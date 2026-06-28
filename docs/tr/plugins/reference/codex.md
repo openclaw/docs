@@ -1,20 +1,21 @@
 ---
 read_when:
-    - codex Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: Codex app-server test düzeneği ve Codex tarafından yönetilen GPT model kataloğu.
+    - codex Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw Codex uygulama sunucusu çalıştırma altyapısı ve Codex tarafından yönetilen GPT kataloğuna sahip model sağlayıcı Plugin.
 title: Codex Plugin
 x-i18n:
-    generated_at: "2026-05-03T08:59:19Z"
+    generated_at: "2026-06-28T00:58:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
+    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Codex Plugin
 
-Codex uygulama sunucusu koşum takımı ve Codex tarafından yönetilen GPT model kataloğu.
+Codex tarafından yönetilen bir GPT kataloğuna sahip OpenClaw Codex app-server harness'ı ve model sağlayıcı Plugin'i.
 
 ## Dağıtım
 
@@ -23,7 +24,7 @@ Codex uygulama sunucusu koşum takımı ve Codex tarafından yönetilen GPT mode
 
 ## Yüzey
 
-providers: codex; contracts: mediaUnderstandingProviders, migrationProviders
+providers: codex; contracts: mediaUnderstandingProviders, migrationProviders, webSearchProviders
 
 ## İlgili belgeler
 

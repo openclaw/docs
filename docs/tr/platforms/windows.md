@@ -1,155 +1,244 @@
 ---
 read_when:
-    - OpenClaw'ı Windows'a yükleme
-    - Yerel Windows ile WSL2 arasında seçim yapma
-    - Windows yardımcı uygulamasının durumu aranıyor
-summary: 'Windows desteği: yerel ve WSL2 kurulum yolları, arka plan hizmeti ve mevcut dikkat edilmesi gerekenler'
+    - Windows'ta OpenClaw Kurulumu
+    - Windows Hub, yerel Windows ve WSL2 arasında seçim yapma
+    - Windows eşlikçi uygulamasını veya Windows node modunu ayarlama
+summary: 'Windows desteği: Windows Hub, yerel CLI ve Gateway, WSL2 gateway kurulumu, node modu ve sorun giderme'
 title: Windows
 x-i18n:
-    generated_at: "2026-05-05T06:18:07Z"
+    generated_at: "2026-06-28T00:49:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: adf885747e3a897cb4ee57f6494805468d38c4595c0ab7582b063153a1134d18
+    source_hash: e7c7bde33f27bce6c1136ccf688547ee82750d317a997c4a45b354c52ae1b690
     source_path: platforms/windows.md
     workflow: 16
 ---
 
-OpenClaw hem **yerel Windows** hem de **WSL2** destekler. WSL2 daha
-kararlı yoldur ve tam deneyim için önerilir; CLI, Gateway ve
-araçlar Linux içinde tam uyumlulukla çalışır. Yerel Windows, aşağıda belirtilen
-bazı sınırlamalarla temel CLI ve Gateway kullanımı için çalışır.
+OpenClaw, yerel bir **Windows Hub** yardımcı uygulamasıyla birlikte Windows CLI desteği sunar.
+Kurulum, tepsi durumu, sohbet, Komut Merkezi tanılamaları ve Windows düğüm
+yetenekleri içeren bir masaüstü uygulaması istediğinizde Windows Hub'ı kullanın.
+CLI/Gateway'i doğrudan istediğinizde PowerShell yükleyicisini kullanın. En
+Linux uyumlu Gateway çalışma zamanını istediğinizde WSL2 kullanın.
 
-Yerel Windows eşlikçi uygulamaları planlanmaktadır.
+## Önerilen: Windows Hub
 
-## WSL2 (önerilir)
+Windows Hub, Windows 10 20H2+ ve Windows 11 için yerel WinUI yardımcı
+uygulamasıdır. Yönetici ayrıcalıkları olmadan kurulur ve OpenClaw sürümlerinde
+imzalı x64 ve ARM64 yükleyicilerle yayımlanır.
 
-- [Başlarken](/tr/start/getting-started) (WSL içinde kullanın)
-- [Kurulum ve güncellemeler](/tr/install/updating)
-- Resmi WSL2 kılavuzu (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+En son kararlı yükleyiciyi [OpenClaw sürümleri sayfasından](https://github.com/openclaw/openclaw/releases) indirin:
 
-## Yerel Windows durumu
+- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-x64.exe)
+- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-arm64.exe)
+- [Sağlama toplamları](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-SHA256SUMS.txt)
 
-Yerel Windows CLI akışları gelişiyor, ancak WSL2 hâlâ önerilen yoldur.
+Yukarıdaki indirme bağlantılarından biri 404 döndürürse [sürümler sayfasını](https://github.com/openclaw/openclaw/releases) ziyaret edin ve en son sürümde `OpenClawCompanion-Setup-*` varlıklarını arayın.
 
-Bugün yerel Windows üzerinde iyi çalışanlar:
+Kurulumdan sonra Başlat menüsünden veya sistem tepsisinden **OpenClaw Companion**'ı
+başlatın. Yükleyici ayrıca Gateway Kurulumu, Sohbet, Ayarlar, Güncellemeleri
+Denetle ve kaldırma için kısayollar ekler.
 
-- `install.ps1` üzerinden web sitesi yükleyicisi
-- `openclaw --version`, `openclaw doctor` ve `openclaw plugins list --json` gibi yerel CLI kullanımı
-- aşağıdaki gibi gömülü local-agent/provider duman testi:
+### Windows Hub neler içerir
+
+- sistem tepsisi durumu ve oturum açılışında başlatma
+- yerel, uygulamaya ait WSL Gateway için ilk çalıştırma kurulumu
+- yerel, uzak ve SSH tünelli Gateway'ler için bağlantı ayarları
+- yerel sohbet penceresi ve tarayıcı Control UI erişimi
+- oturumlar, kullanım, kanallar, düğümler, eşleştirme ve onarım komutları için
+  Komut Merkezi tanılamaları
+- aracı denetimli tuval, ekran, kamera, bildirimler, cihaz durumu, metinden
+  sese, konuşmadan metne ve denetimli `system.run` için Windows düğüm modu
+- Claude Desktop, Claude Code ve Cursor gibi MCP istemcileri için yerel MCP
+  sunucu modu
+
+### İlk başlatma
+
+İlk başlatmada, kullanılabilir kaydedilmiş Gateway yoksa Windows Hub kurulumu
+açar. En hızlı yol, uygulamaya ait bir `OpenClawGateway` WSL dağıtımı hazırlayan,
+Gateway'i bunun içine kuran ve uygulamayı eşleştiren **Yerel olarak kur** seçeneğidir.
+Bu, mevcut Ubuntu dağıtımınızı dışa aktarmaz veya değiştirmez.
+
+Zaten bir Gateway'iniz varsa **Gelişmiş kurulum**'u seçin veya Bağlantılar
+sekmesini açın. Şunlara bağlanabilirsiniz:
+
+- bu bilgisayardaki yerel Gateway
+- bu bilgisayardaki WSL Gateway
+- URL ve token veya kurulum koduyla uzak Gateway
+- SSH tüneli üzerinden erişilen Gateway
+
+Kurulum tamamlandığında tepsi simgesi yeşile döner. Bağlantıyı, eşleştirmeyi,
+düğüm durumunu ve kanal sağlığını doğrulamak için tepsiden **Komut Merkezi**'ni
+açın.
+
+## Windows düğüm modu
+
+Windows Hub, birinci sınıf OpenClaw düğümü olarak kaydolabilir. Aracı daha sonra
+Gateway üzerinden bildirilen Windows yerel yeteneklerini kullanabilir.
+
+Yaygın komutlar şunları içerir:
+
+- `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`,
+  `canvas.snapshot`
+- `screen.snapshot` ve açıkça etkinleştirmeyle `screen.record`
+- `camera.list` ve açıkça etkinleştirmeyle `camera.snap`, `camera.clip`
+- `system.notify`, `system.run`, `system.run.prepare`, `system.which`
+- `location.get`, `device.info`, `device.status`
+- `stt.transcribe`, `tts.speak`
+
+Düğüm modu Gateway eşleştirmesi gerektirir. Uygulama bir eşleştirme isteği
+gösterirse bunu Gateway ana makinesinden onaylayın:
 
 ```powershell
-openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
+openclaw devices list
+openclaw devices approve <request-id>
+openclaw nodes status
 ```
 
-Mevcut sınırlamalar:
+Gateway yalnızca düğümün bildirdiği ve sunucu politikasının izin verdiği
+komutları iletir. `screen.record`, `camera.snap` ve `camera.clip` gibi gizlilik
+açısından hassas komutlar açık `gateway.nodes.allowCommands` etkinleştirmesi
+gerektirir.
 
-- `openclaw onboard --non-interactive`, `--skip-health` geçmediğiniz sürece hâlâ erişilebilir bir yerel gateway bekler
-- `openclaw onboard --non-interactive --install-daemon` ve `openclaw gateway install` önce Windows Zamanlanmış Görevleri dener
-- Zamanlanmış Görev oluşturma reddedilirse, OpenClaw kullanıcı başına Başlangıç klasöründe bir oturum açma öğesine geri döner ve gateway’i hemen başlatır
-- `schtasks` kendisi takılır veya yanıt vermeyi bırakırsa, OpenClaw artık bu yolu hızlıca iptal eder ve sonsuza kadar takılı kalmak yerine geri dönüş yolunu kullanır
-- Zamanlanmış Görevler, daha iyi gözetici durumu sağladıkları için mevcut olduklarında hâlâ tercih edilir
+## Yerel MCP modu
 
-Gateway hizmeti kurulumu olmadan yalnızca yerel CLI istiyorsanız şunlardan birini kullanın:
+Windows Hub, aynı Windows yerel yetenek kayıt defterini loopback üzerinde yerel
+MCP sunucusu olarak sunabilir. Bu, çalışan bir OpenClaw Gateway olmadan yerel
+MCP istemcilerinin Windows yeteneklerini kullanmasını istediğinizde yararlıdır.
+
+Bunu Windows Hub Ayarları'ndaki geliştirici/gelişmiş bölümünden etkinleştirin.
+Sunucu etkinleştirildikten sonra uygulama loopback uç noktasını ve bearer
+token'ı gösterir.
+
+Mod matrisi:
+
+| Düğüm modu | MCP sunucusu | Davranış                         |
+| ---------- | ------------ | -------------------------------- |
+| kapalı     | kapalı       | Yalnızca operatör masaüstü uygulaması |
+| açık       | kapalı       | Gateway bağlantılı Windows düğümü |
+| kapalı     | açık         | Yalnızca yerel MCP sunucusu      |
+| açık       | açık         | Gateway düğümü ve yerel MCP sunucusu |
+
+## Yerel Windows CLI ve Gateway
+
+Terminal öncelikli kullanım için OpenClaw'ı PowerShell'den yükleyin:
 
 ```powershell
-openclaw onboard --non-interactive --skip-health
-openclaw gateway run
+iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-Yerel Windows üzerinde yönetilen başlangıç istiyorsanız:
+Doğrulayın:
+
+```powershell
+openclaw --version
+openclaw doctor
+openclaw gateway status --json
+```
+
+Yerel Windows CLI ve Gateway akışları desteklenir ve gelişmeye devam eder.
+Yönetilen başlangıç, kullanılabildiğinde Windows Scheduled Tasks kullanır. Görev,
+okunabilir `gateway.cmd` betiğini OpenClaw durum dizininde tutar, ancak arka
+plan Gateway'in görünür bir konsol penceresi açmaması için bunu oluşturulmuş bir
+`gateway.vbs` WScript sarmalayıcısı üzerinden başlatır. Görev oluşturma
+reddedilirse OpenClaw, kullanıcı başına Startup klasörü oturum açma öğesine
+geri döner.
+
+Gateway hizmetini kurmak için:
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-Zamanlanmış Görev oluşturma engellenirse, geri dönüş hizmet modu yine de mevcut kullanıcının Başlangıç klasörü aracılığıyla oturum açıldıktan sonra otomatik başlar.
+Yönetilen Gateway hizmeti olmadan yalnızca CLI kullanımı istiyorsanız:
 
-## Gateway
-
-- [Gateway çalıştırma kılavuzu](/tr/gateway)
-- [Yapılandırma](/tr/gateway/configuration)
-
-## Gateway hizmeti kurulumu (CLI)
-
-WSL2 içinde:
-
-```
-openclaw onboard --install-daemon
+```powershell
+openclaw onboard --non-interactive --skip-health
+openclaw gateway run
 ```
 
-Veya:
+## WSL2 Gateway
 
+WSL2, Windows'ta en Linux uyumlu Gateway çalışma zamanı olmaya devam eder.
+Windows Hub sizin için uygulamaya ait bir WSL Gateway kurabilir veya kendi
+dağıtımınızın içine elle kurabilirsiniz.
+
+Elle kurulum:
+
+```powershell
+wsl --install
+# Or pick a distro explicitly:
+wsl --list --online
+wsl --install -d Ubuntu-24.04
 ```
-openclaw gateway install
+
+WSL içinde systemd'yi etkinleştirin:
+
+```bash
+sudo tee /etc/wsl.conf >/dev/null <<'EOF'
+[boot]
+systemd=true
+EOF
 ```
 
-Veya:
+PowerShell'den WSL'yi yeniden başlatın:
 
+```powershell
+wsl --shutdown
 ```
-openclaw configure
-```
 
-İstendiğinde **Gateway hizmeti** seçeneğini belirleyin.
+Ardından Linux hızlı başlangıcıyla OpenClaw'ı WSL içine kurun:
 
-Onar/taşı:
-
-```
-openclaw doctor
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw gateway status
 ```
 
 ## Windows oturum açmadan önce Gateway otomatik başlatma
 
-Ekransız kurulumlarda, Windows’ta kimse oturum açmasa bile tam önyükleme
+Başsız WSL kurulumları için, Windows'ta kimse oturum açmasa bile tam önyükleme
 zincirinin çalıştığından emin olun.
 
-### 1) Kullanıcı hizmetlerini oturum açmadan çalışır tutun
-
 WSL içinde:
 
 ```bash
+sudo apt-get install -y dbus-x11
 sudo loginctl enable-linger "$(whoami)"
-```
-
-### 2) OpenClaw gateway kullanıcı hizmetini kurun
-
-WSL içinde:
-
-```bash
 openclaw gateway install
 ```
 
-### 3) Windows önyüklemesinde WSL’yi otomatik başlatın
-
-Yönetici olarak PowerShell’de:
+PowerShell'de Yönetici olarak:
 
 ```powershell
-schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec /bin/true" /sc onstart /ru SYSTEM
+schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec dbus-launch true" /sc onstart /ru "$env:USERNAME"
 ```
 
-`Ubuntu` değerini şuradan aldığınız dağıtım adınızla değiştirin:
+`Ubuntu` yerine şu komuttan aldığınız dağıtım adını yazın:
 
 ```powershell
 wsl --list --verbose
 ```
 
-### Başlangıç zincirini doğrulayın
+> **Not:** Eski tariflere göre iki değişiklik:
+>
+> - **`/bin/true` yerine `dbus-launch true`** — WSL ≥ 2.6.1.0 üzerinde bir regresyon ([microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)), linger etkin olsa bile son istemci çıktıktan 15-20 saniye sonra dağıtımın boşta sonlandırılmasına neden olur. `dbus-launch true`, geçici çözüm olarak bir child-of-init sürecini canlı tutar ([topluluk tartışması, microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)).
+> - **`/ru SYSTEM` yerine `/ru "$env:USERNAME"`** — Kullanıcı başına WSL dağıtımları (varsayılan kurulum) SYSTEM hesabı tarafından görülemez; görev çalışıyor gibi görünür ama dağıtım hiçbir zaman başlatılmaz. Kendi hesabınızla çalıştırmak bunu önler. Görev oluşturulurken Windows parolanızı ister.
 
-Yeniden başlatmadan sonra (Windows oturum açmadan önce), WSL’den kontrol edin:
+Yeniden başlatmadan sonra WSL'den doğrulayın:
 
 ```bash
 systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## Gelişmiş: WSL hizmetlerini LAN üzerinden açığa çıkarma (portproxy)
+## WSL hizmetlerini LAN üzerinden açığa çıkarma
 
-WSL’nin kendi sanal ağı vardır. Başka bir makinenin **WSL içinde** çalışan bir hizmete
-(SSH, yerel bir TTS sunucusu veya Gateway) erişmesi gerekiyorsa, bir Windows portunu
-mevcut WSL IP’sine yönlendirmeniz gerekir. WSL IP’si yeniden başlatmalardan sonra
-değişir, bu yüzden yönlendirme kuralını yenilemeniz gerekebilir.
+WSL'nin kendi sanal ağı vardır. Başka bir makinenin WSL içindeki bir hizmete
+erişmesi gerekiyorsa bir Windows bağlantı noktasını geçerli WSL IP'sine iletin.
+WSL IP'si yeniden başlatmalardan sonra değişebilir, bu nedenle gerektiğinde
+iletim kuralını yenileyin.
 
-Örnek (PowerShell’de **Yönetici olarak**):
+PowerShell'de Yönetici olarak örnek:
 
 ```powershell
 $Distro = "Ubuntu-24.04"
@@ -161,111 +250,68 @@ if (-not $WslIp) { throw "WSL IP not found." }
 
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPort `
   connectaddress=$WslIp connectport=$TargetPort
-```
 
-Porta Windows Güvenlik Duvarı üzerinden izin verin (bir kez):
-
-```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-WSL yeniden başladıktan sonra portproxy’yi yenileyin:
-
-```powershell
-netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
-netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 `
-  connectaddress=$WslIp connectport=$TargetPort | Out-Null
-```
-
 Notlar:
 
-- Başka bir makineden SSH, **Windows ana makine IP’sini** hedefler (örnek: `ssh user@windows-host -p 2222`).
-- Uzak düğümler **erişilebilir** bir Gateway URL’sini işaret etmelidir (`127.0.0.1` değil); doğrulamak için
-  `openclaw status --all` kullanın.
-- LAN erişimi için `listenaddress=0.0.0.0` kullanın; `127.0.0.1` yalnızca yerel tutar.
-- Bunun otomatik olmasını istiyorsanız, yenileme adımını oturum açıldığında çalıştıracak
-  bir Zamanlanmış Görev kaydedin.
+- Başka bir makineden SSH, Windows ana makine IP'sini hedefler; örneğin
+  `ssh user@windows-host -p 2222`.
+- Uzak düğümler `127.0.0.1` değil, erişilebilir bir Gateway URL'sini göstermelidir.
+- LAN erişimi için `listenaddress=0.0.0.0` kullanın. Yalnızca yerel erişim için
+  `127.0.0.1` kullanın.
 
-## Adım adım WSL2 kurulumu
+## Sorun giderme
 
-### 1) WSL2 + Ubuntu kurun
+### Tepsi simgesi görünmüyor
 
-PowerShell’i açın (Yönetici):
+Görev Yöneticisi'nde `OpenClaw.Tray.WinUI.exe` olup olmadığını denetleyin.
+Çalışıyorsa gizli tepsi simgeleri alanını açıp sabitleyin. Çalışmıyorsa Başlat
+menüsünden **OpenClaw Companion**'ı başlatın.
 
-```powershell
-wsl --install
-# Or pick a distro explicitly:
-wsl --list --online
-wsl --install -d Ubuntu-24.04
-```
+### Yerel kurulum başarısız oluyor
 
-Windows isterse yeniden başlatın.
-
-### 2) systemd’yi etkinleştirin (gateway kurulumu için gereklidir)
-
-WSL terminalinizde:
-
-```bash
-sudo tee /etc/wsl.conf >/dev/null <<'EOF'
-[boot]
-systemd=true
-EOF
-```
-
-Ardından PowerShell’den:
+Kurulum günlüğünü Windows Hub'dan açın veya şunu inceleyin:
 
 ```powershell
-wsl --shutdown
+notepad "$env:LOCALAPPDATA\OpenClawTray\Logs\Setup\easy-setup-latest.txt"
 ```
 
-Ubuntu’yu yeniden açın, ardından doğrulayın:
+Yaygın nedenler WSL'nin devre dışı olması, sanallaştırmanın engellenmesi,
+uygulamaya ait eski WSL durumu veya Gateway paketini yüklerken yaşanan ağ
+hatasıdır.
 
-```bash
-systemctl --user status
+### Uygulama eşleştirme gerektiğini söylüyor
+
+Operatör veya düğüm isteğini Gateway'den onaylayın:
+
+```powershell
+openclaw devices list
+openclaw devices approve <request-id>
 ```
 
-### 3) OpenClaw’u kurun (WSL içinde)
+Cihazın zaten token'ı varsa onaydan sonra Bağlantılar sekmesinden yeniden
+bağlanın.
 
-WSL içinde normal bir ilk kurulum için Linux Başlarken akışını izleyin:
+### Web sohbeti uzak Gateway'e erişemiyor
 
-```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-pnpm install
-pnpm build
-pnpm ui:build
-pnpm openclaw onboard --install-daemon
-```
+Uzak web sohbeti HTTPS veya localhost gerektirir. Kendinden imzalı sertifikalar
+için sertifikaya Windows'ta güvenin veya localhost URL'sine SSH tüneli kullanın.
 
-İlk katılım yerine kaynaktan geliştirme yapıyorsanız,
-[Kurulum](/tr/start/setup) bölümündeki kaynak geliştirme döngüsünü kullanın:
+### `screen.snapshot`, kamera veya ses komutları başarısız oluyor
 
-```bash
-pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
-pnpm openclaw setup
-pnpm gateway:watch
-```
+Kamera, mikrofon, ekran yakalama ve bildirimler için Windows izinlerini doğrulayın.
+Paketli kurulumlar korumalı yetenekleri bildirir, ancak Windows bir komut bunları
+ilk kez kullandığında yine de istem gösterebilir.
 
-Tam kılavuz: [Başlarken](/tr/start/getting-started)
+### Git veya GitHub bağlantısı başarısız oluyor
 
-## Windows eşlikçi uygulaması
+Bazı ağlar GitHub'a HTTPS erişimini engeller veya yavaşlatır. `git clone` veya
+`gh auth login` başarısız olursa başka bir ağ, VPN veya HTTP/HTTPS proxy deneyin.
 
-Henüz bir Windows eşlikçi uygulamamız yok. Bunun gerçekleşmesine yardımcı olmak
-isterseniz katkılar memnuniyetle karşılanır.
-
-## Git ve GitHub bağlantısı (katkıda bulunanlar)
-
-Bazı ağlar GitHub’a HTTPS erişimini engeller veya kısıtlar. `git clone` zaman aşımı
-veya bağlantı sıfırlamalarıyla başarısız olursa, başka bir ağ, VPN veya kuruluşunuzun
-sağladığı bir HTTP/HTTPS proxy deneyin.
-
-`gh auth login`, tarayıcı cihaz akışı sırasında başarısız olursa (örneğin
-`github.com:443` erişiminde zaman aşımı), bunun yerine kişisel erişim belirteciyle kimlik doğrulayın:
-
-1. En az `repo` kapsamına (klasik PAT) veya eşdeğer ayrıntılı erişime sahip bir belirteç oluşturun.
-2. Geçerli oturum için PowerShell’de:
+Geçerli oturumda token tabanlı `gh` kimlik doğrulaması için:
 
 ```powershell
 $env:GH_TOKEN="<your-token>"
@@ -273,20 +319,12 @@ gh auth status
 gh auth setup-git
 ```
 
-3. `gh auth status` eksik `read:org` hakkında uyarı verirse, bu kapsamı içeren
-   bir belirteç oluşturun ve değişkeni yeniden atayın:
-
-```powershell
-$env:GH_TOKEN="<your-token-with-repo-and-read:org>"
-gh auth status
-```
-
-`gh auth refresh -s read:org` yalnızca `gh auth login` ile kimlik doğruladıysanız
-ve yenilenecek saklanmış kimlik bilgileriniz varsa geçerlidir (`GH_TOKEN` kullanırken değil).
-
-Belirteçleri asla commit etmeyin veya issue’lara ya da pull request’lere yapıştırmayın.
+Token'ları asla commit etmeyin veya issue'lara ya da pull request'lere yapıştırmayın.
 
 ## İlgili
 
-- [Kurulum özeti](/tr/install)
-- [Platformlar](/tr/platforms)
+- [Kurulum genel bakışı](/tr/install)
+- [Node.js kurulumu](/tr/install/node)
+- [Düğümler](/tr/nodes)
+- [Control UI](/tr/web/control-ui)
+- [Gateway yapılandırması](/tr/gateway/configuration)

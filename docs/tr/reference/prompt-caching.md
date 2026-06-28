@@ -1,39 +1,43 @@
 ---
 read_when:
-    - Önbellek tutmayla prompt token maliyetlerini azaltmak istiyorsunuz
-    - Çok aracı kurulumlarında aracı başına önbellek davranışına ihtiyacınız var
-    - Heartbeat ile cache-ttl budamayı birlikte ayarlıyorsunuz
-summary: Prompt önbellekleme düğmeleri, birleştirme sırası, sağlayıcı davranışı ve ayarlama desenleri
-title: Prompt önbellekleme
+    - İstem belirteci maliyetlerini önbellek tutma ile azaltmak istiyorsunuz
+    - Çok aracılı kurulumlarda aracı başına önbellek davranışına ihtiyacınız var
+    - Heartbeat ve cache-ttl budamasını birlikte ayarlıyorsunuz
+summary: İstem önbelleğe alma ayarları, birleştirme sırası, sağlayıcı davranışı ve ayarlama kalıpları
+title: İstem önbelleğe alma
 x-i18n:
-    generated_at: "2026-04-25T13:57:05Z"
-    model: gpt-5.4
+    generated_at: "2026-06-28T01:15:45Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4f3d1a5751ca0cab4c5b83c8933ec732b58c60d430e00c24ae9a75036aa0a6a3
+    source_hash: 68b4d0cb086603ebb12e4ce0edc892fb94efd09cb52faa9884b2f5ab0741585c
     source_path: reference/prompt-caching.md
-    workflow: 15
+    workflow: 16
 ---
 
-Prompt önbellekleme, model sağlayıcısının her turda değişmemiş prompt öneklerini (genellikle system/developer talimatları ve diğer kararlı bağlamlar) yeniden işleyip durmak yerine yeniden kullanabilmesi anlamına gelir. OpenClaw, yukarı akış API bu sayaçları doğrudan açığa çıkardığında sağlayıcı kullanımını `cacheRead` ve `cacheWrite` olarak normalize eder.
+İstem önbelleğe alma, model sağlayıcısının değişmeyen istem öneklerini (genellikle sistem/geliştirici talimatları ve diğer kararlı bağlam) her seferinde yeniden işlemek yerine turlar arasında yeniden kullanabilmesi anlamına gelir. OpenClaw, yukarı akış API bu sayaçları doğrudan sunduğunda sağlayıcı kullanımını `cacheRead` ve `cacheWrite` olarak normalleştirir.
 
-Durum yüzeyleri, canlı oturum anlık görüntüsünde önbellek sayaçları eksik olduğunda bunları en son döküm kullanım günlüğünden de kurtarabilir; böylece `/status`, kısmi oturum meta verisi kaybından sonra da bir önbellek satırı göstermeye devam edebilir. Mevcut sıfır olmayan canlı önbellek değerleri yine de döküm geri dönüş değerlerine göre önceliklidir.
+Durum yüzeyleri, canlı oturum anlık görüntüsünde eksik olduklarında en son transkript
+kullanım günlüğünden önbellek sayaçlarını da kurtarabilir; böylece `/status`, kısmi
+oturum meta verisi kaybından sonra bir önbellek satırı göstermeye devam edebilir. Mevcut sıfır olmayan canlı
+önbellek değerleri, transkript yedek değerlerine göre yine önceliklidir.
 
-Bunun önemi: daha düşük token maliyeti, daha hızlı yanıtlar ve uzun süreli oturumlar için daha öngörülebilir performans. Önbellekleme olmadan, tekrar eden prompt'lar girişin büyük kısmı değişmese bile her turda tam prompt maliyetini öder.
+Bu neden önemli: daha düşük token maliyeti, daha hızlı yanıtlar ve uzun süre çalışan oturumlar için daha öngörülebilir performans. Önbelleğe alma olmadan, tekrarlanan istemler, girdinin çoğu değişmemiş olsa bile her turda tam istem maliyetini öder.
 
-Aşağıdaki bölümler prompt yeniden kullanımını ve token maliyetini etkileyen her önbellek düğmesini kapsar.
+Aşağıdaki bölümler, istem yeniden kullanımını ve token maliyetini etkileyen önbellekle ilgili her ayarı kapsar.
 
-Sağlayıcı başvuruları:
+Sağlayıcı referansları:
 
-- Anthropic prompt caching: [https://platform.claude.com/docs/en/build-with-claude/prompt-caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
-- OpenAI prompt caching: [https://developers.openai.com/api/docs/guides/prompt-caching](https://developers.openai.com/api/docs/guides/prompt-caching)
-- OpenAI API headers and request IDs: [https://developers.openai.com/api/reference/overview](https://developers.openai.com/api/reference/overview)
-- Anthropic request IDs and errors: [https://platform.claude.com/docs/en/api/errors](https://platform.claude.com/docs/en/api/errors)
+- Anthropic istem önbelleğe alma: [https://platform.claude.com/docs/en/build-with-claude/prompt-caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- OpenAI istem önbelleğe alma: [https://developers.openai.com/api/docs/guides/prompt-caching](https://developers.openai.com/api/docs/guides/prompt-caching)
+- OpenAI API başlıkları ve istek kimlikleri: [https://developers.openai.com/api/reference/overview](https://developers.openai.com/api/reference/overview)
+- Anthropic istek kimlikleri ve hataları: [https://platform.claude.com/docs/en/api/errors](https://platform.claude.com/docs/en/api/errors)
 
-## Birincil düğmeler
+## Birincil ayarlar
 
-### `cacheRetention` (genel varsayılan, model ve aracı başına)
+### `cacheRetention` (genel varsayılan, model ve ajan başına)
 
-Önbellek tutmayı tüm modeller için genel varsayılan olarak ayarlayın:
+Önbellek saklamayı tüm modeller için genel varsayılan olarak ayarlayın:
 
 ```yaml
 agents:
@@ -53,7 +57,7 @@ agents:
           cacheRetention: "short" # none | short | long
 ```
 
-Aracı başına geçersiz kılma:
+Ajan başına geçersiz kılma:
 
 ```yaml
 agents:
@@ -63,15 +67,15 @@ agents:
         cacheRetention: "none"
 ```
 
-Config birleştirme sırası:
+Yapılandırma birleştirme sırası:
 
 1. `agents.defaults.params` (genel varsayılan — tüm modellere uygulanır)
 2. `agents.defaults.models["provider/model"].params` (model başına geçersiz kılma)
-3. `agents.list[].params` (eşleşen aracı kimliği; anahtara göre geçersiz kılar)
+3. `agents.list[].params` (eşleşen ajan kimliği; anahtara göre geçersiz kılar)
 
 ### `contextPruning.mode: "cache-ttl"`
 
-Eski araç sonucu bağlamını önbellek TTL pencerelerinden sonra budar; böylece boşta kalma sonrası istekler aşırı büyük geçmişi yeniden önbelleğe almaz.
+Boşta kalma sonrası isteklerin aşırı büyük geçmişi yeniden önbelleğe almaması için eski araç sonucu bağlamını önbellek TTL pencerelerinden sonra budar.
 
 ```yaml
 agents:
@@ -81,11 +85,11 @@ agents:
       ttl: "1h"
 ```
 
-Tam davranış için bkz. [Session Pruning](/tr/concepts/session-pruning).
+Tam davranış için [Oturum Budama](/tr/concepts/session-pruning) bölümüne bakın.
 
-### Heartbeat keep-warm
+### Heartbeat sıcak tutma
 
-Heartbeat, önbellek pencerelerini sıcak tutabilir ve boşta kalma aralarından sonra tekrarlanan önbellek yazımlarını azaltabilir.
+Heartbeat, önbellek pencerelerini sıcak tutabilir ve boşta kalma aralıklarından sonra tekrarlanan önbellek yazmalarını azaltabilir.
 
 ```yaml
 agents:
@@ -94,58 +98,59 @@ agents:
       every: "55m"
 ```
 
-Aracı başına Heartbeat, `agents.list[].heartbeat` altında desteklenir.
+Ajan başına Heartbeat `agents.list[].heartbeat` konumunda desteklenir.
 
 ## Sağlayıcı davranışı
 
 ### Anthropic (doğrudan API)
 
 - `cacheRetention` desteklenir.
-- Anthropic API anahtarı kimlik doğrulama profilleriyle OpenClaw, ayarlanmadığında Anthropic model referansları için `cacheRetention: "short"` tohumlar.
-- Anthropic yerel Messages yanıtları hem `cache_read_input_tokens` hem `cache_creation_input_tokens` açığa çıkarır; bu yüzden OpenClaw hem `cacheRead` hem `cacheWrite` gösterebilir.
-- Yerel Anthropic isteklerinde `cacheRetention: "short"`, varsayılan 5 dakikalık ephemeral önbelleğe eşlenir; `cacheRetention: "long"` ise yalnızca doğrudan `api.anthropic.com` ana makinelerinde 1 saatlik TTL'ye yükseltir.
+- Anthropic API anahtarı kimlik doğrulama profillerinde OpenClaw, ayarlanmamış Anthropic model referansları için `cacheRetention: "short"` değerini başlatır.
+- Anthropic yerel Messages yanıtları hem `cache_read_input_tokens` hem de `cache_creation_input_tokens` değerlerini sunar; bu nedenle OpenClaw hem `cacheRead` hem de `cacheWrite` gösterebilir.
+- Yerel Anthropic istekleri için `cacheRetention: "short"` varsayılan 5 dakikalık geçici önbelleğe eşlenir ve `cacheRetention: "long"` yalnızca doğrudan `api.anthropic.com` ana bilgisayarlarında 1 saatlik TTL'ye yükseltilir.
 
 ### OpenAI (doğrudan API)
 
-- Prompt önbellekleme, desteklenen yeni modellerde otomatiktir. OpenClaw'ın blok düzeyinde önbellek işaretçileri enjekte etmesi gerekmez.
-- OpenClaw, turlar arasında önbellek yönlendirmesini kararlı tutmak için `prompt_cache_key` kullanır ve `cacheRetention: "long"` doğrudan OpenAI ana makinelerinde seçildiğinde yalnızca `prompt_cache_retention: "24h"` kullanır.
-- OpenAI uyumlu Completions sağlayıcıları, `prompt_cache_key` değerini yalnızca model config'i açıkça `compat.supportsPromptCacheKey: true` ayarladığında alır; `cacheRetention: "none"` bunu yine de bastırır.
-- OpenAI, önbelleğe alınmış prompt token'larını `usage.prompt_tokens_details.cached_tokens` (veya Responses API olaylarında `input_tokens_details.cached_tokens`) üzerinden açığa çıkarır. OpenClaw bunu `cacheRead` alanına eşler.
-- OpenAI ayrı bir önbellek-yazma token sayacı açığa çıkarmaz; bu nedenle sağlayıcı önbelleği ısıtıyor olsa bile OpenAI yollarında `cacheWrite` `0` kalır.
-- OpenAI, `x-request-id`, `openai-processing-ms` ve `x-ratelimit-*` gibi yararlı izleme ve rate-limit başlıkları döndürür, ancak önbellek isabeti hesabı başlıklardan değil kullanım yükünden gelmelidir.
-- Uygulamada OpenAI, Anthropic tarzı kayan tam geçmiş yeniden kullanımı yerine genellikle ilk önek önbelleği gibi davranır. Kararlı uzun önekli metin turları geçerli canlı problarda `4864` önbelleğe alınmış token platosuna yaklaşabilirken, araç ağırlıklı veya MCP tarzı dökümler tam tekrarlar üzerinde bile genellikle `4608` önbelleğe alınmış token civarında plato yapar.
+- İstem önbelleğe alma, desteklenen yeni modellerde otomatiktir. OpenClaw'ın blok düzeyinde önbellek işaretleri eklemesi gerekmez.
+- OpenClaw, turlar arasında önbellek yönlendirmesini kararlı tutmak için `prompt_cache_key` kullanır. Doğrudan OpenAI ana bilgisayarları, `cacheRetention: "long"` seçildiğinde `prompt_cache_retention: "24h"` kullanır.
+- OpenAI uyumlu Completions sağlayıcıları, yalnızca model yapılandırmaları açıkça `compat.supportsPromptCacheKey: true` ayarladığında `prompt_cache_key` alır. Uzun saklama iletimi ayrı bir kabiliyettir: açık `cacheRetention: "long"`, yalnızca ilgili compat girdisi uzun önbellek saklamayı da desteklediğinde `prompt_cache_retention: "24h"` gönderir. Mistral gibi sağlayıcılar, `compat.supportsLongCacheRetention: false` ayarlayarak uzun saklama alanını bastırırken önbellek anahtarlarına katılabilir. `cacheRetention: "none"` her iki alanı da bastırır.
+- OpenAI yanıtları, önbelleğe alınmış istem tokenlerini `usage.prompt_tokens_details.cached_tokens` üzerinden (veya Responses API olaylarında `input_tokens_details.cached_tokens` üzerinden) sunar. OpenClaw bunu `cacheRead` değerine eşler.
+- OpenAI ayrı bir önbellek yazma token sayacı sunmaz; bu nedenle sağlayıcı bir önbelleği ısıtıyor olsa bile OpenAI yollarında `cacheWrite` `0` kalır.
+- OpenAI, `x-request-id`, `openai-processing-ms` ve `x-ratelimit-*` gibi yararlı izleme ve hız sınırı başlıkları döndürür; ancak önbellek isabeti hesaplaması başlıklardan değil kullanım yükünden gelmelidir.
+- Pratikte OpenAI çoğu zaman Anthropic tarzı hareketli tam geçmiş yeniden kullanımından çok ilk önek önbelleği gibi davranır. Kararlı uzun önek metin turları mevcut canlı problarda `4864` önbelleğe alınmış token platosuna yakın sonuçlanabilirken, araç yoğun veya MCP tarzı transkriptler tam tekrarlarda bile genellikle `4608` önbelleğe alınmış token civarında plato yapar.
 
 ### Anthropic Vertex
 
-- Vertex AI üzerindeki Anthropic modelleri (`anthropic-vertex/*`), `cacheRetention` desteğini doğrudan Anthropic ile aynı şekilde sunar.
-- `cacheRetention: "long"`, Vertex AI uç noktalarında gerçek 1 saatlik prompt önbellek TTL'sine eşlenir.
-- `anthropic-vertex` için varsayılan önbellek tutma, doğrudan Anthropic varsayılanlarıyla eşleşir.
-- Vertex istekleri sınır farkında önbellek şekillendirmesi üzerinden yönlendirilir; böylece önbellek yeniden kullanımı sağlayıcıların gerçekten aldıklarıyla hizalı kalır.
+- Vertex AI üzerindeki Anthropic modelleri (`anthropic-vertex/*`), doğrudan Anthropic ile aynı şekilde `cacheRetention` destekler.
+- `cacheRetention: "long"`, Vertex AI uç noktalarında gerçek 1 saatlik istem önbelleği TTL'sine eşlenir.
+- `anthropic-vertex` için varsayılan önbellek saklama, doğrudan Anthropic varsayılanlarıyla eşleşir.
+- Vertex istekleri, önbellek yeniden kullanımının sağlayıcıların fiilen aldığı şeyle hizalı kalması için sınır farkındalıklı önbellek şekillendirme üzerinden yönlendirilir.
 
 ### Amazon Bedrock
 
-- Anthropic Claude model referansları (`amazon-bedrock/*anthropic.claude*`) açık `cacheRetention` geçiş desteği sunar.
-- Anthropic olmayan Bedrock modelleri çalışma zamanında zorla `cacheRetention: "none"` yapılır.
+- Anthropic Claude model referansları (`amazon-bedrock/*anthropic.claude*`) açık `cacheRetention` iletimini destekler.
+- Anthropic dışı Bedrock modelleri çalışma zamanında zorunlu olarak `cacheRetention: "none"` değerine ayarlanır.
 
 ### OpenRouter modelleri
 
-`openrouter/anthropic/*` model referansları için OpenClaw, Anthropic
-`cache_control` değerini yalnızca istek hâlâ doğrulanmış bir OpenRouter yolunu hedefliyorsa
-(`openrouter` varsayılan uç noktasında veya `openrouter.ai`'ye çözümlenen herhangi bir sağlayıcı/base URL üzerinde)
-sistem/geliştirici prompt bloklarına enjekte eder; bu, prompt önbelleği yeniden kullanımını iyileştirir.
+`openrouter/anthropic/*` model referansları için OpenClaw, istem önbelleği
+yeniden kullanımını iyileştirmek amacıyla sistem/geliştirici istem bloklarına Anthropic
+`cache_control` ekler; bunu yalnızca istek hâlâ doğrulanmış bir OpenRouter rotasını
+hedeflediğinde yapar (`openrouter` varsayılan uç noktasında veya `openrouter.ai` değerine çözümlenen
+herhangi bir sağlayıcı/temel URL).
 
 `openrouter/deepseek/*`, `openrouter/moonshot*/*` ve `openrouter/zai/*`
-model referansları için `contextPruning.mode: "cache-ttl"` izinlidir çünkü OpenRouter
-sağlayıcı tarafı prompt önbelleklemesini otomatik yönetir. OpenClaw bu isteklere
-Anthropic `cache_control` işaretçileri enjekte etmez.
+model referansları için `contextPruning.mode: "cache-ttl"` izinlidir; çünkü OpenRouter
+sağlayıcı tarafı istem önbelleğe almayı otomatik olarak işler. OpenClaw bu isteklere
+Anthropic `cache_control` işaretleri eklemez.
 
-DeepSeek önbellek oluşturma en iyi çaba esaslıdır ve birkaç saniye sürebilir. Hemen gelen
-takip isteği yine de `cached_tokens: 0` gösterebilir; kısa bir gecikmeden sonra
-aynı önekli tekrarlı istekle doğrulayın ve önbellek isabet sinyali olarak `usage.prompt_tokens_details.cached_tokens`
-kullanın.
+DeepSeek önbellek oluşturma en iyi çaba esaslıdır ve birkaç saniye sürebilir. Hemen
+ardından gelen bir takip isteği hâlâ `cached_tokens: 0` gösterebilir; kısa bir gecikmeden sonra
+tekrarlanan aynı önekli istekle doğrulayın ve önbellek isabeti sinyali olarak
+`usage.prompt_tokens_details.cached_tokens` kullanın.
 
-Modeli keyfi bir OpenAI uyumlu proxy URL'sine yeniden yönlendirirseniz, OpenClaw
-bu OpenRouter'a özgü Anthropic önbellek işaretçilerini enjekte etmeyi bırakır.
+Modeli rastgele bir OpenAI uyumlu proxy URL'sine yeniden yönlendirirseniz OpenClaw
+OpenRouter'a özgü bu Anthropic önbellek işaretlerini eklemeyi durdurur.
 
 ### Diğer sağlayıcılar
 
@@ -154,69 +159,72 @@ Sağlayıcı bu önbellek modunu desteklemiyorsa `cacheRetention` etkisizdir.
 ### Google Gemini doğrudan API
 
 - Doğrudan Gemini aktarımı (`api: "google-generative-ai"`), önbellek isabetlerini
-  yukarı akış `cachedContentTokenCount` üzerinden bildirir; OpenClaw bunu `cacheRead` alanına eşler.
-- Doğrudan bir Gemini modelinde `cacheRetention` ayarlandığında, OpenClaw
-  Google AI Studio çalıştırmalarında sistem prompt'ları için `cachedContents` kaynaklarını otomatik olarak
-  oluşturur, yeniden kullanır ve yeniler. Bu, artık
-  önbelleğe alınmış içerik tutamacını önceden manuel oluşturmanız gerekmediği anlamına gelir.
-- Yine de daha önce var olan bir Gemini önbelleğe alınmış içerik tutamacını
-  yapılandırılmış model üzerinde `params.cachedContent` (veya eski `params.cached_content`) olarak geçebilirsiniz.
-- Bu, Anthropic/OpenAI prompt önek önbelleklemesinden ayrıdır. Gemini için
-  OpenClaw, isteğe önbellek işaretçileri enjekte etmek yerine sağlayıcıya özgü bir `cachedContents` kaynağı yönetir.
+  yukarı akış `cachedContentTokenCount` üzerinden raporlar; OpenClaw bunu `cacheRead` değerine eşler.
+- Doğrudan Gemini modelinde `cacheRetention` ayarlandığında OpenClaw, Google AI Studio çalıştırmalarında sistem istemleri için otomatik olarak
+  `cachedContents` kaynakları oluşturur, yeniden kullanır ve yeniler. Bu, artık önceden
+  bir önbelleğe alınmış içerik tanıtıcısını elle oluşturmanız gerekmediği anlamına gelir.
+- Önceden var olan bir Gemini önbelleğe alınmış içerik tanıtıcısını yapılandırılmış
+  modelde `params.cachedContent` (veya eski `params.cached_content`) olarak yine de geçirebilirsiniz.
+- Bu, Anthropic/OpenAI istem öneki önbelleğe almadan ayrıdır. Gemini için
+  OpenClaw, isteğe önbellek işaretleri eklemek yerine sağlayıcıya özgü bir
+  `cachedContents` kaynağı yönetir.
 
-### Gemini CLI JSON kullanımı
+### Gemini CLI kullanımı
 
-- Gemini CLI JSON çıktısı ayrıca önbellek isabetlerini `stats.cached` üzerinden de gösterebilir;
-  OpenClaw bunu `cacheRead` alanına eşler.
-- CLI doğrudan `stats.input` değeri vermezse OpenClaw giriş token'larını
-  `stats.input_tokens - stats.cached` üzerinden türetir.
-- Bu yalnızca kullanım normalizasyonudur. OpenClaw'ın
-  Gemini CLI için Anthropic/OpenAI tarzı prompt önbellek işaretçileri oluşturduğu anlamına gelmez.
+- Gemini CLI `stream-json` çıktısı, önbellek isabetlerini `stats.cached` üzerinden gösterebilir;
+  OpenClaw bunu `cacheRead` değerine eşler. Eski `--output-format json` geçersiz kılmaları
+  aynı kullanım normalleştirmesini kullanır.
+- CLI doğrudan `stats.input` değeri atlıyorsa OpenClaw girdi tokenlerini
+  `stats.input_tokens - stats.cached` değerinden türetir.
+- Bu yalnızca kullanım normalleştirmesidir. OpenClaw'ın Gemini CLI için
+  Anthropic/OpenAI tarzı istem önbelleği işaretleri oluşturduğu anlamına gelmez.
 
-## Sistem prompt'u önbellek sınırı
+## Sistem istemi önbellek sınırı
 
-OpenClaw, sistem prompt'unu dahili bir önbellek önek sınırı ile ayrılmış
-**kararlı önek** ve **oynak sonek** olarak böler. Sınırın üstündeki içerik
+OpenClaw, sistem istemini dahili bir önbellek öneki sınırıyla ayrılmış **kararlı önek** ve **değişken
+sonek** olarak böler. Sınırın üstündeki içerik
 (araç tanımları, Skills meta verileri, çalışma alanı dosyaları ve diğer
-görece statik bağlamlar) turlar arasında bayt düzeyinde özdeş kalacak şekilde sıralanır.
-Sınırın altındaki içerik (örneğin `HEARTBEAT.md`, çalışma zamanı zaman damgaları ve
-tur başına diğer meta veriler) önbelleğe alınmış
-öneği geçersiz kılmadan değişebilir.
+nispeten statik bağlam), turlar arasında bayt düzeyinde aynı kalacak şekilde sıralanır.
+Sınırın altındaki içeriğin (örneğin `HEARTBEAT.md`, çalışma zamanı zaman damgaları ve
+diğer tur başına meta veriler) önbelleğe alınmış
+öneki geçersiz kılmadan değişmesine izin verilir.
 
 Temel tasarım tercihleri:
 
-- Kararlı çalışma alanı proje bağlamı dosyaları `HEARTBEAT.md` öncesine sıralanır; böylece
-  Heartbeat dalgalanması kararlı öneği bozmaz.
+- Kararlı çalışma alanı proje bağlamı dosyaları `HEARTBEAT.md` öncesinde sıralanır; böylece
+  Heartbeat değişkenliği kararlı öneki bozmaz.
 - Sınır, Anthropic ailesi, OpenAI ailesi, Google ve
-  CLI aktarım şekillendirmesi boyunca uygulanır; böylece desteklenen tüm sağlayıcılar aynı önek
+  CLI aktarım şekillendirmesi genelinde uygulanır; böylece desteklenen tüm sağlayıcılar aynı önek
   kararlılığından yararlanır.
-- Codex Responses ve Anthropic Vertex istekleri
-  sınır farkında önbellek şekillendirmesi üzerinden yönlendirilir; böylece önbellek yeniden kullanımı sağlayıcıların gerçekten aldığıyla hizalı kalır.
-- Sistem prompt fingerprint'leri normalize edilir (boşluk, satır sonları,
-  kanca ile eklenmiş bağlam, çalışma zamanı yetenek sıralaması); böylece anlamsal olarak değişmemiş
-  prompt'lar turlar arasında KV/önbellek paylaşır.
+- Codex Responses ve Anthropic Vertex istekleri,
+  önbellek yeniden kullanımının sağlayıcıların fiilen aldığı şeyle hizalı kalması için
+  sınır farkındalıklı önbellek şekillendirme üzerinden yönlendirilir.
+- Sistem istemi parmak izleri normalleştirilir (boşluk, satır sonları,
+  hook ile eklenen bağlam, çalışma zamanı kabiliyet sıralaması); böylece anlamsal olarak değişmemiş
+  istemler turlar arasında KV/önbellek paylaşır.
 
-Bir config veya çalışma alanı değişikliğinden sonra beklenmedik `cacheWrite` sıçramaları görürseniz,
-değişikliğin önbellek sınırının üstüne mi altına mı düştüğünü kontrol edin. Oynak içeriği sınırın altına
-taşımak (veya onu kararlı hâle getirmek) çoğu zaman sorunu çözer.
+Bir yapılandırma veya çalışma alanı değişikliğinden sonra beklenmeyen `cacheWrite` sıçramaları görürseniz,
+değişikliğin önbellek sınırının üstüne mi altına mı düştüğünü kontrol edin. Değişken
+içeriği sınırın altına taşımak (veya kararlı hale getirmek) çoğu zaman
+sorunu çözer.
 
 ## OpenClaw önbellek kararlılığı korumaları
 
-OpenClaw ayrıca istek sağlayıcıya ulaşmadan önce önbelleğe duyarlı çeşitli yük biçimlerini deterministik tutar:
+OpenClaw ayrıca istek sağlayıcıya ulaşmadan önce önbelleğe duyarlı birkaç yük şeklini deterministik tutar:
 
-- Paket MCP araç katalogları, araç
-  kaydından önce deterministik olarak sıralanır; böylece `listTools()` sırası değişiklikleri araç bloğunu dalgalandırıp
-  prompt önbelleği öneklerini bozmaz.
-- Kalıcı görsel blokları içeren eski oturumlar **en son
-  tamamlanmış 3 turu** bozulmadan tutar; daha eski, zaten işlenmiş görsel blokları
-  görsel ağırlıklı takiplerin büyük
-  bayat yükleri yeniden gönderip durmaması için bir işaretçiyle değiştirilebilir.
+- Paket MCP araç katalogları, araç kaydından önce deterministik olarak sıralanır; böylece
+  `listTools()` sırası değişiklikleri araçlar bloğunu dalgalandırmaz ve
+  istem önbelleği öneklerini bozmaz.
+- Kalıcı görüntü blokları içeren eski oturumlar, **en son 3
+  tamamlanmış turu** olduğu gibi tutar; daha eski ve zaten işlenmiş görüntü blokları,
+  görüntü yoğun takiplerin büyük ve bayat yükleri yeniden göndermeye devam etmemesi için
+  bir işaretle değiştirilebilir.
 
-## Ayarlama desenleri
+## Ayarlama kalıpları
 
-### Karışık trafik (önerilen varsayılan)
+### Karma trafik (önerilen varsayılan)
 
-Ana aracınızda uzun ömürlü bir temel koruyun, patlamalı bildirim aracıları için önbelleği kapatın:
+Ana ajanınızda uzun ömürlü bir temel çizgi tutun, ani bildirim yapan ajanlarda önbelleği devre dışı bırakın:
 
 ```yaml
 agents:
@@ -237,80 +245,79 @@ agents:
         cacheRetention: "none"
 ```
 
-### Önce maliyet temeli
+### Önce maliyet temel çizgisi
 
-- Temel olarak `cacheRetention: "short"` ayarlayın.
+- Temel `cacheRetention: "short"` ayarlayın.
 - `contextPruning.mode: "cache-ttl"` etkinleştirin.
-- Heartbeat'i yalnızca sıcak önbelleklerden faydalanan aracılar için TTL'nizin altında tutun.
+- Heartbeat'i yalnızca sıcak önbelleklerden yararlanan ajanlar için TTL değerinizin altında tutun.
 
-## Önbellek tanılaması
+## Önbellek tanılamaları
 
-OpenClaw, gömülü aracı çalıştırmaları için özel önbellek izleme tanılamaları sunar.
+OpenClaw, gömülü ajan çalıştırmaları için özel önbellek izleme tanılamaları sunar.
 
 Normal kullanıcıya dönük tanılamalar için `/status` ve diğer kullanım özetleri,
 canlı oturum girdisinde bu sayaçlar yoksa `cacheRead` /
-`cacheWrite` için geri dönüş kaynağı olarak en son döküm kullanım girdisini kullanabilir.
+`cacheWrite` için yedek kaynak olarak en son transkript kullanım girdisini kullanabilir.
 
 ## Canlı regresyon testleri
 
-OpenClaw, tekrarlanan önekler, araç turları, görsel turları, MCP tarzı araç dökümleri ve Anthropic önbelleksiz denetimi için tek birleşik canlı önbellek regresyon geçidi tutar.
+OpenClaw, tekrarlanan önekler, araç turları, görüntü turları, MCP tarzı araç transkriptleri ve Anthropic önbelleksiz kontrolü için tek bir birleşik canlı önbellek regresyon kapısı tutar.
 
 - `src/agents/live-cache-regression.live.test.ts`
 - `src/agents/live-cache-regression-baseline.ts`
 
-Dar canlı geçidi şununla çalıştırın:
+Dar canlı kapıyı şununla çalıştırın:
 
 ```sh
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache
 ```
 
-Temel dosya, gözlemlenen en son canlı sayıları ve test tarafından kullanılan sağlayıcıya özgü regresyon tabanlarını saklar.
-Çalıştırıcı ayrıca önceki önbellek durumunun geçerli regresyon örneğini kirletmemesi için
-çalıştırma başına yeni oturum kimlikleri ve prompt ad alanları kullanır.
+Temel çizgi dosyası, en son gözlemlenen canlı sayıları ve test tarafından kullanılan sağlayıcıya özgü regresyon tabanlarını saklar.
+Çalıştırıcı ayrıca, önceki önbellek durumunun mevcut regresyon örneğini kirletmemesi için her çalıştırmada yeni oturum kimlikleri ve istem ad alanları kullanır.
 
-Bu testler, sağlayıcılar arasında kasıtlı olarak özdeş başarı ölçütleri kullanmaz.
+Bu testler, sağlayıcılar arasında kasıtlı olarak aynı başarı ölçütlerini kullanmaz.
 
 ### Anthropic canlı beklentileri
 
-- `cacheWrite` üzerinden açık ısınma yazımları bekleyin.
-- Anthropic önbellek denetimi konuşma boyunca önbellek kırılma noktasını ilerlettiği için tekrarlanan turlarda neredeyse tam geçmiş yeniden kullanımı bekleyin.
-- Geçerli canlı doğrulamalar, kararlı, araç ve görsel yolları için hâlâ yüksek isabet oranı eşiklerini kullanır.
+- `cacheWrite` aracılığıyla açık ısınma yazmaları bekleyin.
+- Anthropic önbellek denetimi, önbellek kesme noktasını konuşma boyunca ilerlettiği için tekrarlanan dönüşlerde neredeyse tam geçmiş yeniden kullanımını bekleyin.
+- Geçerli canlı doğrulamalar, kararlı, araç ve görüntü yolları için hâlâ yüksek isabet oranı eşiklerini kullanır.
 
 ### OpenAI canlı beklentileri
 
-- Yalnızca `cacheRead` bekleyin. `cacheWrite` `0` kalır.
-- Tekrarlanan tur önbellek yeniden kullanımını Anthropic tarzı kayan tam geçmiş yeniden kullanımı olarak değil, sağlayıcıya özgü bir plato olarak değerlendirin.
-- Geçerli canlı doğrulamalar, `gpt-5.4-mini` üzerinde gözlemlenen canlı davranıştan türetilmiş korumacı taban kontrollerini kullanır:
+- Yalnızca `cacheRead` bekleyin. `cacheWrite` `0` olarak kalır.
+- Tekrarlanan dönüş önbellek yeniden kullanımını, Anthropic tarzı hareketli tam geçmiş yeniden kullanımı olarak değil, sağlayıcıya özgü bir plato olarak ele alın.
+- Geçerli canlı doğrulamalar, `gpt-5.4-mini` üzerinde gözlemlenen canlı davranıştan türetilmiş muhafazakar taban kontrollerini kullanır:
   - kararlı önek: `cacheRead >= 4608`, isabet oranı `>= 0.90`
-  - araç dökümü: `cacheRead >= 4096`, isabet oranı `>= 0.85`
-  - görsel dökümü: `cacheRead >= 3840`, isabet oranı `>= 0.82`
-  - MCP tarzı döküm: `cacheRead >= 4096`, isabet oranı `>= 0.85`
+  - araç transkripti: `cacheRead >= 4096`, isabet oranı `>= 0.85`
+  - görüntü transkripti: `cacheRead >= 3840`, isabet oranı `>= 0.82`
+  - MCP tarzı transkript: `cacheRead >= 4096`, isabet oranı `>= 0.85`
 
-2026-04-04 tarihindeki yeni birleşik canlı doğrulama şu değerlerle sonuçlandı:
+2026-04-04 tarihli yeni birleşik canlı doğrulama şu sonuçlarla tamamlandı:
 
 - kararlı önek: `cacheRead=4864`, isabet oranı `0.966`
-- araç dökümü: `cacheRead=4608`, isabet oranı `0.896`
-- görsel dökümü: `cacheRead=4864`, isabet oranı `0.954`
-- MCP tarzı döküm: `cacheRead=4608`, isabet oranı `0.891`
+- araç transkripti: `cacheRead=4608`, isabet oranı `0.896`
+- görüntü transkripti: `cacheRead=4864`, isabet oranı `0.954`
+- MCP tarzı transkript: `cacheRead=4608`, isabet oranı `0.891`
 
-Birleşik geçit için son yerel duvar saati süresi yaklaşık `88s` idi.
+Birleşik kapı için yakın tarihli yerel duvar saati süresi yaklaşık `88s` idi.
 
 Doğrulamaların neden farklı olduğu:
 
-- Anthropic açık önbellek kırılma noktalarını ve kayan konuşma geçmişi yeniden kullanımını açığa çıkarır.
-- OpenAI prompt önbelleklemesi hâlâ tam önek duyarlıdır, ancak canlı Responses trafiğinde etkili yeniden kullanılabilir önek tam prompt'tan daha erken plato yapabilir.
-- Bu nedenle Anthropic ve OpenAI'ı tek bir sağlayıcılar arası yüzde eşiğiyle karşılaştırmak sahte regresyonlar oluşturur.
+- Anthropic, açık önbellek kesme noktaları ve hareketli konuşma geçmişi yeniden kullanımını ortaya koyar.
+- OpenAI istem önbelleğe alma hâlâ tam önek duyarlıdır, ancak canlı Responses trafiğinde etkili yeniden kullanılabilir önek, tam istemden daha erken bir platoya ulaşabilir.
+- Bu nedenle, Anthropic ve OpenAI'ı sağlayıcılar arası tek bir yüzde eşiğiyle karşılaştırmak yanlış regresyonlar oluşturur.
 
-### `diagnostics.cacheTrace` config
+### `diagnostics.cacheTrace` yapılandırması
 
 ```yaml
 diagnostics:
   cacheTrace:
     enabled: true
-    filePath: "~/.openclaw/logs/cache-trace.jsonl" # isteğe bağlı
-    includeMessages: false # varsayılan true
-    includePrompt: false # varsayılan true
-    includeSystem: false # varsayılan true
+    filePath: "~/.openclaw/logs/cache-trace.jsonl" # optional
+    includeMessages: false # default true
+    includePrompt: false # default true
+    includeSystem: false # default true
 ```
 
 Varsayılanlar:
@@ -320,38 +327,38 @@ Varsayılanlar:
 - `includePrompt`: `true`
 - `includeSystem`: `true`
 
-### Env düğmeleri (tek seferlik hata ayıklama)
+### Ortam anahtarları (tek seferlik hata ayıklama)
 
-- `OPENCLAW_CACHE_TRACE=1`, önbellek izlemesini etkinleştirir.
-- `OPENCLAW_CACHE_TRACE_FILE=/path/to/cache-trace.jsonl`, çıktı yolunu geçersiz kılar.
-- `OPENCLAW_CACHE_TRACE_MESSAGES=0|1`, tam mesaj yükü yakalamayı açıp kapatır.
-- `OPENCLAW_CACHE_TRACE_PROMPT=0|1`, prompt metni yakalamayı açıp kapatır.
-- `OPENCLAW_CACHE_TRACE_SYSTEM=0|1`, sistem prompt'u yakalamayı açıp kapatır.
+- `OPENCLAW_CACHE_TRACE=1` önbellek izlemeyi etkinleştirir.
+- `OPENCLAW_CACHE_TRACE_FILE=/path/to/cache-trace.jsonl` çıktı yolunu geçersiz kılar.
+- `OPENCLAW_CACHE_TRACE_MESSAGES=0|1` tam ileti yükü yakalamayı açıp kapatır.
+- `OPENCLAW_CACHE_TRACE_PROMPT=0|1` istem metni yakalamayı açıp kapatır.
+- `OPENCLAW_CACHE_TRACE_SYSTEM=0|1` sistem istemi yakalamayı açıp kapatır.
 
-### Neye bakılmalı
+### İncelenecekler
 
-- Önbellek izleme olayları JSONL biçimindedir ve `session:loaded`, `prompt:before`, `stream:context` ve `session:after` gibi aşamalı anlık görüntüleri içerir.
-- Tur başına önbellek token etkisi normal kullanım yüzeylerinde `cacheRead` ve `cacheWrite` üzerinden görünür (örneğin `/usage full` ve oturum kullanım özetleri).
-- Anthropic için önbellekleme etkinken hem `cacheRead` hem `cacheWrite` bekleyin.
-- OpenAI için önbellek isabetlerinde `cacheRead` bekleyin ve `cacheWrite` değerinin `0` kalmasını bekleyin; OpenAI ayrı bir önbellek-yazma token alanı yayımlamaz.
-- İstek izleme gerekiyorsa istek kimliklerini ve rate-limit başlıklarını önbellek ölçümlerinden ayrı günlüğe kaydedin. OpenClaw'ın geçerli önbellek izleme çıktısı ham sağlayıcı yanıt başlıklarından ziyade prompt/oturum biçimine ve normalize edilmiş token kullanımına odaklanır.
+- Önbellek izleme olayları JSONL biçimindedir ve `session:loaded`, `prompt:before`, `stream:context` ve `session:after` gibi aşamalı anlık görüntüler içerir.
+- Dönüş başına önbellek belirteci etkisi, normal kullanım yüzeylerinde `cacheRead` ve `cacheWrite` aracılığıyla görünür (örneğin `/usage full` ve oturum kullanım özetleri).
+- Anthropic için, önbelleğe alma etkinken hem `cacheRead` hem de `cacheWrite` bekleyin.
+- OpenAI için, önbellek isabetlerinde `cacheRead` bekleyin ve `cacheWrite` değerinin `0` kalmasını bekleyin; OpenAI ayrı bir önbellek yazma belirteci alanı yayımlamaz.
+- İstek izlemeye ihtiyacınız varsa, istek kimliklerini ve hız sınırı başlıklarını önbellek metriklerinden ayrı olarak günlüğe kaydedin. OpenClaw'ın geçerli önbellek izleme çıktısı, ham sağlayıcı yanıt başlıkları yerine istem/oturum şekline ve normalleştirilmiş belirteç kullanımına odaklanır.
 
 ## Hızlı sorun giderme
 
-- Çoğu turda yüksek `cacheWrite`: oynak sistem prompt girdilerini kontrol edin ve modelin/sağlayıcının önbellek ayarlarınızı desteklediğini doğrulayın.
-- Anthropic'te yüksek `cacheWrite`: çoğu zaman önbellek kırılma noktasının her istekte değişen içeriğe denk geldiği anlamına gelir.
-- Düşük OpenAI `cacheRead`: kararlı öneğin başta olduğunu, tekrar eden öneğin en az 1024 token olduğunu ve önbellek paylaşması gereken turlar için aynı `prompt_cache_key` değerinin yeniden kullanıldığını doğrulayın.
-- `cacheRetention` etkisiz: model anahtarının `agents.defaults.models["provider/model"]` ile eşleştiğini doğrulayın.
-- Önbellek ayarlı Bedrock Nova/Mistral istekleri: çalışma zamanında `none` değerine zorlanması beklenen davranıştır.
+- Çoğu dönüşte yüksek `cacheWrite`: geçici sistem istemi girdilerini kontrol edin ve modelin/sağlayıcının önbellek ayarlarınızı desteklediğini doğrulayın.
+- Anthropic üzerinde yüksek `cacheWrite`: genellikle önbellek kesme noktasının her istekte değişen içeriğe denk geldiği anlamına gelir.
+- Düşük OpenAI `cacheRead`: kararlı önekin başta olduğunu, tekrarlanan önekin en az 1024 belirteç olduğunu ve önbellek paylaşması gereken dönüşlerde aynı `prompt_cache_key` değerinin yeniden kullanıldığını doğrulayın.
+- `cacheRetention` etkisizse: model anahtarının `agents.defaults.models["provider/model"]` ile eşleştiğini doğrulayın.
+- Önbellek ayarlarıyla Bedrock Nova/Mistral istekleri: çalışma zamanında beklenen şekilde `none` değerine zorlanır.
 
 İlgili belgeler:
 
 - [Anthropic](/tr/providers/anthropic)
-- [Token use and costs](/tr/reference/token-use)
-- [Session pruning](/tr/concepts/session-pruning)
-- [Gateway configuration reference](/tr/gateway/configuration-reference)
+- [Belirteç kullanımı ve maliyetler](/tr/reference/token-use)
+- [Oturum budama](/tr/concepts/session-pruning)
+- [Gateway yapılandırma başvurusu](/tr/gateway/configuration-reference)
 
 ## İlgili
 
-- [Token use and costs](/tr/reference/token-use)
-- [API usage and costs](/tr/reference/api-usage-costs)
+- [Belirteç kullanımı ve maliyetler](/tr/reference/token-use)
+- [API kullanımı ve maliyetler](/tr/reference/api-usage-costs)

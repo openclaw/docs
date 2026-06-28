@@ -1,75 +1,99 @@
 ---
 read_when:
-    - Bir ajan araçları kullanırken yönlendirmenin nasıl davrandığını açıklama
-    - Etkin çalıştırma kuyruğu davranışını veya çalışma zamanı yönlendirme entegrasyonunu değiştirme
-    - steer, queue, collect ve followup modlarının karşılaştırılması
-summary: Aktif çalıştırma yönlendirmesi, çalışma zamanı sınırlarında mesajları nasıl kuyruğa alır
+    - Bir agent araçları kullanırken steer davranışının nasıl olduğunu açıklama
+    - Etkin çalışma kuyruğu davranışını veya çalışma zamanı yönlendirme entegrasyonunu değiştirme
+    - Yönlendirmeyi followup, collect ve interrupt kuyruk modlarıyla karşılaştırma
+summary: Aktif çalışma yönlendirmesinin çalışma zamanı sınırlarında mesajları nasıl sıraya aldığı
 title: Yönlendirme kuyruğu
 x-i18n:
-    generated_at: "2026-05-04T02:23:42Z"
+    generated_at: "2026-06-28T00:30:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c8df35b127ae0c1e1b3b684a1f63ce33874eb3d0b7bf9d0df7cb9dfce093090a
+    source_hash: b38d036d2a44af431653746e2d5918af0a8af471450f440479cf0a1acc86c9cd
     source_path: concepts/queue-steering.md
     workflow: 16
 ---
 
-Bir oturum çalışması zaten akış halindeyken bir mesaj geldiğinde, OpenClaw aynı oturum için başka bir çalışma başlatmak yerine bu mesajı etkin çalışma zamanına gönderebilir. Genel modlar çalışma zamanından bağımsızdır; Pi ve yerel Codex app-server düzeneği teslim ayrıntılarını farklı şekilde uygular.
+Bir oturum çalışması zaten akıştayken normal bir prompt geldiğinde, kuyruk modu
+`steer` ise OpenClaw varsayılan olarak bu prompt'u etkin çalışma zamanına
+göndermeye çalışır. Bu varsayılan davranış için hiçbir yapılandırma girdisi ve
+hiçbir kuyruk yönergesi gerekmez. OpenClaw ve yerel Codex app-server harness'ı
+teslimat ayrıntılarını farklı şekilde uygular.
 
 ## Çalışma zamanı sınırı
 
-Yönlendirme, zaten çalışmakta olan bir araç çağrısını kesintiye uğratmaz. Pi, model sınırlarında kuyruktaki yönlendirme mesajlarını denetler:
+Yönlendirme, zaten çalışan bir araç çağrısını kesintiye uğratmaz. OpenClaw,
+kuyruğa alınmış yönlendirme iletilerini model sınırlarında kontrol eder:
 
 1. Asistan araç çağrıları ister.
-2. Pi, mevcut asistan mesajının araç çağrısı grubunu yürütür.
-3. Pi, tur sonu olayını yayar.
-4. Pi, kuyruktaki yönlendirme mesajlarını boşaltır.
-5. Pi, bu mesajları bir sonraki LLM çağrısından önce kullanıcı mesajları olarak ekler.
+2. OpenClaw, mevcut asistan iletisinin araç çağrısı grubunu yürütür.
+3. OpenClaw tur sonu olayını yayar.
+4. OpenClaw, kuyruğa alınmış yönlendirme iletilerini boşaltır.
+5. OpenClaw, bu iletileri bir sonraki LLM çağrısından önce kullanıcı iletileri olarak ekler.
 
-Bu, araç sonuçlarını onları isteyen asistan mesajıyla eşlenmiş tutar, ardından bir sonraki model çağrısının en son kullanıcı girdisini görmesini sağlar.
+Bu, araç sonuçlarını onları isteyen asistan iletisiyle eşlenmiş halde tutar,
+ardından bir sonraki model çağrısının en son kullanıcı girdisini görmesini sağlar.
 
-Yerel Codex app-server düzeneği, Pi'nin dahili yönlendirme kuyruğu yerine `turn/steer` sunar. OpenClaw aynı modları burada uyarlar:
+Yerel Codex app-server harness'ı, OpenClaw çalışma zamanının dahili yönlendirme
+kuyruğu yerine `turn/steer` sunar. OpenClaw, yapılandırılmış sessiz pencere boyunca
+kuyruğa alınmış prompt'ları toplu hale getirir, ardından toplanan tüm kullanıcı
+girdileriyle varış sırasına göre tek bir `turn/steer` isteği gönderir.
 
-- `steer`, kuyruktaki mesajları yapılandırılmış sessiz pencere boyunca gruplar, ardından toplanan tüm kullanıcı girdileriyle geliş sırasına göre tek bir `turn/steer` isteği gönderir.
-- `queue`, ayrı `turn/steer` istekleri göndererek eski serileştirilmiş yapıyı korur.
-- `followup`, `collect`, `steer-backlog` ve `interrupt`, etkin Codex turu etrafında OpenClaw tarafından sahip olunan kuyruk davranışı olarak kalır.
+Codex inceleme ve manuel Compaction turları, aynı tur yönlendirmesini reddeder.
+Bir çalışma zamanı `steer` modunda yönlendirmeyi kabul edemediğinde, OpenClaw
+prompt'u başlatmadan önce etkin çalışmanın bitmesini bekler.
 
-Codex inceleme ve manuel Compaction turları aynı tur yönlendirmesini reddeder. Bir çalışma zamanı yönlendirmeyi kabul edemediğinde, OpenClaw bu modun izin verdiği durumlarda followup kuyruğuna geri döner.
-
-Bu sayfa, normal gelen mesajlar için kuyruk modu yönlendirmesini açıklar. Açık `/steer <message>` komutu için bkz. [Steer](/tools/steer).
+Bu sayfa, mod `steer` olduğunda normal gelen iletiler için kuyruk modu
+yönlendirmesini açıklar. Mod `followup` veya `collect` ise normal iletiler bu
+yönlendirme yoluna girmez; etkin çalışma bitene kadar beklerler. Açık
+`/steer <message>` komutu için bkz. [Yönlendir](/tr/tools/steer).
 
 ## Modlar
 
-| Mod             | Etkin çalışma davranışı                                                                                                      | Sonraki followup davranışı                                                          |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `steer`         | Kuyruktaki tüm yönlendirme mesajlarını bir sonraki çalışma zamanı sınırında birlikte enjekte eder. Varsayılan budur.          | Yalnızca yönlendirme kullanılamadığında followup'a geri döner.                      |
-| `queue`         | Eski tek tek yönlendirme. Pi her model sınırında kuyruktaki bir mesajı enjekte eder; Codex ayrı `turn/steer` istekleri gönderir. | Yalnızca yönlendirme kullanılamadığında followup'a geri döner.                      |
-| `steer-backlog` | `steer` ile aynı etkin çalışma yönlendirme davranışı.                                                                         | Aynı mesajı daha sonraki bir followup turu için de tutar.                           |
-| `followup`      | Geçerli çalışmayı yönlendirmez.                                                                                              | Kuyruktaki mesajları daha sonra çalıştırır.                                         |
-| `collect`       | Geçerli çalışmayı yönlendirmez.                                                                                              | Uyumlu kuyruktaki mesajları bekletme penceresinden sonra tek bir sonraki turda birleştirir. |
-| `interrupt`     | Etkin çalışmayı iptal eder, ardından en yeni mesajı başlatır.                                                                 | Yok.                                                                                |
+| Mod         | Etkin çalışma davranışı                                 | Sonraki davranış                                                                     |
+| ----------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `steer`     | Mümkün olduğunda prompt'u etkin çalışma zamanına yönlendirir. | Yönlendirme kullanılamıyorsa etkin çalışmanın bitmesini bekler.                  |
+| `followup`  | Yönlendirme yapmaz.                                     | Kuyruğa alınmış iletileri etkin çalışma bittikten sonra daha sonra çalıştırır.       |
+| `collect`   | Yönlendirme yapmaz.                                     | Uyumlu kuyruğa alınmış iletileri debounce penceresinden sonra tek bir sonraki turda birleştirir. |
+| `interrupt` | Etkin çalışmayı yönlendirmek yerine iptal eder.         | İptalden sonra en yeni iletiyi başlatır.                                             |
 
-## Seri mesaj örneği
+## Ani yoğunluk örneği
 
-Temsilci bir araç çağrısı yürütürken dört kullanıcı mesaj gönderirse:
+Aracı bir araç çağrısı yürütürken dört kullanıcı ileti gönderirse:
 
-- `steer`: etkin çalışma zamanı, bir sonraki model kararından önce dört mesajın tamamını geliş sırasına göre alır. Pi bunları bir sonraki model sınırında boşaltır; Codex bunları tek bir gruplu `turn/steer` olarak alır.
-- `queue`: eski serileştirilmiş yönlendirme. Pi kuyruktaki mesajları tek tek enjekte eder; Codex ayrı `turn/steer` istekleri alır.
-- `collect`: OpenClaw etkin çalışma sona erene kadar bekler, ardından bekletme penceresinden sonra uyumlu kuyruktaki mesajlarla bir followup turu oluşturur.
+- Varsayılan davranışla, etkin çalışma zamanı bir sonraki model kararından önce
+  dört iletinin tamamını varış sırasıyla alır. OpenClaw bunları bir sonraki model
+  sınırında boşaltır; Codex bunları toplu tek bir `turn/steer` olarak alır.
+- `/queue collect` ile OpenClaw yönlendirme yapmaz. Etkin çalışmanın bitmesini
+  bekler, ardından debounce penceresinden sonra uyumlu kuyruğa alınmış iletilerle
+  bir takip turu oluşturur.
+- `/queue interrupt` ile OpenClaw etkin çalışmayı iptal eder ve yönlendirmek yerine
+  en yeni iletiyi başlatır.
 
 ## Kapsam
 
-Yönlendirme her zaman geçerli etkin oturum çalışmasını hedefler. Yeni bir oturum oluşturmaz, etkin çalışmanın araç politikasını değiştirmez veya mesajları gönderene göre bölmez. Çok kullanıcılı kanallarda gelen istemler zaten gönderen ve rota bağlamını içerir, bu nedenle bir sonraki model çağrısı her mesajı kimin gönderdiğini görebilir.
+Yönlendirme her zaman mevcut etkin oturum çalışmasını hedefler. Yeni bir oturum
+oluşturmaz, etkin çalışmanın araç politikasını değiştirmez veya iletileri
+gönderene göre bölmez. Çok kullanıcılı kanallarda gelen prompt'lar zaten gönderen
+ve rota bağlamını içerir, bu yüzden bir sonraki model çağrısı her iletiyi kimin
+gönderdiğini görebilir.
 
-OpenClaw'ın uyumlu mesajları birleştirebilen ve followup kuyruğu bırakma politikasını koruyabilen daha sonraki bir followup turu oluşturmasını istediğinizde `collect` kullanın. `queue` yalnızca eski tek tek yönlendirme davranışına ihtiyacınız olduğunda kullanın.
+İletilerin etkin çalışmayı yönlendirmek yerine varsayılan olarak kuyruğa alınmasını
+istediğinizde `followup` veya `collect` kullanın. En yeni prompt etkin çalışmanın
+yerini almalıysa `interrupt` kullanın.
 
-## Bekletme
+## Debounce
 
-`messages.queue.debounceMs`, `collect`, `followup`, `steer-backlog` ve etkin çalışma yönlendirmesi kullanılamadığında `steer` geri dönüşü dahil olmak üzere followup teslimine uygulanır. Pi için etkin `steer` kendisi bekletme zamanlayıcısını kullanmaz, çünkü Pi mesajları doğal olarak bir sonraki model sınırına kadar gruplar. Yerel Codex düzeneği için OpenClaw, gruplu `turn/steer` göndermeden önce sessiz pencere olarak aynı debounce değerini kullanır.
+`messages.queue.debounceMs`, kuyruğa alınmış `followup` ve `collect` teslimatı için
+geçerlidir. Yerel Codex harness'ı ile `steer` modunda, toplu `turn/steer`
+gönderilmeden önceki sessiz pencereyi de ayarlar. OpenClaw için etkin yönlendirme
+debounce zamanlayıcısını kullanmaz, çünkü OpenClaw iletileri doğal olarak bir
+sonraki model sınırına kadar toplu hale getirir.
 
 ## İlgili
 
 - [Komut kuyruğu](/tr/concepts/queue)
-- [Steer](/tools/steer)
-- [Mesajlar](/tr/concepts/messages)
-- [Temsilci döngüsü](/tr/concepts/agent-loop)
+- [Yönlendir](/tr/tools/steer)
+- [İletiler](/tr/concepts/messages)
+- [Aracı döngüsü](/tr/concepts/agent-loop)

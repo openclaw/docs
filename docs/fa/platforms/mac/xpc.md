@@ -1,38 +1,43 @@
 ---
 read_when:
-    - ویرایش قراردادهای IPC یا IPC برنامهٔ نوار منو
-summary: معماری IPC در macOS برای برنامه OpenClaw، ترنسپورت Node Gateway و PeekabooBridge
-title: ارتباط بین‌فرایندی macOS
+    - ویرایش قراردادهای IPC یا IPC برنامه نوار منو
+summary: معماری IPC در macOS برای برنامه OpenClaw، انتقال گره Gateway و PeekabooBridge
+title: IPC در macOS
 x-i18n:
-    generated_at: "2026-04-29T23:12:43Z"
+    generated_at: "2026-06-28T00:13:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 359a33f1a4f5854bd18355f588b4465b5627d9c8fa10a37c884995375da32cac
+    source_hash: 436ea0a01dc544d246b4f2f506a2950fd05b36a8cf79f6f03cffe2843eef8c0d
     source_path: platforms/mac/xpc.md
     workflow: 16
 ---
 
-# معماری IPC در macOS برای OpenClaw
+# معماری IPC در OpenClaw برای macOS
 
-**مدل فعلی:** یک سوکت محلی Unix، **سرویس میزبان node** را برای تأییدهای exec + `system.run` به **برنامه macOS** متصل می‌کند. یک CLI اشکال‌زدایی `openclaw-mac` برای بررسی‌های کشف/اتصال وجود دارد؛ کنش‌های عامل همچنان از طریق Gateway WebSocket و `node.invoke` جریان می‌یابند. خودکارسازی UI از PeekabooBridge استفاده می‌کند.
+**مدل فعلی:** یک سوکت محلی Unix، **سرویس میزبان node** را برای تأییدهای exec و `system.run` به **برنامه macOS** وصل می‌کند. یک CLI اشکال‌زدایی `openclaw-mac` برای بررسی‌های کشف/اتصال وجود دارد؛ کنش‌های عامل همچنان از طریق Gateway WebSocket و `node.invoke` جریان می‌یابند. خودکارسازی UI از PeekabooBridge استفاده می‌کند.
 
 ## اهداف
 
-- یک نمونه برنامه GUI واحد که مالک تمام کارهای مرتبط با TCC باشد (اعلان‌ها، ضبط صفحه، میکروفون، گفتار، AppleScript).
-- یک سطح کوچک برای خودکارسازی: Gateway + فرمان‌های node، به‌علاوه PeekabooBridge برای خودکارسازی UI.
-- مجوزهای قابل پیش‌بینی: همیشه همان bundle ID امضاشده، اجراشده توسط launchd، تا اعطای مجوزهای TCC پایدار بماند.
+- یک نمونه واحد از برنامه GUI که مالک همه کارهای مرتبط با TCC باشد (اعلان‌ها، ضبط صفحه، میکروفون، گفتار، AppleScript).
+- سطحی کوچک برای خودکارسازی: Gateway + فرمان‌های node، به‌علاوه PeekabooBridge برای خودکارسازی UI.
+- مجوزهای قابل پیش‌بینی: همیشه همان bundle ID امضاشده، اجراشده توسط launchd، تا اعطاهای TCC پایدار بمانند.
 
-## نحوه کار
+## نحوه کارکرد
 
 ### انتقال Gateway + node
 
-- برنامه Gateway را اجرا می‌کند (حالت محلی) و به‌عنوان یک node به آن متصل می‌شود.
-- کنش‌های عامل از طریق `node.invoke` انجام می‌شوند (برای مثال `system.run`، `system.notify`، `canvas.*`).
+- برنامه Gateway را اجرا می‌کند (حالت محلی) و به‌عنوان یک node به آن وصل می‌شود.
+- کنش‌های عامل از طریق `node.invoke` انجام می‌شوند (مثلاً `system.run`، `system.notify`، `canvas.*`).
+- فرمان‌های رایج node در Mac شامل `canvas.*`، `camera.snap`، `camera.clip`،
+  `screen.snapshot`، `screen.record`، `system.run`، و `system.notify` هستند.
+- node یک نگاشت `permissions` گزارش می‌کند تا عامل‌ها بتوانند ببینند آیا دسترسی به صفحه،
+  دوربین، میکروفون، گفتار، خودکارسازی، یا دسترس‌پذیری در دسترس است یا نه.
 
 ### سرویس node + IPC برنامه
 
-- یک سرویس میزبان node بدون رابط گرافیکی به Gateway WebSocket متصل می‌شود.
-- درخواست‌های `system.run` از طریق یک سوکت محلی Unix به برنامه macOS ارسال می‌شوند.
+- یک سرویس میزبان node بدون رابط گرافیکی به Gateway WebSocket وصل می‌شود.
+- درخواست‌های `system.run` از طریق یک سوکت محلی Unix به برنامه macOS فوروارد می‌شوند.
 - برنامه exec را در زمینه UI انجام می‌دهد، در صورت نیاز درخواست تأیید نشان می‌دهد، و خروجی را برمی‌گرداند.
 
 نمودار (SCI):
@@ -46,24 +51,24 @@ Agent -> Gateway -> Node Service (WS)
 
 ### PeekabooBridge (خودکارسازی UI)
 
-- خودکارسازی UI از یک سوکت UNIX جداگانه با نام `bridge.sock` و پروتکل JSON مربوط به PeekabooBridge استفاده می‌کند.
-- ترتیب ترجیح میزبان (در سمت کلاینت): Peekaboo.app → Claude.app → OpenClaw.app → اجرای محلی.
-- امنیت: میزبان‌های bridge به TeamID مجاز نیاز دارند؛ راه فرار same-UID فقط برای DEBUG با `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` محافظت می‌شود (قرارداد Peekaboo).
-- برای جزئیات ببینید: [استفاده از PeekabooBridge](/fa/platforms/mac/peekaboo).
+- خودکارسازی UI از یک سوکت جداگانه UNIX به نام `bridge.sock` و پروتکل JSON مربوط به PeekabooBridge استفاده می‌کند.
+- ترتیب ترجیح میزبان (سمت کلاینت): Peekaboo.app → Claude.app → OpenClaw.app → اجرای محلی.
+- امنیت: میزبان‌های bridge به TeamID مجاز نیاز دارند؛ راه فرار DEBUG-only برای همان UID با `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` محافظت می‌شود (قرارداد Peekaboo).
+- ببینید: [کاربرد PeekabooBridge](/fa/platforms/mac/peekaboo) برای جزئیات.
 
 ## جریان‌های عملیاتی
 
-- راه‌اندازی دوباره/ساخت دوباره: `SIGN_IDENTITY="Apple Development: <Developer Name> (<TEAMID>)" scripts/restart-mac.sh`
+- راه‌اندازی/ساخت مجدد: `SIGN_IDENTITY="Apple Development: <Developer Name> (<TEAMID>)" scripts/restart-mac.sh`
   - نمونه‌های موجود را می‌کشد
   - ساخت Swift + بسته‌بندی
-  - LaunchAgent را می‌نویسد/bootstrap می‌کند/kickstart می‌کند
-- نمونه واحد: اگر نمونه دیگری با همان bundle ID در حال اجرا باشد، برنامه زود خارج می‌شود.
+  - LaunchAgent را می‌نویسد/راه‌اندازی اولیه می‌کند/kickstart می‌کند
+- نمونه واحد: اگر نمونه دیگری با همان bundle ID در حال اجرا باشد، برنامه زودتر خارج می‌شود.
 
 ## نکات سخت‌سازی
 
-- برای همه سطوح دارای امتیاز، الزام به تطابق TeamID را ترجیح دهید.
-- PeekabooBridge: `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (فقط DEBUG) ممکن است به فراخوان‌های same-UID برای توسعه محلی اجازه دهد.
-- تمام ارتباطات فقط محلی باقی می‌مانند؛ هیچ سوکت شبکه‌ای در معرض قرار نمی‌گیرد.
+- ترجیحاً برای همه سطوح دارای امتیاز، تطابق TeamID الزامی باشد.
+- PeekabooBridge: `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (فقط DEBUG) ممکن است برای توسعه محلی به فراخوان‌های همان UID اجازه دهد.
+- همه ارتباطات فقط محلی باقی می‌مانند؛ هیچ سوکت شبکه‌ای در معرض قرار نمی‌گیرد.
 - درخواست‌های TCC فقط از bundle برنامه GUI منشأ می‌گیرند؛ bundle ID امضاشده را در بازسازی‌ها پایدار نگه دارید.
 - سخت‌سازی IPC: حالت سوکت `0600`، توکن، بررسی‌های peer-UID، چالش/پاسخ HMAC، TTL کوتاه.
 

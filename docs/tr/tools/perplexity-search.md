@@ -1,14 +1,15 @@
 ---
 read_when:
     - Web araması için Perplexity Search kullanmak istiyorsunuz
-    - PERPLEXITY_API_KEY veya OPENROUTER_API_KEY ayarının yapılmış olması gerekir
+    - PERPLEXITY_API_KEY veya OPENROUTER_API_KEY yapılandırılmış olmalıdır
 summary: web_search için Perplexity Search API ve Sonar/OpenRouter uyumluluğu
 title: Perplexity araması
 x-i18n:
-    generated_at: "2026-05-06T09:35:12Z"
+    generated_at: "2026-06-28T01:24:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
+    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
@@ -17,7 +18,16 @@ OpenClaw, `web_search` sağlayıcısı olarak Perplexity Search API'yi destekler
 `title`, `url` ve `snippet` alanlarıyla yapılandırılmış sonuçlar döndürür.
 
 Uyumluluk için OpenClaw, eski Perplexity Sonar/OpenRouter kurulumlarını da destekler.
-`OPENROUTER_API_KEY`, `plugins.entries.perplexity.config.webSearch.apiKey` içinde bir `sk-or-...` anahtarı kullanırsanız veya `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` ayarlarsanız sağlayıcı chat-completions yoluna geçer ve yapılandırılmış Search API sonuçları yerine alıntılar içeren yapay zeka tarafından sentezlenmiş yanıtlar döndürür.
+`OPENROUTER_API_KEY` kullanırsanız, `plugins.entries.perplexity.config.webSearch.apiKey` içinde `sk-or-...` anahtarı kullanırsanız veya `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` ayarlarsanız, sağlayıcı chat-completions yoluna geçer ve yapılandırılmış Search API sonuçları yerine alıntılarla AI tarafından sentezlenmiş yanıtlar döndürür.
+
+## Plugin'i yükle
+
+Resmi Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## Perplexity API anahtarı alma
 
@@ -29,7 +39,7 @@ Uyumluluk için OpenClaw, eski Perplexity Sonar/OpenRouter kurulumlarını da de
 
 Perplexity Sonar için zaten OpenRouter kullanıyorsanız `provider: "perplexity"` değerini koruyun ve Gateway ortamında `OPENROUTER_API_KEY` ayarlayın ya da `plugins.entries.perplexity.config.webSearch.apiKey` içinde bir `sk-or-...` anahtarı saklayın.
 
-İsteğe bağlı uyumluluk kontrolleri:
+İsteğe bağlı uyumluluk denetimleri:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
@@ -88,18 +98,17 @@ Perplexity Sonar için zaten OpenRouter kullanıyorsanız `provider: "perplexity
 }
 ```
 
-## Anahtarın ayarlanacağı yer
+## Anahtar nerede ayarlanır
 
 **Yapılandırma yoluyla:** `openclaw configure --section web` komutunu çalıştırın. Anahtarı
-`plugins.entries.perplexity.config.webSearch.apiKey` altında
-`~/.openclaw/openclaw.json` içinde saklar.
+`~/.openclaw/openclaw.json` dosyasında `plugins.entries.perplexity.config.webSearch.apiKey` altında saklar.
 Bu alan SecretRef nesnelerini de kabul eder.
 
-**Ortam yoluyla:** Gateway süreç ortamında `PERPLEXITY_API_KEY` veya `OPENROUTER_API_KEY`
-ayarlayın. Bir gateway kurulumu için bunu
-`~/.openclaw/.env` içine (veya servis ortamınıza) koyun. Bkz. [Ortam değişkenleri](/tr/help/faq#env-vars-and-env-loading).
+**Ortam yoluyla:** Gateway işlem ortamında `PERPLEXITY_API_KEY` veya `OPENROUTER_API_KEY`
+ayarlayın. Bir Gateway kurulumu için bunu
+`~/.openclaw/.env` içine (veya hizmet ortamınıza) koyun. Bkz. [Ortam değişkenleri](/tr/help/faq#env-vars-and-env-loading).
 
-`provider: "perplexity"` yapılandırılmışsa ve Perplexity anahtar SecretRef'i env yedeği olmadan çözümlenmemişse başlangıç/yeniden yükleme hızlı şekilde başarısız olur.
+`provider: "perplexity"` yapılandırılmışsa ve Perplexity anahtarı SecretRef çözümlenmemişse ve env geri dönüşü yoksa, başlatma/yeniden yükleme hızla başarısız olur.
 
 ## Araç parametreleri
 
@@ -134,7 +143,7 @@ Yalnızca bu tarihten önce yayımlanan sonuçlar (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Domain izin listesi/engelleme listesi dizisi (en fazla 20).
+Alan adı izin listesi/engelleme listesi dizisi (en fazla 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
@@ -148,7 +157,7 @@ Sayfa başına token sınırı.
 Eski Sonar/OpenRouter uyumluluk yolu için:
 
 - `query`, `count` ve `freshness` kabul edilir
-- `count` burada yalnızca uyumluluk içindir; yanıt yine N sonuçluk liste yerine alıntılar içeren tek bir sentezlenmiş yanıttır
+- `count` burada yalnızca uyumluluk içindir; yanıt yine N sonuçlu bir liste yerine alıntılar içeren tek bir sentezlenmiş yanıttır
 - `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` ve `max_tokens_per_page`
   gibi yalnızca Search API'ye özgü filtreler açık hatalar döndürür
@@ -156,39 +165,39 @@ Eski Sonar/OpenRouter uyumluluk yolu için:
 **Örnekler:**
 
 ```javascript
-// Country and language-specific search
+// Ülke ve dile özel arama
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// Recent results (past week)
+// Son sonuçlar (geçen hafta)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// Date range search
+// Tarih aralığı araması
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
   date_before: "2024-06-30",
 });
 
-// Domain filtering (allowlist)
+// Alan adı filtreleme (izin listesi)
 await web_search({
   query: "climate research",
   domain_filter: ["nature.com", "science.org", ".edu"],
 });
 
-// Domain filtering (denylist - prefix with -)
+// Alan adı filtreleme (engelleme listesi - önüne - koyun)
 await web_search({
   query: "product reviews",
   domain_filter: ["-reddit.com", "-pinterest.com"],
 });
 
-// More content extraction
+// Daha fazla içerik çıkarma
 await web_search({
   query: "detailed AI research",
   max_tokens: 50000,
@@ -196,16 +205,16 @@ await web_search({
 });
 ```
 
-### Domain filtresi kuralları
+### Alan adı filtresi kuralları
 
-- Filtre başına en fazla 20 domain
+- Filtre başına en fazla 20 alan adı
 - Aynı istekte izin listesi ve engelleme listesi karıştırılamaz
-- Engelleme listesi girişleri için `-` önekini kullanın (örn. `["-reddit.com"]`)
+- Engelleme listesi girdileri için `-` öneki kullanın (örn. `["-reddit.com"]`)
 
 ## Notlar
 
-- Perplexity Search API yapılandırılmış web araması sonuçları döndürür (`title`, `url`, `snippet`)
-- OpenRouter veya açık `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, uyumluluk için Perplexity'yi tekrar Sonar chat completions yoluna geçirir
+- Perplexity Search API, yapılandırılmış web arama sonuçları döndürür (`title`, `url`, `snippet`)
+- OpenRouter veya açık `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, uyumluluk için Perplexity'yi tekrar Sonar chat completions'a geçirir
 - Sonar/OpenRouter uyumluluğu, yapılandırılmış sonuç satırları değil, alıntılar içeren tek bir sentezlenmiş yanıt döndürür
 - Sonuçlar varsayılan olarak 15 dakika önbelleğe alınır (`cacheTtlMinutes` ile yapılandırılabilir)
 
@@ -215,13 +224,13 @@ await web_search({
   <Card title="Web aramasına genel bakış" href="/tr/tools/web" icon="globe">
     Tüm sağlayıcılar ve otomatik algılama kuralları.
   </Card>
-  <Card title="Brave arama" href="/tr/tools/brave-search" icon="shield">
+  <Card title="Brave search" href="/tr/tools/brave-search" icon="shield">
     Ülke ve dil filtreleriyle yapılandırılmış sonuçlar.
   </Card>
-  <Card title="Exa arama" href="/tr/tools/exa-search" icon="magnifying-glass">
-    İçerik çıkarımıyla sinirsel arama.
+  <Card title="Exa search" href="/tr/tools/exa-search" icon="magnifying-glass">
+    İçerik çıkarma ile nöral arama.
   </Card>
   <Card title="Perplexity Search API belgeleri" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
-    Resmi Perplexity Search API hızlı başlangıç ve başvuru bilgileri.
+    Resmi Perplexity Search API hızlı başlangıcı ve başvurusu.
   </Card>
 </CardGroup>

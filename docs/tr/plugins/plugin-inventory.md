@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Plugin için, çekirdek npm paketinde mi sunulacağına yoksa ayrı olarak mı kurulacağına karar veriyorsunuz
-    - Paketlenmiş Plugin paketi meta verilerini veya sürüm otomasyonunu güncelliyorsunuz
-    - Kanonik dahili ve harici Plugin listesine ihtiyacınız var
-summary: Çekirdekte dağıtılan, harici olarak yayımlanan veya yalnızca kaynak olarak tutulan OpenClaw Plugin'lerinin oluşturulan envanteri
+    - Bir Plugin'in çekirdek npm paketinde mi yer alacağına yoksa ayrı mı kurulacağına karar veriyorsunuz
+    - Paketle birlikte gelen Plugin paket meta verilerini veya sürüm otomasyonunu güncelliyorsunuz
+    - Kanonik dahili ve harici plugin listesine ihtiyacınız var
+summary: OpenClaw çekirdeğinde gönderilen, harici olarak yayımlanan veya yalnızca kaynak olarak tutulan Plugin’lerin oluşturulmuş envanteri
 title: Plugin envanteri
 x-i18n:
-    generated_at: "2026-05-10T19:47:12Z"
+    generated_at: "2026-06-28T00:56:23Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
 
 # Plugin envanteri
 
-Bu sayfa `extensions/*/package.json`, `openclaw.plugin.json`
-ve kök npm paketindeki `files` dışlamalarından oluşturulur. Şununla yeniden oluşturun:
+Bu sayfa `extensions/*/package.json`, `openclaw.plugin.json` ve kök npm paketi `files` dışlamalarından oluşturulur. Şununla yeniden oluşturun:
 
 ```bash
 pnpm plugins:inventory:gen
@@ -25,19 +25,15 @@ pnpm plugins:inventory:gen
 
 ## Tanımlar
 
-- **Çekirdek npm paketi:** `openclaw` npm paketine dahil edilmiştir ve ayrı bir Plugin kurulumu olmadan kullanılabilir.
-- **Resmi harici paket:** çekirdek npm paketinden çıkarılmış, bu resmi envanterde tutulan ve ClawHub ve/veya npm üzerinden isteğe bağlı olarak kurulan OpenClaw bakımlı Plugin.
-- **Yalnızca kaynak checkout'u:** yayımlanan npm yapılarına dahil edilmeyen ve kurulabilir paket olarak duyurulmayan repo yerelindeki Plugin.
+- **Çekirdek npm paketi:** `openclaw` npm paketine dahil olarak oluşturulur ve ayrı bir Plugin kurulumu olmadan kullanılabilir.
+- **Resmi harici paket:** çekirdek npm paketinden çıkarılmış, bu resmi envanterde tutulan ve ClawHub ve/veya npm üzerinden istek üzerine yüklenen OpenClaw tarafından sürdürülen Plugin.
+- **Yalnızca kaynak checkout:** yayımlanan npm yapılarından çıkarılmış ve yüklenebilir paket olarak duyurulmayan repo yerelindeki Plugin.
 
-Kaynak checkout'ları npm kurulumlarından farklıdır: `pnpm install` sonrasında paketle birlikte gelen
-Plugin'ler `extensions/<id>` konumundan yüklenir; böylece yerel düzenlemeler ve pakete yerel çalışma alanı
-bağımlılıkları kullanılabilir olur.
+Kaynak checkout'lar npm kurulumlarından farklıdır: `pnpm install` sonrasında paketli Plugin'ler `extensions/<id>` içinden yüklenir, böylece yerel düzenlemeler ve pakete yerel workspace bağımlılıkları kullanılabilir.
 
-## Plugin kurma
+## Plugin yükleme
 
-Kurulum gerekip gerekmediğine karar vermek için **Dağıtım** sütununu kullanın. `included in OpenClaw`
-diyen Plugin'ler çekirdek pakette zaten mevcuttur. Resmi
-harici paketler bir kez kurulum, ardından Gateway yeniden başlatması gerektirir.
+Kurulumun gerekip gerekmediğine karar vermek için her girdideki kurulum yolunu kullanın. `included in OpenClaw` diyen Plugin'ler çekirdek pakette zaten mevcuttur. Resmi harici paketler bir kurulum, ardından bir Gateway yeniden başlatması gerektirir.
 
 Örneğin, Discord resmi bir harici pakettir:
 
@@ -47,139 +43,278 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-Yalın paket belirtimleri önce ClawHub'ı, ardından npm yedeğini dener. Bir kaynağı zorlamak için
-`clawhub:@openclaw/discord` veya `npm:@openclaw/discord` kullanın. Kurulumdan sonra kimlik bilgilerini
-ve kanal yapılandırmasını eklemek için Plugin'in [Discord](/tr/channels/discord) gibi kurulum dokümanını izleyin.
-Güncelleme, kaldırma ve yayımlama komutları için [Plugin'leri yönet](/tr/plugins/manage-plugins) bölümüne bakın.
+Lansman geçişi sırasında sıradan yalın paket belirtimleri hâlâ npm'den yüklenir. Açık bir kaynak gerektiğinde `clawhub:@openclaw/discord` veya `npm:@openclaw/discord` kullanın. Kurulumdan sonra, kimlik bilgileri ve kanal yapılandırması eklemek için [Discord](/tr/channels/discord) gibi Plugin'in kurulum belgesini izleyin. Güncelleme, kaldırma ve yayımlama komutları için [Plugin'leri yönet](/tr/plugins/manage-plugins) bölümüne bakın.
+
+Her girdi paketi, dağıtım yolunu ve açıklamayı listeler.
 
 ## Çekirdek npm paketi
 
-| Plugin                                                            | Açıklama                                                                                                                                                              | Dağıtım                                                              | Yüzey                                                                                                                                                                                                                                                           |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/tr/plugins/reference/alibaba)                             | Video oluşturma sağlayıcısı desteği ekler.                                                                                                                           | `@openclaw/alibaba-provider`<br />OpenClaw'a dahildir                | contracts: videoGenerationProviders                                                                                                                                                                                                                             |
-| [amazon-bedrock](/tr/plugins/reference/amazon-bedrock)               | OpenClaw'a Amazon Bedrock model sağlayıcısı desteği ekler.                                                                                                           | `@openclaw/amazon-bedrock-provider`<br />OpenClaw'a dahildir         | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                  |
-| [amazon-bedrock-mantle](/tr/plugins/reference/amazon-bedrock-mantle) | OpenClaw'a Amazon Bedrock Mantle model sağlayıcısı desteği ekler.                                                                                                    | `@openclaw/amazon-bedrock-mantle-provider`<br />OpenClaw'a dahildir  | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                |
-| [anthropic](/tr/plugins/reference/anthropic)                         | OpenClaw'a Anthropic model sağlayıcısı desteği ekler.                                                                                                                | `@openclaw/anthropic-provider`<br />OpenClaw'a dahildir              | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                    |
-| [anthropic-vertex](/tr/plugins/reference/anthropic-vertex)           | OpenClaw'a Anthropic Vertex model sağlayıcısı desteği ekler.                                                                                                         | `@openclaw/anthropic-vertex-provider`<br />OpenClaw'a dahildir       | providers: anthropic-vertex                                                                                                                                                                                                                                     |
-| [arcee](/tr/plugins/reference/arcee)                                 | OpenClaw'a Arcee model sağlayıcısı desteği ekler.                                                                                                                    | `@openclaw/arcee-provider`<br />OpenClaw'a dahildir                  | providers: arcee                                                                                                                                                                                                                                                |
-| [azure-speech](/tr/plugins/reference/azure-speech)                   | Azure AI Speech metinden konuşmaya dönüştürme (MP3, yerel Ogg/Opus sesli notları, PCM telefon).                                                                      | `@openclaw/azure-speech`<br />OpenClaw'a dahildir                    | contracts: speechProviders                                                                                                                                                                                                                                      |
-| [bonjour](/tr/plugins/reference/bonjour)                             | Yerel OpenClaw gateway'ini Bonjour/mDNS üzerinden duyurur.                                                                                                           | `@openclaw/bonjour`<br />OpenClaw'a dahildir                         | plugin                                                                                                                                                                                                                                                          |
-| [browser](/tr/plugins/reference/browser)                             | Ajan tarafından çağrılabilir araçlar ekler.                                                                                                                          | `@openclaw/browser-plugin`<br />OpenClaw'a dahildir                  | contracts: tools; skills                                                                                                                                                                                                                                        |
-| [byteplus](/tr/plugins/reference/byteplus)                           | OpenClaw'a BytePlus, BytePlus Plan model sağlayıcısı desteği ekler.                                                                                                  | `@openclaw/byteplus-provider`<br />OpenClaw'a dahildir               | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                         |
-| [canvas](/tr/plugins/reference/canvas)                               | Eşleştirilmiş düğümler için deneysel Canvas denetimi ve A2UI işleme yüzeyleri.                                                                                       | `@openclaw/canvas-plugin`<br />OpenClaw'a dahildir                   | contracts: tools                                                                                                                                                                                                                                                |
-| [cerebras](/tr/plugins/reference/cerebras)                           | OpenClaw'a Cerebras model sağlayıcısı desteği ekler.                                                                                                                 | `@openclaw/cerebras-provider`<br />OpenClaw'a dahildir               | providers: cerebras                                                                                                                                                                                                                                             |
-| [chutes](/tr/plugins/reference/chutes)                               | OpenClaw'a Chutes model sağlayıcısı desteği ekler.                                                                                                                   | `@openclaw/chutes-provider`<br />OpenClaw'a dahildir                 | providers: chutes                                                                                                                                                                                                                                               |
-| [clickclack](/tr/plugins/reference/clickclack)                       | OpenClaw mesajlarını gönderip almak için Clickclack kanal yüzeyini ekler.                                                                                            | `@openclaw/clickclack`<br />OpenClaw'a dahildir                      | channels: clickclack                                                                                                                                                                                                                                            |
-| [cloudflare-ai-gateway](/tr/plugins/reference/cloudflare-ai-gateway) | OpenClaw'a Cloudflare AI Gateway model sağlayıcısı desteği ekler.                                                                                                    | `@openclaw/cloudflare-ai-gateway-provider`<br />OpenClaw'a dahildir  | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                |
-| [comfy](/tr/plugins/reference/comfy)                                 | OpenClaw'a ComfyUI model sağlayıcısı desteği ekler.                                                                                                                  | `@openclaw/comfy-provider`<br />OpenClaw'a dahildir                  | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                       |
-| [copilot-proxy](/tr/plugins/reference/copilot-proxy)                 | OpenClaw'a Copilot Proxy model sağlayıcısı desteği ekler.                                                                                                            | `@openclaw/copilot-proxy`<br />OpenClaw'a dahildir                   | providers: copilot-proxy                                                                                                                                                                                                                                        |
-| [deepgram](/tr/plugins/reference/deepgram)                           | Medya anlama sağlayıcısı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcısı desteği ekler.                                                                     | `@openclaw/deepgram-provider`<br />OpenClaw'a dahildir               | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                          |
-| [deepinfra](/tr/plugins/reference/deepinfra)                         | OpenClaw'a DeepInfra model sağlayıcısı desteği ekler.                                                                                                                | `@openclaw/deepinfra-provider`<br />OpenClaw'a dahildir              | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/tr/plugins/reference/deepseek)                           | OpenClaw'a DeepSeek model sağlayıcısı desteği ekler.                                                                                                                | `@openclaw/deepseek-provider`<br />OpenClaw'a dahildir               | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/tr/plugins/reference/document-extract)           | Yerel belge eklerinden metinleri ve yedek sayfa görsellerini çıkarır.                                                                                                | `@openclaw/document-extract-plugin`<br />OpenClaw'a dahildir         | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/tr/plugins/reference/duckduckgo)                       | Web arama sağlayıcısı desteği ekler.                                                                                                                                 | `@openclaw/duckduckgo-plugin`<br />OpenClaw'a dahildir               | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/tr/plugins/reference/elevenlabs)                       | Medya anlama sağlayıcısı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcısı desteği ekler. Metinden konuşmaya sağlayıcısı desteği ekler.                      | `@openclaw/elevenlabs-speech`<br />OpenClaw'a dahildir               | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/tr/plugins/reference/exa)                                     | Web arama sağlayıcısı desteği ekler.                                                                                                                                 | `@openclaw/exa-plugin`<br />OpenClaw'a dahildir                      | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/tr/plugins/reference/fal)                                     | OpenClaw'a fal model sağlayıcısı desteği ekler.                                                                                                                      | `@openclaw/fal-provider`<br />OpenClaw'a dahildir                    | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/tr/plugins/reference/file-transfer)                 | Eşleştirilmiş Node'larda özel Node komutlarıyla dosyaları getirir, listeler ve yazar. 16 MB'a kadar ikili dosyalar için node.invoke üzerinden base64 kullanarak bash stdout kesilmesini atlar. | `@openclaw/file-transfer`<br />OpenClaw'a dahildir                   | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/tr/plugins/reference/firecrawl)                         | Aracı tarafından çağrılabilir araçlar ekler. Web getirme sağlayıcısı desteği ekler. Web arama sağlayıcısı desteği ekler.                                            | `@openclaw/firecrawl-plugin`<br />OpenClaw'a dahildir                | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/tr/plugins/reference/fireworks)                         | OpenClaw'a Fireworks model sağlayıcısı desteği ekler.                                                                                                                | `@openclaw/fireworks-provider`<br />OpenClaw'a dahildir              | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/tr/plugins/reference/github-copilot)               | OpenClaw'a GitHub Copilot model sağlayıcısı desteği ekler.                                                                                                           | `@openclaw/github-copilot-provider`<br />OpenClaw'a dahildir         | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/tr/plugins/reference/google)                               | OpenClaw'a Google, Google Gemini CLI, Google Vertex model sağlayıcısı desteği ekler.                                                                                | `@openclaw/google-plugin`<br />OpenClaw'a dahildir                   | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/tr/plugins/reference/gradium)                             | Metinden konuşmaya sağlayıcısı desteği ekler.                                                                                                                        | `@openclaw/gradium-speech`<br />OpenClaw'a dahildir                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/tr/plugins/reference/groq)                                   | OpenClaw'a Groq model sağlayıcısı desteği ekler.                                                                                                                     | `@openclaw/groq-provider`<br />OpenClaw'a dahildir                   | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/tr/plugins/reference/huggingface)                     | OpenClaw'a Hugging Face model sağlayıcısı desteği ekler.                                                                                                             | `@openclaw/huggingface-provider`<br />OpenClaw'a dahildir            | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/tr/plugins/reference/imessage)                           | OpenClaw iletilerini göndermek ve almak için iMessage kanal yüzeyini ekler.                                                                                          | `@openclaw/imessage`<br />OpenClaw'a dahildir                        | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/tr/plugins/reference/inworld)                             | Inworld akışlı metinden konuşmaya (MP3, OGG_OPUS, PCM telefon).                                                                                                      | `@openclaw/inworld-speech`<br />OpenClaw'a dahildir                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/tr/plugins/reference/irc)                                     | OpenClaw iletilerini göndermek ve almak için IRC kanal yüzeyini ekler.                                                                                               | `@openclaw/irc`<br />OpenClaw'a dahildir                             | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/tr/plugins/reference/kilocode)                           | OpenClaw'a Kilocode model sağlayıcısı desteği ekler.                                                                                                                 | `@openclaw/kilocode-provider`<br />OpenClaw'a dahildir               | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/tr/plugins/reference/kimi)                                   | OpenClaw'a Kimi, Kimi Coding model sağlayıcısı desteği ekler.                                                                                                        | `@openclaw/kimi-provider`<br />OpenClaw'a dahildir                   | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/tr/plugins/reference/litellm)                             | OpenClaw'a LiteLLM model sağlayıcısı desteği ekler.                                                                                                                  | `@openclaw/litellm-provider`<br />OpenClaw'a dahildir                | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/tr/plugins/reference/llm-task)                           | İş akışlarından çağrılabilen yapılandırılmış görevler için yalnızca JSON kullanan genel LLM aracı.                                                                   | `@openclaw/llm-task`<br />OpenClaw'a dahildir                        | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/tr/plugins/reference/lmstudio)                           | OpenClaw'a LM Studio model sağlayıcısı desteği ekler.                                                                                                                   | `@openclaw/lmstudio-provider`<br />OpenClaw'a dahildir              | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/tr/plugins/reference/mattermost)                       | OpenClaw mesajlarını göndermek ve almak için Mattermost kanal yüzeyini ekler.                                                                                     | `@openclaw/mattermost`<br />OpenClaw'a dahildir                     | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/tr/plugins/reference/memory-core)                     | Bellek embedding sağlayıcısı desteği ekler. Ajan tarafından çağrılabilen araçlar ekler.                                                                                                   | `@openclaw/memory-core`<br />OpenClaw'a dahildir                    | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/tr/plugins/reference/memory-wiki)                     | OpenClaw için kalıcı wiki derleyicisi ve Obsidian uyumlu bilgi kasası.                                                                                         | `@openclaw/memory-wiki`<br />OpenClaw'a dahildir                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/tr/plugins/reference/microsoft)                         | Metin okuma sağlayıcısı desteği ekler.                                                                                                                                | `@openclaw/microsoft-speech`<br />OpenClaw'a dahildir               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/tr/plugins/reference/microsoft-foundry)         | OpenClaw'a Microsoft Foundry model sağlayıcısı desteği ekler.                                                                                                           | `@openclaw/microsoft-foundry`<br />OpenClaw'a dahildir              | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/tr/plugins/reference/migrate-claude)               | Claude Code ve Claude Desktop talimatlarını, MCP sunucularını, Skills'i ve güvenli yapılandırmayı OpenClaw'a içe aktarır.                                                      | `@openclaw/migrate-claude`<br />OpenClaw'a dahildir                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/tr/plugins/reference/migrate-hermes)               | Hermes yapılandırmasını, bellekleri, Skills'i ve desteklenen kimlik bilgilerini OpenClaw'a içe aktarır.                                                                             | `@openclaw/migrate-hermes`<br />OpenClaw'a dahildir                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/tr/plugins/reference/minimax)                             | OpenClaw'a MiniMax, MiniMax Portal model sağlayıcısı desteği ekler.                                                                                                     | `@openclaw/minimax-provider`<br />OpenClaw'a dahildir               | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/tr/plugins/reference/mistral)                             | OpenClaw'a Mistral model sağlayıcısı desteği ekler.                                                                                                                     | `@openclaw/mistral-provider`<br />OpenClaw'a dahildir               | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/tr/plugins/reference/moonshot)                           | OpenClaw'a Moonshot model sağlayıcısı desteği ekler.                                                                                                                    | `@openclaw/moonshot-provider`<br />OpenClaw'a dahildir              | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/tr/plugins/reference/nvidia)                               | OpenClaw'a NVIDIA model sağlayıcısı desteği ekler.                                                                                                                      | `@openclaw/nvidia-provider`<br />OpenClaw'a dahildir                | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/tr/plugins/reference/oc-path)                             | oc:// çalışma alanı dosya adreslemesi için openclaw path CLI'sini ekler.                                                                                                      | `@openclaw/oc-path`<br />OpenClaw'a dahildir                        | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/tr/plugins/reference/ollama)                               | OpenClaw'a Ollama model sağlayıcısı desteği ekler.                                                                                                                      | `@openclaw/ollama-provider`<br />OpenClaw'a dahildir                | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/tr/plugins/reference/open-prose)                       | /prose slash komutuna sahip OpenProse VM skill paketi.                                                                                                                 | `@openclaw/open-prose`<br />OpenClaw'a dahildir                     | skills                                                                                                                                                                                                                                                           |
-| [openai](/tr/plugins/reference/openai)                               | OpenClaw'a OpenAI, OpenAI Codex model sağlayıcısı desteği ekler.                                                                                                        | `@openclaw/openai-provider`<br />OpenClaw'a dahildir                | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/tr/plugins/reference/opencode)                           | OpenClaw'a OpenCode model sağlayıcısı desteği ekler.                                                                                                                    | `@openclaw/opencode-provider`<br />OpenClaw'a dahildir              | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/tr/plugins/reference/opencode-go)                     | OpenClaw'a OpenCode Go model sağlayıcısı desteği ekler.                                                                                                                 | `@openclaw/opencode-go-provider`<br />OpenClaw'a dahildir           | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/tr/plugins/reference/openrouter)                       | OpenClaw'a OpenRouter model sağlayıcısı desteği ekler.                                                                                                                  | `@openclaw/openrouter-provider`<br />OpenClaw'a dahildir            | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/tr/plugins/reference/openshell)                         | Yansıtılmış yerel çalışma alanları ve SSH tabanlı komut yürütme ile OpenShell tarafından desteklenen sandbox arka ucu.                                                                 | `@openclaw/openshell-sandbox`<br />OpenClaw'a dahildir              | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/tr/plugins/reference/perplexity)                       | Web arama sağlayıcısı desteği ekler.                                                                                                                                    | `@openclaw/perplexity-plugin`<br />OpenClaw'a dahildir              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/tr/plugins/reference/qianfan)                             | OpenClaw'a Qianfan model sağlayıcısı desteği ekler.                                                                                                                     | `@openclaw/qianfan-provider`<br />OpenClaw'a dahildir               | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/tr/plugins/reference/qwen)                                   | OpenClaw'a Qwen, Qwen Cloud, Model Studio, DashScope model sağlayıcısı desteği ekler.                                                                                   | `@openclaw/qwen-provider`<br />OpenClaw'a dahildir                  | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/tr/plugins/reference/runway)                               | Video oluşturma sağlayıcısı desteği ekler.                                                                                                                              | `@openclaw/runway-provider`<br />OpenClaw'a dahildir                | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/tr/plugins/reference/searxng)                             | Web arama sağlayıcısı desteği ekler.                                                                                                                                    | `@openclaw/searxng-plugin`<br />OpenClaw'a dahildir                 | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/tr/plugins/reference/senseaudio)                       | Medya anlama sağlayıcısı desteği ekler.                                                                                                                           | `@openclaw/senseaudio-provider`<br />OpenClaw'a dahildir            | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/tr/plugins/reference/sglang)                               | OpenClaw'a SGLang model sağlayıcısı desteği ekler.                                                                                                                      | `@openclaw/sglang-provider`<br />OpenClaw'a dahildir                | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/tr/plugins/reference/signal)                               | OpenClaw mesajlarını göndermek ve almak için Signal kanal arayüzünü ekler.                                                                                         | `@openclaw/signal`<br />OpenClaw'a dahildir                         | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/tr/plugins/reference/skill-workshop)               | Tekrarlanabilir iş akışlarını bekleyen inceleme, güvenli yazma ve skill istemi yenilemesiyle çalışma alanı skill'leri olarak yakalar.                                                       | `@openclaw/skill-workshop`<br />OpenClaw'a dahildir                 | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/tr/plugins/reference/slack)                                 | OpenClaw mesajlarını göndermek ve almak için Slack kanal arayüzünü ekler.                                                                                          | `@openclaw/slack`<br />OpenClaw'a dahildir                          | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/tr/plugins/reference/stepfun)                             | OpenClaw'a StepFun, StepFun Plan model sağlayıcısı desteği ekler.                                                                                                       | `@openclaw/stepfun-provider`<br />OpenClaw'a dahildir               | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/tr/plugins/reference/synthetic)                         | OpenClaw'a Synthetic model sağlayıcısı desteği ekler.                                                                                                                   | `@openclaw/synthetic-provider`<br />OpenClaw'a dahildir             | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/tr/plugins/reference/tavily)                               | Ajan tarafından çağrılabilir araçlar ekler. Web arama sağlayıcısı desteği ekler.                                                                                                         | `@openclaw/tavily-plugin`<br />OpenClaw'a dahildir                  | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/tr/plugins/reference/telegram)                           | OpenClaw mesajlarını göndermek ve almak için Telegram kanal arayüzünü ekler.                                                                                       | `@openclaw/telegram`<br />OpenClaw'a dahildir                       | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/tr/plugins/reference/tencent)                             | OpenClaw'a Tencent TokenHub model sağlayıcısı desteği ekler.                                                                                                            | `@openclaw/tencent-provider`<br />OpenClaw'a dahildir               | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/tr/plugins/reference/together)                           | OpenClaw'a Together model sağlayıcısı desteği ekler.                                                                                                                    | `@openclaw/together-provider`<br />OpenClaw'a dahildir              | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/tr/plugins/reference/tokenjuice)                       | exec ve bash aracı sonuçlarını tokenjuice indirgeyicileriyle sıkıştırır.                                                                                                        | `@openclaw/tokenjuice`<br />OpenClaw'a dahildir                     | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/tr/plugins/reference/tts-local-cli)                 | Metinden sese sağlayıcısı desteği ekler.                                                                                                                                | `@openclaw/tts-local-cli`<br />OpenClaw'a dahildir                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/tr/plugins/reference/venice)                               | OpenClaw'a Venice model sağlayıcısı desteği ekler.                                                                                                                      | `@openclaw/venice-provider`<br />OpenClaw'a dahildir                | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/tr/plugins/reference/vercel-ai-gateway)         | OpenClaw'a Vercel AI Gateway model sağlayıcısı desteği ekler.                                                                                                           | `@openclaw/vercel-ai-gateway-provider`<br />OpenClaw'a dahildir     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/tr/plugins/reference/vllm)                                   | OpenClaw'a vLLM model sağlayıcısı desteği ekler.                                                                                                                        | `@openclaw/vllm-provider`<br />OpenClaw'a dahildir                  | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/tr/plugins/reference/volcengine)                       | OpenClaw'a Volcengine, Volcengine Plan model sağlayıcısı desteği ekler.                                                                                                 | `@openclaw/volcengine-provider`<br />OpenClaw'a dahildir            | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/tr/plugins/reference/voyage)                               | Bellek gömme sağlayıcısı desteği ekler.                                                                                                                              | `@openclaw/voyage-provider`<br />OpenClaw içinde yer alır                | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/tr/plugins/reference/vydra)                                 | OpenClaw'a Vydra model sağlayıcısı desteği ekler.                                                                                                                       | `@openclaw/vydra-provider`<br />OpenClaw içinde yer alır                 | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/tr/plugins/reference/web-readability)             | Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini ayıklar.                                                                                                | `@openclaw/web-readability-plugin`<br />OpenClaw içinde yer alır         | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/tr/plugins/reference/webhooks)                           | Harici otomasyonu OpenClaw TaskFlow'larına bağlayan kimliği doğrulanmış gelen Webhook'lar.                                                                                  | `@openclaw/webhooks`<br />OpenClaw içinde yer alır                       | plugin                                                                                                                                                                                                                                                           |
-| [xai](/tr/plugins/reference/xai)                                     | OpenClaw'a xAI model sağlayıcısı desteği ekler.                                                                                                                         | `@openclaw/xai-plugin`<br />OpenClaw içinde yer alır                     | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/tr/plugins/reference/xiaomi)                               | OpenClaw'a Xiaomi model sağlayıcısı desteği ekler.                                                                                                                      | `@openclaw/xiaomi-provider`<br />OpenClaw içinde yer alır                | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/tr/plugins/reference/zai)                                     | OpenClaw'a Z.AI model sağlayıcısı desteği ekler.                                                                                                                        | `@openclaw/zai-provider`<br />OpenClaw içinde yer alır                   | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+59 Plugin
+
+- **[admin-http-rpc](/tr/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - OpenClaw'a dahildir. OpenClaw yönetici HTTP RPC uç noktası.
+
+- **[alibaba](/tr/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - OpenClaw'a dahildir. Video üretimi sağlayıcısı desteği ekler.
+
+- **[anthropic](/tr/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - OpenClaw'a dahildir. OpenClaw'a Anthropic model sağlayıcısı desteği ekler.
+
+- **[azure-speech](/tr/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - OpenClaw'a dahildir. Azure AI Speech metinden konuşmaya (MP3, yerel Ogg/Opus sesli notları, PCM telefon).
+
+- **[bonjour](/tr/plugins/reference/bonjour)** (`@openclaw/bonjour`) - OpenClaw'a dahildir. Yerel OpenClaw Gateway'ini Bonjour/mDNS üzerinden duyurur.
+
+- **[browser](/tr/plugins/reference/browser)** (`@openclaw/browser-plugin`) - OpenClaw'a dahildir. Ajan tarafından çağrılabilir araçlar ekler.
+
+- **[byteplus](/tr/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - OpenClaw'a dahildir. OpenClaw'a BytePlus, BytePlus Plan model sağlayıcısı desteği ekler.
+
+- **[canvas](/tr/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - OpenClaw'a dahildir. Eşleştirilmiş düğümler için deneysel Canvas denetimi ve A2UI işleme yüzeyleri.
+
+- **[codex-supervisor](/tr/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - OpenClaw'a dahildir. Codex uygulama sunucusu oturumlarını OpenClaw'dan denetler.
+
+- **[cohere](/tr/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - OpenClaw'a dahildir; npm; ClawHub: `clawhub:@openclaw/cohere-provider`. OpenClaw Cohere sağlayıcı Plugin'i.
+
+- **[comfy](/tr/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - OpenClaw'a dahildir. OpenClaw'a ComfyUI model sağlayıcısı desteği ekler.
+
+- **[copilot-proxy](/tr/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - OpenClaw'a dahildir. OpenClaw'a Copilot Proxy model sağlayıcısı desteği ekler.
+
+- **[deepgram](/tr/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - OpenClaw'a dahildir. Medya anlama sağlayıcısı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcısı desteği ekler.
+
+- **[document-extract](/tr/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - OpenClaw'a dahildir. Yerel belge eklerinden metin ve yedek sayfa görüntüleri çıkarır.
+
+- **[duckduckgo](/tr/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - OpenClaw'a dahildir. Web arama sağlayıcısı desteği ekler.
+
+- **[elevenlabs](/tr/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - OpenClaw'a dahildir. Medya anlama sağlayıcısı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcısı desteği ekler. Metinden konuşmaya sağlayıcısı desteği ekler.
+
+- **[fal](/tr/plugins/reference/fal)** (`@openclaw/fal-provider`) - OpenClaw'a dahildir. OpenClaw'a fal model sağlayıcısı desteği ekler.
+
+- **[file-transfer](/tr/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - OpenClaw'a dahildir. Ayrılmış düğüm komutları üzerinden eşleştirilmiş düğümlerde dosyaları getirir, listeler ve yazar. 16 MB'a kadar ikili dosyalar için node.invoke üzerinden base64 kullanarak bash stdout kesilmesini atlar.
+
+- **[github-copilot](/tr/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - OpenClaw'a dahildir. OpenClaw'a GitHub Copilot model sağlayıcısı desteği ekler.
+
+- **[google](/tr/plugins/reference/google)** (`@openclaw/google-plugin`) - OpenClaw'a dahildir. OpenClaw'a Google, Google Gemini CLI, Google Vertex model sağlayıcısı desteği ekler.
+
+- **[huggingface](/tr/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - OpenClaw'a dahildir. OpenClaw'a Hugging Face model sağlayıcısı desteği ekler.
+
+- **[imessage](/tr/plugins/reference/imessage)** (`@openclaw/imessage`) - OpenClaw'a dahildir. OpenClaw mesajlarını göndermek ve almak için iMessage kanal yüzeyini ekler.
+
+- **[litellm](/tr/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - OpenClaw'a dahildir. OpenClaw'a LiteLLM model sağlayıcısı desteği ekler.
+
+- **[llm-task](/tr/plugins/reference/llm-task)** (`@openclaw/llm-task`) - OpenClaw'a dahildir. İş akışlarından çağrılabilen yapılandırılmış görevler için genel JSON'a özel LLM aracı.
+
+- **[lmstudio](/tr/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - OpenClaw'a dahildir. OpenClaw'a LM Studio model sağlayıcısı desteği ekler.
+
+- **[memory-core](/tr/plugins/reference/memory-core)** (`@openclaw/memory-core`) - OpenClaw'a dahildir. Ajan tarafından çağrılabilir araçlar ekler.
+
+- **[memory-wiki](/tr/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - OpenClaw'a dahildir. OpenClaw için kalıcı wiki derleyicisi ve Obsidian dostu bilgi kasası.
+
+- **[microsoft](/tr/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - OpenClaw'a dahildir. Metinden konuşmaya sağlayıcısı desteği ekler.
+
+- **[microsoft-foundry](/tr/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - OpenClaw'a dahildir. OpenClaw'a Microsoft Foundry model sağlayıcısı desteği ekler.
+
+- **[migrate-claude](/tr/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - OpenClaw'a dahildir. Claude Code ve Claude Desktop yönergelerini, MCP sunucularını, Skills'i ve güvenli yapılandırmayı OpenClaw'a içe aktarır.
+
+- **[migrate-hermes](/tr/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - OpenClaw'a dahildir. Hermes yapılandırmasını, bellekleri, Skills'i ve desteklenen kimlik bilgilerini OpenClaw'a içe aktarır.
+
+- **[minimax](/tr/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - OpenClaw'a dahildir. OpenClaw'a MiniMax, MiniMax Portal model sağlayıcısı desteği ekler.
+
+- **[mistral](/tr/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - OpenClaw'a dahildir. OpenClaw'a Mistral model sağlayıcısı desteği ekler.
+
+- **[novita](/tr/plugins/reference/novita)** (`@openclaw/novita-provider`) - OpenClaw'a dahildir. OpenClaw'a Novita, Novita AI, Novitaai model sağlayıcısı desteği ekler.
+
+- **[nvidia](/tr/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - OpenClaw'a dahildir. OpenClaw'a NVIDIA model sağlayıcısı desteği ekler.
+
+- **[oc-path](/tr/plugins/reference/oc-path)** (`@openclaw/oc-path`) - OpenClaw'a dahildir. oc:// workspace dosya adreslemesi için openclaw path CLI'sini ekler.
+
+- **[ollama](/tr/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - OpenClaw'a dahildir. OpenClaw'a Ollama, Ollama Cloud model sağlayıcısı desteği ekler.
+
+- **[open-prose](/tr/plugins/reference/open-prose)** (`@openclaw/open-prose`) - OpenClaw'a dahildir. /prose slash komutuna sahip OpenProse VM Skills paketi.
+
+- **[openai](/tr/plugins/reference/openai)** (`@openclaw/openai-provider`) - OpenClaw'a dahildir. OpenClaw'a OpenAI model sağlayıcısı desteği ekler.
+
+- **[opencode](/tr/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - OpenClaw'a dahildir. OpenClaw'a OpenCode model sağlayıcısı desteği ekler.
+
+- **[opencode-go](/tr/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - OpenClaw'a dahildir. OpenClaw'a OpenCode Go model sağlayıcısı desteği ekler.
+
+- **[openrouter](/tr/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - OpenClaw'a dahildir. OpenClaw'a OpenRouter model sağlayıcısı desteği ekler.
+
+- **[policy](/tr/plugins/reference/policy)** (`@openclaw/policy`) - OpenClaw'a dahildir. Workspace uyumluluğu için ilke destekli doctor kontrolleri ekler.
+
+- **[runway](/tr/plugins/reference/runway)** (`@openclaw/runway-provider`) - OpenClaw'a dahildir. Video üretimi sağlayıcısı desteği ekler.
+
+- **[senseaudio](/tr/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - OpenClaw'a dahildir. Medya anlama sağlayıcısı desteği ekler.
+
+- **[sglang](/tr/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - OpenClaw'a dahildir. OpenClaw'a SGLang model sağlayıcısı desteği ekler.
+
+- **[synthetic](/tr/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - OpenClaw'a dahildir. OpenClaw'a Synthetic model sağlayıcısı desteği ekler.
+
+- **[telegram](/tr/plugins/reference/telegram)** (`@openclaw/telegram`) - OpenClaw'a dahildir. OpenClaw mesajlarını göndermek ve almak için Telegram kanal yüzeyini ekler.
+
+- **[together](/tr/plugins/reference/together)** (`@openclaw/together-provider`) - OpenClaw'a dahildir. OpenClaw'a Together model sağlayıcısı desteği ekler.
+
+- **[tts-local-cli](/tr/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - OpenClaw'a dahildir. Metinden konuşmaya sağlayıcısı desteği ekler.
+
+- **[vllm](/tr/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - OpenClaw'a dahildir. OpenClaw'a vLLM model sağlayıcısı desteği ekler.
+
+- **[volcengine](/tr/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - OpenClaw'a dahildir. OpenClaw'a Volcengine, Volcengine Plan model sağlayıcısı desteği ekler.
+
+- **[voyage](/tr/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - OpenClaw'a dahildir. Bellek gömme sağlayıcısı desteği ekler.
+
+- **[vydra](/tr/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - OpenClaw'a dahildir. OpenClaw'a Vydra model sağlayıcısı desteği ekler.
+
+- **[web-readability](/tr/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - OpenClaw'a dahildir. Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini çıkarır.
+
+- **[webhooks](/tr/plugins/reference/webhooks)** (`@openclaw/webhooks`) - OpenClaw'a dahildir. Harici otomasyonu OpenClaw TaskFlows'a bağlayan kimliği doğrulanmış gelen Webhook'lar.
+
+- **[workboard](/tr/plugins/reference/workboard)** (`@openclaw/workboard`) - OpenClaw'a dahildir. Ajan sahipliğindeki issue'lar ve oturumlar için pano çalışma tahtası.
+
+- **[xai](/tr/plugins/reference/xai)** (`@openclaw/xai-plugin`) - OpenClaw'a dahildir. OpenClaw'a xAI model sağlayıcısı desteği ekler.
+
+- **[xiaomi](/tr/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - OpenClaw'a dahildir. OpenClaw'a Xiaomi, Xiaomi Token Plan model sağlayıcısı desteği ekler.
 
 ## Resmi harici paketler
 
-| Plugin                                                              | Açıklama                                                                             | Dağıtım                                                                                          | Yüzey                                                                        |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/tr/plugins/reference/acpx)                                     | Plugin tarafından sahip olunan oturum ve taşıma yönetimine sahip gömülü ACP çalışma zamanı arka ucu. | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/tr/plugins/reference/brave)                                   | Web arama sağlayıcısı desteği ekler.                                                  | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/tr/plugins/reference/codex)                                   | Codex uygulama sunucusu koşum takımı ve Codex tarafından yönetilen GPT model kataloğu. | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/tr/plugins/reference/diagnostics-otel)             | OpenClaw tanılama OpenTelemetry dışa aktarıcısı.                                      | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/tr/plugins/reference/diagnostics-prometheus) | OpenClaw tanılama Prometheus dışa aktarıcısı.                                         | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/tr/plugins/reference/diffs)                                   | Ajanlar için salt okunur fark görüntüleyici ve dosya işleyici.                       | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/tr/plugins/reference/discord)                               | OpenClaw mesajları göndermek ve almak için Discord kanal yüzeyini ekler.             | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/tr/plugins/reference/feishu)                                 | OpenClaw mesajları göndermek ve almak için Feishu kanal yüzeyini ekler.              | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/tr/plugins/reference/google-meet)                       | Chrome veya Twilio taşımaları üzerinden Google Meet çağrılarına katılın.             | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/tr/plugins/reference/googlechat)                         | OpenClaw mesajları göndermek ve almak için Google Chat kanal yüzeyini ekler.         | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/tr/plugins/reference/line)                                     | OpenClaw mesajları göndermek ve almak için LINE kanal yüzeyini ekler.                | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/tr/plugins/reference/lobster)                               | Sürdürülebilir onaylara sahip türlendirilmiş iş akışı aracı.                         | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/tr/plugins/reference/matrix)                                 | OpenClaw mesajları göndermek ve almak için Matrix kanal yüzeyini ekler.              | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/tr/plugins/reference/memory-lancedb)                 | Ajan tarafından çağrılabilen araçlar ekler.                                           | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/tr/plugins/reference/msteams)                               | OpenClaw mesajları göndermek ve almak için Microsoft Teams kanal yüzeyini ekler.     | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/tr/plugins/reference/nextcloud-talk)                 | OpenClaw mesajları göndermek ve almak için Nextcloud Talk kanal yüzeyini ekler.      | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/tr/plugins/reference/nostr)                                   | OpenClaw mesajları göndermek ve almak için Nostr kanal yüzeyini ekler.               | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/tr/plugins/reference/qqbot)                                   | OpenClaw mesajları göndermek ve almak için QQ Bot kanal yüzeyini ekler.              | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/tr/plugins/reference/synology-chat)                   | OpenClaw mesajları göndermek ve almak için Synology Chat kanal yüzeyini ekler.       | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/tr/plugins/reference/tlon)                                     | OpenClaw mesajları göndermek ve almak için Tlon kanal yüzeyini ekler.                | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/tr/plugins/reference/twitch)                                 | OpenClaw mesajları göndermek ve almak için Twitch kanal yüzeyini ekler.              | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/tr/plugins/reference/voice-call)                         | Ajan tarafından çağrılabilen araçlar ekler.                                           | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/tr/plugins/reference/whatsapp)                             | OpenClaw mesajları göndermek ve almak için WhatsApp kanal yüzeyini ekler.            | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/tr/plugins/reference/zalo)                                     | OpenClaw mesajları göndermek ve almak için Zalo kanal yüzeyini ekler.                | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/tr/plugins/reference/zalouser)                             | OpenClaw mesajları göndermek ve almak için Zalo Personal kanal yüzeyini ekler.       | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+68 Plugin
 
-## Yalnızca kaynak checkout
+- **[acpx](/tr/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub. Plugin sahipli oturum ve taşıma yönetimine sahip OpenClaw ACP çalışma zamanı arka ucu.
 
-| Plugin                                      | Açıklama                                                               | Dağıtım                                         | Yüzey                |
-| ------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------ | -------------------- |
-| [qa-channel](/tr/plugins/reference/qa-channel) | OpenClaw mesajları göndermek ve almak için QA Channel kanal yüzeyini ekler. | `@openclaw/qa-channel`<br />yalnızca kaynak checkout | channels: qa-channel |
-| [qa-lab](/tr/plugins/reference/qa-lab)         | Özel hata ayıklayıcı kullanıcı arayüzü ve senaryo çalıştırıcısı olan OpenClaw QA lab plugin'i. | `@openclaw/qa-lab`<br />yalnızca kaynak checkout     | plugin               |
-| [qa-matrix](/tr/plugins/reference/qa-matrix)   | Matrix QA taşıma çalıştırıcısı ve alt katmanı.                         | `@openclaw/qa-matrix`<br />yalnızca kaynak checkout  | plugin               |
+- **[amazon-bedrock](/tr/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm; ClawHub. Model keşfi, gömmeler ve guardrail desteği olan OpenClaw Amazon Bedrock sağlayıcı Plugin'i.
+
+- **[amazon-bedrock-mantle](/tr/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlayıcı Plugin'i.
+
+- **[anthropic-vertex](/tr/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Google Vertex AI üzerindeki Claude modelleri için OpenClaw Anthropic Vertex sağlayıcı Plugin'i.
+
+- **[arcee](/tr/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. OpenClaw'a Arcee model sağlayıcı desteği ekler.
+
+- **[brave](/tr/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub. Web araması için OpenClaw Brave Search sağlayıcı Plugin'i.
+
+- **[cerebras](/tr/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`. OpenClaw'a Cerebras model sağlayıcı desteği ekler.
+
+- **[chutes](/tr/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`. OpenClaw'a Chutes model sağlayıcı desteği ekler.
+
+- **[clickclack](/tr/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`. OpenClaw iletilerini göndermek ve almak için Clickclack kanal yüzeyini ekler.
+
+- **[cloudflare-ai-gateway](/tr/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`. OpenClaw'a Cloudflare AI Gateway model sağlayıcı desteği ekler.
+
+- **[codex](/tr/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub. Codex tarafından yönetilen GPT kataloğuna sahip OpenClaw Codex uygulama sunucusu koşum takımı ve model sağlayıcı Plugin'i.
+
+- **[copilot](/tr/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`. GitHub Copilot ajan çalışma zamanını kaydeder.
+
+- **[deepinfra](/tr/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`. OpenClaw'a DeepInfra model sağlayıcı desteği ekler.
+
+- **[deepseek](/tr/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. OpenClaw'a DeepSeek model sağlayıcı desteği ekler.
+
+- **[diagnostics-otel](/tr/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. Metrikler, izler ve günlükler için OpenClaw tanılama OpenTelemetry dışa aktarıcısı.
+
+- **[diagnostics-prometheus](/tr/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. Çalışma zamanı metrikleri için OpenClaw tanılama Prometheus dışa aktarıcısı.
+
+- **[diffs](/tr/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. Ajanlar için OpenClaw salt okunur fark görüntüleyici Plugin'i ve dosya işleyicisi.
+
+- **[diffs-language-pack](/tr/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. Varsayılan fark görüntüleyici kümesinin dışındaki diller için sözdizimi vurgulaması ekler.
+
+- **[discord](/tr/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. Kanallar, DM'ler, komutlar ve uygulama olayları için OpenClaw Discord kanal Plugin'i.
+
+- **[exa](/tr/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. Web araması sağlayıcı desteği ekler.
+
+- **[feishu](/tr/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. Sohbetler ve iş yeri araçları için OpenClaw Feishu/Lark kanal Plugin'i (@m1heng tarafından toplulukça sürdürülür).
+
+- **[firecrawl](/tr/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. Ajan tarafından çağrılabilir araçlar ekler. Web getirme sağlayıcı desteği ekler. Web araması sağlayıcı desteği ekler.
+
+- **[fireworks](/tr/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. OpenClaw'a Fireworks model sağlayıcı desteği ekler.
+
+- **[gmi](/tr/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`. OpenClaw GMI Cloud sağlayıcı Plugin'i.
+
+- **[google-meet](/tr/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Chrome veya Twilio taşıyıcıları üzerinden çağrılara katılmak için OpenClaw Google Meet katılımcı Plugin'i.
+
+- **[googlechat](/tr/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. Alanlar ve doğrudan iletiler için OpenClaw Google Chat kanal Plugin'i.
+
+- **[gradium](/tr/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. Metinden konuşmaya sağlayıcı desteği ekler.
+
+- **[groq](/tr/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. OpenClaw'a Groq model sağlayıcı desteği ekler.
+
+- **[inworld](/tr/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Inworld akışlı metinden konuşmaya (MP3, OGG_OPUS, PCM telefon).
+
+- **[irc](/tr/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. OpenClaw iletilerini göndermek ve almak için IRC kanal yüzeyini ekler.
+
+- **[kilocode](/tr/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`. OpenClaw'a Kilocode model sağlayıcı desteği ekler.
+
+- **[kimi](/tr/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. OpenClaw'a Kimi, Kimi Coding model sağlayıcı desteği ekler.
+
+- **[line](/tr/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. LINE Bot API sohbetleri için OpenClaw LINE kanal Plugin'i.
+
+- **[llama-cpp](/tr/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. node-llama-cpp üzerinden yerel GGUF gömmeleri.
+
+- **[lobster](/tr/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. Tipli işlem hatları ve sürdürülebilir onaylar için Lobster iş akışı aracı Plugin'i.
+
+- **[matrix](/tr/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. Odalar ve doğrudan iletiler için OpenClaw Matrix kanal Plugin'i.
+
+- **[mattermost](/tr/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. OpenClaw iletilerini göndermek ve almak için Mattermost kanal yüzeyini ekler.
+
+- **[memory-lancedb](/tr/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. Otomatik geri çağırma, otomatik yakalama ve vektör araması özelliklerine sahip LanceDB destekli OpenClaw uzun süreli bellek Plugin'i.
+
+- **[moonshot](/tr/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. OpenClaw'a Moonshot model sağlayıcı desteği ekler.
+
+- **[msteams](/tr/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. Bot konuşmaları için OpenClaw Microsoft Teams kanal Plugin'i.
+
+- **[nextcloud-talk](/tr/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. Konuşmalar için OpenClaw Nextcloud Talk kanal Plugin'i.
+
+- **[nostr](/tr/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. NIP-04 şifreli doğrudan iletiler için OpenClaw Nostr kanal Plugin'i.
+
+- **[openshell](/tr/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. Yansıtılmış yerel çalışma alanları ve SSH komut yürütmesiyle NVIDIA OpenShell CLI için OpenClaw sandbox arka ucu.
+
+- **[parallel](/tr/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. Web araması sağlayıcı desteği ekler.
+
+- **[perplexity](/tr/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`. Web araması sağlayıcı desteği ekler.
+
+- **[pixverse](/tr/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`. OpenClaw PixVerse video oluşturma sağlayıcı Plugin'i.
+
+- **[qianfan](/tr/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. OpenClaw'a Qianfan model sağlayıcı desteği ekler.
+
+- **[qqbot](/tr/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. Grup ve doğrudan ileti iş akışları için OpenClaw QQ Bot kanal Plugin'i.
+
+- **[qwen](/tr/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. OpenClaw'a Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI model sağlayıcı desteği ekler.
+
+- **[raft](/tr/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. Güvenli CLI uyandırma köprüleri için OpenClaw Raft kanal Plugin'i.
+
+- **[searxng](/tr/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. Web araması sağlayıcı desteği ekler.
+
+- **[signal](/tr/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. OpenClaw iletilerini göndermek ve almak için Signal kanal yüzeyini ekler.
+
+- **[slack](/tr/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. Kanallar, DM'ler, komutlar ve uygulama olayları için OpenClaw Slack kanal Plugin'i.
+
+- **[sms](/tr/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. OpenClaw metin iletileri için Twilio SMS kanal Plugin'i.
+
+- **[stepfun](/tr/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. OpenClaw'a StepFun, StepFun Plan model sağlayıcı desteği ekler.
+
+- **[synology-chat](/tr/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. OpenClaw kanalları ve doğrudan iletiler için Synology Chat kanal Plugin'i.
+
+- **[tavily](/tr/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. Ajan tarafından çağrılabilir araçlar ekler. Web araması sağlayıcı desteği ekler.
+
+- **[tencent](/tr/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. OpenClaw'a Tencent TokenHub model sağlayıcı desteği ekler.
+
+- **[tlon](/tr/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. Sohbet iş akışları için OpenClaw Tlon/Urbit kanal Plugin'i.
+
+- **[tokenjuice](/tr/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. exec ve bash araç sonuçlarını tokenjuice indirgeyicileriyle sıkıştırır.
+
+- **[twitch](/tr/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. Sohbet ve moderasyon iş akışları için OpenClaw Twitch kanal Plugin'i.
+
+- **[venice](/tr/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`. OpenClaw'a Venice model sağlayıcı desteği ekler.
+
+- **[vercel-ai-gateway](/tr/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. OpenClaw'a Vercel AI Gateway model sağlayıcı desteği ekler.
+
+- **[voice-call](/tr/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Twilio, Telnyx ve Plivo telefon çağrıları için OpenClaw sesli arama Plugin'i.
+
+- **[whatsapp](/tr/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. WhatsApp Web sohbetleri için OpenClaw WhatsApp kanal Plugin'i.
+
+- **[zai](/tr/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. OpenClaw'a Z.AI model sağlayıcı desteği ekler.
+
+- **[zalo](/tr/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. Bot ve Webhook sohbetleri için OpenClaw Zalo kanal Plugin'i.
+
+- **[zalouser](/tr/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. Yerel zca-js entegrasyonu üzerinden OpenClaw Zalo Kişisel Hesap Plugin'i.
+
+## Yalnızca kaynak checkout'u
+
+3 Plugin
+
+- **[qa-channel](/tr/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - yalnızca kaynak checkout'unda. OpenClaw iletilerini göndermek ve almak için QA Channel yüzeyini ekler.
+
+- **[qa-lab](/tr/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - yalnızca kaynak checkout'unda. Özel hata ayıklayıcı arayüzü ve senaryo çalıştırıcısına sahip OpenClaw QA lab Plugin'i.
+
+- **[qa-matrix](/tr/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - yalnızca kaynak çalışma kopyası. Matrix QA aktarım çalıştırıcısı ve alt katmanı.

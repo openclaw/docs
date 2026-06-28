@@ -6,15 +6,16 @@ read_when:
 summary: Mesaj akışı, oturumlar, kuyruğa alma ve akıl yürütme görünürlüğü
 title: Mesajlar
 x-i18n:
-    generated_at: "2026-05-10T19:32:35Z"
+    generated_at: "2026-06-28T00:29:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 053ff7b2ecca07e99057aed2f9ba199a6c1a07f15e865915045d25d128db984b
+    source_hash: d5585ae95fc65cb64240e4bf5d0bbe2eb54f55461b9fa4ee331d4d703d62e76f
     source_path: concepts/messages.md
     workflow: 16
 ---
 
-OpenClaw, gelen mesajları oturum çözümleme, kuyruğa alma, akış, araç yürütme ve akıl yürütme görünürlüğünden oluşan bir işlem hattı üzerinden işler. Bu sayfa, gelen mesajdan yanıta giden yolu eşler.
+OpenClaw, gelen mesajları oturum çözümleme, kuyruğa alma, akış, araç yürütme ve akıl yürütme görünürlüğünden oluşan bir işlem hattı üzerinden işler. Bu sayfa, gelen mesajdan yanıta kadar olan yolu eşler.
 
 ## Mesaj akışı (üst düzey)
 
@@ -26,21 +27,21 @@ Inbound message
   -> outbound replies (channel limits + chunking)
 ```
 
-Temel ayarlar yapılandırmada bulunur:
+Temel ayar düğmeleri yapılandırmada yer alır:
 
-- Önekler, kuyruğa alma ve grup davranışı için `messages.*`.
+- Ön ekler, kuyruğa alma ve grup davranışı için `messages.*`.
 - Blok akışı ve parçalama varsayılanları için `agents.defaults.*`.
-- Sınırlar ve akış açma kapama ayarları için kanal geçersiz kılmaları (`channels.whatsapp.*`, `channels.telegram.*` vb.).
+- Sınırlar ve akış açma/kapatma ayarları için kanal geçersiz kılmaları (`channels.whatsapp.*`, `channels.telegram.*` vb.).
 
-Tam şema için bkz. [Yapılandırma](/tr/gateway/configuration).
+Tam şema için [Yapılandırma](/tr/gateway/configuration) bölümüne bakın.
 
-## Gelen tekilleştirme
+## Gelen ileti tekilleştirme
 
-Kanallar, yeniden bağlanmalardan sonra aynı mesajı yeniden teslim edebilir. OpenClaw, yinelenen teslimatların başka bir ajan çalıştırmasını tetiklememesi için kanal/hesap/eş/oturum/mesaj kimliğine göre anahtarlanan kısa ömürlü bir önbellek tutar.
+Kanallar, yeniden bağlanmalardan sonra aynı mesajı tekrar teslim edebilir. OpenClaw, yinelenen teslimlerin başka bir ajan çalıştırması tetiklememesi için kanal/hesap/eş/oturum/mesaj kimliğine göre anahtarlanan kısa ömürlü bir önbellek tutar.
 
-## Gelen debounce
+## Gelen ileti geciktirme
 
-**Aynı gönderenden** hızlı ardışık mesajlar, `messages.inbound` aracılığıyla tek bir ajan turunda toplu işlenebilir. Debounce, kanal + konuşma başına kapsamlanır ve yanıt iş parçacığı/ID'leri için en son mesajı kullanır.
+**Aynı gönderenden** hızlı ardışık mesajlar, `messages.inbound` aracılığıyla tek bir ajan turunda toplu işlenebilir. Geciktirme kapsamı kanal + konuşma başınadır ve yanıt iş parçacığı/kimlikleri için en son mesajı kullanır.
 
 Yapılandırma (genel varsayılan + kanal başına geçersiz kılmalar):
 
@@ -61,69 +62,70 @@ Yapılandırma (genel varsayılan + kanal başına geçersiz kılmalar):
 
 Notlar:
 
-- Debounce, **yalnızca metin** mesajlarına uygulanır; medya/ekler hemen boşaltılır.
-- Denetim komutları, bağımsız kalmaları için debounce'u atlar. Aynı gönderenli DM birleştirmesine açıkça katılan kanallar, bölünmüş gönderim yükünün aynı ajan turuna katılabilmesi için DM komutlarını debounce penceresi içinde tutabilir.
+- Geciktirme yalnızca **sadece metin** mesajlarına uygulanır; medya/ekler hemen boşaltılır.
+- Denetim komutları, bağımsız kalmaları için geciktirmeyi atlar. Aynı gönderen DM birleştirmesine açıkça katılan kanallar, bölünmüş gönderilen bir yükün aynı ajan turuna katılabilmesi için DM komutlarını geciktirme penceresi içinde tutabilir.
 
 ## Oturumlar ve cihazlar
 
-Oturumların sahibi istemciler değil, Gateway'dir.
+Oturumlar istemciler tarafından değil, Gateway tarafından sahiplenilir.
 
-- Doğrudan sohbetler ajan ana oturum anahtarına daraltılır.
+- Doğrudan sohbetler, ajanın ana oturum anahtarına daraltılır.
 - Gruplar/kanallar kendi oturum anahtarlarını alır.
 - Oturum deposu ve dökümler Gateway ana makinesinde bulunur.
 
-Birden fazla cihaz/kanal aynı oturuma eşlenebilir, ancak geçmiş her istemciye tam olarak geri eşitlenmez. Öneri: ayrışan bağlamdan kaçınmak için uzun konuşmalarda tek bir birincil cihaz kullanın. Denetim arayüzü ve TUI her zaman Gateway destekli oturum dökümünü gösterir, bu nedenle doğruluk kaynağı onlardır.
+Birden çok cihaz/kanal aynı oturuma eşlenebilir, ancak geçmiş her istemciye tam olarak geri eşitlenmez. Öneri: bağlamın ayrışmasını önlemek için uzun konuşmalarda tek bir birincil cihaz kullanın. Control UI ve TUI her zaman Gateway destekli oturum dökümünü gösterir; bu nedenle doğruluk kaynağı onlardır.
 
 Ayrıntılar: [Oturum yönetimi](/tr/concepts/session).
 
 ## Araç sonucu meta verileri
 
-Araç sonucu `content`, modelin görebildiği sonuçtur. Araç sonucu `details`, arayüz işleme, tanılama, medya teslimi ve plugin'ler için çalışma zamanı meta verileridir.
+Araç sonucu `content`, modelin görebildiği sonuçtur. Araç sonucu `details`, UI işleme, tanılama, medya teslimi ve Plugin'ler için çalışma zamanı meta verileridir.
 
 OpenClaw bu sınırı açık tutar:
 
-- `toolResult.details`, sağlayıcı yeniden yürütmesi ve Compaction girdisinden önce çıkarılır.
-- Kalıcı oturum dökümleri yalnızca sınırlı `details` tutar; aşırı büyük meta veriler, `persistedDetailsTruncated: true` ile işaretlenmiş kompakt bir özetle değiştirilir.
+- `toolResult.details`, sağlayıcı yeniden oynatması ve Compaction girdisinden önce çıkarılır.
+- Kalıcı oturum dökümleri yalnızca sınırlandırılmış `details` tutar; aşırı büyük meta veriler, `persistedDetailsTruncated: true` olarak işaretlenmiş kompakt bir özetle değiştirilir.
 - Plugin'ler ve araçlar, modelin okuması gereken metni yalnızca `details` içine değil, `content` içine koymalıdır.
 
 ## Gelen gövdeler ve geçmiş bağlamı
 
 OpenClaw, **istem gövdesini** **komut gövdesinden** ayırır:
 
-- `BodyForAgent`: geçerli mesaj için birincil model odaklı metin. Kanal plugin'leri bunu gönderenin geçerli istem taşıyan metnine odaklı tutmalıdır.
-- `Body`: eski istem yedeği. Bu, kanal zarflarını ve isteğe bağlı geçmiş sarmalayıcılarını içerebilir, ancak güncel kanallar `BodyForAgent` mevcut olduğunda birincil model girdisi olarak buna güvenmemelidir.
+- `BodyForAgent`: geçerli mesaj için modele yönelik birincil metin. Kanal Plugin'leri bunu gönderenin geçerli istem taşıyan metnine odaklı tutmalıdır.
+- `Body`: eski istem yedeği. Bu, kanal zarflarını ve isteğe bağlı geçmiş sarmalayıcılarını içerebilir, ancak mevcut kanallar `BodyForAgent` kullanılabilir olduğunda birincil model girdisi olarak buna dayanmamalıdır.
 - `CommandBody`: yönerge/komut ayrıştırması için ham kullanıcı metni.
-- `RawBody`: `CommandBody` için eski takma ad (uyumluluk için korunur).
+- `RawBody`: `CommandBody` için eski takma ad (uyumluluk için tutulur).
 
 Bir kanal geçmiş sağladığında, paylaşılan bir sarmalayıcı kullanır:
 
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-**Doğrudan olmayan sohbetlerde** (gruplar/kanallar/odalar), **geçerli mesaj gövdesi** gönderen etiketiyle öneklenir (geçmiş girdileriyle aynı stil kullanılır). Bu, gerçek zamanlı ve kuyruğa alınmış/geçmiş mesajlarını ajan isteminde tutarlı tutar.
+**Doğrudan olmayan sohbetlerde** (gruplar/kanallar/odalar), **geçerli mesaj gövdesinin** başına gönderen etiketi eklenir (geçmiş girdileriyle aynı stil). Bu, gerçek zamanlı ve kuyruğa alınmış/geçmiş mesajlarını ajan isteminde tutarlı tutar.
 
-Geçmiş tamponları **yalnızca bekleyen** öğelerdir: bir çalıştırmayı tetiklemeyen grup mesajlarını (örneğin, bahsetme kapılı mesajlar) içerir ve oturum dökümünde zaten bulunan mesajları **hariç tutar**.
+Geçmiş arabellekleri **yalnızca bekleyenleri** içerir: bir çalıştırmayı tetiklemeyen grup mesajlarını (örneğin, bahsetme kapılı mesajlar) içerir ve oturum dökümünde zaten bulunan mesajları **hariç tutar**.
 
-Yönerge çıkarma yalnızca **geçerli mesaj** bölümüne uygulanır, böylece geçmiş bozulmadan kalır. Geçmişi sarmalayan kanallar, `CommandBody` (veya `RawBody`) değerini özgün mesaj metnine ayarlamalı ve `Body` değerini birleştirilmiş istem olarak tutmalıdır. Yapılandırılmış geçmiş, yanıt, iletilmiş mesaj ve kanal meta verileri, istem oluşturma sırasında kullanıcı rolünde güvenilmeyen bağlam blokları olarak işlenir.
-Geçmiş tamponları, `messages.groupChat.historyLimit` (genel varsayılan) ve `channels.slack.historyLimit` veya `channels.telegram.accounts.<id>.historyLimit` gibi kanal başına geçersiz kılmalar aracılığıyla yapılandırılabilir (devre dışı bırakmak için `0` ayarlayın).
+Yönerge çıkarma yalnızca **geçerli mesaj** bölümüne uygulanır, böylece geçmiş bozulmadan kalır. Geçmişi sarmalayan kanallar `CommandBody` (veya `RawBody`) değerini özgün mesaj metnine ayarlamalı ve `Body` değerini birleştirilmiş istem olarak tutmalıdır. Yapılandırılmış geçmiş, yanıt, iletilmiş mesaj ve kanal meta verileri, istem derleme sırasında kullanıcı rolünde güvenilmeyen bağlam blokları olarak işlenir.
+Geçmiş arabellekleri `messages.groupChat.historyLimit` (genel varsayılan) ve `channels.slack.historyLimit` ya da `channels.telegram.accounts.<id>.historyLimit` gibi kanal başına geçersiz kılmalar ile yapılandırılabilir (devre dışı bırakmak için `0` ayarlayın).
 
-## Kuyruğa alma ve takipler
+## Kuyruğa alma ve takip iletileri
 
-Bir çalıştırma zaten etkinse, gelen mesajlar kuyruğa alınabilir, geçerli çalıştırmaya yönlendirilebilir veya bir takip turu için toplanabilir.
+Bir çalıştırma zaten etkinse, gelen mesajlar varsayılan olarak geçerli çalıştırmaya yönlendirilir. `messages.queue`, etkin çalıştırma mesajlarının yönlendirilip yönlendirilmeyeceğini, daha sonrası için kuyruğa alınıp alınmayacağını, daha sonraki tek bir turda toplanıp toplanmayacağını veya etkin çalıştırmayı kesip kesmeyeceğini seçer.
 
-- `messages.queue` (ve `messages.queue.byChannel`) aracılığıyla yapılandırın.
-- Varsayılan mod `steer` modudur; yönlendirme kuyruğa alınmış takip teslimine geri düştüğünde 500 ms takip debounce'u kullanılır.
-- Modlar: `steer`, `followup`, `collect`, `steer-backlog`, `interrupt` ve eski tek seferde bir `queue` modu.
+- `messages.queue` (ve `messages.queue.byChannel`) üzerinden yapılandırın.
+- Varsayılan mod `steer` olup Codex yönlendirme toplu işleri ve takip/toplama kuyrukları için 500 ms geciktirme kullanır.
+- Modlar: `steer`, `followup`, `collect` ve `interrupt`.
 
 Ayrıntılar: [Komut kuyruğu](/tr/concepts/queue) ve [Yönlendirme kuyruğu](/tr/concepts/queue-steering).
 
 ## Kanal çalıştırma sahipliği
 
-Kanal plugin'leri, bir mesaj oturum kuyruğuna girmeden önce sıralamayı koruyabilir, girdiye debounce uygulayabilir ve aktarım geri basıncı uygulayabilir. Ajan turunun kendisinin etrafında ayrı bir zaman aşımı dayatmamalıdırlar. Bir mesaj bir oturuma yönlendirildiğinde, uzun süren iş oturum, araç ve çalışma zamanı yaşam döngüsü tarafından yönetilir; böylece tüm kanallar yavaş turları tutarlı biçimde raporlar ve kurtarır.
+Kanal Plugin'leri, bir mesaj oturum kuyruğuna girmeden önce sıralamayı koruyabilir, girdiyi geciktirebilir ve aktarım geri basıncı uygulayabilir. Ajan turunun kendisi etrafında ayrı bir zaman aşımı dayatmamalıdırlar. Bir mesaj oturuma yönlendirildikten sonra, uzun süren iş oturum, araç ve çalışma zamanı yaşam döngüsü tarafından yönetilir; böylece tüm kanallar yavaş turları tutarlı biçimde raporlar ve toparlar.
 
 ## Akış, parçalama ve toplu işleme
 
-Blok akışı, model metin blokları ürettikçe kısmi yanıtlar gönderir. Parçalama, kanal metin sınırlarına uyar ve çitli kodu bölmekten kaçınır.
+Blok akışı, model metin blokları ürettikçe kısmi yanıtlar gönderir.
+Parçalama, kanal metin sınırlarına uyar ve çitli kodu bölmekten kaçınır.
 
 Temel ayarlar:
 
@@ -146,34 +148,35 @@ OpenClaw model akıl yürütmesini gösterebilir veya gizleyebilir:
 
 Ayrıntılar: [Düşünme + akıl yürütme yönergeleri](/tr/tools/thinking) ve [Token kullanımı](/tr/reference/token-use).
 
-## Önekler, iş parçacığı oluşturma ve yanıtlar
+## Ön ekler, iş parçacıkları ve yanıtlar
 
-Giden mesaj biçimlendirme `messages` içinde merkezileştirilmiştir:
+Giden mesaj biçimlendirmesi `messages` içinde merkezileştirilmiştir:
 
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix` ve `channels.<channel>.accounts.<id>.responsePrefix` (giden önek kademesi), ayrıca `channels.whatsapp.messagePrefix` (WhatsApp gelen öneki)
-- `replyToMode` ve kanal başına varsayılanlar aracılığıyla yanıt iş parçacığı
+- `messages.responsePrefix`, `channels.<channel>.responsePrefix` ve `channels.<channel>.accounts.<id>.responsePrefix` (giden ön ek kademesi), ayrıca `channels.whatsapp.messagePrefix` (WhatsApp gelen ön eki)
+- `replyToMode` ve kanal başına varsayılanlar üzerinden yanıt iş parçacığı
 
 Ayrıntılar: [Yapılandırma](/tr/gateway/config-agents#messages) ve kanal belgeleri.
 
 ## Sessiz yanıtlar
 
-Tam sessiz token `NO_REPLY` / `no_reply`, "kullanıcıya görünür bir yanıt teslim etme" anlamına gelir.
-Bir turda üretilmiş TTS sesi gibi bekleyen araç medyası da varsa, OpenClaw sessiz metni çıkarır ancak medya ekini yine de teslim eder.
+Tam sessiz token `NO_REPLY` / `no_reply`, "kullanıcının görebileceği bir yanıt teslim etme" anlamına gelir.
+Bir turda oluşturulmuş TTS sesi gibi bekleyen araç medyası da varsa, OpenClaw sessiz metni çıkarır ancak medya ekini yine de teslim eder.
 OpenClaw bu davranışı konuşma türüne göre çözümler:
 
-- Doğrudan konuşmalar varsayılan olarak sessizliğe izin vermez ve yalın bir sessiz yanıtı kısa görünür bir yedeğe yeniden yazar.
-- Gruplar/kanallar varsayılan olarak sessizliğe izin verir.
-- İç orkestrasyon varsayılan olarak sessizliğe izin verir.
+- Doğrudan konuşmalar hiçbir zaman `NO_REPLY` istem yönlendirmesi almaz. Doğrudan bir çalıştırma yanlışlıkla yalın bir sessiz token döndürürse, OpenClaw bunu yeniden yazmak veya teslim etmek yerine bastırır.
+- Gruplar/kanallar varsayılan olarak yalnızca otomatik grup yanıtları için sessizliğe izin verir. `message_tool` görünür yanıt modunda sessizlik, modelin `message(action=send)` çağırmadığı anlamına gelir.
+- Dahili orkestrasyon varsayılan olarak sessizliğe izin verir.
 
-OpenClaw ayrıca doğrudan olmayan sohbetlerde herhangi bir asistan yanıtından önce gerçekleşen iç çalıştırıcı hataları için sessiz yanıtlar kullanır; böylece gruplar/kanallar Gateway hata kalıp metnini görmez. Doğrudan sohbetler varsayılan olarak kompakt hata metni gösterir; ham çalıştırıcı ayrıntıları yalnızca `/verbose` `on` veya `full` olduğunda gösterilir.
+OpenClaw ayrıca doğrudan olmayan sohbetlerde genel dahili çalıştırıcı hataları için sessiz yanıtlar kullanır, böylece gruplar/kanallar Gateway hata şablon metnini görmez.
+Eksik kimlik doğrulama, hız sınırı veya aşırı yük bildirimleri gibi kullanıcıya yönelik kurtarma metni bulunan sınıflandırılmış hatalar yine de teslim edilebilir. Doğrudan sohbetler varsayılan olarak kompakt hata metni gösterir; ham çalıştırıcı ayrıntıları yalnızca `/verbose full` etkin olduğunda gösterilir.
 
-Varsayılanlar `agents.defaults.silentReply` ve `agents.defaults.silentReplyRewrite` altında bulunur; `surfaces.<id>.silentReply` ve `surfaces.<id>.silentReplyRewrite` bunları yüzey başına geçersiz kılabilir.
+Varsayılanlar `agents.defaults.silentReply` altında bulunur; `surfaces.<id>.silentReply` yüzey başına grup/dahili ilkeyi geçersiz kılabilir.
 
-Üst oturumda bekleyen bir veya daha fazla oluşturulmuş alt ajan çalıştırması olduğunda, yalın sessiz yanıtlar yeniden yazılmak yerine tüm yüzeylerde düşürülür; böylece üst öğe, alt tamamlanma olayı gerçek yanıtı teslim edene kadar sessiz kalır.
+Yalın sessiz yanıtlar tüm yüzeylerde düşürülür; böylece üst oturumlar, sentinel metni yedek konuşma metnine yeniden yazmak yerine sessiz kalır.
 
 ## İlgili
 
-- [Mesaj yaşam döngüsü refaktörü](/tr/concepts/message-lifecycle-refactor) - dayanıklı gönderme ve alma tasarımı hedefi
+- [Mesaj yaşam döngüsü refaktörü](/tr/concepts/message-lifecycle-refactor) - dayanıklı gönderme ve alma tasarımını hedefler
 - [Akış](/tr/concepts/streaming) — gerçek zamanlı mesaj teslimi
 - [Yeniden deneme](/tr/concepts/retry) — mesaj teslimi yeniden deneme davranışı
 - [Kuyruk](/tr/concepts/queue) — mesaj işleme kuyruğu

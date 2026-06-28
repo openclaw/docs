@@ -1,52 +1,55 @@
 ---
 read_when:
-    - Extern Mac-beheer instellen of debuggen
-summary: macOS-appstroom voor het bedienen van een externe OpenClaw-gateway
+    - Remote Mac-bediening instellen of debuggen
+summary: macOS-appflow voor het beheren van een externe OpenClaw-gateway
 title: Bediening op afstand
 x-i18n:
-    generated_at: "2026-06-27T17:48:26Z"
+    generated_at: "2026-06-28T00:13:05Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b3634785f797af55f7dc6d217e0116313e8ef7d314c503275fbc66b54eb29a69
+    source_hash: 96ac4af5af9d3250f907818751120984106c3c7bcb1f3349d3f0678b4fefb120
     source_path: platforms/mac/remote.md
     workflow: 16
 ---
 
-Deze flow laat de macOS-app fungeren als volledige afstandsbediening voor een OpenClaw-Gateway die op een andere host (desktop/server) draait. De app kan direct verbinding maken met vertrouwde LAN-/Tailnet-Gateway-URL's of een SSH-tunnel beheren wanneer de externe Gateway alleen via loopback beschikbaar is. Gezondheidscontroles, doorsturen van Voice Wake en Web Chat hergebruiken dezelfde externe configuratie uit _Instellingen → Algemeen_.
+Met deze flow kan de macOS-app fungeren als volledige afstandsbediening voor een OpenClaw-Gateway die op een andere host (desktop/server) draait. De app kan rechtstreeks verbinding maken met vertrouwde LAN-/Tailnet-Gateway-URL's of een SSH-tunnel beheren wanneer de externe Gateway alleen via loopback bereikbaar is. Health checks, doorsturen van Voice Wake en Web Chat gebruiken dezelfde externe configuratie uit _Settings → General_.
 
 ## Modi
 
 - **Lokaal (deze Mac)**: Alles draait op de laptop. Geen SSH betrokken.
-- **Extern via SSH (standaard)**: OpenClaw-opdrachten worden uitgevoerd op de externe host. De Mac-app opent een SSH-verbinding met `-o BatchMode` plus je gekozen identiteit/sleutel en een lokale port-forward.
+- **Extern via SSH (standaard)**: OpenClaw-opdrachten worden uitgevoerd op de externe host. De Mac-app opent een SSH-verbinding met `-o BatchMode`, plus je gekozen identity/key en een lokale port-forward.
 - **Extern direct (ws/wss)**: Geen SSH-tunnel. De Mac-app maakt rechtstreeks verbinding met de Gateway-URL (bijvoorbeeld via LAN, Tailscale, Tailscale Serve of een openbare HTTPS-reverseproxy).
 
 ## Externe transporten
 
 Externe modus ondersteunt twee transporten:
 
-- **SSH-tunnel** (standaard): Gebruikt `ssh -N -L ...` om de Gateway-poort door te sturen naar localhost. De Gateway ziet het IP-adres van de Node als `127.0.0.1` omdat de tunnel loopback is.
-- **Direct (ws/wss)**: Maakt rechtstreeks verbinding met de Gateway-URL. De Gateway ziet het echte client-IP.
+- **SSH-tunnel** (standaard): Gebruikt `ssh -N -L ...` om de Gateway-poort door te sturen naar localhost. De Gateway ziet het IP-adres van de node als `127.0.0.1`, omdat de tunnel loopback is.
+- **Direct (ws/wss)**: Maakt rechtstreeks verbinding met de Gateway-URL. De Gateway ziet het echte client-IP-adres.
 
 In SSH-tunnelmodus worden ontdekte LAN-/tailnet-hostnamen opgeslagen als
 `gateway.remote.sshTarget`. De app houdt `gateway.remote.url` op het lokale
 tunneleindpunt, bijvoorbeeld `ws://127.0.0.1:18789`, zodat CLI, Web Chat en
-de lokale node-host-service allemaal hetzelfde veilige loopback-transport gebruiken.
+de lokale node-hostservice allemaal hetzelfde veilige loopback-transport gebruiken.
+Wanneer discovery zowel ruwe Tailnet-IP's als stabiele hostnamen teruggeeft, geeft de app
+de voorkeur aan Tailscale MagicDNS- of LAN-namen, zodat externe verbindingen adreswijzigingen
+beter overleven.
 Als de lokale tunnelpoort verschilt van de externe Gateway-poort, stel dan
 `gateway.remote.remotePort` in op de poort op de externe host.
 
 Browserautomatisering in externe modus is eigendom van de CLI-nodehost, niet van de
-native macOS-appnode. De app start waar mogelijk de geïnstalleerde nodehostservice;
+native macOS-app-node. De app start waar mogelijk de geïnstalleerde node-hostservice;
 als je browserbesturing vanaf die Mac nodig hebt, installeer/start die dan met
 `openclaw node install ...` en `openclaw node start` (of voer
-`openclaw node run ...` op de voorgrond uit), en richt je daarna op die browsergeschikte
-Node.
+`openclaw node run ...` op de voorgrond uit), en richt je vervolgens op die browsergeschikte
+node.
 
 ## Vereisten op de externe host
 
 1. Installeer Node + pnpm en bouw/installeer de OpenClaw-CLI (`pnpm install && pnpm build && pnpm link --global`).
-2. Zorg dat `openclaw` op PATH staat voor niet-interactieve shells (maak indien nodig een symlink naar `/usr/local/bin` of `/opt/homebrew/bin`).
-3. Alleen voor SSH-transport: open SSH met sleutelauthenticatie. We raden **Tailscale**-IP's aan voor stabiele bereikbaarheid buiten het LAN.
+2. Zorg dat `openclaw` op PATH staat voor niet-interactieve shells (symlink indien nodig naar `/usr/local/bin` of `/opt/homebrew/bin`).
+3. Alleen voor SSH-transport: open SSH met key auth. We raden **Tailscale**-IP's aan voor stabiele bereikbaarheid buiten LAN.
 
 ## macOS-app instellen
 
@@ -68,51 +71,51 @@ openclaw-mac configure-remote \
   --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Dit schrijft de externe configuratie weg, markeert onboarding als voltooid en laat de app
-het geselecteerde transport beheren wanneer deze start.
+Dit schrijft de externe configuratie, markeert onboarding als voltooid en laat de app
+het geselecteerde transport beheren wanneer die start.
 
-1. Open _Instellingen → Algemeen_.
-2. Kies onder **OpenClaw draait** **Extern** en stel in:
-   - **Transport**: **SSH-tunnel** of **Direct (ws/wss)**.
-   - **SSH-doel**: `user@host` (optioneel `:port`).
-     - Als de Gateway op hetzelfde LAN zit en Bonjour adverteert, kies deze dan uit de ontdekte lijst om dit veld automatisch in te vullen.
-   - **Gateway-URL** (alleen Direct): `wss://gateway.example.ts.net` (of `ws://...` voor lokaal/LAN).
-   - **Identiteitsbestand** (geavanceerd): pad naar je sleutel.
-   - **Projectroot** (geavanceerd): extern checkoutpad dat voor opdrachten wordt gebruikt.
-   - **CLI-pad** (geavanceerd): optioneel pad naar een uitvoerbaar `openclaw`-entrypoint/binary (automatisch ingevuld wanneer geadverteerd).
-3. Druk op **Externe verbinding testen**. Succes betekent dat de externe `openclaw status --json` correct wordt uitgevoerd. Fouten betekenen meestal PATH-/CLI-problemen; exitcode 127 betekent dat de CLI extern niet wordt gevonden.
-4. Gezondheidscontroles en Web Chat lopen nu automatisch via het geselecteerde transport.
+1. Open _Settings → General_.
+2. Kies onder **OpenClaw runs** **Remote** en stel in:
+   - **Transport**: **SSH tunnel** of **Direct (ws/wss)**.
+   - **SSH target**: `user@host` (optioneel `:port`).
+     - Als de Gateway op hetzelfde LAN staat en Bonjour adverteert, kies deze dan uit de ontdekte lijst om dit veld automatisch in te vullen.
+   - **Gateway URL** (alleen Direct): `wss://gateway.example.ts.net` (of `ws://...` voor lokaal/LAN).
+   - **Identity file** (geavanceerd): pad naar je key.
+   - **Project root** (geavanceerd): extern checkoutpad dat voor opdrachten wordt gebruikt.
+   - **CLI path** (geavanceerd): optioneel pad naar een uitvoerbaar `openclaw`-entrypoint/binary (automatisch ingevuld wanneer geadverteerd).
+3. Druk op **Test remote**. Succes geeft aan dat de externe `openclaw status --json` correct draait. Fouten betekenen meestal PATH-/CLI-problemen; exit 127 betekent dat de CLI extern niet is gevonden.
+4. Health checks en Web Chat lopen nu automatisch via het geselecteerde transport.
 
 ## Web Chat
 
-- **SSH-tunnel**: Web Chat maakt verbinding met de Gateway via de doorgestuurde WebSocket-controlpoort (standaard 18789).
+- **SSH-tunnel**: Web Chat maakt verbinding met de Gateway via de doorgestuurde WebSocket-besturingspoort (standaard 18789).
 - **Direct (ws/wss)**: Web Chat maakt rechtstreeks verbinding met de geconfigureerde Gateway-URL.
 - Er is geen aparte WebChat-HTTP-server meer.
 
 ## Machtigingen
 
-- De externe host heeft dezelfde TCC-goedkeuringen nodig als lokaal (Automatisering, Toegankelijkheid, Schermopname, Microfoon, Spraakherkenning, Meldingen). Voer onboarding op die machine uit om ze eenmalig te verlenen.
+- De externe host heeft dezelfde TCC-goedkeuringen nodig als lokaal (Automation, Accessibility, Screen Recording, Microphone, Speech Recognition, Notifications). Voer onboarding uit op die machine om ze eenmalig toe te kennen.
 - Nodes adverteren hun machtigingsstatus via `node.list` / `node.describe`, zodat agents weten wat beschikbaar is.
 
-## Beveiligingsnotities
+## Beveiligingsopmerkingen
 
-- Geef de voorkeur aan loopback-bindings op de externe host en maak verbinding via SSH, Tailscale Serve of een vertrouwde directe Tailnet-/LAN-URL.
-- SSH-tunneling gebruikt strikte host-keycontrole; vertrouw eerst de hostsleutel zodat deze in `~/.ssh/known_hosts` bestaat.
-- Als je de Gateway aan een niet-loopback-interface bindt, vereis dan geldige Gateway-authenticatie: token, wachtwoord of een identity-aware reverseproxy met `gateway.auth.mode: "trusted-proxy"`.
-- Zie [Beveiliging](/nl/gateway/security) en [Tailscale](/nl/gateway/tailscale).
+- Geef de voorkeur aan loopback-binds op de externe host en maak verbinding via SSH, Tailscale Serve of een vertrouwde directe Tailnet-/LAN-URL.
+- SSH-tunneling gebruikt strikte host-keycontrole; vertrouw eerst de host-key zodat deze bestaat in `~/.ssh/known_hosts`.
+- Als je de Gateway aan een niet-loopback-interface bindt, vereis geldige Gateway-auth: token, wachtwoord of een identity-aware reverseproxy met `gateway.auth.mode: "trusted-proxy"`.
+- Zie [Security](/nl/gateway/security) en [Tailscale](/nl/gateway/tailscale).
 
-## WhatsApp-aanmeldflow (extern)
+## WhatsApp-loginflow (extern)
 
-- Voer `openclaw channels login --verbose` **op de externe host** uit. Scan de QR-code met WhatsApp op je telefoon.
-- Voer login opnieuw uit op die host als de authenticatie verloopt. De gezondheidscontrole toont koppelingsproblemen.
+- Voer `openclaw channels login --verbose` **op de externe host** uit. Scan de QR met WhatsApp op je telefoon.
+- Voer login opnieuw uit op die host als auth verloopt. Health check zal koppelingsproblemen tonen.
 
 ## Probleemoplossing
 
-- **exit 127 / niet gevonden**: `openclaw` staat niet op PATH voor niet-login-shells. Voeg het toe aan `/etc/paths`, je shell-rc, of maak een symlink naar `/usr/local/bin`/`/opt/homebrew/bin`.
-- **Gezondheidsprobe mislukt**: controleer SSH-bereikbaarheid, PATH, en of Baileys is aangemeld (`openclaw status --json`).
-- **Web Chat blijft hangen**: bevestig dat de Gateway op de externe host draait en dat de doorgestuurde poort overeenkomt met de Gateway-WS-poort; de UI vereist een gezonde WS-verbinding.
-- **Node-IP toont 127.0.0.1**: verwacht bij de SSH-tunnel. Zet **Transport** op **Direct (ws/wss)** als je wilt dat de Gateway het echte client-IP ziet.
-- **Dashboard werkt maar Mac-mogelijkheden zijn offline**: dit betekent dat de operator-/controlverbinding van de app gezond is, maar dat de bijbehorende Node-verbinding niet verbonden is of zijn opdrachtoppervlak mist. Open het apparaatgedeelte in de menubalk en controleer of de Mac `paired · disconnected` is. Voor `wss://*.ts.net` Tailscale Serve-eindpunten detecteert de app verouderde legacy TLS-leaf-pins na certificaatrotatie, wist de verouderde pin wanneer macOS het nieuwe certificaat vertrouwt, en probeert automatisch opnieuw. Als het certificaat niet door het systeem wordt vertrouwd of de host geen Tailscale Serve-naam is, stel dan `gateway.remote.tlsFingerprint` in op de verwachte certificaatfingerprint, controleer het certificaat, of schakel over naar **Extern via SSH**.
+- **exit 127 / not found**: `openclaw` staat niet op PATH voor niet-login-shells. Voeg het toe aan `/etc/paths`, je shell-rc, of symlink naar `/usr/local/bin`/`/opt/homebrew/bin`.
+- **Health probe failed**: controleer SSH-bereikbaarheid, PATH en of Baileys is ingelogd (`openclaw status --json`).
+- **Web Chat stuck**: bevestig dat de Gateway op de externe host draait en dat de doorgestuurde poort overeenkomt met de Gateway-WS-poort; de UI vereist een gezonde WS-verbinding.
+- **Node IP shows 127.0.0.1**: verwacht met de SSH-tunnel. Zet **Transport** op **Direct (ws/wss)** als je wilt dat de Gateway het echte client-IP-adres ziet.
+- **Dashboard works but Mac capabilities are offline**: dit betekent dat de operator-/besturingsverbinding van de app gezond is, maar de companion-nodeverbinding niet verbonden is of het opdrachtoppervlak ontbreekt. Open het devicegedeelte in de menubalk en controleer of de Mac `paired · disconnected` is. Voor `wss://*.ts.net` Tailscale Serve-eindpunten detecteert de app verouderde legacy TLS-leaf-pins na certificaatrotatie, wist de verouderde pin wanneer macOS het nieuwe certificaat vertrouwt en probeert automatisch opnieuw. Als het certificaat niet door het systeem wordt vertrouwd of de host geen Tailscale Serve-naam is, stel dan `gateway.remote.tlsFingerprint` in op de verwachte certificaatvingerafdruk, controleer het certificaat of schakel over naar **Remote over SSH**.
 - **Voice Wake**: triggerzinnen worden automatisch doorgestuurd in externe modus; er is geen aparte forwarder nodig.
 
 ## Meldingsgeluiden
@@ -123,7 +126,7 @@ Kies geluiden per melding vanuit scripts met `openclaw` en `node.invoke`, bijvoo
 openclaw nodes notify --node <id> --title "Ping" --body "Remote gateway ready" --sound Glass
 ```
 
-Er is geen globale schakelaar voor "standaardgeluid" meer in de app; callers kiezen per aanvraag een geluid (of geen geluid).
+Er is geen globale schakelaar voor "default sound" meer in de app; aanroepers kiezen per verzoek een geluid (of geen geluid).
 
 ## Gerelateerd
 

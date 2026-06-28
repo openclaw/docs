@@ -1,65 +1,69 @@
 ---
 read_when:
-    - '`.experimental` yapılandırma anahtarını görüyorsunuz ve bunun kararlı olup olmadığını bilmek istiyorsunuz'
+    - Bir `.experimental` yapılandırma anahtarı görüyorsunuz ve bunun kararlı olup olmadığını bilmek istiyorsunuz
     - Önizleme çalışma zamanı özelliklerini normal varsayılanlarla karıştırmadan denemek istiyorsunuz
-    - Şu anda belgelenmiş deneysel bayrakları bulmak için tek bir yer istiyorsunuz
+    - Belgelenmiş mevcut deneysel bayrakları bulmak için tek bir yer istiyorsunuz
 summary: OpenClaw'da deneysel bayrakların ne anlama geldiği ve hangilerinin şu anda belgelendiği
 title: Deneysel özellikler
 x-i18n:
-    generated_at: "2026-05-02T22:18:05Z"
+    generated_at: "2026-06-28T00:27:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 066efa297bac995597f1092ed6473d9cff28c01d7e28fa1382d7997f8f83a346
+    source_hash: a0f42e6b574c5db9508412c9c5d9919d1a54a16fe00edea43664f3a01e8e38f5
     source_path: concepts/experimental-features.md
     workflow: 16
 ---
 
-OpenClaw'daki deneysel özellikler **isteğe bağlı önizleme yüzeyleridir**. Henüz kararlı bir varsayılanı veya uzun ömürlü bir herkese açık sözleşmeyi hak etmeden önce gerçek dünya kullanımı gerektirdikleri için açık bayrakların arkasındadırlar.
+OpenClaw’daki deneysel özellikler **isteğe bağlı önizleme yüzeyleridir**. Kararlı bir varsayılanı veya uzun ömürlü bir genel sözleşmeyi hak etmeden önce gerçek dünyada daha fazla denenmeleri gerektiği için açık bayrakların arkasındadırlar.
 
-Bunlara normal yapılandırmadan farklı davranın:
+Bunları normal yapılandırmadan farklı ele alın:
 
-- İlgili belge birini denemenizi söylemedikçe bunları **varsayılan olarak kapalı** tutun.
+- İlgili doküman denemenizi söylemediği sürece **varsayılan olarak kapalı** tutun.
 - **Şekil ve davranışın** kararlı yapılandırmadan daha hızlı değişmesini bekleyin.
-- Zaten mevcutsa önce kararlı yolu tercih edin.
-- OpenClaw'ı geniş ölçekte kullanıma alıyorsanız, deneysel bayrakları paylaşılan bir temele yerleştirmeden önce daha küçük bir ortamda test edin.
+- Zaten mevcut olduğunda önce kararlı yolu tercih edin.
+- OpenClaw’ı geniş ölçekte kullanıma alıyorsanız, deneysel bayrakları paylaşılan bir temele dahil etmeden önce daha küçük bir ortamda test edin.
 
-## Şu anda belgelenen bayraklar
+## Şu Anda Belgelenen Bayraklar
 
-| Yüzey                    | Anahtar                                                   | Ne zaman kullanılır                                                                                                 | Daha fazla                                                                                   |
-| ------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Yerel model çalışma zamanı | `agents.defaults.experimental.localModelLean`             | Daha küçük veya daha katı bir yerel arka uç, OpenClaw'ın tam varsayılan araç yüzeyinde zorlanıyorsa                  | [Yerel Modeller](/tr/gateway/local-models)                                                       |
-| Bellek araması           | `agents.defaults.memorySearch.experimental.sessionMemory` | `memory_search` aracının önceki oturum dökümlerini dizine eklemesini istiyor ve ek depolama/dizinleme maliyetini kabul ediyorsanız | [Bellek yapılandırma başvurusu](/tr/reference/memory-config#session-memory-search-experimental) |
-| Yapılandırılmış planlama aracı | `tools.experimental.planTool`                             | Uyumlu çalışma zamanlarında ve kullanıcı arayüzlerinde çok adımlı iş takibi için yapılandırılmış `update_plan` aracının sunulmasını istiyorsanız | [Gateway yapılandırma başvurusu](/tr/gateway/config-tools#toolsexperimental)                    |
+| Yüzey                    | Anahtar                                                                                    | Ne zaman kullanılır                                                                                                             | Daha fazla                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Yerel model çalışma zamanı | `agents.defaults.experimental.localModelLean`, `agents.list[].experimental.localModelLean` | Daha küçük veya daha katı bir yerel arka uç, OpenClaw’ın tam varsayılan araç yüzeyinde zorlandığında                              | [Yerel Modeller](/tr/gateway/local-models)                                                       |
+| Bellek araması           | `agents.defaults.memorySearch.experimental.sessionMemory`                                  | `memory_search` aracının önceki oturum transcriptlerini indekslemesini ve ek depolama/indeksleme maliyetini kabul etmesini istediğinizde | [Bellek yapılandırma referansı](/tr/reference/memory-config#session-memory-search-experimental) |
+| Codex harness            | `plugins.entries.codex.config.appServer.experimental.sandboxExecServer`                    | Native Codex app-server 0.132.0 veya daha yenisinin, Code Mode’u devre dışı bırakmak yerine OpenClaw sandbox destekli exec-server’ı hedeflemesini istediğinizde | [Codex harness referansı](/tr/plugins/codex-harness-reference#sandboxed-native-execution)        |
+| Yapılandırılmış planlama aracı | `tools.experimental.planTool`                                                              | Uyumlu çalışma zamanlarında ve UI’larda çok adımlı iş takibi için yapılandırılmış `update_plan` aracının açığa çıkarılmasını istediğinizde | [Gateway yapılandırma referansı](/tr/gateway/config-tools#toolsexperimental)                    |
 
-## Yerel model yalın modu
+## Yerel Model Lean Mode
 
-`agents.defaults.experimental.localModelLean: true`, daha zayıf yerel model kurulumları için bir baskı azaltma valfidir. Açık olduğunda OpenClaw, her tur için ajanın araç yüzeyinden üç varsayılan aracı — `browser`, `cron` ve `message` — kaldırır. Başka hiçbir şey değişmez.
+`agents.defaults.experimental.localModelLean: true`, daha zayıf yerel model kurulumları için bir basınç azaltma valfidir. Açık olduğunda OpenClaw, her turda aracının araç yüzeyinden üç varsayılan aracı — `browser`, `cron` ve `message` — kaldırır. Ayrıca `tools.toolSearch` açıkça yapılandırılmamışsa bu çalıştırmayı varsayılan olarak yapılandırılmış Tool Search kontrollerine yönlendirir; böylece daha büyük Plugin, MCP veya istemci araç katalogları prompt’a dökülmek yerine `tool_search`, `tool_describe` ve `tool_call` arkasında kalır. Doğrudan `message` teslimi gerektiren çalıştırmalar, lean-mode Tool Search varsayılanını etkinleştirmek yerine bu aracı doğrudan tutar. Yapılandırılmış tek bir agent için aynı davranışı etkinleştirmek veya devre dışı bırakmak üzere `agents.list[].experimental.localModelLean` kullanın.
 
-### Neden bu üç araç
+### Neden Bu Üç Araç
 
-Bu üç araç, varsayılan OpenClaw çalışma zamanında en büyük açıklamalara ve en çok parametre şekline sahiptir. Küçük bağlamlı veya daha katı OpenAI uyumlu bir arka uçta bu, şu farkı yaratır:
+Bu üç araç, varsayılan OpenClaw çalışma zamanında en büyük açıklamalara ve en fazla parametre şekline sahiptir. Küçük bağlamlı veya daha katı OpenAI uyumlu bir arka uçta bu, şunlar arasındaki farktır:
 
-- Araç şemalarının isteme temizce sığması ile konuşma geçmişini sıkıştırması arasındaki fark.
-- Modelin doğru aracı seçmesi ile çok fazla benzer görünen şema olduğu için hatalı biçimlendirilmiş araç çağrıları üretmesi arasındaki fark.
-- Chat Completions bağdaştırıcısının sunucunun yapılandırılmış çıktı sınırları içinde kalması ile araç çağrısı yük boyutu nedeniyle 400 hatasına takılması arasındaki fark.
+- Araç şemalarının prompt’a temizce sığması veya konuşma geçmişini sıkıştırması.
+- Modelin doğru aracı seçmesi veya çok fazla benzer görünen şema olduğu için hatalı biçimlendirilmiş araç çağrıları üretmesi.
+- Chat Completions adaptörünün sunucunun yapılandırılmış çıktı sınırları içinde kalması veya araç çağrısı yük boyutu nedeniyle 400 hatasına takılması.
 
-Bunları kaldırmak OpenClaw'ı sessizce yeniden bağlamaz; yalnızca araç listesini kısaltır. Modelin kullanabileceği `read`, `write`, `edit`, `exec`, `apply_patch`, web araması/getirme (yapılandırıldığında), bellek ve oturum/ajan araçları hâlâ vardır.
+Bunların kaldırılması OpenClaw’ı sessizce yeniden bağlamaz; yalnızca doğrudan araç listesini kısaltır. Modelin hâlâ `read`, `write`, `edit`, `exec`, `apply_patch`, web araması/getirme (yapılandırıldığında), bellek ve oturum/agent araçları kullanılabilir. Ek kataloglar, açıkça `tools.toolSearch: false` ayarlamadığınız sürece Tool Search üzerinden çağrılabilir kalır.
 
-### Ne zaman açılmalı
+### Ne Zaman Açılmalı
 
-Yalın modu, modelin Gateway ile konuşabildiğini zaten kanıtladıysanız ancak tam ajan turları hatalı davranıyorsa etkinleştirin. Tipik sinyal zinciri şöyledir:
+Lean mode’u, modelin Gateway ile konuşabildiğini zaten kanıtladığınız ancak tam agent turlarının sorun çıkardığı durumda etkinleştirin. Tipik sinyal zinciri şudur:
 
 1. `openclaw infer model run --gateway --model <ref> --prompt "Reply with exactly: pong"` başarılı olur.
-2. Normal bir ajan turu hatalı biçimlendirilmiş araç çağrıları, aşırı büyük istemler veya modelin araçlarını yok sayması nedeniyle başarısız olur.
-3. `localModelLean: true` ayarını açmak hatayı giderir.
+2. Normal bir agent turu hatalı biçimlendirilmiş araç çağrıları, aşırı büyük prompt’lar veya modelin araçlarını yok sayması nedeniyle başarısız olur.
+3. `localModelLean: true` ayarını değiştirmek hatayı giderir.
 
-### Ne zaman kapalı bırakılmalı
+### Ne Zaman Kapalı Bırakılmalı
 
-Arka ucunuz tam varsayılan çalışma zamanını temiz şekilde işliyorsa bunu kapalı bırakın. Yalın mod bir geçici çözümdür, varsayılan değildir. Bazı yerel yığınların düzgün davranmak için daha küçük bir araç yüzeyine ihtiyaç duyması nedeniyle vardır; barındırılan modeller ve iyi kaynak ayrılmış yerel sistemler buna ihtiyaç duymaz.
+Arka ucunuz tam varsayılan çalışma zamanını temiz şekilde işliyorsa bunu kapalı bırakın. Lean mode bir geçici çözümdür, varsayılan değildir. Bazı yerel yığınların düzgün çalışmak için daha küçük bir araç yüzeyine ihtiyaç duyması nedeniyle vardır; barındırılan modeller ve iyi kaynaklandırılmış yerel sistemler buna ihtiyaç duymaz.
 
-Yalın mod ayrıca `tools.profile`, `tools.allow`/`tools.deny` veya model `compat.supportsTools: false` kaçış yolunun yerine geçmez. Belirli bir ajan için kalıcı olarak daha dar bir araç yüzeyine ihtiyacınız varsa, deneysel bayrak yerine bu kararlı ayarları tercih edin.
+Lean mode ayrıca `tools.profile`, `tools.allow`/`tools.deny` veya model `compat.supportsTools: false` kaçış yolunun yerine geçmez. Belirli bir agent için kalıcı olarak daha dar bir araç yüzeyine ihtiyacınız varsa, deneysel bayrak yerine bu kararlı ayarları tercih edin.
 
-### Etkinleştir
+Tool Search’ü zaten genel olarak ayarlıyorsanız, OpenClaw bu operatör yapılandırmasını olduğu gibi bırakır. Lean-mode Tool Search varsayılanından çıkmak için `tools.toolSearch: false` ayarlayın.
+
+### Etkinleştirme
 
 ```json5
 {
@@ -73,17 +77,35 @@ Yalın mod ayrıca `tools.profile`, `tools.allow`/`tools.deny` veya model `compa
 }
 ```
 
-Bayrağı değiştirdikten sonra Gateway'i yeniden başlatın, ardından kırpılmış araç listesini şununla doğrulayın:
+Yalnızca bir agent için:
+
+```json5
+{
+  agents: {
+    list: [
+      {
+        id: "local",
+        model: "lmstudio/gemma-4-e4b-it",
+        experimental: {
+          localModelLean: true,
+        },
+      },
+    ],
+  },
+}
+```
+
+Bayrağı değiştirdikten sonra Gateway’i yeniden başlatın, ardından kısaltılmış araç listesini şununla doğrulayın:
 
 ```bash
 openclaw status --deep
 ```
 
-Derin durum çıktısı etkin ajan araçlarını listeler; yalın mod açıkken `browser`, `cron` ve `message` bulunmamalıdır.
+Derin durum çıktısı etkin agent araçlarını listeler; mevcut teslim modu doğrudan `message` yanıtlarını zorunlu kılmadıkça, lean mode açıkken `browser`, `cron` ve `message` bulunmamalıdır.
 
-## Deneysel, gizli anlamına gelmez
+## Deneysel Gizli Anlamına Gelmez
 
-Bir özellik deneyselse OpenClaw bunu belgelerde ve yapılandırma yolunun kendisinde açıkça söylemelidir. Yapmaması gereken şey, önizleme davranışını kararlı görünen bir varsayılan ayarın içine gizlice sokup bunun normalmiş gibi davranmaktır. Yapılandırma yüzeyleri böyle dağınık hale gelir.
+Bir özellik deneyselse OpenClaw bunu dokümanlarda ve yapılandırma yolunun kendisinde açıkça söylemelidir. Yapmaması gereken şey, önizleme davranışını kararlı görünen varsayılan bir ayara gizlice sokup bunun normalmiş gibi davranmaktır. Yapılandırma yüzeyleri bu şekilde karmaşıklaşır.
 
 ## İlgili
 

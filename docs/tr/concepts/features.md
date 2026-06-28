@@ -1,34 +1,35 @@
 ---
 read_when:
-    - OpenClaw'ın neleri desteklediğinin tam listesini istiyorsunuz
-summary: Kanallar, yönlendirme, medya ve kullanıcı deneyimi genelindeki OpenClaw yetenekleri.
+    - OpenClaw’un neleri desteklediğinin tam listesini istiyorsunuz
+summary: Kanallar, yönlendirme, medya ve UX genelinde OpenClaw yetenekleri.
 title: Özellikler
 x-i18n:
-    generated_at: "2026-05-10T19:31:47Z"
+    generated_at: "2026-06-28T00:27:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb2e4973ad7f986034e125cd84d9d3f8542ea4821bde28fce2df3fb78c06c34f
+    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
     source_path: concepts/features.md
     workflow: 16
 ---
 
-## Öne Çıkanlar
+## Öne çıkanlar
 
 <Columns>
   <Card title="Kanallar" icon="message-square" href="/tr/channels">
     Tek bir Gateway ile Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat ve daha fazlası.
   </Card>
-  <Card title="Plugin'ler" icon="plug" href="/tr/tools/plugin">
-    Paketlenmiş plugin'ler, normal güncel sürümlerde ayrı kurulum gerektirmeden Matrix, Nextcloud Talk, Nostr, Twitch, Zalo ve daha fazlasını ekler.
+  <Card title="Pluginler" icon="plug" href="/tr/tools/plugin">
+    Paketlenmiş pluginler, normal güncel sürümlerde ayrı kurulumlar olmadan Matrix, Nextcloud Talk, Nostr, Twitch, Zalo ve daha fazlasını ekler.
   </Card>
   <Card title="Yönlendirme" icon="route" href="/tr/concepts/multi-agent">
-    İzole oturumlarla çok ajanlı yönlendirme.
+    Yalıtılmış oturumlarla çok ajanlı yönlendirme.
   </Card>
   <Card title="Medya" icon="image" href="/tr/nodes/images">
     Görseller, ses, video, belgeler ve görsel/video üretimi.
   </Card>
-  <Card title="Uygulamalar ve UI" icon="monitor" href="/tr/web/control-ui">
-    Web Control UI ve macOS yardımcı uygulaması.
+  <Card title="Uygulamalar ve UI" icon="monitor" href="/tr/platforms">
+    Windows Hub, Web Control UI, macOS uygulaması ve mobil düğümler.
   </Card>
   <Card title="Mobil düğümler" icon="smartphone" href="/tr/nodes">
     Eşleştirme, ses/sohbet ve zengin cihaz komutlarıyla iOS ve Android düğümleri.
@@ -39,18 +40,18 @@ x-i18n:
 
 **Kanallar:**
 
-- Yerleşik kanallar arasında Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat ve WhatsApp bulunur
-- Paketlenmiş plugin kanalları arasında Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo ve Zalo Personal bulunur
-- İsteğe bağlı olarak ayrı kurulan kanal plugin'leri arasında Voice Call ve WeChat gibi üçüncü taraf paketler bulunur
-- Üçüncü taraf kanal plugin'leri, WeChat gibi örneklerle Gateway'i daha da genişletebilir
+- Yerleşik kanallar Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat ve WhatsApp içerir
+- Paketlenmiş plugin kanalları Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo ve Zalo Personal içerir
+- İsteğe bağlı olarak ayrıca kurulan kanal pluginleri Voice Call ve WeChat gibi üçüncü taraf paketleri içerir
+- Üçüncü taraf kanal pluginleri Gateway'i WeChat gibi seçeneklerle daha da genişletebilir
 - Bahsetmeye dayalı etkinleştirmeyle grup sohbeti desteği
-- İzin listeleri ve eşleştirmeyle DM güvenliği
+- İzin listeleri ve eşleştirme ile DM güvenliği
 
 **Ajan:**
 
 - Araç akışıyla gömülü ajan çalışma zamanı
-- Çalışma alanı veya gönderici başına izole oturumlarla çok ajanlı yönlendirme
-- Oturumlar: doğrudan sohbetler paylaşılan `main` altında birleşir; gruplar izoledir
+- Çalışma alanı veya gönderici başına yalıtılmış oturumlarla çok ajanlı yönlendirme
+- Oturumlar: doğrudan sohbetler paylaşılan `main` içine birleşir; gruplar yalıtılır
 - Uzun yanıtlar için akış ve parçalara ayırma
 
 **Kimlik doğrulama ve sağlayıcılar:**
@@ -61,7 +62,7 @@ x-i18n:
 
 **Medya:**
 
-- Gelen ve giden görseller, ses, video ve belgeler
+- İçeri ve dışarı görseller, ses, video ve belgeler
 - Paylaşılan görsel üretimi ve video üretimi yetenek yüzeyleri
 - Sesli not transkripsiyonu
 - Birden çok sağlayıcıyla metinden sese dönüştürme
@@ -69,7 +70,7 @@ x-i18n:
 **Uygulamalar ve arayüzler:**
 
 - WebChat ve tarayıcı Control UI
-- macOS menü çubuğu yardımcı uygulaması
+- macOS menü çubuğu eşlikçi uygulaması
 - Eşleştirme, Canvas, kamera, ekran kaydı, konum ve ses özellikli iOS düğümü
 - Eşleştirme, sohbet, ses, Canvas, kamera ve cihaz komutları özellikli Android düğümü
 
@@ -78,13 +79,13 @@ x-i18n:
 - Tarayıcı otomasyonu, exec, sandboxing
 - Web araması (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Cron işleri ve Heartbeat zamanlaması
-- Skills, plugin'ler ve iş akışı işlem hatları (Lobster)
+- Skills, pluginler ve iş akışı işlem hatları (Lobster)
 
 ## İlgili
 
 <CardGroup cols={2}>
   <Card title="Deneysel özellikler" href="/tr/concepts/experimental-features" icon="flask">
-    Varsayılan yüzeye henüz sunulmamış, isteğe bağlı özellikler.
+    Varsayılan yüzeye henüz gönderilmemiş, isteğe bağlı etkinleştirilen özellikler.
   </Card>
   <Card title="Ajan çalışma zamanı" href="/tr/concepts/agent" icon="robot">
     Ajan çalışma zamanı modeli ve çalışmaların nasıl dağıtıldığı.
@@ -92,7 +93,7 @@ x-i18n:
   <Card title="Kanallar" href="/tr/channels" icon="message-square">
     Telegram, WhatsApp, Discord, Slack ve daha fazlasını tek bir Gateway'den bağlayın.
   </Card>
-  <Card title="Plugin'ler" href="/tr/tools/plugin" icon="plug">
-    OpenClaw'u genişleten paketlenmiş ve üçüncü taraf plugin'ler.
+  <Card title="Pluginler" href="/tr/tools/plugin" icon="plug">
+    OpenClaw'ı genişleten paketlenmiş ve üçüncü taraf pluginler.
   </Card>
 </CardGroup>

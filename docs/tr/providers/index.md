@@ -5,15 +5,16 @@ read_when:
 summary: OpenClaw tarafından desteklenen model sağlayıcıları (LLM'ler)
 title: Sağlayıcı dizini
 x-i18n:
-    generated_at: "2026-05-06T09:27:45Z"
+    generated_at: "2026-06-28T01:10:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw birçok LLM sağlayıcısı kullanabilir. Bir sağlayıcı seçin, kimlik doğrulaması yapın, ardından
+OpenClaw birçok LLM sağlayıcısını kullanabilir. Bir sağlayıcı seçin, kimlik doğrulaması yapın, ardından
 varsayılan modeli `provider/model` olarak ayarlayın.
 
 Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/vb.)? Bkz. [Kanallar](/tr/channels).
@@ -40,18 +41,20 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [BytePlus (Uluslararası)](/tr/concepts/model-providers#byteplus-international)
 - [Cerebras](/tr/providers/cerebras)
 - [Chutes](/tr/providers/chutes)
+- [Cohere](/tr/providers/cohere)
 - [Cloudflare AI Gateway](/tr/providers/cloudflare-ai-gateway)
 - [ComfyUI](/tr/providers/comfy)
 - [DeepSeek](/tr/providers/deepseek)
+- [ds4 (yerel DeepSeek V4)](/tr/providers/ds4)
 - [ElevenLabs](/tr/providers/elevenlabs)
 - [fal](/tr/providers/fal)
 - [Fireworks](/tr/providers/fireworks)
 - [GitHub Copilot](/tr/providers/github-copilot)
-- [GLM modelleri](/tr/providers/glm)
+- [GMI Cloud](/tr/providers/gmi)
 - [Google (Gemini)](/tr/providers/google)
 - [Gradium](/tr/providers/gradium)
 - [Groq (LPU çıkarımı)](/tr/providers/groq)
-- [Hugging Face (Çıkarım)](/tr/providers/huggingface)
+- [Hugging Face (Inference)](/tr/providers/huggingface)
 - [inferrs (yerel modeller)](/tr/providers/inferrs)
 - [Kilocode](/tr/providers/kilocode)
 - [LiteLLM (birleşik gateway)](/tr/providers/litellm)
@@ -60,7 +63,9 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [Mistral](/tr/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/tr/providers/moonshot)
 - [NVIDIA](/tr/providers/nvidia)
+- [NovitaAI](/tr/providers/novita)
 - [Ollama (bulut + yerel modeller)](/tr/providers/ollama)
+- [Ollama Cloud](/tr/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/tr/providers/openai)
 - [OpenCode](/tr/providers/opencode)
 - [OpenCode Go](/tr/providers/opencode-go)
@@ -68,6 +73,7 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [Perplexity (web araması)](/tr/providers/perplexity-provider)
 - [Qianfan](/tr/providers/qianfan)
 - [Qwen Cloud](/tr/providers/qwen)
+- [Qwen OAuth / Portal](/tr/providers/qwen-oauth)
 - [Runway](/tr/providers/runway)
 - [SenseAudio](/tr/providers/senseaudio)
 - [SGLang (yerel modeller)](/tr/providers/sglang)
@@ -82,7 +88,7 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [Vydra](/tr/providers/vydra)
 - [xAI](/tr/providers/xai)
 - [Xiaomi](/tr/providers/xiaomi)
-- [Z.AI](/tr/providers/zai)
+- [Z.AI (GLM)](/tr/providers/zai)
 
 ## Paylaşılan genel bakış sayfaları
 

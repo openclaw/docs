@@ -1,25 +1,24 @@
 ---
 read_when:
-    - Mevcut oturum hakkında hızlı bir yan soru sormak istiyorsunuz
-    - İstemciler genelinde BTW davranışını uyguluyor veya hata ayıklıyorsunuz
+    - Geçerli oturum hakkında hızlı bir yan soru sormak istiyorsunuz
+    - BTW davranışını istemciler genelinde uyguluyor veya hata ayıklıyorsunuz
 summary: /btw ile geçici yan sorular
 title: Bu arada yan sorular
 x-i18n:
-    generated_at: "2026-05-11T20:37:23Z"
+    generated_at: "2026-06-28T01:20:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fba82915b0a8f59d20073dac5c159c4aff4e81ccb1be5979be521212e22c493a
+    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw`, **geçerli oturum** hakkında hızlı bir yan soru sormanızı sağlar; bu soruyu
-normal konuşma geçmişine dönüştürmez. `/side` bir takma addır.
+`/btw`, **geçerli oturum** hakkında hızlı bir yan soru sormanızı sağlar; bu soru normal konuşma geçmişine dönüştürülmez. `/side` bir takma addır.
 
-Claude Code'un `/btw` davranışı model alınmıştır, ancak OpenClaw'ın
-Gateway ve çok kanallı mimarisine uyarlanmıştır.
+Claude Code'un `/btw` davranışı model alınmıştır, ancak OpenClaw'ın Gateway ve çok kanallı mimarisine uyarlanmıştır.
 
-## Ne yapar
+## Ne yapar?
 
 Şunu gönderdiğinizde:
 
@@ -30,107 +29,89 @@ Gateway ve çok kanallı mimarisine uyarlanmıştır.
 OpenClaw:
 
 1. geçerli oturum bağlamının anlık görüntüsünü alır,
-2. ayrı bir geçici yan sorgu çalıştırır,
+2. ayrı, geçici bir yan sorgu çalıştırır,
 3. yalnızca yan soruyu yanıtlar,
-4. ana çalıştırmayı olduğu gibi bırakır,
-5. BTW sorusunu veya yanıtını oturum geçmişine **yazmaz**,
-6. yanıtı normal bir asistan mesajı yerine **canlı yan sonuç** olarak yayar.
+4. ana çalışmayı değiştirmez,
+5. BTW sorusunu veya yanıtını oturum geçmişine yazmaz,
+6. yanıtı normal bir asistan iletisi yerine **canlı yan sonuç** olarak yayar.
 
 Önemli zihinsel model şudur:
 
 - aynı oturum bağlamı
-- ayrı tek seferlik yan sorgu
+- ayrı, tek seferlik yan sorgu
 - oturum yerel bir harness kullandığında aynı yerel harness aktarımı
-- gelecekteki bağlamın kirlenmemesi
-- transkript kalıcılığı olmaması
+- gelecekteki bağlam kirlenmesi yok
+- transcript kalıcılığı yok
 
-Codex harness oturumları için BTW, etkin app-server iş parçacığını geçici bir
-yan iş parçacığı olarak çatallayarak Codex içinde kalır. Bu, yan yanıtı üst
-transkriptten izole etmeye devam ederken Codex OAuth ve yerel iş parçacığı
-davranışını sağlam tutar. Codex `/side` gibi, yan iş parçacığı geçerli Codex
-izinlerini ve yerel araç yüzeyini korur; ayrıca modele devralınan üst iş
-parçacığı çalışmasını etkin talimatlar olarak ele almamasını söyleyen
-koruyucu sınırlar içerir. Codex dışı çalışma zamanları daha eski doğrudan tek
-seferlik yolu korur.
+Codex harness oturumlarında BTW, etkin app-server iş parçacığını geçici bir yan iş parçacığı olarak çatallayarak Codex içinde kalır. Bu, yanıtı üst transcript'ten yalıtırken Codex OAuth ve yerel iş parçacığı davranışını korur. Codex `/side` gibi, yan iş parçacığı geçerli Codex izinlerini ve yerel araç yüzeyini korur; ayrıca modele, devralınan üst iş parçacığı çalışmasını etkin talimatlar olarak ele almamasını söyleyen koruma sınırları içerir.
 
-## Ne yapmaz
+CLI çalışma zamanı takma adlarında BTW, doğrudan sağlayıcı çağrısına geri dönmek yerine yan soru modunda sahip olan CLI arka ucunu kullanır. OpenClaw, temizlenmiş konuşma bağlamını yeni, tek seferlik bir CLI çağrısına aktarır, bu çağrı için OpenClaw MCP araç paketlemeyi ve yeniden kullanılabilir CLI oturum durumunu devre dışı bırakır ve arka ucun desteklediği CLI'ye özgü no-resume veya no-tools bayraklarını eklemesine izin verir. Doğrudan CLI olmayan çalışma zamanları, doğrudan tek seferlik yolu korur.
+
+## Ne yapmaz?
 
 `/btw` şunları **yapmaz**:
 
 - yeni kalıcı bir oturum oluşturmaz,
-- tamamlanmamış ana görevi sürdürmez,
-- BTW soru/yanıt verilerini transkript geçmişine yazmaz,
+- bitmemiş ana görevi sürdürmez,
+- BTW soru/yanıt verilerini transcript geçmişine yazmaz,
 - `chat.history` içinde görünmez,
 - yeniden yüklemeden sonra kalmaz.
 
-Bu, kasıtlı olarak **geçicidir**.
+Bilinçli olarak **geçicidir**.
 
-## Bağlam nasıl çalışır
+## Bağlam nasıl çalışır?
 
-BTW, geçerli oturumu **yalnızca arka plan bağlamı** olarak kullanır.
+BTW, geçerli oturumu yalnızca **arka plan bağlamı** olarak kullanır.
 
-Ana çalıştırma o anda etkinse OpenClaw geçerli mesaj durumunun anlık
-görüntüsünü alır ve devam eden ana istemi arka plan bağlamı olarak dahil eder;
-bunu yaparken modele açıkça şunları söyler:
+Ana çalışma şu anda etkinse OpenClaw, geçerli ileti durumunun anlık görüntüsünü alır ve sürmekte olan ana istemi arka plan bağlamı olarak dahil eder; aynı zamanda modele açıkça şunları söyler:
 
 - yalnızca yan soruyu yanıtla,
-- tamamlanmamış ana görevi sürdürme veya tamamlama,
+- bitmemiş ana görevi sürdürme veya tamamlama,
 - üst konuşmayı yönlendirme.
 
-Bu, BTW'yi ana çalıştırmadan izole tutarken oturumun ne hakkında olduğunun
-farkında olmasını sağlar.
+Bu, BTW'yi ana çalışmadan yalıtılmış tutarken oturumun neyle ilgili olduğundan haberdar olmasını sağlar.
 
 ## Teslim modeli
 
-BTW, normal bir asistan transkript mesajı olarak **teslim edilmez**.
+BTW, normal bir asistan transcript iletisi olarak teslim **edilmez**.
 
-Gateway protokolü düzeyinde:
+Gateway protokol düzeyinde:
 
 - normal asistan sohbeti `chat` olayını kullanır
 - BTW `chat.side_result` olayını kullanır
 
-Bu ayrım kasıtlıdır. BTW normal `chat` olay yolunu yeniden kullansaydı,
-istemciler onu düzenli konuşma geçmişi gibi ele alırdı.
+Bu ayrım bilinçlidir. BTW normal `chat` olay yolunu yeniden kullansaydı istemciler onu normal konuşma geçmişi gibi ele alırdı.
 
-BTW ayrı bir canlı olay kullandığı ve `chat.history` üzerinden yeniden
-oynatılmadığı için yeniden yüklemeden sonra kaybolur.
+BTW ayrı bir canlı olay kullandığı ve `chat.history` üzerinden yeniden oynatılmadığı için yeniden yüklemeden sonra kaybolur.
 
 ## Yüzey davranışı
 
 ### TUI
 
-TUI içinde BTW geçerli oturum görünümünde satır içi işlenir, ancak geçici
-kalmaya devam eder:
+TUI içinde BTW, geçerli oturum görünümünde satır içi işlenir, ancak geçici kalır:
 
-- normal bir asistan yanıtından görsel olarak ayırt edilir
+- normal bir asistan yanıtından görsel olarak ayırt edilebilir
 - `Enter` veya `Esc` ile kapatılabilir
 - yeniden yüklemede yeniden oynatılmaz
 
-### Harici kanallar
+### Dış kanallar
 
-Telegram, WhatsApp ve Discord gibi kanallarda BTW, açıkça etiketlenmiş tek
-seferlik bir yanıt olarak teslim edilir; çünkü bu yüzeylerde yerel geçici
-katman kavramı yoktur.
+Telegram, WhatsApp ve Discord gibi kanallarda BTW, bu yüzeylerde yerel geçici katman kavramı olmadığı için açıkça etiketlenmiş tek seferlik bir yanıt olarak teslim edilir.
 
-Yanıt yine de normal oturum geçmişi değil, bir yan sonuç olarak ele alınır.
+Yanıt yine normal oturum geçmişi değil, bir yan sonuç olarak ele alınır.
 
 ### Control UI / web
 
-Gateway, BTW'yi `chat.side_result` olarak doğru şekilde yayar ve BTW
-`chat.history` içine dahil edilmez; bu nedenle kalıcılık sözleşmesi web için
-zaten doğrudur.
+Gateway, BTW'yi doğru biçimde `chat.side_result` olarak yayar ve BTW `chat.history` içine dahil edilmez; bu nedenle kalıcılık sözleşmesi web için zaten doğrudur.
 
-Mevcut Control UI, BTW'yi tarayıcıda canlı işlemek için hâlâ ayrılmış bir
-`chat.side_result` tüketicisine ihtiyaç duyar. Bu istemci tarafı destek
-gelene kadar BTW, tam TUI ve harici kanal davranışına sahip bir Gateway
-düzeyi özelliğidir, ancak henüz eksiksiz bir tarayıcı UX'i değildir.
+Geçerli Control UI, BTW'yi tarayıcıda canlı işlemek için hâlâ özel bir `chat.side_result` tüketicisine ihtiyaç duyar. Bu istemci tarafı desteği gelene kadar BTW, tam TUI ve dış kanal davranışına sahip Gateway düzeyinde bir özelliktir, ancak henüz eksiksiz bir tarayıcı UX'i değildir.
 
-## BTW ne zaman kullanılır
+## BTW ne zaman kullanılır?
 
 Şunları istediğinizde `/btw` kullanın:
 
 - geçerli çalışma hakkında hızlı bir açıklama,
-- uzun bir çalıştırma hâlâ sürerken olgusal bir yan yanıt,
+- uzun bir çalışma hâlâ sürerken olgusal bir yan yanıt,
 - gelecekteki oturum bağlamının parçası olmaması gereken geçici bir yanıt.
 
 Örnekler:
@@ -143,12 +124,11 @@ düzeyi özelliğidir, ancak henüz eksiksiz bir tarayıcı UX'i değildir.
 /btw what is 17 * 19?
 ```
 
-## BTW ne zaman kullanılmamalı
+## BTW ne zaman kullanılmamalıdır?
 
-Yanıtın oturumun gelecekteki çalışma bağlamının parçası olmasını istiyorsanız
-`/btw` kullanmayın.
+Yanıtın oturumun gelecekteki çalışma bağlamının parçası olmasını istiyorsanız `/btw` kullanmayın.
 
-Bu durumda BTW kullanmak yerine ana oturumda normal şekilde sorun.
+Bu durumda, BTW kullanmak yerine ana oturumda normal şekilde sorun.
 
 ## İlgili
 
@@ -157,12 +137,12 @@ Bu durumda BTW kullanmak yerine ana oturumda normal şekilde sorun.
     Yerel komut kataloğu ve sohbet yönergeleri.
   </Card>
   <Card title="Thinking levels" href="/tr/tools/thinking" icon="brain">
-    Yan soru model çağrısı için akıl yürütme çabası düzeyleri.
+    Yan soru model çağrısı için akıl yürütme efor düzeyleri.
   </Card>
   <Card title="Session" href="/tr/concepts/session" icon="comments">
     Oturum anahtarları, geçmiş ve kalıcılık semantiği.
   </Card>
   <Card title="Steer command" href="/tr/tools/steer" icon="arrow-right">
-    Etkin çalıştırmayı sonlandırmadan içine bir yönlendirme mesajı enjekte edin.
+    Etkin çalışmayı sonlandırmadan içine bir yönlendirme iletisi enjekte edin.
   </Card>
 </CardGroup>

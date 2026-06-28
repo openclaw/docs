@@ -1,20 +1,21 @@
 ---
 read_when:
-    - 實作 macOS 畫布面板
-    - 為視覺工作區新增代理控制項
+    - 實作 macOS Canvas 面板
+    - 新增視覺工作區的代理控制項
     - 偵錯 WKWebView 畫布載入
-summary: 由代理控制、透過 WKWebView + 自訂 URL 方案嵌入的畫布面板
+summary: 透過 WKWebView + 自訂 URL scheme 嵌入的代理程式控制畫布面板
 title: 畫布
 x-i18n:
-    generated_at: "2026-05-06T09:13:47Z"
+    generated_at: "2026-06-28T00:12:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
+    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-macOS 應用程式使用 `WKWebView` 嵌入由代理控制的 **Canvas 面板**。它是用於 HTML/CSS/JS、A2UI 和小型互動式 UI 介面的輕量視覺工作區。
+macOS 應用程式使用 `WKWebView` 內嵌由代理控制的 **Canvas 面板**。它是用於 HTML/CSS/JS、A2UI，以及小型互動式 UI 介面的輕量視覺工作區。
 
 ## Canvas 所在位置
 
@@ -37,22 +38,22 @@ Canvas 面板透過 **自訂 URL scheme** 提供這些檔案：
 ## 面板行為
 
 - 無邊框、可調整大小的面板，錨定在選單列附近（或滑鼠游標附近）。
-- 依每個 session 記住大小/位置。
-- 本機 Canvas 檔案變更時自動重新載入。
-- 同一時間只會顯示一個 Canvas 面板（會視需要切換 session）。
+- 依工作階段記住大小/位置。
+- 本機 canvas 檔案變更時會自動重新載入。
+- 同一時間只會顯示一個 Canvas 面板（會視需要切換工作階段）。
 
-可以從「設定」→ **允許 Canvas** 停用 Canvas。停用時，canvas 節點命令會回傳 `CANVAS_DISABLED`。
+可從 Settings → **Allow Canvas** 停用 Canvas。停用時，canvas 節點命令會回傳 `CANVAS_DISABLED`。
 
 ## 代理 API 介面
 
-Canvas 透過 **Gateway WebSocket** 暴露，因此代理可以：
+Canvas 透過 **閘道 WebSocket** 暴露，因此代理可以：
 
 - 顯示/隱藏面板
-- 導覽到路徑或 URL
+- 導覽至路徑或 URL
 - 評估 JavaScript
 - 擷取快照影像
 
-CLI 範例：
+命令列介面範例：
 
 ```bash
 openclaw nodes canvas present --node <id>
@@ -63,12 +64,14 @@ openclaw nodes canvas snapshot --node <id>
 
 注意事項：
 
-- `canvas.navigate` 接受 **本機 Canvas 路徑**、`http(s)` URL 和 `file://` URL。
-- 如果你傳入 `"/"`，Canvas 會顯示本機 scaffold 或 `index.html`。
+- `canvas.navigate` 接受 **本機 canvas 路徑**、`http(s)` URL，以及 `file://` URL。
+- 如果傳入 `"/"`，Canvas 會顯示本機 scaffold 或 `index.html`。
 
 ## Canvas 中的 A2UI
 
-A2UI 由 Gateway canvas host 託管，並在 Canvas 面板內渲染。當 Gateway 通告 Canvas host 時，macOS 應用程式會在第一次開啟時自動導覽到 A2UI host 頁面。
+A2UI 由閘道 canvas host 託管，並在 Canvas 面板內轉譯。
+當閘道公告 Canvas host 時，macOS 應用程式會在第一次開啟時自動導覽至
+A2UI host 頁面。
 
 預設 A2UI host URL：
 
@@ -76,7 +79,7 @@ A2UI 由 Gateway canvas host 託管，並在 Canvas 面板內渲染。當 Gatewa
 http://<gateway-host>:18789/__openclaw__/a2ui/
 ```
 
-### A2UI 命令（v0.8）
+### A2UI 命令 (v0.8)
 
 Canvas 目前接受 **A2UI v0.8** 伺服器→用戶端訊息：
 
@@ -85,9 +88,9 @@ Canvas 目前接受 **A2UI v0.8** 伺服器→用戶端訊息：
 - `dataModelUpdate`
 - `deleteSurface`
 
-不支援 `createSurface`（v0.9）。
+不支援 `createSurface` (v0.9)。
 
-CLI 範例：
+命令列介面範例：
 
 ```bash
 cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
@@ -98,7 +101,7 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-快速煙霧測試：
+快速冒煙測試：
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
@@ -110,19 +113,30 @@ Canvas 可以透過深層連結觸發新的代理執行：
 
 - `openclaw://agent?...`
 
-範例（在 JS 中）：
+範例（於 JS 中）：
 
 ```js
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-除非提供有效金鑰，否則應用程式會提示確認。
+支援的查詢參數：
 
-## 安全注意事項
+- `message`：預先填入的代理提示。
+- `sessionKey`：穩定的工作階段識別碼。
+- `thinking`：選用的思考設定檔。
+- `deliver`、`to` 或 `channel`：傳遞目標。
+- `timeoutSeconds`：選用的執行逾時。
+- `key`：應用程式為受信任本機呼叫端產生的安全權杖。
 
-- Canvas scheme 會阻擋目錄遍歷；檔案必須位於 session 根目錄下。
-- 本機 Canvas 內容使用自訂 scheme（不需要 loopback 伺服器）。
-- 只有在明確導覽時，才允許外部 `http(s)` URL。
+除非提供有效的 key，否則應用程式會提示確認。未帶 key 的連結
+會在核准前顯示訊息與 URL，並忽略傳遞路由欄位；
+帶 key 的連結會使用一般閘道執行路徑。
+
+## 安全性注意事項
+
+- Canvas scheme 會封鎖目錄穿越；檔案必須位於工作階段根目錄下。
+- 本機 Canvas 內容使用自訂 scheme（不需要迴路伺服器）。
+- 外部 `http(s)` URL 只有在明確導覽時才允許。
 
 ## 相關
 

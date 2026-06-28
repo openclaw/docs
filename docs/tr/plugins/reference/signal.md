@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Signal Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını gönderip almak için Signal kanal yüzeyini ekler.
+    - Signal Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw iletilerini gönderip almak için Signal kanal yüzeyini ekler.
 title: Signal Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:54Z"
+    generated_at: "2026-06-28T01:02:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d066bcea16277affe7ecc181207330fa9c439ec242bab279c65efdf67b361c6
+    source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
     source_path: plugins/reference/signal.md
     workflow: 16
 ---
 
 # Signal Plugin
 
-OpenClaw mesajlarını göndermek ve almak için Signal kanal yüzeyini ekler.
+OpenClaw mesajları gönderip almak için Signal kanal yüzeyini ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/signal`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/signal`
 
 ## Yüzey
 
-channels: signal
+kanallar: signal
 
 ## İlgili belgeler
 

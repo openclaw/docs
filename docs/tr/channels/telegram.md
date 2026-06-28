@@ -1,42 +1,43 @@
 ---
 read_when:
-    - Telegram özellikleri veya webhooks üzerinde çalışma
-summary: Telegram bot desteğinin durumu, yetenekleri ve yapılandırması
+    - Telegram özellikleri veya webhook'lar üzerinde çalışma
+summary: Telegram bot destek durumu, yetenekleri ve yapılandırması
 title: Telegram
 x-i18n:
-    generated_at: "2026-05-12T12:49:01Z"
+    generated_at: "2026-06-28T00:16:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 185ac6051d3da2037b2727a6afca98bef946bc62c3f2b22cc9afe9831669297b
+    source_hash: f05ee57f06fe3b1c42ca19204bf74685ca3f05b1f02b9a6e36a7986e298b7edc
     source_path: channels/telegram.md
     workflow: 16
 ---
 
-Üretime hazır; grammY aracılığıyla bot DM'leri ve grupları destekler. Varsayılan mod uzun yoklamadır; Webhook modu isteğe bağlıdır.
+Bot DM'leri ve gruplar için grammY üzerinden production-ready. Varsayılan mod uzun yoklamadır; Webhook modu isteğe bağlıdır.
 
 <CardGroup cols={3}>
   <Card title="Eşleştirme" icon="link" href="/tr/channels/pairing">
-    Telegram için varsayılan DM ilkesi eşleştirmedir.
+    Telegram için varsayılan DM politikası eşleştirmedir.
   </Card>
   <Card title="Kanal sorun giderme" icon="wrench" href="/tr/channels/troubleshooting">
-    Kanallar arası tanılama ve onarım çalışma planları.
+    Kanallar arası tanılama ve onarım playbook'ları.
   </Card>
   <Card title="Gateway yapılandırması" icon="settings" href="/tr/gateway/configuration">
-    Tam kanal yapılandırma kalıpları ve örnekleri.
+    Tam kanal yapılandırma desenleri ve örnekleri.
   </Card>
 </CardGroup>
 
 ## Hızlı kurulum
 
 <Steps>
-  <Step title="Bot token'ını BotFather'da oluşturun">
+  <Step title="BotFather'da bot token'ını oluşturun">
     Telegram'ı açın ve **@BotFather** ile sohbet edin (kullanıcı adının tam olarak `@BotFather` olduğunu doğrulayın).
 
     `/newbot` komutunu çalıştırın, yönergeleri izleyin ve token'ı kaydedin.
 
   </Step>
 
-  <Step title="Token'ı ve DM ilkesini yapılandırın">
+  <Step title="Token ve DM politikasını yapılandırın">
 
 ```json5
 {
@@ -51,8 +52,8 @@ x-i18n:
 }
 ```
 
-    Ortam değişkeni yedeği: `TELEGRAM_BOT_TOKEN=...` (yalnızca varsayılan hesap).
-    Telegram, `openclaw channels login telegram` kullanmaz; token'ı yapılandırmada/ortamda ayarlayın, ardından Gateway'i başlatın.
+    Env yedeği: `TELEGRAM_BOT_TOKEN=...` (yalnızca varsayılan hesap).
+    Telegram, `openclaw channels login telegram` kullanmaz; token'ı yapılandırmada/env içinde ayarlayın, ardından gateway'i başlatın.
 
   </Step>
 
@@ -64,36 +65,37 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-    Eşleştirme kodları 1 saat sonra sona erer.
+    Eşleştirme kodlarının süresi 1 saat sonra dolar.
 
   </Step>
 
   <Step title="Botu bir gruba ekleyin">
-    Botu grubunuza ekleyin, ardından grup erişimi için gereken iki kimliği de alın:
+    Botu grubunuza ekleyin, ardından grup erişiminin ihtiyaç duyduğu iki ID'yi de alın:
 
-    - `allowFrom` / `groupAllowFrom` içinde kullanılan Telegram kullanıcı kimliğiniz
-    - `channels.telegram.groups` altında anahtar olarak kullanılan Telegram grup sohbet kimliği
+    - `allowFrom` / `groupAllowFrom` içinde kullanılan Telegram kullanıcı ID'niz
+    - `channels.telegram.groups` altında anahtar olarak kullanılan Telegram grup sohbeti ID'si
 
-    İlk kurulum için grup sohbet kimliğini `openclaw logs --follow`, iletilmiş kimlik botu veya Bot API `getUpdates` ile alın. Grup izin verildikten sonra `/whoami@<bot_username>` kullanıcı ve grup kimliklerini doğrulayabilir.
+    İlk kurulum için grup sohbeti ID'sini `openclaw logs --follow` çıktısından, yönlendirilmiş ID botundan veya Bot API `getUpdates` üzerinden alın. Grup izin verildikten sonra `/whoami@<bot_username>` kullanıcı ve grup ID'lerini doğrulayabilir.
 
-    `-100` ile başlayan negatif Telegram süper grup kimlikleri grup sohbet kimlikleridir. Bunları `groupAllowFrom` altına değil, `channels.telegram.groups` altına koyun.
+    `-100` ile başlayan negatif Telegram süper grup ID'leri grup sohbeti ID'leridir. Bunları `groupAllowFrom` altına değil, `channels.telegram.groups` altına koyun.
 
   </Step>
 </Steps>
 
 <Note>
-Token çözümleme sırası hesaba duyarlıdır. Pratikte, yapılandırma değerleri ortam değişkeni yedeğine göre önceliklidir ve `TELEGRAM_BOT_TOKEN` yalnızca varsayılan hesaba uygulanır.
+Token çözümleme sırası hesaba duyarlıdır. Pratikte yapılandırma değerleri env yedeğine göre önceliklidir ve `TELEGRAM_BOT_TOKEN` yalnızca varsayılan hesap için geçerlidir.
+Başarılı bir başlatmadan sonra OpenClaw, yeniden başlatmaların fazladan bir Telegram `getMe` çağrısından kaçınabilmesi için bot kimliğini state dizininde 24 saate kadar önbelleğe alır; token'ın değiştirilmesi veya kaldırılması bu önbelleği temizler.
 </Note>
 
 ## Telegram tarafı ayarları
 
 <AccordionGroup>
   <Accordion title="Gizlilik modu ve grup görünürlüğü">
-    Telegram botları varsayılan olarak **Gizlilik Modu** kullanır; bu, gruplarda hangi mesajları alabileceklerini sınırlar.
+    Telegram botlarında varsayılan olarak **Privacy Mode** açıktır; bu, botların hangi grup mesajlarını alacağını sınırlar.
 
-    Botun tüm grup mesajlarını görmesi gerekiyorsa:
+    Botun tüm grup mesajlarını görmesi gerekiyorsa şunlardan birini yapın:
 
-    - `/setprivacy` ile gizlilik modunu devre dışı bırakın veya
+    - `/setprivacy` üzerinden gizlilik modunu devre dışı bırakın veya
     - botu grup yöneticisi yapın.
 
     Gizlilik modunu değiştirirken, Telegram'ın değişikliği uygulaması için botu her gruptan kaldırıp yeniden ekleyin.
@@ -101,48 +103,52 @@ Token çözümleme sırası hesaba duyarlıdır. Pratikte, yapılandırma değer
   </Accordion>
 
   <Accordion title="Grup izinleri">
-    Yönetici durumu Telegram grup ayarlarında denetlenir.
+    Yönetici durumu Telegram grup ayarlarından kontrol edilir.
 
     Yönetici botlar tüm grup mesajlarını alır; bu, her zaman açık grup davranışı için kullanışlıdır.
 
   </Accordion>
 
-  <Accordion title="Yararlı BotFather geçişleri">
+  <Accordion title="Yararlı BotFather anahtarları">
 
-    - Grup eklemelerine izin vermek/reddetmek için `/setjoingroups`
-    - Grup görünürlüğü davranışı için `/setprivacy`
+    - grup eklemelerine izin vermek/reddetmek için `/setjoingroups`
+    - grup görünürlüğü davranışı için `/setprivacy`
 
   </Accordion>
 </AccordionGroup>
 
 ## Erişim denetimi ve etkinleştirme
 
+### Grup bot kimliği
+
+Telegram gruplarında ve forum konularında, yapılandırılmış bot kullanıcı adının açıkça anılması (örneğin `@my_bot`), agent persona adı Telegram kullanıcı adından farklı olsa bile seçili OpenClaw agent'ına hitap etmek olarak değerlendirilir. Grup sessizlik politikası ilgisiz grup trafiği için hâlâ geçerlidir, ancak bot kullanıcı adının kendisi "başka biri" sayılmaz.
+
 <Tabs>
-  <Tab title="DM ilkesi">
+  <Tab title="DM politikası">
     `channels.telegram.dmPolicy` doğrudan mesaj erişimini denetler:
 
     - `pairing` (varsayılan)
-    - `allowlist` (`allowFrom` içinde en az bir gönderen kimliği gerektirir)
-    - `open` (`allowFrom` öğesinin `"*"` içermesini gerektirir)
+    - `allowlist` (`allowFrom` içinde en az bir gönderen ID'si gerektirir)
+    - `open` (`allowFrom` içinde `"*"` olmasını gerektirir)
     - `disabled`
 
-    `allowFrom: ["*"]` ile `dmPolicy: "open"`, bot kullanıcı adını bulan veya tahmin eden herhangi bir Telegram hesabının bota komut vermesine izin verir. Bunu yalnızca araçları sıkı biçimde kısıtlanmış, bilinçli olarak herkese açık botlar için kullanın; tek sahipli botlar sayısal kullanıcı kimlikleriyle `allowlist` kullanmalıdır.
+    `allowFrom: ["*"]` ile `dmPolicy: "open"`, bot kullanıcı adını bulan veya tahmin eden herhangi bir Telegram hesabının bota komut vermesine izin verir. Bunu yalnızca araçları sıkı biçimde kısıtlanmış, özellikle herkese açık olması amaçlanan botlar için kullanın; tek sahipli botlar sayısal kullanıcı ID'leriyle `allowlist` kullanmalıdır.
 
-    `channels.telegram.allowFrom` sayısal Telegram kullanıcı kimliklerini kabul eder. `telegram:` / `tg:` önekleri kabul edilir ve normalleştirilir.
-    Çok hesaplı yapılandırmalarda, kısıtlayıcı üst düzey bir `channels.telegram.allowFrom` güvenlik sınırı olarak ele alınır: hesap düzeyindeki `allowFrom: ["*"]` girdileri, birleştirmeden sonra etkin hesap izin listesi hâlâ açık bir joker karakter içermedikçe o hesabı herkese açık yapmaz.
+    `channels.telegram.allowFrom` sayısal Telegram kullanıcı ID'lerini kabul eder. `telegram:` / `tg:` önekleri kabul edilir ve normalize edilir.
+    Çok hesaplı yapılandırmalarda, kısıtlayıcı bir üst düzey `channels.telegram.allowFrom` güvenlik sınırı olarak değerlendirilir: hesap düzeyi `allowFrom: ["*"]` girdileri, birleştirme sonrasında etkin hesap izin listesi hâlâ açık bir joker karakter içermedikçe o hesabı herkese açık yapmaz.
     Boş `allowFrom` ile `dmPolicy: "allowlist"` tüm DM'leri engeller ve yapılandırma doğrulaması tarafından reddedilir.
-    Kurulum yalnızca sayısal kullanıcı kimliklerini ister.
-    Yükseltme yaptıysanız ve yapılandırmanız `@username` izin listesi girdileri içeriyorsa, bunları çözümlemek için `openclaw doctor --fix` çalıştırın (en iyi çaba; Telegram bot token'ı gerektirir).
-    Daha önce eşleştirme deposu izin listesi dosyalarına güveniyorsanız, `openclaw doctor --fix` izin listesi akışlarında girdileri `channels.telegram.allowFrom` içine kurtarabilir (örneğin `dmPolicy: "allowlist"` henüz açık kimlik içermediğinde).
+    Kurulum yalnızca sayısal kullanıcı ID'leri ister.
+    Yükseltme yaptıysanız ve yapılandırmanız `@username` izin listesi girdileri içeriyorsa, bunları çözmek için `openclaw doctor --fix` çalıştırın (best-effort; bir Telegram bot token'ı gerektirir).
+    Daha önce eşleştirme deposu izin listesi dosyalarına güveniyorsanız, `openclaw doctor --fix` izin listesi akışlarında girdileri `channels.telegram.allowFrom` içine kurtarabilir (örneğin `dmPolicy: "allowlist"` henüz açık ID içermediğinde).
 
-    Tek sahipli botlar için, erişim ilkesini önceki eşleştirme onaylarına bağlı kalmak yerine yapılandırmada kalıcı tutmak amacıyla açık sayısal `allowFrom` kimlikleriyle `dmPolicy: "allowlist"` tercih edin.
+    Tek sahipli botlar için, erişim politikasını önceki eşleştirme onaylarına bağlı kalmak yerine yapılandırmada kalıcı tutmak amacıyla açık sayısal `allowFrom` ID'leriyle `dmPolicy: "allowlist"` tercih edin.
 
     Yaygın karışıklık: DM eşleştirme onayı, "bu gönderen her yerde yetkilidir" anlamına gelmez.
-    Eşleştirme DM erişimi verir. Henüz komut sahibi yoksa, ilk onaylanan eşleştirme ayrıca `commands.ownerAllowFrom` ayarlayarak yalnızca sahip komutları ve yürütme onayları için açık bir operatör hesabı belirler.
-    Grup gönderen yetkilendirmesi yine açık yapılandırma izin listelerinden gelir.
-    "Bir kez yetkilendirilmiş olayım ve hem DM'ler hem de grup komutları çalışsın" istiyorsanız, sayısal Telegram kullanıcı kimliğinizi `channels.telegram.allowFrom` içine koyun; yalnızca sahip komutları için `commands.ownerAllowFrom` öğesinin `telegram:<your user id>` içerdiğinden emin olun.
+    Eşleştirme DM erişimi verir. Henüz komut sahibi yoksa, ilk onaylanan eşleştirme ayrıca `commands.ownerAllowFrom` değerini ayarlar; böylece yalnızca sahibin kullanabildiği komutlar ve exec onayları açık bir operatör hesabına sahip olur.
+    Grup gönderen yetkilendirmesi hâlâ açık yapılandırma izin listelerinden gelir.
+    "Bir kez yetkili olayım ve hem DM'ler hem de grup komutları çalışsın" istiyorsanız, sayısal Telegram kullanıcı ID'nizi `channels.telegram.allowFrom` içine koyun; yalnızca sahibin kullanabildiği komutlar için `commands.ownerAllowFrom` değerinin `telegram:<your user id>` içerdiğinden emin olun.
 
-    ### Telegram kullanıcı kimliğinizi bulma
+    ### Telegram kullanıcı ID'nizi bulma
 
     Daha güvenli (üçüncü taraf bot yok):
 
@@ -156,35 +162,35 @@ Token çözümleme sırası hesaba duyarlıdır. Pratikte, yapılandırma değer
 curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 ```
 
-    Üçüncü taraf yöntem (daha az gizli): `@userinfobot` veya `@getidsbot`.
+    Üçüncü taraf yöntemi (daha az gizli): `@userinfobot` veya `@getidsbot`.
 
   </Tab>
 
-  <Tab title="Grup ilkesi ve izin listeleri">
+  <Tab title="Grup politikası ve izin listeleri">
     İki denetim birlikte uygulanır:
 
     1. **Hangi gruplara izin verilir** (`channels.telegram.groups`)
        - `groups` yapılandırması yok:
-         - `groupPolicy: "open"` ile: herhangi bir grup, grup kimliği denetimlerinden geçebilir
+         - `groupPolicy: "open"` ile: herhangi bir grup grup ID'si denetimlerinden geçebilir
          - `groupPolicy: "allowlist"` (varsayılan) ile: `groups` girdileri (veya `"*"`) ekleyene kadar gruplar engellenir
-       - `groups` yapılandırılmış: izin listesi gibi davranır (açık kimlikler veya `"*"`)
+       - `groups` yapılandırılmış: izin listesi gibi davranır (açık ID'ler veya `"*"`)
 
     2. **Gruplarda hangi gönderenlere izin verilir** (`channels.telegram.groupPolicy`)
        - `open`
        - `allowlist` (varsayılan)
        - `disabled`
 
-    `groupAllowFrom`, grup gönderen filtrelemesi için kullanılır. Ayarlanmazsa Telegram `allowFrom` değerine geri döner.
-    `groupAllowFrom` girdileri sayısal Telegram kullanıcı kimlikleri olmalıdır (`telegram:` / `tg:` önekleri normalleştirilir).
-    Telegram grup veya süper grup sohbet kimliklerini `groupAllowFrom` içine koymayın. Negatif sohbet kimlikleri `channels.telegram.groups` altına aittir.
-    Sayısal olmayan girdiler gönderen yetkilendirmesinde yok sayılır.
+    `groupAllowFrom`, grup gönderen filtrelemesi için kullanılır. Ayarlanmamışsa Telegram `allowFrom` değerine geri döner.
+    `groupAllowFrom` girdileri sayısal Telegram kullanıcı ID'leri olmalıdır (`telegram:` / `tg:` önekleri normalize edilir).
+    Telegram grup veya süper grup sohbeti ID'lerini `groupAllowFrom` içine koymayın. Negatif sohbet ID'leri `channels.telegram.groups` altına aittir.
+    Sayısal olmayan girdiler gönderen yetkilendirmesi için yok sayılır.
     Güvenlik sınırı (`2026.2.25+`): grup gönderen kimlik doğrulaması DM eşleştirme deposu onaylarını **devralmaz**.
     Eşleştirme yalnızca DM için kalır. Gruplar için `groupAllowFrom` veya grup başına/konu başına `allowFrom` ayarlayın.
-    `groupAllowFrom` ayarlı değilse Telegram, eşleştirme deposuna değil yapılandırmadaki `allowFrom` değerine geri döner.
-    Tek sahipli botlar için pratik kalıp: kullanıcı kimliğinizi `channels.telegram.allowFrom` içine ayarlayın, `groupAllowFrom` değerini ayarsız bırakın ve hedef gruplara `channels.telegram.groups` altında izin verin.
-    Çalışma zamanı notu: `channels.telegram` tamamen yoksa, `channels.defaults.groupPolicy` açıkça ayarlanmadığı sürece çalışma zamanı hata kapalı `groupPolicy="allowlist"` varsayılanını kullanır.
+    `groupAllowFrom` ayarlanmamışsa Telegram, eşleştirme deposuna değil yapılandırmadaki `allowFrom` değerine geri döner.
+    Tek sahipli botlar için pratik desen: kullanıcı ID'nizi `channels.telegram.allowFrom` içinde ayarlayın, `groupAllowFrom` değerini boş bırakın ve hedef gruplara `channels.telegram.groups` altında izin verin.
+    Çalışma zamanı notu: `channels.telegram` tamamen eksikse, `channels.defaults.groupPolicy` açıkça ayarlanmadığı sürece çalışma zamanı fail-closed `groupPolicy="allowlist"` varsayılanına döner.
 
-    Yalnızca sahip grup kurulumu:
+    Yalnızca sahipli grup kurulumu:
 
 ```json5
 {
@@ -204,7 +210,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Gruptan `@<bot_username> ping` ile test edin. `requireMention: true` olduğu sürece düz grup mesajları botu tetiklemez.
+    Bunu gruptan `@<bot_username> ping` ile test edin. `requireMention: true` iken düz grup mesajları botu tetiklemez.
 
     Örnek: belirli bir gruptaki herhangi bir üyeye izin verin:
 
@@ -243,30 +249,30 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     <Warning>
       Yaygın hata: `groupAllowFrom` bir Telegram grup izin listesi değildir.
 
-      - `-1001234567890` gibi negatif Telegram grup veya süper grup sohbet kimliklerini `channels.telegram.groups` altına koyun.
-      - İzin verilen bir grup içinde hangi kişilerin botu tetikleyebileceğini sınırlamak istediğinizde `8734062810` gibi Telegram kullanıcı kimliklerini `groupAllowFrom` altına koyun.
+      - `-1001234567890` gibi negatif Telegram grup veya süper grup sohbeti ID'lerini `channels.telegram.groups` altına koyun.
+      - İzin verilen bir grup içindeki hangi kişilerin botu tetikleyebileceğini sınırlamak istediğinizde `8734062810` gibi Telegram kullanıcı ID'lerini `groupAllowFrom` altına koyun.
       - `groupAllowFrom: ["*"]` değerini yalnızca izin verilen bir grubun herhangi bir üyesinin botla konuşabilmesini istediğinizde kullanın.
 
     </Warning>
 
   </Tab>
 
-  <Tab title="Bahsetme davranışı">
-    Grup yanıtları varsayılan olarak bahsetme gerektirir.
+  <Tab title="Mention davranışı">
+    Grup yanıtları varsayılan olarak mention gerektirir.
 
-    Bahsetme şuradan gelebilir:
+    Mention şunlardan gelebilir:
 
-    - yerel `@botusername` bahsetmesi veya
-    - şunlardaki bahsetme kalıpları:
+    - yerel `@botusername` mention'ı veya
+    - şuralardaki mention desenleri:
       - `agents.list[].groupChat.mentionPatterns`
       - `messages.groupChat.mentionPatterns`
 
-    Oturum düzeyi komut geçişleri:
+    Oturum düzeyi komut anahtarları:
 
     - `/activation always`
     - `/activation mention`
 
-    Bunlar yalnızca oturum durumunu günceller. Kalıcılık için yapılandırmayı kullanın.
+    Bunlar yalnızca oturum state'ini günceller. Kalıcılık için yapılandırma kullanın.
 
     Kalıcı yapılandırma örneği:
 
@@ -282,10 +288,27 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Grup sohbet kimliğini alma:
+    Grup geçmişi bağlamı varsayılan olarak `mention-only` olur: önceki grup mesajları
+    yalnızca bota hitap ettiklerinde, bota verilen yanıtlar olduklarında
+    veya botun kendi mesajları olduklarında dahil edilir. Güvenilen gruplar için
+    yakın oda geçmişini dahil etmek üzere `includeGroupHistoryContext: "recent"` ayarlayın.
+    Sonraki turla birlikte önceki Telegram grup geçmişi göndermemek için
+    `includeGroupHistoryContext: "none"` ayarlayın.
 
-    - bir grup mesajını `@userinfobot` / `@getidsbot` adresine iletin
-    - veya `openclaw logs --follow` içinden `chat.id` değerini okuyun
+```json5
+{
+  channels: {
+    telegram: {
+      includeGroupHistoryContext: "recent",
+    },
+  },
+}
+```
+
+    Grup sohbeti ID'sini alma:
+
+    - bir grup mesajını `@userinfobot` / `@getidsbot` adresine yönlendirin
+    - veya `openclaw logs --follow` çıktısından `chat.id` değerini okuyun
     - veya Bot API `getUpdates` çıktısını inceleyin
     - grup izin verildikten sonra, yerel komutlar etkinse `/whoami@<bot_username>` çalıştırın
 
@@ -294,34 +317,43 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
 ## Çalışma zamanı davranışı
 
-- Telegram, Gateway süreci tarafından sahiplenilir.
-- Yönlendirme deterministiktir: Telegram gelenleri Telegram'a yanıtlar (model kanal seçmez).
-- Gelen mesajlar, yanıt meta verileri, medya yer tutucuları ve Gateway'in gözlemlediği Telegram yanıtları için kalıcı yanıt zinciri bağlamıyla paylaşılan kanal zarfına normalleştirilir.
+- Telegram, Gateway sürecinin sorumluluğundadır.
+- Yönlendirme deterministiktir: Telegram üzerinden gelen iletiler Telegram'a yanıtlanır (model kanal seçmez).
+- Gelen iletiler, yanıt meta verileri, medya yer tutucuları ve Gateway'in gözlemlediği Telegram yanıtları için kalıcı yanıt zinciri bağlamıyla paylaşılan kanal zarfına normalize edilir.
 - Grup oturumları grup kimliğine göre yalıtılır. Forum konuları, konuları yalıtılmış tutmak için `:topic:<threadId>` ekler.
-- DM mesajları `message_thread_id` taşıyabilir; OpenClaw yanıtlar için iş parçacığı kimliğini korur, ancak varsayılan olarak DM'leri düz oturumda tutar. DM konu oturumu yalıtımını bilinçli olarak istediğinizde `channels.telegram.dm.threadReplies: "inbound"`, `channels.telegram.direct.<chatId>.threadReplies: "inbound"`, `requireTopic: true` veya eşleşen bir konu yapılandırması ayarlayın.
-- Uzun yoklama, sohbet başına/iş parçacığı başına sıralama ile grammY runner kullanır. Genel runner sink eşzamanlılığı `agents.defaults.maxConcurrent` kullanır.
-- Uzun yoklama, her Gateway süreci içinde korunur; böylece aynı anda yalnızca bir etkin yoklayıcı bir bot token'ını kullanabilir. Hâlâ `getUpdates` 409 çakışmaları görüyorsanız, aynı token'ı büyük olasılıkla başka bir OpenClaw Gateway'i, betik veya harici yoklayıcı kullanıyordur.
-- Uzun yoklama izleyicisi yeniden başlatmaları varsayılan olarak 120 saniye boyunca tamamlanmış `getUpdates` canlılığı olmadığında tetiklenir. `channels.telegram.pollingStallThresholdMs` değerini yalnızca dağıtımınız uzun süren işler sırasında hâlâ yanlış yoklama durması yeniden başlatmaları görüyorsa artırın. Değer milisaniye cinsindendir ve `30000` ile `600000` arasında izin verilir; hesap başına geçersiz kılmalar desteklenir.
-- Telegram Bot API okundu bilgisi desteği sunmaz (`sendReadReceipts` uygulanmaz).
+- DM iletileri `message_thread_id` taşıyabilir; OpenClaw bunu yanıtlar için korur. DM konu oturumları yalnızca Telegram `getMe` bot için `has_topics_enabled: true` bildirdiğinde ayrılır; aksi halde DM'ler düz oturumda kalır.
+- Uzun yoklama, sohbet başına/iş parçacığı başına sıralamayla grammY runner kullanır. Genel runner sink eşzamanlılığı `agents.defaults.maxConcurrent` kullanır.
+- Çok hesaplı başlatma, büyük bot filolarının her hesap yoklamasını aynı anda yaymaması için eşzamanlı Telegram `getMe` yoklamalarını sınırlar.
+- Uzun yoklama, her Gateway süreci içinde korunur; böylece aynı anda yalnızca bir aktif yoklayıcı bir bot token'ını kullanabilir. Hâlâ `getUpdates` 409 çakışmaları görüyorsanız, başka bir OpenClaw Gateway, betik veya harici yoklayıcı büyük olasılıkla aynı token'ı kullanıyordur.
+- Uzun yoklama watchdog yeniden başlatmaları, varsayılan olarak 120 saniye boyunca tamamlanmış `getUpdates` canlılığı olmadığında tetiklenir. Dağıtımınız uzun süren işler sırasında hâlâ yanlış yoklama takılması yeniden başlatmaları görüyorsa `channels.telegram.pollingStallThresholdMs` değerini artırın. Değer milisaniye cinsindedir ve `30000` ile `600000` arasında izin verilir; hesap başına geçersiz kılmalar desteklenir.
+- Telegram Bot API okundu bilgisi desteğine sahip değildir (`sendReadReceipts` geçerli değildir).
+
+<Note>
+  `channels.telegram.dm.threadReplies` ve `channels.telegram.direct.<chatId>.threadReplies` kaldırıldı. Yapılandırmanızda bu anahtarlar hâlâ varsa yükseltmeden sonra `openclaw doctor --fix` çalıştırın. DM konu yönlendirmesi artık Telegram `getMe.has_topics_enabled` üzerinden gelen bot yeteneğini izler; bu, BotFather iş parçacıklı modu tarafından kontrol edilir: konuları etkin botlar, Telegram `message_thread_id` gönderdiğinde iş parçacığı kapsamlı DM oturumları kullanır; diğer DM'ler düz oturumda kalır.
+</Note>
 
 ## Özellik başvurusu
 
 <AccordionGroup>
-  <Accordion title="Canlı akış önizlemesi (mesaj düzenlemeleri)">
-    OpenClaw kısmi yanıtları gerçek zamanlı olarak akışa verebilir:
+  <Accordion title="Canlı akış önizlemesi (ileti düzenlemeleri)">
+    OpenClaw kısmi yanıtları gerçek zamanlı olarak akışa alabilir:
 
-    - doğrudan sohbetler: önizleme mesajı + `editMessageText`
-    - gruplar/konular: önizleme mesajı + `editMessageText`
+    - doğrudan sohbetler: önizleme iletisi + `editMessageText`
+    - gruplar/konular: önizleme iletisi + `editMessageText`
 
     Gereksinim:
 
-    - `channels.telegram.streaming`, `off | partial | block | progress` olur (varsayılan: `partial`)
-    - `progress`, araç ilerlemesi için düzenlenebilir tek bir durum taslağı tutar, tamamlandığında bunu temizler ve son yanıtı normal bir mesaj olarak gönderir
-    - `streaming.preview.toolProgress`, araç/ilerleme güncellemelerinin aynı düzenlenmiş önizleme mesajını yeniden kullanıp kullanmayacağını denetler (varsayılan: önizleme akışı etkinken `true`)
-    - `streaming.preview.commandText`, bu araç ilerleme satırlarının içindeki komut/çalıştırma ayrıntısını denetler: `raw` (varsayılan, yayımlanmış davranışı korur) veya `status` (yalnızca araç etiketi)
-    - eski `channels.telegram.streamMode` ve boolean `streaming` değerleri algılanır; bunları `channels.telegram.streaming.mode` değerine taşımak için `openclaw doctor --fix` çalıştırın
+    - `channels.telegram.streaming`, `off | partial | block | progress` değerlerinden biridir (varsayılan: `partial`)
+    - kısa ilk yanıt önizlemeleri debounce edilir, ardından çalışma hâlâ aktifse sınırlı bir gecikmeden sonra somutlaştırılır
+    - `progress`, araç ilerlemesi için düzenlenebilir tek bir durum taslağı tutar, araç ilerlemesinden önce yanıt etkinliği gelirse kararlı durum etiketini gösterir, tamamlandığında temizler ve son yanıtı normal ileti olarak gönderir
+    - `streaming.preview.toolProgress`, araç/ilerleme güncellemelerinin aynı düzenlenen önizleme iletisini yeniden kullanıp kullanmayacağını kontrol eder (varsayılan: önizleme akışı aktifken `true`)
+    - `streaming.preview.commandText`, bu araç ilerleme satırlarındaki komut/exec ayrıntısını kontrol eder: `raw` (varsayılan, yayımlanmış davranışı korur) veya `status` (yalnızca araç etiketi)
+    - `streaming.progress.commentary` (varsayılan: `false`), geçici ilerleme taslağında asistan yorum/preamble metnini etkinleştirir
+    - eski `channels.telegram.streamMode`, boolean `streaming` değerleri ve kullanımdan kaldırılmış yerel taslak önizleme anahtarları algılanır; bunları güncel akış yapılandırmasına geçirmek için `openclaw doctor --fix` çalıştırın
 
-    Araç ilerleme önizleme güncellemeleri, araçlar çalışırken gösterilen kısa durum satırlarıdır; örneğin komut yürütme, dosya okumaları, planlama güncellemeleri veya yama özetleri. Telegram, `v2026.4.22` ve sonrasındaki yayımlanmış OpenClaw davranışıyla eşleşmesi için bunları varsayılan olarak etkin tutar. Yanıt metni için düzenlenen önizlemeyi koruyup araç ilerleme satırlarını gizlemek için şunu ayarlayın:
+    Araç ilerleme önizleme güncellemeleri, araçlar çalışırken gösterilen kısa durum satırlarıdır; örneğin komut yürütme, dosya okuma, planlama güncellemeleri, patch özetleri veya Codex app-server modunda Codex preamble/yorum metni. Telegram, `v2026.4.22` ve sonrasındaki yayımlanmış OpenClaw davranışıyla eşleşmesi için bunları varsayılan olarak etkin tutar.
+
+    Yanıt metni için düzenlenen önizlemeyi koruyup araç ilerleme satırlarını gizlemek için şunu ayarlayın:
 
     ```json
     {
@@ -338,7 +370,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     }
     ```
 
-    Araç ilerlemesini görünür tutup komut/çalıştırma metnini gizlemek için şunu ayarlayın:
+    Araç ilerlemesini görünür tutup komut/exec metnini gizlemek için şunu ayarlayın:
 
     ```json
     {
@@ -355,7 +387,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     }
     ```
 
-    Son yanıtı aynı mesaja düzenlemeden görünür araç ilerlemesi istediğinizde `progress` modunu kullanın. Komut metni politikasını `streaming.progress` altına koyun:
+    Son yanıtı aynı iletiye düzenlemeden görünür araç ilerlemesi istediğinizde `progress` modunu kullanın. Komut metni politikasını `streaming.progress` altına koyun:
 
     ```json
     {
@@ -373,48 +405,67 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     }
     ```
 
-    `streaming.mode: "off"` değerini yalnızca sadece son yanıt teslimi istediğinizde kullanın: Telegram önizleme düzenlemeleri devre dışı bırakılır ve genel araç/ilerleme konuşmaları bağımsız durum mesajları olarak gönderilmek yerine bastırılır. Onay istemleri, medya yükleri ve hatalar yine de normal son teslim yolundan yönlendirilir. Yalnızca araç ilerleme durum satırlarını gizlerken yanıt önizleme düzenlemelerini korumak istediğinizde `streaming.preview.toolProgress: false` kullanın.
+    `streaming.mode: "off"` değerini yalnızca sadece son yanıt teslimi istediğinizde kullanın: Telegram önizleme düzenlemeleri devre dışı bırakılır ve genel araç/ilerleme sohbeti bağımsız durum iletileri olarak gönderilmek yerine bastırılır. Onay istemleri, medya payload'ları ve hatalar normal son teslim üzerinden yönlendirilmeye devam eder. Yalnızca araç ilerleme durum satırlarını gizlerken yanıt önizleme düzenlemelerini korumak istediğinizde `streaming.preview.toolProgress: false` kullanın.
 
     <Note>
-      Telegram seçili alıntı yanıtları istisnadır. `replyToMode`, `"first"`, `"all"` veya `"batched"` olduğunda ve gelen mesaj seçili alıntı metni içerdiğinde, OpenClaw son yanıtı yanıt önizlemesini düzenlemek yerine Telegram'ın yerel alıntı yanıt yolundan gönderir; bu nedenle `streaming.preview.toolProgress` o tur için kısa durum satırlarını gösteremez. Seçili alıntı metni olmayan geçerli mesaj yanıtları önizleme akışını korur. Araç ilerleme görünürlüğü yerel alıntı yanıtlarından daha önemli olduğunda `replyToMode: "off"` ayarlayın veya bu ödünleşimi kabul etmek için `streaming.preview.toolProgress: false` ayarlayın.
+      Telegram seçili alıntı yanıtları istisnadır. `replyToMode`, `"first"`, `"all"` veya `"batched"` olduğunda ve gelen ileti seçili alıntı metni içerdiğinde, OpenClaw son yanıtı yanıt önizlemesini düzenlemek yerine Telegram'ın yerel alıntı yanıt yolu üzerinden gönderir; bu yüzden `streaming.preview.toolProgress` o tur için kısa durum satırlarını gösteremez. Seçili alıntı metni olmayan geçerli ileti yanıtları önizleme akışını korumaya devam eder. Araç ilerlemesi görünürlüğü yerel alıntı yanıtlarından daha önemliyse `replyToMode: "off"` ayarlayın veya bu ödünleşimi kabul etmek için `streaming.preview.toolProgress: false` ayarlayın.
     </Note>
 
     Yalnızca metin yanıtları için:
 
-    - kısa DM/grup/konu önizlemeleri: OpenClaw aynı önizleme mesajını tutar ve son düzenlemeyi yerinde yapar
-    - birden çok Telegram mesajına bölünen uzun metin son yanıtları, mümkün olduğunda mevcut önizlemeyi ilk son parça olarak yeniden kullanır, sonra yalnızca kalan parçaları gönderir
-    - ilerleme modu son yanıtları durum taslağını temizler ve taslağı yanıta düzenlemek yerine normal son teslimi kullanır
-    - tamamlanan metin doğrulanmadan önce son düzenleme başarısız olursa OpenClaw normal son teslimi kullanır ve bayat önizlemeyi temizler
+    - kısa DM/grup/konu önizlemeleri: OpenClaw aynı önizleme iletisini korur ve son düzenlemeyi yerinde yapar
+    - birden çok Telegram iletisine bölünen uzun metin sonları, mümkün olduğunda mevcut önizlemeyi ilk son parça olarak yeniden kullanır, ardından yalnızca kalan parçaları gönderir
+    - ilerleme modu sonları, durum taslağını temizler ve taslağı yanıta düzenlemek yerine normal son teslimi kullanır
+    - son düzenleme, tamamlanan metin onaylanmadan önce başarısız olursa OpenClaw normal son teslimi kullanır ve eski önizlemeyi temizler
 
-    Karmaşık yanıtlar için (örneğin medya yükleri), OpenClaw normal son teslime geri döner ve ardından önizleme mesajını temizler.
+    Karmaşık yanıtlar için (örneğin medya payload'ları), OpenClaw normal son teslime geri döner ve ardından önizleme iletisini temizler.
 
-    Önizleme akışı, blok akışından ayrıdır. Telegram için blok akışı açıkça etkinleştirildiğinde OpenClaw çift akışı önlemek için önizleme akışını atlar.
+    Önizleme akışı, blok akışından ayrıdır. Blok akışı Telegram için açıkça etkinleştirildiğinde OpenClaw çift akışı önlemek için önizleme akışını atlar.
 
-    Yalnızca Telegram akıl yürütme akışı:
+    Akıl yürütme akışı davranışı:
 
-    - `/reasoning stream`, oluşturma sırasında akıl yürütmeyi canlı önizlemeye gönderir
+    - `/reasoning stream`, desteklenen bir kanalın akıl yürütme önizleme yolunu kullanır; Telegram'da, üretim sırasında akıl yürütmeyi canlı önizlemeye akışa alır
     - akıl yürütme önizlemesi son teslimden sonra silinir; akıl yürütmenin görünür kalması gerektiğinde `/reasoning on` kullanın
-    - son yanıt, akıl yürütme metni olmadan gönderilir
+    - son yanıt akıl yürütme metni olmadan gönderilir
 
   </Accordion>
 
-  <Accordion title="Biçimlendirme ve HTML geri dönüşü">
-    Giden metin Telegram `parse_mode: "HTML"` kullanır.
+  <Accordion title="Zengin ileti biçimlendirmesi">
+    Giden metin varsayılan olarak standart Telegram HTML iletilerini kullanır; böylece yanıtlar güncel Telegram istemcilerinde okunabilir kalır. Bu uyumluluk modu normal kalın, italik, bağlantı, kod, spoiler ve alıntıları destekler; ancak yerel tablolar, ayrıntılar, zengin medya ve formüller gibi Bot API 10.1'e özgü zengin blokları desteklemez.
 
-    - Markdown benzeri metin, Telegram açısından güvenli HTML'ye işlenir.
-    - Desteklenen Telegram HTML etiketleri korunur; desteklenmeyen HTML kaçışlanır.
-    - Telegram ayrıştırılmış HTML'yi reddederse OpenClaw düz metin olarak yeniden dener.
+    Bot API 10.1 zengin iletilerini etkinleştirmek için `channels.telegram.richMessages: true` ayarlayın:
 
-    Bağlantı önizlemeleri varsayılan olarak etkindir ve `channels.telegram.linkPreview: false` ile devre dışı bırakılabilir.
+```json5
+{
+  channels: {
+    telegram: {
+      richMessages: true,
+    },
+  },
+}
+```
+
+    Etkinleştirildiğinde:
+
+    - Ajana, bu bot/hesap için Telegram zengin iletilerinin kullanılabilir olduğu söylenir.
+    - Markdown metni OpenClaw'ın Markdown IR'ı üzerinden işlenir ve Telegram zengin HTML'i olarak gönderilir.
+    - Açık zengin HTML payload'ları; başlıklar, tablolar, ayrıntılar, zengin medya ve formüller gibi desteklenen Bot API 10.1 etiketlerini korur.
+    - Medya altyazıları zengin iletiler altyazıların yerini almadığı için hâlâ Telegram HTML altyazılarını kullanır.
+
+    Bu, model metnini Telegram Rich Markdown işaretlerinden uzak tutar; böylece `$400-600K` gibi para birimleri matematik olarak ayrıştırılmaz. Uzun zengin metin, Telegram'ın zengin metin ve zengin blok sınırları boyunca otomatik olarak bölünür. Telegram'ın sütun sınırını aşan tablolar kod blokları olarak gönderilir.
+
+    Varsayılan: istemci uyumluluğu için kapalı. Zengin iletiler uyumlu Telegram istemcileri gerektirir; bazı güncel Desktop, Web, Android ve üçüncü taraf istemciler kabul edilen zengin iletileri desteklenmiyor olarak gösterir. Botla kullanılan her istemci bunları işleyemiyorsa bu seçeneği devre dışı tutun. `/status`, geçerli Telegram oturumunda zengin iletilerin açık mı kapalı mı olduğunu gösterir.
+
+    Bağlantı önizlemeleri varsayılan olarak etkindir. `channels.telegram.linkPreview: false`, zengin metin için otomatik varlık algılamasını atlar.
 
   </Accordion>
 
   <Accordion title="Yerel komutlar ve özel komutlar">
-    Telegram komut menüsü kaydı, başlangıçta `setMyCommands` ile işlenir.
+    Telegram komut menüsü kaydı başlatma sırasında `setMyCommands` ile işlenir.
 
     Yerel komut varsayılanları:
 
-    - `commands.native: "auto"`, Telegram için yerel komutları etkinleştirir
+    - `commands.native: "auto"` Telegram için yerel komutları etkinleştirir
 
     Özel komut menüsü girdileri ekleyin:
 
@@ -433,28 +484,28 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
     Kurallar:
 
-    - adlar normalleştirilir (başındaki `/` kaldırılır, küçük harfe çevrilir)
-    - geçerli kalıp: `a-z`, `0-9`, `_`, uzunluk `1..32`
+    - adlar normalize edilir (baştaki `/` kaldırılır, küçük harfe çevrilir)
+    - geçerli örüntü: `a-z`, `0-9`, `_`, uzunluk `1..32`
     - özel komutlar yerel komutları geçersiz kılamaz
-    - çakışmalar/çoğaltmalar atlanır ve günlüğe kaydedilir
+    - çakışmalar/yinelenenler atlanır ve günlüğe yazılır
 
     Notlar:
 
     - özel komutlar yalnızca menü girdileridir; davranışı otomatik olarak uygulamazlar
-    - Plugin/skill komutları, Telegram menüsünde gösterilmese bile yazıldığında çalışmaya devam edebilir
+    - Plugin/Skills komutları Telegram menüsünde gösterilmese bile yazıldığında çalışabilir
 
-    Yerel komutlar devre dışı bırakılırsa yerleşikler kaldırılır. Özel/Plugin komutları, yapılandırılmışsa yine de kaydolabilir.
+    Yerel komutlar devre dışıysa yerleşikler kaldırılır. Özel/Plugin komutları yapılandırıldıysa yine de kaydedilebilir.
 
     Yaygın kurulum hataları:
 
-    - `BOT_COMMANDS_TOO_MUCH` ile `setMyCommands failed`, Telegram menüsünün kırpmadan sonra hâlâ taştığı anlamına gelir; Plugin/skill/özel komutları azaltın veya `channels.telegram.commands.native` ayarını devre dışı bırakın.
-    - Doğrudan Bot API curl komutları çalışırken `deleteWebhook`, `deleteMyCommands` veya `setMyCommands` işlemlerinin `404: Not Found` ile başarısız olması, `channels.telegram.apiRoot` değerinin tam `/bot<TOKEN>` uç noktasına ayarlandığı anlamına gelebilir. `apiRoot` yalnızca Bot API kökü olmalıdır ve `openclaw doctor --fix` yanlışlıkla eklenmiş sondaki `/bot<TOKEN>` bölümünü kaldırır.
-    - `getMe returned 401`, Telegram'ın yapılandırılmış bot token'ını reddettiği anlamına gelir. `botToken`, `tokenFile` veya `TELEGRAM_BOT_TOKEN` değerini güncel BotFather token'ı ile güncelleyin; OpenClaw yoklamadan önce durur, bu nedenle bu bir Webhook temizleme hatası olarak bildirilmez.
-    - Ağ/fetch hatalarıyla `setMyCommands failed` genellikle `api.telegram.org` adresine giden DNS/HTTPS'in engellendiği anlamına gelir.
+    - `BOT_COMMANDS_TOO_MUCH` ile `setMyCommands failed`, kırpma sonrasında Telegram menüsünün hâlâ taştığı anlamına gelir; Plugin/Skills/özel komutları azaltın veya `channels.telegram.commands.native` devre dışı bırakın.
+    - Doğrudan Bot API curl komutları çalışırken `deleteWebhook`, `deleteMyCommands` veya `setMyCommands` işlemlerinin `404: Not Found` ile başarısız olması, `channels.telegram.apiRoot` değerinin tam `/bot<TOKEN>` endpoint'ine ayarlandığı anlamına gelebilir. `apiRoot` yalnızca Bot API kökü olmalıdır ve `openclaw doctor --fix` yanlışlıkla eklenmiş sondaki `/bot<TOKEN>` kısmını kaldırır.
+    - `getMe returned 401`, Telegram'ın yapılandırılmış bot token'ını reddettiği anlamına gelir. `botToken`, `tokenFile` veya `TELEGRAM_BOT_TOKEN` değerini güncel BotFather token'ıyla güncelleyin; OpenClaw yoklamadan önce durur, bu nedenle bu bir Webhook temizleme hatası olarak bildirilmez.
+    - Ağ/fetch hatalarıyla `setMyCommands failed`, genellikle `api.telegram.org` adresine giden DNS/HTTPS erişiminin engellendiği anlamına gelir.
 
-    ### Cihaz eşleştirme komutları (`device-pair` Plugin'i)
+    ### Cihaz eşleme komutları (`device-pair` Plugin)
 
-    `device-pair` Plugin'i yüklü olduğunda:
+    `device-pair` Plugin yüklendiğinde:
 
     1. `/pair` kurulum kodu üretir
     2. kodu iOS uygulamasına yapıştırın
@@ -462,9 +513,9 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     4. isteği onaylayın:
        - açık onay için `/pair approve <requestId>`
        - yalnızca bir bekleyen istek olduğunda `/pair approve`
-       - en yenisi için `/pair approve latest`
+       - en son istek için `/pair approve latest`
 
-    Kurulum kodu kısa ömürlü bir bootstrap token taşır. Yerleşik bootstrap devri, birincil node token'ını `scopes: []` konumunda tutar; devredilen herhangi bir operatör token'ı `operator.approvals`, `operator.read`, `operator.talk.secrets` ve `operator.write` ile sınırlı kalır. Bootstrap kapsam denetimleri rol öneklidir; bu yüzden bu operatör izin listesi yalnızca operatör isteklerini karşılar; operatör olmayan rollerin hâlâ kendi rol önekleri altında kapsamlara ihtiyacı vardır.
+    Kurulum kodu kısa ömürlü bir bootstrap token taşır. Yerleşik kurulum kodu bootstrap yalnızca node içindir: ilk bağlantı bekleyen bir node isteği oluşturur ve onaydan sonra Gateway `scopes: []` ile kalıcı bir node token'ı döndürür. Devredilmiş bir operatör token'ı döndürmez; operatör erişimi ayrı bir onaylanmış operatör eşlemesi veya token akışı gerektirir.
 
     Bir cihaz değişmiş kimlik doğrulama ayrıntılarıyla yeniden denerse (örneğin rol/kapsamlar/açık anahtar), önceki bekleyen istek geçersiz kılınır ve yeni istek farklı bir `requestId` kullanır. Onaylamadan önce `/pair pending` komutunu yeniden çalıştırın.
 
@@ -513,7 +564,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     - `all`
     - `allowlist` (varsayılan)
 
-    Eski `capabilities: ["inlineButtons"]`, `inlineButtons: "all"` değerine eşlenir.
+    Eski `capabilities: ["inlineButtons"]`, `inlineButtons: "all"` ile eşleşir.
 
     Mesaj eylemi örneği:
 
@@ -533,23 +584,44 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Geri çağırma tıklamaları aracıya metin olarak geçirilir:
+    Mini App düğmesi örneği:
+
+```json5
+{
+  action: "send",
+  channel: "telegram",
+  to: "123456789",
+  message: "Open app:",
+  presentation: {
+    blocks: [
+      {
+        type: "buttons",
+        buttons: [{ label: "Launch", web_app: { url: "https://example.com/app" } }],
+      },
+    ],
+  },
+}
+```
+
+    Telegram `web_app` düğmeleri yalnızca bir kullanıcı ile bot arasındaki özel sohbetlerde çalışır.
+
+    Callback tıklamaları ajana metin olarak aktarılır:
     `callback_data: <value>`
 
   </Accordion>
 
-  <Accordion title="Aracılar ve otomasyon için Telegram mesaj eylemleri">
+  <Accordion title="Ajanlar ve otomasyon için Telegram mesaj eylemleri">
     Telegram araç eylemleri şunları içerir:
 
     - `sendMessage` (`to`, `content`, isteğe bağlı `mediaUrl`, `replyToMessageId`, `messageThreadId`)
     - `react` (`chatId`, `messageId`, `emoji`)
     - `deleteMessage` (`chatId`, `messageId`)
-    - `editMessage` (`chatId`, `messageId`, `content`)
+    - `editMessage` (`chatId`, `messageId`, `content` veya `caption`, isteğe bağlı `presentation` satır içi düğmeleri; yalnızca düğme düzenlemeleri yanıt işaretlemesini günceller)
     - `createForumTopic` (`chatId`, `name`, isteğe bağlı `iconColor`, `iconCustomEmojiId`)
 
-    Kanal mesaj eylemleri ergonomik takma adlar sunar (`send`, `react`, `delete`, `edit`, `sticker`, `sticker-search`, `topic-create`).
+    Kanal mesaj eylemleri kullanışlı takma adlar sunar (`send`, `react`, `delete`, `edit`, `sticker`, `sticker-search`, `topic-create`).
 
-    Kapılama denetimleri:
+    Kapı denetimleri:
 
     - `channels.telegram.actions.sendMessage`
     - `channels.telegram.actions.deleteMessage`
@@ -557,14 +629,14 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     - `channels.telegram.actions.sticker` (varsayılan: devre dışı)
 
     Not: `edit` ve `topic-create` şu anda varsayılan olarak etkindir ve ayrı `channels.telegram.actions.*` anahtarları yoktur.
-    Çalışma zamanı gönderimleri etkin yapılandırma/gizli bilgiler anlık görüntüsünü kullanır (başlangıç/yeniden yükleme), bu yüzden eylem yolları gönderim başına anlık SecretRef yeniden çözümlemesi yapmaz.
+    Çalışma zamanı gönderimleri etkin yapılandırma/gizli bilgiler anlık görüntüsünü (başlatma/yeniden yükleme) kullanır; bu nedenle eylem yolları gönderim başına geçici SecretRef yeniden çözümlemesi yapmaz.
 
     Tepki kaldırma semantiği: [/tools/reactions](/tr/tools/reactions)
 
   </Accordion>
 
-  <Accordion title="Yanıt dizilimi etiketleri">
-    Telegram, oluşturulan çıktıda açık yanıt dizilimi etiketlerini destekler:
+  <Accordion title="Yanıt iş parçacığı etiketleri">
+    Telegram, oluşturulan çıktıda açık yanıt iş parçacığı etiketlerini destekler:
 
     - `[[reply_to_current]]` tetikleyen mesaja yanıt verir
     - `[[reply_to:<id>]]` belirli bir Telegram mesaj kimliğine yanıt verir
@@ -575,29 +647,30 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     - `first`
     - `all`
 
-    Yanıt dizilimi etkinleştirildiğinde ve özgün Telegram metni veya açıklaması kullanılabilir olduğunda, OpenClaw otomatik olarak yerel bir Telegram alıntı parçası ekler. Telegram yerel alıntı metnini 1024 UTF-16 kod birimiyle sınırlar; bu nedenle daha uzun mesajlar baştan alıntılanır ve Telegram alıntıyı reddederse düz yanıta geri döner.
+    Yanıt iş parçacığı etkin olduğunda ve özgün Telegram metni ya da açıklaması kullanılabilir olduğunda, OpenClaw otomatik olarak yerel bir Telegram alıntı parçası ekler. Telegram yerel alıntı metnini 1024 UTF-16 kod birimiyle sınırlar; bu nedenle daha uzun mesajlar baştan alıntılanır ve Telegram alıntıyı reddederse düz yanıta geri döner.
 
-    Not: `off`, örtük yanıt dizilimini devre dışı bırakır. Açık `[[reply_to_*]]` etiketleri yine de dikkate alınır.
+    Not: `off`, örtük yanıt iş parçacığını devre dışı bırakır. Açık `[[reply_to_*]]` etiketleri yine de dikkate alınır.
 
   </Accordion>
 
-  <Accordion title="Forum konuları ve ileti dizisi davranışı">
+  <Accordion title="Forum konuları ve iş parçacığı davranışı">
     Forum süper grupları:
 
-    - konu oturumu anahtarları `:topic:<threadId>` ekler
-    - yanıtlar ve yazıyor eylemi konu ileti dizisini hedefler
+    - konu oturum anahtarları `:topic:<threadId>` ekler
+    - yanıtlar ve yazma durumu konu iş parçacığını hedefler
     - konu yapılandırma yolu:
       `channels.telegram.groups.<chatId>.topics.<threadId>`
 
     Genel konu (`threadId=1`) özel durumu:
 
-    - mesaj gönderimleri `message_thread_id` öğesini çıkarır (Telegram `sendMessage(...thread_id=1)` çağrısını reddeder)
-    - yazıyor eylemleri yine de `message_thread_id` içerir
+    - mesaj gönderimleri `message_thread_id` içermez (Telegram `sendMessage(...thread_id=1)` değerini reddeder)
+    - yazma eylemleri yine de `message_thread_id` içerir
 
-    Konu mirası: konu girdileri, geçersiz kılınmadıkça grup ayarlarını devralır (`requireMention`, `allowFrom`, `skills`, `systemPrompt`, `enabled`, `groupPolicy`).
+    Konu devralma: konu girdileri, geçersiz kılınmadıkça grup ayarlarını devralır (`requireMention`, `allowFrom`, `skills`, `systemPrompt`, `enabled`, `groupPolicy`).
     `agentId` yalnızca konuya özeldir ve grup varsayılanlarından devralınmaz.
+    `topics."*"`, o gruptaki her konu için varsayılanları ayarlar; kesin konu kimlikleri yine de `"*"` değerine göre önceliklidir.
 
-    **Konu başına aracı yönlendirme**: Her konu, konu yapılandırmasında `agentId` ayarlanarak farklı bir aracıya yönlendirilebilir. Bu, her konuya kendi yalıtılmış çalışma alanını, belleğini ve oturumunu verir. Örnek:
+    **Konu başına ajan yönlendirme**: Her konu, konu yapılandırmasında `agentId` ayarlanarak farklı bir ajana yönlendirilebilir. Bu, her konuya kendi yalıtılmış çalışma alanını, belleğini ve oturumunu verir. Örnek:
 
     ```json5
     {
@@ -617,24 +690,25 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     }
     ```
 
-    Ardından her konu kendi oturum anahtarına sahip olur: `agent:zu:telegram:group:-1001234567890:topic:3`
+    Her konunun daha sonra kendi oturum anahtarı olur: `agent:zu:telegram:group:-1001234567890:topic:3`
 
-    **Kalıcı ACP konu bağlama**: Forum konuları, üst düzey türlendirilmiş ACP bağlamaları aracılığıyla ACP harness oturumlarını sabitleyebilir (`type: "acp"` ve `match.channel: "telegram"`, `peer.kind: "group"` içeren `bindings[]` ve `-1001234567890:topic:42` gibi konu nitelemeli bir kimlik). Şu anda gruplardaki/süper gruplardaki forum konularıyla sınırlıdır. Bkz. [ACP Aracıları](/tr/tools/acp-agents).
+    **Kalıcı ACP konu bağlama**: Forum konuları, üst düzey yazılı ACP bağlamaları aracılığıyla ACP harness oturumlarını sabitleyebilir (`type: "acp"` ve `match.channel: "telegram"`, `peer.kind: "group"` içeren `bindings[]` ve `-1001234567890:topic:42` gibi konu nitelikli bir kimlik). Şu anda gruplardaki/süper gruplardaki forum konularıyla sınırlıdır. Bkz. [ACP Ajanları](/tr/tools/acp-agents).
 
-    **Sohbetten iş parçacığına bağlı ACP başlatma**: `/acp spawn <agent> --thread here|auto` mevcut konuyu yeni bir ACP oturumuna bağlar; devam iletileri doğrudan oraya yönlendirilir. OpenClaw başlatma onayını konu içinde sabitler. `channels.telegram.threadBindings.spawnSessions` etkin kalmalıdır (varsayılan: `true`).
+    **Sohbetten iş parçacığına bağlı ACP başlatma**: `/acp spawn <agent> --thread here|auto`, geçerli konuyu yeni bir ACP oturumuna bağlar; sonraki iletiler doğrudan oraya yönlendirilir. OpenClaw başlatma onayını konu içinde sabitler. `channels.telegram.threadBindings.spawnSessions` etkin kalmasını gerektirir (varsayılan: `true`).
 
-    Şablon bağlamı `MessageThreadId` ve `IsForum` değerlerini açığa çıkarır. `message_thread_id` içeren DM sohbetleri varsayılan olarak DM yönlendirmesini ve yanıt meta verilerini düz oturumlarda tutar; iş parçacığına duyarlı oturum anahtarlarını yalnızca `threadReplies: "inbound"`, `threadReplies: "always"`, `requireTopic: true` veya eşleşen bir konu yapılandırmasıyla yapılandırıldıklarında kullanırlar. Hesap varsayılanı için üst düzey `channels.telegram.dm.threadReplies` değerini veya tek bir DM için `direct.<chatId>.threadReplies` değerini kullanın.
+    Şablon bağlamı `MessageThreadId` ve `IsForum` değerlerini sunar. `message_thread_id` içeren DM sohbetleri yanıt meta verilerini korur; iş parçacığına duyarlı oturum anahtarlarını yalnızca Telegram `getMe`, bot için `has_topics_enabled: true` bildirdiğinde kullanırlar.
+    Önceki `dm.threadReplies` ve `direct.*.threadReplies` geçersiz kılmaları kasıtlı olarak kullanımdan kaldırılmıştır; tek doğruluk kaynağı olarak BotFather iş parçacıklı modunu kullanın ve eski yapılandırma anahtarlarını kaldırmak için `openclaw doctor --fix` çalıştırın.
 
   </Accordion>
 
   <Accordion title="Ses, video ve çıkartmalar">
     ### Ses mesajları
 
-    Telegram, sesli notlar ile ses dosyalarını ayırt eder.
+    Telegram, sesli notları ve ses dosyalarını ayırt eder.
 
     - varsayılan: ses dosyası davranışı
-    - sesli not gönderimini zorlamak için aracı yanıtında `[[audio_as_voice]]` etiketi
-    - gelen sesli not dökümleri, aracı bağlamında makine tarafından üretilmiş,
+    - sesli not gönderimini zorlamak için ajan yanıtında `[[audio_as_voice]]` etiketi
+    - gelen sesli not dökümleri, ajan bağlamında makine tarafından oluşturulmuş,
       güvenilmeyen metin olarak çerçevelenir; bahsetme algılama yine de ham
       dökümü kullanır, böylece bahsetme kapılı sesli mesajlar çalışmaya devam eder.
 
@@ -652,7 +726,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
     ### Video mesajları
 
-    Telegram, video dosyaları ile video notlarını ayırt eder.
+    Telegram video dosyalarını video notlarından ayırır.
 
     Mesaj eylemi örneği:
 
@@ -666,7 +740,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Video notları altyazıları desteklemez; sağlanan mesaj metni ayrı olarak gönderilir.
+    Video notları açıklama metinlerini desteklemez; sağlanan mesaj metni ayrı gönderilir.
 
     ### Çıkartmalar
 
@@ -684,13 +758,9 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     - `Sticker.fileUniqueId`
     - `Sticker.cachedDescription`
 
-    Çıkartma önbellek dosyası:
+    Yinelenen görüntü çağrılarını azaltmak için çıkartma açıklamaları OpenClaw SQLite plugin durumunda önbelleğe alınır.
 
-    - `~/.openclaw/telegram/sticker-cache.json`
-
-    Çıkartmalar bir kez açıklanır (mümkün olduğunda) ve yinelenen görsel çağrılarını azaltmak için önbelleğe alınır.
-
-    Çıkartma eylemlerini etkinleştirin:
+    Çıkartma eylemlerini etkinleştirme:
 
 ```json5
 {
@@ -715,7 +785,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Önbelleğe alınmış çıkartmaları arayın:
+    Önbelleğe alınmış çıkartmaları arama:
 
 ```json5
 {
@@ -731,7 +801,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
   <Accordion title="Tepki bildirimleri">
     Telegram tepkileri `message_reaction` güncellemeleri olarak gelir (mesaj yüklerinden ayrıdır).
 
-    Etkinleştirildiğinde OpenClaw şu tür sistem olaylarını kuyruğa alır:
+    Etkinleştirildiğinde OpenClaw aşağıdaki gibi sistem olaylarını kuyruğa alır:
 
     - `Telegram reaction added: 👍 by Alice (@alice) on msg 42`
 
@@ -742,20 +812,20 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
     Notlar:
 
-    - `own`, yalnızca bot tarafından gönderilen mesajlara kullanıcı tepkileri anlamına gelir (gönderilen mesaj önbelleği üzerinden en iyi çaba).
-    - Tepki olayları yine de Telegram erişim kontrollerine uyar (`dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`); yetkisiz gönderenler düşürülür.
-    - Telegram, tepki güncellemelerinde iş parçacığı kimlikleri sağlamaz.
-      - forum olmayan gruplar grup sohbeti oturumuna yönlendirilir
-      - forum grupları, tam kaynak konuya değil, grubun genel konu oturumuna (`:topic:1`) yönlendirilir
+    - `own`, yalnızca bot tarafından gönderilen mesajlara kullanıcı tepkileri anlamına gelir (gönderilen mesaj önbelleği üzerinden en iyi çabayla).
+    - Tepki olayları yine de Telegram erişim denetimlerine uyar (`dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`); yetkisiz gönderenler düşürülür.
+    - Telegram, tepki güncellemelerinde konu kimlikleri sağlamaz.
+      - forum dışı gruplar grup sohbeti oturumuna yönlendirilir
+      - forum grupları, tam kaynak konuya değil grubun genel konu oturumuna (`:topic:1`) yönlendirilir
 
-    Yoklama/Webhook için `allowed_updates` otomatik olarak `message_reaction` içerir.
+    Polling/webhook için `allowed_updates`, `message_reaction` değerini otomatik olarak içerir.
 
   </Accordion>
 
-  <Accordion title="Ack tepkileri">
-    `ackReaction`, OpenClaw gelen bir mesajı işlerken bir onay emojisi gönderir.
+  <Accordion title="Onay tepkileri">
+    `ackReaction`, OpenClaw gelen bir mesajı işlerken bir onay emojisi gönderir. `ackReactionScope`, bu emojinin gerçekte *ne zaman* gönderileceğine karar verir.
 
-    Çözümleme sırası:
+    **Emoji (`ackReaction`) çözümleme sırası:**
 
     - `channels.telegram.accounts.<accountId>.ackReaction`
     - `channels.telegram.ackReaction`
@@ -767,10 +837,20 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     - Telegram unicode emoji bekler (örneğin "👀").
     - Bir kanal veya hesap için tepkiyi devre dışı bırakmak üzere `""` kullanın.
 
+    **Kapsam (`messages.ackReactionScope`):**
+
+    Telegram provider kapsamı `messages.ackReactionScope` değerinden okur (varsayılan `"group-mentions"`). Bugün Telegram hesabı veya Telegram kanalı düzeyinde geçersiz kılma yoktur.
+
+    Değerler: `"all"` (DM'ler + gruplar), `"direct"` (yalnızca DM'ler), `"group-all"` (her grup mesajı, DM yok), `"group-mentions"` (botun bahsedildiği gruplar; **DM yok** — varsayılan budur), `"off"` / `"none"` (devre dışı).
+
+    <Note>
+    Varsayılan kapsam (`"group-mentions"`) doğrudan mesajlarda onay tepkilerini tetiklemez. Gelen Telegram DM'lerinde onay tepkisi almak için `messages.ackReactionScope` değerini `"direct"` veya `"all"` olarak ayarlayın. Değer Telegram provider başlangıcında okunur, bu nedenle değişikliğin etkili olması için gateway yeniden başlatması gerekir.
+    </Note>
+
   </Accordion>
 
-  <Accordion title="Telegram olayları ve komutlarından yapılandırma yazımları">
-    Kanal yapılandırma yazımları varsayılan olarak etkindir (`configWrites !== false`).
+  <Accordion title="Telegram olaylarından ve komutlarından yapılandırma yazımları">
+    Kanal yapılandırması yazımları varsayılan olarak etkindir (`configWrites !== false`).
 
     Telegram tarafından tetiklenen yazımlar şunları içerir:
 
@@ -791,34 +871,34 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
   </Accordion>
 
-  <Accordion title="Uzun yoklama ve Webhook">
-    Varsayılan uzun yoklamadır. Webhook modu için `channels.telegram.webhookUrl` ve `channels.telegram.webhookSecret` değerlerini ayarlayın; isteğe bağlı olarak `webhookPath`, `webhookHost`, `webhookPort` (varsayılanlar `/telegram-webhook`, `127.0.0.1`, `8787`).
+  <Accordion title="Uzun polling ve Webhook">
+    Varsayılan uzun polling kullanımıdır. Webhook modu için `channels.telegram.webhookUrl` ve `channels.telegram.webhookSecret` ayarlayın; isteğe bağlı olarak `webhookPath`, `webhookHost`, `webhookPort` (varsayılanlar `/telegram-webhook`, `127.0.0.1`, `8787`).
 
-    Uzun yoklama modunda OpenClaw, yeniden başlatma filigranını yalnızca bir güncelleme başarıyla dağıtıldıktan sonra kalıcı hale getirir. Bir işleyici başarısız olursa bu güncelleme aynı süreçte yeniden denenebilir durumda kalır ve yeniden başlatma tekilleştirmesi için tamamlanmış olarak yazılmaz.
+    Uzun polling modunda OpenClaw yeniden başlatma filigranını yalnızca bir güncelleme başarıyla dağıtıldıktan sonra kalıcı hale getirir. Bir işleyici başarısız olursa bu güncelleme aynı süreçte yeniden denenebilir kalır ve yeniden başlatma tekilleştirmesi için tamamlanmış olarak yazılmaz.
 
     Yerel dinleyici `127.0.0.1:8787` adresine bağlanır. Genel giriş için yerel bağlantı noktasının önüne bir ters proxy koyun veya bilinçli olarak `webhookHost: "0.0.0.0"` ayarlayın.
 
     Webhook modu, Telegram'a `200` döndürmeden önce istek korumalarını, Telegram gizli belirtecini ve JSON gövdesini doğrular.
-    OpenClaw ardından güncellemeyi uzun yoklamanın kullandığı aynı sohbet başına/konu başına bot hatları üzerinden eşzamansız olarak işler; böylece yavaş aracı dönüşleri Telegram'ın teslim ACK değerini bekletmez.
+    Ardından OpenClaw güncellemeyi, uzun polling tarafından kullanılan aynı sohbet başına/konu başına bot hatları üzerinden asenkron olarak işler; böylece yavaş aracı turları Telegram'ın teslimat ACK'sini bekletmez.
 
   </Accordion>
 
   <Accordion title="Sınırlar, yeniden deneme ve CLI hedefleri">
     - `channels.telegram.textChunkLimit` varsayılanı 4000'dir.
-    - `channels.telegram.chunkMode="newline"`, uzunluğa göre bölmeden önce paragraf sınırlarını (boş satırlar) tercih eder.
+    - `channels.telegram.chunkMode="newline"` uzunluğa göre bölmeden önce paragraf sınırlarını (boş satırlar) tercih eder.
     - `channels.telegram.mediaMaxMb` (varsayılan 100), gelen ve giden Telegram medya boyutunu sınırlar.
-    - `channels.telegram.mediaGroupFlushMs` (varsayılan 500), OpenClaw bunları tek bir gelen mesaj olarak dağıtmadan önce Telegram albümlerinin/medya gruplarının ne kadar süre arabelleğe alınacağını denetler. Albüm parçaları geç geliyorsa artırın; albüm yanıt gecikmesini azaltmak için düşürün.
-    - `channels.telegram.timeoutSeconds`, Telegram API istemcisi zaman aşımını geçersiz kılar (ayarlanmazsa grammY varsayılanı geçerlidir). Bot istemcileri, yapılandırılan değerleri 60 saniyelik giden metin/yazıyor isteği korumasının altına sıkıştırır; böylece grammY, OpenClaw'ın aktarım koruması ve yedeği çalışmadan önce görünür yanıt teslimini iptal etmez. Uzun yoklama yine de 45 saniyelik `getUpdates` isteği koruması kullanır, böylece boşta yoklamalar süresiz olarak terk edilmez.
-    - `channels.telegram.pollingStallThresholdMs` varsayılan olarak `120000` değerindedir; yalnızca yanlış pozitif yoklama-durması yeniden başlatmaları için `30000` ile `600000` arasında ayarlayın.
+    - `channels.telegram.mediaGroupFlushMs` (varsayılan 500), Telegram albümlerinin/medya gruplarının OpenClaw bunları tek bir gelen mesaj olarak göndermeden önce ne kadar süre arabelleğe alınacağını kontrol eder. Albüm parçaları geç geliyorsa artırın; albüm yanıt gecikmesini azaltmak için düşürün.
+    - `channels.telegram.timeoutSeconds`, Telegram API istemcisi zaman aşımını geçersiz kılar (ayarlanmazsa grammY varsayılanı uygulanır). Bot istemcileri, yapılandırılan değerleri 60 saniyelik giden metin/yazıyor isteği korumasının altında sınırlar; böylece grammY, OpenClaw'ın taşıma koruması ve fallback'i çalışmadan önce görünür yanıt teslimini iptal etmez. Uzun yoklama, boşta kalan yoklamaların süresiz terk edilmemesi için yine 45 saniyelik bir `getUpdates` isteği koruması kullanır.
+    - `channels.telegram.pollingStallThresholdMs` varsayılan olarak `120000` değerini kullanır; yalnızca yanlış pozitif yoklama-takılması yeniden başlatmaları için `30000` ile `600000` arasında ayarlayın.
     - grup bağlam geçmişi `channels.telegram.historyLimit` veya `messages.groupChat.historyLimit` kullanır (varsayılan 50); `0` devre dışı bırakır.
-    - yanıt/alıntı/iletme ek bağlamı, Gateway üst mesajları gözlemlediğinde seçili tek bir konuşma bağlam penceresine normalleştirilir; gözlemlenen mesaj önbelleği oturum deposunun yanında kalıcı hale getirilir. Telegram güncellemelerde yalnızca tek bir sığ `reply_to_message` içerir; bu nedenle önbellekten daha eski zincirler Telegram'ın mevcut güncelleme yüküyle sınırlıdır.
-    - Telegram izin listeleri öncelikle aracıyı kimin tetikleyebileceğini kapılar; tam bir ek bağlam redaksiyon sınırı değildir.
-    - DM geçmiş denetimleri:
+    - yanıt/alıntı/iletme ek bağlamı, Gateway üst mesajları gözlemlemişse tek bir seçili konuşma bağlam penceresine normalleştirilir; gözlemlenen mesaj önbelleği OpenClaw SQLite Plugin durumunda yaşar ve `openclaw doctor --fix` eski sidecar'ları içe aktarır. Telegram güncellemelerde yalnızca tek bir sığ `reply_to_message` içerir; bu nedenle önbellekten daha eski zincirler Telegram'ın mevcut güncelleme yüküyle sınırlıdır.
+    - Telegram izin listeleri esas olarak ajanı kimin tetikleyebileceğini denetler; tam bir ek bağlam redaksiyon sınırı değildir.
+    - DM geçmişi kontrolleri:
       - `channels.telegram.dmHistoryLimit`
       - `channels.telegram.dms["<user_id>"].historyLimit`
-    - `channels.telegram.retry` yapılandırması, kurtarılabilir giden API hataları için Telegram gönderme yardımcılarına (CLI/araçlar/eylemler) uygulanır. Gelen son-yanıt teslimi de Telegram ön bağlantı hataları için sınırlı bir güvenli-gönder yeniden denemesi kullanır, ancak görünür mesajları çoğaltabilecek belirsiz gönderim sonrası ağ zarflarını yeniden denemez.
+    - `channels.telegram.retry` yapılandırması, kurtarılabilir giden API hataları için Telegram gönderme yardımcılarına (CLI/araçlar/eylemler) uygulanır. Gelen son yanıt teslimi de Telegram bağlantı öncesi hataları için sınırlı bir güvenli-gönder yeniden denemesi kullanır, ancak görünür mesajları çoğaltabilecek belirsiz gönderim sonrası ağ zarflarını yeniden denemez.
 
-    CLI ve mesaj aracı gönderme hedefleri sayısal sohbet kimliği, kullanıcı adı veya bir forum konusu hedefi olabilir:
+    CLI ve mesaj aracı gönderme hedefleri sayısal sohbet ID'si, kullanıcı adı veya forum konu hedefi olabilir:
 
 ```bash
 openclaw message send --channel telegram --target 123456789 --message "hi"
@@ -843,50 +923,50 @@ openclaw message poll --channel telegram --target -1001234567890:topic:42 \
     - `--poll-public`
     - forum konuları için `--thread-id` (veya bir `:topic:` hedefi kullanın)
 
-    Telegram gönderimi ayrıca şunları destekler:
+    Telegram gönderimi şunları da destekler:
 
     - `channels.telegram.capabilities.inlineButtons` izin verdiğinde satır içi klavyeler için `buttons` bloklarıyla `--presentation`
-    - bot o sohbette sabitleyebildiğinde sabitlenmiş teslim istemek için `--pin` veya `--delivery '{"pin":true}'`
-    - giden görüntüleri, GIF'leri ve videoları sıkıştırılmış fotoğraf, animasyonlu medya veya video yüklemeleri yerine belge olarak göndermek için `--force-document`
+    - bot o sohbette sabitleyebiliyorsa sabitlenmiş teslim istemek için `--pin` veya `--delivery '{"pin":true}'`
+    - giden görselleri, GIF'leri ve videoları sıkıştırılmış fotoğraf, animasyonlu-medya veya video yüklemeleri yerine belge olarak göndermek için `--force-document`
 
-    Eylem kapılama:
+    Eylem denetimi:
 
     - `channels.telegram.actions.sendMessage=false`, yoklamalar dahil giden Telegram mesajlarını devre dışı bırakır
-    - `channels.telegram.actions.poll=false`, normal gönderimleri etkin bırakarak Telegram yoklaması oluşturmayı devre dışı bırakır
+    - `channels.telegram.actions.poll=false`, normal gönderimleri etkin bırakırken Telegram yoklaması oluşturmayı devre dışı bırakır
 
   </Accordion>
 
   <Accordion title="Telegram'da exec onayları">
-    Telegram, onaylayıcı DM'lerinde exec onaylarını destekler ve isteğe bağlı olarak istemleri kaynak sohbet veya konuya gönderebilir. Onaylayıcılar sayısal Telegram kullanıcı kimlikleri olmalıdır.
+    Telegram, onaylayıcı DM'lerinde exec onaylarını destekler ve isteğe bağlı olarak kaynak sohbete veya konuya istemler gönderebilir. Onaylayıcılar sayısal Telegram kullanıcı ID'leri olmalıdır.
 
     Yapılandırma yolu:
 
-    - `channels.telegram.execApprovals.enabled` (en az bir onaylayıcı çözümlenebilir olduğunda otomatik etkinleşir)
-    - `channels.telegram.execApprovals.approvers` (`commands.ownerAllowFrom` içindeki sayısal sahip kimliklerine geri döner)
+    - `channels.telegram.execApprovals.enabled` (en az bir onaylayıcı çözümlenebildiğinde otomatik etkinleşir)
+    - `channels.telegram.execApprovals.approvers` (`commands.ownerAllowFrom` içindeki sayısal sahip ID'lerine fallback yapar)
     - `channels.telegram.execApprovals.target`: `dm` (varsayılan) | `channel` | `both`
     - `agentFilter`, `sessionFilter`
 
-    `channels.telegram.allowFrom`, `groupAllowFrom` ve `defaultTo`, botla kimin konuşabileceğini ve normal yanıtları nereye göndereceğini denetler. Birini exec onaylayıcısı yapmazlar. Henüz komut sahibi yoksa ilk onaylanmış DM eşleştirmesi `commands.ownerAllowFrom` değerini önyükler; böylece tek sahipli kurulum, `execApprovals.approvers` altında kimlikleri çoğaltmadan çalışmaya devam eder.
+    `channels.telegram.allowFrom`, `groupAllowFrom` ve `defaultTo`, botla kimin konuşabileceğini ve normal yanıtları nereye göndereceğini kontrol eder. Bunlar birini exec onaylayıcısı yapmaz. İlk onaylı DM eşleştirmesi, henüz komut sahibi yoksa `commands.ownerAllowFrom` değerini başlatır; böylece tek sahipli kurulum, ID'leri `execApprovals.approvers` altında çoğaltmadan çalışmaya devam eder.
 
-    Kanal teslimi komut metnini sohbette gösterir; `channel` veya `both` değerlerini yalnızca güvenilen gruplarda/konularda etkinleştirin. İstem bir forum konusuna ulaştığında OpenClaw, onay istemi ve devam iletisi için konuyu korur. Exec onayları varsayılan olarak 30 dakika sonra sona erer.
+    Kanal teslimi komut metnini sohbette gösterir; `channel` veya `both` değerini yalnızca güvenilir gruplarda/konularda etkinleştirin. İstem bir forum konusuna düştüğünde OpenClaw, onay istemi ve takip mesajı için konuyu korur. Exec onayları varsayılan olarak 30 dakika sonra sona erer.
 
-    Satır içi onay düğmeleri ayrıca hedef yüzeye (`dm`, `group` veya `all`) izin vermesi için `channels.telegram.capabilities.inlineButtons` gerektirir. `plugin:` önekli onay kimlikleri Plugin onayları üzerinden çözümlenir; diğerleri önce exec onayları üzerinden çözümlenir.
+    Satır içi onay düğmeleri ayrıca `channels.telegram.capabilities.inlineButtons` değerinin hedef yüzeye (`dm`, `group` veya `all`) izin vermesini gerektirir. `plugin:` ön ekli onay ID'leri Plugin onayları üzerinden çözümlenir; diğerleri önce exec onayları üzerinden çözümlenir.
 
     Bkz. [Exec onayları](/tr/tools/exec-approvals).
 
   </Accordion>
 </AccordionGroup>
 
-## Hata yanıtı denetimleri
+## Hata yanıtı kontrolleri
 
-Aracı bir teslim veya sağlayıcı hatasıyla karşılaştığında, Telegram hata metniyle yanıt verebilir ya da bunu bastırabilir. Bu davranışı iki yapılandırma anahtarı denetler:
+Ajan bir teslim veya sağlayıcı hatasıyla karşılaştığında Telegram hata metniyle yanıt verebilir ya da bunu bastırabilir. Bu davranışı iki yapılandırma anahtarı kontrol eder:
 
-| Anahtar                             | Değerler          | Varsayılan | Açıklama                                                                                              |
-| ----------------------------------- | ----------------- | ---------- | ----------------------------------------------------------------------------------------------------- |
-| `channels.telegram.errorPolicy`     | `reply`, `silent` | `reply`    | `reply` sohbete kullanıcı dostu bir hata mesajı gönderir. `silent` hata yanıtlarını tamamen bastırır. |
-| `channels.telegram.errorCooldownMs` | sayı (ms)         | `60000`    | Aynı sohbete hata yanıtları arasındaki minimum süre. Kesintiler sırasında hata spam'ini önler.        |
+| Anahtar                            | Değerler          | Varsayılan | Açıklama                                                                                      |
+| ---------------------------------- | ----------------- | ---------- | --------------------------------------------------------------------------------------------- |
+| `channels.telegram.errorPolicy`     | `reply`, `silent` | `reply`    | `reply`, sohbete dostça bir hata mesajı gönderir. `silent`, hata yanıtlarını tamamen bastırır. |
+| `channels.telegram.errorCooldownMs` | number (ms)       | `60000`    | Aynı sohbete hata yanıtları arasındaki en kısa süre. Kesintiler sırasında hata spam'ini önler. |
 
-Hesap başına, grup başına ve konu başına geçersiz kılmalar desteklenir (diğer Telegram yapılandırma anahtarlarıyla aynı kalıtım).
+Hesap, grup ve konu bazında geçersiz kılmalar desteklenir (diğer Telegram yapılandırma anahtarlarıyla aynı kalıtım).
 
 ```json5
 {
@@ -907,20 +987,20 @@ Hesap başına, grup başına ve konu başına geçersiz kılmalar desteklenir (
 ## Sorun giderme
 
 <AccordionGroup>
-  <Accordion title="Bot, etiketlenmeyen grup mesajlarına yanıt vermiyor">
+  <Accordion title="Bot, bahsedilmeden gönderilen grup mesajlarına yanıt vermiyor">
 
     - `requireMention=false` ise Telegram gizlilik modu tam görünürlüğe izin vermelidir.
-      - BotFather: `/setprivacy` -> Devre dışı bırak
+      - BotFather: `/setprivacy` -> Devre Dışı Bırak
       - ardından botu gruptan kaldırıp yeniden ekleyin
-    - Yapılandırma etiketsiz grup mesajları beklediğinde `openclaw channels status` uyarır.
-    - `openclaw channels status --probe` açık sayısal grup kimliklerini denetleyebilir; joker karakter `"*"` için üyelik yoklaması yapılamaz.
+    - Yapılandırma, bahsedilmemiş grup mesajları beklediğinde `openclaw channels status` uyarır.
+    - `openclaw channels status --probe` açık sayısal grup ID'lerini kontrol edebilir; joker karakter `"*"` için üyelik yoklaması yapılamaz.
     - hızlı oturum testi: `/activation always`.
 
   </Accordion>
 
   <Accordion title="Bot grup mesajlarını hiç görmüyor">
 
-    - `channels.telegram.groups` varsa grup listelenmelidir (veya `"*"` dahil edilmelidir)
+    - `channels.telegram.groups` varsa grup listelenmiş olmalıdır (veya `"*"` içermelidir)
     - botun gruptaki üyeliğini doğrulayın
     - atlama nedenleri için günlükleri inceleyin: `openclaw logs --follow`
 
@@ -928,35 +1008,35 @@ Hesap başına, grup başına ve konu başına geçersiz kılmalar desteklenir (
 
   <Accordion title="Komutlar kısmen çalışıyor veya hiç çalışmıyor">
 
-    - gönderen kimliğinizi yetkilendirin (eşleştirme ve/veya sayısal `allowFrom`)
-    - grup ilkesi `open` olsa bile komut yetkilendirmesi yine de geçerlidir
-    - `BOT_COMMANDS_TOO_MUCH` ile `setMyCommands failed`, yerel menüde çok fazla giriş olduğu anlamına gelir; Plugin/skill/özel komutlarını azaltın veya yerel menüleri devre dışı bırakın
-    - Başlangıçtaki `deleteMyCommands` / `setMyCommands` çağrıları ve `sendChatAction` yazıyor çağrıları sınırlandırılır ve istek zaman aşımında Telegram'ın aktarım yedeği üzerinden bir kez yeniden denenir. Kalıcı ağ/fetch hataları genellikle `api.telegram.org` için DNS/HTTPS erişilebilirliği sorunlarını gösterir
+    - gönderici kimliğinizi yetkilendirin (eşleştirme ve/veya sayısal `allowFrom`)
+    - grup ilkesi `open` olsa bile komut yetkilendirmesi yine uygulanır
+    - `setMyCommands failed` ile `BOT_COMMANDS_TOO_MUCH` hatası, yerel menüde çok fazla giriş olduğu anlamına gelir; Plugin/skill/özel komutları azaltın veya yerel menüleri devre dışı bırakın
+    - `deleteMyCommands` / `setMyCommands` başlangıç çağrıları ve `sendChatAction` yazıyor çağrıları sınırlıdır ve istek zaman aşımında Telegram'ın taşıma fallback'i üzerinden bir kez yeniden denenir. Kalıcı ağ/fetch hataları genellikle `api.telegram.org` için DNS/HTTPS erişilebilirlik sorunlarını gösterir
 
   </Accordion>
 
   <Accordion title="Başlangıç yetkisiz token bildiriyor">
 
-    - `getMe returned 401`, yapılandırılmış bot token'ı için bir Telegram kimlik doğrulama hatasıdır.
-    - BotFather içinde bot token'ını yeniden kopyalayın veya yeniden oluşturun, ardından varsayılan hesap için `channels.telegram.botToken`, `channels.telegram.tokenFile`, `channels.telegram.accounts.<id>.botToken` veya `TELEGRAM_BOT_TOKEN` değerini güncelleyin.
-    - Başlangıç sırasında `deleteWebhook 401 Unauthorized` da bir kimlik doğrulama hatasıdır; bunu "webhook yok" olarak ele almak, aynı hatalı token hatasını yalnızca sonraki API çağrılarına ertelemiş olur.
+    - `getMe returned 401`, yapılandırılan bot token'ı için bir Telegram kimlik doğrulama hatasıdır.
+    - BotFather'da bot token'ını yeniden kopyalayın veya yeniden oluşturun, ardından varsayılan hesap için `channels.telegram.botToken`, `channels.telegram.tokenFile`, `channels.telegram.accounts.<id>.botToken` veya `TELEGRAM_BOT_TOKEN` değerini güncelleyin.
+    - Başlangıç sırasında `deleteWebhook 401 Unauthorized` da bir kimlik doğrulama hatasıdır; bunu "webhook yok" olarak ele almak, aynı hatalı-token arızasını yalnızca daha sonraki API çağrılarına ertelemiş olur.
 
   </Accordion>
 
-  <Accordion title="Polling veya ağ kararsızlığı">
+  <Accordion title="Yoklama veya ağ kararsızlığı">
 
-    - Node 22+ + özel fetch/proxy, AbortSignal türleri uyuşmuyorsa anında abort davranışını tetikleyebilir.
-    - Bazı host'lar `api.telegram.org` adresini önce IPv6'ya çözer; bozuk IPv6 çıkışı aralıklı Telegram API hatalarına neden olabilir.
+    - Node 22+ ve özel fetch/proxy, AbortSignal türleri uyuşmazsa anında iptal davranışını tetikleyebilir.
+    - Bazı host'lar `api.telegram.org` adresini önce IPv6'ya çözümler; bozuk IPv6 çıkışı aralıklı Telegram API hatalarına neden olabilir.
     - Günlüklerde `TypeError: fetch failed` veya `Network request for 'getUpdates' failed!` varsa OpenClaw artık bunları kurtarılabilir ağ hataları olarak yeniden dener.
-    - Polling başlangıcı sırasında OpenClaw, başarılı başlangıç `getMe` yoklamasını grammY için yeniden kullanır; böylece runner ilk `getUpdates` öncesinde ikinci bir `getMe` çağrısına ihtiyaç duymaz.
-    - Polling başlangıcı sırasında `deleteWebhook` geçici bir ağ hatasıyla başarısız olursa OpenClaw başka bir polling öncesi kontrol düzlemi çağrısı yapmak yerine long polling'e devam eder. Hâlâ etkin olan bir webhook, `getUpdates` çakışması olarak görünür; OpenClaw ardından Telegram aktarımını yeniden oluşturur ve webhook temizliğini yeniden dener.
-    - Telegram soketleri kısa ve sabit bir aralıkla yenileniyorsa düşük bir `channels.telegram.timeoutSeconds` değeri olup olmadığını kontrol edin; bot istemcileri, yapılandırılmış değerleri giden istek ve `getUpdates` istek korumalarının altına düşmeyecek şekilde sınırlar, ancak eski sürümler bu değerler bu korumaların altındayken her polling veya yanıtı abort edebiliyordu.
-    - Günlüklerde `Polling stall detected` varsa OpenClaw varsayılan olarak 120 saniye boyunca tamamlanmış long-poll canlılığı olmadan polling'i yeniden başlatır ve Telegram aktarımını yeniden oluşturur.
-    - `openclaw channels status --probe` ve `openclaw doctor`, çalışan bir polling hesabı başlangıç toleransından sonra `getUpdates` tamamlamadığında, çalışan bir webhook hesabı başlangıç toleransından sonra `setWebhook` tamamlamadığında veya son başarılı polling aktarım etkinliği bayatladığında uyarır.
-    - `channels.telegram.pollingStallThresholdMs` değerini yalnızca uzun süren `getUpdates` çağrıları sağlıklıyken ancak host'unuz hâlâ yanlış polling-stall yeniden başlatmaları bildiriyorsa artırın. Kalıcı takılmalar genellikle host ile `api.telegram.org` arasındaki proxy, DNS, IPv6 veya TLS çıkış sorunlarına işaret eder.
-    - Telegram ayrıca Bot API aktarımı için `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` ve bunların küçük harfli varyantları dahil işlem proxy env değerlerini dikkate alır. `NO_PROXY` / `no_proxy` yine de `api.telegram.org` adresini atlayabilir.
-    - OpenClaw yönetimli proxy bir hizmet ortamı için `OPENCLAW_PROXY_URL` üzerinden yapılandırılmışsa ve standart proxy env yoksa Telegram da Bot API aktarımı için bu URL'yi kullanır.
-    - Kararsız doğrudan çıkış/TLS bulunan VPS host'larında Telegram API çağrılarını `channels.telegram.proxy` üzerinden yönlendirin:
+    - Yoklama başlangıcı sırasında OpenClaw, grammY için başarılı başlangıç `getMe` yoklamasını yeniden kullanır; böylece çalıştırıcının ilk `getUpdates` öncesinde ikinci bir `getMe` çağrısına ihtiyacı olmaz.
+    - Yoklama başlangıcı sırasında `deleteWebhook` geçici bir ağ hatasıyla başarısız olursa OpenClaw başka bir yoklama öncesi kontrol düzlemi çağrısı yapmak yerine uzun yoklamaya devam eder. Hâlâ etkin olan webhook bir `getUpdates` çakışması olarak yüzeye çıkar; ardından OpenClaw Telegram taşımasını yeniden oluşturur ve webhook temizliğini yeniden dener.
+    - Telegram soketleri kısa ve sabit bir aralıkla yeniden döngüye giriyorsa düşük bir `channels.telegram.timeoutSeconds` değeri olup olmadığını kontrol edin; bot istemcileri yapılandırılan değerleri giden ve `getUpdates` istek korumalarının altında sınırlar, ancak eski sürümler bu değer bu korumaların altında ayarlandığında her yoklamayı veya yanıtı iptal edebiliyordu.
+    - Günlüklerde `Polling stall detected` varsa OpenClaw, varsayılan olarak tamamlanmış uzun yoklama canlılığı olmadan geçen 120 saniyeden sonra yoklamayı yeniden başlatır ve Telegram taşımasını yeniden oluşturur.
+    - `openclaw channels status --probe` ve `openclaw doctor`, çalışan bir yoklama hesabı başlangıç toleransından sonra `getUpdates` tamamlamadıysa, çalışan bir webhook hesabı başlangıç toleransından sonra `setWebhook` tamamlamadıysa veya son başarılı yoklama taşıma etkinliği eskidiyse uyarır.
+    - `channels.telegram.pollingStallThresholdMs` değerini yalnızca uzun süren `getUpdates` çağrıları sağlıklı olduğu halde host'unuz yanlış yoklama-takılması yeniden başlatmaları bildiriyorsa artırın. Kalıcı takılmalar genellikle host ile `api.telegram.org` arasındaki proxy, DNS, IPv6 veya TLS çıkışı sorunlarına işaret eder.
+    - Telegram ayrıca Bot API taşıması için `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` ve bunların küçük harfli varyantları dahil süreç proxy ortam değişkenlerine uyar. `NO_PROXY` / `no_proxy` yine de `api.telegram.org` adresini atlatabilir.
+    - OpenClaw yönetimli proxy bir hizmet ortamı için `OPENCLAW_PROXY_URL` üzerinden yapılandırılmışsa ve standart proxy ortam değişkeni yoksa Telegram da Bot API taşıması için bu URL'yi kullanır.
+    - Kararsız doğrudan çıkış/TLS olan VPS host'larında Telegram API çağrılarını `channels.telegram.proxy` üzerinden yönlendirin:
 
 ```yaml
 channels:
@@ -964,7 +1044,7 @@ channels:
     proxy: socks5://<user>:<password>@proxy-host:1080
 ```
 
-    - Node 22+ varsayılan olarak `autoSelectFamily=true` kullanır (WSL2 hariç). Telegram DNS sonuç sırası önce `OPENCLAW_TELEGRAM_DNS_RESULT_ORDER`, sonra `channels.telegram.network.dnsResultOrder`, sonra `NODE_OPTIONS=--dns-result-order=ipv4first` gibi işlem varsayılanını izler; hiçbiri geçerli değilse Node 22+ `ipv4first` değerine geri döner.
+    - Node 22+ varsayılan olarak `autoSelectFamily=true` kullanır (WSL2 hariç). Telegram DNS sonuç sırası önce `OPENCLAW_TELEGRAM_DNS_RESULT_ORDER`, sonra `channels.telegram.network.dnsResultOrder`, ardından `NODE_OPTIONS=--dns-result-order=ipv4first` gibi süreç varsayılanına uyar; hiçbiri uygulanmazsa Node 22+ `ipv4first` değerine fallback yapar.
     - Host'unuz WSL2 ise veya açıkça yalnızca IPv4 davranışıyla daha iyi çalışıyorsa aile seçimini zorlayın:
 
 ```yaml
@@ -974,7 +1054,7 @@ channels:
       autoSelectFamily: false
 ```
 
-    - RFC 2544 kıyaslama aralığı yanıtlarına (`198.18.0.0/15`) Telegram medya indirmeleri için varsayılan olarak zaten izin verilir. Güvenilir bir fake-IP veya saydam proxy, medya indirmeleri sırasında `api.telegram.org` adresini başka bir private/internal/special-use adrese yeniden yazıyorsa yalnızca Telegram için geçerli bypass'a katılabilirsiniz:
+    - RFC 2544 kıyaslama aralığı yanıtlarına (`198.18.0.0/15`) Telegram medya indirmeleri için varsayılan olarak zaten izin verilir. Güvenilir bir sahte IP veya saydam proxy, medya indirmeleri sırasında `api.telegram.org` adresini başka bir özel/dahili/özel kullanımlı adrese yeniden yazıyorsa, yalnızca Telegram için geçerli atlamayı etkinleştirebilirsiniz:
 
 ```yaml
 channels:
@@ -983,13 +1063,18 @@ channels:
       dangerouslyAllowPrivateNetwork: true
 ```
 
-    - Aynı katılım hesap başına
-      `channels.telegram.accounts.<accountId>.network.dangerouslyAllowPrivateNetwork` altında da kullanılabilir.
-    - Proxy'niz Telegram medya host'larını `198.18.x.x` içine çözüyorsa önce tehlikeli bayrağı kapalı bırakın. Telegram medyası zaten varsayılan olarak RFC 2544 kıyaslama aralığına izin verir.
+    - Aynı etkinleştirme, hesap başına
+      `channels.telegram.accounts.<accountId>.network.dangerouslyAllowPrivateNetwork` konumunda da kullanılabilir.
+    - Proxy'niz Telegram medya ana bilgisayarlarını `198.18.x.x` olarak çözümlüyorsa, önce
+      tehlikeli bayrağı kapalı bırakın. Telegram medyası, RFC 2544
+      kıyaslama aralığına varsayılan olarak zaten izin verir.
 
     <Warning>
       `channels.telegram.network.dangerouslyAllowPrivateNetwork`, Telegram
-      medya SSRF korumalarını zayıflatır. Bunu yalnızca Clash, Mihomo veya Surge fake-IP yönlendirmesi gibi, RFC 2544 kıyaslama aralığı dışında private veya special-use yanıtlar üreten güvenilir, operatör kontrollü proxy ortamları için kullanın. Normal herkese açık internet Telegram erişimi için kapalı bırakın.
+      medya SSRF korumalarını zayıflatır. Bunu yalnızca Clash, Mihomo veya Surge
+      sahte IP yönlendirmesi gibi, RFC 2544 kıyaslama aralığı dışında özel veya
+      özel kullanımlı yanıtlar sentezleyen güvenilir operatör denetimli proxy
+      ortamlarında kullanın. Normal genel internet Telegram erişimi için kapalı bırakın.
     </Warning>
 
     - Ortam geçersiz kılmaları (geçici):
@@ -1012,18 +1097,19 @@ Daha fazla yardım: [Kanal sorun giderme](/tr/channels/troubleshooting).
 
 Birincil başvuru: [Yapılandırma başvurusu - Telegram](/tr/gateway/config-channels#telegram).
 
-<Accordion title="Yüksek sinyalli Telegram alanları">
+<Accordion title="High-signal Telegram fields">
 
-- başlangıç/kimlik doğrulama: `enabled`, `botToken`, `tokenFile`, `accounts.*` (`tokenFile` normal bir dosyaya işaret etmelidir; symlink'ler reddedilir)
+- başlatma/kimlik doğrulama: `enabled`, `botToken`, `tokenFile`, `accounts.*` (`tokenFile` normal bir dosyayı göstermelidir; sembolik bağlantılar reddedilir)
 - erişim denetimi: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `groups.*.topics.*`, üst düzey `bindings[]` (`type: "acp"`)
+- konu varsayılanları: `groups.<chatId>.topics."*"` eşleşmeyen forum konularına uygulanır; kesin konu kimlikleri bunu geçersiz kılar
 - exec onayları: `execApprovals`, `accounts.*.execApprovals`
 - komut/menü: `commands.native`, `commands.nativeSkills`, `customCommands`
-- iş parçacığı/yanıtlar: `replyToMode`, `dm.threadReplies`, `direct.*.threadReplies`
-- streaming: `streaming` (önizleme), `streaming.preview.toolProgress`, `blockStreaming`
-- biçimlendirme/teslim: `textChunkLimit`, `chunkMode`, `linkPreview`, `responsePrefix`
+- ileti dizileri/yanıtlar: `replyToMode`
+- akış: `streaming` (önizleme), `streaming.preview.toolProgress`, `blockStreaming`
+- biçimlendirme/teslim: `textChunkLimit`, `chunkMode`, `richMessages`, `linkPreview`, `responsePrefix`
 - medya/ağ: `mediaMaxMb`, `mediaGroupFlushMs`, `timeoutSeconds`, `pollingStallThresholdMs`, `retry`, `network.autoSelectFamily`, `network.dangerouslyAllowPrivateNetwork`, `proxy`
 - özel API kökü: `apiRoot` (yalnızca Bot API kökü; `/bot<TOKEN>` eklemeyin)
-- webhook: `webhookUrl`, `webhookSecret`, `webhookPath`, `webhookHost`
+- Webhook: `webhookUrl`, `webhookSecret`, `webhookPath`, `webhookHost`
 - eylemler/yetenekler: `capabilities.inlineButtons`, `actions.sendMessage|editMessage|deleteMessage|reactions|sticker`
 - tepkiler: `reactionNotifications`, `reactionLevel`
 - hatalar: `errorPolicy`, `errorCooldownMs`
@@ -1032,28 +1118,28 @@ Birincil başvuru: [Yapılandırma başvurusu - Telegram](/tr/gateway/config-cha
 </Accordion>
 
 <Note>
-Çok hesaplı öncelik: iki veya daha fazla hesap kimliği yapılandırıldığında, varsayılan yönlendirmeyi açık hale getirmek için `channels.telegram.defaultAccount` ayarlayın (veya `channels.telegram.accounts.default` dahil edin). Aksi halde OpenClaw ilk normalize edilmiş hesap kimliğine geri döner ve `openclaw doctor` uyarır. Adlandırılmış hesaplar `channels.telegram.allowFrom` / `groupAllowFrom` değerlerini devralır, ancak `accounts.default.*` değerlerini devralmaz.
+Çoklu hesap önceliği: iki veya daha fazla hesap kimliği yapılandırıldığında, varsayılan yönlendirmeyi açık hale getirmek için `channels.telegram.defaultAccount` değerini ayarlayın (veya `channels.telegram.accounts.default` ekleyin). Aksi halde OpenClaw ilk normalleştirilmiş hesap kimliğine geri döner ve `openclaw doctor` uyarır. Adlandırılmış hesaplar `channels.telegram.allowFrom` / `groupAllowFrom` değerlerini devralır, ancak `accounts.default.*` değerlerini devralmaz.
 </Note>
 
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Eşleştirme" icon="link" href="/tr/channels/pairing">
+  <Card title="Pairing" icon="link" href="/tr/channels/pairing">
     Bir Telegram kullanıcısını Gateway ile eşleştirin.
   </Card>
-  <Card title="Gruplar" icon="users" href="/tr/channels/groups">
-    Grup ve konu allowlist davranışı.
+  <Card title="Groups" icon="users" href="/tr/channels/groups">
+    Grup ve konu izin listesi davranışı.
   </Card>
-  <Card title="Kanal yönlendirme" icon="route" href="/tr/channels/channel-routing">
-    Gelen mesajları aracılara yönlendirin.
+  <Card title="Channel routing" icon="route" href="/tr/channels/channel-routing">
+    Gelen iletileri aracılara yönlendirin.
   </Card>
-  <Card title="Güvenlik" icon="shield" href="/tr/gateway/security">
+  <Card title="Security" icon="shield" href="/tr/gateway/security">
     Tehdit modeli ve sağlamlaştırma.
   </Card>
-  <Card title="Çok aracılı yönlendirme" icon="sitemap" href="/tr/concepts/multi-agent">
-    Grupları ve konuları aracılarla eşleyin.
+  <Card title="Multi-agent routing" icon="sitemap" href="/tr/concepts/multi-agent">
+    Grupları ve konuları aracılara eşleyin.
   </Card>
-  <Card title="Sorun giderme" icon="wrench" href="/tr/channels/troubleshooting">
+  <Card title="Troubleshooting" icon="wrench" href="/tr/channels/troubleshooting">
     Kanallar arası tanılama.
   </Card>
 </CardGroup>

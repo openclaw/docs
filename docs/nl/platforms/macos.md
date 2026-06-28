@@ -1,222 +1,95 @@
 ---
 read_when:
-    - macOS-appfuncties implementeren
-    - Gateway-levenscyclus of node-bridging wijzigen op macOS
-summary: OpenClaw macOS-begeleidende app (menubalk + gateway-broker)
+    - De macOS-app installeren
+    - Kiezen tussen lokale en externe Gateway-modus op macOS
+    - Op zoek naar downloads van macOS-appreleases
+summary: Installeer en gebruik de OpenClaw macOS-menubalkapp
 title: macOS-app
 x-i18n:
-    generated_at: "2026-06-27T17:49:12Z"
+    generated_at: "2026-06-28T00:13:29Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4e637a1ae5ca66dfb6255fb6a233436ae0cf04b972f96446e8dc3d703486c9fa
+    source_hash: 42cd610465f2e60736da4681e028bca3ed3ed00b424028554ea098acc8ea980c
     source_path: platforms/macos.md
     workflow: 16
 ---
 
-De macOS-app is de **menubalk-app** voor OpenClaw. Deze beheert machtigingen,
-beheert of koppelt lokaal aan de Gateway (launchd of handmatig), en stelt macOS-
-mogelijkheden beschikbaar aan de agent als een node.
+De macOS-app is de OpenClaw **menubalk-metgezel**. Gebruik deze wanneer je een
+native systeemvak-UI, macOS-toestemmingsprompts, meldingen, WebChat, spraakinvoer,
+Canvas of door Mac gehoste Node-tools zoals `system.run` wilt.
 
-## Wat het doet
+Als je alleen de CLI en Gateway nodig hebt, begin dan met [Aan de slag](/nl/start/getting-started).
 
-- Toont native meldingen en status in de menubalk.
-- Beheert TCC-prompts (Meldingen, Toegankelijkheid, Schermopname, Microfoon,
-  Spraakherkenning, Automatisering/AppleScript).
-- Draait of verbindt met de Gateway (lokaal of extern).
-- Stelt macOS-specifieke tools beschikbaar (Canvas, Camera, Schermopname, `system.run`).
-- Start de lokale node-hostservice in **remote** modus (launchd), en stopt deze in **local** modus.
-- Host optioneel **PeekabooBridge** voor UI-automatisering.
-- Installeert de globale CLI (`openclaw`) op verzoek via npm, pnpm of bun (de app geeft de voorkeur aan npm, daarna pnpm, daarna bun; Node blijft de aanbevolen Gateway-runtime).
+## Downloaden
 
-## Lokale versus externe modus
+Download builds van de macOS-app via de
+[OpenClaw GitHub-releases](https://github.com/openclaw/openclaw/releases).
+Wanneer een release macOS-appassets bevat, zoek dan naar:
 
-- **Local** (standaard): de app koppelt aan een draaiende lokale Gateway als die aanwezig is;
-  anders schakelt deze de launchd-service in via `openclaw gateway install`.
-- **Remote**: de app verbindt met een Gateway via SSH/Tailscale en start nooit
-  een lokaal proces.
-  De app start de lokale **node-hostservice** zodat de externe Gateway deze Mac kan bereiken.
-  De app start de Gateway niet als een childproces.
-  Gateway-detectie geeft nu de voorkeur aan Tailscale MagicDNS-namen boven ruwe tailnet-IP's,
-  zodat de Mac-app betrouwbaarder herstelt wanneer tailnet-IP's veranderen.
+- `OpenClaw-<version>.dmg` (aanbevolen)
+- `OpenClaw-<version>.zip`
 
-## Launchd-beheer
+Sommige releases bevatten alleen CLI-, bewijs- of Windows-assets. Als de nieuwste
+release geen macOS-appasset heeft, gebruik dan de nieuwste release die dat wel heeft,
+of bouw de app vanuit broncode met [macOS-ontwikkelinstallatie](/nl/platforms/mac/dev-setup).
 
-De app beheert een LaunchAgent per gebruiker met label `ai.openclaw.gateway`
-(of `ai.openclaw.<profile>` bij gebruik van `--profile`/`OPENCLAW_PROFILE`; legacy `com.openclaw.*` wordt nog steeds ontladen).
-
-```bash
-launchctl kickstart -k gui/$UID/ai.openclaw.gateway
-launchctl bootout gui/$UID/ai.openclaw.gateway
-```
-
-Vervang het label door `ai.openclaw.<profile>` wanneer je een benoemd profiel gebruikt.
-
-Als de LaunchAgent niet is geïnstalleerd, schakel deze dan in vanuit de app of voer
-`openclaw gateway install` uit.
-
-Als de Gateway herhaaldelijk minuten tot uren verdwijnt en alleen hervat wanneer je de Control UI aanraakt of via SSH inlogt op de host, zie dan de probleemoplossingsnotitie voor macOS Maintenance Sleep / `ENETDOWN`-crashes en de respawn-beschermingspoort van launchd in [Gateway-probleemoplossing](/nl/gateway/troubleshooting#macos-gateway-silently-stops-responding-then-resumes-when-you-touch-the-dashboard).
-
-## Node-mogelijkheden (mac)
-
-De macOS-app presenteert zichzelf als een node. Veelgebruikte commando's:
-
-- Canvas: `canvas.present`, `canvas.navigate`, `canvas.eval`, `canvas.snapshot`, `canvas.a2ui.*`
-- Camera: `camera.snap`, `camera.clip`
-- Scherm: `screen.snapshot`, `screen.record`
-- Systeem: `system.run`, `system.notify`
-
-De node rapporteert een `permissions`-map zodat agents kunnen bepalen wat is toegestaan.
-
-Node-service + app-IPC:
-
-- Wanneer de headless node-hostservice draait (remote modus), verbindt deze met de Gateway WS als een node.
-- `system.run` wordt uitgevoerd in de macOS-app (UI/TCC-context) via een lokale Unix-socket; prompts + uitvoer blijven in de app.
-
-Diagram (SCI):
-
-```
-Gateway -> Node Service (WS)
-                 |  IPC (UDS + token + HMAC + TTL)
-                 v
-             Mac App (UI + TCC + system.run)
-```
-
-## Uitvoeringsgoedkeuringen (system.run)
-
-`system.run` wordt beheerd door **Uitvoeringsgoedkeuringen** in de macOS-app (Instellingen → Uitvoeringsgoedkeuringen).
-Beveiliging + vragen + allowlist worden lokaal op de Mac opgeslagen in:
-
-```
-~/.openclaw/exec-approvals.json
-```
-
-Voorbeeld:
-
-```json
-{
-  "version": 1,
-  "defaults": {
-    "security": "deny",
-    "ask": "on-miss"
-  },
-  "agents": {
-    "main": {
-      "security": "allowlist",
-      "ask": "on-miss",
-      "allowlist": [{ "pattern": "/opt/homebrew/bin/rg" }]
-    }
-  }
-}
-```
-
-Notities:
-
-- `allowlist`-vermeldingen zijn globpatronen voor opgeloste binaire paden, of kale commandonamen voor commando's die via PATH worden aangeroepen.
-- Ruwe shellcommandotekst die shellbesturing of uitbreidingssyntaxis bevat (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) wordt behandeld als een allowlist-mis en vereist expliciete goedkeuring (of het toevoegen van de shellbinary aan de allowlist).
-- Het kiezen van "Altijd toestaan" in de prompt voegt dat commando toe aan de allowlist.
-- Omgevingsoverschrijvingen van `system.run` worden gefilterd (verwijdert `PATH`, `DYLD_*`, `LD_*`, `BASHOPTS`, `FPATH`, `KSH_ENV`, `NODE_OPTIONS`, `NODE_REDIRECT_WARNINGS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_REPL_HISTORY`, `NODE_V8_COVERAGE`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`, `TCLLIBPATH`) en daarna samengevoegd met de omgeving van de app.
-- Voor shellwrappers (`bash|sh|zsh ... -c/-lc`) worden request-gebonden omgevingsoverschrijvingen teruggebracht tot een kleine expliciete allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- Voor beslissingen voor altijd toestaan in allowlist-modus bewaren bekende dispatchwrappers (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) interne uitvoerbare paden in plaats van wrapperpaden. Als uitpakken niet veilig is, wordt er niet automatisch een allowlist-vermelding bewaard.
-
-## Deep links
-
-De app registreert het `openclaw://`-URL-schema voor lokale acties.
-
-### `openclaw://agent`
-
-Activeert een Gateway-`agent`-request.
-__OC_I18N_900004__
-Queryparameters:
-
-- `message` (vereist)
-- `sessionKey` (optioneel)
-- `thinking` (optioneel)
-- `deliver` / `to` / `channel` (optioneel)
-- `timeoutSeconds` (optioneel)
-- `key` (optionele sleutel voor onbeheerde modus)
-
-Veiligheid:
-
-- Zonder `key` vraagt de app om bevestiging.
-- Zonder `key` handhaaft de app een korte berichtlimiet voor de bevestigingsprompt en negeert `deliver` / `to` / `channel`.
-- Met een geldige `key` draait de run onbeheerd (bedoeld voor persoonlijke automatiseringen).
-
-## Onboardingstroom (typisch)
+## Eerste keer starten
 
 1. Installeer en start **OpenClaw.app**.
-2. Voltooi de machtigingenchecklist (TCC-prompts).
-3. Zorg dat de **Local** modus actief is en dat de Gateway draait.
-4. Installeer de CLI als je terminaltoegang wilt.
+2. Voltooi de macOS-toestemmingschecklist.
+3. Kies de modus **Lokaal** of **Extern**.
+4. Installeer de `openclaw` CLI als de app daarom vraagt.
+5. Open WebChat vanuit de menubalk en stuur een testbericht.
 
-## Plaatsing van state-map (macOS)
+Gebruik [Aan de slag](/nl/start/getting-started) voor het CLI/Gateway-installatiepad.
+Gebruik [macOS-toestemmingen](/nl/platforms/mac/permissions) voor herstel van toestemmingen.
 
-Plaats je OpenClaw-state-map niet in iCloud of andere cloudgesynchroniseerde mappen.
-Door synchronisatie ondersteunde paden kunnen latency toevoegen en soms file-lock/synchronisatieraces veroorzaken voor
-sessies en aanmeldgegevens.
+## Kies een Gateway-modus
 
-Geef de voorkeur aan een lokaal niet-gesynchroniseerd state-pad zoals:
-__OC_I18N_900005__
-Als `openclaw doctor` state detecteert onder:
+| Modus   | Gebruik deze wanneer                                                                  | Detailpagina                                       |
+| ------ | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Lokaal  | Deze Mac de Gateway moet uitvoeren en actief moet houden met launchd.                  | [Gateway op macOS](/nl/platforms/mac/bundled-gateway) |
+| Extern | Een andere host de Gateway uitvoert en deze Mac die moet beheren via SSH, LAN of Tailnet. | [Extern beheer](/nl/platforms/mac/remote)            |
 
-- `~/Library/Mobile Documents/com~apple~CloudDocs/...`
-- `~/Library/CloudStorage/...`
+De lokale modus vereist een geinstalleerde `openclaw` CLI. De app kan deze installeren,
+of je kunt [Gateway op macOS](/nl/platforms/mac/bundled-gateway) volgen.
 
-waarschuwt het en raadt het aan terug te verplaatsen naar een lokaal pad.
+## Waar de app verantwoordelijk voor is
 
-## Build- en dev-workflow (native)
+- Menubalkstatus, meldingen, gezondheid en WebChat.
+- macOS-toestemmingsprompts voor scherm, microfoon, spraak, automatisering en toegankelijkheid.
+- Lokale Node-tools zoals Canvas, camera-/schermopname, meldingen en `system.run`.
+- Exec-goedkeuringsprompts voor door Mac gehoste opdrachten.
+- SSH-tunnels in externe modus of directe Gateway-verbindingen.
 
-- `cd apps/macos && swift build`
-- `swift run OpenClaw` (of Xcode)
-- App verpakken: `scripts/package-mac-app.sh`
+De app vervangt de OpenClaw Gateway of de algemene CLI-documentatie **niet**. Kernconfiguratie
+van Gateway, providers, plugins, kanalen, tools en beveiliging staat in
+hun eigen documentatie.
 
-## Gateway-connectiviteit debuggen (macOS CLI)
+## macOS-detailpagina's
 
-Gebruik de debug-CLI om dezelfde Gateway WebSocket-handshake en detectie-
-logica te oefenen die de macOS-app gebruikt, zonder de app te starten.
-__OC_I18N_900006__
-Verbindingsopties:
+| Taak                                     | Lees                                                                                        |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| De CLI/Gateway-service installeren of debuggen | [Gateway op macOS](/nl/platforms/mac/bundled-gateway)                                          |
+| Status buiten cloud-gesynchroniseerde mappen houden | [Gateway op macOS](/nl/platforms/mac/bundled-gateway#state-directory-on-macos)                 |
+| App-detectie en connectiviteit debuggen  | [Gateway op macOS](/nl/platforms/mac/bundled-gateway#debug-app-connectivity)                   |
+| launchd-gedrag begrijpen                 | [Gateway-levenscyclus](/nl/platforms/mac/child-process)                                           |
+| Toestemmingen of signing-/TCC-problemen oplossen | [macOS-toestemmingen](/nl/platforms/mac/permissions)                                             |
+| Verbinding maken met een externe Gateway | [Extern beheer](/nl/platforms/mac/remote)                                                     |
+| Menubalkstatus en gezondheidscontroles lezen | [Menubalk](/nl/platforms/mac/menu-bar), [Gezondheidscontroles](/nl/platforms/mac/health)                 |
+| De ingesloten chat-UI gebruiken          | [WebChat](/nl/platforms/mac/webchat)                                                           |
+| Voice wake of push-to-talk gebruiken     | [Voice wake](/nl/platforms/mac/voicewake)                                                      |
+| Canvas en Canvas-deeplinks gebruiken     | [Canvas](/nl/platforms/mac/canvas)                                                             |
+| PeekabooBridge hosten voor UI-automatisering | [Peekaboo bridge](/nl/platforms/mac/peekaboo)                                                  |
+| Opdrachtgoedkeuringen configureren       | [Exec-goedkeuringen](/nl/tools/exec-approvals), [geavanceerde details](/nl/tools/exec-approvals-advanced) |
+| Mac-Node-opdrachten en app-IPC inspecteren | [macOS-IPC](/nl/platforms/mac/xpc)                                                             |
+| Logs vastleggen                          | [macOS-logging](/nl/platforms/mac/logging)                                                     |
+| Vanuit broncode bouwen                   | [macOS-ontwikkelinstallatie](/nl/platforms/mac/dev-setup)                                                 |
 
-- `--url <ws://host:port>`: configuratie overschrijven
-- `--mode <local|remote>`: oplossen vanuit configuratie (standaard: configuratie of lokaal)
-- `--probe`: een nieuwe healthprobe forceren
-- `--timeout <ms>`: requesttime-out (standaard: `15000`)
-- `--json`: gestructureerde uitvoer voor diffing
+## Gerelateerd
 
-Detectieopties:
-
-- `--include-local`: gateways opnemen die als "lokaal" zouden worden gefilterd
-- `--timeout <ms>`: totale detectieperiode (standaard: `2000`)
-- `--json`: gestructureerde uitvoer voor diffing
-
-<Tip>
-Vergelijk met `openclaw gateway discover --json` om te zien of de detectiepipeline van de macOS-app (`local.` plus het geconfigureerde wide-area-domein, met wide-area- en Tailscale Serve-fallbacks) verschilt van de op `dns-sd` gebaseerde detectie van de Node CLI.
-</Tip>
-
-## Externe verbindingsplumbing (SSH-tunnels)
-
-Wanneer de macOS-app in **Remote** modus draait, opent deze een SSH-tunnel zodat lokale UI-
-componenten met een externe Gateway kunnen praten alsof die op localhost staat.
-
-### Beheertunnel (Gateway WebSocket-poort)
-
-- **Doel:** healthchecks, status, Web Chat, configuratie en andere control-plane-aanroepen.
-- **Lokale poort:** de Gateway-poort (standaard `18789`), altijd stabiel.
-- **Externe poort:** dezelfde Gateway-poort op de externe host.
-- **Gedrag:** geen willekeurige lokale poort; de app hergebruikt een bestaande gezonde tunnel
-  of herstart deze indien nodig.
-- **SSH-vorm:** `ssh -N -L <local>:127.0.0.1:<remote>` met BatchMode +
-  ExitOnForwardFailure + keepalive-opties.
-- **IP-rapportage:** de SSH-tunnel gebruikt loopback, dus de Gateway ziet het node-
-  IP als `127.0.0.1`. Gebruik **Direct (ws/wss)** transport als je wilt dat het echte client-
-  IP verschijnt (zie [externe macOS-toegang](/nl/platforms/mac/remote)).
-
-Voor instelstappen, zie [externe macOS-toegang](/nl/platforms/mac/remote). Voor protocol-
-details, zie [Gateway-protocol](/nl/gateway/protocol).
-
-## Gerelateerde docs
-
-- [Gateway-runbook](/nl/gateway)
-- [Gateway (macOS)](/nl/platforms/mac/bundled-gateway)
-- [macOS-machtigingen](/nl/platforms/mac/permissions)
-- [Canvas](/nl/platforms/mac/canvas)
+- [Platformen](/nl/platforms)
+- [Aan de slag](/nl/start/getting-started)
+- [Gateway](/nl/gateway)
+- [Exec-goedkeuringen](/nl/tools/exec-approvals)

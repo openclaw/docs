@@ -1,29 +1,30 @@
 ---
 read_when:
-    - tokenjuice Plugin’ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - tokenjuice Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
 summary: exec ve bash aracı sonuçlarını tokenjuice indirgeyicileriyle sıkıştırır.
 title: Tokenjuice Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:41Z"
+    generated_at: "2026-06-28T01:03:14Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2a6e6194d80faf6d261200f3b1b2e4c92d238b901efc4acd7ccdfee065b5f07b
+    source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
     source_path: plugins/reference/tokenjuice.md
     workflow: 16
 ---
 
 # Tokenjuice Plugin
 
-exec ve bash araç sonuçlarını tokenjuice reducer'larıyla sıkıştırır.
+Exec ve bash aracı sonuçlarını tokenjuice reducer'larıyla sıkıştırır.
 
 ## Dağıtım
 
 - Paket: `@openclaw/tokenjuice`
-- Kurulum yolu: OpenClaw'a dahil
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
 
 ## Yüzey
 
-contracts: agentToolResultMiddleware
+sözleşmeler: agentToolResultMiddleware
 
 ## İlgili belgeler
 

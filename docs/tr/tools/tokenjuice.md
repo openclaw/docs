@@ -1,34 +1,37 @@
 ---
 read_when:
     - OpenClaw'da daha kısa `exec` veya `bash` araç sonuçları istiyorsunuz
-    - Paketlenmiş Tokenjuice plugin'ini etkinleştirmek istiyorsunuz
-    - Tokenjuice'ın neyi değiştirdiğini ve neyi ham bıraktığını anlamanız gerekiyor
-summary: İsteğe bağlı paketlenmiş bir plugin ile gürültülü exec ve bash araç sonuçlarını sıkıştırın
+    - Tokenjuice Plugin'ini yüklemek veya etkinleştirmek istiyorsunuz
+    - tokenjuice'ın neyi değiştirdiğini ve neyi ham bıraktığını anlamanız gerekir
+summary: Gürültülü exec ve bash aracı sonuçlarını isteğe bağlı Tokenjuice Plugin ile sıkıştırın
 title: Tokenjuice
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-25T14:00:19Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
-  source_path: tools/tokenjuice.md
-  workflow: 15
+    generated_at: "2026-06-28T01:26:34Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
+    source_path: tools/tokenjuice.md
+    workflow: 16
 ---
 
-`tokenjuice`, komut zaten çalıştırıldıktan sonra gürültülü `exec` ve `bash`
-araç sonuçlarını sıkıştıran isteğe bağlı paketlenmiş bir plugin'dir.
+`tokenjuice`, komut zaten çalıştıktan sonra gürültülü `exec` ve `bash`
+araç sonuçlarını sıkıştıran isteğe bağlı harici bir Plugin'dir.
 
 Komutun kendisini değil, döndürülen `tool_result` değerini değiştirir. Tokenjuice
-shell girdisini yeniden yazmaz, komutları yeniden çalıştırmaz ve çıkış kodlarını değiştirmez.
+kabuk girdisini yeniden yazmaz, komutları yeniden çalıştırmaz veya çıkış kodlarını değiştirmez.
 
-Bugün bu, PI gömülü çalıştırmalarına ve Codex
-app-server harness içindeki OpenClaw dinamik araçlarına uygulanır. Tokenjuice, OpenClaw'ın
-araç sonucu middleware'ine bağlanır ve çıktı etkin harness oturumuna geri gitmeden önce
-kırpar.
+Bugün bu, OpenClaw gömülü çalıştırmaları ve Codex app-server harness içindeki OpenClaw dinamik araçları için geçerlidir. Tokenjuice, OpenClaw'ın araç sonucu ara katmanına bağlanır ve çıktıyı etkin harness oturumuna geri dönmeden önce kırpar.
 
-## Plugin'i etkinleştirin
+## Plugin'i etkinleştirme
 
-Hızlı yol:
+Bir kez kurun:
+
+```bash
+openclaw plugins install clawhub:@openclaw/tokenjuice
+```
+
+Ardından etkinleştirin:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
@@ -39,9 +42,6 @@ Eşdeğeri:
 ```bash
 openclaw plugins enable tokenjuice
 ```
-
-OpenClaw plugin'i zaten paketlenmiş olarak sunar. Ayrı bir `plugins install`
-veya `tokenjuice install openclaw` adımı yoktur.
 
 Yapılandırmayı doğrudan düzenlemeyi tercih ederseniz:
 
@@ -57,21 +57,21 @@ Yapılandırmayı doğrudan düzenlemeyi tercih ederseniz:
 }
 ```
 
-## Tokenjuice'ın değiştirdiği şeyler
+## tokenjuice neleri değiştirir
 
 - Gürültülü `exec` ve `bash` sonuçlarını oturuma geri beslenmeden önce sıkıştırır.
-- Özgün komut yürütmesini değiştirmeden bırakır.
-- Tam dosya içeriği okumalarını ve Tokenjuice'ın ham bırakması gereken diğer komutları korur.
-- İsteğe bağlı kalır: her yerde birebir çıktı istiyorsanız plugin'i devre dışı bırakın.
+- Özgün komut çalıştırmasını değiştirmeden korur.
+- Tam dosya içeriği okumalarını ve tokenjuice'in ham bırakması gereken diğer komutları korur.
+- İsteğe bağlı kalır: her yerde birebir çıktı istiyorsanız Plugin'i devre dışı bırakın.
 
-## Çalıştığını doğrulayın
+## Çalıştığını doğrulama
 
 1. Plugin'i etkinleştirin.
 2. `exec` çağırabilen bir oturum başlatın.
 3. `git status` gibi gürültülü bir komut çalıştırın.
-4. Döndürülen araç sonucunun ham shell çıktısından daha kısa ve daha yapılandırılmış olduğunu kontrol edin.
+4. Döndürülen araç sonucunun ham kabuk çıktısından daha kısa ve daha yapılandırılmış olduğunu kontrol edin.
 
-## Plugin'i devre dışı bırakın
+## Plugin'i devre dışı bırakma
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false
@@ -85,6 +85,6 @@ openclaw plugins disable tokenjuice
 
 ## İlgili
 
-- [Exec tool](/tr/tools/exec)
-- [Thinking levels](/tr/tools/thinking)
-- [Context engine](/tr/concepts/context-engine)
+- [Exec aracı](/tr/tools/exec)
+- [Düşünme düzeyleri](/tr/tools/thinking)
+- [Bağlam motoru](/tr/concepts/context-engine)

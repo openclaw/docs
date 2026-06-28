@@ -1,22 +1,23 @@
 ---
 read_when:
     - Triển khai bảng Canvas trên macOS
-    - Thêm các điều khiển tác nhân cho không gian làm việc trực quan
-    - Gỡ lỗi quá trình tải canvas trong WKWebView
-summary: Bảng Canvas do tác nhân điều khiển được nhúng qua WKWebView + lược đồ URL tùy chỉnh
+    - Thêm các điều khiển agent cho không gian làm việc trực quan
+    - Gỡ lỗi tải canvas trong WKWebView
+summary: Bảng Canvas do agent điều khiển được nhúng qua WKWebView + lược đồ URL tùy chỉnh
 title: Khung vẽ
 x-i18n:
-    generated_at: "2026-05-06T09:21:17Z"
+    generated_at: "2026-06-28T00:12:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
+    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-Ứng dụng macOS nhúng một **bảng Canvas** do agent điều khiển bằng `WKWebView`. Đây là một không gian làm việc trực quan nhẹ cho HTML/CSS/JS, A2UI và các bề mặt UI tương tác nhỏ.
+Ứng dụng macOS nhúng một **bảng Canvas** do agent điều khiển bằng `WKWebView`. Đây là không gian làm việc trực quan nhẹ cho HTML/CSS/JS, A2UI và các bề mặt UI tương tác nhỏ.
 
-## Vị trí của Canvas
+## Nơi Canvas lưu trữ
 
 Trạng thái Canvas được lưu trong Application Support:
 
@@ -32,18 +33,18 @@ Ví dụ:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Nếu không có `index.html` ở gốc, ứng dụng sẽ hiển thị một **trang khung dựng sẵn**.
+Nếu không có `index.html` ở thư mục gốc, ứng dụng sẽ hiển thị một **trang khung dựng sẵn**.
 
 ## Hành vi của bảng
 
-- Bảng không viền, có thể đổi kích thước, neo gần thanh menu (hoặc con trỏ chuột).
+- Bảng không viền, có thể thay đổi kích thước, được neo gần thanh menu (hoặc con trỏ chuột).
 - Ghi nhớ kích thước/vị trí theo từng phiên.
 - Tự động tải lại khi các tệp canvas cục bộ thay đổi.
 - Mỗi lần chỉ hiển thị một bảng Canvas (phiên được chuyển đổi khi cần).
 
-Có thể tắt Canvas từ Settings → **Allow Canvas**. Khi bị tắt, các lệnh node canvas trả về `CANVAS_DISABLED`.
+Canvas có thể được tắt trong Settings → **Allow Canvas**. Khi bị tắt, các lệnh node canvas trả về `CANVAS_DISABLED`.
 
-## Bề mặt API cho agent
+## Bề mặt API agent
 
 Canvas được cung cấp qua **Gateway WebSocket**, vì vậy agent có thể:
 
@@ -68,10 +69,10 @@ Ghi chú:
 
 ## A2UI trong Canvas
 
-A2UI được lưu trữ bởi máy chủ canvas của Gateway và được kết xuất bên trong bảng Canvas.
-Khi Gateway quảng bá một máy chủ Canvas, ứng dụng macOS sẽ tự động điều hướng đến trang máy chủ A2UI trong lần mở đầu tiên.
+A2UI được Gateway canvas host lưu trữ và được kết xuất bên trong bảng Canvas.
+Khi Gateway quảng bá một Canvas host, ứng dụng macOS tự động điều hướng đến trang host A2UI trong lần mở đầu tiên.
 
-URL máy chủ A2UI mặc định:
+URL host A2UI mặc định:
 
 ```
 http://<gateway-host>:18789/__openclaw__/a2ui/
@@ -79,7 +80,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### Lệnh A2UI (v0.8)
 
-Canvas hiện chấp nhận thông điệp server→client **A2UI v0.8**:
+Canvas hiện chấp nhận các thông điệp máy chủ→máy khách **A2UI v0.8**:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -99,13 +100,13 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Kiểm thử nhanh:
+Kiểm tra nhanh:
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Kích hoạt các lượt chạy agent từ Canvas
+## Kích hoạt lượt chạy agent từ Canvas
 
 Canvas có thể kích hoạt các lượt chạy agent mới qua deep link:
 
@@ -117,15 +118,24 @@ Ví dụ (trong JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-Ứng dụng sẽ yêu cầu xác nhận trừ khi có khóa hợp lệ được cung cấp.
+Các tham số truy vấn được hỗ trợ:
+
+- `message`: prompt agent được điền sẵn.
+- `sessionKey`: mã định danh phiên ổn định.
+- `thinking`: hồ sơ thinking tùy chọn.
+- `deliver`, `to`, hoặc `channel`: đích phân phối.
+- `timeoutSeconds`: thời gian chờ lượt chạy tùy chọn.
+- `key`: mã an toàn do ứng dụng tạo cho các caller cục bộ đáng tin cậy.
+
+Ứng dụng yêu cầu xác nhận trừ khi cung cấp khóa hợp lệ. Các liên kết không có khóa hiển thị thông điệp và URL trước khi phê duyệt, đồng thời bỏ qua các trường định tuyến phân phối; liên kết có khóa sử dụng đường dẫn chạy Gateway bình thường.
 
 ## Ghi chú bảo mật
 
-- Lược đồ Canvas chặn việc duyệt thư mục ngược; các tệp phải nằm dưới gốc phiên.
-- Nội dung Canvas cục bộ dùng lược đồ tùy chỉnh (không cần máy chủ loopback).
+- Lược đồ Canvas chặn duyệt vượt thư mục; các tệp phải nằm dưới thư mục gốc của phiên.
+- Nội dung Canvas cục bộ sử dụng lược đồ tùy chỉnh (không cần máy chủ loopback).
 - URL `http(s)` bên ngoài chỉ được cho phép khi được điều hướng rõ ràng.
 
 ## Liên quan
 
-- [ứng dụng macOS](/vi/platforms/macos)
+- [Ứng dụng macOS](/vi/platforms/macos)
 - [WebChat](/vi/web/webchat)

@@ -1,40 +1,31 @@
 ---
 read_when:
     - WhatsApp Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını göndermek ve almak için WhatsApp kanal yüzeyini ekler.
+summary: OpenClaw WhatsApp Web sohbetleri için WhatsApp kanal Plugin'i.
 title: WhatsApp Plugin
 x-i18n:
-    generated_at: "2026-05-05T06:18:39Z"
+    generated_at: "2026-06-28T01:03:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
+    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
-# WhatsApp Plugin'i
+# WhatsApp Plugin
 
-OpenClaw mesajlarını göndermek ve almak için WhatsApp kanal yüzeyini ekler.
+WhatsApp Web sohbetleri için OpenClaw WhatsApp kanal Plugin'i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/whatsapp`
-- Kurulum yolu: npm; ClawHub
+- Kurulum yolu: ClawHub: `clawhub:@openclaw/whatsapp`; npm
 
 ## Yüzey
 
-channels: whatsapp
-
-## Windows kurulum notu
-
-Windows'ta WhatsApp Plugin'i, Baileys/libsignal bağımlılıklarından biri git URL'sinden alındığı için npm kurulumu sırasında `PATH` üzerinde Git gerektirir. Git for Windows'ı kurun, ardından kabuğu yeniden başlatıp kurulumu yeniden çalıştırın:
-
-```powershell
-winget install --id Git.Git -e
-```
-
-Taşınabilir Git de `bin` dizini `PATH` üzerinde olduğu sürece çalışır.
+kanallar: whatsapp; Skills
 
 ## İlgili belgeler
 
-- [whatsapp](/tr/channels/whatsapp)
+- [WhatsApp](/tr/channels/whatsapp)

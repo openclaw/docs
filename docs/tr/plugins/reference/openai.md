@@ -1,20 +1,21 @@
 ---
 read_when:
-    - openai Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw'a OpenAI ve OpenAI Codex model sağlayıcısı desteği ekler.
+    - openai eklentisini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw’a OpenAI model sağlayıcı desteği ekler.
 title: OpenAI Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:45Z"
+    generated_at: "2026-06-28T01:01:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# OpenAI Plugin
+# OpenAI plugin
 
-OpenClaw'a OpenAI ve OpenAI Codex model sağlayıcı desteği ekler.
+OpenClaw'a OpenAI model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
@@ -23,7 +24,7 @@ OpenClaw'a OpenAI ve OpenAI Codex model sağlayıcı desteği ekler.
 
 ## Yüzey
 
-sağlayıcılar: openai, openai-codex; sözleşmeler: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## İlgili belgeler
 

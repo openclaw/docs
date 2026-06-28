@@ -1,20 +1,21 @@
 ---
 read_when:
-    - ollama Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw'a Ollama model sağlayıcısı desteği ekler.
+    - ollama pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw'a Ollama ve Ollama Cloud model sağlayıcısı desteği ekler.
 title: Ollama Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:32Z"
+    generated_at: "2026-06-28T01:01:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3257b3086e28e62c0c9bdc4ff22bd8c7a6ea6bec0ed018e5a93e811ba0353a23
+    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
 
-# Ollama Plugin
+# Ollama Plugin'i
 
-OpenClaw'a Ollama model sağlayıcısı desteği ekler.
+OpenClaw'a Ollama ve Ollama Cloud model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
@@ -23,8 +24,9 @@ OpenClaw'a Ollama model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders
+sağlayıcılar: ollama, ollama-cloud; sözleşmeler: memoryEmbeddingProviders, webSearchProviders
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [ollama](/tr/providers/ollama)
+- [ollama-cloud](/tr/providers/ollama-cloud)

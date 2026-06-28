@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Ajanınızın kulağa daha az jenerik gelmesini istiyorsunuz
+    - Ajanınızın daha az genel konuşmasını istiyorsunuz
     - SOUL.md dosyasını düzenliyorsunuz
-    - Güvenlikten veya kısalıktan ödün vermeden daha güçlü bir kişilik istiyorsunuz
-summary: OpenClaw ajanınıza genel asistan kalıpları yerine gerçek bir ses kazandırmak için SOUL.md kullanın
-title: SOUL.md kişilik kılavuzu
+    - Güvenliği veya kısalığı bozmadan daha güçlü bir kişilik istiyorsunuz
+summary: OpenClaw aracınıza genel asistan kalabalığı yerine gerçek bir ses vermek için SOUL.md kullanın
+title: SOUL.md kişilik rehberi
 x-i18n:
-    generated_at: "2026-05-06T09:10:17Z"
+    generated_at: "2026-06-28T00:31:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
+    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
     source_path: concepts/soul.md
     workflow: 16
 ---
@@ -17,11 +18,12 @@ x-i18n:
 `SOUL.md`, ajanınızın sesinin yaşadığı yerdir.
 
 OpenClaw bunu normal oturumlara enjekte eder, bu yüzden gerçek ağırlığı vardır. Ajanınız
-sönük, kaçamak ya da tuhaf biçimde kurumsal geliyorsa, düzeltilmesi gereken dosya genellikle budur.
+sönük, çekingen veya tuhaf biçimde kurumsal geliyorsa, düzeltilmesi gereken dosya
+genellikle budur.
 
 ## SOUL.md içinde neler yer almalı
 
-Ajanla konuşmanın hissini değiştiren şeyleri koyun:
+Ajanla konuşmanın nasıl hissettirdiğini değiştiren şeyleri koyun:
 
 - ton
 - görüşler
@@ -33,36 +35,38 @@ Ajanla konuşmanın hissini değiştiren şeyleri koyun:
 Bunu **şuna** dönüştürmeyin:
 
 - bir hayat hikayesi
-- bir değişiklik günlüğü
+- bir changelog
 - bir güvenlik politikası dökümü
-- davranışsal etkisi olmayan devasa bir hisler duvarı
+- davranışsal etkisi olmayan dev bir hisler duvarı
 
-Kısa, uzunu yener. Keskin, belirsizi yener.
+Kısa, uzundan iyidir. Net, muğlaktan iyidir.
 
 ## Bu neden işe yarar
 
-Bu, OpenAI'ın istem yönlendirmesiyle örtüşür:
+Bu, OpenAI'ın prompt rehberliğiyle uyumludur:
 
-- İstem mühendisliği kılavuzu, üst düzey davranış, ton, hedefler ve
-  örneklerin kullanıcı mesajının içine gömülmek yerine yüksek öncelikli talimat katmanında yer alması gerektiğini söyler.
-- Aynı kılavuz, istemleri bir kez yazıp unutulan sihirli metinler olarak değil,
-  üzerinde yineleme yaptığınız, sabitlediğiniz ve değerlendirdiğiniz şeyler olarak ele almayı önerir.
+- Prompt mühendisliği rehberi, üst düzey davranış, ton, hedefler ve
+  örneklerin kullanıcı turunun içine gömülmek yerine yüksek öncelikli talimat
+  katmanında yer alması gerektiğini söyler.
+- Aynı rehber, prompt'ları bir kez yazıp unutulan sihirli metinler olarak değil,
+  üzerinde yinelediğiniz, sabitlediğiniz ve değerlendirdiğiniz şeyler olarak ele
+  almanızı önerir.
 
-OpenClaw için `SOUL.md` bu katmandır.
+OpenClaw için `SOUL.md` o katmandır.
 
-Daha iyi kişilik istiyorsanız daha güçlü talimatlar yazın. Kararlı bir
-kişilik istiyorsanız bunları kısa ve sürümlenmiş tutun.
+Daha iyi bir kişilik istiyorsanız, daha güçlü talimatlar yazın. Kararlı bir
+kişilik istiyorsanız, onları kısa ve sürümlenmiş tutun.
 
 OpenAI referansları:
 
-- [İstem mühendisliği](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Mesaj rolleri ve talimat takibi](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Prompt mühendisliği](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Mesaj rolleri ve talimat izleme](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
-## Molty istemi
+## Molty prompt'u
 
 Bunu ajanınıza yapıştırın ve `SOUL.md` dosyasını yeniden yazmasına izin verin.
 
-OpenClaw çalışma alanları için yol sabit: `http://SOUL.md` değil, `SOUL.md` kullanın.
+OpenClaw çalışma alanları için yol sabittir: `http://SOUL.md` değil, `SOUL.md` kullanın.
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -83,10 +87,10 @@ Save the new `SOUL.md`. Welcome to having a personality.
 
 İyi `SOUL.md` kuralları şöyle duyulur:
 
-- bir görüşün olsun
-- dolgu sözleri atla
-- yakıştığında komik ol
-- kötü fikirleri erkenden dile getir
+- bir görüşe sahip ol
+- dolgu ifadeleri atla
+- yerine uyduğunda komik ol
+- kötü fikirleri erken belirt
 - derinlik gerçekten yararlı değilse kısa kal
 
 Kötü `SOUL.md` kuralları şöyle duyulur:
@@ -95,28 +99,29 @@ Kötü `SOUL.md` kuralları şöyle duyulur:
 - kapsamlı ve düşünceli yardım sağla
 - olumlu ve destekleyici bir deneyim sağla
 
-İkinci liste sizi pelteye götürür.
+O ikinci liste, sizi pelteye götürür.
 
 ## Bir uyarı
 
 Kişilik, özensiz olma izni değildir.
 
-İşletim kuralları için `AGENTS.md` kullanın. Ses, duruş ve
-üslup için `SOUL.md` kullanın. Ajanınız paylaşılan kanallarda, herkese açık yanıtlarda veya müşteri
-yüzeylerinde çalışıyorsa, tonun hâlâ ortama uyduğundan emin olun.
+İşletim kuralları için `AGENTS.md` dosyasını tutun. Ses, duruş ve
+stil için `SOUL.md` dosyasını tutun. Ajanınız paylaşılan kanallarda, herkese açık
+yanıtlarda veya müşteri yüzeylerinde çalışıyorsa, tonun ortama hâlâ uyduğundan
+emin olun.
 
-Keskin olmak iyidir. Sinir bozucu olmak değildir.
+Keskin olmak iyidir. Rahatsız edici olmak değildir.
 
 ## İlgili
 
 <CardGroup cols={2}>
   <Card title="Agent workspace" href="/tr/concepts/agent-workspace" icon="folder-open">
-    OpenClaw'ın sistem istemine enjekte ettiği çalışma alanı dosyaları.
+    OpenClaw'ın model bağlamına enjekte ettiği çalışma alanı dosyaları.
   </Card>
   <Card title="System prompt" href="/tr/concepts/system-prompt" icon="message-lines">
-    `SOUL.md` dosyasının her turdaki sistem istemine nasıl dahil edildiği.
+    `SOUL.md` dosyasının OpenClaw ve Codex çalışma zamanı bağlamına nasıl dahil edildiği.
   </Card>
   <Card title="SOUL.md template" href="/tr/reference/templates/SOUL" icon="file-lines">
-    Kişilik dosyası için başlangıç şablonu.
+    Bir kişilik dosyası için başlangıç şablonu.
   </Card>
 </CardGroup>

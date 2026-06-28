@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Canlı OpenClaw belgelerinde terminalden arama yapmak istiyorsunuz
-    - Dokümantasyon CLI'sinin kabuk üzerinden hangi yardımcı çalıştırılabilir dosyaları çağırdığını bilmeniz gerekir
-summary: '`openclaw docs` için CLI başvurusu (canlı dokümantasyon dizininde arayın)'
+    - Canlı OpenClaw belgelerini terminalden aramak istiyorsunuz
+    - Belge CLI'sinin hangi barındırılan arama API'sini çağırdığını bilmeniz gerekir
+summary: '`openclaw docs` için CLI başvurusu (canlı dokümanlar dizininde arama yapın)'
 title: Belgeler
 x-i18n:
-    generated_at: "2026-05-10T19:29:03Z"
+    generated_at: "2026-06-28T00:21:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0f733083bf455695ed24b13db6fe53e95aa3804fa8696a2fd29e749f24324c8
+    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Canlı OpenClaw docs dizininde terminalden arama yapın. Komut, `https://docs.openclaw.ai/mcp.SearchOpenClaw` adresindeki herkese açık, Mintlify üzerinde barındırılan docs MCP arama uç noktasına shell üzerinden çağrı yapar ve sonuçları terminalinizde gösterir.
+Terminalden canlı OpenClaw dokümanları dizininde arama yapın. Komut, OpenClaw'ın Cloudflare üzerinde barındırılan doküman arama API'sini çağırır ve sonuçları terminalinizde işler.
 
 ## Kullanım
 
@@ -26,9 +27,9 @@ openclaw docs <query...>            # search the live docs index
 
 Argümanlar:
 
-| Argüman      | Açıklama                                                                                   |
-| ------------ | ------------------------------------------------------------------------------------------ |
-| `[query...]` | Serbest biçimli arama sorgusu. Çok kelimeli sorgular boşluklarla birleştirilip tek sorgu olarak gönderilir. |
+| Argüman      | Açıklama                                                                          |
+| ------------ | ---------------------------------------------------------------------------------- |
+| `[query...]` | Serbest biçimli arama sorgusu. Çok sözcüklü sorgular boşluklarla birleştirilir ve tek parça olarak gönderilir. |
 
 ## Örnekler
 
@@ -38,27 +39,17 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Sorgu olmadan, `openclaw docs` arama çalıştırmak yerine docs giriş noktası URL'sini ve örnek bir arama komutunu yazdırır.
+Sorgu olmadığında `openclaw docs`, arama çalıştırmak yerine doküman giriş noktası URL'sini ve örnek bir arama komutunu yazdırır.
 
-## Nasıl çalışır
+## Nasıl çalışır?
 
-`openclaw docs`, docs arama MCP aracını çağırmak için `mcporter` CLI'ını çalıştırır, ardından araç çıktısındaki `Title: / Link: / Content:` bloklarını bir sonuç listesine ayrıştırır.
-
-`mcporter`'ı çözümlemek için OpenClaw sırayla şunları kontrol eder:
-
-1. `PATH` üzerindeki `mcporter` (varsa doğrudan kullanılır).
-2. `pnpm` yüklüyse `pnpm dlx mcporter ...`.
-3. `npx` yüklüyse `npx -y mcporter ...`.
-
-Hiçbiri yoksa komut, `pnpm` yükleme ipucuyla (`npm install -g pnpm`) başarısız olur.
-
-Arama çağrısı sabit 30 saniyelik zaman aşımı kullanır. Sonuç alıntıları giriş başına yaklaşık 220 karaktere kısaltılır.
+`openclaw docs`, `https://docs.openclaw.ai/api/search` adresini çağırır ve JSON sonuçlarını işler. Arama çağrısı sabit 30 saniyelik zaman aşımı kullanır.
 
 ## Çıktı
 
-Zengin (TTY) bir terminalde sonuçlar, bir başlığın ardından madde işaretli liste olarak gösterilir. Her madde sayfa başlığını, bağlantılı docs URL'sini ve sonraki satırda kısa bir alıntıyı gösterir. Boş sonuçlar "Sonuç yok." yazdırır.
+Zengin (TTY) terminalde sonuçlar, bir başlığın ardından madde işaretli liste olarak işlenir. Her madde sayfa başlığını, bağlantılı doküman URL'sini ve sonraki satırda kısa bir parçayı gösterir. Boş sonuçlar "Sonuç yok." yazdırır.
 
-Zengin olmayan çıktıda (pipe ile aktarılmış çıktı, `--no-color`, betikler), aynı veri Markdown olarak gösterilir:
+Zengin olmayan çıktıda (pipe ile aktarılan, `--no-color`, betikler), aynı veri Markdown olarak işlenir:
 
 ```markdown
 # Docs search: <query>
@@ -69,12 +60,12 @@ Zengin olmayan çıktıda (pipe ile aktarılmış çıktı, `--no-color`, betikl
 
 ## Çıkış kodları
 
-| Kod | Anlam                                                   |
-| --- | ------------------------------------------------------- |
-| `0` | Arama başarılı oldu (sıfır sonuçlu yanıtlar dahil).     |
-| `1` | MCP araç çağrısı başarısız oldu; stderr satır içinde yazdırılır. |
+| Kod | Anlamı                                                            |
+| --- | ----------------------------------------------------------------- |
+| `0` | Arama başarılı oldu (sıfır sonuçlu yanıtlar dahil).               |
+| `1` | Barındırılan doküman arama API çağrısı başarısız oldu; stderr satır içinde yazdırılır. |
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
-- [Canlı docs](https://docs.openclaw.ai)
+- [CLI başvurusu](/tr/cli)
+- [Canlı dokümanlar](https://docs.openclaw.ai)

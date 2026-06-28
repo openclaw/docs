@@ -1,25 +1,26 @@
 ---
 read_when:
-    - amazon-bedrock-mantle Plugin’ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw'a Amazon Bedrock Mantle model sağlayıcısı desteği ekler.
-title: Amazon Bedrock Mantle Plugin
+    - amazon-bedrock-mantle plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlayıcı Plugin’i.
+title: Amazon Bedrock Mantle Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:49:42Z"
+    generated_at: "2026-06-28T00:57:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 48212e4eefdc393b9ff6a9fa7b74f4e3960b0b922b95141aeaf41a3a667b1f4e
+    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
-# Amazon Bedrock Mantle Plugin
+# Amazon Bedrock Mantle eklentisi
 
-OpenClaw'a Amazon Bedrock Mantle model sağlayıcı desteği ekler.
+OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlayıcı eklentisi.
 
 ## Dağıtım
 
 - Paket: `@openclaw/amazon-bedrock-mantle-provider`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 

@@ -1,48 +1,50 @@
 ---
 read_when:
-    - macOS Skills ayarları UI'sini güncelleme
-    - Skills kapılarını veya kurulum davranışını değiştirme
-summary: macOS Skills ayarları UI'si ve gateway destekli durum
+    - macOS Skills ayarları kullanıcı arayüzü güncelleniyor
+    - Skills geçiş denetimini veya yükleme davranışını değiştirme
+summary: macOS Skills ayarları kullanıcı arayüzü ve Gateway destekli durum
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:20:11Z"
-    model: gpt-5.4
+    generated_at: "2026-06-28T00:49:20Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
     source_path: platforms/mac/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
-macOS uygulaması OpenClaw Skills'i gateway üzerinden gösterir; Skills'i yerelde ayrıştırmaz.
+macOS uygulaması OpenClaw Skills öğelerini Gateway üzerinden gösterir; Skills öğelerini yerelde ayrıştırmaz.
 
 ## Veri kaynağı
 
-- `skills.status` (gateway), tüm Skills'i uygunluk ve eksik gereksinimlerle birlikte döndürür
-  (paketle gelen Skills için izin listesi engelleri dahil).
+- `skills.status` (Gateway), tüm Skills öğelerini uygunluk ve eksik gereksinimlerle birlikte döndürür
+  (paketlenmiş Skills öğeleri için izin listesi engelleri dahil).
 - Gereksinimler, her `SKILL.md` içindeki `metadata.openclaw.requires` alanından türetilir.
 
 ## Kurulum eylemleri
 
-- `metadata.openclaw.install`, kurulum seçeneklerini tanımlar (brew/node/go/uv).
-- Uygulama, kurucuları gateway host üzerinde çalıştırmak için `skills.install` çağırır.
-- Yerleşik tehlikeli kod `critical` bulguları, varsayılan olarak `skills.install` işlemini engeller; şüpheli bulgular ise yalnızca uyarı verir. Tehlikeli geçersiz kılma gateway isteğinde bulunur, ancak varsayılan uygulama akışı kapalı varsayımla kalır.
-- Her kurulum seçeneği `download` ise gateway, tüm indirme
+- `metadata.openclaw.install`, kurulum seçeneklerini (brew/node/go/uv) tanımlar.
+- Uygulama, kurulum araçlarını Gateway ana makinesinde çalıştırmak için `skills.install` çağırır.
+- Operatörün sahip olduğu `security.installPolicy`, kurulum aracı meta verileri çalışmadan önce Gateway destekli skill
+  kurulumlarını engelleyebilir. Kurulum zamanındaki yerleşik tehlikeli kod
+  engelleme, skill kurulum akışının parçası değildir.
+- Her kurulum seçeneği `download` ise Gateway tüm indirme
   seçeneklerini gösterir.
-- Aksi halde gateway, geçerli kurulum tercihleri ve host binary'lerini kullanarak bir tercihli
-  kurucu seçer: `skills.install.preferBrew` etkinse ve `brew` mevcutsa önce Homebrew,
-  sonra `uv`, sonra `skills.install.nodeManager` içindeki yapılandırılmış
-  Node yöneticisi, ardından `go` veya `download` gibi
-  daha sonraki geri dönüşler.
-- Node kurulum etiketleri, `yarn` dahil yapılandırılmış Node yöneticisini yansıtır.
+- Aksi halde Gateway, mevcut kurulum tercihlerini ve ana makine ikililerini kullanarak
+  tercih edilen tek bir kurulum aracı seçer: `skills.install.preferBrew` etkinleştirildiğinde ve `brew` mevcut olduğunda önce Homebrew, ardından `uv`, ardından
+  `skills.install.nodeManager` içinden yapılandırılmış node yöneticisi, ardından daha sonraki
+  `go` veya `download` gibi yedekler.
+- Node kurulum etiketleri, `yarn` dahil yapılandırılmış node yöneticisini yansıtır.
 
 ## Env/API anahtarları
 
-- Uygulama, anahtarları `~/.openclaw/openclaw.json` içinde `skills.entries.<skillKey>` altında saklar.
-- `skills.update`, `enabled`, `apiKey` ve `env` alanlarını yamalar.
+- Uygulama anahtarları `~/.openclaw/openclaw.json` içinde `skills.entries.<skillKey>` altında saklar.
+- `skills.update`, `enabled`, `apiKey` ve `env` alanlarına yama uygular.
 
 ## Uzak mod
 
-- Kurulum + yapılandırma güncellemeleri yerel Mac üzerinde değil, gateway host üzerinde gerçekleşir.
+- Kurulum ve yapılandırma güncellemeleri Gateway ana makinesinde gerçekleşir (yerel Mac üzerinde değil).
 
 ## İlgili
 

@@ -1,22 +1,25 @@
 ---
 read_when:
-    - Mengimplementasikan panel Kanvas macOS
+    - Mengimplementasikan panel Canvas macOS
     - Menambahkan kontrol agen untuk ruang kerja visual
-    - Men-debug pemuatan kanvas WKWebView
-summary: Panel Kanvas yang dikendalikan agen disematkan melalui WKWebView + skema URL khusus
+    - Men-debug muatan kanvas WKWebView
+summary: Panel Canvas yang dikendalikan agen disematkan melalui WKWebView + skema URL kustom
 title: Kanvas
 x-i18n:
-    generated_at: "2026-05-06T09:19:54Z"
+    generated_at: "2026-06-28T00:12:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
+    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-Aplikasi macOS menyematkan **panel Canvas** yang dikendalikan agen menggunakan `WKWebView`. Ini adalah ruang kerja visual ringan untuk HTML/CSS/JS, A2UI, dan permukaan UI interaktif kecil.
+Aplikasi macOS menyematkan **panel Canvas** yang dikendalikan agen menggunakan `WKWebView`. Ini
+adalah ruang kerja visual ringan untuk HTML/CSS/JS, A2UI, dan permukaan
+UI interaktif kecil.
 
-## Lokasi Canvas
+## Tempat Canvas berada
 
 Status Canvas disimpan di bawah Application Support:
 
@@ -36,21 +39,22 @@ Jika tidak ada `index.html` di root, aplikasi menampilkan **halaman scaffold baw
 
 ## Perilaku panel
 
-- Panel tanpa bingkai yang dapat diubah ukurannya, ditambatkan di dekat bilah menu (atau kursor tetikus).
+- Panel tanpa border yang dapat diubah ukurannya, ditambatkan di dekat bilah menu (atau kursor mouse).
 - Mengingat ukuran/posisi per sesi.
 - Memuat ulang otomatis saat file canvas lokal berubah.
 - Hanya satu panel Canvas yang terlihat pada satu waktu (sesi dialihkan sesuai kebutuhan).
 
-Canvas dapat dinonaktifkan dari Pengaturan → **Izinkan Canvas**. Saat dinonaktifkan, perintah node canvas mengembalikan `CANVAS_DISABLED`.
+Canvas dapat dinonaktifkan dari Settings → **Allow Canvas**. Saat dinonaktifkan, perintah
+node canvas mengembalikan `CANVAS_DISABLED`.
 
 ## Permukaan API agen
 
 Canvas diekspos melalui **Gateway WebSocket**, sehingga agen dapat:
 
 - menampilkan/menyembunyikan panel
-- bernavigasi ke path atau URL
+- menavigasi ke path atau URL
 - mengevaluasi JavaScript
-- menangkap gambar snapshot
+- mengambil gambar snapshot
 
 Contoh CLI:
 
@@ -68,7 +72,9 @@ Catatan:
 
 ## A2UI di Canvas
 
-A2UI di-host oleh host canvas Gateway dan dirender di dalam panel Canvas. Saat Gateway mengiklankan host Canvas, aplikasi macOS otomatis bernavigasi ke halaman host A2UI pada pembukaan pertama.
+A2UI di-host oleh host canvas Gateway dan dirender di dalam panel Canvas.
+Saat Gateway mengiklankan host Canvas, aplikasi macOS otomatis menavigasi ke
+halaman host A2UI pada pembukaan pertama.
 
 URL host A2UI default:
 
@@ -104,9 +110,9 @@ Smoke cepat:
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Memicu run agen dari Canvas
+## Memicu eksekusi agen dari Canvas
 
-Canvas dapat memicu run agen baru melalui deep link:
+Canvas dapat memicu eksekusi agen baru melalui deep link:
 
 - `openclaw://agent?...`
 
@@ -116,13 +122,24 @@ Contoh (dalam JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-Aplikasi meminta konfirmasi kecuali kunci yang valid disediakan.
+Parameter kueri yang didukung:
+
+- `message`: prompt agen yang telah diisi sebelumnya.
+- `sessionKey`: pengidentifikasi sesi stabil.
+- `thinking`: profil thinking opsional.
+- `deliver`, `to`, atau `channel`: target pengiriman.
+- `timeoutSeconds`: batas waktu eksekusi opsional.
+- `key`: token keamanan yang dibuat aplikasi untuk pemanggil lokal tepercaya.
+
+Aplikasi meminta konfirmasi kecuali kunci valid diberikan. Tautan tanpa kunci
+menampilkan pesan dan URL sebelum persetujuan, serta mengabaikan kolom routing pengiriman;
+tautan berkunci menggunakan jalur eksekusi Gateway normal.
 
 ## Catatan keamanan
 
 - Skema Canvas memblokir traversal direktori; file harus berada di bawah root sesi.
 - Konten Canvas lokal menggunakan skema kustom (tidak memerlukan server loopback).
-- URL `http(s)` eksternal hanya diizinkan saat dinavigasikan secara eksplisit.
+- URL `http(s)` eksternal hanya diizinkan saat dinavigasi secara eksplisit.
 
 ## Terkait
 

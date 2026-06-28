@@ -1,57 +1,61 @@
 ---
 read_when:
-    - Moonshot K2 (Moonshot Open Platform) veya Kimi Coding kurulumu istiyorsunuz
-    - Ayrı uç noktaları, anahtarları ve model referanslarını anlamanız gerekir
-    - İki sağlayıcıdan herhangi biri için kopyala/yapıştır yapılandırması istiyorsunuz
+    - Moonshot K2 (Moonshot Open Platform) ile Kimi Coding kurulumu karşılaştırması
+    - Ayrı uç noktaları, anahtarları ve model başvurularını anlamanız gerekir
+    - İki sağlayıcıdan biri için kopyala/yapıştır yapılandırması istiyorsunuz
 summary: Moonshot K2 ile Kimi Coding'i yapılandırma (ayrı sağlayıcılar + anahtarlar)
 title: Moonshot AI
 x-i18n:
-    generated_at: "2026-05-10T19:52:47Z"
+    generated_at: "2026-06-28T01:11:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0f6396d91ac8c1f698531ce067f79d4a4de7a5c7a166099c0fe4b7e5b78fde9e
+    source_hash: e7365d7e843275750824a937553dcf535245146fb49fe00c622bf14b71d2dd17
     source_path: providers/moonshot.md
     workflow: 16
 ---
 
-Moonshot, OpenAI uyumlu uç noktalarla Kimi API sağlar. Sağlayıcıyı yapılandırın ve varsayılan modeli `moonshot/kimi-k2.6` olarak ayarlayın ya da `kimi/kimi-for-coding` ile Kimi Coding kullanın.
+  Moonshot, OpenAI uyumlu uç noktalarla Kimi API’yi sağlar. Sağlayıcıyı yapılandırın ve varsayılan modeli `moonshot/kimi-k2.6` olarak ayarlayın ya da `kimi/kimi-for-coding` ile Kimi Coding kullanın.
 
-<Warning>
-Moonshot ve Kimi Coding **ayrı sağlayıcılardır**. Anahtarlar birbirinin yerine kullanılamaz, uç noktalar farklıdır ve model referansları farklıdır (`moonshot/...` ve `kimi/...`).
-</Warning>
+  <Warning>
+  Moonshot ve Kimi Coding **ayrı sağlayıcılardır**. Anahtarlar birbirinin yerine kullanılamaz, uç noktalar farklıdır ve model referansları farklıdır (`moonshot/...` ile `kimi/...`).
+  </Warning>
 
-## Yerleşik model kataloğu
+  ## Yerleşik model kataloğu
 
-[//]: # "moonshot-kimi-k2-ids:start"
+  [//]: # "moonshot-kimi-k2-ids:start"
 
-| Model referansı                   | Ad                    | Akıl yürütme | Girdi       | Bağlam  | Maks çıkış |
-| --------------------------------- | --------------------- | ------------ | ----------- | ------- | ---------- |
-| `moonshot/kimi-k2.6`              | Kimi K2.6             | Hayır        | metin, görsel | 262,144 | 262,144    |
-| `moonshot/kimi-k2.5`              | Kimi K2.5             | Hayır        | metin, görsel | 262,144 | 262,144    |
-| `moonshot/kimi-k2-thinking`       | Kimi K2 Thinking      | Evet         | metin       | 262,144 | 262,144    |
-| `moonshot/kimi-k2-thinking-turbo` | Kimi K2 Thinking Turbo | Evet        | metin       | 262,144 | 262,144    |
-| `moonshot/kimi-k2-turbo`          | Kimi K2 Turbo         | Hayır        | metin       | 256,000 | 16,384     |
+  | Model ref                         | Ad                     | Akıl yürütme | Girdi       | Bağlam  | Maksimum çıktı |
+  | --------------------------------- | ---------------------- | ------------ | ----------- | ------- | -------------- |
+  | `moonshot/kimi-k2.6`              | Kimi K2.6              | Hayır        | metin, görsel | 262,144 | 262,144        |
+  | `moonshot/kimi-k2.7-code`         | Kimi K2.7 Code         | Her zaman açık | metin, görsel | 262,144 | 262,144        |
+  | `moonshot/kimi-k2.5`              | Kimi K2.5              | Hayır        | metin, görsel | 262,144 | 262,144        |
+  | `moonshot/kimi-k2-thinking`       | Kimi K2 Thinking       | Evet         | metin       | 262,144 | 262,144        |
+  | `moonshot/kimi-k2-thinking-turbo` | Kimi K2 Thinking Turbo | Evet         | metin       | 262,144 | 262,144        |
+  | `moonshot/kimi-k2-turbo`          | Kimi K2 Turbo          | Hayır        | metin       | 256,000 | 16,384         |
 
-[//]: # "moonshot-kimi-k2-ids:end"
+  [//]: # "moonshot-kimi-k2-ids:end"
 
-Güncel Moonshot barındırmalı K2 modelleri için paketlenmiş maliyet tahminleri, Moonshot'ın yayımlanmış kullandıkça öde ücretlerini kullanır: Kimi K2.6 için $0.16/MTok önbellek isabeti, $0.95/MTok girdi ve $4.00/MTok çıktı; Kimi K2.5 için $0.10/MTok önbellek isabeti, $0.60/MTok girdi ve $3.00/MTok çıktı. Diğer eski katalog girdileri, yapılandırmada geçersiz kılmadığınız sürece sıfır maliyet yer tutucularını korur.
+  Mevcut Moonshot barındırmalı K2 modelleri için katalog maliyet tahminleri, Moonshot’ın yayımlanmış kullandıkça öde ücretlerini kullanır: Kimi K2.7 Code önbellek isabeti için $0.19/MTok, girdi için $0.95/MTok ve çıktı için $4.00/MTok; Kimi K2.6 önbellek isabeti için $0.16/MTok, girdi için $0.95/MTok ve çıktı için $4.00/MTok; Kimi K2.5 önbellek isabeti için $0.10/MTok, girdi için $0.60/MTok ve çıktı için $3.00/MTok. Diğer eski katalog girdileri, yapılandırmada geçersiz kılmadığınız sürece sıfır maliyetli yer tutucuları korur.
 
-## Başlarken
+  Kimi K2.7 Code her zaman yerel düşünmeyi kullanır. OpenClaw, bu model için yalnızca `on` düşünme durumunu sunar ve Moonshot’ın gerektirdiği şekilde dışa giden `thinking` ve `reasoning_effort` denetimlerini atlar. OpenClaw ayrıca K2.7’nin sağlayıcı varsayılanlarına sabitlediği örnekleme geçersiz kılmalarını da atlar. Kimi K2.6, onboarding varsayılanı olarak kalır.
 
-Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
+  ## Başlarken
 
-<Tabs>
+  Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
+
+  <Tabs>
   <Tab title="Moonshot API">
-    **En uygun olduğu kullanım:** Moonshot Open Platform üzerinden Kimi K2 modelleri.
+    **En uygun olduğu durum:** Moonshot Open Platform üzerinden Kimi K2 modelleri.
 
     <Steps>
-      <Step title="Choose your endpoint region">
+      <Step title="Uç nokta bölgenizi seçin">
         | Kimlik doğrulama seçimi | Uç nokta                       | Bölge         |
         | ----------------------- | ------------------------------ | ------------- |
         | `moonshot-api-key`      | `https://api.moonshot.ai/v1`   | Uluslararası  |
         | `moonshot-api-key-cn`   | `https://api.moonshot.cn/v1`   | Çin           |
       </Step>
-      <Step title="Run onboarding">
+      <Step title="Onboarding’i çalıştırın">
         ```bash
         openclaw onboard --auth-choice moonshot-api-key
         ```
@@ -62,7 +66,7 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
         openclaw onboard --auth-choice moonshot-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Varsayılan model ayarlayın">
         ```json5
         {
           agents: {
@@ -73,12 +77,12 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
         }
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Modellerin kullanılabilir olduğunu doğrulayın">
         ```bash
         openclaw models list --provider moonshot
         ```
       </Step>
-      <Step title="Run a live smoke test">
+      <Step title="Canlı smoke test çalıştırın">
         Normal oturumlarınıza dokunmadan model erişimini ve maliyet takibini doğrulamak istediğinizde yalıtılmış bir durum dizini kullanın:
 
         ```bash
@@ -91,7 +95,7 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
           --json
         ```
 
-        JSON yanıtı `provider: "moonshot"` ve `model: "kimi-k2.6"` bildirmelidir. Asistan döküm girdisi, Moonshot kullanım metaverisi döndürdüğünde normalleştirilmiş token kullanımını ve tahmini maliyeti `usage.cost` altında saklar.
+        JSON yanıtı `provider: "moonshot"` ve `model: "kimi-k2.6"` bildirmelidir. Asistan transkript girdisi, Moonshot kullanım meta verisi döndürdüğünde normalize edilmiş token kullanımını ve tahmini maliyeti `usage.cost` altında saklar.
       </Step>
     </Steps>
 
@@ -106,6 +110,7 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
           models: {
             // moonshot-kimi-k2-aliases:start
             "moonshot/kimi-k2.6": { alias: "Kimi K2.6" },
+            "moonshot/kimi-k2.7-code": { alias: "Kimi K2.7 Code" },
             "moonshot/kimi-k2.5": { alias: "Kimi K2.5" },
             "moonshot/kimi-k2-thinking": { alias: "Kimi K2 Thinking" },
             "moonshot/kimi-k2-thinking-turbo": { alias: "Kimi K2 Thinking Turbo" },
@@ -129,6 +134,15 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
                 reasoning: false,
                 input: ["text", "image"],
                 cost: { input: 0.95, output: 4, cacheRead: 0.16, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+              },
+              {
+                id: "kimi-k2.7-code",
+                name: "Kimi K2.7 Code",
+                reasoning: true,
+                input: ["text", "image"],
+                cost: { input: 0.95, output: 4, cacheRead: 0.19, cacheWrite: 0 },
                 contextWindow: 262144,
                 maxTokens: 262144,
               },
@@ -179,19 +193,30 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
   </Tab>
 
   <Tab title="Kimi Coding">
-    **En uygun olduğu kullanım:** Kimi Coding uç noktası üzerinden kod odaklı görevler.
+    Resmi plugin’i kurun, ardından Gateway’i yeniden başlatın:
+
+    ```bash
+    openclaw plugins install @openclaw/kimi-provider
+    openclaw gateway restart
+    ```
+    **En uygun olduğu durum:** Kimi Coding uç noktası üzerinden kod odaklı görevler.
 
     <Note>
-    Kimi Coding, Moonshot'tan (`moonshot/...`) farklı bir API anahtarı ve sağlayıcı öneki (`kimi/...`) kullanır. Kararlı API model referansı `kimi/kimi-for-coding` şeklindedir; eski referanslar `kimi/kimi-code` ve `kimi/k2p5` kabul edilmeye devam eder ve bu API model kimliğine normalleştirilir.
+    Kimi Coding, Moonshot’tan (`moonshot/...`) farklı bir API anahtarı ve sağlayıcı öneki (`kimi/...`) kullanır. Kararlı API model referansı `kimi/kimi-for-coding`’dir; eski referanslar `kimi/kimi-code` ve `kimi/k2p5` kabul edilmeye devam eder ve bu API model kimliğine normalize edilir.
     </Note>
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Plugin'i yükleyin">
+        ```bash
+        openclaw plugins install @openclaw/kimi-provider
+        ```
+      </Step>
+      <Step title="İlk kurulumu çalıştırın">
         ```bash
         openclaw onboard --auth-choice kimi-code-api-key
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Varsayılan bir model ayarlayın">
         ```json5
         {
           agents: {
@@ -202,7 +227,7 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
         ```bash
         openclaw models list --provider kimi
         ```
@@ -230,25 +255,25 @@ Sağlayıcınızı seçin ve kurulum adımlarını izleyin.
 
 ## Kimi web araması
 
-OpenClaw ayrıca Moonshot web araması tarafından desteklenen bir `web_search` sağlayıcısı olarak **Kimi** ile birlikte gelir.
+Moonshot Plugin'i, Moonshot web aramasıyla desteklenen bir `web_search` sağlayıcısı olarak **Kimi**'yi de kaydeder.
 
 <Steps>
-  <Step title="Etkileşimli web araması kurulumunu çalıştır">
+  <Step title="Etkileşimli web araması kurulumunu çalıştırın">
     ```bash
     openclaw configure --section web
     ```
 
-    `plugins.entries.moonshot.config.webSearch.*` değerlerini saklamak için
-    web araması bölümünde **Kimi** seçeneğini seçin.
+    `plugins.entries.moonshot.config.webSearch.*` değerini depolamak için web araması bölümünde
+    **Kimi**'yi seçin.
 
   </Step>
-  <Step title="Web araması bölgesini ve modelini yapılandır">
+  <Step title="Web araması bölgesini ve modelini yapılandırın">
     Etkileşimli kurulum şunları sorar:
 
     | Ayar                | Seçenekler                                                           |
     | ------------------- | -------------------------------------------------------------------- |
     | API bölgesi         | `https://api.moonshot.ai/v1` (uluslararası) veya `https://api.moonshot.cn/v1` (Çin) |
-    | Web araması modeli  | Varsayılan olarak `kimi-k2.6` kullanılır                             |
+    | Web arama modeli    | Varsayılan olarak `kimi-k2.6`                                        |
 
   </Step>
 </Steps>
@@ -284,12 +309,18 @@ Yapılandırma `plugins.entries.moonshot.config.webSearch` altında bulunur:
 
 <AccordionGroup>
   <Accordion title="Yerel düşünme modu">
-    Moonshot Kimi ikili yerel düşünmeyi destekler:
+    Kimi K2.7 Code her zaman yerel düşünmeyi kullanır. Moonshot, istemcilerin bu
+    model için `thinking` alanını atlamasını gerektirir; bu nedenle OpenClaw yalnızca `on`
+    değerini sunar ve eski `off` ayarlarını yok sayar. K2.7 ayrıca `temperature`, `top_p`, `n`,
+    `presence_penalty` ve `frequency_penalty` değerlerini sabitler; OpenClaw bu alanlar için yapılandırılmış
+    geçersiz kılmaları atlar.
+
+    Diğer Moonshot Kimi modelleri ikili yerel düşünmeyi destekler:
 
     - `thinking: { type: "enabled" }`
     - `thinking: { type: "disabled" }`
 
-    Bunu model başına `agents.defaults.models.<provider/model>.params` aracılığıyla yapılandırın:
+    Bunu model başına `agents.defaults.models.<provider/model>.params` üzerinden yapılandırın:
 
     ```json5
     {
@@ -307,23 +338,18 @@ Yapılandırma `plugins.entries.moonshot.config.webSearch` altında bulunur:
     }
     ```
 
-    OpenClaw ayrıca Moonshot için çalışma zamanı `/think` düzeylerini eşler:
+    OpenClaw, bu modeller için çalışma zamanı `/think` düzeylerini eşler:
 
-    | `/think` düzeyi      | Moonshot davranışı         |
+    | `/think` düzeyi     | Moonshot davranışı       |
     | -------------------- | -------------------------- |
     | `/think off`         | `thinking.type=disabled`   |
     | Off olmayan herhangi bir düzey | `thinking.type=enabled`    |
 
     <Warning>
-    Moonshot düşünme etkinleştirildiğinde, `tool_choice` `auto` veya `none` olmalıdır. OpenClaw, uyumluluk için uyumsuz `tool_choice` değerlerini `auto` olarak normalleştirir.
+    Moonshot düşünme etkinleştirildiğinde, `tool_choice` değeri `auto` veya `none` olmalıdır. OpenClaw uyumsuz değerleri `auto` olarak normalleştirir. Buna, sabitlenmiş bir araç seçimini korumak için düşünme modu devre dışı bırakılamayan Kimi K2.7 Code da dahildir.
     </Warning>
 
-    Kimi K2.6 ayrıca `reasoning_content` için çok turlu saklamayı denetleyen
-    isteğe bağlı bir `thinking.keep` alanını kabul eder. Turlar arasında tam
-    akıl yürütmeyi korumak için bunu `"all"` olarak ayarlayın; sunucu
-    varsayılan stratejisini kullanmak için bunu atlayın (veya `null` bırakın).
-    OpenClaw, `thinking.keep` alanını yalnızca `moonshot/kimi-k2.6` için iletir
-    ve diğer modellerden çıkarır.
+    Kimi K2.6 ayrıca `reasoning_content` için çok turlu saklamayı denetleyen isteğe bağlı bir `thinking.keep` alanını kabul eder. Turlar arasında tam reasoning'i korumak için bunu `"all"` olarak ayarlayın; sunucu varsayılan stratejisini kullanmak için bunu belirtmeyin (veya `null` bırakın). OpenClaw, `thinking.keep` alanını yalnızca `moonshot/kimi-k2.6` için iletir ve diğer modellerden kaldırır. Kimi K2.7 Code, varsayılan olarak tam reasoning geçmişini korurken OpenClaw `thinking` alanının tamamını atlar.
 
     ```json5
     {
@@ -344,7 +370,7 @@ Yapılandırma `plugins.entries.moonshot.config.webSearch` altında bulunur:
   </Accordion>
 
   <Accordion title="Araç çağrısı kimliği temizleme">
-    Moonshot Kimi, `functions.<name>:<index>` biçimindeki tool_call kimlikleri sunar. OpenClaw bunları değiştirmeden korur, böylece çok turlu araç çağrıları çalışmaya devam eder.
+    Moonshot Kimi, `functions.<name>:<index>` biçiminde yerel tool_call kimlikleri sunar. OpenAI-completions taşıması için OpenClaw, her yerel Kimi kimliğinin ilk oluşumunu korur ve sonraki yinelenenleri deterministik OpenAI tarzı `call_*` kimliklerine yeniden yazar. Eşleşen araç sonuçları aynı kimlikle yeniden eşlenir; böylece Kimi'nin ilk yerel kimliği kaldırılmadan yeniden oynatma benzersiz kalır.
 
     Özel bir OpenAI uyumlu sağlayıcıda katı temizlemeyi zorlamak için `sanitizeToolCallIds: true` ayarlayın:
 
@@ -366,27 +392,28 @@ Yapılandırma `plugins.entries.moonshot.config.webSearch` altında bulunur:
   <Accordion title="Akış kullanım uyumluluğu">
     Yerel Moonshot uç noktaları (`https://api.moonshot.ai/v1` ve
     `https://api.moonshot.cn/v1`), paylaşılan `openai-completions` taşımasında
-    akış kullanım uyumluluğunu duyurur. OpenClaw bunu uç nokta yeteneklerine göre
-    belirler, bu yüzden aynı yerel Moonshot ana bilgisayarlarını hedefleyen uyumlu
+    akış kullanım uyumluluğu bildirir. OpenClaw bunu uç nokta yeteneklerine
+    bağlar; bu nedenle aynı yerel Moonshot ana makinelerini hedefleyen uyumlu
     özel sağlayıcı kimlikleri aynı akış kullanım davranışını devralır.
 
-    Paketle gelen K2.6 fiyatlandırmasıyla, giriş, çıkış ve önbellek okuma tokenlarını
-    içeren akış kullanımı ayrıca `/status`, `/usage full`, `/usage cost` ve döküm
-    destekli oturum muhasebesi için yerel tahmini USD maliyetine dönüştürülür.
+    Katalog K2.6 fiyatlandırmasıyla, giriş, çıkış ve cache-read token'larını
+    içeren akış kullanımı ayrıca `/status`, `/usage full`, `/usage cost` ve
+    transkript destekli oturum muhasebesi için yerel tahmini USD maliyetine
+    dönüştürülür.
 
   </Accordion>
 
   <Accordion title="Uç nokta ve model ref başvurusu">
-    | Sağlayıcı   | Model ref öneki | Uç nokta                      | Kimlik doğrulama env var        |
+    | Sağlayıcı  | Model ref öneki | Uç nokta                      | Auth env var        |
     | ---------- | ---------------- | ----------------------------- | ------------------- |
     | Moonshot   | `moonshot/`      | `https://api.moonshot.ai/v1`  | `MOONSHOT_API_KEY`  |
     | Moonshot CN| `moonshot/`      | `https://api.moonshot.cn/v1`  | `MOONSHOT_API_KEY`  |
-    | Kimi Coding| `kimi/`          | Kimi Coding uç noktası          | `KIMI_API_KEY`      |
-    | Web arama | N/A              | Moonshot API bölgesiyle aynı   | `KIMI_API_KEY` veya `MOONSHOT_API_KEY` |
+    | Kimi Coding| `kimi/`          | Kimi Coding uç noktası        | `KIMI_API_KEY`      |
+    | Web araması | N/A             | Moonshot API bölgesiyle aynı  | `KIMI_API_KEY` veya `MOONSHOT_API_KEY` |
 
     - Kimi web araması `KIMI_API_KEY` veya `MOONSHOT_API_KEY` kullanır ve varsayılan olarak `kimi-k2.6` modeliyle `https://api.moonshot.ai/v1` adresini kullanır.
-    - Gerekirse fiyatlandırmayı ve bağlam meta verilerini `models.providers` içinde geçersiz kılın.
-    - Moonshot bir model için farklı bağlam limitleri yayımlarsa, `contextWindow` değerini buna göre ayarlayın.
+    - Gerekirse fiyatlandırmayı ve bağlam metadata'sını `models.providers` içinde geçersiz kılın.
+    - Moonshot bir model için farklı bağlam sınırları yayımlarsa `contextWindow` değerini buna göre ayarlayın.
 
   </Accordion>
 </AccordionGroup>
@@ -395,13 +422,13 @@ Yapılandırma `plugins.entries.moonshot.config.webSearch` altında bulunur:
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve yük devretme davranışını seçme.
+    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
   </Card>
-  <Card title="Web arama" href="/tr/tools/web" icon="magnifying-glass">
-    Kimi dahil web arama sağlayıcılarını yapılandırma.
+  <Card title="Web araması" href="/tr/tools/web" icon="magnifying-glass">
+    Kimi dahil web araması sağlayıcılarını yapılandırma.
   </Card>
   <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    Sağlayıcılar, modeller ve plugin'ler için tam config şeması.
+    Sağlayıcılar, modeller ve Plugin'ler için tam yapılandırma şeması.
   </Card>
   <Card title="Moonshot Open Platform" href="https://platform.moonshot.ai" icon="globe">
     Moonshot API anahtarı yönetimi ve dokümantasyonu.

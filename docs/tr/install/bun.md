@@ -5,10 +5,11 @@ read_when:
 summary: 'Bun iş akışı (deneysel): pnpm’e kıyasla kurulumlar ve dikkat edilmesi gerekenler'
 title: Bun (deneysel)
 x-i18n:
-    generated_at: "2026-05-10T19:41:27Z"
+    generated_at: "2026-06-28T00:43:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d97a7da26520d66e6033065c50d6490c869ace3d5f0b25aafcd196074cf7df7c
+    source_hash: 1c31f2c09f3c1f99ae1a306184a86f2240b0c0f4f655c2759f5aeb6bac6b745a
     source_path: install/bun.md
     workflow: 16
 ---
@@ -17,24 +18,24 @@ x-i18n:
 Bun, **Gateway çalışma zamanı için önerilmez** (WhatsApp ve Telegram ile bilinen sorunlar). Üretim için Node kullanın.
 </Warning>
 
-Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi, tamamen desteklenen ve belge araçları tarafından kullanılan `pnpm` olarak kalır. Bun, `pnpm-lock.yaml` dosyasını kullanamaz ve onu yok sayar.
+Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi, tamamen desteklenen ve dokümantasyon araçları tarafından kullanılan `pnpm` olarak kalır. Bun, `pnpm-lock.yaml` kullanamaz ve bunu yok sayar.
 
 ## Kurulum
 
 <Steps>
-  <Step title="Install dependencies">
+  <Step title="Bağımlılıkları yükleyin">
     ```sh
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` git tarafından yok sayılır, bu yüzden depoda değişiklik gürültüsü oluşmaz. Kilit dosyası yazımlarını tamamen atlamak için:
+    `bun.lock` / `bun.lockb` git tarafından yok sayılır, bu nedenle depoda gereksiz değişiklik oluşmaz. Kilit dosyası yazımlarını tamamen atlamak için:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Build and test">
+  <Step title="Derleyin ve test edin">
     ```sh
     bun run build
     bun run vitest run
@@ -46,10 +47,10 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
 
 Bun, açıkça güvenilmediği sürece bağımlılık yaşam döngüsü betiklerini engeller. Bu depo için yaygın olarak engellenen betikler gerekli değildir:
 
-- `baileys` `preinstall` -- Node ana sürümünün >= 20 olduğunu denetler (OpenClaw varsayılan olarak Node 24 kullanır ve şu anda `22.16+` olan Node 22 LTS'yi hâlâ destekler)
-- `protobufjs` `postinstall` -- uyumsuz sürüm şemaları hakkında uyarılar üretir (derleme yapıtı yok)
+- `baileys` `preinstall` -- Node ana sürümünün >= 20 olduğunu denetler (OpenClaw varsayılan olarak Node 24 kullanır ve hâlâ Node 22 LTS'yi destekler, şu anda `22.19+`)
+- `protobufjs` `postinstall` -- uyumsuz sürüm şemaları hakkında uyarılar üretir (derleme çıktısı yoktur)
 
-Bu betikleri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız, onlara açıkça güvenin:
+Bu betikleri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız, bunlara açıkça güvenin:
 
 ```sh
 bun pm trust baileys protobufjs
@@ -57,7 +58,7 @@ bun pm trust baileys protobufjs
 
 ## Uyarılar
 
-Bazı betikler hâlâ pnpm'i sabit olarak kullanır (örneğin `docs:build`, `ui:*`, `protocol:check`). Şimdilik bunları pnpm üzerinden çalıştırın.
+Bazı betikler hâlâ pnpm'i sabit kodlar (örneğin `check:docs`, `ui:*`, `protocol:check`). Şimdilik bunları pnpm üzerinden çalıştırın.
 
 ## İlgili
 

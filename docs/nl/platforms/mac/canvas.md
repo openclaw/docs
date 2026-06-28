@@ -2,23 +2,24 @@
 read_when:
     - Het macOS Canvas-paneel implementeren
     - Agentbedieningselementen toevoegen voor visuele werkruimte
-    - Fouten opsporen bij het laden van WKWebView-canvas
-summary: Door agent aangestuurd Canvas-paneel ingebed via WKWebView + aangepast URL-schema
+    - WKWebView-canvasloads debuggen
+summary: Door agent beheerd Canvas-paneel ingebed via WKWebView + aangepast URL-schema
 title: Canvas
 x-i18n:
-    generated_at: "2026-05-06T09:23:05Z"
+    generated_at: "2026-06-28T00:12:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
+    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-De macOS-app integreert een agentgestuurd **Canvas-paneel** met `WKWebView`. Het
+De macOS-app sluit een door de agent aangestuurd **Canvas-paneel** in met `WKWebView`. Het
 is een lichte visuele werkruimte voor HTML/CSS/JS, A2UI en kleine interactieve
 UI-oppervlakken.
 
-## Waar Canvas zich bevindt
+## Waar Canvas staat
 
 Canvas-status wordt opgeslagen onder Application Support:
 
@@ -34,17 +35,17 @@ Voorbeelden:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Als er geen `index.html` in de root bestaat, toont de app een **ingebouwde scaffoldpagina**.
+Als er geen `index.html` in de root bestaat, toont de app een **ingebouwde scaffold-pagina**.
 
 ## Paneelgedrag
 
 - Randloos, aanpasbaar paneel dat is verankerd bij de menubalk (of muiscursor).
 - Onthoudt grootte/positie per sessie.
-- Herlaadt automatisch wanneer lokale Canvas-bestanden wijzigen.
-- Er is maar één Canvas-paneel tegelijk zichtbaar (sessie wordt indien nodig gewisseld).
+- Herlaadt automatisch wanneer lokale Canvas-bestanden veranderen.
+- Er is slechts één Canvas-paneel tegelijk zichtbaar (de sessie wordt indien nodig gewisseld).
 
-Canvas kan worden uitgeschakeld via Settings → **Canvas toestaan**. Wanneer uitgeschakeld, retourneren canvas
-node-opdrachten `CANVAS_DISABLED`.
+Canvas kan worden uitgeschakeld via Settings → **Allow Canvas**. Wanneer uitgeschakeld, geven canvas
+node-opdrachten `CANVAS_DISABLED` terug.
 
 ## Agent-API-oppervlak
 
@@ -53,7 +54,7 @@ Canvas wordt beschikbaar gesteld via de **Gateway WebSocket**, zodat de agent he
 - het paneel tonen/verbergen
 - naar een pad of URL navigeren
 - JavaScript evalueren
-- een snapshotafbeelding vastleggen
+- een snapshot-afbeelding vastleggen
 
 CLI-voorbeelden:
 
@@ -71,11 +72,11 @@ Opmerkingen:
 
 ## A2UI in Canvas
 
-A2UI wordt gehost door de Gateway-canvas-host en weergegeven binnen het Canvas-paneel.
-Wanneer de Gateway een Canvas-host adverteert, navigeert de macOS-app bij het
-eerste openen automatisch naar de A2UI-hostpagina.
+A2UI wordt gehost door de Gateway-canvas-host en binnen het Canvas-paneel gerenderd.
+Wanneer de Gateway een Canvas-host adverteert, navigeert de macOS-app bij de eerste opening automatisch naar de
+A2UI-hostpagina.
 
-Standaard-URL van A2UI-host:
+Standaard-URL van de A2UI-host:
 
 ```
 http://<gateway-host>:18789/__openclaw__/a2ui/
@@ -109,7 +110,7 @@ Snelle smoke-test:
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Agent-runs vanuit Canvas starten
+## Agent-runs starten vanuit Canvas
 
 Canvas kan nieuwe agent-runs starten via deep links:
 
@@ -121,12 +122,23 @@ Voorbeeld (in JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-De app vraagt om bevestiging, tenzij er een geldige sleutel is opgegeven.
+Ondersteunde queryparameters:
+
+- `message`: vooraf ingevulde agent-prompt.
+- `sessionKey`: stabiele sessie-identificatie.
+- `thinking`: optioneel denkprofiel.
+- `deliver`, `to` of `channel`: afleverdoel.
+- `timeoutSeconds`: optionele run-time-out.
+- `key`: door de app gegenereerd veiligheidstoken voor vertrouwde lokale callers.
+
+De app vraagt om bevestiging tenzij er een geldige key is opgegeven. Links zonder key
+tonen het bericht en de URL vóór goedkeuring en negeren routeringsvelden voor aflevering;
+links met key gebruiken het normale Gateway-runpad.
 
 ## Beveiligingsopmerkingen
 
 - Het Canvas-schema blokkeert directory traversal; bestanden moeten onder de sessieroot staan.
-- Lokale Canvas-inhoud gebruikt een aangepast schema (geen loopbackserver vereist).
+- Lokale Canvas-inhoud gebruikt een aangepast schema (geen local loopback-server vereist).
 - Externe `http(s)`-URL's zijn alleen toegestaan wanneer er expliciet naartoe wordt genavigeerd.
 
 ## Gerelateerd

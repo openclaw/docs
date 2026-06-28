@@ -1,29 +1,30 @@
 ---
 read_when:
-    - تنفيذ لوحة Canvas على macOS
-    - إضافة عناصر تحكم الوكيل لمساحة العمل المرئية
-    - تصحيح أخطاء تحميلات لوحة الرسم في WKWebView
-summary: لوحة الرسم التي يتحكم بها الوكيل، مضمّنة عبر WKWebView + مخطط URL مخصص
+    - تنفيذ لوحة Canvas في macOS
+    - إضافة عناصر تحكم للوكيل لمساحة العمل المرئية
+    - تصحيح أخطاء تحميلات canvas في WKWebView
+summary: لوحة Canvas يتحكم بها الوكيل ومضمّنة عبر WKWebView + مخطط URL مخصص
 title: لوحة الرسم
 x-i18n:
-    generated_at: "2026-05-06T08:04:24Z"
+    generated_at: "2026-06-28T00:13:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
+    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-يتضمن تطبيق macOS لوحة **Canvas** يتحكم بها الوكيل باستخدام `WKWebView`. وهي
-مساحة عمل مرئية خفيفة لـ HTML/CSS/JS وA2UI وأسطح UI تفاعلية صغيرة.
+يدمج تطبيق macOS **لوحة Canvas** يتحكم بها الوكيل باستخدام `WKWebView`. وهي
+مساحة عمل مرئية خفيفة لـ HTML/CSS/JS وA2UI وأسطح واجهة مستخدم تفاعلية صغيرة.
 
-## مكان وجود Canvas
+## أين توجد Canvas
 
 تُخزَّن حالة Canvas ضمن Application Support:
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
-تقدم لوحة Canvas هذه الملفات عبر **مخطط URL مخصص**:
+تقدّم لوحة Canvas هذه الملفات عبر **مخطط URL مخصص**:
 
 - `openclaw-canvas://<session>/<path>`
 
@@ -33,21 +34,21 @@ x-i18n:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-إذا لم يوجد `index.html` في الجذر، يعرض التطبيق **صفحة هيكلية مدمجة**.
+إذا لم يوجد `index.html` في الجذر، يعرض التطبيق **صفحة هيكلية مضمّنة**.
 
 ## سلوك اللوحة
 
-- لوحة بلا حدود، قابلة لتغيير الحجم، ومثبتة بالقرب من شريط القائمة (أو مؤشر الفأرة).
+- لوحة بلا حدود وقابلة لتغيير الحجم ومثبتة قرب شريط القائمة (أو مؤشر الفأرة).
 - تتذكر الحجم/الموضع لكل جلسة.
 - تعيد التحميل تلقائيًا عند تغيّر ملفات Canvas المحلية.
-- تظهر لوحة Canvas واحدة فقط في كل مرة (وتُبدَّل الجلسة حسب الحاجة).
+- تظهر لوحة Canvas واحدة فقط في كل مرة (تُبدَّل الجلسة حسب الحاجة).
 
-يمكن تعطيل Canvas من الإعدادات → **السماح بـ Canvas**. عند تعطيله، تُرجع أوامر
-node الخاصة بـ canvas القيمة `CANVAS_DISABLED`.
+يمكن تعطيل Canvas من الإعدادات → **السماح بـ Canvas**. عند تعطيلها، تعيد
+أوامر عقد Canvas القيمة `CANVAS_DISABLED`.
 
-## سطح API للوكيل
+## سطح واجهة API للوكيل
 
-تُعرَض Canvas عبر **Gateway WebSocket**، لذا يمكن للوكيل:
+تُعرَض Canvas عبر **Gateway WebSocket**، بحيث يستطيع الوكيل:
 
 - إظهار/إخفاء اللوحة
 - الانتقال إلى مسار أو URL
@@ -70,11 +71,11 @@ openclaw nodes canvas snapshot --node <id>
 
 ## A2UI في Canvas
 
-تستضيف Gateway مضيف canvas الخاص بـ A2UI ويُعرَض داخل لوحة Canvas.
-عندما تعلن Gateway عن مضيف Canvas، ينتقل تطبيق macOS تلقائيًا إلى صفحة مضيف
-A2UI عند أول فتح.
+يستضيف مضيف Canvas في Gateway واجهة A2UI وتُعرَض داخل لوحة Canvas.
+عندما يعلن Gateway عن مضيف Canvas، ينتقل تطبيق macOS تلقائيًا إلى صفحة مضيف
+A2UI عند الفتح الأول.
 
-URL مضيف A2UI الافتراضي:
+عنوان URL الافتراضي لمضيف A2UI:
 
 ```
 http://<gateway-host>:18789/__openclaw__/a2ui/
@@ -120,15 +121,26 @@ openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-يطالب التطبيق بالتأكيد ما لم يتم توفير مفتاح صالح.
+معلمات الاستعلام المدعومة:
 
-## ملاحظات الأمان
+- `message`: مطالبة وكيل معبأة مسبقًا.
+- `sessionKey`: معرّف جلسة ثابت.
+- `thinking`: ملف تعريف تفكير اختياري.
+- `deliver` أو `to` أو `channel`: هدف التسليم.
+- `timeoutSeconds`: مهلة تشغيل اختيارية.
+- `key`: رمز أمان ينشئه التطبيق للمتصلين المحليين الموثوقين.
 
-- يمنع مخطط Canvas اجتياز الأدلة؛ يجب أن تكون الملفات ضمن جذر الجلسة.
+يطالب التطبيق بالتأكيد ما لم يُقدَّم مفتاح صالح. تعرض الروابط غير المزودة بمفتاح
+الرسالة وURL قبل الموافقة، وتتجاهل حقول توجيه التسليم؛ أما الروابط المزودة بمفتاح
+فتستخدم مسار تشغيل Gateway العادي.
+
+## ملاحظات أمنية
+
+- يحظر مخطط Canvas اجتياز الأدلة؛ يجب أن تكون الملفات ضمن جذر الجلسة.
 - يستخدم محتوى Canvas المحلي مخططًا مخصصًا (لا يلزم خادم loopback).
 - لا يُسمح بعناوين URL الخارجية من نوع `http(s)` إلا عند الانتقال إليها صراحةً.
 
-## ذو صلة
+## ذات صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [WebChat](/ar/web/webchat)

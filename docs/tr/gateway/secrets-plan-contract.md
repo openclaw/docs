@@ -1,20 +1,21 @@
 ---
 read_when:
-    - '`openclaw secrets apply` planlarını oluşturma veya gözden geçirme'
+    - '`openclaw secrets apply` planlarını oluşturma veya inceleme'
     - '`Invalid plan target path` hatalarında hata ayıklama'
     - Hedef türü ve yol doğrulama davranışını anlama
-summary: '`secrets apply` planları için sözleşme: hedef doğrulama, yol eşleştirme ve `auth-profiles.json` hedef kapsamı'
-title: Secrets apply plan sözleşmesi
+summary: '`secrets apply` planları için sözleşme: hedef doğrulaması, yol eşleştirme ve `auth-profiles.json` hedef kapsamı'
+title: Gizli bilgiler uygulama planı sözleşmesi
 x-i18n:
-    generated_at: "2026-04-24T09:11:36Z"
-    model: gpt-5.4
+    generated_at: "2026-06-28T00:38:30Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
+    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
     source_path: gateway/secrets-plan-contract.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu sayfa, `openclaw secrets apply` tarafından zorunlu tutulan katı sözleşmeyi tanımlar.
+Bu sayfa, `openclaw secrets apply` tarafından zorlanan katı sözleşmeyi tanımlar.
 
 Bir hedef bu kurallarla eşleşmezse, apply yapılandırmayı değiştirmeden önce başarısız olur.
 
@@ -45,19 +46,54 @@ Bir hedef bu kurallarla eşleşmezse, apply yapılandırmayı değiştirmeden ö
 }
 ```
 
+## Sağlayıcı upsert'leri ve silmeleri
+
+Planlar ayrıca hedef başına yazmalarla birlikte `secrets.providers` eşlemini değiştiren iki isteğe bağlı üst düzey alan içerebilir:
+
+- `providerUpserts` — sağlayıcı takma adına göre anahtarlanmış bir nesne. Her değer bir sağlayıcı tanımıdır (`openclaw.json` içinde `secrets.providers.<alias>` altında kabul edilenle aynı şekil; örneğin bir `exec` veya `file` sağlayıcısı).
+- `providerDeletes` — kaldırılacak sağlayıcı takma adlarından oluşan bir dizi.
+
+`providerUpserts`, `targets` öncesinde çalışır; bu nedenle bir `target.ref.provider`, aynı planın `providerUpserts` içinde tanıttığı bir sağlayıcı takma adına başvurabilir. Bu olmadan, `openclaw.json` içinde henüz yapılandırılmamış bir takma ada başvuran planlar `provider "<alias>" is not configured` hatasıyla başarısız olur.
+
+```json5
+{
+  version: 1,
+  protocolVersion: 1,
+  providerUpserts: {
+    onepassword_anthropic: {
+      source: "exec",
+      command: "/usr/bin/op",
+      args: ["read", "op://Vault/Anthropic/credential"],
+    },
+  },
+  providerDeletes: ["legacy_unused_alias"],
+  targets: [
+    {
+      type: "models.providers.apiKey",
+      path: "models.providers.anthropic.apiKey",
+      pathSegments: ["models", "providers", "anthropic", "apiKey"],
+      providerId: "anthropic",
+      ref: { source: "exec", provider: "onepassword_anthropic", id: "credential" },
+    },
+  ],
+}
+```
+
+`providerUpserts` aracılığıyla tanıtılan exec sağlayıcıları, [Exec sağlayıcısı onay davranışı](#exec-provider-consent-behavior) bölümündeki exec onayı kurallarına yine tabidir: exec sağlayıcıları içeren planlar yazma modunda `--allow-exec` gerektirir.
+
 ## Desteklenen hedef kapsamı
 
-Plan hedefleri, şu konumlardaki desteklenen kimlik bilgisi yolları için kabul edilir:
+Plan hedefleri, şu bölümdeki desteklenen kimlik bilgisi yolları için kabul edilir:
 
-- [SecretRef Credential Surface](/tr/reference/secretref-credential-surface)
+- [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface)
 
 ## Hedef türü davranışı
 
 Genel kural:
 
-- `target.type` tanınmalıdır ve normalize edilmiş `target.path` şekliyle eşleşmelidir.
+- `target.type` tanınmalı ve normalleştirilmiş `target.path` şekliyle eşleşmelidir.
 
-Uyumluluk takma adları mevcut planlar için kabul edilmeye devam eder:
+Mevcut planlar için uyumluluk takma adları kabul edilmeye devam eder:
 
 - `models.providers.apiKey`
 - `skills.entries.apiKey`
@@ -67,55 +103,55 @@ Uyumluluk takma adları mevcut planlar için kabul edilmeye devam eder:
 
 Her hedef aşağıdakilerin tümüyle doğrulanır:
 
-- `type` tanınan bir hedef türü olmalıdır.
-- `path` boş olmayan bir noktalı yol olmalıdır.
-- `pathSegments` atlanabilir. Verilirse, `path` ile tam olarak aynı yola normalize edilmelidir.
+- `type`, tanınan bir hedef türü olmalıdır.
+- `path`, boş olmayan bir noktalı yol olmalıdır.
+- `pathSegments` atlanabilir. Sağlanırsa, tam olarak `path` ile aynı yola normalleşmelidir.
 - Yasaklı segmentler reddedilir: `__proto__`, `prototype`, `constructor`.
-- Normalize edilmiş yol, hedef türü için kaydedilmiş yol şekliyle eşleşmelidir.
-- `providerId` veya `accountId` ayarlıysa, yolda kodlanmış kimlikle eşleşmelidir.
+- Normalleştirilmiş yol, hedef türü için kayıtlı yol şekliyle eşleşmelidir.
+- `providerId` veya `accountId` ayarlanmışsa, yolda kodlanmış kimlikle eşleşmelidir.
 - `auth-profiles.json` hedefleri `agentId` gerektirir.
 - Yeni bir `auth-profiles.json` eşlemesi oluştururken `authProfileProvider` ekleyin.
 
 ## Başarısızlık davranışı
 
-Bir hedef doğrulamayı geçemezse, apply şu şekilde bir hatayla çıkar:
+Bir hedef doğrulamadan geçemezse, apply şuna benzer bir hatayla çıkar:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-Geçersiz bir plan için hiçbir yazma işlemi işlenmez.
+Geçersiz bir plan için hiçbir yazma işlemi kaydedilmez.
 
-## Exec sağlayıcı onay davranışı
+## Exec sağlayıcısı onay davranışı
 
 - `--dry-run`, varsayılan olarak exec SecretRef denetimlerini atlar.
-- Exec SecretRef/sağlayıcı içeren planlar, `--allow-exec` ayarlanmadıkça yazma modunda reddedilir.
-- Exec içeren planları doğrularken/uygularken hem dry-run hem de yazma komutlarında `--allow-exec` geçin.
+- Exec SecretRef'leri/sağlayıcıları içeren planlar, `--allow-exec` ayarlanmadığı sürece yazma modunda reddedilir.
+- Exec içeren planları doğrularken/uygularken, hem dry-run hem de yazma komutlarında `--allow-exec` geçirin.
 
 ## Çalışma zamanı ve denetim kapsamı notları
 
 - Yalnızca ref içeren `auth-profiles.json` girdileri (`keyRef`/`tokenRef`), çalışma zamanı çözümlemesine ve denetim kapsamına dahildir.
-- `secrets apply`, desteklenen `openclaw.json` hedeflerini, desteklenen `auth-profiles.json` hedeflerini ve isteğe bağlı scrub hedeflerini yazar.
+- `secrets apply`, desteklenen `openclaw.json` hedeflerini, desteklenen `auth-profiles.json` hedeflerini ve isteğe bağlı temizleme hedeflerini yazar.
 
 ## Operatör denetimleri
 
 ```bash
-# Yazma işlemi olmadan planı doğrula
+# Validate plan without writes
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Sonra gerçekten uygula
+# Then apply for real
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# Exec içeren planlar için, her iki modda da açıkça dahil olun
+# For exec-containing plans, opt in explicitly in both modes
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Apply geçersiz hedef yolu iletisiyle başarısız olursa, planı `openclaw secrets configure` ile yeniden oluşturun veya hedef yolunu yukarıdaki desteklenen bir şekle düzeltin.
+Apply geçersiz hedef yolu iletisiyle başarısız olursa, planı `openclaw secrets configure` ile yeniden oluşturun veya hedef yolunu yukarıdaki desteklenen şekillerden birine düzeltin.
 
 ## İlgili belgeler
 
-- [Secrets Management](/tr/gateway/secrets)
+- [Sırlar Yönetimi](/tr/gateway/secrets)
 - [CLI `secrets`](/tr/cli/secrets)
-- [SecretRef Credential Surface](/tr/reference/secretref-credential-surface)
+- [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface)
 - [Yapılandırma Başvurusu](/tr/gateway/configuration-reference)

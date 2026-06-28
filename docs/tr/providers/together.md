@@ -1,14 +1,15 @@
 ---
 read_when:
     - OpenClaw ile Together AI kullanmak istiyorsunuz
-    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
+    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçimine ihtiyacınız var
 summary: Together AI kurulumu (kimlik doğrulama + model seçimi)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-30T09:42:27Z"
+    generated_at: "2026-06-28T01:13:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
+    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
     source_path: providers/together.md
     workflow: 16
 ---
@@ -18,28 +19,29 @@ x-i18n:
 | Özellik | Değer                         |
 | -------- | ----------------------------- |
 | Sağlayıcı | `together`                    |
-| Kimlik doğrulama     | `TOGETHER_API_KEY`            |
+| Kimlik doğrulama | `TOGETHER_API_KEY`            |
 | API      | OpenAI uyumlu             |
 | Temel URL | `https://api.together.xyz/v1` |
 
 ## Başlarken
 
 <Steps>
-  <Step title="Bir API anahtarı alın">
-    [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys)
-    adresinde bir API anahtarı oluşturun.
+  <Step title="API anahtarı alın">
+    [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys) adresinde bir API anahtarı oluşturun.
   </Step>
   <Step title="İlk kurulumu çalıştırın">
     ```bash
     openclaw onboard --auth-choice together-api-key
     ```
   </Step>
-  <Step title="Varsayılan bir model ayarlayın">
+  <Step title="Varsayılan model ayarlayın">
     ```json5
     {
       agents: {
         defaults: {
-          model: { primary: "together/moonshotai/Kimi-K2.5" },
+          model: {
+            primary: "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          },
         },
       },
     }
@@ -58,36 +60,32 @@ openclaw onboard --non-interactive \
 
 <Note>
 İlk kurulum ön ayarı, varsayılan model olarak
-`together/moonshotai/Kimi-K2.5` modelini ayarlar.
+`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` değerini ayarlar.
 </Note>
 
 ## Yerleşik katalog
 
 OpenClaw, bu paketlenmiş Together kataloğuyla gelir:
 
-| Model ref                                                    | Ad                                    | Girdi       | Bağlam    | Notlar                            |
-| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | -------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | metin, görüntü | 262,144    | Varsayılan model; akıl yürütme etkin |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | metin        | 202,752    | Genel amaçlı metin modeli       |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | metin        | 131,072    | Hızlı yönerge modeli           |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | metin, görüntü | 10,000,000 | Çok modlu                       |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | metin, görüntü | 20,000,000 | Çok modlu                       |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | metin        | 131,072    | Genel metin modeli               |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | metin        | 131,072    | Akıl yürütme modeli                  |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | metin        | 262,144    | İkincil Kimi metin modeli        |
+| Model ref                                          | Ad                          | Girdi       | Bağlam | Notlar                |
+| -------------------------------------------------- | ---------------------------- | ----------- | ------- | -------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | text        | 131,072 | Varsayılan model        |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | text, image | 262,144 | Kimi akıl yürütme modeli |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | text        | 512,000 | Akıl yürüten metin modeli |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | text        | 32,768  | Hızlı metin modeli      |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | text        | 202,752 | Akıl yürüten metin modeli |
 
 ## Video oluşturma
 
-Paketlenmiş `together` Plugin'i, paylaşılan `video_generate` aracı üzerinden
-video oluşturmayı da kaydeder.
+Paketlenmiş `together` Plugin, paylaşılan `video_generate` aracı üzerinden video oluşturmayı da kaydeder.
 
-| Özellik             | Değer                                 |
-| -------------------- | ------------------------------------- |
-| Varsayılan video modeli  | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| Modlar                | metinden videoya, tek görüntülü referans |
-| Desteklenen parametreler | `aspectRatio`, `resolution`           |
+| Özellik             | Değer                                                                    |
+| -------------------- | ------------------------------------------------------------------------ |
+| Varsayılan video modeli  | `together/Wan-AI/Wan2.2-T2V-A14B`                                        |
+| Modlar                | metinden videoya; `Wan-AI/Wan2.2-I2V-A14B` ile yalnızca tek görüntülü referans |
+| Desteklenen parametreler | `aspectRatio`, `resolution`                                              |
 
-Together'ı varsayılan video sağlayıcısı olarak kullanmak için:
+Together’ı varsayılan video sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -102,19 +100,18 @@ Together'ı varsayılan video sağlayıcısı olarak kullanmak için:
 ```
 
 <Tip>
-Paylaşılan araç parametreleri, sağlayıcı seçimi ve yük devretme davranışı için
-bkz. [Video Oluşturma](/tr/tools/video-generation).
+Paylaşılan araç parametreleri, sağlayıcı seçimi ve yük devretme davranışı için [Video Oluşturma](/tr/tools/video-generation) bölümüne bakın.
 </Tip>
 
 <AccordionGroup>
   <Accordion title="Ortam notu">
     Gateway bir daemon (launchd/systemd) olarak çalışıyorsa,
-    `TOGETHER_API_KEY` değişkeninin bu süreç tarafından kullanılabilir olduğundan emin olun
-    (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
+    `TOGETHER_API_KEY` değerinin bu işlem için kullanılabilir olduğundan emin olun (örneğin,
+    `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
 
     <Warning>
     Yalnızca etkileşimli kabuğunuzda ayarlanan anahtarlar, daemon tarafından yönetilen
-    gateway süreçleri tarafından görülemez. Kalıcı kullanılabilirlik için
+    Gateway işlemleri tarafından görülemez. Kalıcı kullanılabilirlik için
     `~/.openclaw/.env` veya `env.shellEnv` yapılandırmasını kullanın.
     </Warning>
 
@@ -122,9 +119,8 @@ bkz. [Video Oluşturma](/tr/tools/video-generation).
 
   <Accordion title="Sorun giderme">
     - Anahtarınızın çalıştığını doğrulayın: `openclaw models list --provider together`
-    - Modeller görünmüyorsa, API anahtarının Gateway süreciniz için doğru
-      ortamda ayarlandığını doğrulayın.
-    - Model ref'leri `together/<model-id>` biçimini kullanır.
+    - Modeller görünmüyorsa, API anahtarının Gateway işleminiz için doğru ortamda ayarlandığını doğrulayın.
+    - Model ref değerleri `together/<model-id>` biçimini kullanır.
 
   </Accordion>
 </AccordionGroup>
@@ -133,12 +129,12 @@ bkz. [Video Oluşturma](/tr/tools/video-generation).
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcı kuralları, model ref'leri ve yük devretme davranışı.
+    Sağlayıcı kuralları, model ref değerleri ve yük devretme davranışı.
   </Card>
   <Card title="Video oluşturma" href="/tr/tools/video-generation" icon="video">
     Paylaşılan video oluşturma aracı parametreleri ve sağlayıcı seçimi.
   </Card>
-  <Card title="Yapılandırma referansı" href="/tr/gateway/configuration-reference" icon="gear">
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
     Sağlayıcı ayarları dahil tam yapılandırma şeması.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">

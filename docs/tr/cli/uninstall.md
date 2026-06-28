@@ -1,16 +1,17 @@
 ---
 read_when:
     - Gateway hizmetini ve/veya yerel durumu kaldırmak istiyorsunuz
-    - Önce bir dry-run istiyorsunuz
-summary: '`openclaw uninstall` için CLI başvurusu (Gateway hizmetini + yerel verileri kaldırma)'
-title: Kaldırma
+    - Önce bir deneme çalıştırması istiyorsunuz
+summary: '`openclaw uninstall` için CLI başvurusu (gateway hizmetini + yerel verileri kaldır)'
+title: Kaldır
 x-i18n:
-    generated_at: "2026-04-24T09:04:12Z"
-    model: gpt-5.4
+    generated_at: "2026-06-28T00:25:30Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
@@ -19,14 +20,14 @@ Gateway hizmetini + yerel verileri kaldırın (CLI kalır).
 
 Seçenekler:
 
-- `--service`: Gateway hizmetini kaldır
-- `--state`: durumu ve yapılandırmayı kaldır
-- `--workspace`: çalışma alanı dizinlerini kaldır
-- `--app`: macOS uygulamasını kaldır
-- `--all`: hizmeti, durumu, çalışma alanını ve uygulamayı kaldır
-- `--yes`: onay istemlerini atla
+- `--service`: Gateway hizmetini kaldırır
+- `--state`: durum ve yapılandırmayı kaldırır
+- `--workspace`: çalışma alanı dizinlerini kaldırır
+- `--app`: macOS uygulamasını kaldırır
+- `--all`: hizmeti, durumu, çalışma alanını ve uygulamayı kaldırır
+- `--yes`: onay istemlerini atlar
 - `--non-interactive`: istemleri devre dışı bırakır; `--yes` gerektirir
-- `--dry-run`: dosyaları kaldırmadan eylemleri yazdır
+- `--dry-run`: dosyaları kaldırmadan eylemleri yazdırır
 
 Örnekler:
 
@@ -42,7 +43,8 @@ openclaw uninstall --dry-run
 Notlar:
 
 - Durumu veya çalışma alanlarını kaldırmadan önce geri yüklenebilir bir anlık görüntü istiyorsanız önce `openclaw backup create` çalıştırın.
-- `--all`, hizmeti, durumu, çalışma alanını ve uygulamayı birlikte kaldırmanın kısa yoludur.
+- `--state`, `--workspace` de seçilmediği sürece yapılandırılmış çalışma alanı dizinlerini korur.
+- `--all`, hizmeti, durumu, çalışma alanını ve uygulamayı birlikte kaldırmanın kısaltmasıdır.
 - `--non-interactive`, `--yes` gerektirir.
 
 ## İlgili

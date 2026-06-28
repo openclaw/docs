@@ -1,27 +1,28 @@
 ---
 read_when:
     - nostr Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajları göndermek ve almak için Nostr kanal yüzeyini ekler.
-title: Nostr Plugin'i
+summary: NIP-04 şifreli doğrudan mesajlar için OpenClaw Nostr kanal Plugin'i.
+title: Nostr Plugin
 x-i18n:
-    generated_at: "2026-05-03T09:00:59Z"
+    generated_at: "2026-06-28T01:01:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Nostr Plugin
+# Nostr Plugin'i
 
-OpenClaw mesajlarını göndermek ve almak için Nostr kanal yüzeyini ekler.
+NIP-04 şifreli doğrudan mesajlar için OpenClaw Nostr kanal Plugin'i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/nostr`
 - Kurulum yolu: npm; ClawHub
 
-## Yüzey
+## Arayüz
 
 kanallar: nostr
 

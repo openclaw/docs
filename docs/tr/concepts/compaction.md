@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Otomatik Compaction’ı ve /compact komutunu anlamak istiyorsunuz
-    - Bağlam sınırlarına ulaşan uzun oturumlarda hata ayıklıyorsunuz
-summary: OpenClaw'ın model sınırları içinde kalmak için uzun konuşmaları nasıl özetlediği
+    - Otomatik compaction ve /compact işlevini anlamak istiyorsunuz
+    - Bağlam sınırlarına takılan uzun oturumlarda hata ayıklıyorsunuz
+summary: OpenClaw uzun konuşmaları model sınırları içinde kalmak için nasıl özetler
 title: Compaction
 x-i18n:
-    generated_at: "2026-05-11T20:27:02Z"
+    generated_at: "2026-06-28T00:27:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: edef60498a1e91405bd42d5e6eb4883719487f6d6f40936c4168e8bc5f40a39a
+    source_hash: 71c1665055574622926a4f13ee82b97f1c45e679a895db78da983919c0a5458f
     source_path: concepts/compaction.md
     workflow: 16
 ---
 
-Her modelin bir context penceresi vardır: işleyebileceği maksimum token sayısı. Bir konuşma bu sınıra yaklaştığında OpenClaw, sohbetin devam edebilmesi için eski iletileri bir özete **compacts** eder.
+Her modelin bir bağlam penceresi vardır: işleyebileceği maksimum token sayısı. Bir konuşma bu sınıra yaklaştığında OpenClaw, sohbetin devam edebilmesi için eski mesajları bir özete **compaction** uygular.
 
-## Nasıl çalışır
+## Nasıl çalışır?
 
-1. Daha eski konuşma turları kompakt bir girdiye özetlenir.
-2. Özet, oturum transcript'ine kaydedilir.
-3. Son iletiler olduğu gibi tutulur.
+1. Eski konuşma turları kompakt bir girdide özetlenir.
+2. Özet, oturum dökümüne kaydedilir.
+3. Son mesajlar olduğu gibi korunur.
 
-OpenClaw geçmişi compaction parçalarına böldüğünde, assistant tool çağrılarını eşleşen `toolResult` girdileriyle birlikte tutar. Bir bölme noktası bir tool bloğunun içine denk gelirse OpenClaw sınırı kaydırır; böylece eş birlikte kalır ve mevcut özetlenmemiş kuyruk korunur.
+OpenClaw geçmişi compaction parçalarına böldüğünde, asistan araç çağrılarını eşleşen `toolResult` girdileriyle birlikte tutar. Bir bölme noktası bir araç bloğunun içine denk gelirse OpenClaw, çiftin birlikte kalması ve mevcut özetlenmemiş kuyruğun korunması için sınırı taşır.
 
-Tam konuşma geçmişi diskte kalır. Compaction yalnızca modelin bir sonraki turda ne gördüğünü değiştirir.
+Tam konuşma geçmişi diskte kalır. Compaction yalnızca modelin bir sonraki turda gördüklerini değiştirir.
 
 ## Otomatik compaction
 
-Otomatik compaction varsayılan olarak açıktır. Oturum context sınırına yaklaştığında veya model bir context-overflow hatası döndürdüğünde çalışır (bu durumda OpenClaw compact eder ve yeniden dener).
+Otomatik compaction varsayılan olarak açıktır. Oturum bağlam sınırına yaklaştığında veya model bir bağlam taşması hatası döndürdüğünde çalışır; bu durumda OpenClaw compaction uygular ve yeniden dener.
 
 Şunları görürsünüz:
 
@@ -36,12 +37,12 @@ Otomatik compaction varsayılan olarak açıktır. Oturum context sınırına ya
 - `/status` çıktısında `🧹 Compactions: <count>`.
 
 <Info>
-OpenClaw, compact etmeden önce agent'a önemli notları [memory](/tr/concepts/memory) dosyalarına kaydetmesini otomatik olarak hatırlatır. Bu, context kaybını önler.
+OpenClaw, compaction öncesinde önemli notları [memory](/tr/concepts/memory) dosyalarına kaydetmesi için aracı otomatik olarak hatırlatır. Bu, bağlam kaybını önler.
 </Info>
 
 <AccordionGroup>
-  <Accordion title="Tanınan overflow imzaları">
-    OpenClaw, şu provider hata kalıplarından context overflow durumunu algılar:
+  <Accordion title="Tanınan taşma imzaları">
+    OpenClaw, bağlam taşmasını şu sağlayıcı hata kalıplarından algılar:
 
     - `request_too_large`
     - `context length exceeded`
@@ -55,21 +56,21 @@ OpenClaw, compact etmeden önce agent'a önemli notları [memory](/tr/concepts/m
 
 ## Manuel compaction
 
-Bir compaction'ı zorlamak için herhangi bir sohbette `/compact` yazın. Özete yol göstermek için talimat ekleyin:
+Compaction zorlamak için herhangi bir sohbette `/compact` yazın. Özeti yönlendirmek için yönergeler ekleyin:
 
 ```
 /compact Focus on the API design decisions
 ```
 
-`agents.defaults.compaction.keepRecentTokens` ayarlandığında, manuel compaction bu Pi kesme noktasına uyar ve yeniden oluşturulan context içinde son kuyruğu tutar. Açık bir tutma bütçesi olmadan, manuel compaction sert bir checkpoint gibi davranır ve yalnızca yeni özetten devam eder.
+`agents.defaults.compaction.keepRecentTokens` ayarlandığında manuel compaction, bu OpenClaw kesme noktasına uyar ve yeniden oluşturulan bağlamda son kuyruğu korur. Açık bir koruma bütçesi olmadan manuel compaction sert bir kontrol noktası gibi davranır ve yalnızca yeni özetten devam eder.
 
 ## Yapılandırma
 
-Compaction'ı `openclaw.json` dosyanızda `agents.defaults.compaction` altında yapılandırın. En yaygın düğmeler aşağıda listelenmiştir; tam başvuru için bkz. [Oturum yönetimi derinlemesine inceleme](/tr/reference/session-management-compaction).
+Compaction ayarlarını `openclaw.json` dosyanızda `agents.defaults.compaction` altında yapılandırın. En yaygın ayarlar aşağıda listelenmiştir; tam başvuru için [Oturum yönetimi ayrıntılı incelemesi](/tr/reference/session-management-compaction) bölümüne bakın.
 
 ### Farklı bir model kullanma
 
-Varsayılan olarak compaction, agent'ın birincil modelini kullanır. Özetlemeyi daha yetenekli veya özelleşmiş bir modele devretmek için `agents.defaults.compaction.model` ayarını belirleyin. Override herhangi bir `provider/model-id` dizesini kabul eder:
+Varsayılan olarak compaction, aracın birincil modelini kullanır. Özetlemeyi daha yetenekli veya uzmanlaşmış bir modele devretmek için `agents.defaults.compaction.model` ayarını belirleyin. Geçersiz kılma, bir `provider/model-id` dizesini veya `agents.defaults.models` altında yapılandırılmış yalın bir takma adı kabul eder:
 
 ```json
 {
@@ -83,7 +84,9 @@ Varsayılan olarak compaction, agent'ın birincil modelini kullanır. Özetlemey
 }
 ```
 
-Bu, yerel modellerle de çalışır; örneğin özetlemeye ayrılmış ikinci bir Ollama modeli:
+Yalın yapılandırılmış takma adlar, compaction başlamadan önce kurallı sağlayıcılarına ve modellerine çözümlenir. Yalın bir değer hem bir takma adla hem de yapılandırılmış değişmez bir model kimliğiyle eşleşirse değişmez model kimliği kazanır. Eşleşmeyen yalın bir değer, etkin sağlayıcıda model kimliği olarak kalır.
+
+Bu yerel modellerle de çalışır; örneğin özetlemeye ayrılmış ikinci bir Ollama modeli:
 
 ```json
 {
@@ -97,30 +100,30 @@ Bu, yerel modellerle de çalışır; örneğin özetlemeye ayrılmış ikinci bi
 }
 ```
 
-Ayarlanmadığında compaction etkin oturum modeliyle başlar. Özetleme model-fallback'e uygun bir provider hatasıyla başarısız olursa OpenClaw, o compaction denemesini oturumun mevcut model fallback zinciri üzerinden yeniden dener. Fallback seçimi geçicidir ve oturum durumuna geri yazılmaz. Açık bir `agents.defaults.compaction.model` override'ı kesin kalır ve oturum fallback zincirini devralmaz.
+Ayarlanmadığında compaction, etkin oturum modeliyle başlar. Özetleme, model yedeğine uygun bir sağlayıcı hatasıyla başarısız olursa OpenClaw, bu compaction denemesini oturumun mevcut model yedek zinciri üzerinden yeniden dener. Yedek seçimi geçicidir ve oturum durumuna geri yazılmaz. Açık bir `agents.defaults.compaction.model` geçersiz kılması kesin kalır ve oturum yedek zincirini devralmaz.
 
-### Tanımlayıcı koruma
+### Tanımlayıcı koruması
 
-Compaction özetlemesi, opaque tanımlayıcıları varsayılan olarak korur (`identifierPolicy: "strict"`). Devre dışı bırakmak için `identifierPolicy: "off"` ile veya özel yönlendirme için `identifierPolicy: "custom"` artı `identifierInstructions` ile override edin.
+Compaction özetlemesi, opak tanımlayıcıları varsayılan olarak korur (`identifierPolicy: "strict"`). Devre dışı bırakmak için `identifierPolicy: "off"` ile, özel yönlendirme içinse `identifierPolicy: "custom"` artı `identifierInstructions` ile geçersiz kılın.
 
-### Etkin transcript bayt koruması
+### Etkin döküm bayt koruması
 
-`agents.defaults.compaction.maxActiveTranscriptBytes` ayarlandığında, etkin JSONL bu boyuta ulaşırsa OpenClaw bir çalıştırmadan önce normal yerel compaction'ı tetikler. Bu, provider tarafı context yönetiminin model context'ini sağlıklı tutabildiği, ancak yerel transcript'in büyümeye devam ettiği uzun süreli oturumlar için kullanışlıdır. Ham JSONL baytlarını bölmez; normal compaction pipeline'ından anlamsal bir özet oluşturmasını ister.
+`agents.defaults.compaction.maxActiveTranscriptBytes` ayarlandığında OpenClaw, etkin JSONL bu boyuta ulaşırsa bir çalışmadan önce normal yerel compaction tetikler. Bu, sağlayıcı tarafı bağlam yönetiminin model bağlamını sağlıklı tutabildiği ancak yerel dökümün büyümeye devam ettiği uzun süre çalışan oturumlar için kullanışlıdır. Ham JSONL baytlarını bölmez; normal compaction işlem hattından anlamsal bir özet oluşturmasını ister.
 
 <Warning>
-Bayt koruması `truncateAfterCompaction: true` gerektirir. Transcript rotasyonu olmadan etkin dosya küçülmez ve koruma pasif kalır.
+Bayt koruması `truncateAfterCompaction: true` gerektirir. Döküm döndürme olmadan etkin dosya küçülmez ve koruma pasif kalır.
 </Warning>
 
-### Successor transcript'ler
+### Ardıl dökümler
 
-`agents.defaults.compaction.truncateAfterCompaction` etkinleştirildiğinde OpenClaw mevcut transcript'i yerinde yeniden yazmaz. Compaction özetinden, korunmuş durumdan ve özetlenmemiş kuyruktan yeni bir etkin successor transcript oluşturur; ardından önceki JSONL dosyasını arşivlenmiş checkpoint kaynağı olarak tutar.
-Successor transcript'ler ayrıca kısa bir yeniden deneme penceresi içinde gelen tam yinelenen uzun kullanıcı turlarını da düşürür; böylece channel yeniden deneme fırtınaları compaction sonrasında bir sonraki etkin transcript'e taşınmaz.
+`agents.defaults.compaction.truncateAfterCompaction` etkinleştirildiğinde OpenClaw, mevcut dökümü yerinde yeniden yazmaz. Compaction özetinden, korunmuş durumdan ve özetlenmemiş kuyruktan yeni bir etkin ardıl döküm oluşturur, ardından dal/geri yükleme akışlarını bu kompakt ardıla yönelten kontrol noktası üst verilerini kaydeder.
+Ardıl dökümler ayrıca kısa bir yeniden deneme penceresi içinde gelen birebir aynı uzun kullanıcı turlarını düşürür; böylece kanal yeniden deneme fırtınaları compaction sonrasında bir sonraki etkin döküme taşınmaz.
 
-Compaction öncesi checkpoint'ler yalnızca OpenClaw'ın checkpoint boyutu sınırının altında kaldıkları sürece saklanır; fazla büyük etkin transcript'ler yine compact edilir, ancak OpenClaw disk kullanımını ikiye katlamak yerine büyük debug snapshot'ını atlar.
+OpenClaw artık yeni compaction işlemleri için ayrı `.checkpoint.*.jsonl` kopyaları yazmaz. Mevcut eski kontrol noktası dosyaları, başvuruldukları sürece kullanılabilir ve normal oturum temizliği tarafından budanır.
 
 ### Compaction bildirimleri
 
-Varsayılan olarak compaction sessiz çalışır. Compaction başladığında ve tamamlandığında kısa durum iletileri göstermek için `notifyUser` ayarını belirleyin:
+Varsayılan olarak compaction sessiz çalışır. Compaction başladığında ve tamamlandığında kısa durum mesajları göstermek için `notifyUser` ayarını belirleyin:
 
 ```json5
 {
@@ -134,9 +137,9 @@ Varsayılan olarak compaction sessiz çalışır. Compaction başladığında ve
 }
 ```
 
-### Memory flush
+### Bellek boşaltma
 
-Compaction öncesinde OpenClaw, dayanıklı notları diske depolamak için **sessiz memory flush** turu çalıştırabilir. Bu bakım turunun etkin konuşma modeli yerine yerel bir model kullanması gerektiğinde `agents.defaults.compaction.memoryFlush.model` ayarını belirleyin:
+Compaction öncesinde OpenClaw, kalıcı notları diske depolamak için **sessiz bellek boşaltma** turu çalıştırabilir. Bu bakım turunun etkin konuşma modeli yerine yerel bir model kullanması gerektiğinde `agents.defaults.compaction.memoryFlush.model` ayarını belirleyin:
 
 ```json
 {
@@ -152,13 +155,13 @@ Compaction öncesinde OpenClaw, dayanıklı notları diske depolamak için **ses
 }
 ```
 
-Memory-flush model override'ı kesindir ve etkin oturum fallback zincirini devralmaz. Ayrıntılar ve yapılandırma için bkz. [Memory](/tr/concepts/memory).
+Bellek boşaltma modeli geçersiz kılması kesindir ve etkin oturum yedek zincirini devralmaz. Ayrıntılar ve yapılandırma için [Bellek](/tr/concepts/memory) bölümüne bakın.
 
-## Takılabilir compaction provider'ları
+## Takılabilir compaction sağlayıcıları
 
-Plugins, Plugin API'sindeki `registerCompactionProvider()` aracılığıyla özel bir compaction provider'ı kaydedebilir. Bir provider kaydedilip yapılandırıldığında OpenClaw, özetlemeyi yerleşik LLM pipeline'ı yerine ona devreder.
+Plugin'ler, plugin API üzerinde `registerCompactionProvider()` aracılığıyla özel bir compaction sağlayıcısı kaydedebilir. Bir sağlayıcı kaydedilip yapılandırıldığında OpenClaw, özetlemeyi yerleşik LLM işlem hattı yerine ona devreder.
 
-Kayıtlı bir provider kullanmak için yapılandırmanızda id'sini ayarlayın:
+Kayıtlı bir sağlayıcı kullanmak için yapılandırmanızda kimliğini ayarlayın:
 
 ```json
 {
@@ -172,35 +175,35 @@ Kayıtlı bir provider kullanmak için yapılandırmanızda id'sini ayarlayın:
 }
 ```
 
-Bir `provider` ayarlamak otomatik olarak `mode: "safeguard"` değerini zorunlu kılar. Provider'lar, yerleşik yol ile aynı compaction talimatlarını ve tanımlayıcı koruma politikasını alır; OpenClaw provider çıktısından sonra son-tur ve bölünmüş-tur suffix context'ini yine korur.
+Bir `provider` ayarlamak otomatik olarak `mode: "safeguard"` zorlar. Sağlayıcılar, yerleşik yolla aynı compaction yönergelerini ve tanımlayıcı koruma politikasını alır; OpenClaw sağlayıcı çıktısından sonra da son tur ve bölünmüş tur sonek bağlamını korur.
 
 <Note>
-Provider başarısız olursa veya boş bir sonuç döndürürse OpenClaw yerleşik LLM özetlemesine geri döner.
+Sağlayıcı başarısız olursa veya boş sonuç döndürürse OpenClaw yerleşik LLM özetlemesine geri döner.
 </Note>
 
 ## Compaction ve budama
 
 |                  | Compaction                    | Budama                           |
 | ---------------- | ----------------------------- | -------------------------------- |
-| **Ne yapar** | Daha eski konuşmayı özetler | Eski tool sonuçlarını kırpar     |
-| **Kaydedilir mi?**       | Evet (oturum transcript'inde) | Hayır (yalnızca bellekte, istek başına) |
-| **Kapsam**        | Tüm konuşma                  | Yalnızca tool sonuçları          |
+| **Ne yapar?**    | Eski konuşmayı özetler        | Eski araç sonuçlarını kırpar     |
+| **Kaydedilir mi?** | Evet (oturum dökümünde)     | Hayır (yalnızca bellek içi, istek başına) |
+| **Kapsam**       | Tüm konuşma                   | Yalnızca araç sonuçları          |
 
-[Oturum budama](/tr/concepts/session-pruning), özetleme yapmadan tool çıktısını kırpan daha hafif bir tamamlayıcıdır.
+[Oturum budama](/tr/concepts/session-pruning), araç çıktısını özetlemeden kırpan daha hafif bir tamamlayıcıdır.
 
 ## Sorun giderme
 
-**Çok sık compact ediyor mu?** Modelin context penceresi küçük olabilir veya tool çıktıları büyük olabilir. [Oturum budama](/tr/concepts/session-pruning) özelliğini etkinleştirmeyi deneyin.
+**Çok sık compaction mı uygulanıyor?** Modelin bağlam penceresi küçük olabilir veya araç çıktıları büyük olabilir. [Oturum budamayı](/tr/concepts/session-pruning) etkinleştirmeyi deneyin.
 
-**Compaction sonrasında context bayat mı geliyor?** Özeti yönlendirmek için `/compact Focus on <topic>` kullanın veya notların kalması için [memory flush](/tr/concepts/memory) özelliğini etkinleştirin.
+**Compaction sonrasında bağlam eski mi hissettiriyor?** Özeti yönlendirmek için `/compact Focus on <topic>` kullanın veya notların korunması için [bellek boşaltmayı](/tr/concepts/memory) etkinleştirin.
 
-**Temiz bir başlangıca mı ihtiyacınız var?** `/new`, compact etmeden yeni bir oturum başlatır.
+**Temiz bir başlangıç mı gerekiyor?** `/new`, compaction uygulamadan yeni bir oturum başlatır.
 
-Gelişmiş yapılandırma (reserve token'lar, tanımlayıcı koruma, özel context engine'leri, OpenAI sunucu tarafı compaction) için bkz. [Oturum yönetimi derinlemesine inceleme](/tr/reference/session-management-compaction).
+Gelişmiş yapılandırma için (ayrılmış token'lar, tanımlayıcı koruması, özel bağlam motorları, OpenAI sunucu tarafı compaction) [Oturum yönetimi ayrıntılı incelemesi](/tr/reference/session-management-compaction) bölümüne bakın.
 
 ## İlgili
 
 - [Oturum](/tr/concepts/session): oturum yönetimi ve yaşam döngüsü.
-- [Oturum budama](/tr/concepts/session-pruning): tool sonuçlarını kırpma.
-- [Context](/tr/concepts/context): agent turları için context'in nasıl oluşturulduğu.
-- [Hooks](/tr/automation/hooks): compaction yaşam döngüsü hooks'ları (`before_compaction`, `after_compaction`).
+- [Oturum budama](/tr/concepts/session-pruning): araç sonuçlarını kırpma.
+- [Bağlam](/tr/concepts/context): aracı turları için bağlamın nasıl oluşturulduğu.
+- [Hooks](/tr/automation/hooks): compaction yaşam döngüsü hook'ları (`before_compaction`, `after_compaction`).

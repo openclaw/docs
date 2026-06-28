@@ -1,28 +1,31 @@
 ---
 read_when:
-    - Implementazione del pannello Canvas per macOS
-    - Aggiunta dei controlli agente per l'area di lavoro visiva
-    - Debug dei caricamenti del canvas in WKWebView
+    - Implementazione del pannello Canvas di macOS
+    - Aggiunta di controlli agente per l'area di lavoro visiva
+    - Debug dei caricamenti canvas in WKWebView
 summary: Pannello Canvas controllato dall'agente incorporato tramite WKWebView + schema URL personalizzato
-title: Tela
+title: Area di disegno
 x-i18n:
-    generated_at: "2026-05-06T08:59:40Z"
+    generated_at: "2026-06-28T00:12:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
+    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-L’app macOS incorpora un **pannello Canvas** controllato dall’agente usando `WKWebView`. È un workspace visivo leggero per HTML/CSS/JS, A2UI e piccole superfici UI interattive.
+L'app macOS incorpora un **pannello Canvas** controllato dall'agente usando `WKWebView`. È
+uno spazio di lavoro visivo leggero per HTML/CSS/JS, A2UI e piccole superfici
+UI interattive.
 
-## Dove risiede Canvas
+## Dove vive Canvas
 
 Lo stato di Canvas è archiviato in Application Support:
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
-Il pannello Canvas serve questi file tramite uno **schema URL personalizzato**:
+Il pannello Canvas serve quei file tramite uno **schema URL personalizzato**:
 
 - `openclaw-canvas://<session>/<path>`
 
@@ -32,25 +35,26 @@ Esempi:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Se non esiste alcun `index.html` nella radice, l’app mostra una **pagina scaffold integrata**.
+Se non esiste alcun `index.html` nella root, l'app mostra una **pagina scaffold integrata**.
 
 ## Comportamento del pannello
 
 - Pannello senza bordi e ridimensionabile, ancorato vicino alla barra dei menu (o al cursore del mouse).
 - Ricorda dimensione/posizione per sessione.
 - Si ricarica automaticamente quando i file Canvas locali cambiano.
-- È visibile un solo pannello Canvas alla volta (la sessione viene cambiata quando necessario).
+- È visibile un solo pannello Canvas alla volta (la sessione viene cambiata secondo necessità).
 
-Canvas può essere disabilitato da Impostazioni → **Consenti Canvas**. Quando è disabilitato, i comandi Node di canvas restituiscono `CANVAS_DISABLED`.
+Canvas può essere disabilitato da Impostazioni → **Consenti Canvas**. Quando è disabilitato, i
+comandi dei nodi canvas restituiscono `CANVAS_DISABLED`.
 
-## Superficie API dell’agente
+## Superficie API dell'agente
 
-Canvas è esposto tramite il **Gateway WebSocket**, quindi l’agente può:
+Canvas è esposto tramite il **Gateway WebSocket**, quindi l'agente può:
 
 - mostrare/nascondere il pannello
-- navigare verso un percorso o un URL
+- navigare verso un percorso o URL
 - valutare JavaScript
-- acquisire un’immagine snapshot
+- acquisire un'immagine snapshot
 
 Esempi CLI:
 
@@ -68,11 +72,11 @@ Note:
 
 ## A2UI in Canvas
 
-A2UI è ospitato dal canvas host del Gateway e renderizzato all’interno del pannello Canvas.
-Quando il Gateway annuncia un host Canvas, l’app macOS naviga automaticamente alla
+A2UI è ospitato dall'host canvas del Gateway e renderizzato dentro il pannello Canvas.
+Quando il Gateway annuncia un host Canvas, l'app macOS naviga automaticamente alla
 pagina host A2UI alla prima apertura.
 
-URL host A2UI predefinito:
+URL predefinito dell'host A2UI:
 
 ```
 http://<gateway-host>:18789/__openclaw__/a2ui/
@@ -100,15 +104,15 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Smoke rapido:
+Smoke test rapido:
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Attivare esecuzioni dell’agente da Canvas
+## Attivazione di esecuzioni dell'agente da Canvas
 
-Canvas può attivare nuove esecuzioni dell’agente tramite deep link:
+Canvas può attivare nuove esecuzioni dell'agente tramite deep link:
 
 - `openclaw://agent?...`
 
@@ -118,13 +122,24 @@ Esempio (in JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-L’app chiede conferma a meno che non venga fornita una chiave valida.
+Parametri di query supportati:
 
-## Note di sicurezza
+- `message`: prompt dell'agente precompilato.
+- `sessionKey`: identificatore stabile della sessione.
+- `thinking`: profilo di ragionamento opzionale.
+- `deliver`, `to` o `channel`: destinazione di consegna.
+- `timeoutSeconds`: timeout di esecuzione opzionale.
+- `key`: token di sicurezza generato dall'app per chiamanti locali attendibili.
 
-- Lo schema Canvas blocca il directory traversal; i file devono trovarsi sotto la radice della sessione.
-- Il contenuto Canvas locale usa uno schema personalizzato (non è richiesto alcun server loopback locale).
-- Gli URL `http(s)` esterni sono consentiti solo quando vengono navigati esplicitamente.
+L'app chiede conferma a meno che non venga fornita una chiave valida. I link senza chiave
+mostrano il messaggio e l'URL prima dell'approvazione e ignorano i campi di routing della consegna;
+i link con chiave usano il normale percorso di esecuzione del Gateway.
+
+## Note sulla sicurezza
+
+- Lo schema Canvas blocca l'attraversamento delle directory; i file devono trovarsi sotto la root della sessione.
+- Il contenuto Canvas locale usa uno schema personalizzato (non è richiesto alcun server local loopback).
+- Gli URL esterni `http(s)` sono consentiti solo quando vengono navigati esplicitamente.
 
 ## Correlati
 

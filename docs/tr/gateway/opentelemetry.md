@@ -1,42 +1,32 @@
 ---
 read_when:
-    - OpenClaw model kullanımını, mesaj akışını veya oturum metriklerini bir OpenTelemetry toplayıcısına göndermek istiyorsunuz
-    - İzleri, metrikleri veya günlükleri Grafana, Datadog, Honeycomb, New Relic, Tempo ya da başka bir OTLP arka ucuna bağlıyorsunuz
-    - Panolar veya uyarılar oluşturmak için tam metrik adlarına, span adlarına veya öznitelik yapılarına ihtiyacınız vardır
-summary: OpenClaw tanılamalarını diagnostics-otel Plugin'i aracılığıyla herhangi bir OpenTelemetry toplayıcısına dışa aktarın (OTLP/HTTP)
+    - OpenClaw model kullanımını, ileti akışını veya oturum metriklerini bir OpenTelemetry toplayıcısına göndermek istiyorsunuz
+    - Grafana, Datadog, Honeycomb, New Relic, Tempo veya başka bir OTLP arka ucuna izleri, metrikleri ya da günlükleri bağlıyorsunuz
+    - Panolar veya uyarılar oluşturmak için tam metrik adlarına, span adlarına veya öznitelik şekillerine ihtiyacınız vardır
+summary: OpenClaw tanılamalarını diagnostics-otel Plugin aracılığıyla OpenTelemetry toplayıcılarına veya stdout JSONL’ye dışa aktarın
 title: OpenTelemetry dışa aktarımı
 x-i18n:
-    generated_at: "2026-05-06T17:56:13Z"
+    generated_at: "2026-06-28T00:37:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b09453a4a1592d2698de6340e5f006ef16edfd8e86132285c48865d468d20ab6
+    source_hash: 551de723eec13f73ee7a8614a9c0faa64dae52c5f5749fccfca8a347b3307355
     source_path: gateway/opentelemetry.md
     workflow: 16
 ---
 
-OpenClaw, resmi `diagnostics-otel` plugin'i aracılığıyla tanılamaları
-**OTLP/HTTP (protobuf)** kullanarak dışa aktarır. OTLP/HTTP kabul eden herhangi
-bir collector veya backend, kod değişikliği olmadan çalışır. Yerel dosya
-günlükleri ve bunların nasıl okunacağı için bkz. [Günlükleme](/tr/logging).
+OpenClaw, resmi `diagnostics-otel` Plugin'i aracılığıyla **OTLP/HTTP (protobuf)** kullanarak tanılama verilerini dışa aktarır. Günlükler, container ve sandbox günlük hatları için stdout JSONL olarak da yazılabilir. OTLP/HTTP kabul eden herhangi bir collector veya backend, kod değişikliği gerektirmeden çalışır. Yerel dosya günlükleri ve bunların nasıl okunacağı için bkz. [Günlükleme](/tr/logging).
 
-## Birlikte nasıl çalışır
+## Nasıl birlikte çalışır
 
-- **Tanılama olayları**, model çalıştırmaları, mesaj akışı, oturumlar,
-  kuyruklar ve exec için Gateway ve paketli plugin'ler tarafından yayımlanan
-  yapılandırılmış, süreç içi kayıtlardır.
-- **`diagnostics-otel` plugin'i** bu olaylara abone olur ve bunları OTLP/HTTP
-  üzerinden OpenTelemetry **metrikleri**, **izleri** ve **günlükleri** olarak
-  dışa aktarır.
-- **Sağlayıcı çağrıları**, sağlayıcı aktarımı özel başlıkları kabul ettiğinde
-  OpenClaw'ın güvenilir model çağrısı span bağlamından bir W3C `traceparent`
-  başlığı alır. Plugin tarafından yayımlanan iz bağlamı yayılmaz.
-- Exporter'lar yalnızca hem tanılama yüzeyi hem de plugin etkin olduğunda
-  bağlanır; bu nedenle süreç içi maliyet varsayılan olarak neredeyse sıfır
-  kalır.
+- **Tanılama olayları**, model çalıştırmaları, mesaj akışı, oturumlar, kuyruklar ve exec için Gateway ve paketle birlikte gelen Plugin'ler tarafından yayımlanan yapılandırılmış, süreç içi kayıtlardır.
+- **`diagnostics-otel` Plugin'i**, bu olaylara abone olur ve bunları OTLP/HTTP üzerinden OpenTelemetry **metrikleri**, **izleri** ve **günlükleri** olarak dışa aktarır. Tanılama günlük kayıtlarını stdout JSONL'ye de yansıtabilir.
+- **Sağlayıcı çağrıları**, sağlayıcı aktarımı özel başlıkları kabul ettiğinde OpenClaw'ın güvenilir model çağrısı span bağlamından bir W3C `traceparent` başlığı alır. Plugin tarafından yayımlanan iz bağlamı yayılmaz.
+- Dışa aktarıcılar yalnızca hem tanılama yüzeyi hem de Plugin etkinleştirildiğinde bağlanır; bu nedenle süreç içi maliyet varsayılan olarak sıfıra yakın kalır.
 
 ## Hızlı başlangıç
 
-Paketli kurulumlar için önce plugin'i kurun:
+Paketli kurulumlar için önce Plugin'i kurun:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/diagnostics-otel
@@ -67,7 +57,7 @@ openclaw plugins install clawhub:@openclaw/diagnostics-otel
 }
 ```
 
-Plugin'i CLI'dan da etkinleştirebilirsiniz:
+Plugin'i CLI'den de etkinleştirebilirsiniz:
 
 ```bash
 openclaw plugins enable diagnostics-otel
@@ -79,16 +69,15 @@ openclaw plugins enable diagnostics-otel
 
 ## Dışa aktarılan sinyaller
 
-| Sinyal      | İçeriğine ne girer                                                                                                                                               |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Metrikler** | Token kullanımı, maliyet, çalıştırma süresi, mesaj akışı, Talk olayları, kuyruk hatları, oturum durumu/kurtarma, exec ve bellek baskısı için sayaçlar ve histogramlar. |
-| **İzler**  | Model kullanımı, model çağrıları, harness yaşam döngüsü, araç yürütme, exec, webhook/mesaj işleme, bağlam oluşturma ve araç döngüleri için span'ler.              |
-| **Günlükler**    | `diagnostics.otel.logs` etkin olduğunda OTLP üzerinden dışa aktarılan yapılandırılmış `logging.file` kayıtları.                                                           |
+| Sinyal       | İçeriğine neler girer                                                                                                                                                                                                 |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Metrikler** | Token kullanımı, maliyet, çalıştırma süresi, failover, beceri kullanımı, mesaj akışı, Talk olayları, kuyruk hatları, oturum durumu/kurtarma, araç yürütme, aşırı büyük payload'lar, exec ve bellek baskısı için sayaçlar ve histogramlar. |
+| **İzler**    | Model kullanımı, model çağrıları, harness yaşam döngüsü, beceri kullanımı, araç yürütme, exec, webhook/mesaj işleme, bağlam derleme ve araç döngüleri için span'ler.                                                   |
+| **Günlükler** | `diagnostics.otel.logs` etkinleştirildiğinde OTLP veya stdout JSONL üzerinden dışa aktarılan yapılandırılmış `logging.file` kayıtları; içerik yakalama açıkça etkinleştirilmedikçe günlük gövdeleri saklı tutulur.       |
 
-`traces`, `metrics` ve `logs` ayarlarını bağımsız olarak açıp kapatın.
-`diagnostics.otel.enabled` true olduğunda üçü de varsayılan olarak açıktır.
+`traces`, `metrics` ve `logs` bağımsız olarak açılıp kapatılabilir. `diagnostics.otel.enabled` true olduğunda izler ve metrikler varsayılan olarak açıktır. Günlükler varsayılan olarak kapalıdır ve yalnızca `diagnostics.otel.logs` açıkça `true` olduğunda dışa aktarılır. Günlük dışa aktarımı varsayılan olarak OTLP kullanır; stdout üzerinde JSONL için `diagnostics.otel.logsExporter` değerini `stdout`, her tanılama günlük kaydını hem OTLP'ye hem de stdout'a göndermek için `both` olarak ayarlayın.
 
-## Yapılandırma referansı
+## Yapılandırma başvurusu
 
 ```json5
 {
@@ -106,6 +95,7 @@ openclaw plugins enable diagnostics-otel
       traces: true,
       metrics: true,
       logs: true,
+      logsExporter: "otlp", // otlp | stdout | both
       sampleRate: 0.2, // root-span sampler, 0.0..1.0
       flushIntervalMs: 60000, // metric export interval (min 1000ms)
       captureContent: {
@@ -115,6 +105,7 @@ openclaw plugins enable diagnostics-otel
         toolInputs: false,
         toolOutputs: false,
         systemPrompt: false,
+        toolDefinitions: false,
       },
     },
   },
@@ -123,63 +114,42 @@ openclaw plugins enable diagnostics-otel
 
 ### Ortam değişkenleri
 
-| Değişken                                                                                                          | Amaç                                                                                                                                                                                                                                    |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | `diagnostics.otel.endpoint` değerini geçersiz kılar. Değer zaten `/v1/traces`, `/v1/metrics` veya `/v1/logs` içeriyorsa olduğu gibi kullanılır.                                                                                                          |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Eşleşen `diagnostics.otel.*Endpoint` yapılandırma anahtarı ayarlanmamışsa kullanılan sinyale özgü endpoint geçersiz kılmaları. Sinyale özgü yapılandırma, sinyale özgü ortam değişkenine; o da paylaşılan endpoint'e göre önceliklidir.                                     |
-| `OTEL_SERVICE_NAME`                                                                                               | `diagnostics.otel.serviceName` değerini geçersiz kılar.                                                                                                                                                                                                   |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Hat protokolünü geçersiz kılar (bugün yalnızca `http/protobuf` dikkate alınır).                                                                                                                                                                        |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Eski `gen_ai.system` yerine en yeni deneysel GenAI span özniteliğini (`gen_ai.provider.name`) yaymak için `gen_ai_latest_experimental` olarak ayarlayın. GenAI metrikleri ne olursa olsun her zaman sınırlı, düşük kardinaliteli semantik öznitelikler kullanır. |
-| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Başka bir preload veya host süreci global OpenTelemetry SDK'sını zaten kaydettiğinde `1` olarak ayarlayın. Plugin bu durumda kendi NodeSDK yaşam döngüsünü atlar, ancak tanılama dinleyicilerini yine de bağlar ve `traces`/`metrics`/`logs` ayarlarına uyar.                |
+| Değişken                                                                                                          | Amaç                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | `diagnostics.otel.endpoint` değerini geçersiz kılar. Değer zaten `/v1/traces`, `/v1/metrics` veya `/v1/logs` içeriyorsa olduğu gibi kullanılır.                                                                                                                                                                                              |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Eşleşen `diagnostics.otel.*Endpoint` yapılandırma anahtarı ayarlanmamışsa kullanılan sinyale özgü endpoint geçersiz kılmalarıdır. Sinyale özgü yapılandırma, sinyale özgü env değerine; o da paylaşılan endpoint'e göre önceliklidir.                                                                                                      |
+| `OTEL_SERVICE_NAME`                                                                                               | `diagnostics.otel.serviceName` değerini geçersiz kılar.                                                                                                                                                                                                                                                                                    |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Hat protokolünü geçersiz kılar (bugün yalnızca `http/protobuf` dikkate alınır).                                                                                                                                                                                                                                                             |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | `{gen_ai.operation.name} {gen_ai.request.model}` span adları, `CLIENT` span türü ve eski `gen_ai.system` yerine `gen_ai.provider.name` dahil olmak üzere en yeni deneysel GenAI çıkarım span şeklini yayımlamak için `gen_ai_latest_experimental` olarak ayarlayın. GenAI metrikleri ne olursa olsun sınırlı, düşük kardinaliteli semantik öznitelikler kullanır. |
+| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Başka bir preload veya ana süreç global OpenTelemetry SDK'sını zaten kaydettiğinde `1` olarak ayarlayın. Plugin bu durumda kendi NodeSDK yaşam döngüsünü atlar, ancak tanılama dinleyicilerini bağlamaya ve `traces`/`metrics`/`logs` ayarlarına uymaya devam eder.                                                                          |
 
 ## Gizlilik ve içerik yakalama
 
-Ham model/araç içeriği varsayılan olarak **dışa aktarılmaz**. Span'ler sınırlı
-tanımlayıcılar taşır (kanal, sağlayıcı, model, hata kategorisi, yalnızca hash
-içeren istek kimlikleri) ve istem metni, yanıt metni, araç girdileri, araç
-çıktıları veya oturum anahtarlarını asla içermez.
-Talk metrikleri yalnızca mod, aktarım, sağlayıcı ve olay türü gibi sınırlı olay
-meta verilerini dışa aktarır. Transkriptleri, ses yüklerini, oturum kimliklerini,
-turn kimliklerini, çağrı kimliklerini, oda kimliklerini veya handoff token'larını
-içermezler.
+Ham model/araç içeriği varsayılan olarak **dışa aktarılmaz**. Span'ler sınırlı tanımlayıcılar taşır (kanal, sağlayıcı, model, hata kategorisi, yalnızca hash içeren istek id'leri, araç kaynağı, araç sahibi ve skill adı/kaynağı) ve hiçbir zaman prompt metni, yanıt metni, araç girdileri, araç çıktıları, skill dosya yolları veya oturum anahtarları içermez. OTLP günlük kayıtları varsayılan olarak önem derecesini, logger'ı, kod konumunu, güvenilir iz bağlamını ve sanitize edilmiş öznitelikleri korur; ancak ham günlük mesajı gövdesi yalnızca `diagnostics.otel.captureContent` boolean `true` olarak ayarlandığında dışa aktarılır. Ayrıntılı `captureContent.*` alt anahtarları günlük gövdelerini etkinleştirmez. Kapsamlı agent oturum anahtarlarına benzeyen etiketler `unknown` ile değiştirilir.
+Talk metrikleri yalnızca mod, transport, sağlayıcı ve olay türü gibi sınırlı olay metadata'sını dışa aktarır. Transcript'leri, ses payload'larını, oturum id'lerini, turn id'lerini, çağrı id'lerini, oda id'lerini veya handoff token'larını içermez.
 
-Giden model istekleri bir W3C `traceparent` başlığı içerebilir. Bu başlık yalnızca
-etkin model çağrısı için OpenClaw'a ait tanılama iz bağlamından oluşturulur.
-Mevcut çağıran tarafından sağlanan `traceparent` başlıkları değiştirilir; böylece
-plugin'ler veya özel sağlayıcı seçenekleri servisler arası iz soyunu taklit
-edemez.
+Giden model istekleri bir W3C `traceparent` başlığı içerebilir. Bu başlık yalnızca etkin model çağrısı için OpenClaw'a ait tanılama iz bağlamından oluşturulur. Mevcut çağıran tarafından sağlanan `traceparent` başlıkları değiştirilir; böylece Plugin'ler veya özel sağlayıcı seçenekleri servisler arası iz soyunu taklit edemez.
 
-`diagnostics.otel.captureContent.*` ayarını yalnızca collector'ınız ve saklama
-politikanız istem, yanıt, araç veya system-prompt metni için onaylı olduğunda
-`true` yapın. Her alt anahtar bağımsız olarak opt-in'dir:
+`diagnostics.otel.captureContent.*` değerini yalnızca collector ve saklama politikanız prompt, yanıt, araç veya system-prompt metni için onaylıysa `true` olarak ayarlayın. Her alt anahtar bağımsız olarak opt-in'dir:
 
-- `inputMessages` - kullanıcı istemi içeriği.
-- `outputMessages` - model yanıtı içeriği.
-- `toolInputs` - araç argümanı yükleri.
-- `toolOutputs` - araç sonucu yükleri.
-- `systemPrompt` - oluşturulmuş sistem/geliştirici istemi.
+- `inputMessages` - kullanıcı prompt içeriği.
+- `outputMessages` - model yanıt içeriği.
+- `toolInputs` - araç argüman payload'ları.
+- `toolOutputs` - araç sonuç payload'ları.
+- `systemPrompt` - birleştirilmiş system/developer prompt'u.
+- `toolDefinitions` - model araç adları, açıklamaları ve şemaları.
 
-Herhangi bir alt anahtar etkinleştirildiğinde, model ve araç span'leri yalnızca o
-sınıf için sınırlı, redakte edilmiş `openclaw.content.*` öznitelikleri alır.
+Herhangi bir alt anahtar etkinleştirildiğinde, model ve araç span'leri yalnızca o sınıf için sınırlı, redakte edilmiş `openclaw.content.*` öznitelikleri alır. Boolean `captureContent: true` değerini yalnızca OTLP günlük mesajı gövdelerinin de dışa aktarım için onaylandığı geniş tanılama yakalamalarında kullanın.
 
-## Örnekleme ve flush
+`toolInputs`/`toolOutputs` içeriği, yerleşik agent runtime'ının araç yürütmeleri için yakalanır (tamamlanan/hatalı span'lerde `openclaw.content.tool_input`, tamamlanan span'lerde `openclaw.content.tool_output`). Harici harness araç çağrıları (Codex, Claude CLI) içerik payload'ları olmadan `tool.execution.*` span'leri yayımlar. Yakalanan içerik güvenilir, yalnızca dinleyiciye açık bir kanalda taşınır ve hiçbir zaman genel tanılama olay veri yoluna yerleştirilmez.
 
-- **İzler:** `diagnostics.otel.sampleRate` (yalnızca kök span, `0.0` hepsini
-  düşürür, `1.0` hepsini tutar).
+## Örnekleme ve boşaltma
+
+- **İzler:** `diagnostics.otel.sampleRate` (yalnızca root-span, `0.0` tümünü düşürür, `1.0` tümünü tutar).
 - **Metrikler:** `diagnostics.otel.flushIntervalMs` (minimum `1000`).
-- **Günlükler:** OTLP günlükleri `logging.level` değerine (dosya günlük düzeyi)
-  uyar. Konsol biçimlendirmesini değil, tanılama günlük kaydı redaksiyon yolunu
-  kullanırlar. Yüksek hacimli kurulumlar yerel örnekleme yerine OTLP collector
-  örneklemesini/filtrelemesini tercih etmelidir.
-- **Dosya günlüğü korelasyonu:** JSONL dosya günlükleri, günlük çağrısı geçerli
-  bir tanılama iz bağlamı taşıdığında üst düzey `traceId`, `spanId`,
-  `parentSpanId` ve `traceFlags` içerir; bu, günlük işleyicilerinin yerel günlük
-  satırlarını dışa aktarılan span'lerle birleştirmesini sağlar.
-- **İstek korelasyonu:** Gateway HTTP istekleri ve WebSocket frame'leri dahili
-  bir istek iz kapsamı oluşturur. Bu kapsam içindeki günlükler ve tanılama
-  olayları varsayılan olarak istek izini devralırken, agent çalıştırma ve model
-  çağrısı span'leri alt öğeler olarak oluşturulur; böylece sağlayıcı
-  `traceparent` başlıkları aynı iz üzerinde kalır.
+- **Günlükler:** OTLP günlükleri `logging.level` değerine (dosya günlük seviyesi) uyar. Konsol biçimlendirmesini değil, tanılama günlük kaydı redaksiyon yolunu kullanırlar. Yüksek hacimli kurulumlar yerel örnekleme yerine OTLP collector örnekleme/filtrelemeyi tercih etmelidir. Platformunuz stdout/stderr'i zaten bir günlük işleyicisine gönderiyorsa ve OTLP günlük collector'ınız yoksa `diagnostics.otel.logsExporter: "stdout"` olarak ayarlayın. Stdout kayıtları satır başına bir JSON nesnesidir ve mevcut olduğunda `ts`, `signal`, `service.name`, önem derecesi, gövde, redakte edilmiş öznitelikler ve güvenilir iz alanlarını içerir.
+- **Dosya günlüğü korelasyonu:** JSONL dosya günlükleri, günlük çağrısı geçerli bir tanılama iz bağlamı taşıdığında üst düzey `traceId`, `spanId`, `parentSpanId` ve `traceFlags` içerir; bu da günlük işleyicilerinin yerel günlük satırlarını dışa aktarılan span'lerle birleştirmesini sağlar.
+- **İstek korelasyonu:** Gateway HTTP istekleri ve WebSocket frame'leri dahili bir istek iz kapsamı oluşturur. Bu kapsamdaki günlükler ve tanılama olayları varsayılan olarak istek izini devralırken, agent çalıştırma ve model çağrısı span'leri alt öğe olarak oluşturulur; böylece sağlayıcı `traceparent` başlıkları aynı izde kalır.
 
 ## Dışa aktarılan metrikler
 
@@ -192,9 +162,11 @@ sınıf için sınırlı, redakte edilmiş `openclaw.content.*` öznitelikleri a
 - `gen_ai.client.token.usage` (histogram, GenAI semantik kuralları metriği, öznitelikler: `gen_ai.token.type` = `input`/`output`, `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`)
 - `gen_ai.client.operation.duration` (histogram, saniye, GenAI semantik kuralları metriği, öznitelikler: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, isteğe bağlı `error.type`)
 - `openclaw.model_call.duration_ms` (histogram, öznitelikler: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`, ayrıca sınıflandırılmış hatalarda `openclaw.errorCategory` ve `openclaw.failureKind`)
-- `openclaw.model_call.request_bytes` (histogram, son model istek yükünün UTF-8 bayt boyutu; ham yük içeriği yok)
-- `openclaw.model_call.response_bytes` (histogram, akışla gelen model yanıt olaylarının UTF-8 bayt boyutu; ham yanıt içeriği yok)
-- `openclaw.model_call.time_to_first_byte_ms` (histogram, akışla gelen ilk yanıt olayından önce geçen süre)
+- `openclaw.model_call.request_bytes` (histogram, son model isteği yükünün UTF-8 bayt boyutu; ham yük içeriği yok)
+- `openclaw.model_call.response_bytes` (histogram, akışla gönderilen yanıt parçası yüklerinin UTF-8 bayt boyutu; yüksek frekanslı metin, düşünme ve araç çağrısı deltaları yalnızca artımlı `delta` baytlarını sayar; ham yanıt içeriği yok)
+- `openclaw.model_call.time_to_first_byte_ms` (histogram, ilk akışlı yanıt olayından önce geçen süre)
+- `openclaw.model.failover` (sayaç, öznitelikler: `openclaw.provider`, `openclaw.model`, `openclaw.failover.to_provider`, `openclaw.failover.to_model`, `openclaw.failover.reason`, `openclaw.failover.suspended`, `openclaw.lane`)
+- `openclaw.skill.used` (sayaç, öznitelikler: `openclaw.skill.name`, `openclaw.skill.source`, `openclaw.skill.activation`, isteğe bağlı `openclaw.agent`, isteğe bağlı `openclaw.toolName`)
 
 ### Mesaj akışı
 
@@ -202,16 +174,20 @@ sınıf için sınırlı, redakte edilmiş `openclaw.content.*` öznitelikleri a
 - `openclaw.webhook.error` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.webhook`)
 - `openclaw.webhook.duration_ms` (histogram, öznitelikler: `openclaw.channel`, `openclaw.webhook`)
 - `openclaw.message.queued` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.source`)
+- `openclaw.message.received` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.source`)
+- `openclaw.message.dispatch.started` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.source`)
+- `openclaw.message.dispatch.completed` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.outcome`, `openclaw.reason`, `openclaw.source`)
+- `openclaw.message.dispatch.duration_ms` (histogram, öznitelikler: `openclaw.channel`, `openclaw.outcome`, `openclaw.reason`, `openclaw.source`)
 - `openclaw.message.processed` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.outcome`)
 - `openclaw.message.duration_ms` (histogram, öznitelikler: `openclaw.channel`, `openclaw.outcome`)
 - `openclaw.message.delivery.started` (sayaç, öznitelikler: `openclaw.channel`, `openclaw.delivery.kind`)
 - `openclaw.message.delivery.duration_ms` (histogram, öznitelikler: `openclaw.channel`, `openclaw.delivery.kind`, `openclaw.outcome`, `openclaw.errorCategory`)
 
-### Talk
+### Konuşma
 
 - `openclaw.talk.event` (sayaç, öznitelikler: `openclaw.talk.event_type`, `openclaw.talk.mode`, `openclaw.talk.transport`, `openclaw.talk.brain`, `openclaw.talk.provider`)
-- `openclaw.talk.event.duration_ms` (histogram, öznitelikler: `openclaw.talk.event` ile aynı; bir Talk olayı süre bildirdiğinde yayımlanır)
-- `openclaw.talk.audio.bytes` (histogram, öznitelikler: `openclaw.talk.event` ile aynı; bayt uzunluğu bildiren Talk ses frame olayları için yayımlanır)
+- `openclaw.talk.event.duration_ms` (histogram, öznitelikler: `openclaw.talk.event` ile aynı; bir Konuşma olayı süre bildirdiğinde yayınlanır)
+- `openclaw.talk.audio.bytes` (histogram, öznitelikler: `openclaw.talk.event` ile aynı; bayt uzunluğu bildiren Konuşma ses çerçevesi olayları için yayınlanır)
 
 ### Kuyruklar ve oturumlar
 
@@ -220,30 +196,44 @@ sınıf için sınırlı, redakte edilmiş `openclaw.content.*` öznitelikleri a
 - `openclaw.queue.depth` (histogram, öznitelikler: `openclaw.lane` veya `openclaw.channel=heartbeat`)
 - `openclaw.queue.wait_ms` (histogram, öznitelikler: `openclaw.lane`)
 - `openclaw.session.state` (sayaç, öznitelikler: `openclaw.state`, `openclaw.reason`)
-- `openclaw.session.stuck` (sayaç, öznitelikler: `openclaw.state`; yalnızca etkin çalışma olmayan eskimiş oturum muhasebesi için yayılır)
-- `openclaw.session.stuck_age_ms` (histogram, öznitelikler: `openclaw.state`; yalnızca etkin çalışma olmayan eskimiş oturum muhasebesi için yayılır)
+- `openclaw.session.stuck` (sayaç, öznitelikler: `openclaw.state`; kurtarılabilir eskimiş oturum kayıtları için yayınlanır)
+- `openclaw.session.stuck_age_ms` (histogram, öznitelikler: `openclaw.state`; kurtarılabilir eskimiş oturum kayıtları için yayınlanır)
+- `openclaw.session.turn.created` (sayaç, öznitelikler: `openclaw.agent`, `openclaw.channel`, `openclaw.trigger`)
 - `openclaw.session.recovery.requested` (sayaç, öznitelikler: `openclaw.state`, `openclaw.action`, `openclaw.active_work_kind`, `openclaw.reason`)
 - `openclaw.session.recovery.completed` (sayaç, öznitelikler: `openclaw.state`, `openclaw.action`, `openclaw.status`, `openclaw.active_work_kind`, `openclaw.reason`)
 - `openclaw.session.recovery.age_ms` (histogram, öznitelikler: eşleşen kurtarma sayacıyla aynı)
 - `openclaw.run.attempt` (sayaç, öznitelikler: `openclaw.attempt`)
 
-### Oturum canlılığı telemetrisi
+### Oturum canlılık telemetrisi
 
-`diagnostics.stuckSessionWarnMs`, oturum canlılığı tanılamaları için ilerleme yok yaş eşiğidir. Bir `processing` oturumu, OpenClaw yanıt, araç, durum, blok veya ACP çalışma zamanı ilerlemesi gözlemlerken bu eşiğe doğru yaşlanmaz. Yazma keepalive’ları ilerleme olarak sayılmaz, bu nedenle sessiz bir model veya harness yine de algılanabilir.
+`diagnostics.stuckSessionWarnMs`, oturum canlılığı tanılamaları için ilerleme olmama yaş eşiğidir. Bir `processing` oturumu, OpenClaw yanıt, araç, durum, blok veya ACP çalışma zamanı ilerlemesi gözlemlediği sürece bu eşiğe doğru yaşlanmaz. Yazıyor canlı tutmaları ilerleme olarak sayılmaz; bu nedenle sessiz bir model veya harness yine de algılanabilir.
 
-OpenClaw oturumları hâlâ gözlemleyebildiği işe göre sınıflandırır:
+OpenClaw, oturumları hâlâ gözlemleyebildiği işe göre sınıflandırır:
 
-- `session.long_running`: etkin gömülü iş, model çağrıları veya araç çağrıları hâlâ ilerleme kaydediyor.
-- `session.stalled`: etkin iş var, ancak etkin çalıştırma yakın zamanda ilerleme bildirmedi. Duraklamış gömülü çalıştırmalar başlangıçta yalnızca gözlem modunda kalır, ardından şeridin arkasındaki kuyruğa alınmış dönüşlerin sürdürülebilmesi için `diagnostics.stuckSessionAbortMs` sonrasında ilerleme yoksa abort-drain yapar. Ayarlanmamışsa, iptal eşiği varsayılan olarak en az 10 dakika ve `diagnostics.stuckSessionWarnMs` değerinin 5 katı olan daha güvenli genişletilmiş pencereye döner.
-- `session.stuck`: etkin çalışma olmayan eskimiş oturum muhasebesi. Bu, etkilenen oturum şeridini hemen serbest bırakır.
+- `session.long_running`: etkin gömülü iş, model çağrıları veya araç çağrıları hâlâ ilerleme kaydediyordur. `diagnostics.stuckSessionWarnMs` sonrasında sessiz kalan sahipli model çağrıları da `diagnostics.stuckSessionAbortMs` öncesinde uzun süren olarak raporlanır; böylece yavaş veya akışsız model sağlayıcıları, iptal gözlemlenebilir kaldıkları sürece durmuş gateway oturumları gibi görünmez.
+- `session.stalled`: etkin iş vardır, ancak etkin çalıştırma yakın zamanda ilerleme bildirmemiştir. Sahipli model çağrıları `diagnostics.stuckSessionAbortMs` anında veya sonrasında `session.long_running` durumundan `session.stalled` durumuna geçer; sahipsiz eskimiş model/araç etkinliği zararsız uzun süren iş olarak değerlendirilmez. Durmuş gömülü çalıştırmalar önce yalnızca gözlemle kalır, sonra `diagnostics.stuckSessionAbortMs` sonrasında ilerleme yoksa iptal-boşaltma yapar; böylece kulvarın arkasındaki kuyruğa alınmış dönüşler sürdürülebilir. Ayarlanmamışsa iptal eşiği, en az 5 dakika ve `diagnostics.stuckSessionWarnMs` değerinin 3 katı olan daha güvenli uzatılmış pencereye varsayılanlanır.
+- `session.stuck`: etkin işi olmayan eskimiş oturum kayıtları veya sahipsiz eskimiş model/araç etkinliğine sahip boşta bir kuyruğa alınmış oturum. Bu, kurtarma kapıları geçtikten hemen sonra etkilenen oturum kulvarını serbest bırakır.
 
-Kurtarma, yapılandırılmış `session.recovery.requested` ve `session.recovery.completed` olayları yayar. Tanılama oturum durumu yalnızca değişiklik yapan bir kurtarma sonucu (`aborted` veya `released`) sonrasında ve yalnızca aynı işleme nesli hâlâ güncelse boşta olarak işaretlenir.
+Kurtarma, yapılandırılmış `session.recovery.requested` ve `session.recovery.completed` olayları yayınlar. Tanılama oturum durumu yalnızca değiştirici bir kurtarma sonucu (`aborted` veya `released`) sonrasında ve yalnızca aynı işleme nesli hâlâ güncelse boşta olarak işaretlenir.
 
-Yalnızca `session.stuck`, `openclaw.session.stuck` sayacını, `openclaw.session.stuck_age_ms` histogramını ve `openclaw.session.stuck` span’ini yayar. Tekrarlanan `session.stuck` tanılamaları oturum değişmeden kaldıkça geri çekilir, bu nedenle panolar her Heartbeat tıkında değil, sürekli artışlarda uyarı vermelidir. Yapılandırma düğmesi ve varsayılanlar için bkz. [Yapılandırma başvurusu](/tr/gateway/configuration-reference#diagnostics).
+Yalnızca `session.stuck`, `openclaw.session.stuck` sayacını, `openclaw.session.stuck_age_ms` histogramını ve `openclaw.session.stuck` span'ini yayınlar. Yinelenen `session.stuck` tanılamaları, oturum değişmeden kaldığı sürece geri çekilir; bu nedenle panolar her Heartbeat tikinde değil, kalıcı artışlarda uyarı vermelidir. Yapılandırma düğmesi ve varsayılanlar için bkz. [Yapılandırma referansı](/tr/gateway/configuration-reference#diagnostics).
+
+Canlılık uyarıları ayrıca şunları yayınlar:
+
+- `openclaw.liveness.warning` (sayaç, öznitelikler: `openclaw.liveness.reason`)
+- `openclaw.liveness.event_loop_delay_p99_ms` (histogram, öznitelikler: `openclaw.liveness.reason`)
+- `openclaw.liveness.event_loop_delay_max_ms` (histogram, öznitelikler: `openclaw.liveness.reason`)
+- `openclaw.liveness.event_loop_utilization` (histogram, öznitelikler: `openclaw.liveness.reason`)
+- `openclaw.liveness.cpu_core_ratio` (histogram, öznitelikler: `openclaw.liveness.reason`)
 
 ### Harness yaşam döngüsü
 
 - `openclaw.harness.duration_ms` (histogram, öznitelikler: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, hatalarda `openclaw.harness.phase`)
+
+### Araç yürütme
+
+- `openclaw.tool.execution.duration_ms` (histogram, öznitelikler: `gen_ai.tool.name`, `openclaw.toolName`, `openclaw.tool.source`, `openclaw.tool.owner`, `openclaw.tool.params.kind`, ayrıca hatalarda `openclaw.errorCategory`)
+- `openclaw.tool.execution.blocked` (sayaç, öznitelikler: `gen_ai.tool.name`, `openclaw.toolName`, `openclaw.tool.source`, `openclaw.tool.owner`, `openclaw.tool.params.kind`, `openclaw.deniedReason`)
 
 ### Exec
 
@@ -251,31 +241,34 @@ Yalnızca `session.stuck`, `openclaw.session.stuck` sayacını, `openclaw.sessio
 
 ### Tanılama iç bileşenleri (bellek ve araç döngüsü)
 
+- `openclaw.payload.large` (sayaç, öznitelikler: `openclaw.payload.surface`, `openclaw.payload.action`, `openclaw.channel`, `openclaw.plugin`, `openclaw.reason`)
+- `openclaw.payload.large_bytes` (histogram, öznitelikler: `openclaw.payload.large` ile aynı)
 - `openclaw.memory.heap_used_bytes` (histogram, öznitelikler: `openclaw.memory.kind`)
 - `openclaw.memory.rss_bytes` (histogram)
 - `openclaw.memory.pressure` (sayaç, öznitelikler: `openclaw.memory.level`)
 - `openclaw.tool.loop.iterations` (sayaç, öznitelikler: `openclaw.toolName`, `openclaw.outcome`)
 - `openclaw.tool.loop.duration_ms` (histogram, öznitelikler: `openclaw.toolName`, `openclaw.outcome`)
 
-## Dışa aktarılan span’ler
+## Dışa aktarılan span'ler
 
 - `openclaw.model.usage`
   - `openclaw.channel`, `openclaw.provider`, `openclaw.model`
   - `openclaw.tokens.*` (input/output/cache_read/cache_write/total)
-  - varsayılan olarak `gen_ai.system`, veya en yeni GenAI anlamsal kuralları etkinleştirildiğinde `gen_ai.provider.name`
+  - Varsayılan olarak `gen_ai.system`, veya en son GenAI semantik kuralları etkinleştirildiğinde `gen_ai.provider.name`
   - `gen_ai.request.model`, `gen_ai.operation.name`, `gen_ai.usage.*`
 - `openclaw.run`
   - `openclaw.outcome`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`, `openclaw.errorCategory`
 - `openclaw.model.call`
-  - varsayılan olarak `gen_ai.system`, veya en yeni GenAI anlamsal kuralları etkinleştirildiğinde `gen_ai.provider.name`
+  - Varsayılan olarak `gen_ai.system`, veya en son GenAI semantik kuralları etkinleştirildiğinde `gen_ai.provider.name`
   - `gen_ai.request.model`, `gen_ai.operation.name`, `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`
-  - hatalarda `openclaw.errorCategory` ve isteğe bağlı `openclaw.failureKind`
+  - Hatalarda `openclaw.errorCategory` ve isteğe bağlı `openclaw.failureKind`
   - `openclaw.model_call.request_bytes`, `openclaw.model_call.response_bytes`, `openclaw.model_call.time_to_first_byte_ms`
-  - `openclaw.provider.request_id_hash` (üst sağlayıcı istek kimliğinin sınırlı SHA tabanlı hash’i; ham kimlikler dışa aktarılmaz)
+  - `openclaw.provider.request_id_hash` (yukarı akış sağlayıcı istek kimliğinin sınırlı SHA tabanlı karması; ham kimlikler dışa aktarılmaz)
+  - `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental` ile, model çağrısı span'leri `openclaw.model.call` yerine en son GenAI çıkarım span adı `{gen_ai.operation.name} {gen_ai.request.model}` ve `CLIENT` span türünü kullanır.
 - `openclaw.harness.run`
   - `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.provider`, `openclaw.model`, `openclaw.channel`
   - Tamamlandığında: `openclaw.harness.result_classification`, `openclaw.harness.yield_detected`, `openclaw.harness.items.started`, `openclaw.harness.items.completed`, `openclaw.harness.items.active`
-  - Hatada: `openclaw.harness.phase`, `openclaw.errorCategory`, isteğe bağlı `openclaw.harness.cleanup_failed`
+  - Hata durumunda: `openclaw.harness.phase`, `openclaw.errorCategory`, isteğe bağlı `openclaw.harness.cleanup_failed`
 - `openclaw.tool.execution`
   - `gen_ai.tool.name`, `openclaw.toolName`, `openclaw.errorCategory`, `openclaw.tool.params.*`
 - `openclaw.exec`
@@ -297,15 +290,21 @@ Yalnızca `session.stuck`, `openclaw.session.stuck` sayacını, `openclaw.sessio
 - `openclaw.memory.pressure`
   - `openclaw.memory.level`, `openclaw.memory.heap_used_bytes`, `openclaw.memory.rss_bytes`
 
-İçerik yakalama açıkça etkinleştirildiğinde, model ve araç span’leri etkinleştirdiğiniz belirli içerik sınıfları için sınırlı, redakte edilmiş `openclaw.content.*` özniteliklerini de içerebilir.
+İçerik yakalama açıkça etkinleştirildiğinde, model ve araç span'leri ayrıca
+etkinleştirdiğiniz belirli içerik sınıfları için sınırlı, redakte edilmiş
+`openclaw.content.*` özniteliklerini içerebilir.
 
 ## Tanılama olay kataloğu
 
-Aşağıdaki olaylar yukarıdaki metrikleri ve span’leri destekler. Plugin’ler bunlara OTLP dışa aktarımı olmadan da doğrudan abone olabilir.
+Aşağıdaki olaylar, yukarıdaki metrikleri ve span'leri destekler. Plugin'ler ayrıca OTLP dışa aktarımı olmadan
+bunlara doğrudan abone olabilir.
 
 **Model kullanımı**
 
-- `model.usage` - token’lar, maliyet, süre, bağlam, sağlayıcı/model/kanal, oturum kimlikleri. `usage`, maliyet ve telemetri için sağlayıcı/dönüş muhasebesidir; `context.used` geçerli istem/bağlam anlık görüntüsüdür ve önbelleğe alınmış girdi veya araç döngüsü çağrıları söz konusu olduğunda sağlayıcı `usage.total` değerinden düşük olabilir.
+- `model.usage` - belirteçler, maliyet, süre, bağlam, sağlayıcı/model/kanal,
+  oturum kimlikleri. `usage`, maliyet ve telemetri için sağlayıcı/tur muhasebesidir;
+  `context.used` geçerli istem/bağlam anlık görüntüsüdür ve önbelleğe alınmış giriş veya araç döngüsü çağrıları söz konusu olduğunda
+  sağlayıcı `usage.total` değerinden daha düşük olabilir.
 
 **İleti akışı**
 
@@ -318,19 +317,27 @@ Aşağıdaki olaylar yukarıdaki metrikleri ve span’leri destekler. Plugin’l
 - `queue.lane.enqueue` / `queue.lane.dequeue`
 - `session.state` / `session.long_running` / `session.stalled` / `session.stuck`
 - `run.attempt` / `run.progress`
-- `diagnostic.heartbeat` (toplu sayaçlar: webhook’lar/kuyruk/oturum)
+- `diagnostic.heartbeat` (toplu sayaçlar: webhook'lar/kuyruk/oturum)
 
 **Harness yaşam döngüsü**
 
-- `harness.run.started` / `harness.run.completed` / `harness.run.error` - aracı harness’i için çalıştırma başına yaşam döngüsü. `harnessId`, isteğe bağlı `pluginId`, sağlayıcı/model/kanal ve çalıştırma kimliğini içerir. Tamamlanma `durationMs`, `outcome`, isteğe bağlı `resultClassification`, `yieldDetected` ve `itemLifecycle` sayılarını ekler. Hatalar `phase` (`prepare`/`start`/`send`/`resolve`/`cleanup`), `errorCategory` ve isteğe bağlı `cleanupFailed` ekler.
+- `harness.run.started` / `harness.run.completed` / `harness.run.error` -
+  ajan harness'i için çalıştırma başına yaşam döngüsü. `harnessId`, isteğe bağlı
+  `pluginId`, sağlayıcı/model/kanal ve çalıştırma kimliği içerir. Tamamlanma
+  `durationMs`, `outcome`, isteğe bağlı `resultClassification`, `yieldDetected`
+  ve `itemLifecycle` sayılarını ekler. Hatalar `phase`
+  (`prepare`/`start`/`send`/`resolve`/`cleanup`), `errorCategory` ve
+  isteğe bağlı `cleanupFailed` ekler.
 
 **Exec**
 
-- `exec.process.completed` - terminal sonucu, süre, hedef, mod, çıkış kodu ve hata türü. Komut metni ve çalışma dizinleri dahil edilmez.
+- `exec.process.completed` - terminal sonucu, süre, hedef, mod, çıkış
+  kodu ve hata türü. Komut metni ve çalışma dizinleri
+  dahil edilmez.
 
 ## Dışa aktarıcı olmadan
 
-`diagnostics-otel` çalıştırmadan tanılama olaylarını Plugin’ler veya özel alıcılar için kullanılabilir tutabilirsiniz:
+`diagnostics-otel` çalıştırmadan tanılama olaylarını Plugin'ler veya özel havuzlar için kullanılabilir durumda tutabilirsiniz:
 
 ```json5
 {
@@ -338,7 +345,9 @@ Aşağıdaki olaylar yukarıdaki metrikleri ve span’leri destekler. Plugin’l
 }
 ```
 
-`logging.level` düzeyini yükseltmeden hedefli hata ayıklama çıktısı için tanılama bayraklarını kullanın. Bayraklar büyük/küçük harfe duyarlı değildir ve joker karakterleri destekler (ör. `telegram.*` veya `*`):
+`logging.level` değerini yükseltmeden hedefli hata ayıklama çıktısı için tanılama
+bayraklarını kullanın. Bayraklar büyük/küçük harfe duyarsızdır ve joker karakterleri destekler (ör. `telegram.*` veya
+`*`):
 
 ```json5
 {
@@ -346,13 +355,15 @@ Aşağıdaki olaylar yukarıdaki metrikleri ve span’leri destekler. Plugin’l
 }
 ```
 
-Ya da tek seferlik env geçersiz kılması olarak:
+Veya tek seferlik env geçersiz kılması olarak:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload openclaw gateway
 ```
 
-Bayrak çıktısı standart günlük dosyasına (`logging.file`) gider ve yine de `logging.redactSensitive` tarafından redakte edilir. Tam kılavuz: [Tanılama bayrakları](/tr/diagnostics/flags).
+Bayrak çıktısı standart günlük dosyasına (`logging.file`) gider ve yine de
+`logging.redactSensitive` tarafından redakte edilir. Tam kılavuz:
+[Tanılama bayrakları](/tr/diagnostics/flags).
 
 ## Devre dışı bırakma
 
@@ -362,12 +373,13 @@ Bayrak çıktısı standart günlük dosyasına (`logging.file`) gider ve yine d
 }
 ```
 
-Ayrıca `diagnostics-otel` öğesini `plugins.allow` dışında bırakabilir veya `openclaw plugins disable diagnostics-otel` çalıştırabilirsiniz.
+Ayrıca `diagnostics-otel` öğesini `plugins.allow` dışında bırakabilir veya
+`openclaw plugins disable diagnostics-otel` komutunu çalıştırabilirsiniz.
 
 ## İlgili
 
-- [Günlükleme](/tr/logging) - dosya günlükleri, konsol çıktısı, CLI tailing ve Control UI Günlükleri sekmesi
-- [Gateway günlükleme iç bileşenleri](/tr/gateway/logging) - WS günlük stilleri, alt sistem önekleri ve konsol yakalama
+- [Günlükleme](/tr/logging) - dosya günlükleri, konsol çıktısı, CLI ile takip ve Control UI Günlükler sekmesi
+- [Gateway günlükleme iç işleyişi](/tr/gateway/logging) - WS günlük stilleri, alt sistem önekleri ve konsol yakalama
 - [Tanılama bayrakları](/tr/diagnostics/flags) - hedefli hata ayıklama günlüğü bayrakları
 - [Tanılama dışa aktarımı](/tr/gateway/diagnostics) - operatör destek paketi aracı (OTEL dışa aktarımından ayrı)
-- [Yapılandırma başvurusu](/tr/gateway/configuration-reference#diagnostics) - tam `diagnostics.*` alan başvurusu
+- [Yapılandırma referansı](/tr/gateway/configuration-reference#diagnostics) - tam `diagnostics.*` alan referansı

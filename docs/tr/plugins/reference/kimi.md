@@ -1,30 +1,31 @@
 ---
 read_when:
     - kimi Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw'a Kimi ve Kimi Coding model sağlayıcısı desteği ekler.
+summary: OpenClaw'a Kimi, Kimi Coding model sağlayıcısı desteği ekler.
 title: Kimi Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:52Z"
+    generated_at: "2026-06-28T01:00:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ccfc557ee819deb906b3509febbefcd7879754561c17632b8e544cc8b3b5443e
+    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
 
 # Kimi Plugin
 
-OpenClaw'a Kimi ve Kimi Coding model sağlayıcı desteği ekler.
+OpenClaw'a Kimi, Kimi Coding model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/kimi-provider`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/kimi-provider`
 
 ## Yüzey
 
 sağlayıcılar: kimi, kimi-coding
 
-## İlgili belgeler
+## İlgili dokümanlar
 
 - [kimi](/tr/providers/moonshot)

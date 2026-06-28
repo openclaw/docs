@@ -1,85 +1,115 @@
 ---
 read_when:
-    - Sağlayıcı kimlik bilgileri ve `auth-profiles.json` başvuruları için SecretRefs yapılandırma
-    - Üretimde gizli bilgileri yeniden yükleme, denetleme, yapılandırma ve güvenle uygulama
-    - Başlatmada hızlı başarısız olmayı, etkin olmayan yüzey filtrelemeyi ve son bilinen iyi davranışı anlama
+    - Sağlayıcı kimlik bilgileri ve `auth-profiles.json` refs için SecretRefs’i yapılandırma
+    - Üretimde sırları güvenli şekilde yeniden yükleme, denetleme, yapılandırma ve uygulama
+    - Başlatmada hızlı başarısız olmayı, etkin olmayan yüzey filtrelemeyi ve bilinen son iyi davranışı anlama
 sidebarTitle: Secrets management
-summary: 'Gizli bilgiler yönetimi: SecretRef sözleşmesi, çalışma zamanı anlık görüntü davranışı ve güvenli tek yönlü temizleme'
-title: Gizli bilgi yönetimi
+summary: 'Gizli bilgi yönetimi: SecretRef sözleşmesi, çalışma zamanı anlık görüntü davranışı ve güvenli tek yönlü temizleme'
+title: Gizli bilgilerin yönetimi
 x-i18n:
-    generated_at: "2026-04-30T09:24:53Z"
+    generated_at: "2026-06-28T00:38:28Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 96fddc346e21cab17d978843dc2a482c6faf8f810b3698a97aa88463133eaca5
+    source_hash: 6d90346b1e4abc39cf1ab314c242f0b976aa83ee06f6dfeb787aafb19fa90de9
     source_path: gateway/secrets.md
     workflow: 16
 ---
 
-OpenClaw, desteklenen kimlik bilgilerinin yapılandırmada düz metin olarak saklanmasına gerek kalmaması için eklemeli SecretRef'leri destekler.
+OpenClaw, desteklenen kimlik bilgilerinin yapılandırmada düz metin olarak saklanmasına gerek kalmaması için eklemeli SecretRefs'i destekler.
 
 <Note>
-Düz metin hala çalışır. SecretRef'ler her kimlik bilgisi için isteğe bağlıdır.
+Düz metin hâlâ çalışır. SecretRefs, her kimlik bilgisi için isteğe bağlıdır.
 </Note>
+
+<Warning>
+Düz metin kimlik bilgileri, agent'ın inceleyebildiği dosyalarda saklanıyorsa
+agent tarafından okunabilir kalır; buna `openclaw.json`, `auth-profiles.json`, `.env` veya
+oluşturulmuş `agents/*/agent/models.json` dosyaları dahildir. SecretRefs, bu yerel etki
+alanını yalnızca desteklenen her kimlik bilgisi taşındıktan ve
+`openclaw secrets audit --check` düz metin secret kalıntısı olmadığını raporladıktan sonra azaltır.
+</Warning>
 
 ## Hedefler ve çalışma zamanı modeli
 
-Gizler, bellek içi bir çalışma zamanı anlık görüntüsüne çözümlenir.
+Secret'lar, bellek içi bir çalışma zamanı anlık görüntüsüne çözümlenir.
 
-- Çözümleme, istek yollarında tembel değil, aktivasyon sırasında isteklidir.
-- Etkin olarak aktif bir SecretRef çözümlenemediğinde başlangıç hızlıca başarısız olur.
-- Yeniden yükleme atomik değiştirme kullanır: tam başarı ya da bilinen son iyi anlık görüntüyü koru.
-- SecretRef ilke ihlalleri (örneğin SecretRef girdisiyle birleştirilmiş OAuth-modu kimlik doğrulama profilleri), çalışma zamanı değişiminden önce aktivasyonu başarısız kılar.
+- Çözümleme, istek yollarında tembel değil, etkinleştirme sırasında isteklidir.
+- Etkin olarak aktif bir SecretRef çözümlenemediğinde başlatma hızlı başarısız olur.
+- Yeniden yükleme atomik takas kullanır: tam başarı ya da bilinen son iyi anlık görüntüyü koru.
+- SecretRef ilke ihlalleri (örneğin SecretRef girdisiyle birleştirilmiş OAuth modunda auth profilleri) çalışma zamanı takasından önce etkinleştirmeyi başarısız kılar.
 - Çalışma zamanı istekleri yalnızca aktif bellek içi anlık görüntüden okur.
-- İlk başarılı yapılandırma aktivasyonundan/yüklemesinden sonra, çalışma zamanı kod yolları başarılı bir yeniden yükleme onu değiştirene kadar bu aktif bellek içi anlık görüntüyü okumayı sürdürür.
-- Giden teslim yolları da bu aktif anlık görüntüden okur (örneğin Discord yanıt/iş parçacığı teslimi ve Telegram eylem gönderimleri); her gönderimde SecretRef'leri yeniden çözümlemezler.
+- İlk başarılı yapılandırma etkinleştirmesi/yüklemesinden sonra, çalışma zamanı kod yolları başarılı bir yeniden yükleme onu değiştirene kadar bu aktif bellek içi anlık görüntüyü okumayı sürdürür.
+- Giden teslim yolları da bu aktif anlık görüntüden okur (örneğin Discord yanıt/iş parçacığı teslimi ve Telegram eylem gönderimleri); her gönderimde SecretRefs'i yeniden çözümlemezler.
 
-Bu, giz sağlayıcı kesintilerini sıcak istek yollarından uzak tutar.
+Bu, secret sağlayıcı kesintilerini sıcak istek yollarının dışında tutar.
+
+## Agent erişim sınırı
+
+SecretRefs, kimlik bilgilerini desteklenen yapılandırma ve oluşturulmuş model yüzeylerinde kalıcı hale getirilmekten korur, ancak bir süreç yalıtımı sınırı değildir. Bir düz metin kimlik bilgisi, agent'ın okuyabildiği bir yolda diskte kalırsa agent, dosya veya kabuk araçlarını kullanarak o dosyayı inceleyip API düzeyi redaksiyonu atlayabilir.
+
+Agent tarafından erişilebilir dosyaların kapsamda olduğu üretim dağıtımları için, SecretRef geçişini yalnızca şunların tümü doğru olduğunda tamamlanmış kabul edin:
+
+- desteklenen kimlik bilgileri düz metin değerler yerine SecretRefs kullanır
+- eski düz metin kalıntıları `openclaw.json`,
+  `auth-profiles.json`, `.env` ve oluşturulmuş `models.json` dosyalarından temizlenmiştir
+- geçişten sonra `openclaw secrets audit --check` temizdir
+- kalan desteklenmeyen veya dönen kimlik bilgileri işletim sistemi yalıtımı, container yalıtımı veya harici bir kimlik bilgisi proxy'si tarafından korunur
+
+Bu nedenle audit/configure/apply iş akışı yalnızca kolaylık sağlayan bir yardımcı değil, bir güvenlik geçiş kapısıdır.
+
+<Warning>
+SecretRefs, keyfi okunabilir dosyaları güvenli hale getirmez. Yedekler, kopyalanmış yapılandırmalar,
+eski oluşturulmuş model katalogları ve desteklenmeyen kimlik bilgisi sınıfları; silinene, agent güven
+sınırının dışına taşınana veya ayrı bir yalıtım katmanı tarafından korunana kadar üretim secret'ları
+olarak ele alınmalıdır.
+</Warning>
 
 ## Aktif yüzey filtreleme
 
-SecretRef'ler yalnızca etkin olarak aktif yüzeylerde doğrulanır.
+SecretRefs yalnızca etkin olarak aktif yüzeylerde doğrulanır.
 
-- Etkin yüzeyler: çözümlenmemiş referanslar başlangıcı/yeniden yüklemeyi engeller.
-- İnaktif yüzeyler: çözümlenmemiş referanslar başlangıcı/yeniden yüklemeyi engellemez.
-- İnaktif referanslar `SECRETS_REF_IGNORED_INACTIVE_SURFACE` koduyla ölümcül olmayan tanılar üretir.
+- Etkin yüzeyler: çözümlenmemiş refs başlatmayı/yeniden yüklemeyi engeller.
+- Aktif olmayan yüzeyler: çözümlenmemiş refs başlatmayı/yeniden yüklemeyi engellemez.
+- Aktif olmayan refs, `SECRETS_REF_IGNORED_INACTIVE_SURFACE` koduyla ölümcül olmayan tanılamalar üretir.
 
 <AccordionGroup>
-  <Accordion title="İnaktif yüzey örnekleri">
-    - Devre dışı kanal/hesap girdileri.
-    - Hiçbir etkin hesabın devralmadığı üst düzey kanal kimlik bilgileri.
-    - Devre dışı araç/özellik yüzeyleri.
-    - `tools.web.search.provider` tarafından seçilmeyen web arama sağlayıcısına özgü anahtarlar. Otomatik modda (sağlayıcı ayarlanmamışsa), anahtarlar biri çözümlenene kadar sağlayıcı otomatik algılaması için öncelik sırasına göre yoklanır. Seçimden sonra, seçilmeyen sağlayıcı anahtarları seçilene kadar inaktif kabul edilir.
-    - Sandbox SSH kimlik doğrulama malzemesi (`agents.defaults.sandbox.ssh.identityData`, `certificateData`, `knownHostsData` ve aracı başına geçersiz kılmalar), yalnızca varsayılan aracı veya etkin bir aracı için etkin sandbox arka ucu `ssh` olduğunda aktiftir.
-    - `gateway.remote.token` / `gateway.remote.password` SecretRef'leri şu durumlardan biri doğruysa aktiftir:
+  <Accordion title="Examples of inactive surfaces">
+    - Devre dışı bırakılmış kanal/hesap girdileri.
+    - Etkin hiçbir hesabın devralmadığı üst düzey kanal kimlik bilgileri.
+    - Devre dışı bırakılmış araç/özellik yüzeyleri.
+    - `tools.web.search.provider` tarafından seçilmeyen web arama sağlayıcısına özgü anahtarlar. Otomatik modda (sağlayıcı ayarlanmamışken), anahtarlar biri çözümlenene kadar sağlayıcı otomatik algılaması için önceliğe göre danışılır. Seçimden sonra, seçilmeyen sağlayıcı anahtarları seçilene kadar aktif olmayan olarak ele alınır.
+    - Sandbox SSH auth materyali (`agents.defaults.sandbox.ssh.identityData`, `certificateData`, `knownHostsData` ve agent başına geçersiz kılmalar), yalnızca etkin sandbox backend'i varsayılan agent veya etkin bir agent için `ssh` olduğunda aktiftir.
+    - `gateway.remote.token` / `gateway.remote.password` SecretRefs, şunlardan biri doğruysa aktiftir:
       - `gateway.mode=remote`
       - `gateway.remote.url` yapılandırılmıştır
-      - `gateway.tailscale.mode`, `serve` veya `funnel` değerindedir
+      - `gateway.tailscale.mode`, `serve` veya `funnel` değeridir
       - Bu uzak yüzeyler olmadan yerel modda:
-        - `gateway.remote.token`, belirteç kimlik doğrulaması kazanabildiğinde ve hiçbir env/auth belirteci yapılandırılmadığında aktiftir.
-        - `gateway.remote.password`, yalnızca parola kimlik doğrulaması kazanabildiğinde ve hiçbir env/auth parolası yapılandırılmadığında aktiftir.
-    - `OPENCLAW_GATEWAY_TOKEN` ayarlandığında, `gateway.auth.token` SecretRef'i başlangıç kimlik doğrulama çözümlemesi için inaktiftir, çünkü env belirteç girdisi o çalışma zamanı için kazanır.
+        - `gateway.remote.token`, token auth kazanabiliyorsa ve hiçbir env/auth token yapılandırılmamışsa aktiftir.
+        - `gateway.remote.password`, yalnızca parola auth kazanabiliyorsa ve hiçbir env/auth parolası yapılandırılmamışsa aktiftir.
+    - `gateway.auth.token` SecretRef, `OPENCLAW_GATEWAY_TOKEN` ayarlandığında başlatma auth çözümlemesi için aktif değildir, çünkü env token girdisi o çalışma zamanı için kazanır.
 
   </Accordion>
 </AccordionGroup>
 
-## Gateway kimlik doğrulama yüzeyi tanıları
+## Gateway auth yüzeyi tanılamaları
 
-`gateway.auth.token`, `gateway.auth.password`, `gateway.remote.token` veya `gateway.remote.password` üzerinde bir SecretRef yapılandırıldığında, gateway başlangıcı/yeniden yüklemesi yüzey durumunu açıkça günlükler:
+`gateway.auth.token`, `gateway.auth.password`, `gateway.remote.token` veya `gateway.remote.password` üzerinde bir SecretRef yapılandırıldığında, Gateway başlatma/yeniden yükleme yüzey durumunu açıkça günlüğe yazar:
 
-- `active`: SecretRef etkin kimlik doğrulama yüzeyinin parçasıdır ve çözümlenmelidir.
-- `inactive`: SecretRef bu çalışma zamanı için yok sayılır, çünkü başka bir kimlik doğrulama yüzeyi kazanır ya da uzak kimlik doğrulama devre dışıdır/aktif değildir.
+- `active`: SecretRef, etkin auth yüzeyinin parçasıdır ve çözümlenmelidir.
+- `inactive`: Başka bir auth yüzeyi kazandığı için veya uzak auth devre dışı/aktif olmadığı için SecretRef bu çalışma zamanı için yok sayılır.
 
-Bu girdiler `SECRETS_GATEWAY_AUTH_SURFACE` ile günlüğe yazılır ve aktif yüzey ilkesinin kullandığı nedeni içerir; böylece bir kimlik bilgisinin neden aktif veya inaktif kabul edildiğini görebilirsiniz.
+Bu girdiler `SECRETS_GATEWAY_AUTH_SURFACE` ile günlüğe yazılır ve aktif yüzey ilkesi tarafından kullanılan nedeni içerir; böylece bir kimlik bilgisinin neden aktif veya aktif olmayan olarak ele alındığını görebilirsiniz.
 
-## Onboarding referans ön denetimi
+## İlk kurulum referans ön kontrolü
 
-Onboarding etkileşimli modda çalıştığında ve SecretRef depolamasını seçtiğinizde, OpenClaw kaydetmeden önce ön denetim doğrulaması çalıştırır:
+İlk kurulum etkileşimli modda çalıştığında ve SecretRef depolamasını seçtiğinizde OpenClaw, kaydetmeden önce ön kontrol doğrulaması çalıştırır:
 
-- Env referansları: env var adını doğrular ve kurulum sırasında boş olmayan bir değerin görünür olduğunu onaylar.
-- Sağlayıcı referansları (`file` veya `exec`): sağlayıcı seçimini doğrular, `id` değerini çözümler ve çözümlenen değer türünü denetler.
-- Quickstart yeniden kullanım yolu: `gateway.auth.token` zaten bir SecretRef olduğunda, onboarding aynı hızlı başarısız olma kapısını kullanarak probe/dashboard bootstrap'ten önce onu çözümler (`env`, `file` ve `exec` referansları için).
+- Env refs: env var adını doğrular ve kurulum sırasında boş olmayan bir değerin görünür olduğunu onaylar.
+- Sağlayıcı refs (`file` veya `exec`): sağlayıcı seçimini doğrular, `id` değerini çözümler ve çözümlenen değer türünü denetler.
+- Quickstart yeniden kullanım yolu: `gateway.auth.token` zaten bir SecretRef olduğunda, ilk kurulum probe/dashboard bootstrap öncesinde (`env`, `file` ve `exec` refs için) aynı hızlı başarısız kapıyı kullanarak onu çözümler.
 
-Doğrulama başarısız olursa onboarding hatayı gösterir ve yeniden denemenize izin verir.
+Doğrulama başarısız olursa ilk kurulum hatayı gösterir ve yeniden denemenize izin verir.
 
 ## SecretRef sözleşmesi
 
@@ -93,6 +123,13 @@ Her yerde tek bir nesne şekli kullanın:
   <Tab title="env">
     ```json5
     { source: "env", provider: "default", id: "OPENAI_API_KEY" }
+    ```
+
+    Desteklenen SecretInput alanları tam string kısayollarını da kabul eder:
+
+    ```json5
+    "${OPENAI_API_KEY}"
+    "$OPENAI_API_KEY"
     ```
 
     Doğrulama:
@@ -115,13 +152,13 @@ Her yerde tek bir nesne şekli kullanın:
   </Tab>
   <Tab title="exec">
     ```json5
-    { source: "exec", provider: "vault", id: "providers/openai/apiKey" }
+    { source: "exec", provider: "vault", id: "providers/openai/apiKey#value" }
     ```
 
     Doğrulama:
 
     - `provider`, `^[a-z][a-z0-9_-]{0,63}$` ile eşleşmelidir
-    - `id`, `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$` ile eşleşmelidir
+    - `id`, `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` ile eşleşmelidir (`secret#json_key` gibi seçicileri destekler)
     - `id`, eğik çizgiyle ayrılmış yol segmentleri olarak `.` veya `..` içermemelidir (örneğin `a/../b` reddedilir)
 
   </Tab>
@@ -148,6 +185,13 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
         passEnv: ["PATH", "VAULT_ADDR"],
         jsonOnly: true,
       },
+      "team-secrets": {
+        source: "exec",
+        pluginIntegration: {
+          pluginId: "acme-secrets",
+          integrationId: "secret-store",
+        },
+      },
     },
     defaults: {
       env: "default",
@@ -164,34 +208,39 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
 ```
 
 <AccordionGroup>
-  <Accordion title="Env sağlayıcısı">
-    - `allowlist` aracılığıyla isteğe bağlı izin listesi.
+  <Accordion title="Env provider">
+    - `allowlist` aracılığıyla isteğe bağlı izin verilenler listesi.
     - Eksik/boş env değerleri çözümlemeyi başarısız kılar.
 
   </Accordion>
-  <Accordion title="Dosya sağlayıcısı">
+  <Accordion title="File provider">
     - Yerel dosyayı `path` konumundan okur.
-    - `mode: "json"`, JSON nesnesi yükü bekler ve `id` değerini pointer olarak çözümler.
-    - `mode: "singleValue"`, ref id `"value"` bekler ve dosya içeriğini döndürür.
-    - Yol, sahiplik/izin denetimlerinden geçmelidir.
-    - Windows fail-closed notu: Bir yol için ACL doğrulaması kullanılamıyorsa çözümleme başarısız olur. Yalnızca güvenilen yollar için yol güvenliği denetimlerini atlamak üzere bu sağlayıcıda `allowInsecurePath: true` ayarlayın.
+    - `mode: "json"` JSON nesnesi payload'u bekler ve `id` değerini pointer olarak çözümler.
+    - `mode: "singleValue"` ref id `"value"` bekler ve dosya içeriğini döndürür.
+    - Yol sahiplik/izin denetimlerinden geçmelidir.
+    - Windows güvenli başarısız notu: Bir yol için ACL doğrulaması kullanılamıyorsa çözümleme başarısız olur. Yalnızca güvenilir yollar için, yol güvenlik denetimlerini atlamak üzere o sağlayıcıda `allowInsecurePath: true` ayarlayın.
 
   </Accordion>
-  <Accordion title="Exec sağlayıcısı">
-    - Yapılandırılmış mutlak ikili yolunu çalıştırır, kabuk kullanmaz.
-    - Varsayılan olarak `command`, normal bir dosyayı göstermelidir (symlink değil).
+  <Accordion title="Exec provider">
+    - Yapılandırılmış mutlak ikili yolunu kabuk olmadan çalıştırır.
+    - Varsayılan olarak `command`, normal bir dosyaya işaret etmelidir (symlink değil).
     - Symlink komut yollarına izin vermek için `allowSymlinkCommand: true` ayarlayın (örneğin Homebrew shim'leri). OpenClaw çözümlenen hedef yolu doğrular.
-    - Paket yöneticisi yolları için `allowSymlinkCommand` ile `trustedDirs` değerini eşleyin (örneğin `["/opt/homebrew"]`).
-    - Zaman aşımı, çıktı yok zaman aşımı, çıktı bayt sınırları, env izin listesi ve güvenilen dizinleri destekler.
-    - Windows fail-closed notu: Komut yolu için ACL doğrulaması kullanılamıyorsa çözümleme başarısız olur. Yalnızca güvenilen yollar için yol güvenliği denetimlerini atlamak üzere bu sağlayıcıda `allowInsecurePath: true` ayarlayın.
+    - Paket yöneticisi yolları için `allowSymlinkCommand` değerini `trustedDirs` ile eşleştirin (örneğin `["/opt/homebrew"]`).
+    - Zaman aşımı, çıktısız zaman aşımı, çıktı bayt sınırları, env izin verilenler listesi ve güvenilir dizinleri destekler.
+    - Windows güvenli başarısız notu: Komut yolu için ACL doğrulaması kullanılamıyorsa çözümleme başarısız olur. Yalnızca güvenilir yollar için, yol güvenlik denetimlerini atlamak üzere o sağlayıcıda `allowInsecurePath: true` ayarlayın.
+    - Plugin tarafından yönetilen exec sağlayıcıları, kopyalanmış `command`/`args` yerine
+      `pluginIntegration` kullanabilir. OpenClaw, başlatma/yeniden yükleme sırasında
+      yüklü Plugin manifest'inden geçerli komut ayrıntılarını çözümler. Plugin
+      devre dışı bırakılmış, kaldırılmış, güvenilmeyen veya artık entegrasyonu bildirmiyor ise,
+      o sağlayıcıyı kullanan aktif SecretRefs güvenli biçimde başarısız olur.
 
-    İstek yükü (stdin):
+    İstek payload'u (stdin):
 
     ```json
     { "protocolVersion": 1, "provider": "vault", "ids": ["providers/openai/apiKey"] }
     ```
 
-    Yanıt yükü (stdout):
+    Yanıt payload'u (stdout):
 
     ```jsonc
     { "protocolVersion": 1, "values": { "providers/openai/apiKey": "<openai-api-key>" } } // pragma: allowlist secret
@@ -209,6 +258,39 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
 
   </Accordion>
 </AccordionGroup>
+
+## Dosya destekli API anahtarları
+
+Yapılandırma `env` bloğuna `file:...` string'leri koymayın. `env` bloğu
+literal ve geçersiz kılmayan yapıdadır, bu nedenle `file:...` çözümlenmez.
+
+Bunun yerine desteklenen bir kimlik bilgisi alanında dosya SecretRef kullanın:
+
+```json5
+{
+  secrets: {
+    providers: {
+      xai_key_file: {
+        source: "file",
+        path: "~/.openclaw/secrets/xai-api-key.txt",
+        mode: "singleValue",
+      },
+    },
+  },
+  models: {
+    providers: {
+      xai: {
+        apiKey: { source: "file", provider: "xai_key_file", id: "value" },
+      },
+    },
+  },
+}
+```
+
+`mode: "singleValue"` için SecretRef `id`, `"value"` değeridir. 
+`mode: "json"` için `"/providers/xai/apiKey"` gibi mutlak bir JSON pointer kullanın.
+
+SecretRefs kabul eden yapılandırma alanları için [SecretRef kimlik bilgisi yüzeyi](/tr/reference/secretref-credential-surface) bölümüne bakın.
 
 ## Exec entegrasyon örnekleri
 
@@ -241,6 +323,63 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
     }
     ```
   </Accordion>
+  <Accordion title="Bitwarden Secrets Manager (`bws`)">
+    SecretRef id'lerinin Bitwarden Secrets Manager öğe anahtarlarıyla eşleşmesini
+    istediğinizde bir çözümleyici sarmalayıcı kullanın. Depo
+    `scripts/secrets/openclaw-bws-resolver.mjs` dosyasını içerir; bunu Gateway'i
+    çalıştıran ana makinede mutlak ve güvenilir bir yola kurun veya kopyalayın.
+
+    Gereksinimler:
+
+    - Gateway ana makinesinde Bitwarden Secrets Manager CLI (`bws`) kurulu olmalıdır.
+    - `BWS_ACCESS_TOKEN` Gateway hizmeti tarafından erişilebilir olmalıdır.
+    - `PATH` çözümleyiciye geçirilmelidir veya `BWS_BIN`, mutlak `bws`
+      ikili dosya yoluna ayarlanmalıdır.
+    - Kendi barındırdığınız bir Bitwarden örneği kullanırken ortamda
+      `BWS_SERVER_URL` ayarlanmış olmalıdır.
+
+    ```json5
+    {
+      secrets: {
+        providers: {
+          bws: {
+            source: "exec",
+            command: "/usr/local/bin/openclaw-bws-resolver.mjs",
+            passEnv: ["BWS_ACCESS_TOKEN", "BWS_SERVER_URL", "PATH", "BWS_BIN"],
+            jsonOnly: true,
+          },
+        },
+      },
+      models: {
+        providers: {
+          openai: {
+            baseUrl: "https://api.openai.com/v1",
+            models: [{ id: "gpt-5", name: "gpt-5" }],
+            apiKey: {
+              source: "exec",
+              provider: "bws",
+              id: "openclaw/providers/openai/apiKey",
+            },
+          },
+        },
+      },
+    }
+    ```
+
+    Çözümleyici istenen id'leri toplu işler, `bws secret list` komutunu çalıştırır
+    ve eşleşen secret `key` alanlarının değerlerini döndürür. Exec SecretRef id
+    sözleşmesini karşılayan anahtarlar kullanın; örneğin
+    `openclaw/providers/openai/apiKey`; alt çizgili env-var biçimli anahtarlar,
+    çözümleyici çalışmadan önce reddedilir. Birden fazla görünür Bitwarden secret'ı
+    aynı istenen anahtara sahipse çözümleyici, birini seçmek yerine bu id'yi
+    belirsiz olarak başarısız kılar. Yapılandırmayı güncelledikten sonra
+    çözümleyici yolunu doğrulayın:
+
+    ```bash
+    openclaw secrets audit --allow-exec
+    ```
+
+  </Accordion>
   <Accordion title="HashiCorp Vault CLI">
     ```json5
     {
@@ -268,6 +407,97 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
       },
     }
     ```
+  </Accordion>
+  <Accordion title="password-store (`pass`)">
+    SecretRef id'lerinin doğrudan `pass` girdileriyle eşleşmesini istediğinizde
+    küçük bir çözümleyici sarmalayıcı kullanın. Bunu exec-provider yol
+    denetimlerinizden geçen mutlak bir yolda çalıştırılabilir dosya olarak
+    kaydedin; örneğin `/usr/local/bin/openclaw-pass-resolver`.
+    `#!/usr/bin/env node` shebang'i `node` değerini çözümleyici işleminin
+    `PATH` değerinden çözer, bu yüzden `passEnv` içine `PATH` ekleyin. `pass`
+    bu `PATH` üzerinde değilse üst ortamda `PASS_BIN` ayarlayın ve onu da
+    `passEnv` içine ekleyin:
+
+    ```js
+    #!/usr/bin/env node
+    const { spawnSync } = require("node:child_process");
+
+    let stdin = "";
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("data", (chunk) => {
+      stdin += chunk;
+    });
+    process.stdin.on("error", (err) => {
+      process.stderr.write(`${err.message}\n`);
+      process.exit(1);
+    });
+    process.stdin.on("end", () => {
+      let request;
+      try {
+        request = JSON.parse(stdin || "{}");
+      } catch (err) {
+        process.stderr.write(`Failed to parse request: ${err.message}\n`);
+        process.exit(1);
+      }
+
+      const passBin = process.env.PASS_BIN || "pass";
+      const values = {};
+      const errors = {};
+
+      for (const id of request.ids ?? []) {
+        const result = spawnSync(passBin, ["show", id], { encoding: "utf8" });
+        if (result.status === 0) {
+          values[id] = result.stdout.split(/\r?\n/, 1)[0] ?? "";
+        } else {
+          errors[id] = { message: (result.stderr || `pass exited ${result.status}`).trim() };
+        }
+      }
+
+      process.stdout.write(JSON.stringify({ protocolVersion: 1, values, errors }));
+    });
+    ```
+
+    Ardından exec provider'ı yapılandırın ve `apiKey` değerini `pass` girdi
+    yoluna yönlendirin:
+
+    ```json5
+    {
+      secrets: {
+        providers: {
+          pass_store: {
+            source: "exec",
+            command: "/usr/local/bin/openclaw-pass-resolver",
+            passEnv: ["PATH", "HOME", "GNUPGHOME", "GPG_TTY", "PASSWORD_STORE_DIR", "PASS_BIN"],
+            jsonOnly: true,
+          },
+        },
+      },
+      models: {
+        providers: {
+          openai: {
+            baseUrl: "https://api.openai.com/v1",
+            models: [{ id: "gpt-5", name: "gpt-5" }],
+            apiKey: {
+              source: "exec",
+              provider: "pass_store",
+              id: "openclaw/providers/openai/apiKey",
+            },
+          },
+        },
+      },
+    }
+    ```
+
+    Secret'ı `pass` girdisinin ilk satırında tutun veya bunun yerine tam
+    `pass show` çıktısını döndürmek istiyorsanız sarmalayıcıyı özelleştirin.
+    Yapılandırmayı güncelledikten sonra hem statik denetimi hem de exec
+    çözümleyici yolunu doğrulayın:
+
+    ```bash
+    openclaw secrets audit --check
+    openclaw secrets audit --allow-exec
+    ```
+
   </Accordion>
   <Accordion title="sops">
     ```json5
@@ -299,9 +529,9 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
   </Accordion>
 </AccordionGroup>
 
-## MCP sunucu ortam değişkenleri
+## MCP sunucusu ortam değişkenleri
 
-`plugins.entries.acpx.config.mcpServers` aracılığıyla yapılandırılan MCP sunucu env var'ları SecretInput destekler. Bu, API anahtarlarını ve belirteçleri düz metin yapılandırmanın dışında tutar:
+`plugins.entries.acpx.config.mcpServers` üzerinden yapılandırılan MCP sunucusu env var'ları SecretInput destekler. Bu, API anahtarlarını ve token'ları düz metin yapılandırmasının dışında tutar:
 
 ```json5
 {
@@ -330,11 +560,11 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
 }
 ```
 
-Düz metin string değerleri hala çalışır. `${MCP_SERVER_API_KEY}` gibi env-template referansları ve SecretRef nesneleri, MCP sunucu süreci başlatılmadan önce gateway aktivasyonu sırasında çözümlenir. Diğer SecretRef yüzeylerinde olduğu gibi, çözümlenmemiş referanslar yalnızca `acpx` plugin'i etkin olarak aktif olduğunda aktivasyonu engeller.
+Düz metin string değerler çalışmaya devam eder. `${MCP_SERVER_API_KEY}` gibi env-template refs ve SecretRef nesneleri, MCP sunucusu işlemi başlatılmadan önce Gateway etkinleştirmesi sırasında çözümlenir. Diğer SecretRef yüzeylerinde olduğu gibi, çözümlenemeyen refs yalnızca `acpx` Plugin'i fiilen etkin olduğunda etkinleştirmeyi engeller.
 
-## Sandbox SSH kimlik doğrulama malzemesi
+## Sandbox SSH kimlik doğrulama materyali
 
-Çekirdek `ssh` sandbox arka ucu, SSH kimlik doğrulama malzemesi için SecretRef'leri de destekler:
+Çekirdek `ssh` sandbox backend'i, SSH kimlik doğrulama materyali için SecretRefs desteği de sunar:
 
 ```json5
 {
@@ -357,9 +587,9 @@ Düz metin string değerleri hala çalışır. `${MCP_SERVER_API_KEY}` gibi env-
 
 Çalışma zamanı davranışı:
 
-- OpenClaw bu başvuruları her SSH çağrısı sırasında tembel olarak değil, sandbox etkinleştirmesi sırasında çözümler.
-- Çözümlenen değerler kısıtlayıcı izinlere sahip geçici dosyalara yazılır ve oluşturulan SSH yapılandırmasında kullanılır.
-- Etkili sandbox arka ucu `ssh` değilse, bu başvurular devre dışı kalır ve başlatmayı engellemez.
+- OpenClaw bu refs değerlerini her SSH çağrısında tembel olarak değil, sandbox etkinleştirmesi sırasında çözer.
+- Çözümlenen değerler kısıtlayıcı izinlerle geçici dosyalara yazılır ve oluşturulan SSH yapılandırmasında kullanılır.
+- Etkin sandbox backend'i `ssh` değilse bu refs etkin olmayan durumda kalır ve başlangıcı engellemez.
 
 ## Desteklenen kimlik bilgisi yüzeyi
 
@@ -368,47 +598,47 @@ Standart desteklenen ve desteklenmeyen kimlik bilgileri şurada listelenir:
 - [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface)
 
 <Note>
-Çalışma zamanında üretilen veya dönen kimlik bilgileri ve OAuth yenileme materyali, salt okunur SecretRef çözümlemesinin dışında özellikle bırakılır.
+Çalışma zamanında üretilen veya dönen kimlik bilgileri ve OAuth yenileme materyali, salt okunur SecretRef çözümlemesinin kasıtlı olarak dışında bırakılmıştır.
 </Note>
 
 ## Gerekli davranış ve öncelik
 
-- Başvurusu olmayan alan: değişmez.
-- Başvurusu olan alan: etkinleştirme sırasında etkin yüzeylerde gereklidir.
-- Hem düz metin hem de başvuru varsa, desteklenen öncelik yollarında başvuru öncelikli olur.
-- Redaksiyon işareti `__OPENCLAW_REDACTED__`, dahili yapılandırma redaksiyonu/geri yüklemesi için ayrılmıştır ve değişmez gönderilmiş yapılandırma verisi olarak reddedilir.
+- Ref olmayan alan: değişmez.
+- Ref olan alan: etkin yüzeylerde etkinleştirme sırasında zorunludur.
+- Hem düz metin hem de ref varsa, desteklenen öncelik yollarında ref önceliklidir.
+- Redaction sentinel `__OPENCLAW_REDACTED__`, dahili yapılandırma redaction/restore için ayrılmıştır ve literal olarak gönderilen yapılandırma verisi olarak reddedilir.
 
 Uyarı ve denetim sinyalleri:
 
 - `SECRETS_REF_OVERRIDES_PLAINTEXT` (çalışma zamanı uyarısı)
-- `REF_SHADOWED` (`auth-profiles.json` kimlik bilgileri `openclaw.json` başvurularına göre öncelikli olduğunda denetim bulgusu)
+- `REF_SHADOWED` (`auth-profiles.json` kimlik bilgilerinin `openclaw.json` refs değerlerine göre öncelik aldığı denetim bulgusu)
 
 Google Chat uyumluluk davranışı:
 
 - `serviceAccountRef`, düz metin `serviceAccount` değerine göre önceliklidir.
-- Kardeş başvuru ayarlandığında düz metin değer yok sayılır.
+- Kardeş ref ayarlandığında düz metin değer yok sayılır.
 
 ## Etkinleştirme tetikleyicileri
 
-Gizli etkinleştirme şu durumlarda çalışır:
+Secret etkinleştirmesi şu durumlarda çalışır:
 
-- Başlatma (ön kontrol artı son etkinleştirme)
-- Yapılandırma yeniden yükleme sıcak uygulama yolu
-- Yapılandırma yeniden yükleme yeniden başlatma denetimi yolu
-- `secrets.reload` ile manuel yeniden yükleme
-- Düzenlemeleri kalıcı hale getirmeden önce gönderilen yapılandırma yükü içinde etkin yüzey SecretRef çözülebilirliği için Gateway yapılandırma yazma RPC ön kontrolü (`config.set` / `config.apply` / `config.patch`)
+- Başlangıç (preflight artı son etkinleştirme)
+- Yapılandırma yeniden yükleme hot-apply yolu
+- Yapılandırma yeniden yükleme restart-check yolu
+- `secrets.reload` üzerinden manuel yeniden yükleme
+- Düzenlemeleri kalıcılaştırmadan önce gönderilen yapılandırma payload'u içinde etkin yüzey SecretRef çözümlenebilirliği için Gateway yapılandırma yazma RPC preflight'ı (`config.set` / `config.apply` / `config.patch`)
 
 Etkinleştirme sözleşmesi:
 
-- Başarı, anlık görüntüyü atomik olarak değiştirir.
-- Başlatma hatası Gateway başlatmasını iptal eder.
-- Çalışma zamanı yeniden yükleme hatası, bilinen son iyi anlık görüntüyü korur.
-- Yazma-RPC ön kontrol hatası, gönderilen yapılandırmayı reddeder ve hem disk yapılandırmasını hem de etkin çalışma zamanı anlık görüntüsünü değiştirmeden bırakır.
-- Giden bir yardımcı/araç çağrısına çağrıya özel açık bir kanal tokeni sağlamak SecretRef etkinleştirmesini tetiklemez; etkinleştirme noktaları başlatma, yeniden yükleme ve açık `secrets.reload` olarak kalır.
+- Başarı snapshot'ı atomik olarak değiştirir.
+- Başlangıç hatası Gateway başlangıcını iptal eder.
+- Çalışma zamanı yeniden yükleme hatası bilinen son iyi snapshot'ı korur.
+- Yazma RPC preflight hatası gönderilen yapılandırmayı reddeder ve hem disk yapılandırmasını hem de etkin çalışma zamanı snapshot'ını değiştirmeden korur.
+- Bir outbound helper/tool çağrısına açık bir çağrı başına kanal token'ı sağlamak SecretRef etkinleştirmesini tetiklemez; etkinleştirme noktaları başlangıç, yeniden yükleme ve açık `secrets.reload` olarak kalır.
 
 ## Bozulmuş ve kurtarılmış sinyaller
 
-Sağlıklı bir durumdan sonra yeniden yükleme zamanı etkinleştirmesi başarısız olduğunda OpenClaw bozulmuş sırlar durumuna girer.
+Sağlıklı bir durumdan sonra yeniden yükleme zamanı etkinleştirmesi başarısız olduğunda OpenClaw bozulmuş secrets durumuna girer.
 
 Tek seferlik sistem olayı ve günlük kodları:
 
@@ -417,38 +647,38 @@ Tek seferlik sistem olayı ve günlük kodları:
 
 Davranış:
 
-- Bozulmuş: çalışma zamanı bilinen son iyi anlık görüntüyü korur.
+- Bozulmuş: çalışma zamanı bilinen son iyi snapshot'ı korur.
 - Kurtarılmış: bir sonraki başarılı etkinleştirmeden sonra bir kez yayınlanır.
-- Zaten bozulmuş durumdayken tekrarlanan hatalar uyarıları günlüğe yazar, ancak olayları gereksiz yere çoğaltmaz.
-- Başlatmada hızlı başarısız olma bozulmuş olayları yayınlamaz, çünkü çalışma zamanı hiç etkin olmamıştır.
+- Zaten bozulmuş durumdayken tekrarlanan hatalar uyarıları günlüğe yazar ancak olayları tekrarlamaz.
+- Başlangıç fail-fast, çalışma zamanı hiç etkinleşmediği için bozulmuş olayları yayınlamaz.
 
 ## Komut yolu çözümlemesi
 
-Komut yolları, Gateway anlık görüntü RPC aracılığıyla desteklenen SecretRef çözümlemesine katılmayı seçebilir.
+Komut yolları, Gateway snapshot RPC üzerinden desteklenen SecretRef çözümlemesine katılmayı seçebilir.
 
-İki geniş davranış vardır:
+İki genel davranış vardır:
 
 <Tabs>
   <Tab title="Katı komut yolları">
-    Örneğin `openclaw memory` uzak bellek yolları ve uzak paylaşılan gizli başvurularına ihtiyaç duyduğunda `openclaw qr --remote`. Etkin anlık görüntüden okurlar ve gerekli bir SecretRef kullanılamadığında hızlı başarısız olurlar.
+    Örneğin `openclaw memory` uzak bellek yolları ve uzak paylaşılan gizli referanslara ihtiyaç duyduğunda `openclaw qr --remote`. Bunlar etkin anlık görüntüden okur ve gerekli bir SecretRef kullanılamıyorsa hızlı şekilde başarısız olur.
   </Tab>
   <Tab title="Salt okunur komut yolları">
-    Örneğin `openclaw status`, `openclaw status --all`, `openclaw channels status`, `openclaw channels resolve`, `openclaw security audit` ve salt okunur doctor/yapılandırma onarım akışları. Bunlar da etkin anlık görüntüyü tercih eder, ancak hedeflenen bir SecretRef bu komut yolunda kullanılamadığında iptal etmek yerine bozulmuş moda düşer.
+    Örneğin `openclaw status`, `openclaw status --all`, `openclaw channels status`, `openclaw channels resolve`, `openclaw security audit` ve salt okunur doctor/config onarım akışları. Bunlar da etkin anlık görüntüyü tercih eder, ancak hedeflenen bir SecretRef bu komut yolunda kullanılamadığında işlemi durdurmak yerine sınırlı işlevle devam eder.
 
     Salt okunur davranış:
 
     - Gateway çalışırken, bu komutlar önce etkin anlık görüntüden okur.
-    - Gateway çözümlemesi eksikse veya Gateway kullanılamıyorsa, belirli komut yüzeyi için hedefli yerel geri dönüş denerler.
-    - Hedeflenen bir SecretRef hâlâ kullanılamıyorsa, komut bozulmuş salt okunur çıktı ve "bu komut yolunda yapılandırılmış ancak kullanılamıyor" gibi açık tanılamalarla devam eder.
-    - Bu bozulmuş davranış yalnızca komuta yereldir. Çalışma zamanı başlatma, yeniden yükleme veya gönderme/kimlik doğrulama yollarını zayıflatmaz.
+    - Gateway çözümlemesi eksikse veya Gateway kullanılamıyorsa, ilgili komut yüzeyi için hedefli yerel geri dönüşü denerler.
+    - Hedeflenen bir SecretRef hâlâ kullanılamıyorsa, komut sınırlı salt okunur çıktıyla ve "configured but unavailable in this command path" gibi açık tanılamalarla devam eder.
+    - Bu sınırlı davranış yalnızca komuta özeldir. Çalışma zamanı başlatmasını, yeniden yüklemeyi veya gönderme/auth yollarını zayıflatmaz.
 
   </Tab>
 </Tabs>
 
 Diğer notlar:
 
-- Arka uç sır döndürmesinden sonra anlık görüntü yenilemesi `openclaw secrets reload` tarafından ele alınır.
-- Bu komut yollarının kullandığı Gateway RPC yöntemi: `secrets.resolve`.
+- Arka uç gizli bilgi döndürmesinden sonra anlık görüntü yenilemesi `openclaw secrets reload` tarafından işlenir.
+- Bu komut yolları tarafından kullanılan Gateway RPC yöntemi: `secrets.resolve`.
 
 ## Denetim ve yapılandırma iş akışı
 
@@ -460,9 +690,9 @@ Varsayılan operatör akışı:
     openclaw secrets audit --check
     ```
   </Step>
-  <Step title="SecretRef'leri yapılandır">
+  <Step title="SecretRef’leri yapılandır ve uygula">
     ```bash
-    openclaw secrets configure
+    openclaw secrets configure --apply
     ```
   </Step>
   <Step title="Yeniden denetle">
@@ -472,40 +702,47 @@ Varsayılan operatör akışı:
   </Step>
 </Steps>
 
+Yeniden denetim temiz çıkana kadar geçişi tamamlanmış saymayın. Denetim
+durağan halde hâlâ düz metin değerler bildiriyorsa, çalışma zamanı API’leri
+redakte edilmiş değerler döndürse bile ajan erişimi riski hâlâ mevcuttur.
+
+`configure` sırasında uygulamak yerine bir plan kaydederseniz, yeniden denetimden önce
+bu kaydedilmiş planı `openclaw secrets apply --from <plan-path>` ile uygulayın.
+
 <AccordionGroup>
   <Accordion title="secrets audit">
     Bulgular şunları içerir:
 
-    - bekleyen düz metin değerler (`openclaw.json`, `auth-profiles.json`, `.env` ve oluşturulan `agents/*/agent/models.json`)
+    - durağan halde düz metin değerler (`openclaw.json`, `auth-profiles.json`, `.env` ve oluşturulan `agents/*/agent/models.json`)
     - oluşturulan `models.json` girdilerinde düz metin hassas sağlayıcı başlığı kalıntıları
-    - çözümlenmemiş başvurular
-    - öncelik gölgelemesi (`auth-profiles.json` dosyasının `openclaw.json` başvurularına göre öncelik alması)
+    - çözümlenmemiş ref’ler
+    - öncelik gölgelemesi (`auth-profiles.json` öğesinin `openclaw.json` ref’lerine göre öncelik alması)
     - eski kalıntılar (`auth.json`, OAuth hatırlatmaları)
 
-    Çalıştırma notu:
+    Exec notu:
 
     - Varsayılan olarak denetim, komut yan etkilerinden kaçınmak için exec SecretRef çözülebilirlik denetimlerini atlar.
-    - Denetim sırasında exec sağlayıcılarını yürütmek için `openclaw secrets audit --allow-exec` kullanın.
+    - Denetim sırasında exec sağlayıcılarını çalıştırmak için `openclaw secrets audit --allow-exec` kullanın.
 
     Başlık kalıntısı notu:
 
-    - Hassas sağlayıcı başlığı algılama ada dayalı sezgiseldir (yaygın kimlik doğrulama/kimlik bilgisi başlığı adları ve `authorization`, `x-api-key`, `token`, `secret`, `password` ve `credential` gibi parçalar).
+    - Hassas sağlayıcı başlığı algılaması ad sezgilerine dayanır (yaygın auth/kimlik bilgisi başlık adları ve `authorization`, `x-api-key`, `token`, `secret`, `password` ve `credential` gibi parçalar).
 
   </Accordion>
   <Accordion title="secrets configure">
-    Etkileşimli yardımcı şunları yapar:
+    Şunları yapan etkileşimli yardımcı:
 
     - önce `secrets.providers` yapılandırır (`env`/`file`/`exec`, ekle/düzenle/kaldır)
-    - bir agent kapsamı için `openclaw.json` içindeki desteklenen sır taşıyan alanları ve ayrıca `auth-profiles.json` alanlarını seçmenize izin verir
+    - bir ajan kapsamı için `openclaw.json` içindeki desteklenen gizli bilgi taşıyan alanları ve ayrıca `auth-profiles.json` içeriğini seçmenizi sağlar
     - hedef seçicide doğrudan yeni bir `auth-profiles.json` eşlemesi oluşturabilir
     - SecretRef ayrıntılarını yakalar (`source`, `provider`, `id`)
     - ön kontrol çözümlemesi çalıştırır
     - hemen uygulayabilir
 
-    Çalıştırma notu:
+    Exec notu:
 
-    - Ön kontrol, `--allow-exec` ayarlanmadıkça exec SecretRef denetimlerini atlar.
-    - Doğrudan `configure --apply` üzerinden uyguluyorsanız ve plan exec başvuruları/sağlayıcıları içeriyorsa, uygulama adımı için de `--allow-exec` ayarlı kalsın.
+    - `--allow-exec` ayarlanmadıkça ön kontrol exec SecretRef denetimlerini atlar.
+    - Doğrudan `configure --apply` içinden uygularsanız ve plan exec ref’leri/sağlayıcıları içeriyorsa, uygulama adımı için de `--allow-exec` ayarlı kalsın.
 
     Yararlı modlar:
 
@@ -515,13 +752,13 @@ Varsayılan operatör akışı:
 
     `configure` uygulama varsayılanları:
 
-    - hedeflenen sağlayıcılar için `auth-profiles.json` dosyasından eşleşen statik kimlik bilgilerini temizler
-    - `auth.json` dosyasından eski statik `api_key` girdilerini temizler
-    - `<config-dir>/.env` dosyasından eşleşen bilinen sır satırlarını temizler
+    - hedeflenen sağlayıcılar için `auth-profiles.json` içinden eşleşen statik kimlik bilgilerini temizler
+    - `auth.json` içinden eski statik `api_key` girdilerini temizler
+    - `<config-dir>/.env` içinden eşleşen bilinen gizli bilgi satırlarını temizler
 
   </Accordion>
   <Accordion title="secrets apply">
-    Kaydedilmiş bir planı uygula:
+    Kaydedilmiş bir planı uygulayın:
 
     ```bash
     openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
@@ -530,12 +767,12 @@ Varsayılan operatör akışı:
     openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
     ```
 
-    Çalıştırma notu:
+    Exec notu:
 
-    - kuru çalışma, `--allow-exec` ayarlanmadıkça exec denetimlerini atlar.
-    - yazma modu, `--allow-exec` ayarlanmadıkça exec SecretRef'leri/sağlayıcıları içeren planları reddeder.
+    - dry-run, `--allow-exec` ayarlanmadıkça exec denetimlerini atlar.
+    - yazma modu, `--allow-exec` ayarlanmadıkça exec SecretRef’leri/sağlayıcıları içeren planları reddeder.
 
-    Katı hedef/yol sözleşmesi ayrıntıları ve kesin ret kuralları için bkz. [Secrets Apply Plan Sözleşmesi](/tr/gateway/secrets-plan-contract).
+    Katı hedef/yol sözleşmesi ayrıntıları ve tam reddetme kuralları için bkz. [Gizli Bilgileri Uygulama Planı Sözleşmesi](/tr/gateway/secrets-plan-contract).
 
   </Accordion>
 </AccordionGroup>
@@ -543,18 +780,18 @@ Varsayılan operatör akışı:
 ## Tek yönlü güvenlik ilkesi
 
 <Warning>
-OpenClaw, geçmiş düz metin gizli değerlerini içeren geri alma yedeklerini özellikle yazmaz.
+OpenClaw, geçmiş düz metin gizli bilgi değerlerini içeren geri alma yedeklerini bilerek yazmaz.
 </Warning>
 
 Güvenlik modeli:
 
-- ön kontrol yazma modundan önce başarılı olmalıdır
+- yazma modundan önce ön kontrol başarılı olmalıdır
 - çalışma zamanı etkinleştirmesi commit öncesinde doğrulanır
-- apply, dosyaları atomik dosya değiştirme ve hata durumunda en iyi çabayla geri yükleme kullanarak günceller
+- uygulama, dosyaları atomik dosya değiştirme ve hata durumunda en iyi çabayla geri yükleme kullanarak günceller
 
-## Eski kimlik doğrulama uyumluluk notları
+## Eski auth uyumluluk notları
 
-Statik kimlik bilgileri için çalışma zamanı artık düz metin eski kimlik doğrulama depolamasına bağlı değildir.
+Statik kimlik bilgileri için çalışma zamanı artık düz metin eski auth depolamasına bağlı değildir.
 
 - Çalışma zamanı kimlik bilgisi kaynağı, çözümlenmiş bellek içi anlık görüntüdür.
 - Eski statik `api_key` girdileri keşfedildiğinde temizlenir.
@@ -562,13 +799,13 @@ Statik kimlik bilgileri için çalışma zamanı artık düz metin eski kimlik d
 
 ## Web UI notu
 
-Bazı SecretInput birliklerini form moduna göre ham düzenleyici modunda yapılandırmak daha kolaydır.
+Bazı SecretInput union’larını ham düzenleyici modunda yapılandırmak, form moduna göre daha kolaydır.
 
 ## İlgili
 
-- [Kimlik Doğrulama](/tr/gateway/authentication) — kimlik doğrulama kurulumu
+- [Kimlik Doğrulama](/tr/gateway/authentication) — auth kurulumu
 - [CLI: secrets](/tr/cli/secrets) — CLI komutları
 - [Ortam Değişkenleri](/tr/help/environment) — ortam önceliği
 - [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface) — kimlik bilgisi yüzeyi
-- [Secrets Apply Plan Sözleşmesi](/tr/gateway/secrets-plan-contract) — plan sözleşmesi ayrıntıları
+- [Gizli Bilgileri Uygulama Planı Sözleşmesi](/tr/gateway/secrets-plan-contract) — plan sözleşmesi ayrıntıları
 - [Güvenlik](/tr/gateway/security) — güvenlik duruşu

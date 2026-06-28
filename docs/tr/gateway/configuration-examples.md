@@ -1,20 +1,21 @@
 ---
 read_when:
     - OpenClaw'ı yapılandırmayı öğrenme
-    - Yapılandırma örnekleri aranıyor
-    - OpenClaw'ı ilk kez ayarlama
+    - Yapılandırma örnekleri arıyorsanız
+    - OpenClaw’u ilk kez kurma
 summary: Yaygın OpenClaw kurulumları için şemaya uygun yapılandırma örnekleri
 title: Yapılandırma örnekleri
 x-i18n:
-    generated_at: "2026-05-11T20:29:19Z"
+    generated_at: "2026-06-28T00:33:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan başına notlar için bkz. [Yapılandırma](/tr/gateway/configuration).
+Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan bazlı notlar için bkz. [Yapılandırma](/tr/gateway/configuration).
 
 ## Hızlı başlangıç
 
@@ -27,7 +28,7 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
 }
 ```
 
-`~/.openclaw/openclaw.json` olarak kaydedin; ardından bota bu numaradan DM gönderebilirsiniz.
+`~/.openclaw/openclaw.json` konumuna kaydedin; ardından botla bu numaradan DM üzerinden iletişim kurabilirsiniz.
 
 ### Önerilen başlangıç
 
@@ -58,7 +59,8 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -66,7 +68,7 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
 
 ## Genişletilmiş örnek (başlıca seçenekler)
 
-> JSON5 yorumları ve sondaki virgülleri kullanmanıza olanak tanır. Normal JSON de çalışır.
+> JSON5, yorumlar ve sondaki virgülleri kullanmanıza izin verir. Normal JSON da çalışır.
 
 ```json5
 {
@@ -88,12 +90,11 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı 
 }
 ```
 
-### Symlink eklenmiş kardeş Skills deposu
+### Sembolik bağlı kardeş skill deposu
 
-Bunu, yerleşik bir Skills kökü kardeş bir depoya symlink içerdiğinde kullanın; örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Yerleşik bir skill kökü, kardeş bir depoya sembolik bağlantı içerdiğinde bunu kullanın; örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -495,12 +497,13 @@ Bunu, yerleşik bir Skills kökü kardeş bir depoya symlink içerdiğinde kulla
 }
 ```
 
-- `extraDirs`, kardeş depoyu açık bir Skills kökü olarak tarar.
-- `allowSymlinkTargets`, symlink eklenmiş Skills klasörlerinin, rastgele symlink kaçışlarına izin vermeden bu güvenilen gerçek hedef köke çözümlenmesini sağlar.
+- `extraDirs`, kardeş depoyu açık bir skill kökü olarak tarar.
+- `allowSymlinkTargets`, sembolik bağlı skill klasörlerinin, rastgele sembolik bağlantı kaçışlarına izin vermeden bu güvenilen gerçek hedef köke çözümlenmesini sağlar.
+- Skill Workshop'un aynı güvenilen sembolik bağlantı hedefi üzerinden yazma uygulamasına izin vermek için `skills.workshop.allowSymlinkTargetWrites: true` ayarını yapın.
 
 ## Yaygın kalıplar
 
-### Tek geçersiz kılmayla paylaşılan Skills temel yapılandırması
+### Tek geçersiz kılma ile paylaşılan skill temel ayarı
 
 ```json5
 {
@@ -517,8 +520,8 @@ Bunu, yerleşik bir Skills kökü kardeş bir depoya symlink içerdiğinde kulla
 }
 ```
 
-- `agents.defaults.skills`, paylaşılan temel yapılandırmadır.
-- `agents.list[].skills`, bir agent için bu temel yapılandırmanın yerini alır.
+- `agents.defaults.skills` paylaşılan temeldir.
+- `agents.list[].skills` bir agent için bu temelin yerini alır.
 - Bir agent hiçbir Skills görmemeliyse `skills: []` kullanın.
 
 ### Çok platformlu kurulum
@@ -542,11 +545,11 @@ Bunu, yerleşik bir Skills kökü kardeş bir depoya symlink içerdiğinde kulla
 }
 ```
 
-### Güvenilir node ağı otomatik onayı
+### Güvenilir Node ağı otomatik onayı
 
-Ağ yolunu siz kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Özel bir
-laboratuvar veya tailnet alt ağı için, ilk kez yapılan node cihazı otomatik
-onayını tam CIDR'ler veya IP'lerle etkinleştirebilirsiniz:
+Ağ yolunu kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Ayrılmış bir
+laboratuvar veya tailnet alt ağı için, tam CIDR’ler ya da IP’lerle ilk kez Node
+cihaz otomatik onayını etkinleştirebilirsiniz:
 
 ```json5
 {
@@ -560,13 +563,13 @@ onayını tam CIDR'ler veya IP'lerle etkinleştirebilirsiniz:
 }
 ```
 
-Bu, ayarlanmadığında kapalı kalır. Yalnızca istenen kapsamları olmayan yeni
-`role: node` eşleştirmesine uygulanır. Operatör/tarayıcı istemcileri ve rol,
-kapsam, meta veri veya açık anahtar yükseltmeleri hâlâ manuel onay gerektirir.
+Ayarlanmadığında bu kapalı kalır. Yalnızca istenen kapsamı olmayan yeni `role: node`
+eşleştirmesi için geçerlidir. Operatör/tarayıcı istemcileri ile rol, kapsam, meta veri
+veya açık anahtar yükseltmeleri yine de manuel onay gerektirir.
 
-### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
+### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM’ler)
 
-Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
+Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM’lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
 
 ```json5
 {
@@ -590,7 +593,7 @@ Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden faz
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderen yetkilendirmesi varsayılan olarak önce ID temellidir.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderen yetkilendirmesi varsayılan olarak önce kimlik temellidir.
 Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmeyi yalnızca bu riski açıkça kabul ediyorsanız her kanalın `dangerouslyAllowNameMatching: true` ayarıyla etkinleştirin.
 
 ### Anthropic API anahtarı + MiniMax yedeği
@@ -697,7 +700,7 @@ Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmeyi yalnızca bu ris
 
 ## İpuçları
 
-- `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` değerini içermelidir.
+- `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` içermelidir.
 - Sağlayıcı kimlikleri farklılık gösterir (telefon numaraları, kullanıcı kimlikleri, kanal kimlikleri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
 - Daha sonra eklenecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Daha ayrıntılı kurulum notları için [Sağlayıcılar](/tr/providers) ve [Sorun giderme](/tr/gateway/troubleshooting) bölümlerine bakın.

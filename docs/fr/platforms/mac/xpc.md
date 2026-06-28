@@ -1,39 +1,44 @@
 ---
 read_when:
-    - modification des contrats IPC ou de l’IPC de l’app de barre de menus
-summary: architecture IPC macOS pour l’app OpenClaw, le transport de nœud Gateway et PeekabooBridge
+    - Modification des contrats IPC ou de l’IPC de l’application de barre de menus
+summary: Architecture IPC macOS pour l’application OpenClaw, le transport des nœuds Gateway et PeekabooBridge
 title: IPC macOS
 x-i18n:
-    generated_at: "2026-04-24T07:21:13Z"
-    model: gpt-5.4
+    generated_at: "2026-06-28T00:13:20Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 359a33f1a4f5854bd18355f588b4465b5627d9c8fa10a37c884995375da32cac
+    source_hash: 436ea0a01dc544d246b4f2f506a2950fd05b36a8cf79f6f03cffe2843eef8c0d
     source_path: platforms/mac/xpc.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Architecture IPC macOS d’OpenClaw
 
-**Modèle actuel :** un socket Unix local connecte le **service hôte de nœud** à l’**app macOS** pour les approbations exec et `system.run`. Une CLI de débogage `openclaw-mac` existe pour les vérifications de découverte/connexion ; les actions d’agent passent toujours par le WebSocket Gateway et `node.invoke`. L’automatisation d’interface utilise PeekabooBridge.
+**Modèle actuel :** un socket Unix local connecte le **service hôte node** à l’**application macOS** pour les approbations d’exécution + `system.run`. Une CLI de débogage `openclaw-mac` existe pour les vérifications de découverte/connexion ; les actions d’agent passent toujours par le WebSocket Gateway et `node.invoke`. L’automatisation de l’interface utilisateur utilise PeekabooBridge.
 
 ## Objectifs
 
-- Une seule instance d’app GUI qui possède tout le travail lié à TCC (notifications, enregistrement d’écran, micro, parole, AppleScript).
-- Une petite surface pour l’automatisation : Gateway + commandes de nœud, plus PeekabooBridge pour l’automatisation d’interface.
-- Des autorisations prévisibles : toujours le même identifiant de bundle signé, lancé par launchd, afin que les autorisations TCC persistent.
+- Une instance unique de l’application GUI qui prend en charge tout le travail lié à TCC (notifications, enregistrement de l’écran, micro, parole, AppleScript).
+- Une petite surface pour l’automatisation : Gateway + commandes node, plus PeekabooBridge pour l’automatisation de l’interface utilisateur.
+- Des autorisations prévisibles : toujours le même ID de bundle signé, lancé par launchd, afin que les autorisations TCC persistent.
 
 ## Fonctionnement
 
-### Gateway + transport de nœud
+### Transport Gateway + node
 
-- L’app exécute la Gateway (mode local) et s’y connecte comme nœud.
-- Les actions d’agent sont exécutées via `node.invoke` (par ex. `system.run`, `system.notify`, `canvas.*`).
+- L’application exécute le Gateway (mode local) et s’y connecte en tant que node.
+- Les actions d’agent sont effectuées via `node.invoke` (par ex. `system.run`, `system.notify`, `canvas.*`).
+- Les commandes node Mac courantes incluent `canvas.*`, `camera.snap`, `camera.clip`,
+  `screen.snapshot`, `screen.record`, `system.run` et `system.notify`.
+- Le node signale une carte `permissions` afin que les agents puissent voir si l’accès à l’écran,
+  à la caméra, au microphone, à la parole, à l’automatisation ou à l’accessibilité est disponible.
 
-### Service de nœud + IPC app
+### Service node + IPC de l’application
 
-- Un service hôte de nœud headless se connecte au WebSocket Gateway.
-- Les requêtes `system.run` sont transférées à l’app macOS via un socket Unix local.
-- L’app exécute l’exec dans le contexte UI, demande une confirmation si nécessaire et renvoie la sortie.
+- Un service hôte node sans interface se connecte au WebSocket Gateway.
+- Les requêtes `system.run` sont transférées à l’application macOS via un socket Unix local.
+- L’application effectue l’exécution dans le contexte de l’interface utilisateur, demande une confirmation si nécessaire, puis renvoie la sortie.
 
 Diagramme (SCI) :
 
@@ -44,30 +49,30 @@ Agent -> Gateway -> Node Service (WS)
                   Mac App (UI + TCC + system.run)
 ```
 
-### PeekabooBridge (automatisation d’interface)
+### PeekabooBridge (automatisation de l’interface utilisateur)
 
-- L’automatisation d’interface utilise un socket UNIX distinct nommé `bridge.sock` et le protocole JSON PeekabooBridge.
-- Ordre de préférence de l’hôte (côté client) : Peekaboo.app → Claude.app → OpenClaw.app → exécution locale.
-- Sécurité : les hôtes du pont exigent un TeamID autorisé ; l’échappatoire même UID uniquement en DEBUG est protégée par `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (convention Peekaboo).
-- Voir : [utilisation de PeekabooBridge](/fr/platforms/mac/peekaboo) pour les détails.
+- L’automatisation de l’interface utilisateur utilise un socket UNIX distinct nommé `bridge.sock` et le protocole JSON PeekabooBridge.
+- Ordre de préférence des hôtes (côté client) : Peekaboo.app → Claude.app → OpenClaw.app → exécution locale.
+- Sécurité : les hôtes bridge exigent un TeamID autorisé ; l’échappatoire DEBUG uniquement pour le même UID est protégée par `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (convention Peekaboo).
+- Voir : [utilisation de PeekabooBridge](/fr/platforms/mac/peekaboo) pour plus de détails.
 
 ## Flux opérationnels
 
-- Redémarrage/reconstruction : `SIGN_IDENTITY="Apple Development: <Developer Name> (<TEAMID>)" scripts/restart-mac.sh`
+- Redémarrer/recompiler : `SIGN_IDENTITY="Apple Development: <Developer Name> (<TEAMID>)" scripts/restart-mac.sh`
   - Tue les instances existantes
-  - Build Swift + packaging
-  - Écrit/initialise/lance le LaunchAgent
-- Instance unique : l’app se ferme immédiatement si une autre instance avec le même identifiant de bundle est en cours d’exécution.
+  - Compilation Swift + paquet
+  - Écrit/initialise/relance le LaunchAgent
+- Instance unique : l’application quitte tôt si une autre instance avec le même ID de bundle est en cours d’exécution.
 
-## Remarques de durcissement
+## Notes de durcissement
 
-- Préférez exiger une correspondance de TeamID pour toutes les surfaces privilégiées.
-- PeekabooBridge : `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (DEBUG uniquement) peut autoriser des appelants de même UID pour le développement local.
-- Toute la communication reste locale uniquement ; aucun socket réseau n’est exposé.
-- Les invites TCC proviennent uniquement du bundle de l’app GUI ; gardez l’identifiant de bundle signé stable entre les reconstructions.
-- Durcissement IPC : mode du socket `0600`, jeton, vérifications d’UID pair, défi/réponse HMAC, TTL court.
+- Préférer l’exigence d’une correspondance de TeamID pour toutes les surfaces privilégiées.
+- PeekabooBridge : `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (DEBUG uniquement) peut autoriser les appelants du même UID pour le développement local.
+- Toutes les communications restent strictement locales ; aucun socket réseau n’est exposé.
+- Les invites TCC proviennent uniquement du bundle de l’application GUI ; garder l’ID de bundle signé stable entre les recompilations.
+- Durcissement IPC : mode de socket `0600`, token, vérifications du peer-UID, défi/réponse HMAC, TTL court.
 
-## Liens associés
+## Connexe
 
-- [app macOS](/fr/platforms/macos)
-- [Flux IPC macOS (approbations Exec)](/fr/tools/exec-approvals-advanced#macos-ipc-flow)
+- [application macOS](/fr/platforms/macos)
+- [Flux IPC macOS (approbations d’exécution)](/fr/tools/exec-approvals-advanced#macos-ipc-flow)

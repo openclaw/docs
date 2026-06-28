@@ -1,22 +1,25 @@
 ---
 read_when:
-    - Bir ajan halihazırda çalışırken /steer veya /tell kullanımı
-    - /steer ile /queue steer karşılaştırması
-    - Mevcut çalıştırmayı, bir alt ajanı veya bir ACP oturumunu yönlendirip yönlendirmemeye karar verme
+    - Bir agent zaten çalışırken /steer veya /tell kullanma
+    - /steer ile /queue modlarını karşılaştırma
+    - Mevcut çalıştırmayı mı yoksa bir ACP oturumunu mu yönlendireceğinize karar verme
 sidebarTitle: Steer
-summary: Kuyruk modunu değiştirmeden aktif bir çalıştırmayı yönlendirin
+summary: Kuyruk modunu değiştirmeden etkin bir çalıştırmayı yönlendirin
 title: Yönlendir
 x-i18n:
-    generated_at: "2026-05-04T07:09:31Z"
+    generated_at: "2026-06-28T01:25:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 71e1c80c0eea86d5c3c29513d3ed0675c04779fc9c6ee3b8a76c4bedaa264d22
+    source_hash: 2e73f3f2fd938ee9dbdd14d183abe7f8676dbc7bb7382e6ad2c1fd41034fa09c
     source_path: tools/steer.md
     workflow: 16
 ---
 
-`/steer`, zaten etkin olan bir çalıştırmaya rehberlik gönderir. Yeni bir tur başlatmak için değil, "bu
-çalıştırma hâlâ sürerken bunu ayarla" anları içindir.
+`/steer` önce yönergeleri zaten etkin olan bir çalıştırmaya göndermeyi dener. Bu komut,
+"bu çalıştırma hâlâ devam ederken onu ayarla" anları içindir. Geçerli runtime
+yönlendirmeyi kabul edemiyorsa OpenClaw, mesajı düşürmek yerine normal bir istem
+olarak gönderir.
 
 ## Geçerli oturum
 
@@ -31,40 +34,39 @@ Davranış:
 
 - Yalnızca geçerli oturumun etkin çalıştırmasını hedefler.
 - Oturumun `/queue` modundan bağımsız çalışır.
-- Oturum boştayken yeni bir çalıştırma başlatmaz.
-- Yönlendirilecek etkin bir çalıştırma olmadığında bir uyarıyla yanıt verir.
-- Etkin çalışma zamanının yönlendirme yolunu kullanır; böylece model rehberliği
-  bir sonraki desteklenen çalışma zamanı sınırında görür.
+- Oturum boştayken veya etkin çalıştırma yönlendirmeyi kabul edemediğinde aynı
+  mesajla normal bir tur başlatır.
+- Etkin runtime'ın yönlendirme yolunu kullanır; bu nedenle model yönergeleri bir
+  sonraki desteklenen runtime sınırında görür.
 
 ## Yönlendirme ve kuyruk
 
-`/queue steer`, bir çalıştırma etkinken gelen normal iletilerin nasıl davranacağını
-değiştirir. `/steer <message>`, saklanan `/queue` ayarından bağımsız olarak,
-bu komutun iletisini bir sonraki desteklenen çalışma zamanı sınırında etkin
-çalıştırmaya enjekte etmeye çalışan açık bir komuttur.
+`/queue steer`, normal gelen mesajların bir çalıştırma etkinken geldiklerinde
+etkin çalıştırmayı yönlendirmeyi denemesini sağlar. `/steer <message>`, saklanan
+`/queue` ayarından bağımsız olarak, bu komutun mesajını bir sonraki desteklenen
+runtime sınırında etkin çalıştırmaya enjekte etmeyi deneyen açık bir komuttur.
+Bu enjeksiyon kullanılamadığında komut öneki kaldırılır ve `<message>` normal
+bir istem olarak devam eder.
 
 Kullanım:
 
 - Etkin çalıştırmayı hemen yönlendirmek istediğinizde `/steer <message>` kullanın.
-- Gelecekteki normal iletilerin varsayılan olarak etkin çalıştırmaları yönlendirmesini
-  istediğinizde `/queue steer` kullanın.
-- Yeni iletilerin etkin çalıştırmayı yönlendirmek yerine daha sonraki bir turu
-  beklemesi gerektiğinde `/queue collect` veya `/queue followup` kullanın.
+- Gelecekteki normal mesajların varsayılan olarak etkin çalıştırmaları
+  yönlendirmesini istediğinizde `/queue steer` kullanın.
+- Gelecekteki normal mesajların etkin çalıştırmayı yönlendirmek yerine daha
+  sonraki bir turu beklemesi gerektiğinde `/queue collect` veya `/queue followup`
+  kullanın.
+- En yeni mesajın etkin çalıştırmayı yönlendirmek yerine onun yerini alması
+  gerektiğinde `/queue interrupt` kullanın.
 
-Kuyruk modları ve yedek davranış için bkz. [Komut kuyruğu](/tr/concepts/queue) ve
-[Yönlendirme kuyruğu](/tr/concepts/queue-steering).
+Kuyruk modları ve yönlendirme sınırları için [Komut kuyruğu](/tr/concepts/queue) ve
+[Yönlendirme kuyruğu](/tr/concepts/queue-steering) bölümlerine bakın.
 
 ## Alt aracılar
 
-Hedef bir alt çalıştırma olduğunda `/subagents steer` kullanın:
-
-```text
-/subagents steer 2 focus only on the API surface
-```
-
-Üst düzey `/steer`, kimliğe veya liste dizinine göre bir alt aracı seçmez. Her zaman
-geçerli oturumun etkin çalıştırmasını hedefler. Alt aracı kimlikleri, etiketleri ve
-kontrol komutları için bkz. [Alt aracılar](/tr/tools/subagents).
+Üst düzey `/steer`, geçerli oturumun etkin çalıştırmasını hedefler. Alt aracılar
+üst/requester oturumlarına geri bildirim yapar; `/subagents` yalnızca görünürlük
+içindir.
 
 ## ACP oturumları
 
@@ -74,7 +76,8 @@ Hedef bir ACP harness oturumu olduğunda `/acp steer` kullanın:
 /acp steer --session agent:main:acp:codex tighten the repro
 ```
 
-ACP oturumu seçimi ve çalışma zamanı davranışı için bkz. [ACP aracıları](/tr/tools/acp-agents).
+ACP oturum seçimi ve runtime davranışı için [ACP aracıları](/tr/tools/acp-agents)
+bölümüne bakın.
 
 ## İlgili
 

@@ -1,19 +1,20 @@
 ---
 read_when:
     - Birçok LLM için tek bir API anahtarı istiyorsunuz
-    - Modelleri OpenClaw'da Kilo Gateway üzerinden çalıştırmak istiyorsunuz
-summary: OpenClaw'da birçok modele erişmek için Kilo Gateway'in birleşik API'sini kullanın
+    - Modelleri OpenClaw içinde Kilo Gateway üzerinden çalıştırmak istiyorsunuz
+summary: OpenClaw’da birçok modele erişmek için Kilo Gateway’in birleşik API’sini kullanın
 title: Kilo Gateway
 x-i18n:
-    generated_at: "2026-05-10T19:52:12Z"
+    generated_at: "2026-06-28T01:10:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3de2d983a028082d0a897fdafa48ff1f2ad82f3aacec547763159db07adb00a2
+    source_hash: be06295295b63ce9b9d00d6f3d73e132c805237fde056eac4619616bf992e803
     source_path: providers/kilocode.md
     workflow: 16
 ---
 
-Kilo Gateway, istekleri tek bir endpoint ve API anahtarı arkasındaki birçok modele yönlendiren **birleşik API** sağlar. OpenAI uyumludur; bu nedenle çoğu OpenAI SDK'sı, temel URL değiştirilerek çalışır.
+Kilo Gateway, istekleri tek bir uç nokta ve API anahtarı arkasındaki birçok modele yönlendiren **birleşik API** sağlar. OpenAI uyumludur, bu yüzden çoğu OpenAI SDK'sı temel URL değiştirilerek çalışır.
 
 | Özellik | Değer                              |
 | -------- | ---------------------------------- |
@@ -22,11 +23,20 @@ Kilo Gateway, istekleri tek bir endpoint ve API anahtarı arkasındaki birçok m
 | API      | OpenAI uyumlu                  |
 | Temel URL | `https://api.kilo.ai/api/gateway/` |
 
-## Başlangıç
+## Plugin'i yükleyin
+
+Resmi Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
+
+```bash
+openclaw plugins install @openclaw/kilocode-provider
+openclaw gateway restart
+```
+
+## Başlarken
 
 <Steps>
   <Step title="Hesap oluşturun">
-    [app.kilo.ai](https://app.kilo.ai) adresine gidin, oturum açın veya bir hesap oluşturun, ardından API Keys bölümüne gidip yeni bir anahtar oluşturun.
+    [app.kilo.ai](https://app.kilo.ai) adresine gidin, oturum açın veya bir hesap oluşturun, ardından API Anahtarları'na gidip yeni bir anahtar oluşturun.
   </Step>
   <Step title="Onboarding'i çalıştırın">
     ```bash
@@ -49,19 +59,19 @@ Kilo Gateway, istekleri tek bir endpoint ve API anahtarı arkasındaki birçok m
 
 ## Varsayılan model
 
-Varsayılan model, Kilo Gateway tarafından yönetilen ve sağlayıcıya ait bir akıllı yönlendirme modeli olan `kilocode/kilo/auto` modelidir.
+Varsayılan model, Kilo Gateway tarafından yönetilen, sağlayıcıya ait bir akıllı yönlendirme modeli olan `kilocode/kilo/auto`'dur.
 
 <Note>
-OpenClaw, `kilocode/kilo/auto` değerini kararlı varsayılan referans olarak ele alır, ancak bu rota için kaynak destekli bir görevden üst akış modele eşleme yayımlamaz. `kilocode/kilo/auto` arkasındaki kesin üst akış yönlendirmesi Kilo Gateway'e aittir; OpenClaw içinde sabit kodlanmamıştır.
+OpenClaw, `kilocode/kilo/auto` değerini kararlı varsayılan başvuru olarak ele alır, ancak bu rota için kaynağa dayalı bir görevden üst modele eşleme yayımlamaz. `kilocode/kilo/auto` arkasındaki tam üst yönlendirme OpenClaw'da sabit kodlanmış değildir; Kilo Gateway'e aittir.
 </Note>
 
 ## Yerleşik katalog
 
-OpenClaw, başlangıçta Kilo Gateway üzerinden kullanılabilir modelleri dinamik olarak keşfeder. Hesabınızla kullanılabilen modellerin tam listesini görmek için `/models kilocode` kullanın.
+OpenClaw, başlangıçta Kilo Gateway'den kullanılabilir modelleri dinamik olarak keşfeder. Hesabınızla kullanılabilen modellerin tam listesini görmek için `/models kilocode` kullanın.
 
-Gateway üzerinde kullanılabilen herhangi bir model, `kilocode/` önekiyle kullanılabilir:
+Gateway'de kullanılabilir olan herhangi bir model `kilocode/` ön ekiyle kullanılabilir:
 
-| Model referansı                                | Notlar                              |
+| Model ref                                | Notlar                              |
 | ---------------------------------------- | ---------------------------------- |
 | `kilocode/kilo/auto`                     | Varsayılan — akıllı yönlendirme            |
 | `kilocode/anthropic/claude-sonnet-4`     | Kilo üzerinden Anthropic                 |
@@ -70,7 +80,7 @@ Gateway üzerinde kullanılabilen herhangi bir model, `kilocode/` önekiyle kull
 | ...ve çok daha fazlası                         | Tümünü listelemek için `/models kilocode` kullanın |
 
 <Tip>
-Başlangıçta OpenClaw, `GET https://api.kilo.ai/api/gateway/models` sorgusunu yapar ve keşfedilen modelleri statik geri dönüş kataloğunun önüne ekleyerek birleştirir. Paketle gelen geri dönüş kataloğu, `input: ["text", "image"]`, `reasoning: true`, `contextWindow: 1000000` ve `maxTokens: 128000` ile her zaman `kilocode/kilo/auto` (`Kilo Auto`) içerir.
+Başlangıçta OpenClaw, `GET https://api.kilo.ai/api/gateway/models` sorgusunu yapar ve keşfedilen modelleri statik yedek kataloğun önüne ekleyerek birleştirir. Statik yedek her zaman `input: ["text", "image"]`, `reasoning: true`, `contextWindow: 1000000` ve `maxTokens: 128000` ile `kilocode/kilo/auto` (`Kilo Auto`) içerir.
 </Tip>
 
 ## Yapılandırma örneği
@@ -88,26 +98,26 @@ Başlangıçta OpenClaw, `GET https://api.kilo.ai/api/gateway/models` sorgusunu 
 
 <AccordionGroup>
   <Accordion title="Aktarım ve uyumluluk">
-    Kilo Gateway kaynakta OpenRouter uyumlu olarak belgelenmiştir; bu nedenle yerel OpenAI istek biçimlendirmesi yerine proxy tarzı OpenAI uyumlu yolda kalır.
+    Kilo Gateway kaynakta OpenRouter uyumlu olarak belgelenmiştir, bu yüzden yerel OpenAI istek biçimlendirmesi yerine proxy tarzı OpenAI uyumlu yolda kalır.
 
-    - Gemini destekli Kilo referansları proxy-Gemini yolunda kalır; bu nedenle OpenClaw, yerel Gemini yeniden oynatma doğrulamasını veya bootstrap yeniden yazımlarını etkinleştirmeden Gemini düşünce imzası temizliğini orada korur.
-    - Kilo Gateway, arka planda API anahtarınızla birlikte Bearer token kullanır.
+    - Gemini destekli Kilo ref'leri proxy-Gemini yolunda kalır, bu yüzden OpenClaw, yerel Gemini yeniden oynatma doğrulamasını veya bootstrap yeniden yazımlarını etkinleştirmeden Gemini düşünce imzası temizliğini burada sürdürür.
+    - Kilo Gateway, arka planda API anahtarınızla bir Bearer token kullanır.
 
   </Accordion>
 
-  <Accordion title="Akış sarmalayıcı ve akıl yürütme">
-    Kilo'nun paylaşılan akış sarmalayıcısı, sağlayıcı uygulama başlığını ekler ve desteklenen somut model referansları için proxy akıl yürütme yüklerini normalleştirir.
+  <Accordion title="Akış sarmalayıcı ve reasoning">
+    Kilo'nun paylaşılan akış sarmalayıcısı sağlayıcı uygulama başlığını ekler ve desteklenen somut model ref'leri için proxy reasoning yüklerini normalleştirir.
 
     <Warning>
-    `kilocode/kilo/auto` ve proxy akıl yürütmesi desteklenmeyen diğer ipuçları, akıl yürütme enjeksiyonunu atlar. Akıl yürütme desteğine ihtiyacınız varsa `kilocode/anthropic/claude-sonnet-4` gibi somut bir model referansı kullanın.
+    `kilocode/kilo/auto` ve diğer proxy-reasoning-desteklenmeyen ipuçları reasoning eklemeyi atlar. Reasoning desteğine ihtiyacınız varsa `kilocode/anthropic/claude-sonnet-4` gibi somut bir model ref'i kullanın.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Sorun giderme">
-    - Başlangıçta model keşfi başarısız olursa OpenClaw, `kilocode/kilo/auto` içeren paketli statik kataloğa geri döner.
-    - API anahtarınızın geçerli olduğunu ve Kilo hesabınızda istediğiniz modellerin etkinleştirildiğini doğrulayın.
-    - Gateway bir daemon olarak çalıştığında, `KILOCODE_API_KEY` değerinin bu işlem tarafından kullanılabilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
+    - Başlangıçta model keşfi başarısız olursa OpenClaw, `kilocode/kilo/auto` içeren statik kataloğa geri döner.
+    - API anahtarınızın geçerli olduğunu ve Kilo hesabınızda istenen modellerin etkin olduğunu doğrulayın.
+    - Gateway bir daemon olarak çalıştığında, `KILOCODE_API_KEY` değerinin bu süreç için kullanılabilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` üzerinden).
 
   </Accordion>
 </AccordionGroup>
@@ -116,10 +126,10 @@ Başlangıçta OpenClaw, `GET https://api.kilo.ai/api/gateway/models` sorgusunu 
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
+    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
   </Card>
-  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    Tam OpenClaw yapılandırma başvurusu.
+  <Card title="Yapılandırma referansı" href="/tr/gateway/configuration-reference" icon="gear">
+    Tam OpenClaw yapılandırma referansı.
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">
     Kilo Gateway panosu, API anahtarları ve hesap yönetimi.

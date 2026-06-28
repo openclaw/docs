@@ -2,20 +2,21 @@
 read_when:
     - Yerel OpenClaw durumu için birinci sınıf bir yedekleme arşivi istiyorsunuz
     - Sıfırlama veya kaldırma işleminden önce hangi yolların dahil edileceğini önizlemek istiyorsunuz
-summary: 'CLI başvurusu: `openclaw backup` (yerel yedek arşivleri oluşturma)'
+summary: '`openclaw backup` için CLI başvurusu (yerel yedek arşivleri oluşturma)'
 title: Yedekleme
 x-i18n:
-    generated_at: "2026-05-10T19:28:04Z"
+    generated_at: "2026-06-28T00:20:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2c95cf475a563ad4f0a2dbaeda504b265580545c9d3f6f71d2f4d2a183e76a5c
+    source_hash: 1ac7d8e4babd24f1c46ac48dca6c413e12361173df83cfe485dd3945ccd30c3e
     source_path: cli/backup.md
     workflow: 16
 ---
 
 # `openclaw backup`
 
-OpenClaw durumu, yapılandırması, kimlik doğrulama profilleri, kanal/sağlayıcı kimlik bilgileri, oturumları ve isteğe bağlı olarak çalışma alanları için yerel bir yedekleme arşivi oluşturun.
+OpenClaw durumu, yapılandırması, kimlik doğrulama profilleri, kanal/sağlayıcı kimlik bilgileri, oturumlar ve isteğe bağlı olarak çalışma alanları için yerel bir yedek arşivi oluşturun.
 
 ```bash
 openclaw backup create
@@ -24,56 +25,57 @@ openclaw backup create --dry-run --json
 openclaw backup create --verify
 openclaw backup create --no-include-workspace
 openclaw backup create --only-config
-openclaw backup verify ./2026-03-09T00-00-00.000Z-openclaw-backup.tar.gz
+openclaw backup verify ./2026-03-09T08-00-00.000+08-00-openclaw-backup.tar.gz
 ```
 
 ## Notlar
 
-- Arşiv, çözümlenen kaynak yollarını ve arşiv düzenini içeren bir `manifest.json` dosyası içerir.
+- Arşiv, çözümlenen kaynak yollarını ve arşiv yerleşimini içeren bir `manifest.json` dosyası içerir.
 - Varsayılan çıktı, geçerli çalışma dizininde zaman damgalı bir `.tar.gz` arşividir.
+- Zaman damgalı yedek dosya adları makinenizin yerel saat dilimini kullanır ve UTC farkını içerir.
 - Geçerli çalışma dizini yedeklenen bir kaynak ağacının içindeyse OpenClaw, varsayılan arşiv konumu için ana dizininize geri döner.
 - Mevcut arşiv dosyalarının üzerine asla yazılmaz.
-- Kaynak durum/çalışma alanı ağaçlarının içindeki çıktı yolları, kendini içermeyi önlemek için reddedilir.
-- `openclaw backup verify <archive>`, arşivin tam olarak bir kök manifest içerdiğini doğrular, geçiş tarzı arşiv yollarını reddeder ve manifestte bildirilen her yükün tarball içinde bulunduğunu denetler.
-- `openclaw backup create --verify`, arşiv yazıldıktan hemen sonra bu doğrulamayı çalıştırır.
+- Kaynak durum/çalışma alanı ağaçlarının içindeki çıktı yolları, kendi kendini dahil etmeyi önlemek için reddedilir.
+- `openclaw backup verify <archive>`, arşivin tam olarak bir kök manifest içerdiğini doğrular, dizin geçişi tarzı arşiv yollarını reddeder ve manifestte bildirilen her yükün tarball içinde bulunduğunu kontrol eder.
+- `openclaw backup create --verify`, arşivi yazdıktan hemen sonra bu doğrulamayı çalıştırır.
 - `openclaw backup create --only-config`, yalnızca etkin JSON yapılandırma dosyasını yedekler.
 
 ## Neler yedeklenir
 
-`openclaw backup create`, yerel OpenClaw kurulumunuzdan yedekleme kaynaklarını planlar:
+`openclaw backup create`, yerel OpenClaw kurulumunuzdan yedek kaynaklarını planlar:
 
-- OpenClaw'ın yerel durum çözümleyicisi tarafından döndürülen durum dizini, genellikle `~/.openclaw`
+- OpenClaw'ın yerel durum çözücüsünün döndürdüğü durum dizini, genellikle `~/.openclaw`
 - Etkin yapılandırma dosyası yolu
 - Durum dizininin dışında mevcut olduğunda çözümlenen `credentials/` dizini
 - `--no-include-workspace` iletmediğiniz sürece geçerli yapılandırmadan keşfedilen çalışma alanı dizinleri
 
-Model kimlik doğrulama profilleri, durum dizininin altında zaten
-`agents/<agentId>/agent/auth-profiles.json` içinde yer alır, bu yüzden normalde
+Model kimlik doğrulama profilleri zaten durum dizininin
+`agents/<agentId>/agent/auth-profiles.json` altında yer alır, bu nedenle normalde
 durum yedekleme girdisi tarafından kapsanırlar.
 
 `--only-config` kullanırsanız OpenClaw durum, kimlik bilgileri dizini ve çalışma alanı keşfini atlar ve yalnızca etkin yapılandırma dosyası yolunu arşivler.
 
-OpenClaw, arşivi oluşturmadan önce yolları kanonikleştirir. Yapılandırma,
-kimlik bilgileri dizini veya bir çalışma alanı zaten durum dizininin içinde
-bulunuyorsa bunlar ayrı üst düzey yedekleme kaynakları olarak çoğaltılmaz. Eksik
-yollar atlanır.
+OpenClaw arşivi oluşturmadan önce yolları kanonik hale getirir. Yapılandırma,
+kimlik bilgileri dizini veya bir çalışma alanı zaten durum dizininin içindeyse
+bunlar ayrı üst düzey yedek kaynakları olarak çoğaltılmaz. Eksik yollar
+atlanır.
 
-Arşiv yükü, bu kaynak ağaçlardaki dosya içeriklerini depolar ve gömülü `manifest.json`, çözümlenen mutlak kaynak yollarını ve her varlık için kullanılan arşiv düzenini kaydeder.
+Arşiv yükü, bu kaynak ağaçlarındaki dosya içeriklerini depolar ve gömülü `manifest.json`, çözümlenen mutlak kaynak yollarını ve her varlık için kullanılan arşiv yerleşimini kaydeder.
 
-Arşiv oluşturma sırasında OpenClaw, geri yükleme değeri olmayan bilinen canlı mutasyon dosyalarını atlar; bunlara etkin ajan oturum dökümleri, cron çalıştırma günlükleri, dönen günlükler, teslim kuyrukları, durum dizini altındaki soket/pid/geçici dosyalar ve ilgili dayanıklı kuyruk geçici dosyaları dahildir. JSON sonucu, otomasyonun kaç dosyanın kasıtlı olarak dışarıda bırakıldığını görebilmesi için `skippedVolatileCount` içerir.
+Arşiv oluşturma sırasında OpenClaw, geri yükleme değeri olmayan bilinen canlı değişim dosyalarını atlar; bunlara etkin aracı oturumu dökümleri, cron çalıştırma günlükleri, dönen günlükler, teslim kuyrukları, durum dizini altındaki socket/pid/geçici dosyalar ve ilgili kalıcı kuyruk geçici dosyaları dahildir. JSON sonucu `skippedVolatileCount` içerir; böylece otomasyon kaç dosyanın bilerek atlandığını görebilir.
 
-Durum dizininin `extensions/` ağacı altındaki yüklü Plugin kaynak ve manifest
-dosyaları dahil edilir, ancak iç içe `node_modules/` bağımlılık ağaçları atlanır.
-Bu bağımlılıklar yeniden oluşturulabilir kurulum yapıtlarıdır; bir arşivi geri
-yükledikten sonra, geri yüklenen bir Plugin eksik bağımlılık bildirirse
-`openclaw plugins update <id>` kullanın veya Plugin'i
-`openclaw plugins install <spec> --force` ile yeniden yükleyin.
+Durum dizininin `extensions/` ağacı altındaki kurulu Plugin kaynak ve manifest
+dosyaları dahil edilir, ancak iç içe `node_modules/` bağımlılık ağaçları
+atlanır. Bu bağımlılıklar yeniden oluşturulabilir kurulum yapılarıdır; bir
+arşivi geri yükledikten sonra, geri yüklenen bir Plugin eksik bağımlılıklar
+bildirirse `openclaw plugins update <id>` kullanın veya Plugin'i
+`openclaw plugins install <spec> --force` ile yeniden kurun.
 
 ## Geçersiz yapılandırma davranışı
 
-`openclaw backup`, kurtarma sırasında hâlâ yardımcı olabilmesi için normal yapılandırma ön denetimini kasıtlı olarak atlar. Çalışma alanı keşfi geçerli bir yapılandırmaya bağlı olduğundan, `openclaw backup create` artık yapılandırma dosyası mevcut ancak geçersiz olduğunda ve çalışma alanı yedekleme hâlâ etkin olduğunda hızlıca başarısız olur.
+`openclaw backup`, kurtarma sırasında hâlâ yardımcı olabilmesi için normal yapılandırma ön denetimini bilerek atlar. Çalışma alanı keşfi geçerli bir yapılandırmaya bağlı olduğundan, yapılandırma dosyası mevcut ama geçersizse ve çalışma alanı yedekleme hâlâ etkinse `openclaw backup create` artık hızlıca başarısız olur.
 
-Bu durumda yine de kısmi bir yedekleme istiyorsanız yeniden çalıştırın:
+Bu durumda yine de kısmi bir yedek istiyorsanız yeniden çalıştırın:
 
 ```bash
 openclaw backup create --no-include-workspace
@@ -81,20 +83,20 @@ openclaw backup create --no-include-workspace
 
 Bu, çalışma alanı keşfini tamamen atlarken durum, yapılandırma ve harici kimlik bilgileri dizinini kapsamda tutar.
 
-Yalnızca yapılandırma dosyasının kendisinin bir kopyasına ihtiyacınız varsa, `--only-config` yapılandırma bozuk olduğunda da çalışır çünkü çalışma alanı keşfi için yapılandırmayı ayrıştırmaya dayanmaz.
+Yalnızca yapılandırma dosyasının kendisinin bir kopyasına ihtiyacınız varsa `--only-config`, çalışma alanı keşfi için yapılandırmayı ayrıştırmaya dayanmadığı için yapılandırma hatalı biçimlendirilmiş olduğunda da çalışır.
 
 ## Boyut ve performans
 
-OpenClaw, yerleşik bir en fazla yedekleme boyutu veya dosya başına boyut sınırı uygulamaz.
+OpenClaw yerleşik bir en fazla yedek boyutu veya dosya başına boyut sınırı zorunlu kılmaz.
 
 Pratik sınırlar yerel makineden ve hedef dosya sisteminden gelir:
 
 - Geçici arşiv yazımı ve son arşiv için kullanılabilir alan
 - Büyük çalışma alanı ağaçlarını dolaşıp bunları bir `.tar.gz` içine sıkıştırma süresi
 - `openclaw backup create --verify` kullanırsanız veya `openclaw backup verify` çalıştırırsanız arşivi yeniden tarama süresi
-- Hedef yoldaki dosya sistemi davranışı. OpenClaw, üzerine yazmayan bir hard link yayımlama adımını tercih eder ve hard link desteklenmediğinde özel kopyalamaya geri döner
+- Hedef yoldaki dosya sistemi davranışı. OpenClaw, üzerine yazmayan bir hard-link yayımlama adımını tercih eder ve hard linkler desteklenmediğinde özel kopyalamaya geri döner
 
-Büyük çalışma alanları genellikle arşiv boyutunun ana belirleyicisidir. Daha küçük veya daha hızlı bir yedekleme istiyorsanız `--no-include-workspace` kullanın.
+Büyük çalışma alanları genellikle arşiv boyutunun ana belirleyicisidir. Daha küçük veya daha hızlı bir yedek istiyorsanız `--no-include-workspace` kullanın.
 
 En küçük arşiv için `--only-config` kullanın.
 

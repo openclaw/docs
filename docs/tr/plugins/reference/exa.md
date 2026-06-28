@@ -1,13 +1,14 @@
 ---
 read_when:
-    - exa Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+    - exa Plugin’ini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: Web arama sağlayıcısı desteği ekler.
 title: Exa Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:34Z"
+    generated_at: "2026-06-28T00:59:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8cde3e0199d84893e63becdd7a32fbec25d8e90f52ee604dcba78f5a5980f61
+    source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
     source_path: plugins/reference/exa.md
     workflow: 16
 ---
@@ -19,11 +20,11 @@ Web arama sağlayıcısı desteği ekler.
 ## Dağıtım
 
 - Paket: `@openclaw/exa-plugin`
-- Kurulum yolu: OpenClaw'a dahil
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
 ## Yüzey
 
-contracts: webSearchProviders
+sözleşmeler: webSearchProviders
 
 ## İlgili belgeler
 

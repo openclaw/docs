@@ -1,25 +1,26 @@
 ---
 read_when:
-    - moonshot Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+    - Moonshot pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Moonshot model sağlayıcısı desteği ekler.
 title: Moonshot Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:09Z"
+    generated_at: "2026-06-28T01:01:17Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 30a828575030bb3b35b0d5a2887682e1d63cba03f1d010cd94b93d99df3e9e2f
+    source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
     source_path: plugins/reference/moonshot.md
     workflow: 16
 ---
 
 # Moonshot Plugin
 
-OpenClaw'a Moonshot model sağlayıcı desteği ekler.
+OpenClaw'a Moonshot model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/moonshot-provider`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
 
 ## Yüzey
 

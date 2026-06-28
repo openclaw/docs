@@ -1,22 +1,31 @@
 ---
 read_when:
-    - Bir çalışma alanını elle önyüklemeleme
+    - Bir çalışma alanını elle önyükleme
 summary: HEARTBEAT.md için çalışma alanı şablonu
 title: HEARTBEAT.md şablonu
 x-i18n:
-    generated_at: "2026-04-24T09:30:22Z"
-    model: gpt-5.4
+    generated_at: "2026-06-28T01:17:38Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f234f7f5fd016a29a56bae11fc9114649e9c48acd0ece69a9accf90302ed728c
+    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
     source_path: reference/templates/HEARTBEAT.md
-    workflow: 15
+    workflow: 16
 ---
 
-```markdown
-# Heartbeat API çağrılarını atlamak için bu dosyayı boş tutun (veya yalnızca yorumlar içersin).
+# HEARTBEAT.md şablonu
 
-# Aracının bir şeyi periyodik olarak kontrol etmesini istediğinizde aşağıya görevler ekleyin.
+`HEARTBEAT.md`, ajan çalışma alanında bulunur. OpenClaw’ın heartbeat model çağrılarını atlamasını istediğinizde dosyayı boş ya da yalnızca Markdown yorumları ve başlıkları içerecek şekilde bırakın.
+
+Varsayılan çalışma zamanı şablonu şöyledir:
+
+```markdown
+# Heartbeat API çağrılarını atlamak için bu dosyayı boş bırakın (veya yalnızca yorumlar ekleyin).
+
+# Ajanın belirli aralıklarla bir şeyi kontrol etmesini istediğinizde görevleri aşağıya ekleyin.
 ```
+
+Kısa görevleri yalnızca ajanın belirli aralıklarla bir şeyi kontrol etmesini istediğinizde yorumların altına ekleyin. Heartbeat yönergelerini kısa tutun, çünkü bunlar yinelenen uyanmalarda okunur.
 
 ## İlgili
 

@@ -1,21 +1,23 @@
 ---
 read_when:
-    - macOS ilk kurulum asistanını tasarlama
-    - Kimlik doğrulama veya kimlik kurulumunu uygulama
+    - macOS işe alıştırma asistanını tasarlama
+    - Kimlik doğrulama veya kimlik kurulumu uygulama
 sidebarTitle: 'Onboarding: macOS App'
 summary: OpenClaw için ilk çalıştırma kurulum akışı (macOS uygulaması)
-title: İlk kurulum (macOS uygulaması)
+title: İlk Kurulum (macOS uygulaması)
 x-i18n:
-    generated_at: "2026-05-06T09:31:29Z"
+    generated_at: "2026-06-28T01:19:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6dc7ebea5de7b1398d7b64c00245255c59af8a7ef51315cdd0ef1cb4898a41a4
+    source_hash: 73f902bcbb7ef782d4a5fbe442a8855a8fcb426d45167c4d2fc1fc050263b5f1
     source_path: start/onboarding.md
     workflow: 16
 ---
 
 Bu belge **mevcut** ilk çalıştırma kurulum akışını açıklar. Amaç,
-sorunsuz bir "0. gün" deneyimidir: Gateway'in nerede çalışacağını seçmek, kimlik doğrulamayı bağlamak, sihirbazı çalıştırmak ve ajanın kendini başlatmasına izin vermek.
+sorunsuz bir "0. gün" deneyimidir: Gateway'in nerede çalışacağını seçmek, kimlik doğrulamayı bağlamak, sihirbazı çalıştırmak
+ve aracının kendini başlatmasına izin vermek.
 Katılım yollarına genel bir bakış için bkz. [Katılım Genel Bakışı](/tr/start/onboarding-overview).
 
 <Steps>
@@ -36,10 +38,10 @@ Katılım yollarına genel bir bakış için bkz. [Katılım Genel Bakışı](/t
 
 Güvenlik güven modeli:
 
-- Varsayılan olarak OpenClaw kişisel bir ajandır: tek bir güvenilir operatör sınırı.
-- Paylaşılan/çok kullanıcılı kurulumlar sıkılaştırma gerektirir (güven sınırlarını ayırın, araç erişimini minimumda tutun ve [Güvenlik](/tr/gateway/security) yönergelerini izleyin).
+- Varsayılan olarak OpenClaw kişisel bir aracıdır: tek bir güvenilir operatör sınırı.
+- Paylaşımlı/çok kullanıcılı kurulumlar sıkılaştırma gerektirir (güven sınırlarını ayırın, araç erişimini en düşük düzeyde tutun ve [Güvenlik](/tr/gateway/security) yönergelerini izleyin).
 - Yerel katılım artık yeni yapılandırmalarda varsayılan olarak `tools.profile: "coding"` kullanır; böylece yeni yerel kurulumlar, sınırsız `full` profilini zorunlu kılmadan dosya sistemi/çalışma zamanı araçlarını korur.
-- Hook/webhook'lar veya diğer güvenilmeyen içerik beslemeleri etkinse, güçlü ve modern bir model katmanı kullanın ve sıkı araç politikası/korumalı alan uygulayın.
+- Hook'lar/Webhook'lar veya diğer güvenilmeyen içerik akışları etkinse, güçlü ve modern bir model katmanı kullanın ve sıkı araç politikası/sandboxing uygulayın.
 
 </Step>
 <Step title="Yerel ve Uzak">
@@ -51,14 +53,16 @@ Güvenlik güven modeli:
 
 - **Bu Mac (Yalnızca yerel):** katılım, kimlik doğrulamayı yapılandırabilir ve kimlik bilgilerini
   yerel olarak yazabilir.
-- **Uzak (SSH/Tailnet üzerinden):** katılım yerel kimlik doğrulamayı yapılandırmaz;
-  kimlik bilgilerinin gateway ana makinesinde mevcut olması gerekir.
+- **Uzak (SSH/Tailnet üzerinden):** katılım, yerel kimlik doğrulamayı **yapılandırmaz**;
+  kimlik bilgileri gateway ana makinesinde mevcut olmalıdır. Uzak gateway token alanı,
+  macOS uygulamasının bu Gateway'e bağlanmak için kullandığı token'ı depolar; mevcut
+  düz metin olmayan `gateway.remote.token` değerleri siz değiştirene kadar korunur.
 - **Daha sonra yapılandır:** kurulumu atlayın ve uygulamayı yapılandırılmamış bırakın.
 
 <Tip>
 **Gateway kimlik doğrulama ipucu:**
 
-- Sihirbaz artık loopback için bile bir **token** oluşturur, bu yüzden yerel WS istemcilerinin kimlik doğrulaması yapması gerekir.
+- Sihirbaz artık loopback için bile bir **token** oluşturur; bu nedenle yerel WS istemcileri kimlik doğrulaması yapmalıdır.
 - Kimlik doğrulamayı devre dışı bırakırsanız herhangi bir yerel süreç bağlanabilir; bunu yalnızca tamamen güvenilir makinelerde kullanın.
 - Çok makineli erişim veya loopback dışı bağlamalar için bir **token** kullanın.
 
@@ -83,15 +87,15 @@ Katılım, şunlar için gereken TCC izinlerini ister:
 </Step>
 <Step title="CLI">
   <Info>Bu adım isteğe bağlıdır</Info>
-  Uygulama, genel `openclaw` CLI'yi npm, pnpm veya bun aracılığıyla yükleyebilir.
-  Önce npm'i, ardından pnpm'i, yalnızca algılanan paket yöneticisi oysa bun'ı tercih eder.
+  Uygulama, global `openclaw` CLI'ını npm, pnpm veya bun üzerinden yükleyebilir.
+  Önce npm'i, ardından pnpm'i, yalnızca algılanan paket yöneticisi buysa bun'ı tercih eder.
   Gateway çalışma zamanı için Node önerilen yol olmaya devam eder.
 </Step>
-<Step title="Katılım Sohbeti (adanmış oturum)">
-  Kurulumdan sonra uygulama, ajanın kendini tanıtabilmesi ve sonraki adımlara
-  rehberlik edebilmesi için adanmış bir katılım sohbet oturumu açar. Bu, ilk çalıştırma rehberliğini
-  normal konuşmanızdan ayrı tutar. İlk ajan çalıştırması sırasında gateway ana makinesinde
-  neler olduğunu öğrenmek için bkz. [Başlatma](/tr/start/bootstrapping).
+<Step title="Katılım Sohbeti (özel oturum)">
+  Kurulumdan sonra uygulama, aracının kendini tanıtabilmesi ve sonraki adımları yönlendirebilmesi için
+  özel bir katılım sohbet oturumu açar. Bu, ilk çalıştırma yönlendirmesini
+  normal konuşmanızdan ayrı tutar. İlk aracı çalıştırması sırasında gateway ana makinesinde
+  neler olduğunu görmek için bkz. [Önyükleme](/tr/start/bootstrapping).
 </Step>
 </Steps>
 

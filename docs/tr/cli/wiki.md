@@ -1,14 +1,15 @@
 ---
 read_when:
-    - memory-wiki CLI'sini kullanmak istiyorsunuz
-    - '`openclaw wiki` öğesini belgeliyor veya değiştiriyorsunuz'
-summary: '`openclaw wiki` için CLI referansı (memory-wiki kasası durumu, arama, derleme, lint denetimi, uygulama, köprü ve Obsidian yardımcıları)'
+    - memory-wiki CLI’yi kullanmak istiyorsunuz
+    - '`openclaw wiki` belgeliyorsunuz veya değiştiriyorsunuz'
+summary: '`openclaw wiki` için CLI başvurusu (memory-wiki kasası durumu, arama, derleme, lint, uygulama, köprü ve Obsidian yardımcıları)'
 title: Viki
 x-i18n:
-    generated_at: "2026-04-30T09:15:01Z"
+    generated_at: "2026-06-28T00:26:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
@@ -17,20 +18,20 @@ x-i18n:
 
 `memory-wiki` kasasını inceleyin ve bakımını yapın.
 
-Paketle birlikte gelen `memory-wiki` Plugin'i tarafından sağlanır.
+Birlikte gelen `memory-wiki` Plugin'i tarafından sağlanır.
 
 İlgili:
 
 - [Memory Wiki Plugin'i](/tr/plugins/memory-wiki)
-- [Belleğe Genel Bakış](/tr/concepts/memory)
+- [Bellek Genel Bakışı](/tr/concepts/memory)
 - [CLI: bellek](/tr/cli/memory)
 
 ## Ne için kullanılır
 
-Aşağıdakilere sahip derlenmiş bir bilgi kasası istediğinizde `openclaw wiki` kullanın:
+Aşağıdakileri içeren derlenmiş bir bilgi kasası istediğinizde `openclaw wiki` kullanın:
 
 - wiki'ye özgü arama ve sayfa okumaları
-- kaynak bakımından zengin sentezler
+- kaynak bilgisi açısından zengin sentezler
 - çelişki ve güncellik raporları
 - active memory Plugin'inden köprü içe aktarımları
 - isteğe bağlı Obsidian CLI yardımcıları
@@ -42,6 +43,7 @@ openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -71,64 +73,74 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-Geçerli kasa modunu, durumunu ve Obsidian CLI kullanılabilirliğini inceleyin.
+Geçerli kasa modunu, sağlığını ve Obsidian CLI kullanılabilirliğini inceleyin.
 
-Kasanın başlatılıp başlatılmadığından, köprü modunun sağlıklı olup olmadığından
-veya Obsidian entegrasyonunun kullanılabilir olup olmadığından emin değilseniz
-önce bunu kullanın.
+Kasanın başlatılıp başlatılmadığından, köprü modunun sağlıklı olup olmadığından veya Obsidian entegrasyonunun kullanılabilir olup olmadığından emin değilseniz önce bunu kullanın.
 
-Köprü modu etkin olduğunda ve bellek yapıtlarını okuyacak şekilde
-yapılandırıldığında, bu komut çalışan Gateway'i sorgular; böylece agent/runtime
-belleğiyle aynı active memory Plugin bağlamını görür.
+Köprü modu etkin olduğunda ve bellek yapıtlarını okuyacak şekilde yapılandırıldığında, bu komut çalışan Gateway'i sorgular; böylece ajan/çalışma zamanı belleğiyle aynı active memory Plugin'i bağlamını görür.
 
 ### `wiki doctor`
 
-Wiki durum kontrollerini çalıştırın ve yapılandırma ya da kasa sorunlarını gösterin.
+Wiki sağlık denetimlerini çalıştırın ve yapılandırma ya da kasa sorunlarını gösterin.
 
-Köprü modu etkin olduğunda ve bellek yapıtlarını okuyacak şekilde
-yapılandırıldığında, bu komut raporu oluşturmadan önce çalışan Gateway'i
-sorgular. Devre dışı köprü içe aktarımları ve bellek yapıtlarını okumayan köprü
-yapılandırmaları yerel/çevrimdışı kalır.
+Köprü modu etkin olduğunda ve bellek yapıtlarını okuyacak şekilde yapılandırıldığında, bu komut raporu oluşturmadan önce çalışan Gateway'i sorgular. Devre dışı bırakılmış köprü içe aktarımları ve bellek yapıtlarını okumayan köprü yapılandırmaları yerel/çevrimdışı kalır.
 
 Tipik sorunlar şunları içerir:
 
-- herkese açık bellek yapıtları olmadan köprü modunun etkinleştirilmesi
+- genel bellek yapıtları olmadan etkinleştirilmiş köprü modu
 - geçersiz veya eksik kasa düzeni
-- Obsidian modu beklendiğinde harici Obsidian CLI'nin eksik olması
+- Obsidian modu beklendiğinde eksik harici Obsidian CLI
 
 ### `wiki init`
 
-Wiki kasası düzenini ve başlangıç sayfalarını oluşturun.
+Wiki kasa düzenini ve başlangıç sayfalarını oluşturun.
 
 Bu, üst düzey dizinler ve önbellek dizinleri dahil olmak üzere kök yapıyı başlatır.
 
 ### `wiki ingest <path-or-url>`
 
-İçeriği wiki kaynak katmanına içe aktarın.
+İçeriği wiki kaynak katmanına aktarın.
 
 Notlar:
 
 - URL içe aktarımı `ingest.allowUrlIngest` tarafından denetlenir
-- içe aktarılan kaynak sayfaları kaynak bilgisini frontmatter içinde tutar
-- etkinleştirildiğinde içe aktarımdan sonra otomatik derleme çalışabilir
+- içe aktarılan kaynak sayfalar kaynak bilgisini frontmatter içinde tutar
+- etkinleştirildiğinde içe aktarmadan sonra otomatik derleme çalışabilir
+
+### `wiki okf import <path>`
+
+Paketinden çıkarılmış bir Open Knowledge Format paketini wiki kavram sayfalarına içe aktarın.
+
+İçe aktarıcı, OKF dizin ağacındaki ayrılmış olmayan her `.md` kavram belgesini okur, boş olmayan bir `type` alanı gerektirir ve bilinmeyen OKF `type` değerlerini genel kavramlar olarak ele alır. Ayrılmış OKF `index.md` ve `log.md` dosyaları kavram olarak içe aktarılmaz.
+
+İçe aktarılan sayfalar `concepts/` altında düzleştirilir; böylece mevcut wiki derleme, arama, getirme, özet ve pano akışları bunları hemen görür. Özgün OKF kavram kimliği, `type`, `resource`, `tags`, zaman damgası, kaynak yolu ve tam frontmatter sayfa frontmatter'ında korunur. Dahili OKF markdown bağlantıları oluşturulan wiki sayfalarına yeniden yazılır; bozuk veya harici bağlantılar değiştirilmeden bırakılır.
+
+Örnekler:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-Dizinleri, ilişkili blokları, panoları ve derlenmiş özetleri yeniden oluşturun.
+Dizinleri, ilgili blokları, panoları ve derlenmiş özetleri yeniden oluşturun.
 
-Bu, aşağıdaki konumlara kararlı makineye yönelik yapıtlar yazar:
+Bu, kararlı makineye yönelik yapıtları şuraya yazar:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-`render.createDashboards` etkinse derleme, rapor sayfalarını da yeniler.
+`render.createDashboards` etkinse derleme rapor sayfalarını da yeniler.
 
 ### `wiki lint`
 
-Kasayı lint edin ve şunları raporlayın:
+Kasayı denetleyin ve şunları raporlayın:
 
 - yapısal sorunlar
-- kaynak boşlukları
+- kaynak bilgisi boşlukları
 - çelişkiler
 - açık sorular
 - düşük güvenilirlikli sayfalar/iddialar
@@ -147,15 +159,13 @@ Davranış yapılandırmaya bağlıdır:
 - `--mode`: `auto`, `find-person`, `route-question`, `source-evidence` veya
   `raw-claim`
 
-Wiki'ye özgü sıralama veya kaynak ayrıntıları istediğinizde `wiki search`
-kullanın. Tek bir geniş ortak hatırlama geçişi için, active memory Plugin'i
-ortak arama sunuyorsa `openclaw memory search` tercih edin.
+Wiki'ye özgü sıralama veya kaynak bilgisi ayrıntıları istediğinizde `wiki search` kullanın. Geniş kapsamlı tek bir ortak hatırlama geçişi için, active memory Plugin'i ortak aramayı sunuyorsa `openclaw memory search` tercih edin.
 
-Arama modları agent'ın doğru yüzeyi seçmesine yardımcı olur:
+Arama modları ajanın doğru yüzeyi seçmesine yardımcı olur:
 
 - `find-person`: takma adlar, kullanıcı adları, sosyal hesaplar, kanonik kimlikler ve kişi sayfaları
 - `route-question`: kime sorulacağı/en iyi ne için kullanılacağı ipuçları ve ilişki bağlamı
-- `source-evidence`: kaynak sayfaları ve yapılandırılmış kanıt alanları
+- `source-evidence`: kaynak sayfalar ve yapılandırılmış kanıt alanları
 - `raw-claim`: iddia/kanıt meta verileriyle yapılandırılmış iddia metni
 
 Örnekler:
@@ -167,10 +177,7 @@ openclaw wiki search "maintainer-whois" --mode source-evidence
 openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
-Bir sonuç yapılandırılmış bir iddiayla eşleştiğinde metin çıktısı `Claim:` ve
-`Evidence:` satırlarını içerir. JSON çıktısı ayrıca agent tarafında ayrıntıya
-inmek için `matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`,
-`evidenceKinds` ve `evidenceSourceIds` alanlarını sunar.
+Bir sonuç yapılandırılmış bir iddiayla eşleştiğinde metin çıktısı `Claim:` ve `Evidence:` satırlarını içerir. JSON çıktısı ayrıca ajan tarafı ayrıntılı inceleme için `matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds` ve `evidenceSourceIds` alanlarını sunar.
 
 ### `wiki get <lookup>`
 
@@ -185,33 +192,27 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Serbest biçimli sayfa müdahalesi olmadan dar kapsamlı değişiklikler uygulayın.
+Serbest biçimli sayfa düzenlemesi yapmadan dar kapsamlı değişiklikler uygulayın.
 
 Desteklenen akışlar şunları içerir:
 
-- bir sentez sayfası oluşturma/güncelleme
+- sentez sayfası oluşturma/güncelleme
 - sayfa meta verilerini güncelleme
 - kaynak kimlikleri ekleme
-- sorular ekleme
-- çelişkiler ekleme
+- soru ekleme
+- çelişki ekleme
 - güvenilirlik/durum güncelleme
 - yapılandırılmış iddialar yazma
 
-Bu komut, yönetilen blokları elle düzenlemeden wiki'nin güvenli şekilde
-gelişebilmesi için vardır.
+Bu komut, yönetilen blokları elle düzenlemeden wiki'nin güvenli şekilde gelişebilmesi için vardır.
 
 ### `wiki bridge import`
 
-Active memory Plugin'inden herkese açık bellek yapıtlarını köprü destekli kaynak
-sayfalarına içe aktarın.
+Active memory Plugin'inden genel bellek yapıtlarını köprü destekli kaynak sayfalara içe aktarın.
 
-En son dışa aktarılmış bellek yapıtlarının wiki kasasına çekilmesini
-istediğinizde bunu `bridge` modunda kullanın.
+Wiki kasasına en son dışa aktarılmış bellek yapıtlarının çekilmesini istediğinizde bunu `bridge` modunda kullanın.
 
-Etkin köprü yapıt okumaları için CLI, içe aktarımı Gateway RPC üzerinden
-yönlendirir; böylece içe aktarma runtime bellek Plugin bağlamını kullanır. Köprü
-içe aktarımları devre dışıysa veya yapıt okumaları kapatılmışsa komut
-yerel/çevrimdışı sıfır içe aktarım davranışını korur.
+Etkin köprü yapıtı okumalarında CLI, içe aktarımı Gateway RPC üzerinden yönlendirir; böylece içe aktarma çalışma zamanı bellek Plugin'i bağlamını kullanır. Köprü içe aktarımları devre dışıysa veya yapıt okumaları kapalıysa komut yerel/çevrimdışı sıfır içe aktarma davranışını korur.
 
 ### `wiki unsafe-local import`
 
@@ -231,16 +232,15 @@ Alt komutlar:
 - `command`
 - `daily`
 
-Bunlar, `obsidian.useOfficialCli` etkin olduğunda `PATH` üzerinde resmi
-`obsidian` CLI'yi gerektirir.
+Bunlar, `obsidian.useOfficialCli` etkin olduğunda `PATH` üzerinde resmi `obsidian` CLI'yi gerektirir.
 
 ## Pratik kullanım kılavuzu
 
-- Kaynak ve sayfa kimliği önemli olduğunda `wiki search` + `wiki get` kullanın.
+- Kaynak bilgisi ve sayfa kimliği önemli olduğunda `wiki search` + `wiki get` kullanın.
 - Yönetilen oluşturulmuş bölümleri elle düzenlemek yerine `wiki apply` kullanın.
 - Çelişkili veya düşük güvenilirlikli içeriğe güvenmeden önce `wiki lint` kullanın.
-- Toplu içe aktarımlardan veya kaynak değişikliklerinden sonra panoların ve
-  derlenmiş özetlerin hemen güncel olmasını istediğinizde `wiki compile` kullanın.
+- Toplu içe aktarımlardan veya kaynak değişikliklerinden sonra panoların ve derlenmiş özetlerin hemen güncel olmasını istediğinizde `wiki compile` kullanın.
+- Bir veri kataloğu, dokümantasyon dışa aktarımı veya ajan zenginleştirme işlem hattı zaten OKF markdown paketleri yayıyorsa `wiki okf import` kullanın.
 - Köprü modu yeni dışa aktarılmış bellek yapıtlarına bağlı olduğunda `wiki bridge import` kullanın.
 
 ## Yapılandırma bağlantıları
@@ -255,9 +255,9 @@ Bunlar, `obsidian.useOfficialCli` etkin olduğunda `PATH` üzerinde resmi
 - `plugins.entries.memory-wiki.config.render.*`
 - `plugins.entries.memory-wiki.config.context.includeCompiledDigestPrompt`
 
-Tam yapılandırma modeli için [Memory Wiki Plugin'i](/tr/plugins/memory-wiki) sayfasına bakın.
+Tam yapılandırma modeli için [Memory Wiki Plugin'i](/tr/plugins/memory-wiki) bölümüne bakın.
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Memory wiki](/tr/plugins/memory-wiki)

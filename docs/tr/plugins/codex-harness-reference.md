@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Codex koşumunun tüm yapılandırma alanlarına ihtiyacınız var
-    - Uygulama sunucusunun taşıma, kimlik doğrulama, keşif veya zaman aşımı davranışını değiştiriyorsunuz
-    - Codex harness başlangıcını, model keşfini veya ortam yalıtımını hata ayıklıyorsunuz
-summary: Codex düzeneği için yapılandırma, kimlik doğrulama, keşif ve uygulama sunucusu referansı
-title: Codex harness başvurusu
+    - Tüm Codex harness yapılandırma alanlarına ihtiyacınız var
+    - Uygulama sunucusu taşıma, kimlik doğrulama, keşif veya zaman aşımı davranışını değiştiriyorsunuz
+    - Codex harness başlangıcında, model keşfinde veya ortam yalıtımında hata ayıklıyorsunuz
+summary: Codex harness için yapılandırma, kimlik doğrulama, keşif ve uygulama sunucusu başvurusu
+title: Codex harness referansı
 x-i18n:
-    generated_at: "2026-05-10T19:44:10Z"
+    generated_at: "2026-06-28T00:51:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 72767810c9448015a1ce7f35263dba576151b18c1f4a43ba531d45728241f095
+    source_hash: 32da817c262a61769b78b16c10e508175c730a568c2ba6321595c430815526a5
     source_path: plugins/codex-harness-reference.md
     workflow: 16
 ---
 
-Bu başvuru, paketle birlikte gelen `codex` Plugin için ayrıntılı yapılandırmayı kapsar. Kurulum ve yönlendirme kararları için
-[Codex harness](/tr/plugins/codex-harness) ile başlayın.
+Bu başvuru, paketle birlikte gelen `codex` Plugin'i için ayrıntılı yapılandırmayı kapsar. Kurulum ve yönlendirme kararları için
+[Codex çalıştırma altyapısı](/tr/plugins/codex-harness) ile başlayın.
 
 ## Plugin yapılandırma yüzeyi
 
-Tüm Codex harness ayarları `plugins.entries.codex.config` altında bulunur.
+Tüm Codex çalıştırma altyapısı ayarları `plugins.entries.codex.config` altında bulunur.
 
 ```json5
 {
@@ -44,26 +45,26 @@ Tüm Codex harness ayarları `plugins.entries.codex.config` altında bulunur.
 
 Desteklenen üst düzey alanlar:
 
-| Alan                       | Varsayılan              | Anlam                                                                                                                                     |
-| -------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `discovery`                | etkin                   | Codex app-server `model/list` için model keşfi ayarları.                                                                                  |
-| `appServer`                | yönetilen stdio app-server | Aktarım, komut, kimlik doğrulama, onay, sandbox ve zaman aşımı ayarları.                                                                  |
-| `codexDynamicToolsLoading` | `"searchable"`          | OpenClaw dinamik araçlarını doğrudan ilk Codex araç bağlamına koymak için `"direct"` kullanın.                                             |
-| `codexDynamicToolsExclude` | `[]`                    | Codex app-server dönüşlerinden çıkarılacak ek OpenClaw dinamik araç adları.                                                               |
-| `codexPlugins`             | devre dışı              | Taşınmış, kaynak kurulumlu seçili Plugin'ler için yerel Codex Plugin/uygulama desteği. Bkz. [Yerel Codex Plugin'leri](/tr/plugins/codex-native-plugins). |
-| `computerUse`              | devre dışı              | Codex Computer Use kurulumu. Bkz. [Codex Computer Use](/tr/plugins/codex-computer-use).                                                      |
+| Alan                       | Varsayılan              | Anlamı                                                                                                                                             |
+| -------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `discovery`                | etkin                   | Codex app-server `model/list` için model keşfi ayarları.                                                                                           |
+| `appServer`                | yönetilen stdio app-server | Aktarım, komut, kimlik doğrulama, onay, sandbox ve zaman aşımı ayarları.                                                                        |
+| `codexDynamicToolsLoading` | `"searchable"`          | OpenClaw dinamik araçlarını doğrudan ilk Codex araç bağlamına koymak için `"direct"` kullanın.                                                     |
+| `codexDynamicToolsExclude` | `[]`                    | Codex app-server dönüşlerinden hariç tutulacak ek OpenClaw dinamik araç adları.                                                                    |
+| `codexPlugins`             | devre dışı              | Taşınmış, kaynaktan kurulmuş seçilmiş Plugin'ler için yerel Codex Plugin/uygulama desteği. Bkz. [Yerel Codex Plugin'leri](/tr/plugins/codex-native-plugins). |
+| `computerUse`              | devre dışı              | Codex Computer Use kurulumu. Bkz. [Codex Computer Use](/tr/plugins/codex-computer-use).                                                               |
 
 ## App-server aktarımı
 
-Varsayılan olarak OpenClaw, paketle birlikte gelen Plugin ile gönderilen yönetilen Codex ikilisini başlatır:
+Varsayılan olarak OpenClaw, paketle birlikte gelen Plugin ile gönderilen yönetilen Codex ikili dosyasını başlatır:
 
 ```bash
 codex app-server --listen stdio://
 ```
 
-Bu, app-server sürümünü yerelde kurulu olabilecek ayrı Codex CLI yerine paketle gelen `codex` Plugin'e bağlı tutar. `appServer.command` değerini yalnızca bilerek farklı bir çalıştırılabilir dosya çalıştırmak istediğinizde ayarlayın.
+Bu, app-server sürümünü yerelde kurulu olabilecek herhangi bir ayrı Codex CLI yerine paketle birlikte gelen `codex` Plugin'ine bağlı tutar. `appServer.command` değerini yalnızca bilerek farklı bir yürütülebilir dosya çalıştırmak istediğinizde ayarlayın.
 
-Zaten çalışan bir app-server için WebSocket aktarımını kullanın:
+Zaten çalışmakta olan bir app-server için WebSocket aktarımını kullanın:
 
 ```json5
 {
@@ -87,35 +88,80 @@ Zaten çalışan bir app-server için WebSocket aktarımını kullanın:
 
 Desteklenen `appServer` alanları:
 
-| Alan                          | Varsayılan                                             | Anlam                                                                                                                                                                                         |
-| ----------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `transport`                   | `"stdio"`                                              | `"stdio"` Codex'i başlatır; `"websocket"` `url` değerine bağlanır.                                                                                                                            |
-| `command`                     | yönetilen Codex ikilisi                                | stdio aktarımı için çalıştırılabilir dosya. Yönetilen ikiliyi kullanmak için ayarlamadan bırakın.                                                                                              |
-| `args`                        | `["app-server", "--listen", "stdio://"]`               | stdio aktarımı için argümanlar.                                                                                                                                                                |
-| `url`                         | ayarlanmamış                                           | WebSocket app-server URL'si.                                                                                                                                                                   |
-| `authToken`                   | ayarlanmamış                                           | WebSocket aktarımı için Bearer token.                                                                                                                                                          |
-| `headers`                     | `{}`                                                   | Ek WebSocket başlıkları.                                                                                                                                                                       |
-| `clearEnv`                    | `[]`                                                   | OpenClaw devralınan ortamını oluşturduktan sonra başlatılan stdio app-server sürecinden kaldırılan ek ortam değişkeni adları.                                                                 |
-| `requestTimeoutMs`            | `60000`                                                | App-server kontrol düzlemi çağrıları için zaman aşımı.                                                                                                                                         |
-| `turnCompletionIdleTimeoutMs` | `60000`                                                | OpenClaw `turn/completed` beklerken dönüş kapsamlı bir app-server isteğinden sonraki sessiz pencere.                                                                                            |
-| `mode`                        | yerel Codex gereksinimleri YOLO'ya izin vermiyorsa `"yolo"` dışında | YOLO veya guardian incelemeli yürütme için ön ayar.                                                                                                                                            |
-| `approvalPolicy`              | `"never"` veya izin verilen bir guardian onay ilkesi   | İş parçacığı başlatma, sürdürme ve dönüşe gönderilen yerel Codex onay ilkesi.                                                                                                                   |
-| `sandbox`                     | `"danger-full-access"` veya izin verilen bir guardian sandbox | İş parçacığı başlatma ve sürdürmeye gönderilen yerel Codex sandbox modu.                                                                                                                       |
-| `approvalsReviewer`           | `"user"` veya izin verilen bir guardian inceleyici     | İzin verildiğinde Codex'in yerel onay istemlerini incelemesine izin vermek için `"auto_review"` kullanın.                                                                                       |
-| `defaultWorkspaceDir`         | geçerli süreç dizini                                   | `--cwd` atlandığında `/codex bind` tarafından kullanılan çalışma alanı.                                                                                                                         |
-| `serviceTier`                 | ayarlanmamış                                           | İsteğe bağlı Codex app-server hizmet katmanı. `"priority"` hızlı mod yönlendirmesini etkinleştirir, `"flex"` esnek işlemeyi ister ve `null` geçersiz kılmayı temizler. Eski `"fast"`, `"priority"` olarak kabul edilir. |
+| Alan                                          | Varsayılan                                            | Anlam                                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `transport`                                   | `"stdio"`                                              | `"stdio"` Codex'i başlatır; `"websocket"` `url` adresine bağlanır.                                                                                                                                                                                                                                                                                                                               |
+| `command`                                     | yönetilen Codex ikili dosyası                         | stdio aktarımı için yürütülebilir dosya. Yönetilen ikili dosyayı kullanmak için ayarlanmamış bırakın.                                                                                                                                                                                                                                                                                            |
+| `args`                                        | `["app-server", "--listen", "stdio://"]`               | stdio aktarımı için bağımsız değişkenler.                                                                                                                                                                                                                                                                                                                                                        |
+| `url`                                         | ayarlanmamış                                          | WebSocket app-server URL'si.                                                                                                                                                                                                                                                                                                                                                                     |
+| `authToken`                                   | ayarlanmamış                                          | WebSocket aktarımı için Bearer belirteci. Bir düz dizeyi veya `${CODEX_APP_SERVER_TOKEN}` gibi bir SecretInput'u kabul eder.                                                                                                                                                                                                                                                                     |
+| `headers`                                     | `{}`                                                   | Ek WebSocket üstbilgileri. Üstbilgi değerleri düz dizeleri veya SecretInput değerlerini kabul eder, örneğin `x-codex-client-session-token: "${CODEX_CLIENT_SESSION_TOKEN}"`.                                                                                                                                                                                                                     |
+| `clearEnv`                                    | `[]`                                                   | OpenClaw devralınan ortamını oluşturduktan sonra başlatılan stdio app-server sürecinden kaldırılan ek ortam değişkeni adları.                                                                                                                                                                                                                                                                    |
+| `remoteWorkspaceRoot`                         | ayarlanmamış                                          | Uzak Codex app-server çalışma alanı kökü. Ayarlandığında OpenClaw, yerel çalışma alanı kökünü çözümlenen OpenClaw çalışma alanından çıkarır, geçerli cwd son ekini bu uzak kök altında korur ve Codex'e yalnızca son app-server cwd değerini gönderir. cwd, çözümlenen OpenClaw çalışma alanı kökünün dışındaysa OpenClaw, uzak app-server'a gateway-yerel bir yol göndermek yerine güvenli biçimde başarısız olur. |
+| `requestTimeoutMs`                            | `60000`                                                | app-server kontrol düzlemi çağrıları için zaman aşımı.                                                                                                                                                                                                                                                                                                                                           |
+| `turnCompletionIdleTimeoutMs`                 | `60000`                                                | Codex bir turn kabul ettikten sonra veya OpenClaw `turn/completed` beklerken turn kapsamlı bir app-server isteğinden sonra sessiz pencere.                                                                                                                                                                                                                                                        |
+| `postToolRawAssistantCompletionIdleTimeoutMs` | `300000`                                               | OpenClaw `turn/completed` beklerken bir araç devrinden, yerel araç tamamlanmasından, araç sonrası ham assistant ilerlemesinden, ham reasoning tamamlanmasından veya reasoning ilerlemesinden sonra kullanılan tamamlama boşta kalma ve ilerleme koruması. Bunu, araç sonrası sentezin son assistant yayımlama bütçesinden daha uzun süre haklı olarak sessiz kalabileceği güvenilir veya ağır iş yükleri için kullanın. |
+| `mode`                                        | yerel Codex gereksinimleri YOLO'ya izin vermediği sürece `"yolo"` | YOLO veya guardian incelemeli yürütme için ön ayar.                                                                                                                                                                                                                                                                                                                                              |
+| `approvalPolicy`                              | `"never"` veya izin verilen bir guardian onay ilkesi   | Thread başlatma, sürdürme ve turn işlemlerine gönderilen yerel Codex onay ilkesi.                                                                                                                                                                                                                                                                                                                |
+| `sandbox`                                     | `"danger-full-access"` veya izin verilen bir guardian sandbox | Thread başlatma ve sürdürme işlemlerine gönderilen yerel Codex sandbox modu. Etkin OpenClaw sandbox'ları `danger-full-access` turn'lerini Codex `workspace-write` ile daraltır; turn ağ bayrağı OpenClaw sandbox çıkışını izler.                                                                                                                                                                  |
+| `approvalsReviewer`                           | `"user"` veya izin verilen bir guardian inceleyici     | İzin verildiğinde Codex'in yerel onay istemlerini incelemesine izin vermek için `"auto_review"` kullanın.                                                                                                                                                                                                                                                                                        |
+| `defaultWorkspaceDir`                         | geçerli süreç dizini                                  | `--cwd` atlandığında `/codex bind` tarafından kullanılan çalışma alanı.                                                                                                                                                                                                                                                                                                                          |
+| `serviceTier`                                 | ayarlanmamış                                          | İsteğe bağlı Codex app-server hizmet katmanı. `"priority"` hızlı mod yönlendirmesini etkinleştirir, `"flex"` flex işlemeyi ister ve `null` geçersiz kılmayı temizler. Eski `"fast"`, `"priority"` olarak kabul edilir.                                                                                                                                                                            |
+| `networkProxy`                                | devre dışı                                            | app-server komutları için Codex permissions-profile ağ kullanımını etkinleştirir. OpenClaw, seçilen `permissions.<profile>.network` yapılandırmasını tanımlar ve bunu `sandbox` göndermek yerine `default_permissions` ile seçer.                                                                                                                                                                |
+| `experimental.sandboxExecServer`              | `false`                                                | Yerel Codex yürütmesinin etkin OpenClaw sandbox içinde çalışabilmesi için Codex app-server 0.132.0 veya daha yenisine OpenClaw sandbox destekli bir Codex ortamı kaydeden önizleme katılımı.                                                                                                                                                                                                     |
 
-Plugin, daha eski veya sürümlendirilmemiş app-server el sıkışmalarını engeller. Codex app-server kararlı `0.125.0` veya daha yeni bir sürüm bildirmelidir.
+`appServer.networkProxy`, Codex sandbox sözleşmesini değiştirdiği için
+açıktır. Etkinleştirildiğinde OpenClaw, üretilen izin profilinin Codex
+tarafından yönetilen ağı başlatabilmesi için Codex thread yapılandırmasında
+`features.network_proxy.enabled` ve `default_permissions` değerlerini de
+ayarlar. Varsayılan olarak OpenClaw, profil gövdesinden çakışmaya dayanıklı bir
+`openclaw-network-<fingerprint>` profil adı üretir; `profileName` değerini
+yalnızca kararlı bir yerel ad gerektiğinde kullanın.
+
+```js
+export default {
+  plugins: {
+    entries: {
+      codex: {
+        config: {
+          appServer: {
+            sandbox: "workspace-write",
+            networkProxy: {
+              enabled: true,
+              domains: {
+                "api.openai.com": "allow",
+                "blocked.example.com": "deny",
+              },
+              allowUpstreamProxy: true,
+              proxyUrl: "http://127.0.0.1:3128",
+            },
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+Normal app-server çalışma zamanı `danger-full-access` olacaksa, `networkProxy`
+etkinleştirildiğinde üretilen izin profili için çalışma alanı tarzı dosya
+sistemi erişimi kullanılır. Codex tarafından yönetilen ağ denetimi sandbox'lı
+ağdır, bu nedenle tam erişimli bir profil giden trafiği korumaz.
+
+Plugin, daha eski veya sürümsüz app-server el sıkışmalarını engeller. Codex
+app-server, kararlı `0.125.0` veya daha yeni bir sürüm bildirmelidir.
+
+OpenClaw, loopback olmayan WebSocket uygulama sunucusu URL’lerini uzak olarak değerlendirir ve `appServer.authToken` ya da bir `Authorization` üst bilgisi üzerinden kimlik taşıyan WebSocket kimlik doğrulaması gerektirir. `appServer.authToken` ve her `appServer.headers.*` değeri bir SecretInput olabilir; secrets çalışma zamanı, OpenClaw uygulama sunucusu başlatma seçeneklerini oluşturmadan önce SecretRef’leri ve env kısayolunu çözümler; çözümlenmemiş yapılandırılmış SecretRef’ler herhangi bir token veya üst bilgi gönderilmeden önce başarısız olur. Yerel Codex Plugin’leri yapılandırıldığında OpenClaw, bu Plugin’leri yüklemek veya yenilemek için bağlı uygulama sunucusunun Plugin kontrol düzlemini kullanır ve ardından uygulama envanterini yeniler; böylece Plugin’e ait uygulamalar Codex iş parçacığı tarafından görülebilir. `app/list` hâlâ yetkili envanter ve meta veri kaynağıdır, ancak listelenmiş erişilebilir bir uygulama için Codex şu anda devre dışı olarak işaretlese bile `thread/start` çağrısının `config.apps[appId].enabled = true` gönderip göndermeyeceğine OpenClaw ilkesi karar verir. Bilinmeyen veya eksik uygulama kimlikleri kapalı başarısız kalır; bu yol yalnızca `plugin/install` üzerinden marketplace Plugin’lerini etkinleştirir ve envanteri yeniler. OpenClaw’ı yalnızca OpenClaw tarafından yönetilen Plugin kurulumlarını ve uygulama envanteri yenilemelerini kabul etmesine güvenilen uzak uygulama sunucularına bağlayın.
 
 ## Onay ve sandbox modları
 
-Yerel stdio app-server oturumları varsayılan olarak YOLO moduna ayarlanır:
+Yerel stdio uygulama sunucusu oturumları varsayılan olarak YOLO modundadır:
 `approvalPolicy: "never"`, `approvalsReviewer: "user"` ve
-`sandbox: "danger-full-access"`. Bu güvenilir yerel operatör duruşu, gözetimsiz OpenClaw dönüşlerinin ve Heartbeat'lerin yanıtlayacak kimse yokken yerel onay istemleri olmadan ilerlemesini sağlar.
+`sandbox: "danger-full-access"`. Bu güvenilir yerel operatör duruşu, gözetimsiz OpenClaw turlarının ve heartbeats’in, yanıtlayacak kimse yokken yerel onay istemlerine takılmadan ilerlemesini sağlar.
 
-Codex'in yerel sistem gereksinimleri dosyası örtük YOLO onayı, inceleyici veya sandbox değerlerine izin vermiyorsa OpenClaw örtük varsayılanı bunun yerine guardian olarak değerlendirir ve izin verilen guardian izinlerini seçer. Aynı gereksinimler dosyasındaki ana makine adıyla eşleşen `[[remote_sandbox_config]]` girdileri, sandbox varsayılan kararı için dikkate alınır.
+Codex’in yerel sistem gereksinimleri dosyası örtük YOLO onayı, inceleyici veya sandbox değerlerine izin vermiyorsa OpenClaw örtük varsayılanı bunun yerine guardian olarak değerlendirir ve izin verilen guardian yetkilerini seçer. `tools.exec.mode: "auto"` ayrıca guardian tarafından incelenen Codex onaylarını zorunlu kılar ve güvenli olmayan eski `approvalPolicy: "never"` veya `sandbox: "danger-full-access"` geçersiz kılmalarını korumaz; bilinçli bir onaysız duruş için `tools.exec.mode: "full"` ayarlayın. Aynı gereksinimler dosyasındaki ana makine adıyla eşleşen `[[remote_sandbox_config]]` girdileri sandbox varsayılanı kararında dikkate alınır.
 
-Codex guardian incelemeli onaylar için `appServer.mode: "guardian"` ayarlayın:
+Codex guardian tarafından incelenen onaylar için `appServer.mode: "guardian"` ayarlayın:
 
 ```json5
 {
@@ -136,31 +182,65 @@ Codex guardian incelemeli onaylar için `appServer.mode: "guardian"` ayarlayın:
 ```
 
 `guardian` ön ayarı, bu değerlere izin verildiğinde `approvalPolicy: "on-request"`,
-`approvalsReviewer: "auto_review"` ve `sandbox: "workspace-write"` değerlerine genişler. Tekil ilke alanları `mode` değerini geçersiz kılar. Daha eski `guardian_subagent` inceleyici değeri hâlâ uyumluluk takma adı olarak kabul edilir, ancak yeni yapılandırmalar `auto_review` kullanmalıdır.
+`approvalsReviewer: "auto_review"` ve `sandbox: "workspace-write"` olarak genişler. Tek tek ilke alanları `mode` değerini geçersiz kılar. Eski `guardian_subagent` inceleyici değeri uyumluluk takma adı olarak hâlâ kabul edilir, ancak yeni yapılandırmalar `auto_review` kullanmalıdır.
 
-## Kimlik doğrulama ve ortam yalıtımı
+Bir OpenClaw sandbox’ı etkin olduğunda, yerel Codex uygulama sunucusu süreci yine de Gateway ana makinesinde çalışır. Bu nedenle OpenClaw, Codex ana makine tarafı sandbox kullanımını OpenClaw sandbox arka ucuyla eşdeğer kabul etmek yerine, o tur için Codex yerel Code Mode’u, kullanıcı MCP sunucularını ve uygulama destekli Plugin yürütmeyi devre dışı bırakır. Normal exec/process araçları kullanılabilir olduğunda kabuk erişimi, `sandbox_exec` ve `sandbox_process` gibi OpenClaw sandbox destekli dinamik araçlar üzerinden sunulur.
+
+Ubuntu/AppArmor ana makinelerinde, etkin OpenClaw sandbox kullanımı olmadan yerel Codex `workspace-write` seçeneğini bilinçli olarak çalıştırdığınızda Codex bwrap, kabuk komutu başlamadan önce `workspace-write` altında başarısız olabilir. `bwrap: setting up uid map: Permission denied` veya
+`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` görürseniz daha geniş Docker konteyner ayrıcalıkları vermek yerine `openclaw doctor` çalıştırın ve OpenClaw hizmet kullanıcısı için bildirilen ana makine namespace ilkesini düzeltin. Hizmet süreci için kapsamlı bir AppArmor profili tercih edin; `kernel.apparmor_restrict_unprivileged_userns=0` geri dönüşü ana makine genelindedir ve güvenlik ödünleşimleri vardır.
+
+## Sandbox’lı yerel yürütme
+
+Kararlı varsayılan kapalı başarısızdır: etkin OpenClaw sandbox kullanımı, aksi halde Codex uygulama sunucusu ana makinesinden çalışacak yerel Codex yürütme yüzeylerini devre dışı bırakır. `appServer.experimental.sandboxExecServer: true` seçeneğini yalnızca Codex’in uzak ortam desteğini OpenClaw’ın sandbox arka ucuyla denemek istediğinizde kullanın. Bu önizleme yolu Codex uygulama sunucusu 0.132.0 veya daha yenisini gerektirir.
+
+```json5
+{
+  plugins: {
+    entries: {
+      codex: {
+        enabled: true,
+        config: {
+          appServer: {
+            experimental: {
+              sandboxExecServer: true,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+Bayrak açık olduğunda ve geçerli OpenClaw oturumu sandbox’lıysa OpenClaw, etkin sandbox tarafından desteklenen bir local loopback exec-server başlatır, bunu Codex uygulama sunucusuna kaydeder ve Codex iş parçacığını ve turunu OpenClaw’a ait bu ortamla başlatır. Uygulama sunucusu ortamı kaydedemezse çalışma sessizce ana makine yürütmesine geri dönmek yerine kapalı başarısız olur.
+
+Bu önizleme yolu yalnızca yereldir. Uzak WebSocket uygulama sunucusu aynı ana makinede çalışmadığı sürece loopback exec-server’a erişemez; bu nedenle OpenClaw bu birleşimi reddeder.
+
+## Kimlik doğrulama ve ortam izolasyonu
 
 Kimlik doğrulama şu sırayla seçilir:
 
-1. Aracı için açık bir OpenClaw Codex kimlik doğrulama profili.
-2. App-server'ın o aracının Codex ana dizinindeki mevcut hesabı.
-3. Yalnızca yerel stdio app-server başlatmaları için, app-server hesabı yoksa ve OpenAI kimlik doğrulaması hâlâ gerekiyorsa önce `CODEX_API_KEY`, sonra
+1. Ajan için açık bir OpenClaw Codex kimlik doğrulama profili.
+2. Uygulama sunucusunun, o ajanın Codex home’undaki mevcut hesabı.
+3. Yalnızca yerel stdio uygulama sunucusu başlatmaları için, uygulama sunucusu hesabı yoksa ve OpenAI kimlik doğrulaması hâlâ gerekiyorsa `CODEX_API_KEY`, ardından
    `OPENAI_API_KEY`.
 
-OpenClaw, ChatGPT abonelik tarzı bir Codex kimlik doğrulama profili gördüğünde başlatılan Codex alt sürecinden `CODEX_API_KEY` ve `OPENAI_API_KEY` değerlerini kaldırır. Bu, Gateway düzeyi API anahtarlarını embeddings veya doğrudan OpenAI modelleri için kullanılabilir tutarken yerel Codex app-server dönüşlerinin yanlışlıkla API üzerinden faturalandırılmasını önler.
+OpenClaw ChatGPT abonelik tarzı bir Codex kimlik doğrulama profili gördüğünde, oluşturulan Codex alt sürecinden `CODEX_API_KEY` ve `OPENAI_API_KEY` değerlerini kaldırır. Bu, Gateway düzeyindeki API anahtarlarını embedding’ler veya doğrudan OpenAI modelleri için kullanılabilir tutarken yerel Codex uygulama sunucusu turlarının yanlışlıkla API üzerinden faturalandırılmasını önler.
 
-Açık Codex API anahtarı profilleri ve yerel stdio ortam anahtarı geri dönüşü, devralınan alt süreç ortamı yerine app-server oturum açmasını kullanır. WebSocket app-server bağlantıları Gateway ortam API anahtarı geri dönüşü almaz; açık bir kimlik doğrulama profili veya uzak app-server'ın kendi hesabını kullanın.
+Açık Codex API anahtarı profilleri ve yerel stdio env anahtarı geri dönüşü, devralınmış alt süreç env yerine uygulama sunucusu oturum açmasını kullanır. WebSocket uygulama sunucusu bağlantıları Gateway env API anahtarı geri dönüşünü almaz; açık bir kimlik doğrulama profili veya uzak uygulama sunucusunun kendi hesabını kullanın.
 
-Stdio app-server başlatmaları varsayılan olarak OpenClaw'ın süreç ortamını devralır, ancak OpenClaw Codex app-server hesap köprüsünün sahibidir ve hem `CODEX_HOME` hem de `HOME` değerlerini o aracının OpenClaw durumu altındaki aracı başına dizinlere ayarlar. Codex'in kendi skill yükleyicisi `$CODEX_HOME/skills` ve `$HOME/.agents/skills` okur, bu nedenle iki değer de yerel app-server başlatmaları için yalıtılır. Bu, Codex'e özgü skill'leri, Plugin'leri, yapılandırmayı, hesapları ve iş parçacığı durumunu operatörün kişisel Codex CLI ana dizininden sızdırmak yerine OpenClaw aracısına kapsamlar.
+Stdio uygulama sunucusu başlatmaları varsayılan olarak OpenClaw’ın süreç ortamını devralır. OpenClaw, Codex uygulama sunucusu hesap köprüsünün sahibidir ve `CODEX_HOME` değerini o ajanın OpenClaw durumu altında ajan başına bir dizine ayarlar. Bu, Codex yapılandırmasını, hesaplarını, Plugin önbelleğini/verilerini ve iş parçacığı durumunu operatörün kişisel `~/.codex` home’undan sızdırmak yerine OpenClaw ajanına kapsamlar.
 
-OpenClaw Plugin'leri ve OpenClaw skill anlık görüntüleri yine OpenClaw'ın kendi Plugin kayıt defteri ve skill yükleyicisi üzerinden akar. Kişisel Codex CLI varlıkları akmaz. Bir OpenClaw aracısının parçası olması gereken yararlı Codex CLI skill'leriniz veya Plugin'leriniz varsa bunları açıkça envantere alın:
+OpenClaw normal yerel uygulama sunucusu başlatmaları için `HOME` değerini yeniden yazmaz. `openclaw`, `gh`, `git`, bulut CLI’ları ve kabuk komutları gibi Codex tarafından çalıştırılan alt süreçler normal süreç home’unu görür ve kullanıcı home yapılandırmasını ve token’larını bulabilir. Codex ayrıca `$HOME/.agents/skills` ve `$HOME/.agents/plugins/marketplace.json` öğelerini keşfedebilir; bu `.agents` keşfi bilerek operatör home’u ile paylaşılır ve izole `~/.codex` durumundan ayrıdır.
+
+OpenClaw Plugin’leri ve OpenClaw skill anlık görüntüleri hâlâ OpenClaw’ın kendi Plugin kayıt defteri ve skill yükleyicisi üzerinden akar. Kişisel Codex `~/.codex` varlıkları akmaz. Bir OpenClaw ajanının parçası olması gereken yararlı Codex CLI skill’leriniz veya Plugin’leriniz varsa bunları açıkça envantere alın:
 
 ```bash
 openclaw migrate codex --dry-run
 openclaw migrate apply codex --yes
 ```
 
-Bir dağıtım ek ortam yalıtımına ihtiyaç duyuyorsa bu değişkenleri `appServer.clearEnv` içine ekleyin:
+Bir dağıtım ek ortam izolasyonuna ihtiyaç duyarsa bu değişkenleri `appServer.clearEnv` öğesine ekleyin:
 
 ```json5
 {
@@ -179,12 +259,11 @@ Bir dağıtım ek ortam yalıtımına ihtiyaç duyuyorsa bu değişkenleri `appS
 }
 ```
 
-`appServer.clearEnv` yalnızca başlatılan Codex app-server alt sürecini etkiler.
-`CODEX_HOME` ve `HOME`, yerel başlatmalarda OpenClaw'ın aracı başına Codex yalıtımı için ayrılmış kalır.
+`appServer.clearEnv` yalnızca oluşturulan Codex uygulama sunucusu alt sürecini etkiler. OpenClaw, yerel başlatma normalizasyonu sırasında `CODEX_HOME` ve `HOME` değerlerini bu listeden kaldırır: `CODEX_HOME` ajan başına kalır ve `HOME` alt süreçlerin normal kullanıcı home durumunu kullanabilmesi için devralınmış kalır.
 
 ## Dinamik araçlar
 
-Codex dinamik araçları varsayılan olarak `searchable` yüklemeye ayarlanır. OpenClaw, Codex'e özgü çalışma alanı işlemlerini yineleyen dinamik araçları açığa çıkarmaz:
+Codex dinamik araçları varsayılan olarak `searchable` yüklemeye ayarlıdır. OpenClaw, Codex’e yerel çalışma alanı işlemlerini yineleyen dinamik araçları sunmaz:
 
 - `read`
 - `write`
@@ -194,81 +273,82 @@ Codex dinamik araçları varsayılan olarak `searchable` yüklemeye ayarlanır. 
 - `process`
 - `update_plan`
 
-Kalan OpenClaw entegrasyon araçları; mesajlaşma, oturumlar, medya, cron,
-tarayıcı, nodes, gateway, `heartbeat_respond` ve `web_search` gibi araçlar,
-`openclaw` ad alanı altında Codex araç araması üzerinden kullanılabilir. Bu,
-başlangıçtaki model bağlamını daha küçük tutar. `sessions_yield` ve yalnızca
-mesaj aracına ait kaynak yanıtları doğrudan kalır, çünkü bunlar dönüş denetimi
-sözleşmeleridir.
+Mesajlaşma, medya, cron, tarayıcı, düğümler, Gateway, `heartbeat_respond` ve `web_search` gibi kalan OpenClaw entegrasyon araçlarının çoğu `openclaw` namespace’i altında Codex araç araması üzerinden kullanılabilir. Bu, başlangıç model bağlamını daha küçük tutar. `sessions_yield` ve yalnızca mesaj aracı kaynak yanıtları doğrudan kalır, çünkü bunlar tur kontrol sözleşmeleridir. `sessions_spawn` aranabilir kalır; böylece Codex’in yerel `spawn_agent` yüzeyi birincil Codex alt ajan yüzeyi olarak kalırken, açık OpenClaw veya ACP delegasyonu `openclaw` dinamik araç namespace’i üzerinden hâlâ kullanılabilir.
 
-`codexDynamicToolsLoading: "direct"` değerini yalnızca ertelenmiş dinamik
-araçları arayamayan özel bir Codex app-server'a bağlanırken veya tam araç
-yükünü hata ayıklarken ayarlayın.
+`codexDynamicToolsLoading: "direct"` seçeneğini yalnızca ertelenmiş dinamik araçları arayamayan özel bir Codex uygulama sunucusuna bağlanırken veya tam araç yükünde hata ayıklarken ayarlayın.
 
-## Zaman Aşımları
+## Zaman aşımları
 
-OpenClaw'a ait dinamik araç çağrıları, `appServer.requestTimeoutMs` değerinden
-bağımsız olarak sınırlandırılır. Her Codex `item/tool/call` isteği, bu sırayla
-ilk kullanılabilir zaman aşımını kullanır:
+OpenClaw’a ait dinamik araç çağrıları `appServer.requestTimeoutMs` değerinden bağımsız olarak sınırlandırılır. Her Codex `item/tool/call` isteği, kullanılabilen ilk zaman aşımını şu sırayla kullanır:
 
-- Çağrı başına pozitif bir `timeoutMs` bağımsız değişkeni.
+- Pozitif bir çağrı başına `timeoutMs` bağımsız değişkeni.
 - `image_generate` için `agents.defaults.imageGenerationModel.timeoutMs`.
-- Medya anlama `image` aracı için milisaniyeye dönüştürülmüş
-  `tools.media.image.timeoutSeconds` ya da 60 saniyelik medya varsayılanı.
-- 30 saniyelik dinamik araç varsayılanı.
+- Yapılandırılmış zaman aşımı olmayan `image_generate` için 120 saniyelik görüntü oluşturma varsayılanı.
+- Medya anlama `image` aracı için `tools.media.image.timeoutSeconds` değerinin milisaniyeye dönüştürülmüş hâli veya 60 saniyelik medya varsayılanı. Görüntü anlama için bu, isteğin kendisine uygulanır ve önceki hazırlık çalışmaları tarafından azaltılmaz.
+- 90 saniyelik dinamik araç varsayılanı.
 
-Dinamik araç bütçeleri 600000 ms ile sınırlandırılır. Zaman aşımında OpenClaw,
-desteklendiği yerlerde araç sinyalini iptal eder ve Codex'e başarısız bir
-dinamik araç yanıtı döndürür; böylece oturum `processing` durumunda kalmak
-yerine dönüş devam edebilir.
+Bu watchdog, dış dinamik `item/tool/call` bütçesidir. Sağlayıcıya özgü istek zaman aşımları bu çağrının içinde çalışır ve kendi zaman aşımı semantiklerini korur. Dinamik araç bütçeleri 600000 ms ile sınırlandırılır. Zaman aşımında OpenClaw, desteklendiğinde araç sinyalini iptal eder ve Codex’e başarısız bir dinamik araç yanıtı döndürür; böylece oturum `processing` durumunda kalmak yerine tur devam edebilir.
 
-OpenClaw, Codex dönüş kapsamlı bir app-server isteğine yanıt verdikten sonra,
-harness ayrıca Codex'in yerel dönüşü `turn/completed` ile bitirmesini bekler.
-App-server bu yanıttan sonra `appServer.turnCompletionIdleTimeoutMs` süresi
-boyunca sessiz kalırsa OpenClaw en iyi çabayla Codex dönüşünü keser, tanılama
-amaçlı bir zaman aşımı kaydeder ve takip eden sohbet mesajlarının eski bir
-yerel dönüşün arkasında kuyruğa alınmaması için OpenClaw oturum şeridini
-serbest bırakır.
+Codex bir turu kabul ettikten ve OpenClaw tur kapsamlı bir uygulama sunucusu isteğine yanıt verdikten sonra harness, Codex’in geçerli turda ilerleme kaydetmesini ve sonunda yerel turu `turn/completed` ile bitirmesini bekler. Uygulama sunucusu `appServer.turnCompletionIdleTimeoutMs` boyunca sessiz kalırsa OpenClaw en iyi çabayla Codex turunu keser, tanısal bir zaman aşımı kaydeder ve takip sohbet mesajlarının bayat bir yerel turun arkasında kuyruğa alınmaması için OpenClaw oturum şeridini serbest bırakır.
 
-Aynı dönüşe ait herhangi bir sonlandırıcı olmayan bildirim,
-`rawResponseItem/completed` dahil, bu kısa bekçi zamanlayıcısını devre dışı
-bırakır; çünkü Codex dönüşün hâlâ canlı olduğunu kanıtlamıştır. Daha uzun
-sonlandırıcı bekçi, gerçekten takılı kalan dönüşleri korumaya devam eder. Zaman
-aşımı tanılamaları, son app-server bildirim yöntemini ve ham assistant yanıt
-öğeleri için öğe türünü, rolü, kimliği ve sınırlandırılmış bir assistant metin
-önizlemesini içerir.
+Aynı turn için terminal olmayan bildirimlerin çoğu bu kısa watchdog'u devre dışı bırakır
+çünkü Codex turn'ün hâlâ canlı olduğunu kanıtlamıştır. Araç devirleri daha uzun
+bir araç sonrası boşta kalma bütçesi kullanır: OpenClaw bir `item/tool/call` yanıtı döndürdükten sonra, `commandExecution` gibi
+yerel araç öğeleri tamamlandıktan sonra, ham
+`custom_tool_call_output` tamamlanmalarından sonra ve araç sonrası ham assistant
+ilerlemesi, ham reasoning tamamlanmaları veya reasoning ilerlemesinden sonra. Koruma,
+yapılandırıldığında `appServer.postToolRawAssistantCompletionIdleTimeoutMs` kullanır ve
+aksi halde varsayılan olarak beş dakikaya ayarlanır. Aynı araç sonrası bütçe, Codex bir sonraki
+geçerli turn olayını yayımlamadan önceki sessiz sentez penceresi için
+ilerleme watchdog'unu da uzatır. Reasoning tamamlanmaları, commentary
+`agentMessage` tamamlanmaları ve araç öncesi ham reasoning veya assistant ilerlemesi
+otomatik bir son yanıtla takip edilebilir; bu nedenle oturum şeridini hemen
+serbest bırakmak yerine araç sonrası yanıt korumasını kullanırlar. Yalnızca
+son/commentary olmayan tamamlanmış `agentMessage` öğeleri ve araç öncesi ham assistant
+tamamlanmaları assistant çıktısı serbest bırakmasını kurar: Codex daha sonra
+`turn/completed` olmadan sessiz kalırsa OpenClaw en iyi çabayla yerel turn'ü keser ve
+oturum şeridini serbest bırakır. Assistant, araç, etkin öğe veya
+yan etki kanıtı olmayan turn tamamlama boşta kalma zaman aşımları dahil, yeniden oynatma açısından güvenli stdio app-server hataları
+yeni bir app-server denemesinde bir kez yeniden denenir. Güvensiz
+zaman aşımları yine de takılı app-server istemcisini emekliye ayırır ve OpenClaw
+oturum şeridini serbest bırakır. Ayrıca otomatik olarak yeniden oynatılmak yerine
+eski yerel thread bağlamasını temizlerler. Tamamlama izleme zaman aşımları Codex'e özgü zaman aşımı
+metnini gösterir: yeniden oynatma açısından güvenli durumlar yanıtın eksik olabileceğini söylerken,
+güvensiz durumlar kullanıcıya yeniden denemeden önce geçerli durumu doğrulamasını
+söyler. Genel zaman aşımı tanılamaları, son app-server bildirim yöntemi,
+ham assistant yanıt öğesi id/type/role, etkin istek/öğe sayıları ve kurulmuş
+izleme durumu gibi yapısal alanları içerir. Son bildirim ham assistant yanıt öğesi olduğunda,
+sınırlı bir assistant metin önizlemesi de içerirler. Ham prompt veya
+araç içeriği içermezler.
 
 ## Model keşfi
 
-Varsayılan olarak Codex Plugin'i, app-server'dan kullanılabilir modelleri ister.
-Model kullanılabilirliği Codex app-server'a aittir; bu nedenle liste, OpenClaw
-pakete dahil `@openai/codex` sürümünü yükselttiğinde veya bir dağıtım
-`appServer.command` değerini farklı bir Codex ikilisine yönelttiğinde
-değişebilir. Kullanılabilirlik hesap kapsamlı da olabilir. Bu harness ve hesap
-için canlı kataloğu görmek üzere çalışan bir gateway üzerinde `/codex models`
-kullanın.
+Varsayılan olarak Codex plugin'i kullanılabilir modelleri app-server'dan ister. Model
+kullanılabilirliğinin sahibi Codex app-server'dır; bu nedenle OpenClaw paketlenmiş
+`@openai/codex` sürümünü yükselttiğinde veya bir dağıtım
+`appServer.command` değerini farklı bir Codex ikili dosyasına yönlendirdiğinde liste değişebilir.
+Kullanılabilirlik hesaba bağlı da olabilir. Bu harness ve hesap için canlı kataloğu görmek üzere
+çalışan bir gateway üzerinde `/codex models` kullanın.
 
-Keşif başarısız olursa veya zaman aşımına uğrarsa OpenClaw şunlar için pakete
-dahil yedek kataloğu kullanır:
+Keşif başarısız olursa veya zaman aşımına uğrarsa OpenClaw şunlar için paketlenmiş bir yedek katalog kullanır:
 
 - GPT-5.5
 - GPT-5.4 mini
 - GPT-5.2
 
-Geçerli pakete dahil harness `@openai/codex` `0.130.0` sürümüdür. Bu pakete
-dahil app-server'a yapılan bir `model/list` yoklaması şunu döndürdü:
+Geçerli paketlenmiş harness `@openai/codex` `0.139.0` sürümüdür. Bu paketlenmiş app-server'a yönelik bir `model/list` yoklaması
+şunu döndürdü:
 
-| Model kimliği         | Varsayılan | Gizli | Girdi kipleri  | Akıl yürütme eforları    |
-| --------------------- | ---------- | ----- | -------------- | ------------------------ |
-| `gpt-5.5`             | Evet       | Hayır | metin, görüntü | low, medium, high, xhigh |
-| `gpt-5.4`             | Hayır      | Hayır | metin, görüntü | low, medium, high, xhigh |
-| `gpt-5.4-mini`        | Hayır      | Hayır | metin, görüntü | low, medium, high, xhigh |
-| `gpt-5.3-codex`       | Hayır      | Hayır | metin, görüntü | low, medium, high, xhigh |
-| `gpt-5.3-codex-spark` | Hayır      | Hayır | metin          | low, medium, high, xhigh |
-| `gpt-5.2`             | Hayır      | Hayır | metin, görüntü | low, medium, high, xhigh |
+| Model kimliği   | Varsayılan | Gizli | Girdi kipleri | Reasoning eforları       |
+| --------------- | ---------- | ----- | ------------- | ------------------------ |
+| `gpt-5.5`       | Evet       | Hayır | text, image   | low, medium, high, xhigh |
+| `gpt-5.4`       | Hayır      | Hayır | text, image   | low, medium, high, xhigh |
+| `gpt-5.4-mini`  | Hayır      | Hayır | text, image   | low, medium, high, xhigh |
+| `gpt-5.3-codex` | Hayır      | Hayır | text, image   | low, medium, high, xhigh |
+| `gpt-5.2`       | Hayır      | Hayır | text, image   | low, medium, high, xhigh |
 
-Gizli modeller app-server kataloğu tarafından dahili veya özelleşmiş akışlar
-için döndürülebilir, ancak normal model seçici seçenekleri değildir.
+Gizli modeller app-server kataloğu tarafından dahili veya
+özel akışlar için döndürülebilir, ancak normal model seçici seçenekleri değildir.
 
 Keşfi `plugins.entries.codex.config.discovery` altında ayarlayın:
 
@@ -290,8 +370,8 @@ Keşfi `plugins.entries.codex.config.discovery` altında ayarlayın:
 }
 ```
 
-Başlangıcın Codex'i yoklamaktan kaçınmasını ve yalnızca yedek kataloğu
-kullanmasını istediğinizde keşfi devre dışı bırakın:
+Başlangıcın Codex'i yoklamaktan kaçınmasını ve yalnızca
+yedek kataloğu kullanmasını istediğinizde keşfi devre dışı bırakın:
 
 ```json5
 {
@@ -310,19 +390,29 @@ kullanmasını istediğinizde keşfi devre dışı bırakın:
 }
 ```
 
-## Çalışma alanı başlatma dosyaları
+## Çalışma alanı bootstrap dosyaları
 
-Codex, yerel proje belgesi keşfi üzerinden `AGENTS.md` dosyasını kendisi
-işler. OpenClaw sentetik Codex proje belgesi dosyaları yazmaz veya persona
-dosyaları için Codex yedek dosya adlarına bağlı değildir; çünkü Codex
-yedekleri yalnızca `AGENTS.md` eksik olduğunda uygulanır.
+Codex, yerel proje belgesi keşfi üzerinden `AGENTS.md` dosyasını kendisi işler. OpenClaw,
+sentetik Codex proje belgesi dosyaları yazmaz veya persona dosyaları için Codex yedek
+dosya adlarına bağlı kalmaz; çünkü Codex yedekleri yalnızca
+`AGENTS.md` eksik olduğunda uygulanır.
 
-OpenClaw çalışma alanı eşliği için Codex harness, mevcut olduklarında `SOUL.md`,
-`TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` ve
-`MEMORY.md` dahil diğer başlatma dosyalarını çözer ve bunları `thread/start` ve
-`thread/resume` üzerinde Codex geliştirici talimatları aracılığıyla iletir. Bu,
-çalışma alanı personası ve profil bağlamını, `AGENTS.md` dosyasını
-çoğaltmadan yerel Codex davranış şekillendirme şeridinde görünür tutar.
+OpenClaw çalışma alanı eşliği için Codex harness diğer bootstrap
+dosyalarını çözümler. `SOUL.md`, `IDENTITY.md`, `TOOLS.md` ve `USER.md`,
+etkin ajanı, kullanılabilir çalışma alanı yönergelerini ve kullanıcı profilini tanımladıkları için
+OpenClaw Codex geliştirici talimatları olarak iletilir. Kompakt OpenClaw skills
+listesi, turn kapsamlı iş birliği geliştirici talimatları olarak iletilir.
+`HEARTBEAT.md` içeriği enjekte edilmez; heartbeat turn'leri, dosya mevcut ve boş değilse
+dosyayı okumaya yönelik bir iş birliği modu işaretçisi alır. Yapılandırılmış ajan çalışma alanından gelen
+`MEMORY.md` içeriği, bu çalışma alanı için memory araçları kullanılabilir olduğunda
+yerel Codex turn girdisine yapıştırılmaz; mevcut olduğunda harness,
+turn kapsamlı iş birliği geliştirici talimatlarına küçük bir çalışma alanı belleği işaretçisi ekler
+ve dayanıklı bellek ilgili olduğunda Codex `memory_search` veya `memory_get` kullanmalıdır.
+Araçlar devre dışıysa, bellek araması kullanılamıyorsa veya
+etkin çalışma alanı ajan bellek çalışma alanından farklıysa, `MEMORY.md`
+normal sınırlı turn bağlamı yolunu kullanır.
+`BOOTSTRAP.md` mevcut olduğunda OpenClaw turn girdisi referans
+bağlamı olarak iletilir.
 
 ## Ortam geçersiz kılmaları
 
@@ -334,14 +424,14 @@ Ortam geçersiz kılmaları yerel test için kullanılabilir kalır:
 - `OPENCLAW_CODEX_APP_SERVER_APPROVAL_POLICY`
 - `OPENCLAW_CODEX_APP_SERVER_SANDBOX`
 
-`OPENCLAW_CODEX_APP_SERVER_BIN`, `appServer.command` ayarlanmamışsa yönetilen
-ikiliyi atlar.
+`OPENCLAW_CODEX_APP_SERVER_BIN`, `appServer.command` ayarlanmamış olduğunda
+yönetilen ikili dosyayı atlar.
 
 `OPENCLAW_CODEX_APP_SERVER_GUARDIAN=1` kaldırıldı. Bunun yerine
-`plugins.entries.codex.config.appServer.mode: "guardian"` kullanın ya da tek
-seferlik yerel test için `OPENCLAW_CODEX_APP_SERVER_MODE=guardian` kullanın.
-Config, tekrarlanabilir dağıtımlar için tercih edilir; çünkü Plugin davranışını
-Codex harness kurulumunun geri kalanıyla aynı incelenmiş dosyada tutar.
+`plugins.entries.codex.config.appServer.mode: "guardian"` kullanın veya
+tek seferlik yerel test için `OPENCLAW_CODEX_APP_SERVER_MODE=guardian` kullanın. Tekrarlanabilir dağıtımlar için
+yapılandırma tercih edilir; çünkü plugin davranışını Codex harness kurulumunun geri kalanıyla
+aynı incelenmiş dosyada tutar.
 
 ## İlgili
 
@@ -350,4 +440,4 @@ Codex harness kurulumunun geri kalanıyla aynı incelenmiş dosyada tutar.
 - [Yerel Codex plugins](/tr/plugins/codex-native-plugins)
 - [Codex Computer Use](/tr/plugins/codex-computer-use)
 - [OpenAI provider](/tr/providers/openai)
-- [Yapılandırma başvurusu](/tr/gateway/configuration-reference)
+- [Yapılandırma referansı](/tr/gateway/configuration-reference)

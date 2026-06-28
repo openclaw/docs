@@ -1,40 +1,41 @@
 ---
 read_when:
-    - OpenClaw'u ilk kez kurma
+    - OpenClaw’ı ilk kez kurma
     - Yaygın yapılandırma kalıpları aranıyor
     - Belirli yapılandırma bölümlerine gitme
 summary: 'Yapılandırmaya genel bakış: yaygın görevler, hızlı kurulum ve tam başvuruya bağlantılar'
 title: Yapılandırma
 x-i18n:
-    generated_at: "2026-05-10T19:36:12Z"
+    generated_at: "2026-06-28T00:33:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 023ce17d31ed16e061516a2026ac6c31fd8716548e230d27a7965b9a2d8c59c1
+    source_hash: 53ab0299aca69dafd240550bac1407356b0b3f5f35ef0171ea961c36346d3cab
     source_path: gateway/configuration.md
     workflow: 16
 ---
 
-OpenClaw, `~/.openclaw/openclaw.json` konumundan isteğe bağlı bir <Tooltip tip="JSON5 yorumları ve sonda virgülleri destekler">**JSON5**</Tooltip> yapılandırması okur.
+OpenClaw, `~/.openclaw/openclaw.json` konumundan isteğe bağlı bir <Tooltip tip="JSON5 yorumları ve sondaki virgülleri destekler">**JSON5**</Tooltip> yapılandırması okur.
 Etkin yapılandırma yolu normal bir dosya olmalıdır. Sembolik bağlantılı `openclaw.json`
-düzenleri, OpenClaw sahipliğindeki yazmalar için desteklenmez; atomik bir yazma,
+düzenleri, OpenClaw tarafından sahip olunan yazmalar için desteklenmez; atomik bir yazma
 sembolik bağlantıyı korumak yerine yolu değiştirebilir. Yapılandırmayı varsayılan
-durum dizininin dışında tutuyorsanız, `OPENCLAW_CONFIG_PATH` değerini doğrudan gerçek dosyaya yöneltin.
+durum dizininin dışında tutuyorsanız `OPENCLAW_CONFIG_PATH` değerini doğrudan gerçek dosyaya yönlendirin.
 
-Dosya yoksa, OpenClaw güvenli varsayılanları kullanır. Yapılandırma eklemenin yaygın nedenleri:
+Dosya yoksa OpenClaw güvenli varsayılanları kullanır. Yapılandırma eklemenin yaygın nedenleri:
 
 - Kanalları bağlamak ve bota kimlerin mesaj gönderebileceğini denetlemek
-- Modelleri, araçları, sandbox kullanımını veya otomasyonu (cron, kancalar) ayarlamak
+- Modelleri, araçları, sandbox kullanımını veya otomasyonu (cron, hook'lar) ayarlamak
 - Oturumları, medyayı, ağı veya kullanıcı arayüzünü ayarlamak
 
-Kullanılabilen her alan için [tam başvuruya](/tr/gateway/configuration-reference) bakın.
+Kullanılabilir her alan için [tam başvuruya](/tr/gateway/configuration-reference) bakın.
 
-Agent'lar ve otomasyon, yapılandırmayı düzenlemeden önce tam alan düzeyi
-dokümanlar için `config.schema.lookup` kullanmalıdır. Bu sayfayı görev odaklı rehberlik için,
-[Configuration reference](/tr/gateway/configuration-reference) sayfasını ise daha geniş
-alan haritası ve varsayılanlar için kullanın.
+Aracılar ve otomasyon, yapılandırmayı düzenlemeden önce tam alan düzeyi
+belgeler için `config.schema.lookup` kullanmalıdır. Bu sayfayı görev odaklı rehberlik için,
+daha geniş alan haritası ve varsayılanlar için de
+[Yapılandırma başvurusu](/tr/gateway/configuration-reference) sayfasını kullanın.
 
 <Tip>
-**Yapılandırmaya yeni mi başlıyorsunuz?** Etkileşimli kurulum için `openclaw onboard` ile başlayın veya eksiksiz kopyala-yapıştır yapılandırmaları için [Configuration Examples](/tr/gateway/configuration-examples) rehberine bakın.
+**Yapılandırmaya yeni mi başlıyorsunuz?** Etkileşimli kurulum için `openclaw onboard` ile başlayın veya eksiksiz kopyala-yapıştır yapılandırmaları için [Yapılandırma Örnekleri](/tr/gateway/configuration-examples) rehberine bakın.
 </Tip>
 
 ## Minimal yapılandırma
@@ -64,45 +65,45 @@ alan haritası ve varsayılanlar için kullanın.
     ```
   </Tab>
   <Tab title="Denetim kullanıcı arayüzü">
-    [http://127.0.0.1:18789](http://127.0.0.1:18789) adresini açın ve **Config** sekmesini kullanın.
-    Denetim kullanıcı arayüzü, mevcut olduğunda plugin ve kanal şemalarıyla birlikte
-    alan `title` / `description` doküman meta verileri dahil olmak üzere canlı yapılandırma şemasından
-    bir form oluşturur; kaçış yolu olarak da bir **Ham JSON** düzenleyicisi sunar. Ayrıntıya inen
-    kullanıcı arayüzleri ve diğer araçlar için Gateway ayrıca tek bir yol kapsamlı şema düğümü
-    ve doğrudan alt özetleri almak üzere `config.schema.lookup` sunar.
+    [http://127.0.0.1:18789](http://127.0.0.1:18789) adresini açın ve **Yapılandırma** sekmesini kullanın.
+    Denetim kullanıcı arayüzü, canlı yapılandırma şemasından bir form oluşturur; buna alan
+    `title` / `description` belge meta verileri ile kullanılabilir olduğunda Plugin ve kanal
+    şemaları dahildir, ayrıca bir kaçış yolu olarak **Ham JSON** düzenleyicisi sunar. Ayrıntıya inen
+    kullanıcı arayüzleri ve diğer araçlar için Gateway ayrıca yol kapsamlı tek bir şema düğümünü
+    ve yakın alt özetleri getirmek üzere `config.schema.lookup` sunar.
   </Tab>
   <Tab title="Doğrudan düzenleme">
-    `~/.openclaw/openclaw.json` dosyasını doğrudan düzenleyin. Gateway dosyayı izler ve değişiklikleri otomatik olarak uygular ([hot reload](#config-hot-reload) bölümüne bakın).
+    `~/.openclaw/openclaw.json` dosyasını doğrudan düzenleyin. Gateway dosyayı izler ve değişiklikleri otomatik olarak uygular ([sıcak yeniden yükleme](#config-hot-reload) bölümüne bakın).
   </Tab>
 </Tabs>
 
-## Katı doğrulama
+## Sıkı doğrulama
 
 <Warning>
-OpenClaw yalnızca şemayla tamamen eşleşen yapılandırmaları kabul eder. Bilinmeyen anahtarlar, hatalı biçimlendirilmiş türler veya geçersiz değerler Gateway'in **başlamayı reddetmesine** neden olur. Tek kök düzeyi istisnası `$schema` (string) değeridir; böylece düzenleyiciler JSON Schema meta verisi ekleyebilir.
+OpenClaw yalnızca şemayla tamamen eşleşen yapılandırmaları kabul eder. Bilinmeyen anahtarlar, hatalı biçimlendirilmiş türler veya geçersiz değerler Gateway'in **başlamayı reddetmesine** neden olur. Kök düzeyindeki tek istisna `$schema` (dize) değeridir; böylece düzenleyiciler JSON Schema meta verisi ekleyebilir.
 </Warning>
 
 `openclaw config schema`, Denetim kullanıcı arayüzü ve doğrulama tarafından kullanılan kanonik JSON Schema'yı yazdırır.
-`config.schema.lookup`, ayrıntıya inen araçlar için tek bir yol kapsamlı düğüm ve
-alt özetleri getirir. Alan `title`/`description` doküman meta verileri
-iç içe nesneler, joker karakter (`*`), dizi öğesi (`[]`) ve `anyOf`/
-`oneOf`/`allOf` dalları boyunca taşınır. Çalışma zamanı plugin ve kanal şemaları,
+`config.schema.lookup`, ayrıntıya inen araçlar için tek bir yol kapsamlı düğümü ve
+alt özetleri getirir. Alan `title`/`description` belge meta verileri
+iç içe nesneler, joker (`*`), dizi öğesi (`[]`) ve `anyOf`/
+`oneOf`/`allOf` dalları boyunca taşınır. Çalışma zamanı Plugin ve kanal şemaları,
 manifest kayıt defteri yüklendiğinde birleştirilir.
 
 Doğrulama başarısız olduğunda:
 
-- Gateway açılmaz
+- Gateway başlatılmaz
 - Yalnızca tanılama komutları çalışır (`openclaw doctor`, `openclaw logs`, `openclaw health`, `openclaw status`)
-- Kesin sorunları görmek için `openclaw doctor` çalıştırın
+- Tam sorunları görmek için `openclaw doctor` çalıştırın
 - Onarımları uygulamak için `openclaw doctor --fix` (veya `--yes`) çalıştırın
 
-Gateway, her başarılı başlangıçtan sonra güvenilir bir son-bilinen-iyi kopya tutar,
-ancak başlangıç ve sıcak yeniden yükleme bunu otomatik olarak geri yüklemez. `openclaw.json`
-doğrulamadan geçemezse (plugin yerel doğrulaması dahil), Gateway başlangıcı başarısız olur veya
-yeniden yükleme atlanır ve mevcut çalışma zamanı son kabul edilen yapılandırmayı kullanmaya devam eder.
-Ön eklenmiş/ezilmiş yapılandırmayı onarmak veya son-bilinen-iyi kopyayı geri yüklemek için
-`openclaw doctor --fix` (veya `--yes`) çalıştırın. Aday `***` gibi redakte edilmiş gizli yer tutucuları içerdiğinde
-son-bilinen-iyi durumuna yükseltme atlanır.
+Gateway, her başarılı başlatmadan sonra güvenilen son bilinen iyi kopyayı saklar,
+ancak başlatma ve sıcak yeniden yükleme bunu otomatik olarak geri yüklemez. `openclaw.json`
+doğrulamadan geçemezse (Plugin yerel doğrulaması dahil), Gateway başlatması başarısız olur veya
+yeniden yükleme atlanır ve mevcut çalışma zamanı son kabul edilen yapılandırmayı korur.
+Ön eklenmiş/üzerine yazılmış yapılandırmayı onarmak veya son bilinen iyi kopyayı
+geri yüklemek için `openclaw doctor --fix` (veya `--yes`) çalıştırın. Bir aday
+`***` gibi redakte edilmiş gizli bilgi yer tutucuları içerdiğinde son bilinen iyiye yükseltme atlanır.
 
 ## Yaygın görevler
 
@@ -121,7 +122,7 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     - [iMessage](/tr/channels/imessage) - `channels.imessage`
     - [Mattermost](/tr/channels/mattermost) - `channels.mattermost`
 
-    Tüm kanallar aynı DM ilkesi desenini paylaşır:
+    Tüm kanallar aynı DM ilkesi kalıbını paylaşır:
 
     ```json5
     {
@@ -158,12 +159,12 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     }
     ```
 
-    - `agents.defaults.models`, model kataloğunu tanımlar ve `/model` için izin listesi görevi görür; `provider/*` girdileri dinamik model keşfini kullanmaya devam ederken `/model`, `/models` ve model seçicileri seçili sağlayıcılarla sınırlar.
+    - `agents.defaults.models`, model kataloğunu tanımlar ve `/model` için izin listesi görevi görür; `provider/*` girdileri, dinamik model keşfini kullanmaya devam ederken `/model`, `/models` ve model seçicileri seçili sağlayıcılarla sınırlar.
     - Mevcut modelleri kaldırmadan izin listesi girdileri eklemek için `openclaw config set agents.defaults.models '<json>' --strict-json --merge` kullanın. Girdileri kaldıracak düz değiştirmeler, `--replace` iletmediğiniz sürece reddedilir.
     - Model başvuruları `provider/model` biçimini kullanır (ör. `anthropic/claude-opus-4-6`).
-    - `agents.defaults.imageMaxDimensionPx`, transcript/araç görüntüsü küçültmeyi denetler (varsayılan `1200`); daha düşük değerler genellikle ekran görüntüsü yoğun çalıştırmalarda görme-token kullanımını azaltır.
-    - Sohbette model değiştirmek için [Models CLI](/tr/concepts/models), kimlik doğrulama rotasyonu ve yedek davranışı için [Model Failover](/tr/concepts/model-failover) bölümüne bakın.
-    - Özel/kendi barındırdığınız sağlayıcılar için başvuruda [Custom providers](/tr/gateway/config-tools#custom-providers-and-base-urls) bölümüne bakın.
+    - `agents.defaults.imageMaxDimensionPx`, transcript/araç görsel küçültmesini denetler (varsayılan `1200`); daha düşük değerler genellikle ekran görüntüsü ağırlıklı çalıştırmalarda vision-token kullanımını azaltır.
+    - Sohbette model değiştirme için [Modeller CLI](/tr/concepts/models), kimlik doğrulama rotasyonu ve yedek davranışı için [Model Devretme](/tr/concepts/model-failover) sayfasına bakın.
+    - Özel/kendi barındırdığınız sağlayıcılar için başvurudaki [Özel sağlayıcılar](/tr/gateway/config-tools#custom-providers-and-base-urls) bölümüne bakın.
 
   </Accordion>
 
@@ -173,23 +174,24 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     - `"pairing"` (varsayılan): bilinmeyen gönderenler onay için tek kullanımlık bir eşleştirme kodu alır
     - `"allowlist"`: yalnızca `allowFrom` içindeki gönderenler (veya eşleştirilmiş izin deposu)
     - `"open"`: tüm gelen DM'lere izin ver (`allowFrom: ["*"]` gerektirir)
-    - `"disabled"`: tüm DM'leri yok say
+    - `"disabled"`: tüm DM'leri yoksay
 
-    Gruplar için `groupPolicy` + `groupAllowFrom` veya kanala özgü izin listelerini kullanın.
+    Gruplar için `groupPolicy` + `groupAllowFrom` veya kanala özgü izin listeleri kullanın.
 
     Kanal başına ayrıntılar için [tam başvuruya](/tr/gateway/config-channels#dm-and-group-access) bakın.
 
   </Accordion>
 
-  <Accordion title="Grup sohbeti bahsetme kapılamasını ayarlama">
-    Grup mesajları varsayılan olarak **bahsetme gerektirir**. Tetikleme desenlerini agent başına yapılandırın ve eski otomatik son yanıtları özellikle istemiyorsanız görünür oda yanıtlarını varsayılan mesaj-aracı yolunda tutun:
+  <Accordion title="Grup sohbeti bahsetme kapısını ayarlama">
+    Grup mesajları varsayılan olarak **bahsetme gerektirir**. Tetikleme kalıplarını aracı başına yapılandırın. Normal grup/kanal yanıtları otomatik olarak gönderilir; aracının ne zaman konuşacağına karar vermesi gereken paylaşılan odalar için mesaj aracı yolunu etkinleştirin:
 
     ```json5
     {
       messages: {
         visibleReplies: "automatic", // set "message_tool" to require message-tool sends everywhere
         groupChat: {
-          visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+          visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+          unmentionedInbound: "room_event", // unmentioned always-on group chatter is quiet context
         },
       },
       agents: {
@@ -211,15 +213,15 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     ```
 
     - **Meta veri bahsetmeleri**: yerel @-bahsetmeler (WhatsApp dokunarak bahsetme, Telegram @bot vb.)
-    - **Metin desenleri**: `mentionPatterns` içinde güvenli regex desenleri
-    - **Görünür yanıtlar**: `messages.visibleReplies` genel olarak mesaj-aracı gönderimlerini zorunlu kılabilir; `messages.groupChat.visibleReplies` bunu gruplar/kanallar için geçersiz kılar.
+    - **Metin kalıpları**: `mentionPatterns` içinde güvenli regex kalıpları
+    - **Görünür yanıtlar**: `messages.visibleReplies` genel olarak mesaj aracı gönderimlerini gerektirebilir; `messages.groupChat.visibleReplies` bunu gruplar/kanallar için geçersiz kılar.
     - Görünür yanıt modları, kanal başına geçersiz kılmalar ve kendiyle sohbet modu için [tam başvuruya](/tr/gateway/config-channels#group-chat-mention-gating) bakın.
 
   </Accordion>
 
-  <Accordion title="Agent başına Skills kısıtlama">
+  <Accordion title="Aracı başına Skills kısıtlama">
     Paylaşılan bir temel için `agents.defaults.skills` kullanın, ardından belirli
-    agent'ları `agents.list[].skills` ile geçersiz kılın:
+    aracıları `agents.list[].skills` ile geçersiz kılın:
 
     ```json5
     {
@@ -239,13 +241,13 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     - Varsayılan olarak kısıtlanmamış Skills için `agents.defaults.skills` değerini atlayın.
     - Varsayılanları devralmak için `agents.list[].skills` değerini atlayın.
     - Skills olmaması için `agents.list[].skills: []` ayarlayın.
-    - [Skills](/tr/tools/skills), [Skills config](/tr/tools/skills-config) ve
-      [Configuration Reference](/tr/gateway/config-agents#agents-defaults-skills) bölümlerine bakın.
+    - [Skills](/tr/tools/skills), [Skills yapılandırması](/tr/tools/skills-config) ve
+      [Yapılandırma Başvurusu](/tr/gateway/config-agents#agents-defaults-skills) sayfalarına bakın.
 
   </Accordion>
 
-  <Accordion title="Gateway kanal sağlık izlemeyi ayarlama">
-    Eski görünen kanalları Gateway'in ne kadar agresif yeniden başlatacağını denetleyin:
+  <Accordion title="Gateway kanal sağlık izlemesini ayarlama">
+    Gateway'in bayat görünen kanalları ne kadar agresif yeniden başlatacağını denetleyin:
 
     ```json5
     {
@@ -267,10 +269,10 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     }
     ```
 
-    - Sağlık izleme yeniden başlatmalarını genel olarak devre dışı bırakmak için `gateway.channelHealthCheckMinutes: 0` ayarlayın.
-    - `channelStaleEventThresholdMinutes`, kontrol aralığından büyük veya ona eşit olmalıdır.
+    - Sağlık izleyici yeniden başlatmalarını genel olarak devre dışı bırakmak için `gateway.channelHealthCheckMinutes: 0` ayarlayın.
+    - `channelStaleEventThresholdMinutes`, denetim aralığından büyük veya ona eşit olmalıdır.
     - Genel izleyiciyi devre dışı bırakmadan tek bir kanal veya hesap için otomatik yeniden başlatmaları devre dışı bırakmak üzere `channels.<provider>.healthMonitor.enabled` veya `channels.<provider>.accounts.<id>.healthMonitor.enabled` kullanın.
-    - Operasyonel hata ayıklama için [Health Checks](/tr/gateway/health), tüm alanlar için [tam başvuruya](/tr/gateway/configuration-reference#gateway) bakın.
+    - Operasyonel hata ayıklama için [Sağlık Denetimleri](/tr/gateway/health), tüm alanlar için [tam başvuru](/tr/gateway/configuration-reference#gateway) sayfasına bakın.
 
   </Accordion>
 
@@ -287,13 +289,13 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     ```
 
     - Varsayılan `15000` milisaniyedir.
-    - `OPENCLAW_HANDSHAKE_TIMEOUT_MS`, tek seferlik servis veya kabuk geçersiz kılmaları için hâlâ önceliklidir.
-    - Önce başlangıç/event-loop takılmalarını düzeltmeyi tercih edin; bu ayar sağlıklı ama ısınma sırasında yavaş olan ana makineler içindir.
+    - `OPENCLAW_HANDSHAKE_TIMEOUT_MS`, tek seferlik hizmet veya kabuk geçersiz kılmaları için hâlâ önceliklidir.
+    - Önce başlangıç/event-loop takılmalarını düzeltmeyi tercih edin; bu ayar sağlıklı ancak ısınma sırasında yavaş olan ana makineler içindir.
 
   </Accordion>
 
   <Accordion title="Oturumları ve sıfırlamaları yapılandırma">
-    Oturumlar konuşma sürekliliğini ve izolasyonu denetler:
+    Oturumlar konuşma sürekliliğini ve yalıtımı denetler:
 
     ```json5
     {
@@ -315,13 +317,13 @@ son-bilinen-iyi durumuna yükseltme atlanır.
 
     - `dmScope`: `main` (paylaşılan) | `per-peer` | `per-channel-peer` | `per-account-channel-peer`
     - `threadBindings`: iş parçacığına bağlı oturum yönlendirmesi için genel varsayılanlar (Discord `/focus`, `/unfocus`, `/agents`, `/session idle` ve `/session max-age` destekler).
-    - Kapsam belirleme, kimlik bağlantıları ve gönderme politikası için bkz. [Oturum Yönetimi](/tr/concepts/session).
-    - Tüm alanlar için bkz. [tam başvuru](/tr/gateway/config-agents#session).
+    - Kapsam belirleme, kimlik bağlantıları ve gönderme ilkesi için [Oturum Yönetimi](/tr/concepts/session) bölümüne bakın.
+    - Tüm alanlar için [tam referansa](/tr/gateway/config-agents#session) bakın.
 
   </Accordion>
 
   <Accordion title="Korumalı alanı etkinleştir">
-    Aracı oturumlarını yalıtılmış korumalı alan çalışma zamanlarında çalıştırın:
+    Ajan oturumlarını yalıtılmış korumalı alan çalışma zamanlarında çalıştırın:
 
     ```json5
     {
@@ -336,16 +338,16 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     }
     ```
 
-    Önce imajı oluşturun - kaynak denetiminden çalıştırıyorsanız `scripts/sandbox-setup.sh` çalıştırın veya npm kurulumundan çalıştırıyorsanız [Korumalı Alan § İmajlar ve kurulum](/tr/gateway/sandboxing#images-and-setup) içindeki satır içi `docker build` komutuna bakın.
+    Önce imajı oluşturun - kaynak checkout'tan `scripts/sandbox-setup.sh` çalıştırın veya npm kurulumundan [Korumalı Alan § İmajlar ve kurulum](/tr/gateway/sandboxing#images-and-setup) içindeki satır içi `docker build` komutuna bakın.
 
-    Tam kılavuz için bkz. [Korumalı Alan](/tr/gateway/sandboxing) ve tüm seçenekler için bkz. [tam başvuru](/tr/gateway/config-agents#agentsdefaultssandbox).
+    Tam kılavuz için [Korumalı Alan](/tr/gateway/sandboxing) bölümüne, tüm seçenekler için [tam referansa](/tr/gateway/config-agents#agentsdefaultssandbox) bakın.
 
   </Accordion>
 
-  <Accordion title="Resmi iOS derlemeleri için relay destekli push'u etkinleştir">
-    Relay destekli push `openclaw.json` içinde yapılandırılır.
+  <Accordion title="Resmi iOS derlemeleri için aktarıcı destekli push'u etkinleştir">
+    Herkese açık App Store/TestFlight derlemeleri için aktarıcı destekli push, barındırılan OpenClaw aktarıcısını kullanır: `https://ios-push-relay.openclaw.ai`.
 
-    Gateway yapılandırmasında bunu ayarlayın:
+    Özel aktarıcı dağıtımları, aktarıcı URL'si gateway aktarıcı URL'siyle eşleşen bilinçli olarak ayrı bir iOS derleme/dağıtım yolu gerektirir. Özel bir aktarıcı derlemesi kullanıyorsanız gateway yapılandırmasında bunu ayarlayın:
 
     ```json5
     {
@@ -371,35 +373,36 @@ son-bilinen-iyi durumuna yükseltme atlanır.
 
     Bunun yaptığı:
 
-    - Gateway'in `push.test`, uyandırma dürtmeleri ve yeniden bağlanma uyandırmalarını dış relay üzerinden göndermesine izin verir.
-    - Eşleştirilmiş iOS uygulaması tarafından iletilen, kayıt kapsamlı bir gönderme izni kullanır. Gateway'in dağıtım genelinde geçerli bir relay token'ına ihtiyacı yoktur.
-    - Her relay destekli kaydı, iOS uygulamasının eşleştiği Gateway kimliğine bağlar; böylece başka bir Gateway saklanan kaydı yeniden kullanamaz.
-    - Yerel/manuel iOS derlemelerini doğrudan APNs üzerinde tutar. Relay destekli gönderimler yalnızca relay üzerinden kaydolan resmi dağıtılmış derlemelere uygulanır.
-    - Resmi/TestFlight iOS derlemesine gömülen relay temel URL'siyle eşleşmelidir; böylece kayıt ve gönderme trafiği aynı relay dağıtımına ulaşır.
+    - Gateway'in harici aktarıcı üzerinden `push.test`, uyandırma dürtmeleri ve yeniden bağlanma uyandırmaları göndermesine olanak tanır.
+    - Eşleştirilmiş iOS uygulaması tarafından iletilen kayıt kapsamlı bir gönderme izni kullanır. Gateway'in dağıtım genelinde bir aktarıcı token'ına ihtiyacı yoktur.
+    - Her aktarıcı destekli kaydı iOS uygulamasının eşleştiği gateway kimliğine bağlar; böylece başka bir gateway saklanan kaydı yeniden kullanamaz.
+    - Yerel/manuel iOS derlemelerini doğrudan APNs üzerinde tutar. Aktarıcı destekli gönderimler yalnızca aktarıcı üzerinden kaydolmuş resmi dağıtılmış derlemelere uygulanır.
+    - iOS derlemesine gömülü aktarıcı temel URL'siyle eşleşmelidir; böylece kayıt ve gönderme trafiği aynı aktarıcı dağıtımına ulaşır.
 
     Uçtan uca akış:
 
-    1. Aynı relay temel URL'siyle derlenmiş resmi/TestFlight iOS derlemesini yükleyin.
-    2. Gateway üzerinde `gateway.push.apns.relay.baseUrl` yapılandırın.
-    3. iOS uygulamasını Gateway ile eşleştirin ve hem node hem de operatör oturumlarının bağlanmasına izin verin.
-    4. iOS uygulaması Gateway kimliğini getirir, App Attest ve uygulama makbuzunu kullanarak relay ile kaydolur, ardından relay destekli `push.apns.register` yükünü eşleştirilmiş Gateway'e yayımlar.
-    5. Gateway relay tanıtıcısını ve gönderme iznini saklar, ardından bunları `push.test`, uyandırma dürtmeleri ve yeniden bağlanma uyandırmaları için kullanır.
+    1. Resmi/TestFlight iOS derlemesini kurun.
+    2. İsteğe bağlı: `gateway.push.apns.relay.baseUrl` değerini gateway üzerinde yalnızca bilinçli olarak ayrı bir özel aktarıcı derlemesi kullanırken yapılandırın.
+    3. iOS uygulamasını gateway ile eşleştirin ve hem node hem de operatör oturumlarının bağlanmasına izin verin.
+    4. iOS uygulaması gateway kimliğini alır, App Attest ve uygulama makbuzunu kullanarak aktarıcıya kaydolur, ardından aktarıcı destekli `push.apns.register` yükünü eşleştirilmiş gateway'e yayımlar.
+    5. Gateway aktarıcı tanıtıcısını ve gönderme iznini saklar, ardından bunları `push.test`, uyandırma dürtmeleri ve yeniden bağlanma uyandırmaları için kullanır.
 
     Operasyonel notlar:
 
-    - iOS uygulamasını farklı bir Gateway'e geçirirseniz, o Gateway'e bağlı yeni bir relay kaydı yayımlayabilmesi için uygulamayı yeniden bağlayın.
-    - Farklı bir relay dağıtımını işaret eden yeni bir iOS derlemesi yayınlarsanız, uygulama eski relay kaynağını yeniden kullanmak yerine önbelleğe alınmış relay kaydını yeniler.
+    - iOS uygulamasını farklı bir gateway'e geçirirseniz, o gateway'e bağlı yeni bir aktarıcı kaydı yayımlayabilmesi için uygulamayı yeniden bağlayın.
+    - Farklı bir aktarıcı dağıtımını işaret eden yeni bir iOS derlemesi yayınlarsanız, uygulama eski aktarıcı kökenini yeniden kullanmak yerine önbelleğe alınmış aktarıcı kaydını yeniler.
 
     Uyumluluk notu:
 
-    - `OPENCLAW_APNS_RELAY_BASE_URL` ve `OPENCLAW_APNS_RELAY_TIMEOUT_MS` geçici env geçersiz kılmaları olarak hâlâ çalışır.
-    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` yalnızca local loopback geliştirme kaçış yoludur; HTTP relay URL'lerini yapılandırmada kalıcı hale getirmeyin.
+    - `OPENCLAW_APNS_RELAY_BASE_URL` ve `OPENCLAW_APNS_RELAY_TIMEOUT_MS` geçici env geçersiz kılmaları olarak çalışmaya devam eder.
+    - Özel gateway aktarıcı URL'leri, iOS derlemesine gömülü aktarıcı temel URL'siyle eşleşmelidir. Herkese açık App Store yayın hattı özel iOS aktarıcı URL geçersiz kılmalarını reddeder.
+    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` yalnızca loopback geliştirme kaçış yolu olarak kalır; HTTP aktarıcı URL'lerini yapılandırmada kalıcı hale getirmeyin.
 
-    Uçtan uca akış için bkz. [iOS Uygulaması](/tr/platforms/ios#relay-backed-push-for-official-builds) ve relay güvenlik modeli için bkz. [Kimlik doğrulama ve güven akışı](/tr/platforms/ios#authentication-and-trust-flow).
+    Uçtan uca akış için [iOS Uygulaması](/tr/platforms/ios#relay-backed-push-for-official-builds), aktarıcı güvenlik modeli için [Kimlik doğrulama ve güven akışı](/tr/platforms/ios#authentication-and-trust-flow) bölümüne bakın.
 
   </Accordion>
 
-  <Accordion title="Heartbeat'i kur (periyodik yoklamalar)">
+  <Accordion title="Heartbeat'i ayarla (periyodik yoklamalar)">
     ```json5
     {
       agents: {
@@ -415,8 +418,8 @@ son-bilinen-iyi durumuna yükseltme atlanır.
 
     - `every`: süre dizesi (`30m`, `2h`). Devre dışı bırakmak için `0m` ayarlayın.
     - `target`: `last` | `none` | `<channel-id>` (örneğin `discord`, `matrix`, `telegram` veya `whatsapp`)
-    - `directPolicy`: DM tarzı Heartbeat hedefleri için `allow` (varsayılan) veya `block`
-    - Tam kılavuz için bkz. [Heartbeat](/tr/gateway/heartbeat).
+    - `directPolicy`: DM tarzı heartbeat hedefleri için `allow` (varsayılan) veya `block`
+    - Tam kılavuz için [Heartbeat](/tr/gateway/heartbeat) bölümüne bakın.
 
   </Accordion>
 
@@ -425,7 +428,7 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     {
       cron: {
         enabled: true,
-        maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+        maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
         sessionRetention: "24h",
         runLog: {
           maxBytes: "2mb",
@@ -435,14 +438,14 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     }
     ```
 
-    - `sessionRetention`: tamamlanmış yalıtılmış çalışma oturumlarını `sessions.json` içinden budar (varsayılan `24h`; devre dışı bırakmak için `false` ayarlayın).
-    - `runLog`: `cron/runs/<jobId>.jsonl` dosyasını boyuta ve tutulan satırlara göre budar.
-    - Özellik genel bakışı ve CLI örnekleri için bkz. [Cron işleri](/tr/automation/cron-jobs).
+    - `sessionRetention`: tamamlanmış yalıtılmış çalışma oturumlarını `sessions.json` içinden temizler (varsayılan `24h`; devre dışı bırakmak için `false` ayarlayın).
+    - `runLog`: her iş için tutulan cron çalışma geçmişi satırlarını temizler. `maxBytes`, eski dosya destekli çalışma günlükleri için kabul edilmeye devam eder.
+    - Özellik özeti ve CLI örnekleri için [Cron işleri](/tr/automation/cron-jobs) bölümüne bakın.
 
   </Accordion>
 
-  <Accordion title="Webhook'ları kur (hook'lar)">
-    Gateway üzerinde HTTP Webhook uç noktalarını etkinleştirin:
+  <Accordion title="Webhook'ları ayarla (hooks)">
+    Gateway üzerinde HTTP webhook uç noktalarını etkinleştirin:
 
     ```json5
     {
@@ -466,20 +469,20 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     ```
 
     Güvenlik notu:
-    - Tüm hook/Webhook yük içeriğini güvenilmeyen girdi olarak ele alın.
-    - Ayrılmış bir `hooks.token` kullanın; paylaşılan Gateway token'ını yeniden kullanmayın.
-    - Hook kimlik doğrulaması yalnızca header üzerinden yapılır (`Authorization: Bearer ...` veya `x-openclaw-token`); query string token'ları reddedilir.
-    - `hooks.path` `/` olamaz; Webhook girişini `/hooks` gibi ayrılmış bir alt yolda tutun.
-    - Sıkı kapsamlı hata ayıklama yapmıyorsanız güvenli olmayan içerik atlama bayraklarını devre dışı tutun (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`).
-    - `hooks.allowRequestSessionKey` etkinleştirirseniz, çağıranın seçtiği oturum anahtarlarını sınırlandırmak için `hooks.allowedSessionKeyPrefixes` de ayarlayın.
-    - Hook ile çalışan aracılar için güçlü modern model katmanlarını ve katı araç politikasını tercih edin (örneğin yalnızca mesajlaşma ve mümkün olduğunda korumalı alan).
+    - Tüm hook/webhook yük içeriğini güvenilmeyen girdi olarak ele alın.
+    - Özel bir `hooks.token` kullanın; etkin Gateway kimlik doğrulama sırlarını (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` veya `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`) yeniden kullanmayın.
+    - Hook kimlik doğrulaması yalnızca başlık tabanlıdır (`Authorization: Bearer ...` veya `x-openclaw-token`); sorgu dizesi token'ları reddedilir.
+    - `hooks.path` `/` olamaz; webhook girişini `/hooks` gibi özel bir alt yolda tutun.
+    - Sıkı kapsamlı hata ayıklama yapmıyorsanız güvenli olmayan içerik bypass bayraklarını (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`) devre dışı tutun.
+    - `hooks.allowRequestSessionKey` etkinleştirirseniz, çağıranın seçtiği oturum anahtarlarını sınırlamak için `hooks.allowedSessionKeyPrefixes` de ayarlayın.
+    - Hook ile sürülen ajanlar için güçlü modern model katmanlarını ve sıkı araç ilkesini tercih edin (örneğin yalnızca mesajlaşma ve mümkün olduğunda korumalı alan).
 
-    Tüm eşleme seçenekleri ve Gmail entegrasyonu için bkz. [tam başvuru](/tr/gateway/configuration-reference#hooks).
+    Tüm eşleme seçenekleri ve Gmail entegrasyonu için [tam referansa](/tr/gateway/configuration-reference#hooks) bakın.
 
   </Accordion>
 
-  <Accordion title="Çok aracılı yönlendirmeyi yapılandır">
-    Ayrı çalışma alanları ve oturumlarla birden çok yalıtılmış aracı çalıştırın:
+  <Accordion title="Çoklu ajan yönlendirmesini yapılandır">
+    Ayrı çalışma alanları ve oturumlarla birden fazla yalıtılmış ajan çalıştırın:
 
     ```json5
     {
@@ -496,7 +499,7 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     }
     ```
 
-    Bağlama kuralları ve aracı başına erişim profilleri için bkz. [Çok Aracılı](/tr/concepts/multi-agent) ve [tam başvuru](/tr/gateway/config-agents#multi-agent-routing).
+    Bağlama kuralları ve ajan başına erişim profilleri için [Çoklu Ajan](/tr/concepts/multi-agent) ve [tam referansa](/tr/gateway/config-agents#multi-agent-routing) bakın.
 
   </Accordion>
 
@@ -514,25 +517,17 @@ son-bilinen-iyi durumuna yükseltme atlanır.
     }
     ```
 
-    - **Tek dosya**: içeren nesneyi değiştirir
+    - **Tek dosya**: içeren nesnenin yerini alır
     - **Dosya dizisi**: sırayla derin birleştirilir (sonraki kazanır)
     - **Kardeş anahtarlar**: include'lardan sonra birleştirilir (include edilen değerleri geçersiz kılar)
     - **İç içe include'lar**: 10 seviyeye kadar desteklenir
     - **Göreli yollar**: include eden dosyaya göre çözümlenir
-    - **OpenClaw'a ait yazmalar**: bir yazma yalnızca
-      `plugins: { $include: "./plugins.json5" }` gibi tek dosyalı include ile desteklenen
-      tek bir üst seviye bölümü değiştirdiğinde, OpenClaw o include edilen dosyayı günceller ve
-      `openclaw.json` dosyasını olduğu gibi bırakır
-    - **Desteklenmeyen write-through**: kök include'lar, include dizileri ve kardeş
-      geçersiz kılmalara sahip include'lar, yapılandırmayı düzleştirmek yerine
-      OpenClaw'a ait yazmalar için kapalı hatayla sonuçlanır
-    - **Sınırlama**: `$include` yolları `openclaw.json` dosyasını tutan dizinin altında
-      çözümlenmelidir. Bir ağacı makineler veya kullanıcılar arasında paylaşmak için
-      `OPENCLAW_INCLUDE_ROOTS` değişkenini include'ların başvurabileceği ek dizinlerden oluşan
-      bir yol listesine ayarlayın (POSIX'te `:`, Windows'ta `;`). Sembolik bağlantılar çözümlenir
-      ve yeniden denetlenir; bu nedenle söz dizimsel olarak bir yapılandırma dizininde bulunan,
-      ancak gerçek hedefi izin verilen her kökün dışına kaçan bir yol yine de reddedilir.
-    - **Hata işleme**: eksik dosyalar, ayrıştırma hataları ve döngüsel include'lar için açık hatalar
+    - **Yol biçimi**: include yolları null bayt içermemeli ve çözümlemeden önce ve sonra kesinlikle 4096 karakterden kısa olmalıdır
+    - **OpenClaw'a ait yazmalar**: bir yazma yalnızca `plugins: { $include: "./plugins.json5" }` gibi tek dosya include tarafından desteklenen bir üst düzey bölümü değiştirirse,
+      OpenClaw bu include edilen dosyayı günceller ve `openclaw.json` dosyasını olduğu gibi bırakır
+    - **Desteklenmeyen geçişli yazma**: kök include'lar, include dizileri ve kardeş geçersiz kılmaları olan include'lar, yapılandırmayı düzleştirmek yerine OpenClaw'a ait yazmalar için kapalı başarısız olur
+    - **Sınırlama**: `$include` yolları `openclaw.json` dosyasını tutan dizinin altında çözümlenmelidir. Bir ağacı makineler veya kullanıcılar arasında paylaşmak için `OPENCLAW_INCLUDE_ROOTS` değerini include'ların başvurabileceği ek dizinlerden oluşan bir yol listesine (POSIX'te `:`, Windows'ta `;`) ayarlayın. Sembolik bağlantılar çözümlenir ve yeniden denetlenir; bu nedenle sözdizimsel olarak bir yapılandırma dizininde yaşayan ancak gerçek hedefi izin verilen her kökten kaçan bir yol yine de reddedilir.
+    - **Hata işleme**: eksik dosyalar, ayrıştırma hataları, döngüsel include'lar, geçersiz yol biçimi ve aşırı uzunluk için açık hatalar
 
   </Accordion>
 </AccordionGroup>
@@ -541,23 +536,19 @@ son-bilinen-iyi durumuna yükseltme atlanır.
 
 Gateway `~/.openclaw/openclaw.json` dosyasını izler ve değişiklikleri otomatik olarak uygular - çoğu ayar için manuel yeniden başlatma gerekmez.
 
-Doğrudan dosya düzenlemeleri doğrulanana kadar güvenilmeyen olarak ele alınır. İzleyici,
-düzenleyicinin geçici yazma/yeniden adlandırma hareketliliğinin durulmasını bekler, son dosyayı okur
-ve geçersiz dış düzenlemeleri `openclaw.json` dosyasını yeniden yazmadan reddeder. OpenClaw'a ait yapılandırma
-yazmaları, yazmadan önce aynı şema geçidini kullanır; `gateway.mode` öğesini düşürmek veya dosyayı yarıdan fazla küçültmek gibi
-yıkıcı ezmeler reddedilir ve inceleme için `.rejected.*` olarak kaydedilir.
+Doğrudan dosya düzenlemeleri doğrulanana kadar güvenilmeyen kabul edilir. İzleyici, editörün geçici yazma/yeniden adlandırma hareketliliğinin yatışmasını bekler, son dosyayı okur ve geçersiz harici düzenlemeleri `openclaw.json` dosyasını yeniden yazmadan reddeder. OpenClaw'a ait yapılandırma yazmaları, yazmadan önce aynı şema kapısından geçer; `gateway.mode` düşürme veya dosyayı yarıdan fazla küçültme gibi yıkıcı üzerine yazmalar reddedilir ve inceleme için `.rejected.*` olarak kaydedilir.
 
 `config reload skipped (invalid config)` görürseniz veya başlangıç `Invalid
 config` bildirirse, yapılandırmayı inceleyin, `openclaw config validate` çalıştırın, ardından onarım için `openclaw
-doctor --fix` çalıştırın. Kontrol listesi için bkz. [Gateway sorun giderme](/tr/gateway/troubleshooting#gateway-rejected-invalid-config).
+doctor --fix` çalıştırın. Kontrol listesi için [Gateway sorun giderme](/tr/gateway/troubleshooting#gateway-rejected-invalid-config) bölümüne bakın.
 
 ### Yeniden yükleme modları
 
-| Mod                    | Davranış                                                                                  |
-| ---------------------- | ----------------------------------------------------------------------------------------- |
+| Mod                    | Davranış                                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------- |
 | **`hybrid`** (varsayılan) | Güvenli değişiklikleri anında sıcak uygular. Kritik olanlar için otomatik olarak yeniden başlatır. |
-| **`hot`**              | Yalnızca güvenli değişiklikleri sıcak uygular. Yeniden başlatma gerektiğinde uyarı günlüğe yazar - bunu siz yönetirsiniz. |
-| **`restart`**          | Güvenli olsun veya olmasın her yapılandırma değişikliğinde Gateway'i yeniden başlatır.     |
+| **`hot`**              | Yalnızca güvenli değişiklikleri sıcak uygular. Yeniden başlatma gerektiğinde uyarı günlüğe yazar - bunu siz halledersiniz. |
+| **`restart`**          | Güvenli olsun veya olmasın, herhangi bir yapılandırma değişikliğinde Gateway'i yeniden başlatır. |
 | **`off`**              | Dosya izlemeyi devre dışı bırakır. Değişiklikler bir sonraki manuel yeniden başlatmada etkili olur. |
 
 ```json5
@@ -572,16 +563,16 @@ doctor --fix` çalıştırın. Kontrol listesi için bkz. [Gateway sorun giderme
 
 Çoğu alan kesinti olmadan sıcak uygulanır. `hybrid` modunda, yeniden başlatma gerektiren değişiklikler otomatik olarak işlenir.
 
-| Kategori             | Alanlar                                                           | Yeniden başlatma gerekli mi? |
-| -------------------- | ----------------------------------------------------------------- | ---------------------------- |
-| Kanallar             | `channels.*`, `web` (WhatsApp) - tüm yerleşik ve Plugin kanalları | Hayır                        |
-| Aracı ve modeller    | `agent`, `agents`, `models`, `routing`                            | Hayır                        |
-| Otomasyon            | `hooks`, `cron`, `agent.heartbeat`                                | Hayır                        |
-| Oturumlar ve mesajlar | `session`, `messages`                                             | Hayır                        |
-| Araçlar ve medya     | `tools`, `browser`, `skills`, `mcp`, `audio`, `talk`              | Hayır                        |
-| UI ve çeşitli        | `ui`, `logging`, `identity`, `bindings`                           | Hayır                        |
-| Gateway sunucusu     | `gateway.*` (port, bind, auth, tailscale, TLS, HTTP)              | **Evet**                     |
-| Altyapı              | `discovery`, `plugins`                                            | **Evet**                     |
+| Kategori            | Alanlar                                                           | Yeniden başlatma gerekli mi? |
+| ------------------- | ----------------------------------------------------------------- | --------------- |
+| Kanallar            | `channels.*`, `web` (WhatsApp) - tüm yerleşik ve Plugin kanalları | Hayır           |
+| Agent ve modeller   | `agent`, `agents`, `models`, `routing`                            | Hayır           |
+| Otomasyon           | `hooks`, `cron`, `agent.heartbeat`                                | Hayır           |
+| Oturumlar ve mesajlar | `session`, `messages`                                           | Hayır           |
+| Araçlar ve medya    | `tools`, `browser`, `skills`, `mcp`, `audio`, `talk`              | Hayır           |
+| UI ve diğerleri     | `ui`, `logging`, `identity`, `bindings`                           | Hayır           |
+| Gateway sunucusu    | `gateway.*` (port, bind, auth, tailscale, TLS, HTTP)              | **Evet**        |
+| Altyapı             | `discovery`, `plugins`                                            | **Evet**        |
 
 <Note>
 `gateway.reload` ve `gateway.remote` istisnadır - bunları değiştirmek yeniden başlatmayı **tetiklemez**.
@@ -589,23 +580,41 @@ doctor --fix` çalıştırın. Kontrol listesi için bkz. [Gateway sorun giderme
 
 ### Yeniden yükleme planlaması
 
-`$include` üzerinden başvurulan bir kaynak dosyayı düzenlediğinizde OpenClaw, yeniden yüklemeyi düzleştirilmiş bellek içi görünümden değil, kaynakta yazılmış yerleşimden planlar. Bu, `plugins: { $include: "./plugins.json5" }` gibi tek bir üst düzey bölüm kendi dahil edilen dosyasında bulunsa bile hot-reload kararlarını (hot-apply ve yeniden başlatma) öngörülebilir tutar. Kaynak yerleşim belirsizse yeniden yükleme planlaması kapalı biçimde başarısız olur.
+`$include` üzerinden başvurulan bir kaynak dosyayı düzenlediğinizde OpenClaw,
+yeniden yüklemeyi düzleştirilmiş bellek içi görünümden değil, kaynakta yazılmış
+yerleşimden planlar. Bu, tek bir üst düzey bölüm kendi dahil edilen dosyasında,
+örneğin `plugins: { $include: "./plugins.json5" }` içinde yaşadığında bile
+hot-reload kararlarını (sıcak uygulama mı yeniden başlatma mı) öngörülebilir
+tutar. Kaynak yerleşimi belirsizse yeniden yükleme planlaması kapalı şekilde
+başarısız olur.
 
-## Yapılandırma RPC'si (programlı güncellemeler)
+## Config RPC (programatik güncellemeler)
 
 Gateway API üzerinden yapılandırma yazan araçlar için şu akışı tercih edin:
 
-- Bir alt ağacı incelemek için `config.schema.lookup` (sığ şema düğümü + alt özetler)
-- Mevcut anlık görüntüyü ve `hash` değerini almak için `config.get`
-- Kısmi güncellemeler için `config.patch` (JSON merge patch: nesneler birleştirilir, `null` siler, diziler değiştirilir)
-- Yalnızca tüm yapılandırmayı değiştirmeyi amaçladığınızda `config.apply`
+- Bir alt ağacı incelemek için `config.schema.lookup` (yüzeysel şema düğümü + alt
+  özetleri)
+- Geçerli anlık görüntüyü ve `hash` değerini almak için `config.get`
+- Kısmi güncellemeler için `config.patch` (JSON birleştirme yaması: nesneler
+  birleşir, `null` siler, diziler yalnızca girdiler kaldırılacaksa `replacePaths`
+  ile açıkça onaylandığında değiştirilir)
+- `config.apply` yalnızca tüm yapılandırmayı değiştirmeyi amaçladığınızda
 - Açık self-update ve yeniden başlatma için `update.run`; yeniden başlatma sonrası oturumun bir takip turu çalıştırması gerekiyorsa `continuationMessage` ekleyin
-- En son güncelleme yeniden başlatma sentinel'ini incelemek ve yeniden başlatmadan sonra çalışan sürümü doğrulamak için `update.status`
+- En son güncelleme yeniden başlatma işaretçisini incelemek ve yeniden başlatmadan sonra çalışan sürümü doğrulamak için `update.status`
 
-Agent'lar, tam alan düzeyindeki belgeler ve kısıtlamalar için ilk durak olarak `config.schema.lookup` kullanmalıdır. Daha geniş yapılandırma haritasına, varsayılanlara veya özel alt sistem referanslarına bağlantılara ihtiyaç duyduklarında [Yapılandırma referansı](/tr/gateway/configuration-reference) kullanın.
+Agent'lar, tam alan düzeyi belgeler ve kısıtlamalar için ilk durak olarak
+`config.schema.lookup` kullanmalıdır. Daha geniş yapılandırma haritasına,
+varsayılanlara veya ayrılmış alt sistem referanslarına bağlantılara ihtiyaç
+duyduklarında [Yapılandırma referansı](/tr/gateway/configuration-reference)
+kullanın.
 
 <Note>
-Kontrol düzlemi yazmaları (`config.apply`, `config.patch`, `update.run`) `deviceId+clientIp` başına 60 saniyede 3 istekle sınırlandırılır. Yeniden başlatma istekleri birleştirilir ve ardından yeniden başlatma döngüleri arasında 30 saniyelik bekleme süresi uygular. `update.status` salt okunurdur ancak admin kapsamındadır, çünkü yeniden başlatma sentinel'i güncelleme adımı özetlerini ve komut çıktısı sonlarını içerebilir.
+Kontrol düzlemi yazımları (`config.apply`, `config.patch`, `update.run`),
+`deviceId+clientIp` başına 60 saniyede 3 istekle oran sınırlıdır. Yeniden
+başlatma istekleri birleştirilir ve ardından yeniden başlatma döngüleri arasında
+30 saniyelik bekleme süresi uygulanır. `update.status` salt okunurdur ancak
+admin kapsamındadır çünkü yeniden başlatma işaretçisi güncelleme adımı özetleri
+ve komut çıktısı son bölümleri içerebilir.
 </Note>
 
 Örnek kısmi yama:
@@ -618,16 +627,27 @@ openclaw gateway call config.patch --params '{
 }'
 ```
 
-Hem `config.apply` hem de `config.patch` `raw`, `baseHash`, `sessionKey`, `note` ve `restartDelayMs` kabul eder. Bir yapılandırma zaten mevcut olduğunda iki yöntem için de `baseHash` zorunludur.
+Hem `config.apply` hem de `config.patch`, `raw`, `baseHash`, `sessionKey`,
+`note` ve `restartDelayMs` kabul eder. Bir yapılandırma zaten varsa her iki
+yöntem için de `baseHash` gereklidir.
+
+`config.patch` ayrıca dizi değiştirmesinin kasıtlı olduğu yapılandırma yollarından
+oluşan bir dizi olan `replacePaths` kabul eder. Bir yama mevcut bir diziyi daha
+az girdili olacak şekilde değiştirecek veya silecekse, Gateway bu tam yol
+`replacePaths` içinde görünmediği sürece yazımı reddeder; dizi girdileri altındaki
+iç içe diziler `agents.list[].skills` gibi `[]` kullanır. Bu, kırpılmış
+`config.get` anlık görüntülerinin yönlendirme veya allowlist dizilerini sessizce
+ezmesini önler. Tam yapılandırmayı değiştirmeyi amaçladığınızda `config.apply`
+kullanın.
 
 ## Ortam değişkenleri
 
-OpenClaw, env vars değerlerini üst süreçten ve ayrıca şunlardan okur:
+OpenClaw env var'ları üst süreçten ve şunlardan okur:
 
-- Geçerli çalışma dizininden `.env` (varsa)
+- Geçerli çalışma dizinindeki `.env` (varsa)
 - `~/.openclaw/.env` (global yedek)
 
-Hiçbir dosya mevcut env vars değerlerini geçersiz kılmaz. Yapılandırmada satır içi env vars da ayarlayabilirsiniz:
+Hiçbir dosya mevcut env var'ları geçersiz kılmaz. Yapılandırmada satır içi env var'lar da ayarlayabilirsiniz:
 
 ```json5
 {
@@ -638,8 +658,8 @@ Hiçbir dosya mevcut env vars değerlerini geçersiz kılmaz. Yapılandırmada s
 }
 ```
 
-<Accordion title="Kabuk env içe aktarma (isteğe bağlı)">
-  Etkinleştirilirse ve beklenen anahtarlar ayarlanmamışsa OpenClaw oturum açma kabuğunuzu çalıştırır ve yalnızca eksik anahtarları içe aktarır:
+<Accordion title="Shell env içe aktarma (isteğe bağlı)">
+  Etkinse ve beklenen anahtarlar ayarlanmamışsa OpenClaw oturum açma shell'inizi çalıştırır ve yalnızca eksik anahtarları içe aktarır:
 
 ```json5
 {
@@ -649,11 +669,11 @@ Hiçbir dosya mevcut env vars değerlerini geçersiz kılmaz. Yapılandırmada s
 }
 ```
 
-Eşdeğer env var: `OPENCLAW_LOAD_SHELL_ENV=1`
+Env var eşdeğeri: `OPENCLAW_LOAD_SHELL_ENV=1`
 </Accordion>
 
 <Accordion title="Yapılandırma değerlerinde env var ikamesi">
-  Herhangi bir yapılandırma dizesi değerinde env vars değerlerine `${VAR_NAME}` ile başvurun:
+  Herhangi bir yapılandırma dizesi değerinde `${VAR_NAME}` ile env var'lara başvurun:
 
 ```json5
 {
@@ -665,14 +685,14 @@ Eşdeğer env var: `OPENCLAW_LOAD_SHELL_ENV=1`
 Kurallar:
 
 - Yalnızca büyük harfli adlar eşleşir: `[A-Z_][A-Z0-9_]*`
-- Eksik/boş değişkenler yükleme zamanında hata fırlatır
+- Eksik/boş var'lar yükleme sırasında hata fırlatır
 - Değişmez çıktı için `$${VAR}` ile kaçış yapın
-- `$include` dosyalarının içinde çalışır
+- `$include` dosyaları içinde çalışır
 - Satır içi ikame: `"${BASE}/v1"` → `"https://api.example.com/v1"`
 
 </Accordion>
 
-<Accordion title="Gizli refs (env, file, exec)">
+<Accordion title="SecretRef'ler (env, file, exec)">
   SecretRef nesnelerini destekleyen alanlar için şunları kullanabilirsiniz:
 
 ```json5
@@ -705,10 +725,11 @@ Kurallar:
 }
 ```
 
-SecretRef ayrıntıları (`env`/`file`/`exec` için `secrets.providers` dahil) [Gizli Dizi Yönetimi](/tr/gateway/secrets) içinde yer alır. Desteklenen kimlik bilgisi yolları [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface) içinde listelenmiştir.
+SecretRef ayrıntıları (`env`/`file`/`exec` için `secrets.providers` dahil) [Gizli Bilgi Yönetimi](/tr/gateway/secrets) içinde yer alır.
+Desteklenen kimlik bilgisi yolları [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface) içinde listelenir.
 </Accordion>
 
-Tam öncelik sırası ve kaynaklar için [Ortam](/tr/help/environment) bölümüne bakın.
+Tam öncelik ve kaynaklar için [Ortam](/tr/help/environment) bölümüne bakın.
 
 ## Tam referans
 
@@ -722,4 +743,4 @@ _İlgili: [Yapılandırma Örnekleri](/tr/gateway/configuration-examples) · [Ya
 
 - [Yapılandırma referansı](/tr/gateway/configuration-reference)
 - [Yapılandırma örnekleri](/tr/gateway/configuration-examples)
-- [Gateway çalışma kılavuzu](/tr/gateway)
+- [Gateway runbook](/tr/gateway)

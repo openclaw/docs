@@ -1,20 +1,21 @@
 ---
 read_when:
-    - memory-lancedb Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Ajanın çağırabileceği araçlar ekler.
-title: Bellek Lancedb Plugin
+    - memory-lancedb Plugin’ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw LanceDB destekli, otomatik hatırlama, otomatik yakalama ve vektör araması özelliklerine sahip uzun süreli bellek Plugin'i.
+title: Memory Lancedb Plugin
 x-i18n:
-    generated_at: "2026-05-03T09:00:44Z"
+    generated_at: "2026-06-28T01:01:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
+    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Memory Lancedb Plugin
+# Memory Lancedb plugin’i
 
-Temsilcinin çağırabileceği araçlar ekler.
+Otomatik geri çağırma, otomatik yakalama ve vektör arama özelliklerine sahip LanceDB destekli OpenClaw uzun süreli bellek plugin’i.
 
 ## Dağıtım
 
@@ -25,6 +26,6 @@ Temsilcinin çağırabileceği araçlar ekler.
 
 sözleşmeler: araçlar
 
-## İlgili belgeler
+## İlgili dokümanlar
 
 - [memory-lancedb](/tr/plugins/memory-lancedb)

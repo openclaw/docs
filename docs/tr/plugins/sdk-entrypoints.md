@@ -1,24 +1,25 @@
 ---
 read_when:
-    - definePluginEntry veya defineChannelPluginEntry için tam tür imzasına ihtiyacınız var
-    - Kayıt modunu (tam, kurulum ve CLI meta verileri) anlamak istiyorsunuz
-    - Giriş noktası seçeneklerine bakıyorsunuz
+    - defineToolPlugin, definePluginEntry veya defineChannelPluginEntry için tam tür imzasına ihtiyacınız var
+    - Kayıt modunu anlamak istiyorsunuz (tam vs kurulum vs CLI metadata)
+    - Giriş noktası seçeneklerini inceliyorsunuz
 sidebarTitle: Entry Points
-summary: definePluginEntry, defineChannelPluginEntry ve defineSetupPluginEntry için başvuru
+summary: defineToolPlugin, definePluginEntry, defineChannelPluginEntry ve defineSetupPluginEntry için başvuru
 title: Plugin giriş noktaları
 x-i18n:
-    generated_at: "2026-05-07T13:23:48Z"
+    generated_at: "2026-06-28T01:04:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2fecc65b8f196f3b40daee2e6087759b8786b033e1cd0c3d3b5695c9f8a3f66a
+    source_hash: 49c024020202b754bde9bfa3f2a880332f1a5b4b19b397e59ae83c2673871211
     source_path: plugins/sdk-entrypoints.md
     workflow: 16
 ---
 
-Her Plugin varsayılan bir giriş nesnesi dışa aktarır. SDK, bunları
-oluşturmak için üç yardımcı sağlar.
+Her plugin varsayılan bir giriş nesnesi dışa aktarır. SDK, bunları
+oluşturmak için yardımcılar sağlar.
 
-Yüklü Plugin'ler için `package.json`, mümkün olduğunda çalışma zamanı
+Kurulu plugin'ler için, mevcut olduğunda `package.json` çalışma zamanı
 yüklemesini derlenmiş JavaScript'e yönlendirmelidir:
 
 ```json
@@ -33,31 +34,78 @@ yüklemesini derlenmiş JavaScript'e yönlendirmelidir:
 ```
 
 `extensions` ve `setupEntry`, çalışma alanı ve git checkout geliştirmesi için
-geçerli kaynak girişleri olarak kalır. `runtimeExtensions` ve
-`runtimeSetupEntry`, OpenClaw yüklü bir paketi yüklediğinde tercih edilir ve npm
-paketlerinin çalışma zamanında TypeScript derlemesinden kaçınmasını sağlar. Açık
-çalışma zamanı girişleri gereklidir: `runtimeSetupEntry`, `setupEntry`
-gerektirir ve eksik `runtimeExtensions` veya `runtimeSetupEntry` çıktıları
-sessizce kaynağa geri dönmek yerine kurulumun/keşfin başarısız olmasına neden
-olur. Yüklü bir paket yalnızca bir TypeScript kaynak girişi bildirirse,
-OpenClaw mevcut olduğunda eşleşen derlenmiş `dist/*.js` eşini kullanır, ardından
-TypeScript kaynağına geri döner.
+geçerli kaynak girişleri olarak kalır. OpenClaw kurulu bir paketi yüklediğinde
+`runtimeExtensions` ve `runtimeSetupEntry` tercih edilir ve npm paketlerinin
+çalışma zamanında TypeScript derlemesinden kaçınmasını sağlar. Açık çalışma
+zamanı girişleri zorunludur: `runtimeSetupEntry`, `setupEntry` gerektirir ve
+eksik `runtimeExtensions` veya `runtimeSetupEntry` yapıtları, sessizce kaynağa
+geri dönmek yerine kurulumun/keşfin başarısız olmasına neden olur. Kurulu bir
+paket yalnızca TypeScript kaynak girişi bildirirse, OpenClaw var olduğunda
+eşleşen derlenmiş `dist/*.js` eşini kullanır, ardından TypeScript kaynağına geri
+döner.
 
-Tüm giriş yolları Plugin paket dizini içinde kalmalıdır. Çalışma zamanı
-girişleri ve çıkarımsanan derlenmiş JavaScript eşleri, dışarı kaçan bir
-`extensions` veya `setupEntry` kaynak yolunu geçerli kılmaz.
+Tüm giriş yolları plugin paket dizininin içinde kalmalıdır. Çalışma zamanı
+girişleri ve çıkarımlanan derlenmiş JavaScript eşleri, dışarı kaçan bir
+`extensions` veya `setupEntry` kaynak yolunu geçerli yapmaz.
 
 <Tip>
-  **Adım adım anlatım mı arıyorsunuz?** Adım adım kılavuzlar için [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins)
-  veya [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) bölümüne bakın.
+  **Bir kılavuz mu arıyorsunuz?** Adım adım kılavuzlar için [Araç Plugin'leri](/tr/plugins/tool-plugins),
+  [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) veya
+  [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) sayfalarına bakın.
 </Tip>
+
+## `defineToolPlugin`
+
+**İçe aktarma:** `openclaw/plugin-sdk/tool-plugin`
+
+Yalnızca agent araçları ekleyen basit plugin'ler içindir. `defineToolPlugin`,
+yazım kaynağını küçük tutar, config ve araç parametre türlerini TypeBox
+şemalarından çıkarır, düz dönüş değerlerini OpenClaw araç-sonucu biçimine sarar
+ve `openclaw plugins build` komutunun plugin manifestine yazdığı statik
+metadata'yı açığa çıkarır.
+
+```typescript
+import { Type } from "typebox";
+import { defineToolPlugin } from "openclaw/plugin-sdk/tool-plugin";
+
+export default defineToolPlugin({
+  id: "stock-quotes",
+  name: "Stock Quotes",
+  description: "Fetch stock quotes.",
+  configSchema: Type.Object({
+    apiKey: Type.Optional(Type.String({ description: "API key." })),
+  }),
+  tools: (tool) => [
+    tool({
+      name: "quote",
+      label: "Quote",
+      description: "Fetch a quote.",
+      parameters: Type.Object({
+        symbol: Type.String({ description: "Ticker symbol." }),
+      }),
+      execute: async ({ symbol }, config) => ({ symbol, hasKey: Boolean(config.apiKey) }),
+    }),
+  ],
+});
+```
+
+- `configSchema` isteğe bağlıdır. Atlandığında, OpenClaw katı bir boş nesne
+  şeması kullanır ve oluşturulan manifest yine de `configSchema` içerir.
+- `execute`, düz bir string veya JSON olarak serileştirilebilir bir değer döndürür. Yardımcı,
+  bunu `details` ile bir metin araç sonucu olarak sarar.
+- Araç adları statiktir. `openclaw plugins build`, `contracts.tools` değerini
+  bildirilen araçlardan türetir; bu yüzden yazarlar adları elle yinelemez.
+- Çalışma zamanı yüklemesi katı kalır. Kurulu plugin'ler hâlâ
+  `openclaw.plugin.json` ve `package.json` içindeki `openclaw.extensions` alanına
+  ihtiyaç duyar; OpenClaw eksik manifest verilerini çıkarmak için plugin kodunu
+  çalıştırmaz.
 
 ## `definePluginEntry`
 
 **İçe aktarma:** `openclaw/plugin-sdk/plugin-entry`
 
-Sağlayıcı Plugin'leri, araç Plugin'leri, kanca Plugin'leri ve mesajlaşma kanalı
-**olmayan** her şey için.
+Sağlayıcı plugin'leri, gelişmiş araç plugin'leri, hook plugin'leri ve mesajlaşma
+kanalı **olmayan** her şey için.
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -77,7 +125,7 @@ export default definePluginEntry({
 });
 ```
 
-| Alan           | Tür                                                              | Gerekli | Varsayılan          |
+| Alan           | Tür                                                              | Zorunlu | Varsayılan          |
 | -------------- | ---------------------------------------------------------------- | ------- | ------------------- |
 | `id`           | `string`                                                         | Evet    | -                   |
 | `name`         | `string`                                                         | Evet    | -                   |
@@ -87,18 +135,19 @@ export default definePluginEntry({
 | `register`     | `(api: OpenClawPluginApi) => void`                               | Evet    | -                   |
 
 - `id`, `openclaw.plugin.json` manifestinizle eşleşmelidir.
-- `kind`, özel yuvalar içindir: `"memory"` veya `"context-engine"`.
-- `configSchema`, tembel değerlendirme için bir işlev olabilir.
-- OpenClaw bu şemayı ilk erişimde çözer ve belleğe alır; bu nedenle pahalı şema
+- `kind`, özel slotlar içindir: `"memory"` veya `"context-engine"`.
+- `configSchema`, tembel değerlendirme için bir fonksiyon olabilir.
+- OpenClaw bu şemayı ilk erişimde çözer ve memoize eder; böylece pahalı şema
   oluşturucuları yalnızca bir kez çalışır.
 
 ## `defineChannelPluginEntry`
 
 **İçe aktarma:** `openclaw/plugin-sdk/channel-core`
 
-`definePluginEntry` öğesini kanala özgü bağlantılarla sarmalar. Otomatik olarak
-`api.registerChannel({ plugin })` çağırır, isteğe bağlı bir kök yardım CLI
-metadata bağlantısı sunar ve `registerFull` işlemini kayıt moduna göre kapılar.
+`definePluginEntry` öğesini kanala özgü bağlantılarla sarar. Otomatik olarak
+`api.registerChannel({ plugin })` çağırır, isteğe bağlı bir kök-yardım CLI
+metadata seam'i açığa çıkarır ve `registerFull` çağrısını kayıt moduna göre
+sınırlar.
 
 ```typescript
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -118,7 +167,7 @@ export default defineChannelPluginEntry({
 });
 ```
 
-| Alan                  | Tür                                                              | Gerekli | Varsayılan          |
+| Alan                  | Tür                                                              | Zorunlu | Varsayılan          |
 | --------------------- | ---------------------------------------------------------------- | ------- | ------------------- |
 | `id`                  | `string`                                                         | Evet    | -                   |
 | `name`                | `string`                                                         | Evet    | -                   |
@@ -129,46 +178,46 @@ export default defineChannelPluginEntry({
 | `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | Hayır   | -                   |
 | `registerFull`        | `(api: OpenClawPluginApi) => void`                               | Hayır   | -                   |
 
-- `setRuntime`, çalışma zamanı başvurusunu saklayabilmeniz için kayıt sırasında
-  çağrılır (genellikle `createPluginRuntimeStore` aracılığıyla). CLI metadata
-  yakalama sırasında atlanır.
+- `setRuntime`, çalışma zamanı referansını saklayabilmeniz için kayıt sırasında
+  çağrılır (genellikle `createPluginRuntimeStore` ile). CLI metadata yakalama
+  sırasında atlanır.
 - `registerCliMetadata`, `api.registrationMode === "cli-metadata"`,
   `api.registrationMode === "discovery"` ve
   `api.registrationMode === "full"` sırasında çalışır.
-  Bunu kanalın sahip olduğu CLI tanımlayıcıları için standart yer olarak
-  kullanın; böylece kök yardım etkinleştirmeden kalır, keşif anlık görüntüleri
-  statik komut metadata'sını içerir ve normal CLI komut kaydı tam Plugin
-  yüklemeleriyle uyumlu kalır.
-- Keşif kaydı etkinleştirmesizdir, içe aktarmasız değildir. OpenClaw anlık
-  görüntüyü oluşturmak için güvenilen Plugin girişini ve kanal Plugin modülünü
+  Bunu kanalın sahip olduğu CLI tanımlayıcıları için kanonik yer olarak kullanın;
+  böylece kök yardım etkinleştirme yapmadan kalır, keşif snapshot'ları statik
+  komut metadata'sını içerir ve normal CLI komut kaydı tam plugin yüklemeleriyle
+  uyumlu kalır.
+- Keşif kaydı etkinleştirme yapmaz, ancak içe aktarmasız değildir. OpenClaw
+  snapshot'ı oluşturmak için güvenilir plugin girişini ve kanal plugin modülünü
   değerlendirebilir; bu nedenle üst düzey içe aktarmaları yan etkisiz tutun ve
-  soketleri, istemcileri, işçileri ve servisleri yalnızca `"full"` yollarının
+  soketleri, istemcileri, worker'ları ve hizmetleri yalnızca `"full"` yollarının
   arkasına koyun.
 - `registerFull` yalnızca `api.registrationMode === "full"` olduğunda çalışır.
   Yalnızca kurulum yüklemesi sırasında atlanır.
-- `definePluginEntry` gibi, `configSchema` tembel bir fabrika olabilir ve OpenClaw
-  çözümlenen şemayı ilk erişimde belleğe alır.
-- Plugin'e ait kök CLI komutları için, komutun kök CLI ayrıştırma ağacından
+- `definePluginEntry` gibi, `configSchema` tembel bir factory olabilir ve
+  OpenClaw çözümlenen şemayı ilk erişimde memoize eder.
+- Plugin'in sahip olduğu kök CLI komutları için, komutun kök CLI parse ağacından
   kaybolmadan tembel yüklenmiş kalmasını istediğinizde
   `api.registerCli(..., { descriptors: [...] })` tercih edin. Eşleştirilmiş düğüm
-  özellik komutları için, komutun `openclaw nodes` altına yerleşmesi amacıyla
-  `api.registerNodeCliFeature(...)` tercih edin. Diğer iç içe Plugin komutları
-  için `parentPath` ekleyin ve komutları kayıtçıya geçirilen `program` nesnesi
-  üzerinde kaydedin; OpenClaw Plugin'i çağırmadan önce bunu üst komuta çözer.
-  Kanal Plugin'leri için, bu tanımlayıcıları `registerCliMetadata(...)` üzerinden
+  özellik komutları için, komutun `openclaw nodes` altına gelmesi amacıyla
+  `api.registerNodeCliFeature(...)` tercih edin. Diğer iç içe plugin komutları
+  için `parentPath` ekleyin ve komutları registrar'a geçirilen `program` nesnesi
+  üzerinde kaydedin; OpenClaw bunu plugin'i çağırmadan önce üst komuta çözer.
+  Kanal plugin'leri için, bu tanımlayıcıları `registerCliMetadata(...)` içinden
   kaydetmeyi tercih edin ve `registerFull(...)` öğesini yalnızca çalışma zamanı
   işlerine odaklı tutun.
 - `registerFull(...)` ayrıca Gateway RPC yöntemleri kaydediyorsa, bunları
-  Plugin'e özgü bir önekte tutun. Ayrılmış çekirdek yönetici ad alanları
+  plugin'e özgü bir prefix üzerinde tutun. Ayrılmış çekirdek yönetim namespace'leri
   (`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) her zaman
-  `operator.admin` öğesine zorlanır.
+  `operator.admin` değerine zorlanır.
 
 ## `defineSetupPluginEntry`
 
 **İçe aktarma:** `openclaw/plugin-sdk/channel-core`
 
-Hafif `setup-entry.ts` dosyası için. Çalışma zamanı veya CLI bağlantısı olmadan
-yalnızca `{ plugin }` döndürür.
+Hafif `setup-entry.ts` dosyası içindir. Çalışma zamanı veya CLI bağlantısı
+olmadan yalnızca `{ plugin }` döndürür.
 
 ```typescript
 import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -178,28 +227,27 @@ export default defineSetupPluginEntry(myChannelPlugin);
 
 OpenClaw, bir kanal devre dışı, yapılandırılmamış olduğunda veya ertelenmiş
 yükleme etkinleştirildiğinde tam giriş yerine bunu yükler. Bunun ne zaman önemli
-olduğunu görmek için [Kurulum ve Yapılandırma](/tr/plugins/sdk-setup#setup-entry)
-bölümüne bakın.
+olduğunu görmek için [Kurulum ve Config](/tr/plugins/sdk-setup#setup-entry)
+sayfasına bakın.
 
-Pratikte, `defineSetupPluginEntry(...)` öğesini dar kurulum yardımcı aileleriyle
+Pratikte, `defineSetupPluginEntry(...)` ile dar kurulum yardımcısı ailelerini
 eşleştirin:
 
-- İçe aktarma açısından güvenli kurulum yama bağdaştırıcıları, arama notu çıktısı,
-  `promptResolvedAllowFrom`, `splitSetupEntries` ve devredilmiş kurulum proxy'leri
-  gibi çalışma zamanı açısından güvenli kurulum yardımcıları için
-  `openclaw/plugin-sdk/setup-runtime`
-- İsteğe bağlı kurulum yüzeyleri için `openclaw/plugin-sdk/channel-setup`
-- Kurulum/yükleme CLI/arşiv/dokümantasyon yardımcıları için
-  `openclaw/plugin-sdk/setup-tools`
+- `createSetupTranslator`, içe aktarma güvenli kurulum patch adapter'ları,
+  lookup-note çıktısı, `promptResolvedAllowFrom`, `splitSetupEntries` ve
+  devredilen kurulum proxy'leri gibi çalışma zamanı açısından güvenli kurulum
+  yardımcıları için `openclaw/plugin-sdk/setup-runtime`
+- isteğe bağlı kurulum yüzeyleri için `openclaw/plugin-sdk/channel-setup`
+- kurulum/yükleme CLI/arşiv/dokümantasyon yardımcıları için `openclaw/plugin-sdk/setup-tools`
 
-Ağır SDK'ları, CLI kaydını ve uzun ömürlü çalışma zamanı servislerini tam girişte
-tutun.
+Ağır SDK'leri, CLI kaydını ve uzun ömürlü çalışma zamanı hizmetlerini tam
+girişte tutun.
 
-Kurulum ve çalışma zamanı yüzeylerini ayıran paketlenmiş çalışma alanı kanalları
+Kurulum ve çalışma zamanı yüzeylerini ayıran bundled çalışma alanı kanalları
 bunun yerine `openclaw/plugin-sdk/channel-entry-contract` içinden
-`defineBundledChannelSetupEntry(...)` kullanabilir. Bu sözleşme, kurulum girişinin
-çalışma zamanı ayarlayıcısını sunmaya devam ederken kurulum açısından güvenli
-Plugin/gizli bilgi dışa aktarımlarını korumasını sağlar:
+`defineBundledChannelSetupEntry(...)` kullanabilir. Bu contract, kurulum
+girişinin kurulum açısından güvenli plugin/secrets dışa aktarımlarını korurken
+yine de bir çalışma zamanı setter'ı açığa çıkarmasına izin verir:
 
 ```typescript
 import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
@@ -214,27 +262,39 @@ export default defineBundledChannelSetupEntry({
     specifier: "./runtime-api.js",
     exportName: "setMyChannelRuntime",
   },
+  registerSetupRuntime(api) {
+    api.registerHttpRoute({
+      path: "/my-channel/events",
+      auth: "plugin",
+      handler: async (req, res) => {
+        /* setup-safe route */
+      },
+    });
+  },
 });
 ```
 
-Bu paketlenmiş sözleşmeyi yalnızca kurulum akışları tam kanal girişi yüklenmeden
-önce gerçekten hafif bir çalışma zamanı ayarlayıcısına ihtiyaç duyduğunda
-kullanın.
+Bu bundled contract'ı yalnızca kurulum akışlarının tam kanal girişi yüklenmeden
+önce gerçekten hafif bir çalışma zamanı setter'ına veya kurulum açısından güvenli
+Gateway yüzeyine ihtiyaç duyduğu durumlarda kullanın. `registerSetupRuntime`
+yalnızca `"setup-runtime"` yüklemeleri için çalışır; bunu yalnızca config
+yollarıyla veya ertelenmiş tam etkinleştirmeden önce var olması gereken
+yöntemlerle sınırlı tutun.
 
 ## Kayıt modu
 
-`api.registrationMode`, Plugin'inizin nasıl yüklendiğini bildirir:
+`api.registrationMode`, plugin'inizin nasıl yüklendiğini bildirir:
 
-| Mod               | Ne zaman                          | Ne kaydedilmeli                                                                                                             |
-| ----------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `"full"`          | Normal Gateway başlangıcı         | Her şey                                                                                                                     |
-| `"discovery"`     | Salt okunur yetenek keşfi         | Kanal kaydı artı statik CLI tanımlayıcıları; giriş kodu yüklenebilir, ancak soketleri, işçileri, istemcileri ve servisleri atlayın |
-| `"setup-only"`    | Devre dışı/yapılandırılmamış kanal | Yalnızca kanal kaydı                                                                                                        |
-| `"setup-runtime"` | Çalışma zamanı mevcut kurulum akışı | Kanal kaydı artı yalnızca tam giriş yüklenmeden önce gereken hafif çalışma zamanı                                           |
-| `"cli-metadata"`  | Kök yardım / CLI metadata yakalama | Yalnızca CLI tanımlayıcıları                                                                                                |
+| Mod              | Ne zaman                          | Ne kaydedilmeli                                                                                                              |
+| ----------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `"full"`          | Normal Gateway başlatması            | Her şey                                                                                                              |
+| `"discovery"`     | Salt okunur yetenek keşfi    | Kanal kaydı artı statik CLI tanımlayıcıları; giriş kodu yüklenebilir, ancak soketleri, worker'ları, istemcileri ve servisleri atlayın |
+| `"setup-only"`    | Devre dışı/yapılandırılmamış kanal     | Yalnızca kanal kaydı                                                                                               |
+| `"setup-runtime"` | Çalışma zamanı kullanılabilirken kurulum akışı | Kanal kaydı artı yalnızca tam giriş yüklenmeden önce gereken hafif çalışma zamanı                               |
+| `"cli-metadata"`  | Kök yardım / CLI metadata yakalama  | Yalnızca CLI tanımlayıcıları                                                                                                    |
 
 `defineChannelPluginEntry` bu ayrımı otomatik olarak yönetir. Bir kanal için
-doğrudan `definePluginEntry` kullanıyorsanız, modu kendiniz denetleyin:
+doğrudan `definePluginEntry` kullanıyorsanız modu kendiniz denetleyin:
 
 ```typescript
 register(api) {
@@ -255,50 +315,46 @@ register(api) {
 }
 ```
 
-Keşif modu etkinleştirmesiz bir kayıt defteri anlık görüntüsü oluşturur.
-OpenClaw'ın kanal yeteneklerini ve statik CLI tanımlayıcılarını kaydedebilmesi
-için yine de Plugin girişini ve kanal Plugin nesnesini değerlendirebilir.
-Keşifte modül değerlendirmesini güvenilir ancak hafif kabul edin: üst düzeyde ağ
-istemcileri, alt süreçler, dinleyiciler, veritabanı bağlantıları, arka plan
-işçileri, kimlik bilgisi okumaları veya diğer canlı çalışma zamanı yan etkileri
-olmamalıdır.
+Keşif modu, etkinleştirmeyen bir kayıt defteri anlık görüntüsü oluşturur. OpenClaw'ın kanal
+yeteneklerini ve statik CLI tanımlayıcılarını kaydedebilmesi için yine de
+Plugin girişini ve kanal Plugin nesnesini değerlendirebilir. Keşif sırasında modül değerlendirmesini
+güvenilir ancak hafif kabul edin: üst düzeyde ağ istemcileri, alt süreçler, dinleyiciler, veritabanı
+bağlantıları, arka plan worker'ları, kimlik bilgisi okumaları veya başka canlı çalışma zamanı yan
+etkileri olmamalıdır.
 
-`"setup-runtime"` öğesini, tam paketlenmiş kanal çalışma zamanına yeniden
-girmeden yalnızca kurulum başlangıç yüzeylerinin var olması gereken pencere olarak
-ele alın. Kanal kaydı, kurulum açısından güvenli HTTP rotaları, kurulum açısından
-güvenli Gateway yöntemleri ve devredilmiş kurulum yardımcıları uygun seçeneklerdir.
-Ağır arka plan servisleri, CLI kayıtçıları ve sağlayıcı/istemci SDK başlatmaları
-hâlâ `"full"` içinde olmalıdır.
+`"setup-runtime"` değerini, kurulumla sınırlı başlatma yüzeylerinin tam paketlenmiş kanal
+çalışma zamanına yeniden girmeden var olması gereken pencere olarak ele alın. Uygun seçenekler
+kanal kaydı, kurulum açısından güvenli HTTP rotaları, kurulum açısından güvenli Gateway yöntemleri ve
+devredilmiş kurulum yardımcılarıdır. Ağır arka plan servisleri, CLI kaydedicileri ve
+sağlayıcı/istemci SDK başlatmaları yine `"full"` içinde yer almalıdır.
 
-Özellikle CLI kayıtçıları için:
+Özellikle CLI kaydedicileri için:
 
-- kayıtçı bir veya daha fazla kök komuta sahipse ve OpenClaw'ın gerçek CLI
-  modülünü ilk çağrıda tembel yüklemesini istiyorsanız `descriptors` kullanın
-- bu tanımlayıcıların, kayıtçı tarafından sunulan her üst düzey komut kökünü
-  kapsadığından emin olun
-- tanımlayıcı komut adlarını harf, sayı, kısa çizgi ve alt çizgiyle sınırlı
-  tutun; harf veya sayıyla başlamalıdırlar; OpenClaw bu yapının dışındaki
-  tanımlayıcı adlarını reddeder ve yardımı oluşturmadan önce açıklamalardan
-  terminal kontrol dizilerini kaldırır
-- `commands` öğesini tek başına yalnızca hemen yüklenen uyumluluk yolları için kullanın
+- kaydedici bir veya daha fazla kök komuta sahipse ve OpenClaw'ın gerçek CLI modülünü ilk çağrıda tembel yüklemesini
+  istiyorsanız `descriptors` kullanın
+- bu tanımlayıcıların kaydedici tarafından sunulan her üst düzey komut kökünü kapsadığından emin olun
+- tanımlayıcı komut adlarını harfler, rakamlar, kısa çizgi ve alt çizgiyle sınırlı tutun;
+  bir harf veya rakamla başlamalıdırlar; OpenClaw bu biçimin dışındaki tanımlayıcı adlarını reddeder
+  ve yardımı işlemeden önce açıklamalardan terminal denetim dizilerini çıkarır
+- yalnızca istekli uyumluluk yolları için tek başına `commands` kullanın
 
-## Plugin şekilleri
+## Plugin biçimleri
 
-OpenClaw, yüklenen plugin'leri kayıt davranışlarına göre sınıflandırır:
+OpenClaw, yüklenen Plugin'leri kayıt davranışlarına göre sınıflandırır:
 
-| Şekil                 | Açıklama                                           |
+| Biçim                 | Açıklama                                        |
 | --------------------- | -------------------------------------------------- |
-| **plain-capability**  | Tek bir capability türü (örn. yalnızca provider)   |
-| **hybrid-capability** | Birden fazla capability türü (örn. provider + konuşma) |
-| **hook-only**         | Yalnızca hook'lar, capability yok                  |
-| **non-capability**    | Araçlar/komutlar/servisler var ancak capability yok |
+| **plain-capability**  | Tek yetenek türü (örn. yalnızca sağlayıcı)           |
+| **hybrid-capability** | Birden çok yetenek türü (örn. sağlayıcı + konuşma) |
+| **hook-only**         | Yalnızca hook'lar, yetenek yok                        |
+| **non-capability**    | Araçlar/komutlar/servisler, ancak yetenek yok        |
 
-Bir plugin'in şeklini görmek için `openclaw plugins inspect <id>` kullanın.
+Bir Plugin'in biçimini görmek için `openclaw plugins inspect <id>` kullanın.
 
 ## İlgili
 
-- [SDK Genel Bakış](/tr/plugins/sdk-overview) - kayıt API'si ve alt yol referansı
-- [Runtime Yardımcıları](/tr/plugins/sdk-runtime) - `api.runtime` ve `createPluginRuntimeStore`
-- [Kurulum ve Yapılandırma](/tr/plugins/sdk-setup) - manifest, kurulum girdisi, ertelenmiş yükleme
+- [SDK Genel Bakışı](/tr/plugins/sdk-overview) - kayıt API'si ve alt yol başvurusu
+- [Çalışma Zamanı Yardımcıları](/tr/plugins/sdk-runtime) - `api.runtime` ve `createPluginRuntimeStore`
+- [Kurulum ve Yapılandırma](/tr/plugins/sdk-setup) - manifest, kurulum girişi, ertelenmiş yükleme
 - [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) - `ChannelPlugin` nesnesini oluşturma
-- [Provider Plugin'leri](/tr/plugins/sdk-provider-plugins) - provider kaydı ve hook'lar
+- [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) - sağlayıcı kaydı ve hook'lar

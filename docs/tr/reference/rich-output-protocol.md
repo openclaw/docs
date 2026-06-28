@@ -1,50 +1,63 @@
 ---
 read_when:
-    - Control UI'de asistan çıktısı işlemesini değiştirme
-    - '`[embed ...]`, `MEDIA:`, yanıt veya sesli sunum yönergelerinde hata ayıklama'
-summary: Yerleştirmeler, medya, ses ipuçları ve yanıtlar için zengin çıktı kısa kod protokolü
+    - Control UI'da asistan çıktısı işlemeyi değiştirme
+    - '`[embed ...]`, yapılandırılmış medya, yanıt veya ses sunumu yönergelerinde hata ayıklama'
+summary: Yapılandırılmış medya, yerleştirmeler, ses ipuçları ve yanıtlar için zengin çıktı protokolü
 title: Zengin çıktı protokolü
 x-i18n:
-    generated_at: "2026-05-02T22:22:40Z"
+    generated_at: "2026-06-28T01:15:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8e0c365029c26d198090e1f181703e3979394afb0dfa1742f9c088885650de8b
+    source_hash: f5915f0ba29e6b0d27c99b1c7fdc632f1b58a4d96eae26bf6670205bd4fb88b1
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Asistan çıktısı küçük bir teslim/işleme yönergeleri kümesi taşıyabilir:
+Asistan çıktısı küçük bir teslimat/işleme direktifleri kümesi taşıyabilir:
 
-- Ek teslimi için `MEDIA:`
-- Ses sunumu ipuçları için `[[audio_as_voice]]`
-- Yanıt metaverileri için `[[reply_to_current]]` / `[[reply_to:<id>]]`
+- ek teslimatı için yapılandırılmış `mediaUrl` / `mediaUrls` alanları
+- ses sunumu ipuçları için `[[audio_as_voice]]`
+- yanıt meta verileri için `[[reply_to_current]]` / `[[reply_to:<id>]]`
 - Control UI zengin işlemesi için `[embed ...]`
 
-Uzak `MEDIA:` ekleri herkese açık `https:` URL'leri olmalıdır. Düz `http:`,
-loopback, link-local, özel ve dahili ana makine adları ek yönergeleri olarak
-yok sayılır; sunucu tarafı medya getiricileri yine de kendi ağ korumalarını
-uygular.
+Uzak medya ekleri herkese açık `https:` URL'leri olmalıdır. Düz `http:`,
+loopback, link-local, özel ve dahili ana makine adları ek direktifleri olarak
+yok sayılır; sunucu tarafı medya getiricileri yine de kendi ağ korumalarını uygular.
 
-Yerel `MEDIA:` ekleri mutlak yolları, çalışma alanına göreli yolları veya
-ana dizine göreli `~/` yollarını kullanabilir. Teslimden önce yine de ajan
-dosya okuma ilkesinden ve medya türü denetimlerinden geçerler.
+Yerel medya ekleri mutlak yollar, çalışma alanına göreli yollar veya
+ana dizine göreli `~/` yolları kullanabilir. Teslimattan önce yine de ajan dosya okuma
+politikasından ve medya türü kontrollerinden geçerler.
+
+<Warning>
+Araçlardan, plugins, akış bloklarından, tarayıcı çıktısından veya mesaj eylemlerinden
+ekler için metin komutları yaymayın. Bunun yerine yapılandırılmış medya alanlarını kullanın.
+
+Geçerli mesaj aracı yükü:
+
+```json
+{ "message": "Here is your image.", "mediaUrl": "/workspace/image.png" }
+```
+
+Eski nihai asistan yanıt metni uyumluluk için hâlâ normalleştirilebilir, ancak
+genel bir plugin/araç protokolü değildir.
+</Warning>
 
 Düz Markdown görsel sözdizimi varsayılan olarak metin kalır. Markdown görsel
-yanıtlarını kasıtlı olarak medya eklerine eşleyen kanallar, bunu giden
-adaptörlerinde etkinleştirir; Telegram bunu yapar, böylece `![alt](url)` yine de
+yanıtlarını bilinçli olarak medya eklerine eşleyen kanallar bunu giden
+bağdaştırıcılarında etkinleştirir; Telegram bunu yapar, böylece `![alt](url)` yine de
 bir medya yanıtına dönüşebilir.
 
-Bu yönergeler ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim metaverisi olarak kalır; `[embed ...]` yalnızca web'e özgü zengin işleme yoludur.
-Güvenilir araç sonucu medyası, teslimden önce aynı `MEDIA:` / `[[audio_as_voice]]` ayrıştırıcısını kullanır; böylece metin araç çıktıları yine de bir ses ekini sesli not olarak işaretleyebilir.
+Bu direktifler ayrıdır. Yapılandırılmış medya alanları ve yanıt/ses etiketleri
+teslimat meta verileridir; `[embed ...]` yalnızca web'e özgü zengin işleme yoludur.
 
-Blok akışı etkin olduğunda, `MEDIA:` bir tur için tek teslimlik metaveri olarak
-kalır. Aynı medya URL'si akışla gönderilen bir blokta gönderilir ve son
-asistan yükünde yinelenirse, OpenClaw eki bir kez teslim eder ve kopyayı son
-yükten çıkarır.
+Blok akışı etkinleştirildiğinde, medya yapılandırılmış yük alanlarında taşınmalıdır.
+Aynı medya URL'si bir akış bloğunda gönderilir ve nihai asistan yükünde tekrarlanırsa,
+OpenClaw eki bir kez teslim eder ve kopyayı nihai yükten çıkarır.
 
 ## `[embed ...]`
 
-`[embed ...]`, Control UI için ajana dönük tek zengin işleme sözdizimidir.
+`[embed ...]`, Control UI için ajanların kullanacağı tek zengin işleme sözdizimidir.
 
 Kendi kendini kapatan örnek:
 
@@ -54,14 +67,14 @@ Kendi kendini kapatan örnek:
 
 Kurallar:
 
-- `[view ...]` artık yeni çıktı için geçerli değildir.
+- `[view ...]` yeni çıktı için artık geçerli değildir.
 - Embed kısa kodları yalnızca asistan mesaj yüzeyinde işlenir.
 - Yalnızca URL destekli embed'ler işlenir. `ref="..."` veya `url="..."` kullanın.
-- Blok biçimli satır içi HTML embed kısa kodları işlenmez.
-- Web kullanıcı arayüzü kısa kodu görünür metinden çıkarır ve embed'i satır içinde işler.
-- `MEDIA:` bir embed takma adı değildir ve zengin embed işleme için kullanılmamalıdır.
+- Blok biçimindeki satır içi HTML embed kısa kodları işlenmez.
+- Web UI, kısa kodu görünür metinden çıkarır ve embed'i satır içinde işler.
+- Yapılandırılmış medya bir embed takma adı değildir ve zengin embed işlemesi için kullanılmamalıdır.
 
-## Saklanan işleme yapısı
+## Saklanan işleme şekli
 
 Normalleştirilmiş/saklanan asistan içerik bloğu yapılandırılmış bir `canvas` öğesidir:
 
@@ -80,9 +93,9 @@ Normalleştirilmiş/saklanan asistan içerik bloğu yapılandırılmış bir `ca
 }
 ```
 
-Saklanan/işlenen zengin bloklar bu `canvas` yapısını doğrudan kullanır. `present_view` tanınmaz.
+Saklanan/işlenen zengin bloklar bu `canvas` şeklini doğrudan kullanır. `present_view` tanınmaz.
 
 ## İlgili
 
-- [RPC adaptörleri](/tr/reference/rpc)
+- [RPC bağdaştırıcıları](/tr/reference/rpc)
 - [Typebox](/tr/concepts/typebox)

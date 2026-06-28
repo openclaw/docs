@@ -1,25 +1,26 @@
 ---
 read_when:
-    - nextcloud-talk Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını gönderip almak için Nextcloud Talk kanal yüzeyini ekler.
-title: Nextcloud Talk Plugin
+    - nextcloud-talk plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Konuşmalar için OpenClaw Nextcloud Talk kanal plugin'i.
+title: Nextcloud Talk Plugin'i
 x-i18n:
-    generated_at: "2026-05-03T09:00:53Z"
+    generated_at: "2026-06-28T01:01:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
+    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
 # Nextcloud Talk Plugin
 
-OpenClaw mesajları gönderip almak için Nextcloud Talk kanal yüzeyini ekler.
+Sohbetler için OpenClaw Nextcloud Talk kanal Plugin'i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/nextcloud-talk`
-- Yükleme yolu: npm; ClawHub
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 

@@ -2,13 +2,14 @@
 read_when:
     - OpenClaw için bir sohbet kanalı seçmek istiyorsunuz
     - Desteklenen mesajlaşma platformlarına hızlı bir genel bakışa ihtiyacınız var
-summary: OpenClaw'ın bağlanabileceği mesajlaşma platformları
+summary: OpenClaw'un bağlanabileceği mesajlaşma platformları
 title: Sohbet kanalları
 x-i18n:
-    generated_at: "2026-05-10T19:22:06Z"
+    generated_at: "2026-06-28T00:12:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 57ae81a99d265abbf3f9f016506e787d66b4f6984d833e43e7a8554e157a3c17
+    source_hash: 3ff3e59df21d71f0d80eff2a6299169bfeb15964834a552f3c4c1d5b7c144b8d
     source_path: channels/index.md
     workflow: 16
 ---
@@ -18,48 +19,57 @@ Metin her yerde desteklenir; medya ve tepkiler kanala göre değişir.
 
 ## Teslim notları
 
-- `![alt](url)` gibi markdown görsel söz dizimi içeren Telegram yanıtları,
+- `![alt](url)` gibi markdown görüntü söz dizimi içeren Telegram yanıtları,
   mümkün olduğunda son giden yolda medya yanıtlarına dönüştürülür.
-- Slack çok kişili DM'leri grup sohbetleri olarak yönlendirilir; bu nedenle grup ilkesi, bahsetme
+- Slack çok kişili DM'leri grup sohbetleri olarak yönlendirilir; bu nedenle grup politikası, bahsetme
   davranışı ve grup oturumu kuralları MPIM konuşmaları için geçerlidir.
-- WhatsApp kurulumu isteğe bağlı yüklemedir: katılım akışı, Plugin paketi yüklenmeden önce
-  kurulum akışını gösterebilir ve Gateway, WhatsApp runtime'ını
-  yalnızca kanal gerçekten etkin olduğunda yükler.
+- WhatsApp kurulumu isteğe bağlı yükleme şeklindedir: ilk katılım, Plugin paketi yüklenmeden önce
+  kurulum akışını gösterebilir ve Gateway, dış
+  ClawHub/npm Plugin'ini yalnızca kanal gerçekten etkinken yükler.
+- Bot tarafından yazılmış gelen iletileri kabul eden kanallar, bot çiftlerinin
+  süresiz olarak birbirine yanıt vermesini önlemek için paylaşılan
+  [bot döngüsü korumasını](/tr/channels/bot-loop-protection) kullanabilir.
+- Desteklenen her zaman açık odalar, bahsedilmeyen oda konuşmalarının, ajan
+  `message` aracıyla göndermedikçe sessiz bağlama dönüşmesi için
+  [ortam odası olaylarını](/tr/channels/ambient-room-events) kullanabilir.
 
 ## Desteklenen kanallar
 
 - [Discord](/tr/channels/discord) - Discord Bot API + Gateway; sunucuları, kanalları ve DM'leri destekler.
-- [Feishu](/tr/channels/feishu) - WebSocket üzerinden Feishu/Lark botu (paketlenmiş Plugin).
-- [Google Chat](/tr/channels/googlechat) - HTTP Webhook üzerinden Google Chat API uygulaması (indirilebilir Plugin).
-- [iMessage](/tr/channels/imessage) - Oturum açılmış bir Mac'te `imsg` köprüsü üzerinden yerel macOS entegrasyonu (veya Gateway başka yerde çalışıyorsa SSH sarmalayıcısı); yanıtlar, tapback'ler, efektler, ekler ve grup yönetimi için özel API eylemleri dahil. Ana makine izinleri ve Messages erişimi uygun olduğunda yeni OpenClaw iMessage kurulumları için tercih edilir.
+- [Feishu](/tr/channels/feishu) - WebSocket üzerinden Feishu/Lark botu (paketli Plugin).
+- [Google Chat](/tr/channels/googlechat) - HTTP webhook üzerinden Google Chat API uygulaması (indirilebilir Plugin).
+- [iMessage](/tr/channels/imessage) - Oturum açılmış bir Mac'te `imsg` köprüsü üzerinden yerel macOS entegrasyonu (veya Gateway başka yerde çalıştığında SSH sarmalayıcısı); yanıtlar, tapback'ler, efektler, ekler ve grup yönetimi için özel API eylemleri dahildir. Ana makine izinleri ve Messages erişimi uygunsa yeni OpenClaw iMessage kurulumları için tercih edilir.
 - [IRC](/tr/channels/irc) - Klasik IRC sunucuları; eşleştirme/izin listesi kontrolleriyle kanallar + DM'ler.
 - [LINE](/tr/channels/line) - LINE Messaging API botu (indirilebilir Plugin).
 - [Matrix](/tr/channels/matrix) - Matrix protokolü (indirilebilir Plugin).
 - [Mattermost](/tr/channels/mattermost) - Bot API + WebSocket; kanallar, gruplar, DM'ler (indirilebilir Plugin).
-- [Microsoft Teams](/tr/channels/msteams) - Bot Framework; kurumsal destek (paketlenmiş Plugin).
-- [Nextcloud Talk](/tr/channels/nextcloud-talk) - Nextcloud Talk üzerinden kendi barındırdığınız sohbet (paketlenmiş Plugin).
-- [Nostr](/tr/channels/nostr) - NIP-04 üzerinden merkeziyetsiz DM'ler (paketlenmiş Plugin).
-- [QQ Bot](/tr/channels/qqbot) - QQ Bot API; özel sohbet, grup sohbeti ve zengin medya (paketlenmiş Plugin).
+- [Microsoft Teams](/tr/channels/msteams) - Bot Framework; kurumsal destek (paketli Plugin).
+- [Nextcloud Talk](/tr/channels/nextcloud-talk) - Nextcloud Talk üzerinden kendi barındırılan sohbet (paketli Plugin).
+- [Nostr](/tr/channels/nostr) - NIP-04 üzerinden merkeziyetsiz DM'ler (paketli Plugin).
+- [QQ Bot](/tr/channels/qqbot) - QQ Bot API; özel sohbet, grup sohbeti ve zengin medya (paketli Plugin).
+- [Raft](/tr/channels/raft) - İnsan ve ajan iş birliği için Raft CLI uyandırma köprüsü (dış Plugin).
 - [Signal](/tr/channels/signal) - signal-cli; gizlilik odaklı.
 - [Slack](/tr/channels/slack) - Bolt SDK; çalışma alanı uygulamaları.
-- [Synology Chat](/tr/channels/synology-chat) - Giden+gelen Webhook'lar üzerinden Synology NAS Chat (paketlenmiş Plugin).
+- [SMS](/tr/channels/sms) - Gateway webhook üzerinden Twilio destekli SMS (resmi Plugin).
+- [Synology Chat](/tr/channels/synology-chat) - Giden+gelen webhook'lar üzerinden Synology NAS Chat (paketli Plugin).
 - [Telegram](/tr/channels/telegram) - grammY üzerinden Bot API; grupları destekler.
-- [Tlon](/tr/channels/tlon) - Urbit tabanlı mesajlaşma uygulaması (paketlenmiş Plugin).
-- [Twitch](/tr/channels/twitch) - IRC bağlantısı üzerinden Twitch sohbeti (paketlenmiş Plugin).
-- [Voice Call](/tr/plugins/voice-call) - Plivo veya Twilio üzerinden telefon hizmeti (Plugin, ayrıca yüklenir).
+- [Tlon](/tr/channels/tlon) - Urbit tabanlı mesajlaşma uygulaması (paketli Plugin).
+- [Twitch](/tr/channels/twitch) - IRC bağlantısı üzerinden Twitch sohbeti (paketli Plugin).
+- [Voice Call](/tr/plugins/voice-call) - Plivo veya Twilio üzerinden telefon görüşmesi (Plugin, ayrı yüklenir).
 - [WebChat](/tr/web/webchat) - WebSocket üzerinden Gateway WebChat kullanıcı arayüzü.
-- [WeChat](/tr/channels/wechat) - QR ile oturum açma üzerinden Tencent iLink Bot Plugin'i; yalnızca özel sohbetler (harici Plugin).
-- [WhatsApp](/tr/channels/whatsapp) - En popüler olanı; Baileys kullanır ve QR eşleştirmesi gerektirir.
-- [Yuanbao](/tr/channels/yuanbao) - Tencent Yuanbao botu (harici Plugin).
-- [Zalo](/tr/channels/zalo) - Zalo Bot API; Vietnam'ın popüler mesajlaşma uygulaması (paketlenmiş Plugin).
-- [Zalo Personal](/tr/channels/zalouser) - QR ile oturum açma üzerinden Zalo kişisel hesabı (paketlenmiş Plugin).
+- [WeChat](/tr/channels/wechat) - QR oturum açma ile Tencent iLink Bot Plugin'i; yalnızca özel sohbetler (dış Plugin).
+- [WhatsApp](/tr/channels/whatsapp) - En popüler; Baileys kullanır ve QR eşleştirmesi gerektirir.
+- [Yuanbao](/tr/channels/yuanbao) - Tencent Yuanbao botu (dış Plugin).
+- [Zalo](/tr/channels/zalo) - Zalo Bot API; Vietnam'ın popüler mesajlaşma uygulaması (paketli Plugin).
+- [Zalo ClawBot](/tr/channels/zaloclawbot) - QR oturum açma ile kişisel Zalo asistanı; sahibe bağlı (dış Plugin).
+- [Zalo Personal](/tr/channels/zalouser) - QR oturum açma ile Zalo kişisel hesabı (paketli Plugin).
 
 ## Notlar
 
-- Kanallar aynı anda çalışabilir; birden çok kanal yapılandırın, OpenClaw sohbet başına yönlendirme yapar.
-- En hızlı kurulum genellikle **Telegram**'dır (basit bot token'ı). WhatsApp QR eşleştirmesi gerektirir ve
-  diskte daha fazla durum saklar.
+- Kanallar aynı anda çalışabilir; birden fazlasını yapılandırın, OpenClaw sohbet başına yönlendirme yapar.
+- En hızlı kurulum genellikle **Telegram**'dır (basit bot belirteci). WhatsApp QR eşleştirmesi gerektirir ve
+  diskte daha fazla durum depolar.
 - Grup davranışı kanala göre değişir; bkz. [Gruplar](/tr/channels/groups).
-- Güvenlik için DM eşleştirmesi ve izin listeleri uygulanır; bkz. [Güvenlik](/tr/gateway/security).
-- Sorun giderme: [Kanal sorunlarını giderme](/tr/channels/troubleshooting).
+- Güvenlik için DM eşleştirmesi ve izin listeleri zorunlu tutulur; bkz. [Güvenlik](/tr/gateway/security).
+- Sorun giderme: [Kanal sorun giderme](/tr/channels/troubleshooting).
 - Model sağlayıcıları ayrı olarak belgelenmiştir; bkz. [Model Sağlayıcıları](/tr/providers/models).

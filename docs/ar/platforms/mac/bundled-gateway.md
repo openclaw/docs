@@ -1,16 +1,16 @@
 ---
 read_when:
-    - حزم OpenClaw.app
+    - تحزيم OpenClaw.app
     - تصحيح أخطاء خدمة launchd الخاصة بـ Gateway على macOS
-    - تثبيت CLI الخاصة بـ Gateway على macOS
-summary: وقت تشغيل Gateway على macOS (خدمة launchd خارجية)
+    - تثبيت CLI لـ Gateway على macOS
+summary: تشغيل Gateway على macOS (خدمة launchd خارجية)
 title: Gateway على macOS
 x-i18n:
-    generated_at: "2026-06-27T17:58:27Z"
+    generated_at: "2026-06-28T00:13:05Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
+    source_hash: 5317e82435ecf179407116339507a666957a8e23a07a49665233b22f22f5b155
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
@@ -18,25 +18,25 @@ x-i18n:
 لم يعد OpenClaw.app يضم Node/Bun أو وقت تشغيل Gateway. يتوقع تطبيق macOS
 تثبيت CLI `openclaw` **خارجيًا**، ولا يشغّل Gateway كعملية
 فرعية، ويدير خدمة launchd لكل مستخدم لإبقاء Gateway
-قيد التشغيل (أو يتصل بـ Gateway محلي موجود إذا كان يعمل بالفعل).
+قيد التشغيل (أو يتصل بـ Gateway محلي موجود إذا كان قيد التشغيل بالفعل).
 
-## تثبيت CLI (مطلوب للوضع المحلي)
+## ثبّت CLI (مطلوب للوضع المحلي)
 
-Node 24 هو وقت التشغيل الافتراضي على Mac. ما زال Node 22 LTS، حاليًا `22.19+`، يعمل للتوافق. بعد ذلك ثبّت `openclaw` عالميًا:
+Node 24 هو وقت التشغيل الافتراضي على Mac. ما يزال Node 22 LTS، حاليًا `22.19+`، يعمل للتوافق. ثم ثبّت `openclaw` عالميًا:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-يشغّل زر **تثبيت CLI** في تطبيق macOS مسار التثبيت العالمي نفسه الذي يستخدمه التطبيق
-داخليًا: يفضّل npm أولًا، ثم pnpm، ثم bun إذا كان هو مدير الحزم الوحيد
-المكتشف. يظل Node وقت تشغيل Gateway الموصى به.
+زر **تثبيت CLI** في تطبيق macOS يشغّل مسار التثبيت العالمي نفسه الذي
+يستخدمه التطبيق داخليًا: يفضّل npm أولًا، ثم pnpm، ثم bun إذا كان هو
+مدير الحزم الوحيد المكتشف. يبقى Node وقت تشغيل Gateway الموصى به.
 
-## Launchd (Gateway كـ LaunchAgent)
+## launchd (Gateway بصفة LaunchAgent)
 
 التسمية:
 
-- `ai.openclaw.gateway` (أو `ai.openclaw.<profile>`؛ قد تبقى `com.openclaw.*` القديمة)
+- `ai.openclaw.gateway` (أو `ai.openclaw.<profile>`؛ قد يبقى القديم `com.openclaw.*`)
 
 موقع Plist (لكل مستخدم):
 
@@ -50,20 +50,48 @@ npm install -g openclaw@<version>
 
 السلوك:
 
-- يفعّل/يعطّل "OpenClaw Active" الـ LaunchAgent.
-- لا يوقف إنهاء التطبيق الـ gateway (يبقيه launchd قيد التشغيل).
-- إذا كان Gateway يعمل بالفعل على المنفذ المضبوط، يتصل التطبيق
+- يفعّل "OpenClaw نشط" LaunchAgent أو يعطّله.
+- لا يؤدي إنهاء التطبيق إلى إيقاف Gateway (يبقيه launchd نشطًا).
+- إذا كان Gateway قيد التشغيل بالفعل على المنفذ المكوّن، يتصل التطبيق
   به بدلًا من بدء واحد جديد.
 
 التسجيل:
 
 - stdout الخاص بـ launchd: `~/Library/Logs/openclaw/gateway.log` (تستخدم الملفات الشخصية `gateway-<profile>.log`)
-- stderr الخاص بـ launchd: مكبوت
+- stderr الخاص بـ launchd: مكتوم
 
 ## توافق الإصدارات
 
-يتحقق تطبيق macOS من إصدار gateway مقابل إصداره هو. إذا كانا
+يتحقق تطبيق macOS من إصدار Gateway مقابل إصداره هو. إذا كانا
 غير متوافقين، فحدّث CLI العالمي ليطابق إصدار التطبيق.
+
+## دليل الحالة على macOS
+
+احتفظ بحالة OpenClaw على قرص محلي غير متزامن. تجنّب iCloud Drive والمجلدات
+الأخرى المتزامنة مع السحابة، لأن تأخر المزامنة وأقفال الملفات يمكن أن تؤثر في الجلسات
+وبيانات الاعتماد وحالة Gateway.
+
+اضبط `OPENCLAW_STATE_DIR` على مسار محلي فقط عندما تحتاج إلى تجاوز.
+يحذّر `openclaw doctor` من مسارات الحالة الشائعة المتزامنة مع السحابة ويوصي
+بالعودة إلى التخزين المحلي. راجع
+[متغيرات البيئة](/ar/help/environment#path-related-env-vars) و
+[Doctor](/ar/gateway/doctor).
+
+## تصحيح اتصال التطبيق
+
+استخدم CLI تصحيح macOS من نسخة مصدرية لاختبار مصافحة WebSocket الخاصة بـ Gateway
+ومنطق الاكتشاف نفسه الذي يستخدمه التطبيق:
+
+```bash
+cd apps/macos
+swift run openclaw-mac connect --json
+swift run openclaw-mac discover --timeout 3000 --json
+```
+
+يقبل `connect` الخيارات `--url` و`--token` و`--timeout` و`--json`. يقبل `discover`
+الخيارات `--timeout` و`--json` و`--include-local`. قارن مخرجات الاكتشاف
+مع `openclaw gateway discover --json` عندما تحتاج إلى فصل اكتشاف CLI
+عن مشكلات الاتصال من جانب التطبيق.
 
 ## فحص سريع
 

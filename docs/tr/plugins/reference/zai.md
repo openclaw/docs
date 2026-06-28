@@ -1,29 +1,30 @@
 ---
 read_when:
-    - zai Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+    - zai plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Z.AI model sağlayıcısı desteği ekler.
 title: Z.AI Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:42Z"
+    generated_at: "2026-06-28T01:03:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6c0ef87ca8c0c829c3fc0a1ef538e8ea2791dbb9432a622a7d9d9c1a6a9acc85
+    source_hash: f02339093c874b13e97cfbeaca4a5343159079a008618faac435ac80f2f935c4
     source_path: plugins/reference/zai.md
     workflow: 16
 ---
 
-# Z.AI Plugin
+# Z.AI plugin
 
 OpenClaw'a Z.AI model sağlayıcı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/zai-provider`
-- Kurulum yolu: OpenClaw'a dahil
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/zai-provider`
 
 ## Yüzey
 
-providers: zai; contracts: mediaUnderstandingProviders
+sağlayıcılar: zai; sözleşmeler: mediaUnderstandingProviders
 
 ## İlgili belgeler
 

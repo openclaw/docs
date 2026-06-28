@@ -1,65 +1,64 @@
 ---
 read_when:
-    - Gömülü ajan çalışma zamanını veya koşum kayıt defterini değiştiriyorsunuz
-    - Birlikte gelen veya güvenilir bir Plugin üzerinden bir ajan çalıştırma düzeneği kaydediyorsunuz
-    - Codex Plugin'in model sağlayıcılarıyla nasıl ilişkili olduğunu anlamanız gerekir
+    - Gömülü ajan çalışma zamanını veya harness kayıt defterini değiştiriyorsunuz
+    - Gömülü veya güvenilir bir plugin’den bir agent harness’ı kaydediyorsunuz
+    - Codex plugininin model sağlayıcılarla nasıl ilişkili olduğunu anlamanız gerekir
 sidebarTitle: Agent Harness
-summary: Düşük düzeyli gömülü ajan yürütücüsünün yerini alan Plugin'ler için deneysel SDK yüzeyi
-title: Ajan çalışma altyapısı Plugin'leri
+summary: Plugin’ler için düşük seviyeli gömülü ajan yürütücüsünün yerini alan deneysel SDK yüzeyi
+title: Ajan harness Plugin’leri
 x-i18n:
-    generated_at: "2026-05-10T19:47:47Z"
+    generated_at: "2026-06-28T01:04:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1685af479a8502ac743b0f520f0afae2cdc905524e48b3a84ce95ffe85c8fb49
+    source_hash: a368ae480c31c86c30786f91e5cf451c3489c681be8ee3955c1c2bd55e4b49e9
     source_path: plugins/sdk-agent-harness.md
     workflow: 16
 ---
 
-Bir **agent harness**, hazırlanmış tek bir OpenClaw agent dönüşü için düşük düzeyli yürütücüdür. Bir model sağlayıcısı, kanal veya araç kayıt defteri değildir.
-Kullanıcıya yönelik zihinsel model için bkz. [Agent runtimes](/tr/concepts/agent-runtimes).
+Bir **agent çalıştırma altyapısı**, hazırlanmış tek bir OpenClaw agent turu için alt düzey yürütücüdür. Model sağlayıcı değildir, kanal değildir ve araç kayıt defteri değildir. Kullanıcıya dönük zihinsel model için bkz. [Agent çalışma zamanları](/tr/concepts/agent-runtimes).
 
-Bu yüzeyi yalnızca paketlenmiş veya güvenilir yerel Plugin'ler için kullanın. Parametre türleri kasıtlı olarak mevcut gömülü çalıştırıcıyı yansıttığı için sözleşme hâlâ deneyseldir.
+Bu yüzeyi yalnızca paketlenmiş veya güvenilir yerel Plugin'ler için kullanın. Sözleşme hâlâ deneyseldir çünkü parametre türleri bilinçli olarak mevcut gömülü çalıştırıcıyı yansıtır.
 
-## Harness ne zaman kullanılır
+## Çalıştırma altyapısı ne zaman kullanılır
 
-Bir model ailesinin kendi yerel oturum runtime'ı olduğunda ve normal OpenClaw sağlayıcı aktarımı yanlış soyutlama olduğunda bir agent harness kaydedin.
+Bir model ailesinin kendi yerel oturum çalışma zamanı varsa ve normal OpenClaw sağlayıcı taşıması yanlış soyutlama ise bir agent çalıştırma altyapısı kaydedin.
 
 Örnekler:
 
-- thread'leri ve Compaction'ı sahiplenen yerel bir coding-agent sunucusu
-- yerel plan/akıl yürütme/araç olaylarını stream etmesi gereken yerel bir CLI veya daemon
-- OpenClaw oturum transcript'ine ek olarak kendi resume id'sine ihtiyaç duyan bir model runtime'ı
+- iş parçacıklarını ve Compaction'ı sahiplenen yerel bir kodlama agent sunucusu
+- yerel plan/akıl yürütme/araç olaylarını akış olarak vermesi gereken yerel bir CLI veya daemon
+- OpenClaw oturum dökümüne ek olarak kendi sürdürme kimliğine ihtiyaç duyan bir model çalışma zamanı
 
-Yalnızca yeni bir LLM API'si eklemek için harness kaydetmeyin. Normal HTTP veya WebSocket model API'leri için bir [provider plugin](/tr/plugins/sdk-provider-plugins) oluşturun.
+Yalnızca yeni bir LLM API'si eklemek için bir çalıştırma altyapısı kaydetmeyin. Normal HTTP veya WebSocket model API'leri için bir [sağlayıcı Plugin'i](/tr/plugins/sdk-provider-plugins) oluşturun.
 
-## Core hâlâ nelerin sahibi
+## Çekirdeğin hâlâ sahip olduğu şeyler
 
-Bir harness seçilmeden önce OpenClaw şunları zaten çözümlemiştir:
+Bir çalıştırma altyapısı seçilmeden önce OpenClaw şunları zaten çözümlemiştir:
 
 - sağlayıcı ve model
-- runtime kimlik doğrulama durumu
+- çalışma zamanı kimlik doğrulama durumu
 - düşünme düzeyi ve bağlam bütçesi
-- OpenClaw transcript/oturum dosyası
+- OpenClaw döküm/oturum dosyası
 - çalışma alanı, sandbox ve araç ilkesi
-- kanal yanıt callback'leri ve streaming callback'leri
-- model fallback ve canlı model değiştirme ilkesi
+- kanal yanıt geri çağrıları ve akış geri çağrıları
+- model yedeğe düşme ve canlı model değiştirme ilkesi
 
-Bu ayrım kasıtlıdır. Bir harness hazırlanmış bir denemeyi çalıştırır; sağlayıcıları seçmez, kanal teslimatının yerine geçmez veya modelleri sessizce değiştirmez.
+Bu ayrım bilinçlidir. Bir çalıştırma altyapısı hazırlanmış bir denemeyi çalıştırır; sağlayıcı seçmez, kanal teslimini değiştirmez veya modelleri sessizce değiştirmez.
 
-Hazırlanmış deneme ayrıca, PI ve yerel harness'ler arasında ortak kalması gereken runtime kararları için OpenClaw'a ait bir ilke paketi olan `params.runtimePlan` içerir:
+Hazırlanmış deneme ayrıca OpenClaw'a ait, OpenClaw ve yerel çalıştırma altyapıları arasında ortak kalması gereken çalışma zamanı kararları için bir ilke paketi olan `params.runtimePlan` öğesini içerir:
 
-- sağlayıcı farkındalıklı araç şeması ilkesi için `runtimePlan.tools.normalize(...)` ve
-  `runtimePlan.tools.logDiagnostics(...)`
-- transcript temizleme ve tool-call onarım ilkesi için `runtimePlan.transcript.resolvePolicy(...)`
-- paylaşılan `NO_REPLY` ve medya teslimatı bastırma için `runtimePlan.delivery.isSilentPayload(...)`
-- model fallback sınıflandırması için `runtimePlan.outcome.classifyRunResult(...)`
-- çözümlenmiş sağlayıcı/model/harness metadata'sı için `runtimePlan.observability`
+- sağlayıcıya duyarlı araç şeması ilkesi için `runtimePlan.tools.normalize(...)` ve `runtimePlan.tools.logDiagnostics(...)`
+- döküm temizleme ve araç çağrısı onarma ilkesi için `runtimePlan.transcript.resolvePolicy(...)`
+- paylaşılan `NO_REPLY` ve medya teslimi bastırma için `runtimePlan.delivery.isSilentPayload(...)`
+- model yedeğe düşme sınıflandırması için `runtimePlan.outcome.classifyRunResult(...)`
+- çözümlenmiş sağlayıcı/model/çalıştırma altyapısı meta verileri için `runtimePlan.observability`
 
-Harness'ler, PI davranışıyla eşleşmesi gereken kararlar için planı kullanabilir, ancak yine de bunu host'a ait deneme durumu olarak ele almalıdır. Bunu mutasyona uğratmayın veya bir dönüş içinde sağlayıcı/model değiştirmek için kullanmayın.
+Çalıştırma altyapıları, OpenClaw davranışıyla eşleşmesi gereken kararlar için planı kullanabilir, ancak yine de bunu ana makineye ait deneme durumu olarak ele almalıdır. Bir tur içinde bunu değiştirmeyin veya sağlayıcı/model değiştirmek için kullanmayın.
 
-## Harness kaydetme
+## Çalıştırma altyapısı kaydetme
 
-**İçe aktar:** `openclaw/plugin-sdk/agent-harness`
+**İçe aktarma:** `openclaw/plugin-sdk/agent-harness`
 
 ```typescript
 import type { AgentHarness } from "openclaw/plugin-sdk/agent-harness";
@@ -95,60 +94,68 @@ export default definePluginEntry({
 
 ## Seçim ilkesi
 
-OpenClaw, sağlayıcı/model çözümlemesinden sonra bir harness seçer:
+OpenClaw, sağlayıcı/model çözümlemesinden sonra bir çalıştırma altyapısı seçer:
 
-1. Model kapsamlı runtime ilkesi kazanır.
-2. Sağlayıcı kapsamlı runtime ilkesi sonra gelir.
-3. `auto`, kayıtlı harness'lere çözümlenen sağlayıcı/modeli destekleyip desteklemediklerini sorar.
-4. Eşleşen kayıtlı harness yoksa OpenClaw, PI fallback devre dışı bırakılmadıkça PI kullanır.
+1. Model kapsamlı çalışma zamanı ilkesi kazanır.
+2. Ardından sağlayıcı kapsamlı çalışma zamanı ilkesi gelir.
+3. `auto`, kayıtlı çalıştırma altyapılarına çözümlenen sağlayıcı/modeli destekleyip desteklemediklerini sorar.
+4. Kayıtlı hiçbir çalıştırma altyapısı eşleşmezse OpenClaw gömülü çalışma zamanını kullanır.
 
-Plugin harness hataları çalıştırma hataları olarak görünür. `auto` modunda PI fallback yalnızca çözümlenen sağlayıcı/modeli destekleyen kayıtlı Plugin harness'i olmadığında kullanılır. Bir Plugin harness'i bir çalıştırmayı üstlendikten sonra OpenClaw aynı dönüşü PI üzerinden yeniden oynatmaz; çünkü bu, kimlik doğrulama/runtime semantiğini değiştirebilir veya yan etkileri yineleyebilir.
+Plugin çalıştırma altyapısı hataları çalışma hataları olarak görünür. `auto` modunda gömülü yedek, yalnızca çözümlenen sağlayıcı/modeli destekleyen kayıtlı Plugin çalıştırma altyapısı yoksa kullanılır. Bir Plugin çalıştırma altyapısı bir çalışmayı üstlendikten sonra OpenClaw aynı turu başka bir çalışma zamanı üzerinden yeniden oynatmaz; çünkü bu, kimlik doğrulama/çalışma zamanı anlamlarını değiştirebilir veya yan etkileri çoğaltabilir.
 
-Tam oturum ve tam agent runtime pin'leri seçim tarafından yok sayılır. Buna eski oturum `agentHarnessId` değerleri, `agents.defaults.agentRuntime`, `agents.list[].agentRuntime` ve `OPENCLAW_AGENT_RUNTIME` dahildir. `/status`, sağlayıcı/model rotasından seçilen etkin runtime'ı gösterir.
-Seçilen harness şaşırtıcıysa `agents/harness` hata ayıklama günlüklerini etkinleştirin ve Gateway'in yapılandırılmış `agent harness selected` kaydını inceleyin. Bu kayıt seçilen harness id'sini, seçim nedenini, runtime/fallback ilkesini ve `auto` modunda her Plugin adayının destek sonucunu içerir.
+Tüm oturum ve tüm agent çalışma zamanı sabitlemeleri seçim tarafından yok sayılır. Buna eski oturum `agentHarnessId` değerleri, `agents.defaults.agentRuntime`, `agents.list[].agentRuntime` ve `OPENCLAW_AGENT_RUNTIME` dahildir. `/status`, sağlayıcı/model rotasından seçilen etkili çalışma zamanını gösterir. Seçilen çalıştırma altyapısı şaşırtıcıysa `agents/harness` hata ayıklama günlüğünü etkinleştirin ve Gateway'in yapılandırılmış `agent harness selected` kaydını inceleyin. Bu kayıt seçilen çalıştırma altyapısı kimliğini, seçim nedenini, çalışma zamanı/yedek ilkesini ve `auto` modunda her Plugin adayının destek sonucunu içerir.
 
-Paketlenmiş Codex Plugin'i, harness id'si olarak `codex` kaydeder. Core bunu sıradan bir Plugin harness id'si olarak ele alır; Codex'e özgü takma adlar paylaşılan runtime seçicide değil, Plugin'de veya operatör config'inde yer almalıdır.
+Paketlenmiş Codex Plugin'i çalıştırma altyapısı kimliği olarak `codex` kaydeder. Çekirdek bunu sıradan bir Plugin çalıştırma altyapısı kimliği olarak ele alır; Codex'e özgü takma adlar paylaşılan çalışma zamanı seçicisinde değil, Plugin'de veya operatör yapılandırmasında yer alır.
 
-## Sağlayıcı ve harness eşleştirmesi
+## Sağlayıcı ve çalıştırma altyapısı eşleştirmesi
 
-Çoğu harness ayrıca bir sağlayıcı da kaydetmelidir. Sağlayıcı, model ref'lerini, kimlik doğrulama durumunu, model metadata'sını ve `/model` seçimini OpenClaw'ın geri kalanına görünür kılar. Harness daha sonra `supports(...)` içinde bu sağlayıcıyı üstlenir.
+Çoğu çalıştırma altyapısı ayrıca bir sağlayıcı kaydetmelidir. Sağlayıcı; model referanslarını, kimlik doğrulama durumunu, model meta verilerini ve `/model` seçimini OpenClaw'ın geri kalanına görünür kılar. Çalıştırma altyapısı daha sonra `supports(...)` içinde bu sağlayıcıyı üstlenir.
 
-Paketlenmiş Codex Plugin'i bu kalıbı izler:
+Paketlenmiş Codex Plugin'i bu deseni izler:
 
-- tercih edilen kullanıcı model ref'leri: `openai/gpt-5.5`
-- uyumluluk ref'leri: eski `codex/gpt-*` ref'leri kabul edilmeye devam eder, ancak yeni config'ler bunları normal sağlayıcı/model ref'leri olarak kullanmamalıdır
-- harness id'si: `codex`
-- kimlik doğrulama: sentetik sağlayıcı kullanılabilirliği, çünkü Codex harness'i yerel Codex login/oturumunu sahiplenir
-- app-server isteği: OpenClaw, çıplak model id'sini Codex'e gönderir ve harness'in yerel app-server protokolüyle konuşmasına izin verir
+- tercih edilen kullanıcı model referansları: `openai/gpt-5.5`
+- uyumluluk referansları: eski `codex/gpt-*` referansları kabul edilmeye devam eder, ancak yeni yapılandırmalar bunları normal sağlayıcı/model referansları olarak kullanmamalıdır
+- çalıştırma altyapısı kimliği: `codex`
+- kimlik doğrulama: sentetik sağlayıcı kullanılabilirliği, çünkü Codex çalıştırma altyapısı yerel Codex oturum açma/oturumunu sahiplenir
+- uygulama sunucusu isteği: OpenClaw yalın model kimliğini Codex'e gönderir ve çalıştırma altyapısının yerel uygulama sunucusu protokolüyle konuşmasına izin verir
 
-Codex Plugin'i katkısaldır. Resmî OpenAI sağlayıcısındaki düz `openai/gpt-*` agent ref'leri varsayılan olarak Codex harness'ini seçer. Eski `codex/gpt-*` ref'leri uyumluluk için hâlâ Codex sağlayıcısını ve harness'ini seçer.
+Codex Plugin'i eklemelidir. Resmi OpenAI sağlayıcısındaki düz `openai/gpt-*` agent referansları varsayılan olarak Codex çalıştırma altyapısını seçer. Eski `codex/gpt-*` referansları uyumluluk için Codex sağlayıcısını ve çalıştırma altyapısını seçmeye devam eder.
 
-Operatör kurulumu, model öneki örnekleri ve yalnızca Codex config'leri için bkz. [Codex Harness](/tr/plugins/codex-harness).
+Operatör kurulumu, model öneki örnekleri ve yalnızca Codex yapılandırmaları için bkz. [Codex Çalıştırma Altyapısı](/tr/plugins/codex-harness).
 
-OpenClaw, Codex app-server `0.125.0` veya daha yenisini gerektirir. Codex Plugin'i app-server initialize handshake'ini denetler ve eski ya da sürümsüz sunucuları engeller; böylece OpenClaw yalnızca test edilmiş olduğu protokol yüzeyine karşı çalışır. `0.125.0` alt sınırı, Codex `0.124.0` içinde gelen yerel MCP hook payload desteğini içerirken OpenClaw'ı daha yeni test edilmiş kararlı hatta pin'ler.
+OpenClaw, Codex uygulama sunucusu `0.125.0` veya daha yenisini gerektirir. Codex Plugin'i uygulama sunucusu başlatma el sıkışmasını denetler ve OpenClaw'ın yalnızca test edildiği protokol yüzeyine karşı çalışması için daha eski veya sürümsüz sunucuları engeller. `0.125.0` tabanı, Codex `0.124.0` ile gelen yerel MCP kanca yükü desteğini içerirken OpenClaw'ı daha yeni, test edilmiş kararlı hatta sabitler.
 
-### Araç sonucu middleware'i
+### Araç sonucu ara katmanı
 
-Paketlenmiş Plugin'ler, manifest'leri `contracts.agentToolResultMiddleware` içinde hedeflenen runtime id'lerini bildirdiğinde `api.registerAgentToolResultMiddleware(...)` aracılığıyla runtime'dan bağımsız araç sonucu middleware'i ekleyebilir. Bu güvenilir seam, PI veya Codex araç çıktısını modele geri beslemeden önce çalışması gereken async araç sonucu dönüşümleri içindir.
+Paketlenmiş Plugin'ler ve eşleşen manifest sözleşmeleriyle açıkça etkinleştirilmiş kurulu Plugin'ler, manifestleri `contracts.agentToolResultMiddleware` içinde hedeflenen çalışma zamanı kimliklerini beyan ettiğinde `api.registerAgentToolResultMiddleware(...)` üzerinden çalışma zamanından bağımsız araç sonucu ara katmanı ekleyebilir. Bu güvenilir yüzey, OpenClaw veya Codex araç çıktısını modele geri beslemeden önce çalışması gereken zaman uyumsuz araç sonucu dönüşümleri içindir.
 
-Eski paketlenmiş Plugin'ler, Codex app-server'a özel middleware için hâlâ `api.registerCodexAppServerExtensionFactory(...)` kullanabilir, ancak yeni sonuç dönüşümleri runtime'dan bağımsız API'yi kullanmalıdır.
-Yalnızca Pi'ye özel `api.registerEmbeddedExtensionFactory(...)` hook'u kaldırılmıştır; Pi araç sonucu dönüşümleri runtime'dan bağımsız middleware kullanmalıdır.
+Eski paketlenmiş Plugin'ler Codex uygulama sunucusuna özel ara katman için hâlâ `api.registerCodexAppServerExtensionFactory(...)` kullanabilir, ancak yeni sonuç dönüşümleri çalışma zamanından bağımsız API'yi kullanmalıdır. Yalnızca gömülü çalıştırıcıya ait `api.registerEmbeddedExtensionFactory(...)` kancası kaldırılmıştır; gömülü araç sonucu dönüşümleri çalışma zamanından bağımsız ara katmanı kullanmalıdır.
 
 ### Terminal sonuç sınıflandırması
 
-Kendi protokol projeksiyonunu sahiplenen yerel harness'ler, tamamlanmış bir dönüş görünür asistan metni üretmediğinde `openclaw/plugin-sdk/agent-harness-runtime` içinden `classifyAgentHarnessTerminalOutcome(...)` kullanabilir. Yardımcı `empty`, `reasoning-only` veya `planning-only` döndürür; böylece OpenClaw'ın fallback ilkesi farklı bir modelde yeniden deneme yapıp yapmayacağına karar verebilir. Prompt hatalarını, devam eden dönüşleri ve `NO_REPLY` gibi kasıtlı sessiz yanıtları kasıtlı olarak sınıflandırmaz.
+Kendi protokol projeksiyonunu sahiplenen yerel çalıştırma altyapıları, tamamlanmış bir tur görünür asistan metni üretmediğinde `openclaw/plugin-sdk/agent-harness-runtime` içinden `classifyAgentHarnessTerminalOutcome(...)` kullanabilir. Yardımcı `empty`, `reasoning-only` veya `planning-only` döndürür; böylece OpenClaw'ın yedeğe düşme ilkesi farklı bir modelde yeniden deneme yapıp yapmayacağına karar verebilir. `planning-only`, çalıştırma altyapısının açık `planText` alanını gerektirir; OpenClaw bunu asistan düz yazısından çıkarsamaz. Yardımcı bilinçli olarak istem hatalarını, devam eden turları ve `NO_REPLY` gibi kasıtlı sessiz yanıtları sınıflandırmaz.
 
-### Yerel Codex harness modu
+### Agent sonu yan etkileri
 
-Paketlenmiş `codex` harness'i, gömülü OpenClaw agent dönüşleri için yerel Codex modudur. Önce paketlenmiş `codex` Plugin'ini etkinleştirin ve config'iniz kısıtlayıcı bir allowlist kullanıyorsa `plugins.allow` içine `codex` ekleyin. Yerel app-server config'leri `openai/gpt-*` kullanmalıdır; OpenAI agent dönüşleri varsayılan olarak Codex harness'ini seçer. Eski `openai-codex/*` rotaları `openclaw doctor --fix` ile onarılmalıdır ve eski `codex/*` model ref'leri yerel harness için uyumluluk takma adları olarak kalır.
+Yerel çalıştırma altyapıları bir denemeyi sonlandırdıktan sonra `openclaw/plugin-sdk/agent-harness-runtime` içinden `runAgentEndSideEffects(...)` çağırmalıdır. Bu, taşınabilir `agent_end` kancasını ve OpenClaw'ın araştırma yakalamasını etkileşimli yanıtları geciktirmeden dağıtır. Yerel, etkileşimsiz çalışmalarda denemenin bu yan etkiler bitmeden çözümlenmemesi gerekiyorsa `awaitAgentEndSideEffects(...)` kullanın. Her iki yardımcı da `runAgentHarnessAgentEndHook(...)` ile aynı `{ event, ctx }` yükünü kabul eder; hataları tamamlanmış deneme sonucunu değiştirmez.
 
-Bu mod çalıştığında Codex yerel thread id'sini, resume davranışını, Compaction'ı ve app-server yürütmesini sahiplenir. OpenClaw hâlâ chat kanalının, görünür transcript yansısının, araç ilkesinin, onayların, medya teslimatının ve oturum seçiminin sahibidir. Çalıştırmayı yalnızca Codex app-server yolunun üstlenebildiğini kanıtlamanız gerektiğinde sağlayıcı/model `agentRuntime.id: "codex"` kullanın. Açık Plugin runtime'ları kapalı hata verir; Codex app-server seçim hataları ve runtime hataları PI üzerinden yeniden denenmez.
+### Kullanıcı girdisi ve araç yüzeyleri
 
-## Runtime katılığı
+Çalışma zamanı düzeyinde kullanıcı girdisi isteği sunan yerel çalıştırma altyapıları; istemi biçimlendirmek, OpenClaw'ın engelleyici yanıt yolu üzerinden teslim etmek ve seçim/serbest biçimli yanıtları çalışma zamanının yerel yanıt şekline geri normalleştirmek için `openclaw/plugin-sdk/agent-harness-runtime` içindeki kullanıcı girdisi yardımcılarını kullanmalıdır. Yardımcı, kanal/TUI sunumunu tutarlı tutarken her çalıştırma altyapısı kendi protokol ayrıştırmasını ve bekleyen istek yaşam döngüsünü korur.
 
-Varsayılan olarak OpenClaw `auto` sağlayıcı/model runtime ilkesi kullanır: kayıtlı Plugin harness'leri bir sağlayıcı/model çiftini üstlenebilir ve hiçbiri eşleşmediğinde PI dönüşü işler. Resmî OpenAI sağlayıcısındaki OpenAI agent ref'leri varsayılan olarak Codex'e gider. Eksik harness seçiminin PI üzerinden yönlendirme yapmak yerine başarısız olması gerektiğinde `agentRuntime.id: "codex"` gibi açık bir sağlayıcı/model Plugin runtime'ı kullanın. Seçilen Plugin harness hataları her zaman kesin olarak başarısız olur. Bu, açık bir sağlayıcı/model `agentRuntime.id: "pi"` değerini engellemez.
+Pi benzeri kompakt araç yönlendirmesine ihtiyaç duyan yerel çalıştırma altyapıları `openclaw/plugin-sdk/agent-harness-tool-runtime` içinden `createAgentHarnessToolSurfaceRuntime(...)` kullanmalıdır. Bu; araç arama/kod modu denetim seçimini, yerel model yalın varsayılanlarını, çalışma zamanıyla uyumlu şema filtrelemeyi, gizli katalog yürütmesini, dizin hidrasyonunu ve katalog temizliğini sahiplenir. Çalıştırma altyapıları yine de SDK'ya özgü araç dönüştürmesini ve yerel yürütme geri çağrısını sahiplenir.
 
-Yalnızca Codex gömülü çalıştırmaları için:
+### Yerel Codex çalıştırma altyapısı modu
+
+Paketlenmiş `codex` çalıştırma altyapısı, gömülü OpenClaw agent turları için yerel Codex modudur. Önce paketlenmiş `codex` Plugin'ini etkinleştirin ve yapılandırmanız kısıtlayıcı bir izin listesi kullanıyorsa `plugins.allow` içine `codex` ekleyin. Yerel uygulama sunucusu yapılandırmaları `openai/gpt-*` kullanmalıdır; OpenAI agent turları varsayılan olarak Codex çalıştırma altyapısını seçer. Eski Codex model referans rotaları `openclaw doctor --fix` ile onarılmalıdır ve eski `codex/*` model referansları yerel çalıştırma altyapısı için uyumluluk takma adları olarak kalır.
+
+Bu mod çalıştığında Codex yerel iş parçacığı kimliğini, sürdürme davranışını, Compaction'ı ve uygulama sunucusu yürütmesini sahiplenir. OpenClaw ise sohbet kanalını, görünür döküm aynasını, araç ilkesini, onayları, medya teslimini ve oturum seçimini sahiplenmeye devam eder. Çalışmayı yalnızca Codex uygulama sunucusu yolunun üstlenebileceğini kanıtlamanız gerektiğinde sağlayıcı/model `agentRuntime.id: "codex"` kullanın. Açık Plugin çalışma zamanları kapalı hata verir; Codex uygulama sunucusu seçim hataları ve çalışma zamanı hataları başka bir çalışma zamanı üzerinden yeniden denenmez.
+
+## Çalışma zamanı katılığı
+
+Varsayılan olarak OpenClaw `auto` sağlayıcı/model çalışma zamanı ilkesini kullanır: kayıtlı Plugin çalıştırma altyapıları bir sağlayıcı/model çiftini üstlenebilir ve hiçbiri eşleşmediğinde gömülü çalışma zamanı turu işler. Resmi OpenAI sağlayıcısındaki OpenAI agent referansları varsayılan olarak Codex'e gider. Eksik çalıştırma altyapısı seçiminin gömülü çalışma zamanına yönlendirmek yerine başarısız olması gerektiğinde `agentRuntime.id: "codex"` gibi açık bir sağlayıcı/model Plugin çalışma zamanı kullanın. Seçilen Plugin çalıştırma altyapısı hataları her zaman sert biçimde başarısız olur. Bu, açık bir sağlayıcı/model `agentRuntime.id: "openclaw"` kullanımını engellemez.
+
+Yalnızca Codex gömülü çalışmaları için:
 
 ```json
 {
@@ -169,15 +176,15 @@ Yalnızca Codex gömülü çalıştırmaları için:
 }
 ```
 
-Tek bir kanonik model için CLI backend istiyorsanız runtime'ı o model girdisine koyun:
+Tek bir kanonik model için CLI arka ucu istiyorsanız çalışma zamanını o model girdisine koyun:
 
 ```json
 {
   "agents": {
     "defaults": {
-      "model": "anthropic/claude-opus-4-7",
+      "model": "anthropic/claude-opus-4-8",
       "models": {
-        "anthropic/claude-opus-4-7": {
+        "anthropic/claude-opus-4-8": {
           "agentRuntime": {
             "id": "claude-cli"
           }
@@ -188,7 +195,7 @@ Tek bir kanonik model için CLI backend istiyorsanız runtime'ı o model girdisi
 }
 ```
 
-Agent başına override'lar aynı model kapsamlı şekli kullanır:
+Agent başına geçersiz kılmalar aynı model kapsamlı şekli kullanır:
 
 ```json
 {
@@ -208,7 +215,7 @@ Agent başına override'lar aynı model kapsamlı şekli kullanır:
 }
 ```
 
-Bunun gibi eski tam agent runtime örnekleri yok sayılır:
+Bunun gibi eski tüm-agent çalışma zamanı örnekleri yok sayılır:
 
 ```json
 {
@@ -222,39 +229,39 @@ Bunun gibi eski tam agent runtime örnekleri yok sayılır:
 }
 ```
 
-Açık bir Plugin runtime'ı ile, istenen harness kayıtlı olmadığında, çözümlenen sağlayıcı/modeli desteklemediğinde veya dönüş yan etkileri üretmeden önce başarısız olduğunda oturum erken başarısız olur. Bu, yalnızca Codex dağıtımları ve Codex app-server yolunun gerçekten kullanımda olduğunu kanıtlaması gereken canlı testler için kasıtlıdır.
+Açık bir Plugin runtime ile, istenen koşum kayıtlı değilse, çözümlenen sağlayıcı/modeli desteklemiyorsa veya tur yan etkileri üretmeden önce başarısız olursa oturum erken başarısız olur. Bu, yalnızca Codex dağıtımları ve Codex app-server yolunun gerçekten kullanımda olduğunu kanıtlaması gereken canlı testler için kasıtlıdır.
 
-Bu ayar yalnızca gömülü agent harness'ini denetler. Görsel, video, müzik, TTS, PDF veya sağlayıcıya özgü diğer model yönlendirmelerini devre dışı bırakmaz.
+Bu ayar yalnızca gömülü ajan koşumunu denetler. Görüntü, video, müzik, TTS, PDF veya diğer sağlayıcıya özgü model yönlendirmelerini devre dışı bırakmaz.
 
-## Yerel oturumlar ve transcript yansısı
+## Yerel oturumlar ve transkript yansıtması
 
-Bir harness yerel oturum id'si, thread id'si veya daemon tarafı resume token'ı tutabilir. Bu bağı açıkça OpenClaw oturumuyla ilişkilendirilmiş tutun ve kullanıcı tarafından görülebilen asistan/araç çıktısını OpenClaw transcript'ine yansıtmaya devam edin.
+Bir koşum yerel bir oturum kimliği, iş parçacığı kimliği veya daemon tarafında sürdürme belirteci tutabilir. Bu bağlantıyı açıkça OpenClaw oturumuyla ilişkilendirilmiş halde tutun ve kullanıcıya görünen asistan/araç çıktısını OpenClaw transkriptine yansıtmaya devam edin.
 
-OpenClaw transcript'i şunlar için uyumluluk katmanı olarak kalır:
+OpenClaw transkripti şunlar için uyumluluk katmanı olarak kalır:
 
-- kanalda görünür oturum geçmişi
-- transcript arama ve indeksleme
-- daha sonraki bir dönüşte yerleşik PI harness'ine geri dönme
+- kanal tarafından görülebilen oturum geçmişi
+- transkript arama ve indeksleme
+- sonraki bir turda yerleşik OpenClaw koşumuna geri dönme
 - genel `/new`, `/reset` ve oturum silme davranışı
 
-Harness'iniz bir sidecar bağı saklıyorsa `reset(...)` uygulayın ki sahip olan OpenClaw oturumu sıfırlandığında OpenClaw bunu temizleyebilsin.
+Koşumunuz bir yan bağlantı saklıyorsa, sahibi olan OpenClaw oturumu sıfırlandığında OpenClaw'un bunu temizleyebilmesi için `reset(...)` uygulayın.
 
 ## Araç ve medya sonuçları
 
-Core, OpenClaw araç listesini oluşturur ve hazırlanmış denemeye geçirir. Bir harness dinamik bir araç çağrısı yürüttüğünde, kanal medyasını kendiniz göndermek yerine araç sonucunu harness sonuç şekli üzerinden geri döndürün.
+Çekirdek, OpenClaw araç listesini oluşturur ve hazırlanmış denemeye aktarır. Bir koşum dinamik bir araç çağrısı yürüttüğünde, kanal medyasını kendiniz göndermek yerine araç sonucunu koşum sonuç şekli üzerinden geri döndürün.
 
-Bu, metin, görsel, video, müzik, TTS, onay ve mesajlaşma aracı çıktılarını PI destekli çalıştırmalarla aynı teslimat yolunda tutar.
+Bu, metin, görüntü, video, müzik, TTS, onay ve mesajlaşma aracı çıktılarını OpenClaw destekli çalıştırmalarla aynı teslim yolunda tutar.
 
 ## Mevcut sınırlamalar
 
-- Genel import yolu generic'tir, ancak bazı deneme/sonuç tür takma adları uyumluluk için hâlâ `Pi` adları taşır.
-- Üçüncü taraf harness kurulumu deneyseldir. Yerel bir oturum runtime'ına ihtiyaç duyana kadar provider plugin'leri tercih edin.
-- Harness değiştirme dönüşler arasında desteklenir. Yerel araçlar, onaylar, asistan metni veya mesaj gönderimleri başladıktan sonra bir dönüşün ortasında harness değiştirmeyin.
+- Genel içe aktarma yolu geneldir, ancak bazı deneme/sonuç tür takma adları uyumluluk için hâlâ eski adları taşır.
+- Üçüncü taraf koşum kurulumu deneyseldir. Yerel bir oturum runtime’ına ihtiyaç duyana kadar sağlayıcı Pluginlerini tercih edin.
+- Koşum değiştirme turlar arasında desteklenir. Yerel araçlar, onaylar, asistan metni veya ileti gönderimleri başladıktan sonra bir turun ortasında koşumları değiştirmeyin.
 
 ## İlgili
 
-- [SDK Genel Bakışı](/tr/plugins/sdk-overview)
-- [Çalışma Zamanı Yardımcıları](/tr/plugins/sdk-runtime)
-- [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins)
-- [Codex Çalıştırma Altyapısı](/tr/plugins/codex-harness)
+- [SDK’ye Genel Bakış](/tr/plugins/sdk-overview)
+- [Runtime Yardımcıları](/tr/plugins/sdk-runtime)
+- [Sağlayıcı Pluginleri](/tr/plugins/sdk-provider-plugins)
+- [Codex Koşumu](/tr/plugins/codex-harness)
 - [Model Sağlayıcıları](/tr/concepts/model-providers)

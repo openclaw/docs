@@ -6,39 +6,39 @@ read_when:
 summary: รันไทม์ Gateway บน macOS (บริการ launchd ภายนอก)
 title: Gateway บน macOS
 x-i18n:
-    generated_at: "2026-06-27T17:49:22Z"
+    generated_at: "2026-06-28T00:13:09Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
+    source_hash: 5317e82435ecf179407116339507a666957a8e23a07a49665233b22f22f5b155
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app ไม่ได้บันเดิล Node/Bun หรือรันไทม์ Gateway อีกต่อไป แอป macOS
-คาดว่าจะมีการติดตั้ง CLI `openclaw` **ภายนอก** ไม่สร้าง Gateway เป็น
-โปรเซสลูก และจัดการบริการ launchd รายผู้ใช้เพื่อให้ Gateway
-ทำงานต่อเนื่อง (หรือเชื่อมต่อกับ Gateway ภายในเครื่องที่มีอยู่แล้ว หากมีตัวหนึ่งทำงานอยู่)
+OpenClaw.app จะไม่บันเดิล Node/Bun หรือรันไทม์ Gateway อีกต่อไป แอป macOS
+คาดหวังการติดตั้ง CLI `openclaw` แบบ **ภายนอก** ไม่ได้สปอน Gateway เป็น
+โพรเซสลูก และจัดการบริการ launchd ต่อผู้ใช้เพื่อให้ Gateway
+ทำงานอยู่เสมอ (หรือเชื่อมต่อกับ Gateway ภายในเครื่องที่มีอยู่แล้ว หากมีตัวหนึ่งทำงานอยู่แล้ว)
 
 ## ติดตั้ง CLI (จำเป็นสำหรับโหมดภายในเครื่อง)
 
-Node 24 เป็นรันไทม์เริ่มต้นบน Mac ส่วน Node 22 LTS ซึ่งปัจจุบันคือ `22.19+` ยังใช้งานได้เพื่อความเข้ากันได้ จากนั้นติดตั้ง `openclaw` แบบโกลบอล:
+Node 24 เป็นรันไทม์เริ่มต้นบน Mac ส่วน Node 22 LTS ซึ่งปัจจุบันคือ `22.19+` ยังทำงานได้เพื่อความเข้ากันได้ จากนั้นติดตั้ง `openclaw` แบบโกลบอล:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-ปุ่ม **ติดตั้ง CLI** ของแอป macOS จะรันโฟลว์ติดตั้งแบบโกลบอลเดียวกับที่แอป
-ใช้ภายใน: แอปจะเลือก npm ก่อน ตามด้วย pnpm แล้วจึงเลือก bun หากนั่นเป็น
-ตัวจัดการแพ็กเกจเดียวที่ตรวจพบ Node ยังคงเป็นรันไทม์ Gateway ที่แนะนำ
+ปุ่ม **ติดตั้ง CLI** ของแอป macOS จะรันโฟลว์การติดตั้งแบบโกลบอลเดียวกับที่แอป
+ใช้ภายใน: จะเลือก npm ก่อน จากนั้น pnpm แล้วจึง bun หากนั่นเป็นตัวจัดการแพ็กเกจเดียว
+ที่ตรวจพบ Node ยังคงเป็นรันไทม์ Gateway ที่แนะนำ
 
 ## Launchd (Gateway เป็น LaunchAgent)
 
 ป้ายกำกับ:
 
-- `ai.openclaw.gateway` (หรือ `ai.openclaw.<profile>`; ค่าเดิม `com.openclaw.*` อาจยังคงอยู่)
+- `ai.openclaw.gateway` (หรือ `ai.openclaw.<profile>`; `com.openclaw.*` แบบเดิมอาจยังคงอยู่)
 
-ตำแหน่ง Plist (รายผู้ใช้):
+ตำแหน่ง Plist (ต่อผู้ใช้):
 
 - `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
   (หรือ `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
@@ -46,26 +46,54 @@ npm install -g openclaw@<version>
 ตัวจัดการ:
 
 - แอป macOS เป็นเจ้าของการติดตั้ง/อัปเดต LaunchAgent ในโหมด Local
-- CLI ก็สามารถติดตั้งได้เช่นกัน: `openclaw gateway install`
+- CLI สามารถติดตั้งได้เช่นกัน: `openclaw gateway install`
 
-ลักษณะการทำงาน:
+พฤติกรรม:
 
-- "OpenClaw ทำงานอยู่" เปิด/ปิด LaunchAgent
-- การออกจากแอป **ไม่** หยุด Gateway (launchd จะคงให้ทำงานต่อ)
+- "OpenClaw ใช้งานอยู่" เปิด/ปิด LaunchAgent
+- การออกจากแอป **ไม่** หยุด Gateway (launchd จะคงให้มันทำงานอยู่)
 - หากมี Gateway ทำงานอยู่แล้วบนพอร์ตที่กำหนดค่าไว้ แอปจะเชื่อมต่อกับ
   Gateway นั้นแทนการเริ่มตัวใหม่
 
 การบันทึกล็อก:
 
 - stdout ของ launchd: `~/Library/Logs/openclaw/gateway.log` (โปรไฟล์ใช้ `gateway-<profile>.log`)
-- stderr ของ launchd: ระงับไว้
+- stderr ของ launchd: ถูกระงับ
 
 ## ความเข้ากันได้ของเวอร์ชัน
 
-แอป macOS จะตรวจสอบเวอร์ชัน Gateway เทียบกับเวอร์ชันของตัวเอง หากไม่
-เข้ากัน ให้อัปเดต CLI แบบโกลบอลให้ตรงกับเวอร์ชันของแอป
+แอป macOS จะตรวจสอบเวอร์ชันของ Gateway เทียบกับเวอร์ชันของตัวเอง หากทั้งสอง
+เข้ากันไม่ได้ ให้อัปเดต CLI แบบโกลบอลให้ตรงกับเวอร์ชันของแอป
 
-## การตรวจสอบเบื้องต้น
+## ไดเรกทอรีสถานะบน macOS
+
+เก็บสถานะของ OpenClaw ไว้บนดิสก์ภายในเครื่องที่ไม่ซิงค์ หลีกเลี่ยง iCloud Drive และโฟลเดอร์อื่น
+ที่ซิงค์ผ่านคลาวด์ เพราะความหน่วงในการซิงค์และการล็อกไฟล์อาจส่งผลต่อเซสชัน
+ข้อมูลประจำตัว และสถานะ Gateway
+
+ตั้งค่า `OPENCLAW_STATE_DIR` เป็นพาธภายในเครื่องเท่านั้นเมื่อคุณต้องการโอเวอร์ไรด์
+`openclaw doctor` จะเตือนเกี่ยวกับพาธสถานะที่มักซิงค์ผ่านคลาวด์ และแนะนำ
+ให้ย้ายกลับไปใช้พื้นที่จัดเก็บภายในเครื่อง ดู
+[ตัวแปรสภาพแวดล้อม](/th/help/environment#path-related-env-vars) และ
+[Doctor](/th/gateway/doctor)
+
+## ดีบักการเชื่อมต่อของแอป
+
+ใช้ CLI ดีบักของ macOS จากซอร์สเช็กเอาต์เพื่อทดสอบแฮนด์เชก Gateway
+WebSocket และตรรกะการค้นพบเดียวกับที่แอปใช้:
+
+```bash
+cd apps/macos
+swift run openclaw-mac connect --json
+swift run openclaw-mac discover --timeout 3000 --json
+```
+
+`connect` รับ `--url`, `--token`, `--timeout` และ `--json` ส่วน `discover`
+รับ `--timeout`, `--json` และ `--include-local` เปรียบเทียบเอาต์พุตการค้นพบ
+กับ `openclaw gateway discover --json` เมื่อคุณต้องการแยกปัญหาการค้นพบของ CLI
+ออกจากปัญหาการเชื่อมต่อฝั่งแอป
+
+## ตรวจสอบ Smoke
 
 ```bash
 openclaw --version
@@ -84,4 +112,4 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ## ที่เกี่ยวข้อง
 
 - [แอป macOS](/th/platforms/macos)
-- [คู่มือปฏิบัติการ Gateway](/th/gateway)
+- [รันบุ๊ก Gateway](/th/gateway)

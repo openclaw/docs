@@ -1,20 +1,21 @@
 ---
 read_when:
     - memory-core Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Bellek gömme sağlayıcısı desteği ekler. Ajan tarafından çağrılabilir araçlar ekler.
-title: Memory Core Plugin
+summary: Ajan tarafından çağrılabilir araçlar ekler.
+title: Memory Core plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:35Z"
+    generated_at: "2026-06-28T01:01:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
-# Memory Core Plugin
+# Memory Core Plugin'i
 
-Bellek gömme sağlayıcısı desteği ekler. Ajan tarafından çağrılabilir araçlar ekler.
+Ajan tarafından çağrılabilir araçlar ekler.
 
 ## Dağıtım
 
@@ -23,4 +24,4 @@ Bellek gömme sağlayıcısı desteği ekler. Ajan tarafından çağrılabilir a
 
 ## Yüzey
 
-contracts: memoryEmbeddingProviders, tools
+contracts: tools

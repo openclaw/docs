@@ -1,49 +1,42 @@
 ---
 read_when:
-    - Arayüzsüz Node ana makinesini çalıştırma
-    - system.run için macOS olmayan bir Node'u eşleştirme
-summary: '`openclaw node` için CLI başvurusu (arabirimsiz Node ana makinesi)'
+    - Başsız Node ana makinesini çalıştırma
+    - macOS olmayan bir düğümü system.run için eşleştirme
+summary: '`openclaw node` için CLI referansı (başsız düğüm ana makinesi)'
 title: Node
 x-i18n:
-    generated_at: "2026-05-06T17:53:35Z"
+    generated_at: "2026-06-28T00:23:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: af4735ac4961dc36fd3f11299eb3ec4e156835e7257b21a79bb1d4b467445faa
+    source_hash: 03a1b02e90f8f5f7edcfb2e7fd75ef0cbbdeae79dc0ce91339f31a80daeaaa92
     source_path: cli/node.md
     workflow: 16
 ---
 
 # `openclaw node`
 
-Gateway WebSocket'a bağlanan ve bu makinede `system.run` / `system.which`
-sunan bir **başsız Node ana makinesi** çalıştırın.
+Gateway WebSocket'e bağlanan ve bu makinede `system.run` / `system.which` sunan **başsız bir node ana makinesi** çalıştırın.
 
-## Neden bir Node ana makinesi kullanılır?
+## Neden node ana makinesi kullanılır?
 
-Ağınızdaki başka makinelere tam bir macOS companion app yüklemeden agent'ların
-bu makinelerde **komut çalıştırmasını** istediğinizde bir Node ana makinesi kullanın.
+Ağınızdaki **diğer makinelerde komut çalıştırmak** istediğinizde, oraya tam bir macOS eşlikçi uygulaması kurmadan node ana makinesi kullanın.
 
-Yaygın kullanım örnekleri:
+Yaygın kullanım durumları:
 
-- Uzak Linux/Windows makinelerinde komut çalıştırma (build sunucuları, laboratuvar makineleri, NAS).
-- exec'i gateway üzerinde **sandbox içinde** tutarken onaylanmış çalıştırmaları başka ana makinelere devretme.
+- Uzak Linux/Windows makinelerde komut çalıştırma (derleme sunucuları, laboratuvar makineleri, NAS).
+- Exec'i Gateway üzerinde **sandbox içinde** tutup onaylanmış çalıştırmaları başka ana makinelere devretme.
 - Otomasyon veya CI node'ları için hafif, başsız bir yürütme hedefi sağlama.
 
-Yürütme yine de Node ana makinesindeki **exec onayları** ve agent başına izin
-listeleriyle korunur; böylece komut erişimini kapsamlı ve açık tutabilirsiniz.
+Yürütme yine node ana makinesindeki **exec onayları** ve ajan başına izin listeleriyle korunur; böylece komut erişimini kapsamlı ve açık tutabilirsiniz.
 
 ## Tarayıcı proxy'si (sıfır yapılandırma)
 
-Node ana makineleri, Node üzerinde `browser.enabled` devre dışı bırakılmamışsa
-otomatik olarak bir tarayıcı proxy'si duyurur. Bu, agent'ın ek yapılandırma
-olmadan o Node üzerinde tarayıcı otomasyonu kullanmasını sağlar.
+`browser.enabled` node üzerinde devre dışı bırakılmamışsa node ana makineleri otomatik olarak bir tarayıcı proxy'si duyurur. Bu, ajanın ek yapılandırma olmadan o node üzerinde tarayıcı otomasyonu kullanmasını sağlar.
 
-Varsayılan olarak proxy, Node'un normal tarayıcı profili yüzeyini sunar. Eğer
-`nodeHost.browserProxy.allowProfiles` ayarlarsanız proxy kısıtlayıcı olur:
-izin listesinde olmayan profil hedefleme reddedilir ve kalıcı profil
-oluşturma/silme yolları proxy üzerinden engellenir.
+Varsayılan olarak proxy, node'un normal tarayıcı profili yüzeyini sunar. `nodeHost.browserProxy.allowProfiles` ayarlarsanız proxy kısıtlayıcı olur: izin listesinde olmayan profil hedefleme reddedilir ve kalıcı profil oluşturma/silme rotaları proxy üzerinden engellenir.
 
-Gerekirse Node üzerinde devre dışı bırakın:
+Gerekirse node üzerinde devre dışı bırakın:
 
 ```json5
 {
@@ -64,7 +57,7 @@ openclaw node run --host <gateway-host> --port 18789
 Seçenekler:
 
 - `--host <host>`: Gateway WebSocket ana makinesi (varsayılan: `127.0.0.1`)
-- `--port <port>`: Gateway WebSocket portu (varsayılan: `18789`)
+- `--port <port>`: Gateway WebSocket bağlantı noktası (varsayılan: `18789`)
 - `--tls`: Gateway bağlantısı için TLS kullan
 - `--tls-fingerprint <sha256>`: Beklenen TLS sertifika parmak izi (sha256)
 - `--node-id <id>`: Node kimliğini geçersiz kıl (eşleştirme token'ını temizler)
@@ -72,26 +65,21 @@ Seçenekler:
 
 ## Node ana makinesi için Gateway kimlik doğrulaması
 
-`openclaw node run` ve `openclaw node install`, Gateway kimlik doğrulamasını config/env üzerinden çözer (Node komutlarında `--token`/`--password` bayrakları yoktur):
+`openclaw node run` ve `openclaw node install`, Gateway kimlik doğrulamasını config/env'den çözer (node komutlarında `--token`/`--password` bayrakları yoktur):
 
-- Önce `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` kontrol edilir.
-- Ardından yerel config yedeği: `gateway.auth.token` / `gateway.auth.password`.
-- Yerel modda, Node ana makinesi bilinçli olarak `gateway.remote.token` / `gateway.remote.password` değerlerini devralmaz.
-- `gateway.auth.token` / `gateway.auth.password` açıkça SecretRef ile yapılandırılmış ve çözümlenmemişse, Node kimlik doğrulama çözümlemesi kapalı başarısız olur (uzak yedek maskelemesi yoktur).
-- `gateway.mode=remote` içinde, uzak istemci alanları (`gateway.remote.token` / `gateway.remote.password`) da uzak öncelik kurallarına göre uygundur.
+- Önce `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` denetlenir.
+- Sonra yerel yapılandırma yedeği: `gateway.auth.token` / `gateway.auth.password`.
+- Yerel modda node ana makinesi, bilerek `gateway.remote.token` / `gateway.remote.password` değerlerini devralmaz.
+- `gateway.auth.token` / `gateway.auth.password`, SecretRef aracılığıyla açıkça yapılandırılmış ve çözümlenmemişse node kimlik doğrulama çözümlemesi güvenli biçimde kapalı başarısız olur (uzak yedek maskelemesi yoktur).
+- `gateway.mode=remote` içinde, uzak öncelik kurallarına göre uzak istemci alanları (`gateway.remote.token` / `gateway.remote.password`) da uygundur.
 - Node ana makinesi kimlik doğrulama çözümlemesi yalnızca `OPENCLAW_GATEWAY_*` env değişkenlerini dikkate alır.
 
-Güvenilir özel ağda, local loopback olmayan bir `ws://` Gateway'e bağlanan bir
-Node için `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ayarlayın. Bu olmadan Node
-başlatma kapalı başarısız olur ve sizden `wss://`, bir SSH tüneli veya Tailscale
-kullanmanızı ister.
-Bu, işlem ortamı düzeyinde bir katılımdır; `openclaw.json` config anahtarı değildir.
-`openclaw node install`, kurulum komutu ortamında mevcut olduğunda bunu denetlenen
-Node hizmetine kalıcı olarak yazar.
+Düz metin `ws://` Gateway'e bağlanan bir node için loopback, özel IP değişmezleri, `.local` ve Tailnet `*.ts.net` ana makineleri kabul edilir. Diğer güvenilir özel DNS adları için `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ayarlayın; bu olmadan node başlatma güvenli biçimde kapalı başarısız olur ve sizden `wss://`, SSH tüneli veya Tailscale kullanmanızı ister. Bu bir süreç ortamı opt-in'idir, `openclaw.json` yapılandırma anahtarı değildir.
+`openclaw node install`, kurulum komutu ortamında mevcut olduğunda bunu denetlenen node servisine kalıcı olarak yazar.
 
-## Hizmet (arka plan)
+## Servis (arka plan)
 
-Başsız bir Node ana makinesini kullanıcı hizmeti olarak kurun.
+Başsız bir node ana makinesini kullanıcı servisi olarak kurun.
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789
@@ -100,15 +88,15 @@ openclaw node install --host <gateway-host> --port 18789
 Seçenekler:
 
 - `--host <host>`: Gateway WebSocket ana makinesi (varsayılan: `127.0.0.1`)
-- `--port <port>`: Gateway WebSocket portu (varsayılan: `18789`)
+- `--port <port>`: Gateway WebSocket bağlantı noktası (varsayılan: `18789`)
 - `--tls`: Gateway bağlantısı için TLS kullan
 - `--tls-fingerprint <sha256>`: Beklenen TLS sertifika parmak izi (sha256)
 - `--node-id <id>`: Node kimliğini geçersiz kıl (eşleştirme token'ını temizler)
 - `--display-name <name>`: Node görünen adını geçersiz kıl
-- `--runtime <runtime>`: Hizmet runtime'ı (`node` veya `bun`)
-- `--force`: Zaten kuruluysa yeniden kur/üzerine yaz
+- `--runtime <runtime>`: Servis çalışma zamanı (`node` veya `bun`)
+- `--force`: Zaten kurulmuşsa yeniden kur/üzerine yaz
 
-Hizmeti yönetin:
+Servisi yönetin:
 
 ```bash
 openclaw node status
@@ -118,11 +106,11 @@ openclaw node restart
 openclaw node uninstall
 ```
 
-Ön planda çalışan bir Node ana makinesi için `openclaw node run` kullanın (hizmet yok).
+Ön planda bir node ana makinesi için `openclaw node run` kullanın (servis yok).
 
-Hizmet komutları, makine tarafından okunabilir çıktı için `--json` kabul eder.
+Servis komutları, makine tarafından okunabilir çıktı için `--json` kabul eder.
 
-Node ana makinesi, Gateway yeniden başlatmasını ve ağ kapanmalarını işlem içinde yeniden dener. Gateway terminal bir token/parola/bootstrap kimlik doğrulama duraklaması bildirirse, Node ana makinesi kapanış ayrıntısını günlüğe yazar ve sıfır olmayan kodla çıkar; böylece launchd/systemd onu yeni config ve kimlik bilgileriyle yeniden başlatabilir. Eşleştirme gerektiren duraklamalar, bekleyen isteğin onaylanabilmesi için ön plan akışında kalır.
+Node ana makinesi Gateway yeniden başlatmasını ve ağ kapanmalarını süreç içinde yeniden dener. Gateway, terminal bir token/parola/bootstrap kimlik doğrulama duraklaması bildirirse node ana makinesi kapanış ayrıntısını günlüğe yazar ve launchd/systemd'nin taze yapılandırma ve kimlik bilgileriyle yeniden başlatabilmesi için sıfır olmayan kodla çıkar. Eşleştirme gerektiren duraklamalar, bekleyen isteğin onaylanabilmesi için ön plan akışında kalır.
 
 ## Eşleştirme
 
@@ -134,8 +122,7 @@ openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Sıkı denetimli Node ağlarında, Gateway operatörü güvenilir CIDR'lardan ilk kez
-Node eşleştirmesini otomatik onaylamayı açıkça etkinleştirebilir:
+Sıkı denetlenen node ağlarında Gateway operatörü, güvenilir CIDR'lerden ilk kez node eşleştirmesini otomatik onaylamaya açıkça opt in yapabilir:
 
 ```json5
 {
@@ -149,33 +136,24 @@ Node eşleştirmesini otomatik onaylamayı açıkça etkinleştirebilir:
 }
 ```
 
-Bu varsayılan olarak devre dışıdır. Yalnızca istenen kapsamları olmayan yeni
-`role: node` eşleştirmeleri için geçerlidir. Operatör/tarayıcı istemcileri,
-Control UI, WebChat ve rol, kapsam, metadata veya açık anahtar yükseltmeleri
-yine de elle onay gerektirir.
+Bu varsayılan olarak devre dışıdır. Yalnızca istenen kapsamı olmayan yeni `role: node` eşleştirmesine uygulanır. Operatör/tarayıcı istemcileri, Control UI, WebChat ve rol, kapsam, metadata veya public-key yükseltmeleri yine manuel onay gerektirir.
 
-Node, değişen kimlik doğrulama ayrıntılarıyla (rol/kapsamlar/açık anahtar)
-eşleştirmeyi yeniden denerse, önceki bekleyen istek geçersiz kılınır ve yeni
-bir `requestId` oluşturulur. Onaylamadan önce `openclaw devices list` komutunu
-tekrar çalıştırın.
+Node, değişmiş kimlik doğrulama ayrıntılarıyla (rol/kapsamlar/public key) eşleştirmeyi yeniden denerse önceki bekleyen istek geçersiz kılınır ve yeni bir `requestId` oluşturulur. Onaydan önce `openclaw devices list` komutunu tekrar çalıştırın.
 
-Node ana makinesi; Node kimliğini, token'ını, görünen adını ve gateway bağlantı bilgilerini
-`~/.openclaw/node.json` içinde saklar.
+Node ana makinesi node kimliğini, token'ını, görünen adını ve Gateway bağlantı bilgilerini `~/.openclaw/node.json` içinde saklar.
 
 ## Exec onayları
 
-`system.run`, yerel exec onaylarıyla denetlenir:
+`system.run`, yerel exec onaylarıyla geçitlenir:
 
-- `~/.openclaw/exec-approvals.json`
+- `$OPENCLAW_STATE_DIR/exec-approvals.json`, veya değişken ayarlanmamışsa
+  `~/.openclaw/exec-approvals.json`
 - [Exec onayları](/tr/tools/exec-approvals)
 - `openclaw approvals --node <id|name|ip>` (Gateway'den düzenle)
 
-Onaylanmış async Node exec için OpenClaw, istemden önce kanonik bir `systemRunPlan`
-hazırlar. Daha sonra onaylanan `system.run` iletimi bu saklanan planı yeniden
-kullanır; bu nedenle onay isteği oluşturulduktan sonra komut/cwd/session
-alanlarında yapılan düzenlemeler, Node'un yürüteceği şeyi değiştirmek yerine reddedilir.
+Onaylanmış async node exec için OpenClaw, istemden önce kanonik bir `systemRunPlan` hazırlar. Daha sonra onaylanmış `system.run` iletimi, saklanan bu planı yeniden kullanır; bu nedenle onay isteği oluşturulduktan sonra komut/cwd/session alanlarında yapılan düzenlemeler, node'un yürüteceği şeyi değiştirmek yerine reddedilir.
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Node'lar](/tr/nodes)
