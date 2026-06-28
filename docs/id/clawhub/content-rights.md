@@ -3,10 +3,10 @@ read_when:
     - Melaporkan kekhawatiran hak cipta atau hak lainnya yang melibatkan konten ClawHub
     - Menanggapi permintaan hak konten ClawHub
 sidebarTitle: Content Rights
-summary: Cara mengajukan kekhawatiran hak cipta atau hak konten lainnya terkait materi yang diterbitkan di ClawHub.
+summary: Cara mengajukan kekhawatiran terkait hak cipta atau hak konten lainnya tentang materi yang diterbitkan di ClawHub.
 title: Permintaan Hak Konten
 x-i18n:
-    generated_at: "2026-06-28T07:41:20Z"
+    generated_at: "2026-06-28T10:01:18Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,21 +17,20 @@ x-i18n:
 
 # Permintaan Hak Konten
 
-Jika Anda meyakini konten yang diterbitkan di ClawHub melanggar hak cipta atau
-hak Anda lainnya, kirimkan [Permintaan Hak Konten ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
+Jika Anda yakin konten yang diterbitkan di ClawHub melanggar hak cipta atau hak
+lainnya milik Anda, kirimkan [Permintaan Hak Konten ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
 
 Sertakan:
 
-- satu atau beberapa URL `https://clawhub.ai/<owner>/skills/<skill>` yang persis
+- satu atau beberapa URL persis `https://clawhub.ai/<owner>/skills/<skill>`
 - nama, organisasi, dan email kontak Anda
-- penjelasan singkat tentang kekhawatiran terkait hak
+- penjelasan singkat tentang masalah hak tersebut
 - bukti pendukung, jika tersedia
 
 Staf ClawHub meninjau permintaan secara manual dan dapat menghubungi pemohon atau
-penerbit untuk informasi lebih lanjut. Bergantung pada situasinya, konten yang
+penerbit untuk informasi lebih lanjut. Bergantung pada keadaannya, konten yang
 terdampak dapat disembunyikan, dipulihkan, atau dibiarkan tanpa perubahan.
 
-Untuk konten marketplace yang tidak aman tetapi bukan merupakan kekhawatiran
-terkait hak konten, gunakan alur pelaporan normal yang dijelaskan dalam
-[Moderasi dan Keamanan Akun](/id/clawhub/moderation). Untuk kerentanan di ClawHub
-itu sendiri, lihat [Keamanan](/id/clawhub/security).
+Untuk konten marketplace yang tidak aman tetapi bukan masalah hak konten, gunakan
+alur pelaporan normal yang dijelaskan di [Moderasi dan Keamanan Akun](/id/clawhub/moderation).
+Untuk kerentanan di ClawHub itu sendiri, lihat [Keamanan](/id/clawhub/security).

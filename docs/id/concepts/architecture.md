@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 433489081bfe07691b211f5076ec45ce0ed3fd043eb86128f73121f2cab71cd3
     source_path: concepts/architecture.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## Gambaran umum

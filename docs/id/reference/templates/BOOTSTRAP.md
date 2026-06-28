@@ -10,6 +10,7 @@ x-i18n:
     source_hash: b06ddee2ef6e2e630dce363a28ce9e1f7eafaa1b4f7f39603c140b4c4e436fd7
     source_path: reference/templates/BOOTSTRAP.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # BOOTSTRAP.md - Halo, Dunia

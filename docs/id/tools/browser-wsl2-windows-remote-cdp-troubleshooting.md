@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Dalam pengaturan split-host umum, OpenClaw Gateway berjalan di dalam WSL2, Chrome berjalan di Windows, dan kontrol peramban harus melintasi batas WSL2 dan Windows. Pola kegagalan berlapis dari [issue #39369](https://github.com/openclaw/openclaw/issues/39369) berarti beberapa masalah independen dapat muncul sekaligus, sehingga lapisan yang salah tampak rusak terlebih dahulu.

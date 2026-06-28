@@ -2,9 +2,9 @@
 read_when:
     - Sedang mengerjakan kontrol telemetri / privasi
     - Pertanyaan tentang data apa yang dikumpulkan
-summary: Telemetri instalasi yang dikumpulkan oleh CLI ClawHub dan cara menolaknya.
+summary: Telemetri instalasi yang dikumpulkan oleh CLI ClawHub dan cara untuk tidak ikut serta.
 x-i18n:
-    generated_at: "2026-06-28T07:42:14Z"
+    generated_at: "2026-06-28T10:04:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -25,11 +25,11 @@ Telemetri hanya dikirim ketika:
 - Anda menjalankan `clawhub install <slug>`.
 - Telemetri **tidak dinonaktifkan** (lihat “Cara menonaktifkan” di bawah).
 
-Jika Anda belum masuk, tidak ada yang dilaporkan.
+Jika Anda tidak masuk, tidak ada yang dilaporkan.
 
 ## Apa yang kami kumpulkan
 
-Pada setiap `clawhub install` yang dilaporkan, CLI mengirim satu peristiwa instalasi dengan upaya terbaik.
+Pada setiap `clawhub install` yang dilaporkan, CLI mengirim satu peristiwa instalasi upaya terbaik.
 
 Peristiwa tersebut mencakup:
 
@@ -38,13 +38,13 @@ Peristiwa tersebut mencakup:
 
 ### Apa yang _tidak_ kami kumpulkan
 
-- Tidak ada jalur folder atau pengenal yang diturunkan dari folder.
+- Tidak ada jalur folder atau pengenal turunan folder.
 - Tidak ada isi file.
-- Tidak ada log per eksekusi, prompt, atau keluaran CLI lainnya.
+- Tidak ada log per proses, prompt, atau keluaran CLI lainnya.
 
 ## Jumlah instalasi
 
-ClawHub mempertahankan penghitung agregat per skill:
+ClawHub menyimpan penghitung agregat per skill:
 
 - `installsAllTime`: pengguna unik yang telah melaporkan setidaknya satu instalasi CLI untuk skill tersebut.
 - `installsCurrent`: pengguna unik yang telah melaporkan instalasi dan belum menghapus

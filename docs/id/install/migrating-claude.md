@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw mengimpor state Claude lokal melalui penyedia migrasi Claude bawaan. Penyedia menampilkan pratinjau setiap item sebelum mengubah state, menyamarkan rahasia dalam rencana dan laporan, serta membuat cadangan terverifikasi sebelum diterapkan.

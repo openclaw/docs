@@ -2,9 +2,9 @@
 read_when:
     - Membangun klien API
     - Menambahkan endpoint atau skema
-summary: Ringkasan umum dan konvensi REST API publik (v1).
+summary: Ikhtisar dan konvensi REST API publik (v1).
 x-i18n:
-    generated_at: "2026-06-28T07:41:13Z"
+    generated_at: "2026-06-28T10:00:55Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,16 +21,16 @@ OpenAPI: `/api/v1/openapi.json`
 
 ## Penggunaan ulang katalog publik
 
-Anda dapat membangun katalog, direktori, atau permukaan pencarian pihak ketiga di atas API baca publik ClawHub. Metadata Skills publik dan berkas Skills diterbitkan berdasarkan aturan lisensi Skills ClawHub, sementara API itu sendiri dibatasi lajunya dan harus digunakan secara bertanggung jawab.
+Anda dapat membangun katalog, direktori, atau permukaan pencarian pihak ketiga di atas API baca publik ClawHub. Metadata Skills publik dan file Skills diterbitkan berdasarkan aturan lisensi Skills ClawHub, sementara API itu sendiri dibatasi lajunya dan harus digunakan secara bertanggung jawab.
 
 Panduan:
 
 - Gunakan endpoint baca publik seperti `GET /api/v1/skills`, `GET /api/v1/search`, dan `GET /api/v1/skills/{slug}` untuk daftar katalog.
-- Simpan respons dalam cache dan patuhi `429`, `Retry-After`, serta header batas laju, alih-alih melakukan polling secara agresif.
+- Cache respons dan patuhi header `429`, `Retry-After`, serta batas laju alih-alih melakukan polling secara agresif.
 - Tautkan kembali ke URL Skills ClawHub kanonis saat menampilkan daftar agar pengguna dapat memeriksa catatan registri sumber.
 - Gunakan URL halaman kanonis dalam bentuk `https://clawhub.ai/<owner>/skills/<slug>`.
 - Jangan menyiratkan bahwa ClawHub mendukung, memverifikasi, atau mengoperasikan situs pihak ketiga tersebut.
-- Jangan mencerminkan konten tersembunyi, privat, atau yang diblokir moderasi dengan melewati filter API publik atau batas autentikasi.
+- Jangan mencerminkan konten tersembunyi, privat, atau diblokir moderasi dengan melewati filter API publik atau batas autentikasi.
 
 ## Autentikasi
 
@@ -43,7 +43,7 @@ Penegakan yang sadar autentikasi:
 
 - Permintaan anonim: per IP.
 - Permintaan terautentikasi (token Bearer valid): per bucket pengguna.
-- Token yang hilang/tidak valid kembali ke penegakan IP.
+- Token hilang/tidak valid kembali ke penegakan IP.
 
 - Baca: 3000/menit per IP, 12000/menit per kunci
 - Tulis: 300/menit per IP, 3000/menit per kunci
@@ -57,8 +57,8 @@ Semantik:
 - `X-RateLimit-Reset`: detik epoch Unix (waktu reset absolut)
 - `RateLimit-Reset`: detik penundaan hingga reset
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: anggaran tersisa yang tepat saat
-  ada; permintaan berhasil yang di-shard menghilangkannya alih-alih mengembalikan nilai
-  global perkiraan
+  ada; permintaan sukses yang dishard menghilangkannya alih-alih mengembalikan nilai global
+  perkiraan
 - `Retry-After`: detik penundaan untuk menunggu pada `429`
 
 Contoh `429`:
@@ -95,13 +95,13 @@ Baca publik:
   - Filter opsional: `highlightedOnly=true`, `nonSuspiciousOnly=true`
   - Alias lama: `nonSuspicious=true`
 - `GET /api/v1/skills?limit=&cursor=&sort=`
-  - `sort`: `updated` (default), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), alias instal lama `installsCurrent`/`installs`/`installsAllTime` dipetakan ke `downloads`, `trending`
-  - Nilai `sort` yang tidak valid mengembalikan `400`
+  - `sort`: `updated` (default), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), alias instalasi lama `installsCurrent`/`installs`/`installsAllTime` dipetakan ke `downloads`, `trending`
+  - Nilai `sort` tidak valid mengembalikan `400`
   - `cursor` berlaku untuk pengurutan non-`trending`
   - Filter opsional: `nonSuspiciousOnly=true`
   - Alias lama: `nonSuspicious=true`
-  - Dengan `nonSuspiciousOnly=true`, halaman berbasis kursor dapat berisi item lebih sedikit dari `limit`; gunakan `nextCursor` untuk melanjutkan.
-  - `recommended` menggunakan sinyal keterlibatan dan kebaruan.
+  - Dengan `nonSuspiciousOnly=true`, halaman berbasis kursor dapat berisi lebih sedikit item daripada `limit`; gunakan `nextCursor` untuk melanjutkan.
+  - `recommended` menggunakan sinyal keterlibatan dan keterkinian.
 - `GET /api/v1/skills/{slug}`
 - `GET /api/v1/skills/{slug}/moderation`
 - `GET /api/v1/skills/{slug}/versions?limit=&cursor=`
@@ -111,15 +111,15 @@ Baca publik:
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
   - Skills yang dihosting mengembalikan byte ZIP deterministik.
-  - Skills saat ini yang didukung GitHub dengan pemindaian `clean` atau `suspicious` mengembalikan
-    deskriptor serah-terima JSON `public-github`, bukan byte ClawHub.
+  - Skills terkini yang didukung GitHub dengan pemindaian `clean` atau `suspicious` mengembalikan
+    deskriptor serah terima JSON `public-github`, bukan byte ClawHub.
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
-  - Skills yang dihosting diekspor sebagai berkas tersimpan.
-  - Skills saat ini yang didukung GitHub dengan pemindaian `clean` atau `suspicious` diekspor
-    sebagai deskriptor serah-terima `public-github`.
+  - Skills yang dihosting diekspor sebagai file tersimpan.
+  - Skills terkini yang didukung GitHub dengan pemindaian `clean` atau `suspicious` diekspor
+    sebagai deskriptor serah terima `public-github`.
 - `GET /api/v1/packages?limit=&cursor=&sort=`
   - `sort`: `updated` (default), `recommended`, `downloads`, alias lama `installs`
-  - Nilai `sort` yang tidak valid mengembalikan `400`
+  - Nilai `sort` tidak valid mengembalikan `400`
 - `GET /api/v1/plugins?limit=&cursor=&sort=`
   - `sort`: `recommended` (default), `downloads`, `updated`, alias lama `installs`
 - `GET /api/v1/plugins/search?q=...`
@@ -129,7 +129,7 @@ Baca publik:
 - `GET /api/npm/{package}`
 - `GET /api/npm/{package}/-/{tarball}.tgz`
 
-Autentikasi diperlukan:
+Memerlukan autentikasi:
 
 - `POST /api/v1/skills` (publikasi, multipart lebih disukai)
 - `DELETE /api/v1/skills/{slug}`
@@ -149,9 +149,9 @@ Autentikasi diperlukan:
 - `GET /api/v1/transfers/outgoing`
 - `GET /api/v1/whoami`
 
-Khusus admin:
+Hanya admin:
 
-- `POST /api/v1/users/reserve` mencadangkan slug root dan placeholder paket privat tanpa rilis untuk handle pemilik.
+- `POST /api/v1/users/reserve` mencadangkan slug akar dan placeholder paket privat tanpa rilis untuk handle pemilik.
 
 ## Lama
 

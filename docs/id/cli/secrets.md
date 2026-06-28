@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 6fe1933ca6a9f2a24fbbe20fa3b83bf8f6493ea6c94061e135b4e1b48c33d62c
     source_path: cli/secrets.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw secrets`

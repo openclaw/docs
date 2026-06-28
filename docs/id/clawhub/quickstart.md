@@ -1,11 +1,11 @@
 ---
 read_when:
     - Pertama kali menggunakan ClawHub
-    - Menginstal keterampilan atau Plugin dari registri
+    - Menginstal skill atau plugin dari registry
     - Menerbitkan ke ClawHub
 summary: 'Mulai gunakan ClawHub: temukan, instal, perbarui, dan publikasikan Skills atau Plugin.'
 x-i18n:
-    generated_at: "2026-06-28T07:42:01Z"
+    generated_at: "2026-06-28T10:03:11Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -14,15 +14,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Quickstart
+# Mulai Cepat
 
-ClawHub adalah registri untuk Skills dan Plugin OpenClaw.
+ClawHub adalah registri untuk skill dan plugin OpenClaw.
 
-Gunakan OpenClaw saat Anda menginstal sesuatu ke dalam OpenClaw. Gunakan CLI `clawhub`
+Gunakan OpenClaw saat Anda memasang sesuatu ke dalam OpenClaw. Gunakan CLI `clawhub`
 saat Anda masuk, menerbitkan, mengelola listing milik Anda sendiri, atau menggunakan
 alur kerja khusus registri.
 
-## Temukan dan instal skill
+## Menemukan dan memasang skill
 
 Cari dari OpenClaw:
 
@@ -30,22 +30,22 @@ Cari dari OpenClaw:
 openclaw skills search "calendar"
 ```
 
-Instal skill:
+Pasang skill:
 
 ```bash
 openclaw skills install @openclaw/demo
 ```
 
-Perbarui skill yang terinstal:
+Perbarui skill yang terpasang:
 
 ```bash
 openclaw skills update --all
 ```
 
-OpenClaw mencatat asal skill tersebut sehingga pembaruan berikutnya dapat tetap
-di-resolve melalui ClawHub.
+OpenClaw mencatat asal skill tersebut sehingga pembaruan berikutnya dapat terus
+diselesaikan melalui ClawHub.
 
-## Temukan dan instal Plugin
+## Menemukan dan memasang plugin
 
 Cari dari OpenClaw:
 
@@ -53,24 +53,24 @@ Cari dari OpenClaw:
 openclaw plugins search "calendar"
 ```
 
-Instal Plugin yang di-host di ClawHub dengan sumber ClawHub eksplisit:
+Pasang plugin yang dihosting ClawHub dengan sumber ClawHub eksplisit:
 
 ```bash
 openclaw plugins install clawhub:<package>
 ```
 
-Perbarui Plugin yang terinstal:
+Perbarui plugin yang terpasang:
 
 ```bash
 openclaw plugins update --all
 ```
 
-Gunakan prefiks `clawhub:` saat Anda ingin OpenClaw me-resolve paket melalui
+Gunakan prefiks `clawhub:` saat Anda ingin OpenClaw menyelesaikan paket melalui
 ClawHub, bukan npm atau sumber lain.
 
 ## Masuk untuk penerbitan
 
-Instal CLI ClawHub:
+Pasang CLI ClawHub:
 
 ```bash
 npm i -g clawhub
@@ -91,7 +91,7 @@ Lingkungan headless dapat menggunakan token API dari UI web ClawHub:
 clawhub login --token clh_...
 ```
 
-## Terbitkan skill
+## Menerbitkan skill
 
 Skill adalah folder dengan file `SKILL.md` wajib dan file pendukung opsional.
 
@@ -106,11 +106,11 @@ Perintah ini melewati konten yang tidak berubah. Skill baru dimulai dari `1.0.0`
 secara otomatis menerbitkan versi patch berikutnya. Gunakan `--dry-run` untuk pratinjau atau
 `--version` untuk memilih versi eksplisit.
 
-Sebelum menerbitkan, periksa metadata di `SKILL.md`. Deklarasikan
-variabel lingkungan, alat, dan izin yang diperlukan agar pengguna dapat memahami apa yang
-dibutuhkan skill sebelum mereka menginstalnya. Lihat [Format skill](/id/clawhub/skill-format).
+Sebelum menerbitkan, periksa metadata di `SKILL.md`. Deklarasikan variabel
+lingkungan, alat, dan izin yang diperlukan agar pengguna dapat memahami apa yang
+dibutuhkan skill sebelum mereka memasangnya. Lihat [Format skill](/id/clawhub/skill-format).
 
-Untuk repositori yang berisi beberapa skill, alur kerja GitHub yang dapat digunakan ulang memanggil
+Untuk repositori yang berisi beberapa skill, workflow GitHub yang dapat digunakan kembali memanggil
 `skill publish` untuk setiap folder skill langsung di bawah `skills/`:
 
 ```yaml
@@ -121,25 +121,25 @@ jobs:
       dry_run: true
 ```
 
-## Terbitkan Plugin
+## Menerbitkan plugin
 
-Terbitkan Plugin dari folder lokal, repo GitHub, ref GitHub, atau
-arsip yang sudah ada:
+Terbitkan plugin dari folder lokal, repo GitHub, ref GitHub, atau arsip
+yang sudah ada:
 
 ```bash
 clawhub package publish <source> --family code-plugin --dry-run
 clawhub package publish <source> --family code-plugin
 ```
 
-Gunakan `--dry-run` terlebih dahulu untuk melihat pratinjau metadata paket yang di-resolve, kolom kompatibilitas,
-atribusi sumber, dan rencana unggahan tanpa menerbitkan.
+Gunakan `--dry-run` terlebih dahulu untuk melihat pratinjau metadata paket yang diselesaikan, bidang
+kompatibilitas, atribusi sumber, dan rencana unggah tanpa menerbitkan.
 
 Plugin kode harus menyertakan metadata kompatibilitas OpenClaw di `package.json`,
 termasuk `openclaw.compat.pluginApi` dan `openclaw.build.openclawVersion`.
 
-## Periksa sebelum menginstal
+## Periksa sebelum memasang
 
-Sebelum menginstal, gunakan halaman web ClawHub atau perintah detail CLI untuk memeriksa
+Sebelum memasang, gunakan halaman web ClawHub atau perintah detail CLI untuk memeriksa
 metadata, tautan sumber, versi, changelog, dan status pemindaian:
 
 ```bash
@@ -148,4 +148,4 @@ clawhub package inspect <package>
 ```
 
 Listing publik menampilkan status pemindaian terbaru. Rilis yang ditahan atau diblokir oleh
-moderasi mungkin disembunyikan dari permukaan pencarian dan instalasi sampai diselesaikan.
+moderasi dapat disembunyikan dari permukaan pencarian dan pemasangan hingga diselesaikan.

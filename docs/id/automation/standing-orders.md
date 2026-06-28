@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Perintah tetap memberi agen Anda **otoritas operasi permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas satu per satu setiap kali, Anda mendefinisikan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas - lalu agen mengeksekusi secara otonom di dalam batasan tersebut.

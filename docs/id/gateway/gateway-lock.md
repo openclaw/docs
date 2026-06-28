@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 85a1cb55f08d47d36fde25900e4247ef01c9a6800bf017fbff44a337f299ce13
     source_path: gateway/gateway-lock.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## Mengapa

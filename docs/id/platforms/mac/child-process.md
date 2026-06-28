@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
     source_path: platforms/mac/child-process.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Aplikasi macOS **mengelola Gateway melalui launchd** secara default dan tidak menjalankan Gateway sebagai proses anak. Aplikasi pertama-tama mencoba terhubung ke Gateway yang sudah berjalan pada port yang dikonfigurasi; jika tidak ada yang dapat dijangkau, aplikasi mengaktifkan layanan launchd melalui CLI `openclaw` eksternal (tanpa runtime tertanam). Ini memberi Anda mulai otomatis yang andal saat masuk dan mulai ulang saat terjadi kegagalan.

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
     source_path: platforms/mac/icon.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Status Ikon Bilah Menu

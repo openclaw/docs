@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 24013c06bf3e688bd86caa407bf20dddabe0dff60a400ed4f23478de62308634
     source_path: cli/voicecall.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw voicecall`

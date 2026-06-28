@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 65e8fd3b34a8edd70773316e0dae1fa894cfc7cf1bb216f9b5a9b53a33760330
     source_path: plugins/reference/tts-local-cli.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin CLI Lokal TTS

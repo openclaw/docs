@@ -2,10 +2,10 @@
 read_when:
     - Masuk ke ClawHub
     - Menggunakan CLI ClawHub
-    - Memecahkan masalah 401
+    - Pemecahan masalah 401
 summary: Masuk ClawHub, token API, login CLI, penyimpanan token, dan pencabutan.
 x-i18n:
-    generated_at: "2026-06-28T07:41:26Z"
+    generated_at: "2026-06-28T10:01:00Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -19,7 +19,7 @@ x-i18n:
 ClawHub menggunakan GitHub untuk masuk di web. CLI menggunakan token API ClawHub yang dibuat
 melalui akun yang sudah masuk tersebut.
 
-## Masuk web
+## Masuk Web
 
 Gunakan GitHub untuk masuk di [clawhub.ai](https://clawhub.ai).
 
@@ -42,22 +42,22 @@ Yang terjadi:
 
 1. CLI memulai server callback sementara di `127.0.0.1`.
 2. Browser Anda membuka halaman masuk ClawHub.
-3. Setelah masuk GitHub, ClawHub membuat token API.
+3. Setelah masuk dengan GitHub, ClawHub membuat token API.
 4. Browser mengalihkan kembali ke callback lokal.
 5. CLI menyimpan token di file konfigurasi ClawHub Anda.
 
 Jika browser Anda tidak dapat menjangkau callback lokal karena aturan firewall, VPN, atau
 proxy, gunakan alur token headless.
 
-## Login headless
+## Login Headless
 
-Buat token di UI web ClawHub, lalu teruskan ke CLI:
+Buat token di UI web ClawHub, lalu berikan ke CLI:
 
 ```bash
 clawhub login --token clh_...
 ```
 
-Gunakan alur ini untuk server, job CI, atau lingkungan yang hanya menggunakan terminal.
+Gunakan alur ini untuk server, tugas CI, atau lingkungan yang hanya memiliki terminal.
 
 Untuk shell jarak jauh tempat Anda dapat membuka browser di tempat lain, jalankan:
 
@@ -65,18 +65,18 @@ Untuk shell jarak jauh tempat Anda dapat membuka browser di tempat lain, jalanka
 clawhub login --device
 ```
 
-CLI mencetak kode sekali pakai dan menunggu sementara Anda mengotorisasinya di
+CLI mencetak kode sekali pakai dan menunggu saat Anda mengotorisasinya di
 `https://clawhub.ai/cli/device`.
 
-## Penyimpanan token
+## Penyimpanan Token
 
-Path konfigurasi default:
+Jalur konfigurasi default:
 
 - macOS: `~/Library/Application Support/clawhub/config.json`
 - Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` atau `~/.config/clawhub/config.json`
 - Windows: `%APPDATA%\\clawhub\\config.json`
 
-Timpa path dengan:
+Timpa jalurnya dengan:
 
 ```bash
 export CLAWHUB_CONFIG_PATH=/path/to/config.json

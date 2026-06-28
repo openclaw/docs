@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Jalur Matrix QA menjalankan Plugin bawaan `@openclaw/matrix` terhadap homeserver Tuwunel sekali pakai di Docker, dengan akun sementara untuk penggerak, SUT, dan pengamat serta ruang yang sudah diisi data awal. Ini adalah cakupan live berbasis transport nyata untuk Matrix.

@@ -13,6 +13,7 @@ x-i18n:
   source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
   source_path: providers/comfy.md
   workflow: 15
+  postprocess_version: locale-links-v1
 ---
 
 OpenClaw mengirim Plugin `comfy` bawaan untuk run ComfyUI berbasis alur kerja. Plugin ini sepenuhnya berbasis alur kerja, jadi OpenClaw tidak mencoba memetakan `size`, `aspectRatio`, `resolution`, `durationSeconds`, atau kontrol bergaya TTS generik ke graph Anda.

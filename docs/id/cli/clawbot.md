@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
     source_path: cli/clawbot.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw clawbot`

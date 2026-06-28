@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio dapat mentranskripsi audio masuk dan lampiran catatan suara melalui pipeline bersama `tools.media.audio` OpenClaw. OpenClaw mengirim audio multipart ke endpoint transkripsi yang kompatibel dengan OpenAI dan menyisipkan teks yang dikembalikan sebagai `{{Transcript}}` ditambah blok `[Audio]`.

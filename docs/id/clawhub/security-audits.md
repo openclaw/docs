@@ -7,7 +7,7 @@ sidebarTitle: Security Audits
 summary: Cara memahami hasil audit keamanan ClawHub sebelum memasang skill atau plugin.
 title: Audit Keamanan
 x-i18n:
-    generated_at: "2026-06-28T07:42:01Z"
+    generated_at: "2026-06-28T10:03:36Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,96 +18,96 @@ x-i18n:
 
 # Audit Keamanan
 
-Audit keamanan ClawHub membantu Anda memutuskan apakah skill atau plugin cukup aman
-untuk diinstal. Audit ini menunjukkan apa yang dilakukan sebuah rilis, otoritas apa yang dimintanya, dan
-apakah ada hal yang perlu perhatian ekstra sebelum dapat mengakses file, akun,
+Audit keamanan ClawHub membantu Anda memutuskan apakah suatu keterampilan atau Plugin cukup aman
+untuk dipasang. Audit menunjukkan apa yang dilakukan sebuah rilis, otoritas apa yang dimintanya, dan
+apakah ada hal yang memerlukan perhatian ekstra sebelum dapat mengakses file, akun,
 kredensial, kode, atau layanan eksternal.
 
 Audit adalah sinyal keamanan yang kuat, tetapi bukan jaminan bahwa sebuah rilis
-bebas risiko. Selalu gunakan pertimbangan sebelum memberikan akses sensitif.
+bebas risiko. Selalu gunakan penilaian Anda sebelum memberikan akses sensitif.
 
 Lihat juga [Keamanan](/id/clawhub/security), [Penggunaan yang dapat diterima](/id/clawhub/acceptable-usage),
 dan [Moderasi dan Keamanan Akun](/id/clawhub/moderation).
 
-## Yang perlu diperiksa sebelum menginstal
+## Yang perlu diperiksa sebelum memasang
 
-Sebelum menginstal, tinjau:
+Sebelum memasang, tinjau:
 
 - status audit keseluruhan
 - tingkat risiko
-- temuan apa pun yang tercantum
+- setiap temuan yang tercantum
 - kredensial, izin, atau variabel lingkungan yang diperlukan
 - pemilik, sumber, versi, changelog, unduhan, bintang, dan sinyal kepercayaan lainnya
 
-Instal hanya konten yang Anda pahami dan percayai.
+Pasang hanya konten yang Anda pahami dan percayai.
 
 ## Status audit
 
-Status audit memberi tahu Anda cara menanggapi hasil audit:
+Status audit memberi tahu Anda cara merespons hasil audit:
 
-| Status      | Arti                                                                      |
+| Status      | Arti                                                                   |
 | ----------- | ------------------------------------------------------------------------- |
-| `Pass`      | Tidak ditemukan masalah terlihat di atas risiko rendah.                   |
-| `Review`    | Baca temuan sebelum menginstal. Rilis tersebut mungkin tetap sah.         |
+| `Pass`      | Tidak ditemukan masalah yang terlihat di atas risiko rendah.                                |
+| `Review`    | Baca temuan sebelum memasang. Rilis tersebut mungkin tetap sah. |
 | `Warn`      | Gunakan kehati-hatian ekstra. ClawHub menemukan masalah berdampak tinggi atau sinyal peringatan. |
-| `Malicious` | Jangan instal.                                                            |
-| `Pending`   | Audit belum selesai.                                                      |
-| `Error`     | Audit tidak dapat diselesaikan.                                           |
+| `Malicious` | Jangan pasang.                                                           |
+| `Pending`   | Audit belum selesai.                                             |
+| `Error`     | Audit tidak dapat diselesaikan.                                         |
 
-`Pass` memang meyakinkan, tetapi tidak menggantikan pertimbangan Anda sendiri. Ini paling penting
-untuk alat yang dapat memublikasikan konten, mengedit data, menjalankan perintah, membaca file, atau
+`Pass` meyakinkan, tetapi tidak menggantikan penilaian Anda sendiri. Ini paling penting
+untuk alat yang dapat menerbitkan konten, mengedit data, menjalankan perintah, membaca file, atau
 mengakses sistem produksi.
 
 ## Tingkat risiko
 
-Tingkat risiko menjelaskan radius dampak: seberapa besar kuasa yang tampaknya dimiliki rilis jika
-Anda menggunakannya sebagaimana dimaksud.
+Tingkat risiko menggambarkan radius dampak: seberapa besar kuasa yang tampaknya dimiliki rilis jika
+Anda menggunakannya sesuai tujuan.
 
 | Tingkat risiko | Arti                                                                       |
 | ---------- | ----------------------------------------------------------------------------- |
-| `Low`      | Ditemukan sedikit otoritas sensitif atau dampak pengguna.                     |
-| `Medium`   | Rilis memiliki otoritas bermakna, seperti akses akun atau perubahan data.     |
-| `High`     | Rilis memiliki otoritas berdampak tinggi, temuan berat, atau sinyal berbahaya. |
+| `Low`      | Sedikit otoritas sensitif atau dampak pengguna yang ditemukan.                          |
+| `Medium`   | Rilis memiliki otoritas yang berarti, seperti akses akun atau perubahan data. |
+| `High`     | Rilis memiliki otoritas berdampak tinggi, temuan parah, atau sinyal berbahaya. |
 
 Tingkat risiko dan status audit menjawab pertanyaan yang berbeda:
 
 - Tingkat risiko bertanya: "Seberapa besar kuasa yang ada di sini?"
 - Status audit bertanya: "Apa yang harus saya lakukan dengan hasil ini?"
 
-Misalnya, sebuah skill penerbitan dapat menampilkan `Review` dengan risiko `Medium`. Itu
-tidak berarti skill tersebut berbahaya. Artinya skill tersebut tampak selaras dengan tujuan, tetapi dapat
-bertindak dengan otoritas akun yang bermakna.
+Misalnya, keterampilan penerbitan dapat menampilkan `Review` dengan risiko `Medium`. Itu
+tidak berarti keterampilan tersebut berbahaya. Itu berarti keterampilan tersebut tampak selaras dengan tujuan, tetapi dapat
+bertindak dengan otoritas akun yang berarti.
 
 ## Temuan
 
 Temuan menjelaskan mengapa hasil audit ditampilkan. Setiap temuan biasanya mencakup:
 
-- apa artinya
-- mengapa ditandai
-- konten skill atau plugin yang relevan
+- artinya
+- mengapa hal itu ditandai
+- konten keterampilan atau Plugin yang relevan
 - rekomendasi
 
 Temuan dapat diberi label `Info`, `Low`, `Medium`, `High`, atau `Critical`. Temuan dengan
 tingkat keparahan lebih tinggi berkontribusi lebih kuat pada tingkat risiko dan status audit.
 
-Temuan dengan keyakinan rendah disembunyikan dari ringkasan audit publik agar halaman
+Temuan dengan tingkat keyakinan rendah disembunyikan dari ringkasan audit publik agar halaman
 tetap berfokus pada bukti yang berguna.
 
 ## Yang diperiksa ClawHub
 
 ClawHub mengaudit artefak rilis yang dikirimkan, termasuk:
 
-- instruksi skill atau metadata plugin
+- instruksi keterampilan atau metadata Plugin
 - variabel lingkungan dan izin yang dideklarasikan
-- instruksi instalasi dan metadata paket
+- instruksi pemasangan dan metadata paket
 - file yang disertakan dan manifes file
 - metadata kompatibilitas dan kapabilitas
 
 Pertanyaan utamanya adalah koherensi: apakah nama, ringkasan, metadata, otoritas yang diminta,
 dan konten aktual selaras dengan apa yang secara wajar diharapkan pengguna?
 
-Perilaku yang kuat tidak otomatis buruk. Banyak alat berguna membutuhkan kredensial,
-perintah lokal, API penyedia, atau instalasi paket. Audit memeriksa apakah kuasa tersebut
+Perilaku yang kuat tidak otomatis buruk. Banyak alat yang berguna memerlukan kredensial,
+perintah lokal, API penyedia, atau pemasangan paket. Audit memeriksa apakah kuasa tersebut
 diharapkan, diungkapkan, dan proporsional.
 
 Halaman artefak menautkan ke audit lengkap di:
@@ -124,13 +124,13 @@ Halaman audit menggabungkan:
 
 ## VirusTotal
 
-ClawHub menggunakan VirusTotal sebagai telemetri malware dalam rangkaian audit. VirusTotal adalah
-standar industri tepercaya untuk reputasi file dan pemindaian malware, dan
-kemitraan kami memungkinkan ClawHub menambahkan intelijen keamanan yang lebih luas ke peninjauan skill dan plugin.
+ClawHub menggunakan VirusTotal sebagai telemetri malware dalam tumpukan audit. VirusTotal adalah
+standar industri tepercaya untuk reputasi file dan pemindaian malware, dan kemitraan kami
+memungkinkan ClawHub menambahkan intelijen keamanan yang lebih luas ke peninjauan keterampilan dan Plugin.
 
-VirusTotal terutama berguna untuk artefak berbahaya yang diketahui, temuan mesin, dan
-sinyal reputasi yang melengkapi peninjauan ClawHub yang sadar agen. Ketika jumlah mesin
-vendor tersedia, audit merangkumnya dalam bahasa sederhana, seperti:
+VirusTotal sangat berguna untuk artefak berbahaya yang sudah dikenal, deteksi mesin, dan
+sinyal reputasi yang melengkapi peninjauan ClawHub yang sadar agen. Saat jumlah mesin vendor
+tersedia, audit merangkumnya dalam bahasa sederhana, seperti:
 
 ```text
 62/62 vendors flagged this skill as clean.
@@ -142,29 +142,29 @@ atau:
 2/64 vendors flagged this skill as malicious, 1/64 flagged it as suspicious, and 61/64 flagged it as clean.
 ```
 
-Ketika ClawHub tidak memiliki telemetri jumlah vendor untuk dirangkum, audit menyatakan:
+Saat ClawHub tidak memiliki telemetri jumlah vendor untuk dirangkum, audit menyatakan:
 
 ```text
 No VirusTotal findings
 ```
 
-VirusTotal tetap merupakan telemetri. Ini tidak menggantikan analisis risiko ClawHub sendiri
+VirusTotal tetap merupakan telemetri. Ia tidak menggantikan analisis risiko ClawHub sendiri
 yang sadar artefak.
 
 ## Analisis risiko
 
-Analisis risiko ditenagai secara internal oleh ClawScan, sistem audit keamanan milik
-ClawHub sendiri. Sistem ini meninjau setiap rilis sebagai artefak yang menghadap agen: instruksi,
+Analisis risiko didukung secara internal oleh ClawScan, sistem audit keamanan milik ClawHub
+sendiri. Sistem ini meninjau setiap rilis sebagai artefak yang berhadapan dengan agen: instruksi,
 metadata, izin yang dideklarasikan, file, sinyal kapabilitas, sinyal pemindaian statis,
-temuan SkillSpector, telemetri VirusTotal, dan konteks yang disediakan penerbit.
+temuan SkillSpector, telemetri VirusTotal, dan konteks yang diberikan penerbit.
 Sinyal pemindaian statis adalah konteks internal untuk peninjauan ini; sinyal tersebut bukan
-bagian audit publik mandiri atau vonis yang memblokir instalasi.
+bagian audit publik mandiri atau putusan yang memblokir pemasangan.
 
 Analisis risiko menggunakan
 [OWASP Agentic Skills Top 10](https://owasp.org/www-project-agentic-skills-top-10/)
 sebagai lensa untuk risiko seperti injeksi prompt, penyalahgunaan alat, paparan kredensial,
 eksekusi tidak aman, peracunan memori atau konteks, dan agensi berlebihan.
 
-ClawScan tidak memperlakukan kapabilitas yang tampak menakutkan sebagai sesuatu yang otomatis berbahaya.
-ClawScan menanyakan apakah kapabilitas tersebut diungkapkan, selaras dengan tujuan, dan didukung oleh
+ClawScan tidak memperlakukan kapabilitas yang tampak menakutkan sebagai otomatis berbahaya.
+Ia menanyakan apakah kapabilitas tersebut diungkapkan, selaras dengan tujuan, dan didukung oleh
 kasus penggunaan yang dinyatakan rilis tersebut.

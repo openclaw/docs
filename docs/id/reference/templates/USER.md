@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 599bd4d663c852bca679a341d53605c1a48b7cd7601bd7d102ee5407828dbacb
     source_path: reference/templates/USER.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # USER.md - Tentang Manusia Anda

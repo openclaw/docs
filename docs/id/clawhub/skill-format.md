@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Menerbitkan Skills
+    - Mempublikasikan Skills
     - Men-debug kegagalan publikasi
-summary: Format folder Skill, berkas wajib, jenis berkas yang diizinkan, batasan.
+summary: Format folder Skill, file wajib, jenis file yang diizinkan, batasan.
 x-i18n:
-    generated_at: "2026-06-28T07:42:12Z"
+    generated_at: "2026-06-28T10:03:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -13,46 +13,46 @@ x-i18n:
     workflow: 16
 ---
 
-# Format Skill
+# Format skill
 
 ## Di disk
 
-Sebuah skill adalah folder.
+Skill adalah sebuah folder.
 
 Wajib:
 
-- `SKILL.md` (atau `skill.md`; `skills.md` lama juga diterima)
+- `SKILL.md` (atau `skill.md`; legacy `skills.md` juga diterima)
 
 Opsional:
 
-- file pendukung _berbasis teks_ apa pun (lihat “File yang diizinkan”)
-- `.clawhubignore` (pola pengabaian untuk penerbitan, `.clawdhubignore` lama)
+- file _berbasis teks_ pendukung apa pun (lihat “File yang diizinkan”)
+- `.clawhubignore` (pola abaikan untuk publikasi, legacy `.clawdhubignore`)
 - `.gitignore` (juga dihormati)
 
 ## Impor GitHub
 
-Pengimpor GitHub web lebih ketat daripada penerbitan/sinkronisasi lokal. Ia hanya menemukan
-file `SKILL.md` atau `skills.md` lama di repositori publik non-fork yang dimiliki oleh
-akun GitHub yang sedang masuk. Ia tidak mengimpor repo privat, fork,
+Pengimpor GitHub web lebih ketat daripada publish/sync lokal. Pengimpor ini hanya menemukan
+file `SKILL.md` atau legacy `skills.md` di repositori publik, non-fork, yang dimiliki oleh
+akun GitHub yang sedang login. Pengimpor ini tidak mengimpor repo privat, fork,
 repo yang diarsipkan/dinonaktifkan, atau repo publik pihak ketiga.
 
-Metadata instalasi lokal (ditulis oleh CLI):
+Metadata instal lokal (ditulis oleh CLI):
 
-- `<skill>/.clawhub/origin.json` (`.clawdhub` lama)
+- `<skill>/.clawhub/origin.json` (legacy `.clawdhub`)
 
-Status instalasi workdir (ditulis oleh CLI):
+Status instal workdir (ditulis oleh CLI):
 
-- `<workdir>/.clawhub/lock.json` (`.clawdhub` lama)
+- `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`)
 
 ## `SKILL.md`
 
 - Markdown dengan frontmatter YAML opsional.
-- Server mengekstrak metadata dari frontmatter saat penerbitan.
+- Server mengekstrak metadata dari frontmatter selama publikasi.
 - `description` digunakan sebagai ringkasan skill di UI/pencarian.
 
 ## Metadata frontmatter
 
-Metadata skill dideklarasikan di frontmatter YAML di bagian atas `SKILL.md` Anda. Ini memberi tahu registry (dan analisis keamanan) apa yang dibutuhkan skill Anda untuk berjalan.
+Metadata skill dideklarasikan dalam frontmatter YAML di bagian atas `SKILL.md` Anda. Ini memberi tahu registry (dan analisis keamanan) apa yang dibutuhkan skill Anda untuk berjalan.
 
 ### Frontmatter dasar
 
@@ -66,7 +66,7 @@ version: 1.0.0
 
 ### Metadata runtime (`metadata.openclaw`)
 
-Deklarasikan kebutuhan runtime skill Anda di bawah `metadata.openclaw` (alias: `metadata.clawdbot`, `metadata.clawdis`).
+Deklarasikan persyaratan runtime skill Anda di bawah `metadata.openclaw` (alias: `metadata.clawdbot`, `metadata.clawdis`).
 
 ```yaml
 ---
@@ -83,30 +83,30 @@ metadata:
 ---
 ```
 
-Gunakan `requires.env` untuk variabel lingkungan yang harus ada sebelum skill dapat berjalan. Gunakan `envVars` saat Anda membutuhkan metadata per variabel, termasuk variabel opsional dengan `required: false`.
+Gunakan `requires.env` untuk variabel lingkungan yang harus ada sebelum skill dapat berjalan. Gunakan `envVars` ketika Anda membutuhkan metadata per variabel, termasuk variabel opsional dengan `required: false`.
 
-### Referensi bidang lengkap
+### Referensi lengkap field
 
-| Bidang             | Tipe       | Deskripsi                                                                                                                                         |
-| ------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `requires.env`     | `string[]` | Variabel lingkungan wajib yang diharapkan oleh skill Anda.                                                                                        |
-| `requires.bins`    | `string[]` | Biner CLI yang semuanya harus terinstal.                                                                                                          |
-| `requires.anyBins` | `string[]` | Biner CLI dengan minimal satu yang harus ada.                                                                                                     |
-| `requires.config`  | `string[]` | Jalur file konfigurasi yang dibaca oleh skill Anda.                                                                                               |
-| `primaryEnv`       | `string`   | Variabel lingkungan kredensial utama untuk skill Anda.                                                                                            |
-| `envVars`          | `array`    | Deklarasi variabel lingkungan dengan `name`, `required` opsional, dan `description` opsional. Atur `required: false` untuk variabel lingkungan opsional. |
-| `always`           | `boolean`  | Jika `true`, skill selalu aktif (tidak perlu instalasi eksplisit).                                                                                |
-| `skillKey`         | `string`   | Menimpa kunci pemanggilan skill.                                                                                                                  |
-| `emoji`            | `string`   | Emoji tampilan untuk skill.                                                                                                                       |
-| `homepage`         | `string`   | URL ke beranda atau dokumentasi skill.                                                                                                            |
-| `os`               | `string[]` | Batasan OS (mis. `["macos"]`, `["linux"]`).                                                                                                       |
-| `install`          | `array`    | Spesifikasi instalasi untuk dependensi (lihat di bawah).                                                                                          |
-| `nix`              | `object`   | Spesifikasi plugin Nix (lihat README).                                                                                                            |
-| `config`           | `object`   | Spesifikasi konfigurasi Clawdbot (lihat README).                                                                                                  |
+| Field              | Type       | Deskripsi                                                                                                                                       |
+| ------------------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `requires.env`     | `string[]` | Variabel lingkungan wajib yang diharapkan oleh skill Anda.                                                                                      |
+| `requires.bins`    | `string[]` | Binary CLI yang semuanya harus terinstal.                                                                                                       |
+| `requires.anyBins` | `string[]` | Binary CLI yang minimal salah satunya harus ada.                                                                                                |
+| `requires.config`  | `string[]` | Path file konfigurasi yang dibaca skill Anda.                                                                                                   |
+| `primaryEnv`       | `string`   | Env var kredensial utama untuk skill Anda.                                                                                                      |
+| `envVars`          | `array`    | Deklarasi variabel lingkungan dengan `name`, `required` opsional, dan `description` opsional. Atur `required: false` untuk env var opsional.    |
+| `always`           | `boolean`  | Jika `true`, skill selalu aktif (tidak perlu instal eksplisit).                                                                                 |
+| `skillKey`         | `string`   | Mengganti kunci pemanggilan skill.                                                                                                              |
+| `emoji`            | `string`   | Emoji tampilan untuk skill.                                                                                                                     |
+| `homepage`         | `string`   | URL ke beranda atau dokumentasi skill.                                                                                                          |
+| `os`               | `string[]` | Pembatasan OS (mis. `["macos"]`, `["linux"]`).                                                                                                  |
+| `install`          | `array`    | Spesifikasi instal untuk dependensi (lihat di bawah).                                                                                           |
+| `nix`              | `object`   | Spesifikasi Plugin Nix (lihat README).                                                                                                          |
+| `config`           | `object`   | Spesifikasi konfigurasi Clawdbot (lihat README).                                                                                                |
 
-### Spesifikasi instalasi
+### Spesifikasi instal
 
-Jika skill Anda membutuhkan dependensi yang diinstal, deklarasikan di array `install`:
+Jika skill Anda membutuhkan dependensi yang diinstal, deklarasikan dalam array `install`:
 
 ```yaml
 metadata:
@@ -120,7 +120,7 @@ metadata:
         bins: [tsc]
 ```
 
-Jenis instalasi yang didukung: `brew`, `node`, `go`, `uv`.
+Jenis instal yang didukung: `brew`, `node`, `go`, `uv`.
 
 ### Variabel lingkungan opsional
 
@@ -141,7 +141,7 @@ metadata:
 
 ### Mengapa ini penting
 
-Analisis keamanan ClawHub memeriksa bahwa apa yang dideklarasikan skill Anda cocok dengan apa yang sebenarnya dilakukannya. Jika kode Anda merujuk `TODOIST_API_KEY` tetapi frontmatter Anda tidak mendeklarasikannya di bawah `requires.env`, `primaryEnv`, atau `envVars`, analisis akan menandai ketidakcocokan metadata. Menjaga deklarasi tetap akurat membantu skill Anda lolos tinjauan dan membantu pengguna memahami apa yang mereka instal.
+Analisis keamanan ClawHub memeriksa bahwa apa yang dideklarasikan skill Anda sesuai dengan apa yang benar-benar dilakukannya. Jika kode Anda mereferensikan `TODOIST_API_KEY` tetapi frontmatter Anda tidak mendeklarasikannya di bawah `requires.env`, `primaryEnv`, atau `envVars`, analisis akan menandai ketidaksesuaian metadata. Menjaga deklarasi tetap akurat membantu skill Anda lolos review dan membantu pengguna memahami apa yang mereka instal.
 
 ### Contoh: frontmatter lengkap
 
@@ -172,37 +172,37 @@ metadata:
 
 ## File yang diizinkan
 
-Hanya file “berbasis teks” yang diterima oleh penerbitan.
+Hanya file “berbasis teks” yang diterima oleh publish.
 
-- Daftar ekstensi yang diizinkan ada di `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`).
-- File skrip tetap dipindai setelah unggahan; file PowerShell `.ps1`, `.psm1`, dan `.psd1` diterima sebagai teks.
-- Jenis konten yang dimulai dengan `text/` diperlakukan sebagai teks; ditambah daftar kecil yang diizinkan (JSON/YAML/TOML/JS/TS/Markdown/SVG).
+- Allowlist ekstensi ada di `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`).
+- File skrip tetap dipindai setelah upload; file PowerShell `.ps1`, `.psm1`, dan `.psd1` diterima sebagai teks.
+- Jenis konten yang dimulai dengan `text/` diperlakukan sebagai teks; ditambah allowlist kecil (JSON/YAML/TOML/JS/TS/Markdown/SVG).
 
 Batas (sisi server):
 
-- Ukuran total bundel: 50MB.
-- Teks embedding mencakup `SKILL.md` + hingga sekitar 40 file non-`.md` (batas upaya terbaik).
+- Total ukuran bundle: 50MB.
+- Teks embedding mencakup `SKILL.md` + hingga sekitar 40 file non-`.md` (batas best-effort).
 
 ## Slug
 
 - Diturunkan dari nama folder secara default.
-- Scope paket harus sama persis dengan handle penerbit ClawHub. Handle penerbit dapat menggunakan huruf kecil, angka, tanda hubung, titik, dan garis bawah; harus dimulai dan diakhiri dengan huruf kecil atau angka.
+- Scope paket harus sama persis dengan handle publisher ClawHub. Handle publisher dapat menggunakan huruf kecil, angka, tanda hubung, titik, dan garis bawah; harus diawali dan diakhiri dengan huruf kecil atau angka.
 - Slug paket harus huruf kecil dan aman untuk npm, misalnya `@example.tools/demo-plugin` atau `demo-plugin`.
 
-## Pembuatan versi + tag
+## Versioning + tag
 
-- Setiap penerbitan membuat versi baru (semver).
-- Tag adalah penunjuk string ke sebuah versi; `latest` umum digunakan.
+- Setiap publikasi membuat versi baru (semver).
+- Tag adalah pointer string ke sebuah versi; `latest` umum digunakan.
 
 ## Lisensi
 
-- Semua skill yang diterbitkan di ClawHub dilisensikan di bawah `MIT-0`.
-- Siapa pun boleh menggunakan, memodifikasi, dan mendistribusikan ulang skill yang diterbitkan, termasuk secara komersial.
-- Atribusi tidak diperlukan.
-- Jangan tambahkan ketentuan lisensi yang bertentangan di `SKILL.md`; ClawHub tidak mendukung penimpaan lisensi per skill.
+- Semua skills yang dipublikasikan di ClawHub dilisensikan di bawah `MIT-0`.
+- Siapa pun boleh menggunakan, memodifikasi, dan mendistribusikan ulang skills yang dipublikasikan, termasuk secara komersial.
+- Atribusi tidak diwajibkan.
+- Jangan tambahkan ketentuan lisensi yang bertentangan di `SKILL.md`; ClawHub tidak mendukung override lisensi per skill.
 
 ## Skill berbayar
 
-- ClawHub tidak mendukung skill berbayar, harga per skill, paywall, atau pembagian pendapatan.
-- Jangan tambahkan metadata harga ke `SKILL.md`; itu bukan bagian dari format skill dan tidak akan membuat skill yang diterbitkan menjadi berbayar.
-- Jika skill Anda terintegrasi dengan layanan pihak ketiga berbayar, dokumentasikan biaya eksternal dan akun yang diperlukan dengan jelas dalam instruksi skill dan deklarasi env (`requires.env` untuk variabel wajib, atau `envVars` dengan `required: false` untuk variabel opsional).
+- ClawHub tidak mendukung skill berbayar, penetapan harga per skill, paywall, atau pembagian pendapatan.
+- Jangan tambahkan metadata harga ke `SKILL.md`; itu bukan bagian dari format skill dan tidak akan membuat skill yang dipublikasikan menjadi berbayar.
+- Jika skill Anda terintegrasi dengan layanan pihak ketiga berbayar, dokumentasikan biaya eksternal dan akun yang diperlukan secara jelas dalam instruksi skill dan deklarasi env (`requires.env` untuk variabel wajib, atau `envVars` dengan `required: false` untuk variabel opsional).

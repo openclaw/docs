@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Dukungan Zalo Personal untuk OpenClaw melalui sebuah Plugin, menggunakan `zca-js` native untuk mengotomatiskan akun pengguna Zalo biasa.

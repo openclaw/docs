@@ -8,6 +8,7 @@ x-i18n:
     source_hash: e7784858f6d2594a1d6019435b2a5a1647e12f5de6329198db9539e325f73737
     source_path: automation/troubleshooting.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Halaman ini dipindahkan ke [Scheduled Tasks](/id/automation/cron-jobs#troubleshooting). Lihat [Scheduled Tasks](/id/automation/cron-jobs#troubleshooting) untuk dokumentasi pemecahan masalah.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Saat `channels.matrix.streaming` bernilai `"quiet"`, OpenClaw mengedit satu event pratinjau di tempat dan menandai edit final dengan flag konten khusus. Klien Matrix memberi notifikasi pada edit final hanya jika aturan push per pengguna cocok dengan flag tersebut. Halaman ini ditujukan untuk operator yang meng-host Matrix sendiri dan ingin memasang aturan tersebut untuk setiap akun penerima.
