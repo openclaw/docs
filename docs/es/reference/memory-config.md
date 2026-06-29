@@ -2,22 +2,22 @@
 read_when:
     - Quieres configurar proveedores de búsqueda de memoria o modelos de embeddings
     - Quieres configurar el backend de QMD
-    - Quieres ajustar la búsqueda híbrida, MMR o el decaimiento temporal
-    - Quiere habilitar la indexación de memoria multimodal
+    - Quieres ajustar la búsqueda híbrida, MMR o la decadencia temporal
+    - Quieres habilitar la indexación de memoria multimodal
 sidebarTitle: Memory config
-summary: Todas las opciones de configuración para búsqueda en memoria, proveedores de embeddings, QMD, búsqueda híbrida e indexación multimodal
+summary: Todos los parámetros de configuración para búsqueda en memoria, proveedores de embeddings, QMD, búsqueda híbrida e indexación multimodal
 title: Referencia de configuración de memoria
 x-i18n:
-    generated_at: "2026-06-27T12:52:07Z"
+    generated_at: "2026-06-28T22:33:28Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d8f5880fef3fbdf81e546b0309a0e53459bae47e16efd787f87e34050d8c7b1e
+    source_hash: de7d1c23cd415293001ef59ae2572cd7bfe9a88c70c1e4cf138ee60664ff0ac2
     source_path: reference/memory-config.md
     workflow: 16
 ---
 
-Esta página enumera todos los controles de configuración para la búsqueda de memoria de OpenClaw. Para descripciones conceptuales, consulta:
+Esta página enumera cada opción de configuración para la búsqueda de memoria de OpenClaw. Para descripciones conceptuales generales, consulta:
 
 <CardGroup cols={2}>
   <Card title="Descripción general de la memoria" href="/es/concepts/memory">
@@ -27,7 +27,7 @@ Esta página enumera todos los controles de configuración para la búsqueda de 
     Backend SQLite predeterminado.
   </Card>
   <Card title="Motor QMD" href="/es/concepts/memory-qmd">
-    Componente auxiliar con prioridad local.
+    Sidecar local-first.
   </Card>
   <Card title="Búsqueda de memoria" href="/es/concepts/memory-search">
     Canalización de búsqueda y ajuste.
@@ -37,59 +37,59 @@ Esta página enumera todos los controles de configuración para la búsqueda de 
   </Card>
 </CardGroup>
 
-Todas las opciones de búsqueda de memoria se encuentran en `agents.defaults.memorySearch` en `openclaw.json`, salvo que se indique lo contrario.
+Todas las opciones de búsqueda de memoria viven bajo `agents.defaults.memorySearch` en `openclaw.json`, salvo que se indique lo contrario.
 
 <Note>
-Si buscas el conmutador de la función **Active Memory** y la configuración del subagente, eso se encuentra en `plugins.entries.active-memory` en lugar de `memorySearch`.
+Si buscas el interruptor de la función **Active Memory** y la configuración del subagente, eso vive bajo `plugins.entries.active-memory` en lugar de `memorySearch`.
 
-Active Memory usa un modelo de dos compuertas:
+Active Memory usa un modelo de dos puertas:
 
 1. el Plugin debe estar habilitado y apuntar al id del agente actual
-2. la solicitud debe ser una sesión de chat persistente interactiva apta
+2. la solicitud debe ser una sesión de chat interactiva persistente elegible
 
-Consulta [Active Memory](/es/concepts/active-memory) para ver el modelo de activación, la configuración propiedad del Plugin, la persistencia de transcripciones y el patrón de despliegue seguro.
+Consulta [Active Memory](/es/concepts/active-memory) para el modelo de activación, la configuración propiedad del Plugin, la persistencia de transcripciones y el patrón de despliegue seguro.
 </Note>
 
 ---
 
-## Selección de proveedor
+## Selección del proveedor
 
-| Clave      | Tipo      | Predeterminado        | Descripción                                                                                                                                                                                                                                                                                    |
-| ---------- | --------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider` | `string`  | `"openai"`            | ID de adaptador de embeddings como `bedrock`, `deepinfra`, `gemini`, `github-copilot`, `local`, `mistral`, `ollama`, `openai`, `openai-compatible` o `voyage`; también puede ser un `models.providers.<id>` configurado cuyo `api` apunte a un adaptador de embeddings de memoria o a una API de modelo compatible con OpenAI |
-| `model`    | `string`  | predeterminado del proveedor | Nombre del modelo de embeddings                                                                                                                                                                                                                                                                |
-| `fallback` | `string`  | `"none"`              | ID del adaptador de reserva cuando el principal falla                                                                                                                                                                                                                                          |
-| `enabled`  | `boolean` | `true`                | Habilita o deshabilita la búsqueda de memoria                                                                                                                                                                                                                                                  |
+| Clave      | Tipo      | Predeterminado          | Descripción                                                                                                                                                                                                                                                                                 |
+| ---------- | --------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider` | `string`  | `"openai"`              | ID de adaptador de embeddings como `bedrock`, `deepinfra`, `gemini`, `github-copilot`, `local`, `mistral`, `ollama`, `openai`, `openai-compatible` o `voyage`; también puede ser un `models.providers.<id>` configurado cuyo `api` apunte a un adaptador de embeddings de memoria o a una API de modelo compatible con OpenAI |
+| `model`    | `string`  | predeterminado del proveedor | Nombre del modelo de embeddings                                                                                                                                                                                                                                                            |
+| `fallback` | `string`  | `"none"`                | ID de adaptador de reserva cuando el principal falla                                                                                                                                                                                                                                        |
+| `enabled`  | `boolean` | `true`                  | Habilitar o deshabilitar la búsqueda de memoria                                                                                                                                                                                                                                             |
 
-Cuando `provider` no está definido, OpenClaw usa embeddings de OpenAI. Define `provider`
+Cuando `provider` no está configurado, OpenClaw usa embeddings de OpenAI. Configura `provider`
 explícitamente para usar Gemini, Voyage, Mistral, DeepInfra, Bedrock, GitHub Copilot,
 Ollama, un modelo GGUF local o un endpoint `/v1/embeddings` compatible con OpenAI.
-Las configuraciones heredadas que aún dicen `provider: "auto"` se resuelven como `openai`.
+Las configuraciones heredadas que todavía dicen `provider: "auto"` se resuelven como `openai`.
 
 <Warning>
 Cambiar el proveedor de embeddings, el modelo, la configuración del proveedor, las fuentes, el alcance,
-la fragmentación o el tokenizer puede hacer que el índice vectorial SQLite existente sea incompatible.
-OpenClaw pausa la búsqueda vectorial e informa una advertencia de identidad de índice en lugar de
-volver a generar automáticamente todos los embeddings. Reconstrúyelo cuando estés listo con
+la fragmentación o el tokenizador puede hacer incompatible el índice vectorial SQLite existente.
+OpenClaw pausa la búsqueda vectorial y notifica una advertencia de identidad del índice en lugar de
+volver a generar embeddings automáticamente para todo. Reconstrúyelo cuando estés listo con
 `openclaw memory status --index --agent <id>` o
 `openclaw memory index --force --agent <id>`.
 </Warning>
 
-Cuando `provider` no está definido, existe el `provider: "auto"` heredado o
-`provider: "none"` selecciona intencionalmente el modo solo FTS, la recuperación de memoria aún puede
+Cuando `provider` no está definido, está presente el `provider: "auto"` heredado, o
+`provider: "none"` selecciona intencionadamente el modo solo FTS, la recuperación de memoria todavía puede
 usar la clasificación FTS léxica cuando los embeddings no están disponibles.
 
-Los proveedores explícitos no locales fallan de forma cerrada. Si defines `memorySearch.provider` como
-un proveedor concreto con respaldo remoto, como OpenAI, Gemini, Voyage, Mistral,
+Los proveedores explícitos no locales fallan de forma cerrada. Si configuras `memorySearch.provider` con
+un proveedor concreto respaldado por remoto como OpenAI, Gemini, Voyage, Mistral,
 Bedrock, GitHub Copilot, DeepInfra, Ollama, LM Studio o un proveedor personalizado
 compatible con OpenAI, y ese proveedor no está disponible en tiempo de ejecución, `memory_search`
-devuelve un resultado no disponible en lugar de usar silenciosamente la recuperación solo FTS. Corrige la
-configuración del proveedor o de autenticación, cambia a un proveedor accesible o define
-`provider: "none"` si quieres una recuperación solo FTS deliberada.
+devuelve un resultado no disponible en lugar de usar silenciosamente recuperación solo FTS. Corrige la
+configuración de proveedor/autenticación, cambia a un proveedor alcanzable o configura
+`provider: "none"` si quieres una recuperación deliberadamente solo FTS.
 
 ### IDs de proveedor personalizados
 
-`memorySearch.provider` puede apuntar a una entrada personalizada `models.providers.<id>` para adaptadores de proveedor específicos de memoria como `ollama`, o para APIs de modelo compatibles con OpenAI como `openai-responses` / `openai-completions`. OpenClaw resuelve el propietario `api` de ese proveedor para el adaptador de embeddings mientras conserva el id de proveedor personalizado para el manejo de endpoint, autenticación y prefijos de modelo. Esto permite que las configuraciones multi-GPU o multi-host dediquen los embeddings de memoria a un endpoint local específico:
+`memorySearch.provider` puede apuntar a una entrada personalizada `models.providers.<id>` para adaptadores de proveedor específicos de memoria como `ollama`, o para APIs de modelo compatibles con OpenAI como `openai-responses` / `openai-completions`. OpenClaw resuelve el propietario de `api` de ese proveedor para el adaptador de embeddings, conservando a la vez el ID de proveedor personalizado para el manejo de endpoint, autenticación y prefijo de modelo. Esto permite que las configuraciones multi-GPU o multi-host dediquen los embeddings de memoria a un endpoint local específico:
 
 ```json5
 {
@@ -114,9 +114,9 @@ configuración del proveedor o de autenticación, cambia a un proveedor accesibl
 }
 ```
 
-### Resolución de claves de API
+### Resolución de clave de API
 
-Los embeddings remotos requieren una clave de API. Bedrock usa en su lugar la cadena de credenciales predeterminada del SDK de AWS (roles de instancia, SSO, claves de acceso).
+Los embeddings remotos requieren una clave de API. Bedrock usa en su lugar la cadena de credenciales predeterminada del AWS SDK (roles de instancia, SSO, claves de acceso).
 
 | Proveedor      | Variable de entorno                              | Clave de configuración             |
 | -------------- | ------------------------------------------------ | ---------------------------------- |
@@ -130,24 +130,24 @@ Los embeddings remotos requieren una clave de API. Bedrock usa en su lugar la ca
 | Voyage         | `VOYAGE_API_KEY`                                 | `models.providers.voyage.apiKey`   |
 
 <Note>
-OAuth de Codex cubre solo chat/completions y no satisface solicitudes de embeddings.
+Codex OAuth cubre solo chat/completions y no satisface solicitudes de embeddings.
 </Note>
 
 ---
 
 ## Configuración de endpoint remoto
 
-Usa `provider: "openai-compatible"` para un servidor genérico
-`/v1/embeddings` compatible con OpenAI que no deba heredar las credenciales globales de chat de OpenAI.
+Usa `provider: "openai-compatible"` para un servidor genérico `/v1/embeddings`
+compatible con OpenAI que no deba heredar las credenciales globales de chat de OpenAI.
 
 <ParamField path="remote.baseUrl" type="string">
   URL base personalizada de la API.
 </ParamField>
 <ParamField path="remote.apiKey" type="string">
-  Sobrescribe la clave de API.
+  Sobrescribir clave de API.
 </ParamField>
 <ParamField path="remote.headers" type="object">
-  Cabeceras HTTP adicionales (combinadas con los valores predeterminados del proveedor).
+  Encabezados HTTP adicionales (combinados con los valores predeterminados del proveedor).
 </ParamField>
 
 ```json5
@@ -169,14 +169,14 @@ Usa `provider: "openai-compatible"` para un servidor genérico
 
 ---
 
-## Configuración específica por proveedor
+## Configuración específica del proveedor
 
 <AccordionGroup>
   <Accordion title="Gemini">
-    | Clave                  | Tipo     | Predeterminado         | Descripción                                 |
-    | ---------------------- | -------- | ---------------------- | ------------------------------------------- |
+    | Clave                  | Tipo     | Predeterminado        | Descripción                                |
+    | ---------------------- | -------- | --------------------- | ------------------------------------------ |
     | `model`                | `string` | `gemini-embedding-001` | También admite `gemini-embedding-2-preview` |
-    | `outputDimensionality` | `number` | `3072`                 | Para Embedding 2: 768, 1536 o 3072          |
+    | `outputDimensionality` | `number` | `3072`                | Para Embedding 2: 768, 1536 o 3072        |
 
     <Warning>
     Cambiar el modelo o `outputDimensionality` cambia la identidad del índice. OpenClaw
@@ -187,11 +187,11 @@ Usa `provider: "openai-compatible"` para un servidor genérico
   <Accordion title="Tipos de entrada compatibles con OpenAI">
     Los endpoints de embeddings compatibles con OpenAI pueden optar por campos de solicitud `input_type` específicos del proveedor. Esto es útil para modelos de embeddings asimétricos que requieren etiquetas diferentes para embeddings de consulta y de documento.
 
-    | Clave               | Tipo     | Predeterminado | Descripción                                                    |
-    | ------------------- | -------- | -------------- | -------------------------------------------------------------- |
+    | Clave               | Tipo     | Predeterminado | Descripción                                             |
+    | ------------------- | -------- | -------------- | ------------------------------------------------------- |
     | `inputType`         | `string` | sin definir    | `input_type` compartido para embeddings de consulta y documento |
-    | `queryInputType`    | `string` | sin definir    | `input_type` en tiempo de consulta; sobrescribe `inputType`    |
-    | `documentInputType` | `string` | sin definir    | `input_type` de índice/documento; sobrescribe `inputType`      |
+    | `queryInputType`    | `string` | sin definir    | `input_type` en tiempo de consulta; sobrescribe `inputType` |
+    | `documentInputType` | `string` | sin definir    | `input_type` de índice/documento; sobrescribe `inputType` |
 
     ```json5
     {
@@ -212,13 +212,13 @@ Usa `provider: "openai-compatible"` para un servidor genérico
     }
     ```
 
-    Cambiar estos valores afecta la identidad de la caché de embeddings para la indexación por lotes del proveedor y debe ir seguido de una reindexación de memoria cuando el modelo ascendente trate las etiquetas de forma diferente.
+    Cambiar estos valores afecta a la identidad de caché de embeddings para la indexación por lotes del proveedor y debe ir seguido de una reindexación de memoria cuando el modelo upstream trate las etiquetas de forma diferente.
 
   </Accordion>
   <Accordion title="Bedrock">
     ### Configuración de embeddings de Bedrock
 
-    Bedrock usa la cadena de credenciales predeterminada del SDK de AWS; no se necesitan claves de API. Si OpenClaw se ejecuta en EC2 con un rol de instancia habilitado para Bedrock, basta con definir el proveedor y el modelo:
+    Bedrock usa la cadena de credenciales predeterminada del AWS SDK; no se necesitan claves de API. Si OpenClaw se ejecuta en EC2 con un rol de instancia habilitado para Bedrock, solo configura el proveedor y el modelo:
 
     ```json5
     {
@@ -233,14 +233,14 @@ Usa `provider: "openai-compatible"` para un servidor genérico
     }
     ```
 
-    | Clave                  | Tipo     | Predeterminado               | Descripción                         |
-    | ---------------------- | -------- | ----------------------------- | ----------------------------------- |
+    | Clave                  | Tipo     | Predeterminado                 | Descripción                     |
+    | ---------------------- | -------- | ------------------------------ | ------------------------------- |
     | `model`                | `string` | `amazon.titan-embed-text-v2:0` | Cualquier ID de modelo de embeddings de Bedrock |
-    | `outputDimensionality` | `number` | predeterminado del modelo     | Para Titan V2: 256, 512 o 1024      |
+    | `outputDimensionality` | `number` | predeterminado del modelo      | Para Titan V2: 256, 512 o 1024 |
 
     **Modelos admitidos** (con detección de familia y valores predeterminados de dimensión):
 
-    | ID de modelo                               | Proveedor  | Dimensiones predeterminadas | Dimensiones configurables |
+    | ID de modelo                              | Provider   | Dimensiones predeterminadas | Dimensiones configurables |
     | ------------------------------------------ | ---------- | ------------ | -------------------- |
     | `amazon.titan-embed-text-v2:0`             | Amazon     | 1024         | 256, 512, 1024       |
     | `amazon.titan-embed-text-v1`               | Amazon     | 1536         | --                   |
@@ -263,7 +263,7 @@ Usa `provider: "openai-compatible"` para un servidor genérico
     4. Archivos compartidos de credenciales y configuración
     5. Credenciales de metadatos de ECS o EC2
 
-    La región se resuelve desde `AWS_REGION`, `AWS_DEFAULT_REGION`, el `baseUrl` del proveedor `amazon-bedrock`, o usa `us-east-1` de forma predeterminada.
+    La región se resuelve desde `AWS_REGION`, `AWS_DEFAULT_REGION`, el `baseUrl` del Provider `amazon-bedrock`, o usa `us-east-1` de forma predeterminada.
 
     **Permisos de IAM:** el rol o usuario de IAM necesita:
 
@@ -275,7 +275,7 @@ Usa `provider: "openai-compatible"` para un servidor genérico
     }
     ```
 
-    Para privilegios mínimos, delimita `InvokeModel` al modelo específico:
+    Para aplicar privilegios mínimos, limite `InvokeModel` al modelo específico:
 
     ```
     arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0
@@ -286,20 +286,20 @@ Usa `provider: "openai-compatible"` para un servidor genérico
     | Clave                 | Tipo               | Predeterminado        | Descripción                                                                                                                                                                                                                                                                                                          |
     | --------------------- | ------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | `local.modelPath`     | `string`           | descargado automáticamente | Ruta al archivo de modelo GGUF                                                                                                                                                                                                                                                                                       |
-    | `local.modelCacheDir` | `string`           | predeterminado de node-llama-cpp | Directorio de caché para los modelos descargados                                                                                                                                                                                                                                                                     |
-    | `local.contextSize`   | `number \| "auto"` | `4096`                 | Tamaño de la ventana de contexto para el contexto de embeddings. 4096 cubre fragmentos típicos (128–512 tokens) y limita la VRAM no destinada a pesos. Redúcelo a 1024–2048 en hosts limitados. `"auto"` usa el máximo entrenado del modelo: no se recomienda para modelos de 8B+ (Qwen3-Embedding-8B: 40 960 tokens → ~32 GB de VRAM frente a ~8.8 GB con 4096). |
+    | `local.modelCacheDir` | `string`           | predeterminado de node-llama-cpp | Directorio de caché para los modelos descargados                                                                                                                                                                                                                                                           |
+    | `local.contextSize`   | `number \| "auto"` | `4096`                 | Tamaño de la ventana de contexto para el contexto de embeddings. 4096 cubre fragmentos típicos (128-512 tokens) mientras limita la VRAM no correspondiente a pesos. Redúzcalo a 1024-2048 en hosts con recursos limitados. `"auto"` usa el máximo entrenado del modelo; no se recomienda para modelos de 8B o más (Qwen3-Embedding-8B: 40 960 tokens -> ~32 GB de VRAM frente a ~8.8 GB con 4096). |
 
-    Instala primero el proveedor oficial de llama.cpp: `openclaw plugins install @openclaw/llama-cpp-provider`.
+    Instale primero el Provider oficial de llama.cpp: `openclaw plugins install @openclaw/llama-cpp-provider`.
     Modelo predeterminado: `embeddinggemma-300m-qat-Q8_0.gguf` (~0.6 GB, descargado automáticamente). Los checkouts de código fuente aún requieren aprobación de compilación nativa: `pnpm approve-builds` y luego `pnpm rebuild node-llama-cpp`.
 
-    Usa la CLI independiente para verificar la misma ruta de proveedor que usa el Gateway:
+    Use la CLI independiente para verificar la misma ruta del Provider que usa el Gateway:
 
     ```bash
     openclaw memory status --deep --agent main
     openclaw memory index --force --agent main
     ```
 
-    Define `provider: "local"` explícitamente para embeddings GGUF locales. Las referencias de modelo `hf:` y HTTP(S) son compatibles con configuraciones locales explícitas, pero no cambian el proveedor predeterminado.
+    Establezca `provider: "local"` explícitamente para embeddings GGUF locales. Las referencias de modelo `hf:` y HTTP(S) son compatibles con configuraciones locales explícitas, pero no cambian el Provider predeterminado.
 
   </Accordion>
 </AccordionGroup>
@@ -307,9 +307,9 @@ Usa `provider: "openai-compatible"` para un servidor genérico
 ### Tiempo de espera de embeddings en línea
 
 <ParamField path="sync.embeddingBatchTimeoutSeconds" type="number">
-  Sobrescribe el tiempo de espera para lotes de embeddings en línea durante la indexación de memoria.
+  Anula el tiempo de espera para lotes de embeddings en línea durante la indexación de memoria.
 
-Sin definir, usa el valor predeterminado del proveedor: 600 segundos para proveedores locales/autoalojados como `local`, `ollama` y `lmstudio`, y 120 segundos para proveedores alojados. Aumenta esto cuando los lotes de embeddings locales limitados por CPU están sanos pero son lentos.
+Si no se establece, usa el valor predeterminado del Provider: 600 segundos para Providers locales/autohospedados como `local`, `ollama` y `lmstudio`, y 120 segundos para Providers alojados. Aumente este valor cuando los lotes de embeddings locales limitados por CPU estén saludables pero sean lentos.
 </ParamField>
 
 ---
@@ -318,27 +318,27 @@ Sin definir, usa el valor predeterminado del proveedor: 600 segundos para provee
 
 Todo bajo `memorySearch.query.hybrid`:
 
-| Clave                 | Tipo      | Predeterminado | Descripción                                      |
+| Clave                 | Tipo      | Predeterminado | Descripción                              |
 | --------------------- | --------- | ------- | ---------------------------------- |
 | `enabled`             | `boolean` | `true`  | Habilitar búsqueda híbrida BM25 + vectorial |
-| `vectorWeight`        | `number`  | `0.7`   | Peso para puntuaciones vectoriales (0-1)     |
-| `textWeight`          | `number`  | `0.3`   | Peso para puntuaciones BM25 (0-1)       |
-| `candidateMultiplier` | `number`  | `4`     | Multiplicador del tamaño del conjunto de candidatos     |
+| `vectorWeight`        | `number`  | `0.7`   | Peso para las puntuaciones vectoriales (0-1) |
+| `textWeight`          | `number`  | `0.3`   | Peso para las puntuaciones BM25 (0-1)       |
+| `candidateMultiplier` | `number`  | `4`     | Multiplicador del tamaño del conjunto de candidatos |
 
 <Tabs>
   <Tab title="MMR (diversidad)">
     | Clave         | Tipo      | Predeterminado | Descripción                          |
     | ------------- | --------- | ------- | ------------------------------------ |
-    | `mmr.enabled` | `boolean` | `false` | Habilitar reordenación MMR                |
+    | `mmr.enabled` | `boolean` | `false` | Habilitar reordenación MMR           |
     | `mmr.lambda`  | `number`  | `0.7`   | 0 = diversidad máxima, 1 = relevancia máxima |
   </Tab>
   <Tab title="Decaimiento temporal (recencia)">
     | Clave                        | Tipo      | Predeterminado | Descripción               |
     | ---------------------------- | --------- | ------- | ------------------------- |
-    | `temporalDecay.enabled`      | `boolean` | `false` | Habilitar refuerzo por recencia      |
+    | `temporalDecay.enabled`      | `boolean` | `false` | Habilitar aumento por recencia |
     | `temporalDecay.halfLifeDays` | `number`  | `30`    | La puntuación se reduce a la mitad cada N días |
 
-    Los archivos persistentes (`MEMORY.md`, archivos sin fecha en `memory/`) nunca decaen.
+    Los archivos permanentes (`MEMORY.md`, archivos sin fecha en `memory/`) nunca decaen.
 
   </Tab>
 </Tabs>
@@ -368,9 +368,9 @@ Todo bajo `memorySearch.query.hybrid`:
 
 ## Rutas de memoria adicionales
 
-| Clave        | Tipo       | Descripción                                  |
-| ------------ | ---------- | -------------------------------------------- |
-| `extraPaths` | `string[]` | Directorios o archivos adicionales que indexar |
+| Clave        | Tipo       | Descripción                                      |
+| ------------ | ---------- | ------------------------------------------------ |
+| `extraPaths` | `string[]` | Directorios o archivos adicionales para indexar |
 
 ```json5
 {
@@ -384,9 +384,9 @@ Todo bajo `memorySearch.query.hybrid`:
 }
 ```
 
-Las rutas pueden ser absolutas o relativas al espacio de trabajo. Los directorios se escanean recursivamente en busca de archivos `.md`. El manejo de enlaces simbólicos depende del backend activo: el motor integrado ignora los enlaces simbólicos, mientras que QMD sigue el comportamiento del escáner QMD subyacente.
+Las rutas pueden ser absolutas o relativas al espacio de trabajo. Los directorios se analizan de forma recursiva en busca de archivos `.md`. El manejo de enlaces simbólicos depende del backend activo: el motor integrado ignora los enlaces simbólicos, mientras que QMD sigue el comportamiento del escáner QMD subyacente.
 
-Para la búsqueda de transcripciones entre agentes con alcance de agente, usa `agents.list[].memorySearch.qmd.extraCollections` en lugar de `memory.qmd.paths`. Esas colecciones adicionales siguen la misma forma `{ path, name, pattern? }`, pero se combinan por agente y pueden conservar nombres compartidos explícitos cuando la ruta apunta fuera del espacio de trabajo actual. Si la misma ruta resuelta aparece tanto en `memory.qmd.paths` como en `memorySearch.qmd.extraCollections`, QMD conserva la primera entrada y omite el duplicado.
+Para la búsqueda de transcripciones entre agentes con alcance de agente, usa `agents.list[].memorySearch.qmd.extraCollections` en lugar de `memory.qmd.paths`. Esas colecciones adicionales siguen la misma forma `{ path, name, pattern? }`, pero se combinan por agente y pueden preservar nombres compartidos explícitos cuando la ruta apunta fuera del espacio de trabajo actual. Si la misma ruta resuelta aparece tanto en `memory.qmd.paths` como en `memorySearch.qmd.extraCollections`, QMD conserva la primera entrada y omite el duplicado.
 
 ---
 
@@ -394,11 +394,11 @@ Para la búsqueda de transcripciones entre agentes con alcance de agente, usa `a
 
 Indexa imágenes y audio junto con Markdown usando Gemini Embedding 2:
 
-| Clave                     | Tipo       | Predeterminado | Descripción                              |
-| ------------------------- | ---------- | -------------- | ---------------------------------------- |
-| `multimodal.enabled`      | `boolean`  | `false`        | Habilita la indexación multimodal        |
-| `multimodal.modalities`   | `string[]` | --             | `["image"]`, `["audio"]` o `["all"]`     |
-| `multimodal.maxFileBytes` | `number`   | `10000000`     | Tamaño máximo de archivo para indexación |
+| Clave                     | Tipo       | Predeterminado | Descripción                                    |
+| ------------------------- | ---------- | -------------- | ---------------------------------------------- |
+| `multimodal.enabled`      | `boolean`  | `false`        | Habilitar la indexación multimodal             |
+| `multimodal.modalities`   | `string[]` | --             | `["image"]`, `["audio"]` o `["all"]`           |
+| `multimodal.maxFileBytes` | `number`   | `10000000`     | Tamaño máximo de archivo para la indexación    |
 
 <Note>
 Solo se aplica a archivos en `extraPaths`. Las raíces de memoria predeterminadas siguen siendo solo Markdown. Requiere `gemini-embedding-2-preview`. `fallback` debe ser `"none"`.
@@ -410,57 +410,117 @@ Formatos compatibles: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic`, `.heif`
 
 ## Caché de embeddings
 
-| Clave              | Tipo      | Predeterminado | Descripción                         |
-| ------------------ | --------- | -------------- | ----------------------------------- |
-| `cache.enabled`    | `boolean` | `true`         | Almacena embeddings de fragmentos en caché en SQLite |
-| `cache.maxEntries` | `number`  | `50000`        | Máximo de embeddings almacenados en caché |
+| Clave              | Tipo      | Predeterminado | Descripción                              |
+| ------------------ | --------- | -------------- | ---------------------------------------- |
+| `cache.enabled`    | `boolean` | `true`         | Guardar embeddings de fragmentos en SQLite |
+| `cache.maxEntries` | `number`  | `50000`        | Máximo de embeddings en caché            |
 
-Evita volver a generar embeddings para texto sin cambios durante la reindexación o las actualizaciones de transcripciones.
+Evita volver a generar embeddings de texto sin cambios durante la reindexación o las actualizaciones de transcripciones.
 
 ---
 
 ## Indexación por lotes
 
-| Clave                         | Tipo      | Predeterminado | Descripción                         |
-| ----------------------------- | --------- | -------------- | ----------------------------------- |
-| `remote.nonBatchConcurrency`  | `number`  | `4`            | Embeddings inline en paralelo       |
-| `remote.batch.enabled`        | `boolean` | `false`        | Habilita la API de embeddings por lotes |
-| `remote.batch.concurrency`    | `number`  | `2`            | Trabajos por lotes en paralelo      |
-| `remote.batch.wait`           | `boolean` | `true`         | Espera a que se complete el lote    |
-| `remote.batch.pollIntervalMs` | `number`  | --             | Intervalo de sondeo                 |
-| `remote.batch.timeoutMinutes` | `number`  | --             | Tiempo de espera del lote           |
+| Clave                         | Tipo      | Predeterminado | Descripción                              |
+| ----------------------------- | --------- | -------------- | ---------------------------------------- |
+| `remote.nonBatchConcurrency`  | `number`  | `4`            | Embeddings en línea paralelos            |
+| `remote.batch.enabled`        | `boolean` | `false`        | Habilitar la API de embeddings por lotes |
+| `remote.batch.concurrency`    | `number`  | `2`            | Trabajos por lotes paralelos             |
+| `remote.batch.wait`           | `boolean` | `true`         | Esperar la finalización del lote         |
+| `remote.batch.pollIntervalMs` | `number`  | --             | Intervalo de sondeo                      |
+| `remote.batch.timeoutMinutes` | `number`  | --             | Tiempo de espera del lote                |
 
-Disponible para `openai`, `gemini` y `voyage`. El lote de OpenAI suele ser el más rápido y económico para grandes rellenos iniciales.
+Disponible para `openai`, `gemini` y `voyage`. Los lotes de OpenAI suelen ser la opción más rápida y económica para grandes cargas iniciales.
 
-`remote.nonBatchConcurrency` controla las llamadas de embeddings inline usadas por proveedores locales/autohospedados y proveedores alojados cuando las API por lotes del proveedor no están activas. Ollama usa `1` de forma predeterminada para la indexación sin lotes para evitar sobrecargar hosts locales más pequeños; configura un valor más alto en máquinas más grandes.
+`remote.nonBatchConcurrency` controla las llamadas de embeddings en línea usadas por proveedores locales/autohospedados y proveedores alojados cuando las API de lotes del proveedor no están activas. Ollama usa de forma predeterminada `1` para la indexación sin lotes para evitar sobrecargar hosts locales más pequeños; establece un valor más alto en máquinas más grandes.
 
-Esto es independiente de `sync.embeddingBatchTimeoutSeconds`, que controla el tiempo de espera para las llamadas de embeddings inline.
+Esto es independiente de `sync.embeddingBatchTimeoutSeconds`, que controla el tiempo de espera de las llamadas de embeddings en línea.
 
 ---
 
-## Búsqueda en memoria de sesiones (experimental)
+## Búsqueda de memoria de sesión (experimental)
 
-Indexa transcripciones de sesiones y exponlas mediante `memory_search`:
+Indexa transcripciones de sesiones y muéstralas mediante `memory_search`:
 
-| Clave                         | Tipo       | Predeterminado | Descripción                                |
-| ----------------------------- | ---------- | -------------- | ------------------------------------------ |
-| `experimental.sessionMemory`  | `boolean`  | `false`        | Habilita la indexación de sesiones         |
-| `sources`                     | `string[]` | `["memory"]`   | Añade `"sessions"` para incluir transcripciones |
-| `sync.sessions.deltaBytes`    | `number`   | `100000`       | Umbral de bytes para reindexación          |
-| `sync.sessions.deltaMessages` | `number`   | `50`           | Umbral de mensajes para reindexación       |
+| Clave                         | Tipo       | Predeterminado | Descripción                                  |
+| ----------------------------- | ---------- | -------------- | -------------------------------------------- |
+| `experimental.sessionMemory`  | `boolean`  | `false`        | Habilitar la indexación de sesiones          |
+| `sources`                     | `string[]` | `["memory"]`   | Agregar `"sessions"` para incluir transcripciones |
+| `sync.sessions.deltaBytes`    | `number`   | `100000`       | Umbral de bytes para reindexar               |
+| `sync.sessions.deltaMessages` | `number`   | `50`           | Umbral de mensajes para reindexar            |
 
 <Warning>
 La indexación de sesiones es opcional y se ejecuta de forma asíncrona. Los resultados pueden estar ligeramente desactualizados. Los registros de sesión residen en disco, así que trata el acceso al sistema de archivos como el límite de confianza.
 </Warning>
 
+Las coincidencias de transcripciones de sesión también obedecen
+[`tools.sessions.visibility`](/es/gateway/config-tools#toolssessions). La visibilidad predeterminada
+`tree` solo expone la sesión actual y las sesiones que esta inició. Para
+recuperar desde una sesión diferente, como un DM, una sesión no relacionada
+despachada por el Gateway del mismo agente, amplía intencionalmente la visibilidad a `agent` (o a `all` solo
+cuando también se requiere recuperación entre agentes y la política entre agentes lo permite).
+
+Los ejemplos siguientes colocan estos ajustes bajo `agents.defaults`. También puedes
+aplicar ajustes equivalentes de `memorySearch` en una anulación por agente cuando solo un
+agente deba indexar y buscar transcripciones de sesión.
+
+Para recuperación Gateway-a-DM del mismo agente:
+
+<Tabs>
+  <Tab title="Builtin backend">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          memorySearch: {
+            experimental: { sessionMemory: true },
+            sources: ["memory", "sessions"],
+          },
+        },
+      },
+      tools: {
+        sessions: { visibility: "agent" },
+      },
+    }
+    ```
+  </Tab>
+  <Tab title="QMD backend">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          memorySearch: {
+            experimental: { sessionMemory: true },
+            sources: ["memory", "sessions"],
+          },
+        },
+      },
+      memory: {
+        backend: "qmd",
+        qmd: {
+          sessions: { enabled: true },
+        },
+      },
+      tools: {
+        sessions: { visibility: "agent" },
+      },
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Al usar QMD, `agents.defaults.memorySearch.experimental.sessionMemory` y
+`sources: ["sessions"]` no exportan por sí solos las transcripciones a QMD. Configura
+también `memory.qmd.sessions.enabled: true`.
+
 ---
 
 ## Aceleración vectorial de SQLite (sqlite-vec)
 
-| Clave                        | Tipo      | Predeterminado | Descripción                               |
-| ---------------------------- | --------- | -------------- | ----------------------------------------- |
+| Clave                        | Tipo      | Predeterminado | Descripción                             |
+| ---------------------------- | --------- | -------------- | --------------------------------------- |
 | `store.vector.enabled`       | `boolean` | `true`         | Usa sqlite-vec para consultas vectoriales |
-| `store.vector.extensionPath` | `string`  | incluido       | Sobrescribe la ruta de sqlite-vec         |
+| `store.vector.extensionPath` | `string`  | incluido       | Anula la ruta de sqlite-vec             |
 
 Cuando sqlite-vec no está disponible, OpenClaw recurre automáticamente a la similitud coseno en proceso.
 
@@ -468,65 +528,65 @@ Cuando sqlite-vec no está disponible, OpenClaw recurre automáticamente a la si
 
 ## Almacenamiento de índices
 
-Los índices de memoria integrados viven en la base de datos SQLite de OpenClaw de cada agente en
+Los índices de memoria integrados residen en la base de datos SQLite de OpenClaw de cada agente en
 `agents/<agentId>/agent/openclaw-agent.sqlite`.
 
-| Clave                 | Tipo     | Predeterminado | Descripción                                  |
-| --------------------- | -------- | -------------- | -------------------------------------------- |
-| `store.fts.tokenizer` | `string` | `unicode61`    | Tokenizador FTS5 (`unicode61` o `trigram`)   |
+| Clave                 | Tipo     | Predeterminado | Descripción                               |
+| --------------------- | -------- | -------------- | ----------------------------------------- |
+| `store.fts.tokenizer` | `string` | `unicode61`    | Tokenizador FTS5 (`unicode61` o `trigram`) |
 
 ---
 
 ## Configuración del backend QMD
 
-Define `memory.backend = "qmd"` para habilitarlo. Todas las opciones de QMD viven bajo `memory.qmd`:
+Configura `memory.backend = "qmd"` para habilitarlo. Todos los ajustes de QMD residen bajo `memory.qmd`:
 
 | Clave                    | Tipo      | Predeterminado | Descripción                                                                                  |
 | ------------------------ | --------- | -------------- | -------------------------------------------------------------------------------------------- |
-| `command`                | `string`  | `qmd`          | Ruta del ejecutable QMD; define una ruta absoluta cuando el `PATH` del servicio difiera de tu shell |
-| `searchMode`             | `string`  | `search`       | Comando de búsqueda: `search`, `vsearch`, `query`                                            |
-| `rerank`                 | `boolean` | --             | Define como `false` con `searchMode: "query"` y QMD 2.1+ para omitir el reordenamiento de QMD |
+| `command`                | `string`  | `qmd`          | Ruta del ejecutable de QMD; configura una ruta absoluta cuando el `PATH` del servicio difiera del de tu shell |
+| `searchMode`             | `string`  | `search`       | Comando de búsqueda: `search`, `vsearch`, `query`                                             |
+| `rerank`                 | `boolean` | --             | Configúralo en `false` con `searchMode: "query"` y QMD 2.1+ para omitir el reordenamiento de QMD |
 | `includeDefaultMemory`   | `boolean` | `true`         | Indexa automáticamente `MEMORY.md` + `memory/**/*.md`                                        |
-| `paths[]`                | `array`   | --             | Rutas adicionales: `{ name, path, pattern? }`                                                |
-| `sessions.enabled`       | `boolean` | `false`        | Indexa transcripciones de sesiones                                                          |
-| `sessions.retentionDays` | `number`  | --             | Retención de transcripciones                                                                 |
-| `sessions.exportDir`     | `string`  | --             | Directorio de exportación                                                                    |
+| `paths[]`                | `array`   | --             | Rutas adicionales: `{ name, path, pattern? }`                                                 |
+| `sessions.enabled`       | `boolean` | `false`        | Exporta transcripciones de sesión a QMD                                                       |
+| `sessions.retentionDays` | `number`  | --             | Retención de transcripciones                                                                  |
+| `sessions.exportDir`     | `string`  | --             | Directorio de exportación                                                                     |
 
-`searchMode: "search"` es solo léxico/BM25. OpenClaw no ejecuta comprobaciones de preparación de vectores semánticos ni mantenimiento de embeddings de QMD para ese modo, incluso durante `memory status --deep`; `vsearch` y `query` siguen requiriendo preparación vectorial y embeddings de QMD.
+`searchMode: "search"` es solo léxico/BM25. OpenClaw no ejecuta pruebas de preparación vectorial semántica ni mantenimiento de embeddings de QMD para ese modo, incluso durante `memory status --deep`; `vsearch` y `query` siguen requiriendo preparación vectorial y embeddings de QMD.
 
-`rerank: false` solo cambia el modo `query` de QMD y requiere QMD 2.1 o una versión más reciente. En modo CLI directo, OpenClaw pasa `--no-rerank`; en modo MCP respaldado por mcporter, pasa `rerank: false` a la herramienta de consulta unificada de QMD. Déjalo sin definir para usar el comportamiento predeterminado de reordenamiento de consultas de QMD.
+`rerank: false` solo cambia el modo `query` de QMD y requiere QMD 2.1 o una versión más reciente. En modo CLI directo, OpenClaw pasa `--no-rerank`; en modo MCP respaldado por mcporter, pasa `rerank: false` a la herramienta de consulta unificada de QMD. Déjalo sin configurar para usar el comportamiento predeterminado de reordenamiento de consultas de QMD.
 
-OpenClaw prefiere las formas actuales de colección QMD y consulta MCP, pero mantiene funcionando las versiones anteriores de QMD probando indicadores de patrón de colección compatibles y nombres antiguos de herramientas MCP cuando es necesario. Cuando QMD anuncia compatibilidad con varios filtros de colección, las colecciones de la misma fuente se buscan con un único proceso QMD; las compilaciones anteriores de QMD mantienen la ruta de compatibilidad por colección. Misma fuente significa que las colecciones de memoria duradera se agrupan juntas, mientras que las colecciones de transcripciones de sesión permanecen en un grupo separado para que la diversificación de fuentes siga teniendo ambas entradas.
+OpenClaw prefiere las formas actuales de colección de QMD y consulta MCP, pero mantiene funcionando versiones anteriores de QMD intentando flags compatibles de patrón de colección y nombres de herramientas MCP antiguos cuando sea necesario. Cuando QMD anuncia compatibilidad con múltiples filtros de colección, las colecciones de la misma fuente se buscan con un único proceso de QMD; las compilaciones anteriores de QMD mantienen la ruta de compatibilidad por colección. Misma fuente significa que las colecciones de memoria duradera se agrupan juntas, mientras que las colecciones de transcripciones de sesión permanecen como un grupo separado para que la diversificación de fuentes siga teniendo ambas entradas.
 
 <Note>
-Las sobrescrituras de modelos de QMD permanecen del lado de QMD, no en la configuración de OpenClaw. Si necesitas sobrescribir globalmente los modelos de QMD, define variables de entorno como `QMD_EMBED_MODEL`, `QMD_RERANK_MODEL` y `QMD_GENERATE_MODEL` en el entorno de ejecución del Gateway.
+Las anulaciones de modelo de QMD permanecen del lado de QMD, no en la configuración de OpenClaw. Si necesitas anular globalmente los modelos de QMD, configura variables de entorno como `QMD_EMBED_MODEL`, `QMD_RERANK_MODEL` y `QMD_GENERATE_MODEL` en el entorno de ejecución del Gateway.
 </Note>
 
 <AccordionGroup>
-  <Accordion title="Programación de actualizaciones">
+  <Accordion title="Update schedule">
     | Clave                     | Tipo      | Predeterminado | Descripción                           |
     | ------------------------- | --------- | -------------- | ------------------------------------- |
     | `update.interval`         | `string`  | `5m`           | Intervalo de actualización            |
-    | `update.debounceMs`       | `number`  | `15000`        | Aplica debounce a cambios de archivos |
-    | `update.onBoot`           | `boolean` | `true`         | Actualiza cuando se abre el administrador QMD de larga duración; define false para omitir la actualización inmediata al arrancar |
-    | `update.startup`          | `string`  | `off`          | Inicialización QMD opcional al iniciar el Gateway: `off`, `idle` o `immediate` |
+    | `update.debounceMs`       | `number`  | `15000`        | Aplicar debounce a los cambios de archivos |
+    | `update.onBoot`           | `boolean` | `true`         | Actualizar cuando se abre el administrador QMD de larga duración; establece false para omitir la actualización inmediata de arranque |
+    | `update.startup`          | `string`  | `off`          | Inicialización opcional de QMD al iniciar el Gateway: `off`, `idle` o `immediate` |
     | `update.startupDelayMs`   | `number`  | `120000`       | Retraso antes de que se ejecute la actualización de `startup: "idle"` |
-    | `update.waitForBootSync`  | `boolean` | `false`        | Bloquea la apertura del administrador hasta que se complete su actualización inicial |
-    | `update.embedInterval`    | `string`  | --             | Cadencia de embedding separada        |
+    | `update.waitForBootSync`  | `boolean` | `false`        | Bloquear la apertura del administrador hasta que se complete su actualización inicial |
+    | `update.embedInterval`    | `string`  | --             | Cadencia de incrustación separada     |
     | `update.commandTimeoutMs` | `number`  | --             | Tiempo de espera para comandos QMD    |
     | `update.updateTimeoutMs`  | `number`  | --             | Tiempo de espera para operaciones de actualización QMD |
-    | `update.embedTimeoutMs`   | `number`  | --             | Tiempo de espera para operaciones de embedding QMD |
+    | `update.embedTimeoutMs`   | `number`  | --             | Tiempo de espera para operaciones de incrustación QMD |
   </Accordion>
-  <Accordion title="Límites">
-    | Clave                     | Tipo     | Predeterminado | Descripción                         |
-    | ------------------------- | -------- | -------------- | ----------------------------------- |
-    | `limits.maxResults`       | `number` | `6`            | Resultados de búsqueda máximos      |
-    | `limits.maxSnippetChars`  | `number` | --             | Limita la longitud del fragmento    |
-    | `limits.maxInjectedChars` | `number` | --             | Limita el total de caracteres inyectados |
-    | `limits.timeoutMs`        | `number` | `4000`         | Tiempo de espera de búsqueda        |
+  <Accordion title="Limits">
+    | Clave                     | Tipo     | Predeterminado | Descripción                |
+    | ------------------------- | -------- | -------------- | -------------------------- |
+    | `limits.maxResults`       | `number` | `6`            | Resultados máximos de búsqueda |
+    | `limits.maxSnippetChars`  | `number` | --             | Limitar la longitud del fragmento |
+    | `limits.maxInjectedChars` | `number` | --             | Limitar el total de caracteres inyectados |
+    | `limits.timeoutMs`        | `number` | `4000`         | Tiempo de espera de búsqueda |
   </Accordion>
-  <Accordion title="Ámbito">
-    Controla qué sesiones pueden recibir resultados de búsqueda de QMD. Mismo esquema que [`session.sendPolicy`](/es/gateway/config-agents#session):
+  <Accordion title="Scope">
+    Controla qué sesiones pueden recibir resultados de búsqueda QMD. El mismo esquema que [`session.sendPolicy`](/es/gateway/config-agents#session):
 
     ```json5
     {
@@ -541,24 +601,24 @@ Las sobrescrituras de modelos de QMD permanecen del lado de QMD, no en la config
     }
     ```
 
-    El valor predeterminado incluido permite sesiones directas y de canal, pero sigue denegando grupos.
+    El valor predeterminado incluido permite sesiones directas y de canal, mientras sigue denegando los grupos.
 
     El valor predeterminado es solo DM. `match.keyPrefix` coincide con la clave de sesión normalizada; `match.rawKeyPrefix` coincide con la clave sin procesar, incluido `agent:<id>:`.
 
   </Accordion>
-  <Accordion title="Citas">
+  <Accordion title="Citations">
     `memory.citations` se aplica a todos los backends:
 
-    | Valor            | Comportamiento                                      |
-    | ---------------- | --------------------------------------------------- |
-    | `auto` (predeterminado) | Incluye el pie de página `Source: <path#line>` en fragmentos |
-    | `on`             | Incluye siempre el pie de página                    |
-    | `off`            | Omite el pie de página (la ruta aún se pasa internamente al agente) |
+    | Valor            | Comportamiento                                     |
+    | ---------------- | -------------------------------------------------- |
+    | `auto` (predeterminado) | Incluir el pie `Source: <path#line>` en los fragmentos |
+    | `on`             | Incluir siempre el pie                             |
+    | `off`            | Omitir el pie (la ruta se sigue pasando internamente al agente) |
 
   </Accordion>
 </AccordionGroup>
 
-Cuando la inicialización QMD al iniciar el Gateway está habilitada, OpenClaw inicia QMD solo para los agentes elegibles. Si `update.onBoot` es true y no se configura mantenimiento de intervalos/embeddings, el inicio usa un administrador de una sola ejecución para la actualización de arranque y lo cierra. Si se configura un intervalo de actualización o embedding, el inicio abre el administrador QMD de larga duración para que pueda ser dueño del observador y los temporizadores de intervalo; `update.onBoot: false` omite solo la actualización inmediata al arrancar.
+Cuando la inicialización de QMD al iniciar el Gateway está habilitada, OpenClaw inicia QMD solo para los agentes elegibles. Si `update.onBoot` es true y no se configuró mantenimiento de intervalos/incrustación, el inicio usa un administrador de una sola ejecución para la actualización de arranque y lo cierra. Si se configura un intervalo de actualización o incrustación, el inicio abre el administrador QMD de larga duración para que pueda controlar el observador y los temporizadores de intervalo; `update.onBoot: false` omite solo la actualización inmediata de arranque.
 
 ### Ejemplo completo de QMD
 
@@ -585,20 +645,20 @@ Cuando la inicialización QMD al iniciar el Gateway está habilitada, OpenClaw i
 
 ## Dreaming
 
-Dreaming se configura bajo `plugins.entries.memory-core.config.dreaming`, no bajo `agents.defaults.memorySearch`.
+Dreaming se configura en `plugins.entries.memory-core.config.dreaming`, no en `agents.defaults.memorySearch`.
 
-Dreaming se ejecuta como un barrido programado y usa fases internas ligeras/profundas/REM como detalle de implementación.
+Dreaming se ejecuta como un barrido programado único y usa fases internas ligera/profunda/REM como detalle de implementación.
 
-Para el comportamiento conceptual y los comandos con barra, consulta [Dreaming](/es/concepts/dreaming).
+Para el comportamiento conceptual y los comandos slash, consulta [Dreaming](/es/concepts/dreaming).
 
 ### Configuración de usuario
 
-| Clave                                  | Tipo      | Predeterminado     | Descripción                                                                                                                        |
-| -------------------------------------- | --------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                              | `boolean` | `false`            | Habilita o deshabilita dreaming por completo                                                                                        |
-| `frequency`                            | `string`  | `0 3 * * *`        | Cadencia cron opcional para el barrido completo de dreaming                                                                        |
-| `model`                                | `string`  | modelo predeterminado | Sobrescritura opcional del modelo del subagente Dream Diary                                                                        |
-| `phases.deep.maxPromotedSnippetTokens` | `number`  | `160`              | Máximo de tokens estimados conservados de cada fragmento de recuperación a corto plazo promovido a `MEMORY.md`; los metadatos de procedencia siguen visibles |
+| Clave                                  | Tipo      | Predeterminado | Descripción                                                                                                                      |
+| -------------------------------------- | --------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                              | `boolean` | `false`        | Habilitar o deshabilitar Dreaming por completo                                                                                    |
+| `frequency`                            | `string`  | `0 3 * * *`    | Cadencia cron opcional para el barrido completo de Dreaming                                                                       |
+| `model`                                | `string`  | modelo predeterminado | Anulación opcional del modelo del subagente del diario de sueños                                                                 |
+| `phases.deep.maxPromotedSnippetTokens` | `number`  | `160`          | Tokens estimados máximos conservados de cada fragmento de recuerdo a corto plazo promovido a `MEMORY.md`; los metadatos de procedencia permanecen visibles |
 
 ### Ejemplo
 
@@ -625,10 +685,10 @@ Para el comportamiento conceptual y los comandos con barra, consulta [Dreaming](
 ```
 
 <Note>
-- Dreaming escribe el estado de máquina en `memory/.dreams/`.
-- Dreaming escribe la salida narrativa legible por humanos en `DREAMS.md` (o el `dreams.md` existente).
-- `dreaming.model` usa la puerta de confianza de subagente del Plugin existente; define `plugins.entries.memory-core.subagent.allowModelOverride: true` antes de habilitarlo.
-- Dream Diary reintenta una vez con el modelo predeterminado de la sesión cuando el modelo configurado no está disponible. Los fallos de confianza o de lista de permitidos se registran y no se reintentan silenciosamente.
+- Dreaming escribe estado de máquina en `memory/.dreams/`.
+- Dreaming escribe salida narrativa legible por humanos en `DREAMS.md` (o en el `dreams.md` existente).
+- `dreaming.model` usa la puerta de confianza del subagente del plugin existente; establece `plugins.entries.memory-core.subagent.allowModelOverride: true` antes de habilitarlo.
+- El diario de sueños reintenta una vez con el modelo predeterminado de la sesión cuando el modelo configurado no está disponible. Los errores de confianza o de lista de permitidos se registran y no se reintentan silenciosamente.
 - La política y los umbrales de las fases ligera/profunda/REM son comportamiento interno, no configuración orientada al usuario.
 
 </Note>
@@ -636,5 +696,5 @@ Para el comportamiento conceptual y los comandos con barra, consulta [Dreaming](
 ## Relacionado
 
 - [Referencia de configuración](/es/gateway/configuration-reference)
-- [Resumen de memoria](/es/concepts/memory)
+- [Descripción general de la memoria](/es/concepts/memory)
 - [Búsqueda de memoria](/es/concepts/memory-search)

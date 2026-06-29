@@ -1,29 +1,29 @@
 ---
 read_when:
-    - 非対話的に設定を読み取りまたは編集したい
+    - config を非対話的に読み取りまたは編集したい
 sidebarTitle: Config
 summary: '`openclaw config` の CLI リファレンス (get/set/patch/unset/file/schema/validate)'
 title: 設定
 x-i18n:
-    generated_at: "2026-06-27T10:53:01Z"
+    generated_at: "2026-06-28T22:33:06Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d658c0edbf900565c4645c1d24a9f3e092a3d8a4fec85f7fc7e3989550d13197
+    source_hash: 92878977e8fb6670f12c0a77937a7c41f9230da82e20ec7690731bbda1e910ca
     source_path: cli/config.md
     workflow: 16
 ---
 
-`openclaw.json` の非対話型編集用の設定ヘルパー: パスによる値の取得/設定/パッチ適用/設定解除/ファイル/スキーマ/検証を行い、アクティブな設定ファイルを出力します。サブコマンドなしで実行すると、設定ウィザードを開きます (`openclaw configure` と同じ)。
+`openclaw.json` の非対話型編集用 Config ヘルパー: パスによる値の get/set/patch/unset/file/schema/validate と、アクティブな config ファイルの出力。サブコマンドなしで実行すると、configure ウィザードを開きます（`openclaw configure` と同じ）。
 
 <Note>
-`OPENCLAW_NIX_MODE=1` の場合、OpenClaw は `openclaw.json` を不変として扱います。`config get`、`config file`、`config schema`、`config validate` などの読み取り専用コマンドは引き続き動作しますが、設定を書き込むコマンドは拒否されます。Agents は代わりにインストール用の Nix ソースを編集してください。ファーストパーティの nix-openclaw ディストリビューションでは、[nix-openclaw クイックスタート](https://github.com/openclaw/nix-openclaw#quick-start)を使い、`programs.openclaw.config` または `instances.<name>.config` 配下に値を設定します。
+`OPENCLAW_NIX_MODE=1` の場合、OpenClaw は `openclaw.json` を不変として扱います。`config get`、`config file`、`config schema`、`config validate` などの読み取り専用コマンドは引き続き動作しますが、config の書き込みは拒否されます。Agents は代わりにインストール用の Nix ソースを編集してください。ファーストパーティの nix-openclaw ディストリビューションでは、[nix-openclaw クイックスタート](https://github.com/openclaw/nix-openclaw#quick-start) を使用し、`programs.openclaw.config` または `instances.<name>.config` 配下に値を設定します。
 </Note>
 
 ## ルートオプション
 
 <ParamField path="--section <section>" type="string">
-  サブコマンドなしで `openclaw config` を実行したときに使う、繰り返し指定可能なガイド付きセットアップのセクションフィルター。
+  サブコマンドなしで `openclaw config` を実行するときの、繰り返し指定可能なガイド付きセットアップのセクションフィルター。
 </ParamField>
 
 サポートされるガイド付きセクション: `workspace`、`model`、`web`、`gateway`、`daemon`、`channels`、`plugins`、`skills`、`health`。
@@ -52,20 +52,20 @@ openclaw config validate --json
 
 ### `config schema`
 
-`openclaw.json` 用に生成された JSON スキーマを JSON として stdout に出力します。
+`openclaw.json` 用に生成された JSON schema を JSON として stdout に出力します。
 
 <AccordionGroup>
-  <Accordion title="含まれるもの">
-    - 現在のルート設定スキーマと、エディター用ツールのためのルート `$schema` 文字列フィールド。
-    - Control UI が使うフィールド `title` と `description` のドキュメントメタデータ。
-    - ネストされたオブジェクト、ワイルドカード (`*`)、配列項目 (`[]`) ノードは、一致するフィールドドキュメントが存在する場合、同じ `title` / `description` メタデータを継承します。
-    - `anyOf` / `oneOf` / `allOf` ブランチも、一致するフィールドドキュメントが存在する場合、同じドキュメントメタデータを継承します。
-    - ランタイムマニフェストを読み込める場合は、ベストエフォートのライブ plugin + チャンネルスキーマメタデータ。
-    - 現在の設定が無効な場合でも、クリーンなフォールバックスキーマ。
+  <Accordion title="含まれる内容">
+    - 現在のルート config schema と、エディター向けツール用のルート `$schema` 文字列フィールド。
+    - Control UI が使用するフィールド `title` と `description` の docs メタデータ。
+    - ネストされた object、ワイルドカード（`*`）、array-item（`[]`）ノードは、一致するフィールドドキュメントが存在する場合、同じ `title` / `description` メタデータを継承します。
+    - `anyOf` / `oneOf` / `allOf` ブランチも、一致するフィールドドキュメントが存在する場合、同じ docs メタデータを継承します。
+    - runtime manifest を読み込める場合、ベストエフォートのライブ plugin + channel schema メタデータ。
+    - 現在の config が無効な場合でも、クリーンなフォールバック schema。
 
   </Accordion>
-  <Accordion title="関連するランタイム RPC">
-    `config.schema.lookup` は、浅いスキーマノード (`title`、`description`、`type`、`enum`、`const`、共通の境界値)、一致した UI ヒントメタデータ、直下の子要素サマリーを含む、正規化済みの設定パスを 1 つ返します。Control UI やカスタムクライアントで、パス単位のドリルダウンに使用します。
+  <Accordion title="関連する runtime RPC">
+    `config.schema.lookup` は、浅い schema ノード（`title`、`description`、`type`、`enum`、`const`、一般的な境界）、一致した UI hint メタデータ、および直下の子要素の要約を含む、正規化された config パスを 1 つ返します。Control UI またはカスタムクライアントで、パス範囲のドリルダウンに使用します。
   </Accordion>
 </AccordionGroup>
 
@@ -73,7 +73,7 @@ openclaw config validate --json
 openclaw config schema
 ```
 
-他のツールで確認または検証したい場合は、ファイルにパイプします。
+他のツールで検査または検証したい場合は、ファイルにパイプします。
 
 ```bash
 openclaw config schema > openclaw.schema.json
@@ -81,14 +81,14 @@ openclaw config schema > openclaw.schema.json
 
 ### パス
 
-パスはドット記法またはブラケット記法を使用します。シェル例ではブラケット記法のパスを引用符で囲み、zsh などのシェルが OpenClaw にパスが渡る前に `[0]` を glob として展開しないようにします。
+パスにはドット記法またはブラケット記法を使用します。zsh などの shell が OpenClaw にパスが渡る前に `[0]` を glob として展開しないように、shell の例ではブラケット記法のパスを引用符で囲みます。
 
 ```bash
 openclaw config get agents.defaults.workspace
 openclaw config get 'agents.list[0].id'
 ```
 
-特定の agent を対象にするには、agent リストのインデックスを使用します。
+特定の agent を対象にするには、agent list index を使用します。
 
 ```bash
 openclaw config get agents.list
@@ -97,7 +97,7 @@ openclaw config set 'agents.list[1].tools.exec.node' "node-id-or-name"
 
 ## 値
 
-値は可能な場合 JSON5 として解析されます。それ以外の場合は文字列として扱われます。JSON5 解析を必須にするには `--strict-json` を使います。`--json` はレガシーエイリアスとして引き続きサポートされます。
+値は可能な場合 JSON5 として解析されます。それ以外の場合は文字列として扱われます。文字列へのフォールバックなしで標準 JSON 解析を必須にするには、`--strict-json` を使用します。`--json` は `--strict-json` の legacy alias として引き続きサポートされます。
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -105,20 +105,22 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-`config get <path> --json` は、端末向けに整形されたテキストではなく、生の値を JSON として出力します。
+`--strict-json` が有効な場合、コメント、末尾のカンマ、引用符なしの object key などの JSON5 専用構文は拒否されます。raw-string フォールバック付きの JSON5 value parsing を行うには、`--strict-json` を省略します。
+
+`config get <path> --json` は、terminal-formatted text ではなく raw value を JSON として出力します。
 
 <Note>
-オブジェクト代入はデフォルトで対象パスを置き換えます。`agents.defaults.models`、`models.providers`、`models.providers.<id>.models`、`plugins.entries`、`auth.profiles` など、ユーザー追加エントリを保持することが多い保護されたマップ/リストのパスでは、`--replace` を渡さない限り、既存エントリを削除する置き換えは拒否されます。
+object の代入は、デフォルトで対象パスを置き換えます。`agents.defaults.models`、`models.providers`、`models.providers.<id>.models`、`plugins.entries`、`auth.profiles` など、ユーザーが追加したエントリを保持することが多い保護された map/list パスでは、`--replace` を渡さない限り、既存エントリを削除する置き換えは拒否されます。
 </Note>
 
-これらのマップにエントリを追加する場合は `--merge` を使います。
+これらの map にエントリを追加するときは、`--merge` を使用します。
 
 ```bash
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-指定した値を完全な対象値にしたいことが明確な場合にのみ、`--replace` を使用します。
+指定した値を完全な対象値にする意図がある場合にのみ、`--replace` を使用します。
 
 ## `config set` モード
 
@@ -138,8 +140,8 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
       --ref-id DISCORD_BOT_TOKEN
     ```
   </Tab>
-  <Tab title="プロバイダービルダーモード">
-    プロバイダービルダーモードは `secrets.providers.<alias>` パスのみを対象にします。
+  <Tab title="Provider ビルダーモード">
+    Provider ビルダーモードは、`secrets.providers.<alias>` パスのみを対象にします。
 
     ```bash
     openclaw config set secrets.providers.vault \
@@ -173,28 +175,28 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
 </Tabs>
 
 <Warning>
-SecretRef 代入は、サポートされていないランタイム可変サーフェスでは拒否されます (例: `hooks.token`、`commands.ownerDisplaySecret`、Discord スレッドバインディング Webhook トークン、WhatsApp creds JSON)。[SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface)を参照してください。
+SecretRef の代入は、サポートされていない runtime-mutable surface（例: `hooks.token`、`commands.ownerDisplaySecret`、Discord thread-binding webhook tokens、WhatsApp creds JSON）では拒否されます。[SecretRef Credential Surface](/ja-JP/reference/secretref-credential-surface) を参照してください。
 </Warning>
 
-バッチ解析では常にバッチペイロード (`--batch-json`/`--batch-file`) が信頼できる情報源として使われます。`--strict-json` / `--json` はバッチ解析の動作を変更しません。
+バッチ解析では常に batch payload（`--batch-json`/`--batch-file`）を信頼できる情報源として使用します。`--strict-json` / `--json` は batch parsing behavior を変更しません。
 
 ## `config patch`
 
-多数のパスベースの `config set` コマンドを実行する代わりに、設定形状のパッチを貼り付けたりパイプしたりしたい場合は、`config patch` を使います。入力は JSON5 オブジェクトです。オブジェクトは再帰的にマージされ、配列とスカラー値は対象値を置き換え、`null` は対象パスを削除します。
+多数のパスベースの `config set` コマンドを実行する代わりに、config 形状の patch を貼り付けたりパイプしたりしたい場合は、`config patch` を使用します。入力は JSON5 object です。object は再帰的にマージされ、array と scalar value は対象値を置き換え、`null` は対象パスを削除します。
 
 ```bash
 openclaw config patch --file ./openclaw.patch.json5 --dry-run
 openclaw config patch --file ./openclaw.patch.json5
 ```
 
-stdin 経由でパッチをパイプすることもできます。これはリモートセットアップスクリプトで便利です。
+stdin 経由で patch をパイプすることもできます。これは remote setup scripts に便利です。
 
 ```bash
 ssh openclaw-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
 ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
 ```
 
-パッチ例:
+patch の例:
 
 ```json5
 {
@@ -226,15 +228,15 @@ ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
 }
 ```
 
-1 つのオブジェクトまたは配列を再帰的にパッチせず、指定値そのものにしたい場合は `--replace-path <path>` を使います。
+1 つの object または array を、再帰的に patch するのではなく、指定された値そのものにしたい場合は、`--replace-path <path>` を使用します。
 
 ```bash
 openclaw config patch --file ./discord.patch.json5 --replace-path 'channels.discord.guilds["123"].channels'
 ```
 
-`--dry-run` は書き込みを行わずに、スキーマと SecretRef の解決可能性チェックを実行します。exec ベースの SecretRef は dry-run 中はデフォルトでスキップされます。dry-run でプロバイダーコマンドを意図的に実行したい場合は、`--allow-exec` を追加します。
+`--dry-run` は、書き込みを行わずに schema と SecretRef の解決可能性チェックを実行します。exec-backed SecretRefs は dry-run 中はデフォルトでスキップされます。dry-run で provider commands を実行する意図がある場合は、`--allow-exec` を追加します。
 
-JSON のパス/値モードは、SecretRef とプロバイダーの両方で引き続きサポートされます。
+SecretRefs と providers の両方で、JSON path/value mode は引き続きサポートされます。
 
 ```bash
 openclaw config set channels.discord.token \
@@ -246,43 +248,43 @@ openclaw config set secrets.providers.vaultfile \
   --strict-json
 ```
 
-## プロバイダービルダーフラグ
+## Provider builder flags
 
-プロバイダービルダーの対象は、パスとして `secrets.providers.<alias>` を使用する必要があります。
+Provider builder targets は、パスとして `secrets.providers.<alias>` を使用する必要があります。
 
 <AccordionGroup>
   <Accordion title="共通フラグ">
     - `--provider-source <env|file|exec>`
-    - `--provider-timeout-ms <ms>` (`file`, `exec`)
+    - `--provider-timeout-ms <ms>`（`file`、`exec`）
 
   </Accordion>
-  <Accordion title="Env プロバイダー (--provider-source env)">
-    - `--provider-allowlist <ENV_VAR>` (繰り返し指定可能)
+  <Accordion title="Env provider (--provider-source env)">
+    - `--provider-allowlist <ENV_VAR>`（繰り返し指定可能）
 
   </Accordion>
-  <Accordion title="File プロバイダー (--provider-source file)">
-    - `--provider-path <path>` (必須)
+  <Accordion title="File provider (--provider-source file)">
+    - `--provider-path <path>`（必須）
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
 
   </Accordion>
-  <Accordion title="Exec プロバイダー (--provider-source exec)">
-    - `--provider-command <path>` (必須)
-    - `--provider-arg <arg>` (繰り返し指定可能)
+  <Accordion title="Exec provider (--provider-source exec)">
+    - `--provider-command <path>`（必須）
+    - `--provider-arg <arg>`（繰り返し指定可能）
     - `--provider-no-output-timeout-ms <ms>`
     - `--provider-max-output-bytes <bytes>`
     - `--provider-json-only`
-    - `--provider-env <KEY=VALUE>` (繰り返し指定可能)
-    - `--provider-pass-env <ENV_VAR>` (繰り返し指定可能)
-    - `--provider-trusted-dir <path>` (繰り返し指定可能)
+    - `--provider-env <KEY=VALUE>`（繰り返し指定可能）
+    - `--provider-pass-env <ENV_VAR>`（繰り返し指定可能）
+    - `--provider-trusted-dir <path>`（繰り返し指定可能）
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
 
   </Accordion>
 </AccordionGroup>
 
-強化された exec プロバイダーの例:
+強化された exec provider の例:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -298,7 +300,7 @@ openclaw config set secrets.providers.vault \
 
 ## Dry run
 
-`openclaw.json` に書き込まずに変更を検証するには、`--dry-run` を使います。
+`openclaw.json` に書き込まずに変更を検証するには、`--dry-run` を使用します。
 
 ```bash
 openclaw config set channels.discord.token \
@@ -323,26 +325,26 @@ openclaw config set channels.discord.token \
 ```
 
 <AccordionGroup>
-  <Accordion title="Dry-run の動作">
+  <Accordion title="ドライランの動作">
     - ビルダーモード: 変更された refs/providers に対して SecretRef の解決可能性チェックを実行します。
-    - JSON モード (`--strict-json`、`--json`、またはバッチモード): スキーマ検証と SecretRef の解決可能性チェックを実行します。
-    - 既知のサポートされていない SecretRef 対象サーフェスについては、ポリシー検証も実行されます。
-    - ポリシーチェックは変更後の設定全体を評価するため、親オブジェクトの書き込み (たとえば `hooks` をオブジェクトとして設定する場合) でサポート外サーフェス検証を回避することはできません。
-    - Exec SecretRef チェックは、コマンドの副作用を避けるため、dry-run 中はデフォルトでスキップされます。
-    - exec SecretRef チェックを明示的に有効化するには、`--dry-run` とともに `--allow-exec` を使います (これによりプロバイダーコマンドが実行される場合があります)。
-    - `--allow-exec` は dry-run 専用で、`--dry-run` なしで使用するとエラーになります。
+    - JSON モード（`--strict-json`、`--json`、またはバッチモード）: スキーマ検証に加えて SecretRef の解決可能性チェックを実行します。
+    - 既知の未対応 SecretRef ターゲットサーフェスに対してもポリシー検証が実行されます。
+    - ポリシーチェックは変更後の config 全体を評価するため、親オブジェクトの書き込み（たとえば `hooks` をオブジェクトとして設定すること）で未対応サーフェス検証を回避することはできません。
+    - コマンドの副作用を避けるため、ドライラン中は Exec SecretRef チェックがデフォルトでスキップされます。
+    - Exec SecretRef チェックを有効にするには、`--dry-run` と一緒に `--allow-exec` を使用します（これにより provider コマンドが実行される場合があります）。
+    - `--allow-exec` はドライラン専用であり、`--dry-run` なしで使用するとエラーになります。
 
   </Accordion>
   <Accordion title="--dry-run --json フィールド">
-    `--dry-run --json` は、機械可読なレポートを出力します:
+    `--dry-run --json` は機械判読可能なレポートを出力します。
 
-    - `ok`: ドライランが成功したか
-    - `operations`: 評価された割り当ての数
-    - `checks`: スキーマ/解決可能性チェックが実行されたか
-    - `checks.resolvabilityComplete`: 解決可能性チェックが完了まで実行されたか（exec refs がスキップされた場合は false）
+    - `ok`: ドライランが成功したかどうか
+    - `operations`: 評価された代入の数
+    - `checks`: スキーマ/解決可能性チェックが実行されたかどうか
+    - `checks.resolvabilityComplete`: 解決可能性チェックが最後まで実行されたかどうか（exec refs がスキップされた場合は false）
     - `refsChecked`: ドライラン中に実際に解決された refs の数
     - `skippedExecRefs`: `--allow-exec` が設定されていなかったためスキップされた exec refs の数
-    - `errors`: `ok=false` の場合の、構造化されたパス不足、スキーマ、または解決可能性の失敗
+    - `errors`: `ok=false` の場合の、構造化された missing-path、schema、または resolvability の失敗
 
   </Accordion>
 </AccordionGroup>
@@ -417,22 +419,22 @@ openclaw config set channels.discord.token \
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="ドライランが失敗する場合">
-    - `config schema validation failed`: 変更後の設定の形が無効です。パス/値、または provider/ref オブジェクトの形を修正してください。
-    - `Config policy validation failed: unsupported SecretRef usage`: その認証情報をプレーンテキスト/文字列入力に戻し、SecretRefs は対応しているサーフェスでのみ使用してください。
-    - `SecretRef assignment(s) could not be resolved`: 参照された provider/ref は現在解決できません（環境変数の不足、無効なファイルポインター、exec プロバイダーの失敗、またはプロバイダー/ソースの不一致）。
-    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: ドライランで exec refs がスキップされました。exec の解決可能性検証が必要な場合は `--allow-exec` を付けて再実行してください。
-    - バッチモードでは、失敗しているエントリを修正し、書き込む前に `--dry-run` を再実行してください。
+  <Accordion title="ドライランが失敗した場合">
+    - `config schema validation failed`: 変更後の config の形が無効です。path/value または provider/ref オブジェクトの形を修正してください。
+    - `Config policy validation failed: unsupported SecretRef usage`: その認証情報をプレーンテキスト/文字列入力に戻し、SecretRefs は対応済みサーフェスでのみ使用してください。
+    - `SecretRef assignment(s) could not be resolved`: 参照された provider/ref は現在解決できません（env var の欠落、無効なファイルポインター、exec provider の失敗、または provider/source の不一致）。
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: ドライランが exec refs をスキップしました。exec の解決可能性検証が必要な場合は `--allow-exec` を付けて再実行してください。
+    - バッチモードでは、失敗したエントリを修正し、書き込む前に `--dry-run` を再実行してください。
 
   </Accordion>
 </AccordionGroup>
 
 ## 書き込みの安全性
 
-`openclaw config set` とその他の OpenClaw 所有の設定ライターは、ディスクへコミットする前に変更後の設定全体を検証します。新しいペイロードがスキーマ検証に失敗した場合、または破壊的な上書きに見える場合、アクティブな設定はそのまま残され、拒否されたペイロードは横に `openclaw.json.rejected.*` として保存されます。
+`openclaw config set` とその他の OpenClaw 所有の config ライターは、ディスクへコミットする前に変更後の config 全体を検証します。新しいペイロードがスキーマ検証に失敗した場合、または破壊的な上書きのように見える場合、アクティブな config はそのまま残され、拒否されたペイロードは `openclaw.json.rejected.*` として隣に保存されます。
 
 <Warning>
-アクティブな設定パスは通常ファイルである必要があります。シンボリックリンクされた `openclaw.json` レイアウトは書き込みではサポートされていません。代わりに `OPENCLAW_CONFIG_PATH` を使って実ファイルを直接指してください。
+アクティブな config パスは通常ファイルである必要があります。シンボリックリンクされた `openclaw.json` レイアウトは書き込みでは未対応です。代わりに `OPENCLAW_CONFIG_PATH` を使用して実ファイルを直接指してください。
 </Warning>
 
 小さな編集には CLI 書き込みを推奨します。
@@ -443,7 +445,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-書き込みが拒否された場合は、保存されたペイロードを確認し、設定全体の形を修正してください。
+書き込みが拒否された場合は、保存されたペイロードを確認し、config 全体の形を修正してください。
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -451,36 +453,36 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-エディターでの直接書き込みも引き続き許可されていますが、実行中の Gateway は検証されるまでそれらを信頼されていないものとして扱います。無効な直接編集は起動に失敗するか、ホットリロードでスキップされます。Gateway は `openclaw.json` を書き換えません。接頭辞付き/上書きされた設定を修復する、または最後に正常だったコピーを復元するには、`openclaw doctor --fix` を実行してください。[Gateway トラブルシューティング](/ja-JP/gateway/troubleshooting#gateway-rejected-invalid-config)を参照してください。
+エディターでの直接書き込みも引き続き許可されていますが、実行中の Gateway は検証が通るまでそれらを信頼されていないものとして扱います。無効な直接編集は起動に失敗するか、ホットリロードでスキップされます。Gateway は `openclaw.json` を書き換えません。接頭辞付き/上書きされた config を修復するか、最後に確認済みの正常なコピーを復元するには、`openclaw doctor --fix` を実行してください。[Gateway トラブルシューティング](/ja-JP/gateway/troubleshooting#gateway-rejected-invalid-config)を参照してください。
 
-ファイル全体の復旧は doctor 修復用に予約されています。Plugin スキーマ変更または `minHostVersion` のずれは、モデル、プロバイダー、認証プロファイル、チャンネル、gateway 公開、ツール、メモリ、ブラウザー、cron 設定など、無関係なユーザー設定をロールバックするのではなく、明示的に失敗します。
+ファイル全体の復旧は doctor 修復専用です。Plugin スキーマ変更や `minHostVersion` のずれは、models、providers、auth profiles、channels、gateway exposure、tools、memory、browser、cron config などの無関係なユーザー設定をロールバックするのではなく、明示的なエラーのままにします。
 
 ## サブコマンド
 
-- `config file`: アクティブな設定ファイルのパス（`OPENCLAW_CONFIG_PATH` またはデフォルトの場所から解決）を表示します。このパスはシンボリックリンクではなく、通常ファイルを指している必要があります。
+- `config file`: アクティブな config ファイルパス（`OPENCLAW_CONFIG_PATH` またはデフォルトの場所から解決）を出力します。このパスはシンボリックリンクではなく通常ファイルを指す必要があります。
 
-編集後は Gateway を再起動してください。
+編集後は gateway を再起動してください。
 
 ## 検証
 
-Gateway を起動せずに、現在の設定をアクティブなスキーマに照らして検証します。
+gateway を起動せずに、現在の config をアクティブなスキーマに対して検証します。
 
 ```bash
 openclaw config validate
 openclaw config validate --json
 ```
 
-`openclaw config validate` が成功するようになったら、ローカル TUI を使用して、同じターミナルから各変更を検証しながら、埋め込みエージェントにアクティブな設定とドキュメントを比較させることができます。
+`openclaw config validate` が成功したら、同じターミナルで各変更を検証しながら、ローカル TUI を使用して埋め込み agent にアクティブな config と docs を比較させることができます。
 
 <Note>
-検証がすでに失敗している場合は、`openclaw configure` または `openclaw doctor --fix` から始めてください。`openclaw chat` は無効な設定のガードを迂回しません。
+検証がすでに失敗している場合は、`openclaw configure` または `openclaw doctor --fix` から開始してください。`openclaw chat` は無効な config のガードを回避しません。
 </Note>
 
 ```bash
 openclaw chat
 ```
 
-次に TUI 内で次を実行します。
+その後、TUI 内で次を実行します。
 
 ```text
 !openclaw config file
@@ -492,21 +494,21 @@ openclaw chat
 典型的な修復ループ:
 
 <Steps>
-  <Step title="ドキュメントと比較する">
-    エージェントに、現在の設定を関連するドキュメントページと比較し、最小の修正を提案するよう依頼します。
+  <Step title="docs と比較">
+    現在の config を関連する docs ページと比較し、最小の修正を提案するよう agent に依頼します。
   </Step>
-  <Step title="対象を絞った編集を適用する">
+  <Step title="対象を絞った編集を適用">
     `openclaw config set` または `openclaw configure` で対象を絞った編集を適用します。
   </Step>
-  <Step title="再検証する">
+  <Step title="再検証">
     各変更後に `openclaw config validate` を再実行します。
   </Step>
-  <Step title="ランタイム問題には doctor を使う">
-    検証に通ってもランタイムがまだ正常でない場合は、移行と修復の支援のために `openclaw doctor` または `openclaw doctor --fix` を実行します。
+  <Step title="ランタイム問題には doctor">
+    検証は通るがランタイムがまだ正常でない場合は、移行と修復の支援として `openclaw doctor` または `openclaw doctor --fix` を実行します。
   </Step>
 </Steps>
 
 ## 関連
 
 - [CLI リファレンス](/ja-JP/cli)
-- [設定](/ja-JP/gateway/configuration)
+- [構成](/ja-JP/gateway/configuration)

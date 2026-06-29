@@ -1,29 +1,29 @@
 ---
 read_when:
-    - OpenClaw yapılandırmasını etkileşimsiz olarak okumak veya düzenlemek istiyorsunuz
+    - Yapılandırmayı etkileşimli olmayan şekilde okumak veya düzenlemek istiyorsunuz
 sidebarTitle: Config
-summary: '`openclaw config` için CLI başvurusu (get/set/patch/unset/file/schema/validate)'
+summary: '`openclaw config` için CLI referansı (get/set/patch/unset/file/schema/validate)'
 title: Yapılandırma
 x-i18n:
-    generated_at: "2026-06-28T00:20:58Z"
+    generated_at: "2026-06-28T22:33:21Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d658c0edbf900565c4645c1d24a9f3e092a3d8a4fec85f7fc7e3989550d13197
+    source_hash: 92878977e8fb6670f12c0a77937a7c41f9230da82e20ec7690731bbda1e910ca
     source_path: cli/config.md
     workflow: 16
 ---
 
-`openclaw.json` içinde etkileşimsiz düzenlemeler için yapılandırma yardımcıları: değerlere yola göre get/set/patch/unset/file/schema/validate uygular ve etkin yapılandırma dosyasını yazdırır. Yapılandırma sihirbazını açmak için alt komut olmadan çalıştırın (`openclaw configure` ile aynı).
+`openclaw.json` içinde etkileşimsiz düzenlemeler için yapılandırma yardımcıları: yola göre değerleri get/set/patch/unset/file/schema/validate edin ve etkin yapılandırma dosyasını yazdırın. Yapılandırma sihirbazını açmak için alt komut olmadan çalıştırın (`openclaw configure` ile aynı).
 
 <Note>
-`OPENCLAW_NIX_MODE=1` olduğunda OpenClaw, `openclaw.json` dosyasını değiştirilemez kabul eder. `config get`, `config file`, `config schema` ve `config validate` gibi salt okunur komutlar çalışmaya devam eder, ancak yapılandırma yazıcıları reddeder. Agents bunun yerine kurulumun Nix kaynağını düzenlemelidir; birinci taraf nix-openclaw dağıtımı için [nix-openclaw Hızlı Başlangıç](https://github.com/openclaw/nix-openclaw#quick-start) kullanın ve değerleri `programs.openclaw.config` veya `instances.<name>.config` altında ayarlayın.
+`OPENCLAW_NIX_MODE=1` olduğunda OpenClaw, `openclaw.json` dosyasını değişmez kabul eder. `config get`, `config file`, `config schema` ve `config validate` gibi salt okunur komutlar çalışmaya devam eder, ancak yapılandırma yazıcıları reddeder. Agents bunun yerine kurulumun Nix kaynağını düzenlemelidir; birinci taraf nix-openclaw dağıtımı için [nix-openclaw Hızlı Başlangıç](https://github.com/openclaw/nix-openclaw#quick-start) kullanın ve değerleri `programs.openclaw.config` veya `instances.<name>.config` altında ayarlayın.
 </Note>
 
 ## Kök seçenekler
 
 <ParamField path="--section <section>" type="string">
-  `openclaw config` komutunu alt komut olmadan çalıştırdığınızda yinelenebilir kılavuzlu kurulum bölümü filtresi.
+  `openclaw config` komutunu alt komut olmadan çalıştırdığınızda tekrarlanabilir kılavuzlu kurulum bölüm filtresi.
 </ParamField>
 
 Desteklenen kılavuzlu bölümler: `workspace`, `model`, `web`, `gateway`, `daemon`, `channels`, `plugins`, `skills`, `health`.
@@ -52,20 +52,20 @@ openclaw config validate --json
 
 ### `config schema`
 
-`openclaw.json` için oluşturulan JSON şemasını JSON olarak stdout'a yazdırır.
+`openclaw.json` için oluşturulan JSON şemasını JSON olarak stdout'a yazdırın.
 
 <AccordionGroup>
-  <Accordion title="İçerdikleri">
-    - Geçerli kök yapılandırma şeması ve düzenleyici araçları için bir kök `$schema` dize alanı.
-    - Control UI tarafından kullanılan alan `title` ve `description` belge meta verileri.
-    - İç içe nesne, joker karakter (`*`) ve dizi öğesi (`[]`) düğümleri, eşleşen alan belgelendirmesi bulunduğunda aynı `title` / `description` meta verilerini devralır.
-    - `anyOf` / `oneOf` / `allOf` dalları da eşleşen alan belgelendirmesi bulunduğunda aynı belge meta verilerini devralır.
+  <Accordion title="Neleri içerir">
+    - Geçerli kök yapılandırma şeması ve editör araçları için kök `$schema` dize alanı.
+    - Control UI tarafından kullanılan alan `title` ve `description` dokümantasyon meta verileri.
+    - İç içe nesne, joker (`*`) ve dizi öğesi (`[]`) düğümleri, eşleşen alan dokümantasyonu varsa aynı `title` / `description` meta verilerini devralır.
+    - `anyOf` / `oneOf` / `allOf` dalları da eşleşen alan dokümantasyonu varsa aynı dokümantasyon meta verilerini devralır.
     - Çalışma zamanı manifestleri yüklenebildiğinde en iyi çabayla canlı Plugin + kanal şema meta verileri.
-    - Geçerli yapılandırma geçersiz olsa bile temiz bir yedek şema.
+    - Geçerli yapılandırma geçersiz olduğunda bile temiz bir yedek şema.
 
   </Accordion>
   <Accordion title="İlgili çalışma zamanı RPC'si">
-    `config.schema.lookup`, sığ bir şema düğümü (`title`, `description`, `type`, `enum`, `const`, ortak sınırlar), eşleşen UI ipucu meta verileri ve anlık alt özetleriyle birlikte normalleştirilmiş tek bir yapılandırma yolu döndürür. Bunu Control UI veya özel istemcilerde yol kapsamlı ayrıntıya inme için kullanın.
+    `config.schema.lookup`, sığ bir şema düğümü (`title`, `description`, `type`, `enum`, `const`, yaygın sınırlar), eşleşen UI ipucu meta verileri ve doğrudan alt özetleriyle tek bir normalize edilmiş yapılandırma yolu döndürür. Control UI veya özel istemcilerde yol kapsamlı ayrıntılı inceleme için kullanın.
   </Accordion>
 </AccordionGroup>
 
@@ -73,7 +73,7 @@ openclaw config validate --json
 openclaw config schema
 ```
 
-Başka araçlarla incelemek veya doğrulamak istediğinizde bir dosyaya aktarın:
+Başka araçlarla incelemek veya doğrulamak istediğinizde bir dosyaya yönlendirin:
 
 ```bash
 openclaw config schema > openclaw.schema.json
@@ -81,14 +81,14 @@ openclaw config schema > openclaw.schema.json
 
 ### Yollar
 
-Yollar nokta veya köşeli parantez gösterimini kullanır. Kabuk örneklerinde köşeli parantez gösterimli yolları tırnak içine alın; böylece zsh gibi kabuklar OpenClaw yolu almadan önce `[0]` değerini glob olarak genişletmez:
+Yollar nokta veya köşeli parantez gösterimini kullanır. Kabuk örneklerinde köşeli parantez gösterimli yolları tırnak içine alın; böylece zsh gibi kabuklar, OpenClaw yolu almadan önce `[0]` ifadesini glob olarak genişletmez:
 
 ```bash
 openclaw config get agents.defaults.workspace
 openclaw config get 'agents.list[0].id'
 ```
 
-Belirli bir Agent hedeflemek için Agent liste dizinini kullanın:
+Belirli bir agent'ı hedeflemek için agent listesi indeksini kullanın:
 
 ```bash
 openclaw config get agents.list
@@ -97,7 +97,7 @@ openclaw config set 'agents.list[1].tools.exec.node' "node-id-or-name"
 
 ## Değerler
 
-Değerler mümkün olduğunda JSON5 olarak ayrıştırılır; aksi halde dize olarak ele alınır. JSON5 ayrıştırmasını zorunlu kılmak için `--strict-json` kullanın. `--json`, eski uyumluluk takma adı olarak desteklenmeye devam eder.
+Değerler mümkün olduğunda JSON5 olarak ayrıştırılır; aksi halde dize olarak işlenir. Dize yedeği olmadan standart JSON ayrıştırmasını zorunlu kılmak için `--strict-json` kullanın. `--json`, `--strict-json` için eski bir alias olarak desteklenmeye devam eder.
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -105,20 +105,22 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
+`--strict-json` etkinleştirildiğinde, yorumlar, sonda virgüller veya tırnaksız nesne anahtarları gibi yalnızca JSON5 söz dizimleri reddedilir. Ham dize yedeğiyle JSON5 değer ayrıştırması için `--strict-json` kullanmayın.
+
 `config get <path> --json`, ham değeri terminal biçimli metin yerine JSON olarak yazdırır.
 
 <Note>
-Nesne ataması varsayılan olarak hedef yolun yerini alır. Kullanıcı tarafından eklenen girdileri yaygın olarak tutan korumalı harita/liste yolları, örneğin `agents.defaults.models`, `models.providers`, `models.providers.<id>.models`, `plugins.entries` ve `auth.profiles`, `--replace` geçmediğiniz sürece mevcut girdileri kaldıracak değiştirmeleri reddeder.
+Nesne ataması varsayılan olarak hedef yolu değiştirir. `agents.defaults.models`, `models.providers`, `models.providers.<id>.models`, `plugins.entries` ve `auth.profiles` gibi sıkça kullanıcı ekli girdiler tutan korumalı map/liste yolları, `--replace` geçmediğiniz sürece mevcut girdileri kaldıracak değiştirmeleri reddeder.
 </Note>
 
-Bu haritalara girdi eklerken `--merge` kullanın:
+Bu map'lere girdi eklerken `--merge` kullanın:
 
 ```bash
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-`--replace` yalnızca sağlanan değerin tam hedef değer olmasını bilerek istediğinizde kullanın.
+`--replace` seçeneğini yalnızca sağlanan değerin hedef değerin tamamı olmasını özellikle istediğinizde kullanın.
 
 ## `config set` modları
 
@@ -176,25 +178,25 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
 SecretRef atamaları, desteklenmeyen çalışma zamanında değiştirilebilir yüzeylerde reddedilir (örneğin `hooks.token`, `commands.ownerDisplaySecret`, Discord iş parçacığı bağlama Webhook token'ları ve WhatsApp kimlik bilgileri JSON'u). Bkz. [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface).
 </Warning>
 
-Toplu ayrıştırma her zaman doğruluk kaynağı olarak toplu yükü (`--batch-json`/`--batch-file`) kullanır. `--strict-json` / `--json`, toplu ayrıştırma davranışını değiştirmez.
+Toplu ayrıştırma her zaman doğruluk kaynağı olarak toplu payload'u (`--batch-json`/`--batch-file`) kullanır. `--strict-json` / `--json`, toplu ayrıştırma davranışını değiştirmez.
 
 ## `config patch`
 
-Çok sayıda yol tabanlı `config set` komutu çalıştırmak yerine yapılandırma biçimli bir yamayı yapıştırmak veya pipe ile aktarmak istediğinizde `config patch` kullanın. Girdi bir JSON5 nesnesidir. Nesneler özyinelemeli olarak birleştirilir, diziler ve skaler değerler hedef değerin yerini alır ve `null` hedef yolu siler.
+Çok sayıda yol tabanlı `config set` komutu çalıştırmak yerine yapılandırma biçimli bir patch yapıştırmak veya pipe etmek istediğinizde `config patch` kullanın. Girdi bir JSON5 nesnesidir. Nesneler özyinelemeli olarak birleştirilir, diziler ve skaler değerler hedef değeri değiştirir ve `null` hedef yolu siler.
 
 ```bash
 openclaw config patch --file ./openclaw.patch.json5 --dry-run
 openclaw config patch --file ./openclaw.patch.json5
 ```
 
-Bir yamayı stdin üzerinden de aktarabilirsiniz; bu, uzak kurulum betikleri için kullanışlıdır:
+Uzak kurulum betikleri için yararlı olan bir patch'i stdin üzerinden de pipe edebilirsiniz:
 
 ```bash
 ssh openclaw-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
 ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
 ```
 
-Örnek yama:
+Örnek patch:
 
 ```json5
 {
@@ -226,13 +228,13 @@ ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
 }
 ```
 
-Bir nesne veya dizinin özyinelemeli olarak yamalanmak yerine tam olarak sağlanan değer olması gerektiğinde `--replace-path <path>` kullanın:
+Bir nesne veya dizinin özyinelemeli olarak patch'lenmek yerine tam olarak sağlanan değer haline gelmesi gerektiğinde `--replace-path <path>` kullanın:
 
 ```bash
 openclaw config patch --file ./discord.patch.json5 --replace-path 'channels.discord.guilds["123"].channels'
 ```
 
-`--dry-run`, yazmadan şema ve SecretRef çözülebilirlik kontrollerini çalıştırır. Exec destekli SecretRef'ler dry-run sırasında varsayılan olarak atlanır; dry-run'ın sağlayıcı komutlarını çalıştırmasını bilerek istediğinizde `--allow-exec` ekleyin.
+`--dry-run`, yazmadan şema ve SecretRef çözülebilirlik kontrollerini çalıştırır. Exec destekli SecretRef'ler dry-run sırasında varsayılan olarak atlanır; dry-run'ın sağlayıcı komutlarını çalıştırmasını özellikle istediğinizde `--allow-exec` ekleyin.
 
 JSON yol/değer modu hem SecretRef'ler hem de sağlayıcılar için desteklenmeye devam eder:
 
@@ -251,38 +253,38 @@ openclaw config set secrets.providers.vaultfile \
 Sağlayıcı oluşturucu hedefleri yol olarak `secrets.providers.<alias>` kullanmalıdır.
 
 <AccordionGroup>
-  <Accordion title="Ortak bayraklar">
+  <Accordion title="Yaygın bayraklar">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
 
   </Accordion>
   <Accordion title="Env sağlayıcısı (--provider-source env)">
-    - `--provider-allowlist <ENV_VAR>` (yinelenebilir)
+    - `--provider-allowlist <ENV_VAR>` (tekrarlanabilir)
 
   </Accordion>
   <Accordion title="Dosya sağlayıcısı (--provider-source file)">
-    - `--provider-path <path>` (gerekli)
+    - `--provider-path <path>` (zorunlu)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
 
   </Accordion>
   <Accordion title="Exec sağlayıcısı (--provider-source exec)">
-    - `--provider-command <path>` (gerekli)
-    - `--provider-arg <arg>` (yinelenebilir)
+    - `--provider-command <path>` (zorunlu)
+    - `--provider-arg <arg>` (tekrarlanabilir)
     - `--provider-no-output-timeout-ms <ms>`
     - `--provider-max-output-bytes <bytes>`
     - `--provider-json-only`
-    - `--provider-env <KEY=VALUE>` (yinelenebilir)
-    - `--provider-pass-env <ENV_VAR>` (yinelenebilir)
-    - `--provider-trusted-dir <path>` (yinelenebilir)
+    - `--provider-env <KEY=VALUE>` (tekrarlanabilir)
+    - `--provider-pass-env <ENV_VAR>` (tekrarlanabilir)
+    - `--provider-trusted-dir <path>` (tekrarlanabilir)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
 
   </Accordion>
 </AccordionGroup>
 
-Sıkılaştırılmış exec sağlayıcısı örneği:
+Sertleştirilmiş exec sağlayıcısı örneği:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -298,7 +300,7 @@ openclaw config set secrets.providers.vault \
 
 ## Dry run
 
-`openclaw.json` yazmadan değişiklikleri doğrulamak için `--dry-run` kullanın.
+`openclaw.json` dosyasına yazmadan değişiklikleri doğrulamak için `--dry-run` kullanın.
 
 ```bash
 openclaw config set channels.discord.token \
@@ -323,31 +325,31 @@ openclaw config set channels.discord.token \
 ```
 
 <AccordionGroup>
-  <Accordion title="Dry-run davranışı">
-    - Oluşturucu modu: değişen ref'ler/sağlayıcılar için SecretRef çözülebilirlik kontrollerini çalıştırır.
-    - JSON modu (`--strict-json`, `--json` veya toplu mod): şema doğrulamasını ve SecretRef çözülebilirlik kontrollerini çalıştırır.
-    - İlke doğrulaması, bilinen desteklenmeyen SecretRef hedef yüzeyleri için de çalışır.
-    - İlke kontrolleri, değişiklik sonrası yapılandırmanın tamamını değerlendirir; bu nedenle üst nesne yazımları (örneğin `hooks` öğesini nesne olarak ayarlamak) desteklenmeyen yüzey doğrulamasını atlayamaz.
-    - Exec SecretRef kontrolleri, komut yan etkilerinden kaçınmak için dry-run sırasında varsayılan olarak atlanır.
-    - Exec SecretRef kontrollerine katılmak için `--dry-run` ile `--allow-exec` kullanın (bu, sağlayıcı komutlarını çalıştırabilir).
-    - `--allow-exec` yalnızca dry-run içindir ve `--dry-run` olmadan kullanılırsa hata verir.
+  <Accordion title="Kuru çalıştırma davranışı">
+    - Builder modu: değiştirilen başvurular/sağlayıcılar için SecretRef çözülebilirlik denetimlerini çalıştırır.
+    - JSON modu (`--strict-json`, `--json` veya toplu mod): şema doğrulamasıyla birlikte SecretRef çözülebilirlik denetimlerini çalıştırır.
+    - İlke doğrulaması, desteklenmediği bilinen SecretRef hedef yüzeyleri için de çalışır.
+    - İlke denetimleri değişiklik sonrası yapılandırmanın tamamını değerlendirir; bu nedenle üst nesne yazımları (örneğin `hooks` değerini nesne olarak ayarlamak) desteklenmeyen yüzey doğrulamasını atlayamaz.
+    - Komut yan etkilerinden kaçınmak için kuru çalıştırma sırasında exec SecretRef denetimleri varsayılan olarak atlanır.
+    - Exec SecretRef denetimlerini etkinleştirmek için `--dry-run` ile `--allow-exec` kullanın (bu, sağlayıcı komutlarını çalıştırabilir).
+    - `--allow-exec` yalnızca kuru çalıştırma içindir ve `--dry-run` olmadan kullanılırsa hata verir.
 
   </Accordion>
   <Accordion title="--dry-run --json alanları">
     `--dry-run --json`, makine tarafından okunabilir bir rapor yazdırır:
 
-    - `ok`: dry-run'ın geçip geçmediği
+    - `ok`: kuru çalıştırmanın geçip geçmediği
     - `operations`: değerlendirilen atama sayısı
     - `checks`: şema/çözülebilirlik denetimlerinin çalışıp çalışmadığı
-    - `checks.resolvabilityComplete`: çözülebilirlik denetimlerinin tamamlanıp tamamlanmadığı (exec ref'leri atlandığında false)
-    - `refsChecked`: dry-run sırasında gerçekten çözümlenen ref sayısı
-    - `skippedExecRefs`: `--allow-exec` ayarlanmadığı için atlanan exec ref sayısı
-    - `errors`: `ok=false` olduğunda yapılandırılmış eksik-yol, şema veya çözülebilirlik hataları
+    - `checks.resolvabilityComplete`: çözülebilirlik denetimlerinin tamamlanana kadar çalışıp çalışmadığı (exec başvuruları atlandığında false)
+    - `refsChecked`: kuru çalıştırma sırasında gerçekten çözümlenen başvuru sayısı
+    - `skippedExecRefs`: `--allow-exec` ayarlanmadığı için atlanan exec başvuru sayısı
+    - `errors`: `ok=false` olduğunda yapılandırılmış eksik yol, şema veya çözülebilirlik hataları
 
   </Accordion>
 </AccordionGroup>
 
-### JSON çıktı şekli
+### JSON çıktı biçimi
 
 ```json5
 {
@@ -417,25 +419,25 @@ openclaw config set channels.discord.token \
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="Dry-run başarısız olursa">
-    - `config schema validation failed`: değişiklik sonrası config şekliniz geçersizdir; yolu/değeri veya provider/ref nesne şeklini düzeltin.
-    - `Config policy validation failed: unsupported SecretRef usage`: bu kimlik bilgisini tekrar düz metin/string girişine taşıyın ve SecretRef'leri yalnızca desteklenen yüzeylerde tutun.
-    - `SecretRef assignment(s) could not be resolved`: başvurulan provider/ref şu anda çözümlenemiyor (eksik env var, geçersiz dosya işaretçisi, exec sağlayıcı hatası veya sağlayıcı/kaynak uyumsuzluğu).
-    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run exec ref'lerini atladı; exec çözülebilirlik doğrulamasına ihtiyacınız varsa `--allow-exec` ile yeniden çalıştırın.
-    - Toplu mod için, başarısız girdileri düzeltin ve yazmadan önce `--dry-run` seçeneğini yeniden çalıştırın.
+  <Accordion title="Kuru çalıştırma başarısız olursa">
+    - `config schema validation failed`: değişiklik sonrası yapılandırma biçiminiz geçersiz; yolu/değeri veya sağlayıcı/başvuru nesnesi biçimini düzeltin.
+    - `Config policy validation failed: unsupported SecretRef usage`: bu kimlik bilgisini tekrar düz metin/dize girdisine taşıyın ve SecretRef'leri yalnızca desteklenen yüzeylerde tutun.
+    - `SecretRef assignment(s) could not be resolved`: başvurulan sağlayıcı/başvuru şu anda çözümlenemiyor (eksik ortam değişkeni, geçersiz dosya işaretçisi, exec sağlayıcı hatası veya sağlayıcı/kaynak uyumsuzluğu).
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: kuru çalıştırma exec başvurularını atladı; exec çözülebilirlik doğrulamasına ihtiyacınız varsa `--allow-exec` ile yeniden çalıştırın.
+    - Toplu mod için, başarısız girdileri düzeltin ve yazmadan önce `--dry-run` komutunu yeniden çalıştırın.
 
   </Accordion>
 </AccordionGroup>
 
 ## Yazma güvenliği
 
-`openclaw config set` ve OpenClaw'a ait diğer config yazıcıları, diske işlemeden önce değişiklik sonrası config'in tamamını doğrular. Yeni yük şema doğrulamasından geçmezse veya yıkıcı bir üzerine yazma gibi görünürse, etkin config'e dokunulmaz ve reddedilen yük yanına `openclaw.json.rejected.*` olarak kaydedilir.
+`openclaw config set` ve OpenClaw'a ait diğer yapılandırma yazıcıları, diske kaydetmeden önce değişiklik sonrası yapılandırmanın tamamını doğrular. Yeni yük şema doğrulamasından geçemezse veya yıkıcı bir üzerine yazma gibi görünürse, etkin yapılandırmaya dokunulmaz ve reddedilen yük yanında `openclaw.json.rejected.*` olarak kaydedilir.
 
 <Warning>
-Etkin config yolu normal bir dosya olmalıdır. Symlink'lenmiş `openclaw.json` düzenleri yazma işlemleri için desteklenmez; bunun yerine `OPENCLAW_CONFIG_PATH` ile doğrudan gerçek dosyayı gösterin.
+Etkin yapılandırma yolu normal bir dosya olmalıdır. Sembolik bağlantılı `openclaw.json` düzenleri yazma işlemleri için desteklenmez; bunun yerine doğrudan gerçek dosyayı göstermek için `OPENCLAW_CONFIG_PATH` kullanın.
 </Warning>
 
-Küçük düzenlemeler için CLI yazmalarını tercih edin:
+Küçük düzenlemeler için CLI yazımlarını tercih edin:
 
 ```bash
 openclaw config set gateway.reload.mode hybrid --dry-run
@@ -443,7 +445,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-Bir yazma reddedilirse, kaydedilen yükü inceleyin ve config şeklinin tamamını düzeltin:
+Bir yazma reddedilirse, kaydedilen yükü inceleyin ve tam yapılandırma biçimini düzeltin:
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -451,29 +453,29 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-Doğrudan düzenleyici yazmalarına hâlâ izin verilir, ancak çalışan Gateway bunları doğrulanana kadar güvenilmez kabul eder. Geçersiz doğrudan düzenlemeler başlatmayı başarısız kılar veya hot reload tarafından atlanır; Gateway `openclaw.json` dosyasını yeniden yazmaz. Ön eklenmiş/üzerine yazılmış config'i onarmak veya bilinen son iyi kopyayı geri yüklemek için `openclaw doctor --fix` çalıştırın. Bkz. [Gateway sorun giderme](/tr/gateway/troubleshooting#gateway-rejected-invalid-config).
+Doğrudan düzenleyici yazımlarına hâlâ izin verilir, ancak çalışan Gateway bunlar doğrulanana kadar güvenilmeyen olarak ele alır. Geçersiz doğrudan düzenlemeler başlatmayı başarısız kılar veya sıcak yeniden yükleme tarafından atlanır; Gateway `openclaw.json` dosyasını yeniden yazmaz. Önek eklenmiş/ezilmiş yapılandırmayı onarmak veya bilinen son iyi kopyayı geri yüklemek için `openclaw doctor --fix` çalıştırın. Bkz. [Gateway sorun giderme](/tr/gateway/troubleshooting#gateway-rejected-invalid-config).
 
-Tam dosya kurtarma doctor onarımına ayrılmıştır. Plugin şema değişiklikleri veya `minHostVersion` kayması, modeller, sağlayıcılar, auth profilleri, kanallar, gateway erişimi, araçlar, bellek, tarayıcı veya cron config'i gibi ilgisiz kullanıcı ayarlarını geri almak yerine görünür şekilde hata verir.
+Tüm dosya kurtarma yalnızca doctor onarımı için ayrılmıştır. Plugin şema değişiklikleri veya `minHostVersion` uyumsuzluğu; modeller, sağlayıcılar, kimlik doğrulama profilleri, kanallar, gateway erişimi, araçlar, bellek, tarayıcı veya cron yapılandırması gibi ilgisiz kullanıcı ayarlarını geri almak yerine görünür hata olarak kalır.
 
 ## Alt komutlar
 
-- `config file`: Etkin config dosyası yolunu yazdırır (`OPENCLAW_CONFIG_PATH` veya varsayılan konumdan çözümlenir). Yol bir symlink'i değil, normal bir dosyayı göstermelidir.
+- `config file`: Etkin yapılandırma dosyası yolunu yazdırır (`OPENCLAW_CONFIG_PATH` veya varsayılan konumdan çözümlenir). Yol, sembolik bağlantı değil normal bir dosyayı adlandırmalıdır.
 
 Düzenlemelerden sonra gateway'i yeniden başlatın.
 
 ## Doğrulama
 
-Gateway'i başlatmadan mevcut config'i etkin şemaya göre doğrulayın.
+Gateway'i başlatmadan mevcut yapılandırmayı etkin şemaya göre doğrulayın.
 
 ```bash
 openclaw config validate
 openclaw config validate --json
 ```
 
-`openclaw config validate` geçtikten sonra, aynı terminalden her değişikliği doğrularken yerleşik bir ajanın etkin config'i dokümanlarla karşılaştırması için yerel TUI'yi kullanabilirsiniz:
+`openclaw config validate` geçtikten sonra, her değişikliği aynı terminalden doğrularken yerel TUI'yi kullanarak gömülü bir ajanın etkin yapılandırmayı belgelerle karşılaştırmasını sağlayabilirsiniz:
 
 <Note>
-Doğrulama zaten başarısız oluyorsa, `openclaw configure` veya `openclaw doctor --fix` ile başlayın. `openclaw chat` geçersiz-config korumasını atlatmaz.
+Doğrulama zaten başarısız oluyorsa `openclaw configure` veya `openclaw doctor --fix` ile başlayın. `openclaw chat`, geçersiz yapılandırma korumasını atlamaz.
 </Note>
 
 ```bash
@@ -492,21 +494,21 @@ Ardından TUI içinde:
 Tipik onarım döngüsü:
 
 <Steps>
-  <Step title="Dokümanlarla karşılaştır">
-    Ajanın mevcut config'inizi ilgili doküman sayfasıyla karşılaştırmasını ve en küçük düzeltmeyi önermesini isteyin.
+  <Step title="Belgelerle karşılaştır">
+    Ajanın mevcut yapılandırmanızı ilgili belge sayfasıyla karşılaştırmasını ve en küçük düzeltmeyi önermesini isteyin.
   </Step>
   <Step title="Hedefli düzenlemeleri uygula">
-    Hedefli düzenlemeleri `openclaw config set` veya `openclaw configure` ile uygulayın.
+    `openclaw config set` veya `openclaw configure` ile hedefli düzenlemeler uygulayın.
   </Step>
   <Step title="Yeniden doğrula">
     Her değişiklikten sonra `openclaw config validate` komutunu yeniden çalıştırın.
   </Step>
-  <Step title="Çalışma zamanı sorunları için doctor">
-    Doğrulama geçiyor ancak çalışma zamanı hâlâ sağlıklı değilse, migration ve onarım yardımı için `openclaw doctor` veya `openclaw doctor --fix` çalıştırın.
+  <Step title="Çalışma zamanı sorunları için Doctor">
+    Doğrulama geçerse ancak çalışma zamanı hâlâ sağlıklı değilse, geçiş ve onarım yardımı için `openclaw doctor` veya `openclaw doctor --fix` çalıştırın.
   </Step>
 </Steps>
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Yapılandırma](/tr/gateway/configuration)

@@ -1,0 +1,472 @@
+---
+read_when:
+    - संदेश कार्ड, बटन, या चयन रेंडरिंग जोड़ना या संशोधित करना
+    - समृद्ध आउटबाउंड संदेशों का समर्थन करने वाला चैनल Plugin बनाना
+    - संदेश टूल की प्रस्तुति या डिलीवरी क्षमताएँ बदलना
+    - प्रदाता-विशिष्ट कार्ड/ब्लॉक/कंपोनेंट रेंडरिंग रिग्रेशन की डिबगिंग
+summary: चैनल plugins के लिए सिमैंटिक संदेश कार्ड, बटन, चयन, फ़ॉलबैक टेक्स्ट, और डिलीवरी संकेत
+title: संदेश प्रस्तुति
+x-i18n:
+    generated_at: "2026-06-28T23:38:43Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 9fc5eca9dfe637fbdd56dcb473a68540035f8b990eab8cf139a4e27711536f57
+    source_path: plugins/message-presentation.md
+    workflow: 16
+---
+
+संदेश प्रस्तुति समृद्ध आउटबाउंड चैट UI के लिए OpenClaw का साझा अनुबंध है।
+यह एजेंटों, CLI कमांड, अनुमोदन प्रवाहों और plugins को संदेश के
+इरादे को एक बार वर्णित करने देता है, जबकि प्रत्येक channel plugin अपनी क्षमता के अनुसार सर्वोत्तम नेटिव रूप रेंडर करता है।
+
+पोर्टेबल संदेश UI के लिए प्रस्तुति का उपयोग करें:
+
+- टेक्स्ट सेक्शन
+- छोटा संदर्भ/फुटर टेक्स्ट
+- डिवाइडर
+- बटन
+- चयन मेनू
+- कार्ड शीर्षक और टोन
+
+साझा संदेश टूल में Discord `components`, Slack
+`blocks`, Telegram `buttons`, Teams `card`, या Feishu `card` जैसे नए provider-native फ़ील्ड न जोड़ें। ये channel plugin के स्वामित्व वाले renderer outputs हैं।
+
+## अनुबंध
+
+Plugin लेखक public contract को यहां से import करते हैं:
+
+```ts
+import type {
+  MessagePresentation,
+  ReplyPayloadDelivery,
+} from "openclaw/plugin-sdk/interactive-runtime";
+```
+
+आकार:
+
+```ts
+type MessagePresentation = {
+  title?: string;
+  tone?: "neutral" | "info" | "success" | "warning" | "danger";
+  blocks: MessagePresentationBlock[];
+};
+
+type MessagePresentationBlock =
+  | { type: "text"; text: string }
+  | { type: "context"; text: string }
+  | { type: "divider" }
+  | { type: "buttons"; buttons: MessagePresentationButton[] }
+  | { type: "select"; placeholder?: string; options: MessagePresentationOption[] };
+
+type MessagePresentationAction =
+  | { type: "command"; command: string }
+  | { type: "callback"; value: string };
+
+type MessagePresentationButton = {
+  label: string;
+  action?: MessagePresentationAction;
+  /** Legacy callback value. Prefer action for new controls. */
+  value?: string;
+  url?: string;
+  webApp?: { url: string };
+  /** @deprecated Use webApp. Accepted for legacy JSON payloads only. */
+  web_app?: { url: string };
+  priority?: number;
+  disabled?: boolean;
+  reusable?: boolean;
+  style?: "primary" | "secondary" | "success" | "danger";
+};
+
+type MessagePresentationOption = {
+  label: string;
+  action?: MessagePresentationAction;
+  /** Legacy callback value. Prefer action for new controls. */
+  value?: string;
+};
+
+type ReplyPayloadDelivery = {
+  pin?:
+    | boolean
+    | {
+        enabled: boolean;
+        notify?: boolean;
+        required?: boolean;
+      };
+};
+```
+
+बटन semantics:
+
+- `action.type: "command"` core के command path के माध्यम से native slash command चलाता है। built-in command buttons और menus के लिए इसका उपयोग करें।
+- `action.type: "callback"` channel के interaction path के माध्यम से opaque plugin data ले जाता है। Channel plugins को callback data को slash commands के रूप में दोबारा व्याख्यायित नहीं करना चाहिए।
+- `value` legacy opaque callback value है। नए controls को `action` का उपयोग करना चाहिए ताकि channel plugins text से अनुमान लगाए बिना commands और callbacks को map कर सकें।
+- `url` एक link button है। यह `value` के बिना मौजूद हो सकता है।
+- `webApp` channel-native web app button का वर्णन करता है। Telegram इसे
+  `web_app` के रूप में render करता है और केवल private chats में इसका समर्थन करता है। compatibility के लिए loose JSON payloads में `web_app` अभी भी स्वीकार किया जाता है, लेकिन TypeScript producers को `webApp` का उपयोग करना चाहिए।
+- `label` आवश्यक है और text fallback में भी उपयोग किया जाता है।
+- `style` advisory है। Renderers को unsupported styles को सुरक्षित
+  default पर map करना चाहिए, send को fail नहीं करना चाहिए।
+- `priority` वैकल्पिक है। जब कोई channel action limits advertise करता है और controls को हटाना पड़ता है, core पहले उच्च-priority buttons रखता है और समान priority वाले buttons के बीच मूल क्रम संरक्षित करता है। जब सभी controls fit होते हैं, authored
+  order संरक्षित रहता है।
+- `disabled` वैकल्पिक है। Channels को `supportsDisabled` के साथ opt in करना होगा; अन्यथा
+  core disabled control को non-interactive fallback text में degrade करता है।
+- `reusable` वैकल्पिक है। वे channels जो reusable native callbacks का समर्थन करते हैं, सफल interaction के बाद action को उपलब्ध रख सकते हैं। refresh, inspect, या अधिक details जैसी repeatable या idempotent actions के लिए इसका उपयोग करें;
+  normal one-shot approvals और destructive actions के लिए इसे unset छोड़ें।
+
+Select semantics:
+
+- `options[].action` का command/callback अर्थ button `action` जैसा ही है।
+- `options[].value` legacy selected application value है।
+- `placeholder` advisory है और native select support के बिना channels द्वारा अनदेखा किया जा सकता है।
+- यदि कोई channel selects का समर्थन नहीं करता, fallback text labels की सूची दिखाता है।
+
+## Producer उदाहरण
+
+सरल कार्ड:
+
+```json
+{
+  "title": "Deploy approval",
+  "tone": "warning",
+  "blocks": [
+    { "type": "text", "text": "Canary is ready to promote." },
+    { "type": "context", "text": "Build 1234, staging passed." },
+    {
+      "type": "buttons",
+      "buttons": [
+        { "label": "Approve", "value": "deploy:approve", "style": "success" },
+        { "label": "Decline", "value": "deploy:decline", "style": "danger" }
+      ]
+    }
+  ]
+}
+```
+
+केवल-URL link button:
+
+```json
+{
+  "blocks": [
+    { "type": "text", "text": "Release notes are ready." },
+    {
+      "type": "buttons",
+      "buttons": [{ "label": "Open notes", "url": "https://example.com/release" }]
+    }
+  ]
+}
+```
+
+Telegram Mini App button:
+
+```json
+{
+  "blocks": [
+    {
+      "type": "buttons",
+      "buttons": [{ "label": "Launch", "web_app": { "url": "https://example.com/app" } }]
+    }
+  ]
+}
+```
+
+Select menu:
+
+```json
+{
+  "title": "Choose environment",
+  "blocks": [
+    {
+      "type": "select",
+      "placeholder": "Environment",
+      "options": [
+        { "label": "Canary", "value": "env:canary" },
+        { "label": "Production", "value": "env:prod" }
+      ]
+    }
+  ]
+}
+```
+
+CLI send:
+
+```bash
+openclaw message send --channel slack \
+  --target channel:C123 \
+  --message "Deploy approval" \
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
+```
+
+Pinned delivery:
+
+```bash
+openclaw message send --channel telegram \
+  --target -1001234567890 \
+  --message "Topic opened" \
+  --pin
+```
+
+explicit JSON के साथ pinned delivery:
+
+```json
+{
+  "pin": {
+    "enabled": true,
+    "notify": true,
+    "required": false
+  }
+}
+```
+
+## Renderer अनुबंध
+
+Channel plugins अपने outbound adapter पर render support declare करते हैं:
+
+```ts
+const adapter: ChannelOutboundAdapter = {
+  deliveryMode: "direct",
+  presentationCapabilities: {
+    supported: true,
+    buttons: true,
+    selects: true,
+    context: true,
+    divider: true,
+    limits: {
+      actions: {
+        maxActions: 25,
+        maxActionsPerRow: 5,
+        maxRows: 5,
+        maxLabelLength: 80,
+        maxValueBytes: 100,
+        supportsStyles: true,
+        supportsDisabled: false,
+      },
+      selects: {
+        maxOptions: 25,
+        maxLabelLength: 100,
+        maxValueBytes: 100,
+      },
+      text: {
+        maxLength: 2000,
+        encoding: "characters",
+        markdownDialect: "discord-markdown",
+      },
+    },
+  },
+  deliveryCapabilities: {
+    pin: true,
+  },
+  renderPresentation({ payload, presentation, ctx }) {
+    return renderNativePayload(payload, presentation, ctx);
+  },
+  async pinDeliveredMessage({ target, messageId, pin }) {
+    await pinNativeMessage(target, messageId, { notify: pin.notify === true });
+  },
+};
+```
+
+Capability booleans बताते हैं कि renderer क्या interactive बना सकता है। वैकल्पिक
+`limits` generic envelope का वर्णन करते हैं जिसे core renderer को call करने से पहले adapt कर सकता है:
+
+```ts
+type ChannelPresentationCapabilities = {
+  supported?: boolean;
+  buttons?: boolean;
+  selects?: boolean;
+  context?: boolean;
+  divider?: boolean;
+  limits?: {
+    actions?: {
+      maxActions?: number;
+      maxActionsPerRow?: number;
+      maxRows?: number;
+      maxLabelLength?: number;
+      maxValueBytes?: number;
+      supportsStyles?: boolean;
+      supportsDisabled?: boolean;
+      supportsLayoutHints?: boolean;
+    };
+    selects?: {
+      maxOptions?: number;
+      maxLabelLength?: number;
+      maxValueBytes?: number;
+    };
+    text?: {
+      maxLength?: number;
+      encoding?: "characters" | "utf8-bytes" | "utf16-units";
+      markdownDialect?: "plain" | "markdown" | "html" | "slack-mrkdwn" | "discord-markdown";
+      supportsEdit?: boolean;
+    };
+  };
+};
+```
+
+Core rendering से पहले semantic controls पर generic limits लागू करता है। Renderers
+अब भी native block count, card size, URL limits, और उन provider quirks के लिए अंतिम provider-specific validation और clipping के स्वामी हैं जिन्हें
+generic contract में व्यक्त नहीं किया जा सकता। यदि limits किसी block से हर control हटा देती हैं, तो core labels को non-interactive context text के रूप में रखता है ताकि delivered message में अब भी visible fallback हो।
+
+## Core render flow
+
+जब किसी `ReplyPayload` या message action में `presentation` शामिल होता है, core:
+
+1. presentation payload को normalize करता है।
+2. target channel के outbound adapter को resolve करता है।
+3. `presentationCapabilities` पढ़ता है।
+4. adapter द्वारा advertise किए जाने पर action count, label length, और
+   select option count जैसी generic capability limits लागू करता है।
+5. जब adapter payload को render कर सकता है, `renderPresentation` call करता है।
+6. adapter अनुपस्थित होने या render न कर पाने पर conservative text पर fallback करता है।
+7. resulting payload को normal channel delivery path के माध्यम से भेजता है।
+8. पहली सफल sent message के बाद `delivery.pin` जैसी delivery metadata लागू करता है।
+
+Core fallback behavior का स्वामी है ताकि producers channel-agnostic रह सकें। Channel
+plugins native rendering और interaction handling के स्वामी हैं।
+
+## Degradation rules
+
+Presentation सीमित channels पर भेजने के लिए सुरक्षित होनी चाहिए।
+
+Fallback text में शामिल है:
+
+- पहली line के रूप में `title`
+- normal paragraphs के रूप में `text` blocks
+- compact context lines के रूप में `context` blocks
+- visual separator के रूप में `divider` blocks
+- button labels, link buttons के URLs सहित
+- select option labels
+
+Unsupported native controls को पूरा send fail करने के बजाय degrade होना चाहिए।
+उदाहरण:
+
+- inline buttons disabled होने पर Telegram text fallback भेजता है।
+- select support के बिना कोई channel select options को text के रूप में सूचीबद्ध करता है।
+- केवल-URL button या तो native link button बनता है या fallback URL line।
+- वैकल्पिक pin failures delivered message को fail नहीं करते।
+
+मुख्य exception `delivery.pin.required: true` है; यदि pinning को required के रूप में request किया गया है और channel sent message को pin नहीं कर सकता, तो delivery failure report करती है।
+
+## Provider mapping
+
+वर्तमान bundled renderers:
+
+| Channel         | Native render target                | Notes                                                                                                                                             |
+| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Components और component containers | मौजूदा provider-native payload producers के लिए legacy `channelData.discord.components` को संरक्षित करता है, लेकिन नए shared sends को `presentation` का उपयोग करना चाहिए। |
+| Slack           | Block Kit                           | मौजूदा provider-native payload producers के लिए legacy `channelData.slack.blocks` को संरक्षित करता है, लेकिन नए shared sends को `presentation` का उपयोग करना चाहिए।       |
+| Telegram        | Text plus inline keyboards          | Buttons/selects को target surface के लिए inline button capability चाहिए; अन्यथा text fallback उपयोग होता है।                                         |
+| Mattermost      | Text plus interactive props         | अन्य blocks text में degrade होते हैं।                                                                                                                     |
+| Microsoft Teams | Adaptive Cards                      | जब दोनों प्रदान किए जाते हैं, plain `message` text card के साथ शामिल होता है।                                                                            |
+| Feishu          | Interactive cards                   | Card header `title` का उपयोग कर सकता है; body उस title को duplicate करने से बचती है।                                                                                  |
+| Plain channels  | Text fallback                       | renderer के बिना channels को भी readable output मिलता है।                                                                                            |
+
+प्रदाता-नेटिव पेलोड संगतता मौजूदा उत्तर उत्पादकों के लिए एक संक्रमण सुविधा है। यह नए साझा नेटिव फ़ील्ड जोड़ने का कारण नहीं है।
+
+## प्रस्तुति बनाम InteractiveReply
+
+`InteractiveReply` वह पुराना आंतरिक उपसमुच्चय है जिसका उपयोग अनुमोदन और इंटरैक्शन
+हेल्पर करते हैं। यह समर्थन करता है:
+
+- टेक्स्ट
+- बटन
+- चयन
+
+`MessagePresentation` कैननिकल साझा भेजने का अनुबंध है। यह जोड़ता है:
+
+- शीर्षक
+- टोन
+- संदर्भ
+- विभाजक
+- केवल-URL बटन
+- `ReplyPayload.delivery` के माध्यम से सामान्य डिलीवरी मेटाडेटा
+
+पुराने कोड को जोड़ते समय `openclaw/plugin-sdk/interactive-runtime` से हेल्पर उपयोग करें:
+
+```ts
+import {
+  adaptMessagePresentationForChannel,
+  applyPresentationActionLimits,
+  interactiveReplyToPresentation,
+  normalizeMessagePresentation,
+  presentationPageSize,
+  presentationToInteractiveControlsReply,
+  presentationToInteractiveReply,
+  renderMessagePresentationFallbackText,
+} from "openclaw/plugin-sdk/interactive-runtime";
+```
+
+नए कोड को सीधे `MessagePresentation` स्वीकार या उत्पन्न करना चाहिए। मौजूदा
+`interactive` पेलोड `presentation` का एक अप्रचलित उपसमुच्चय हैं; पुराने उत्पादकों के लिए रनटाइम
+समर्थन बना रहता है।
+
+पुराने `InteractiveReply*` प्रकार और रूपांतरण हेल्पर SDK में
+`@deprecated` के रूप में चिह्नित हैं:
+
+- `InteractiveReply`, `InteractiveReplyBlock`, `InteractiveReplyButton`,
+  `InteractiveReplyOption`, `InteractiveReplySelectBlock`, और
+  `InteractiveReplyTextBlock`
+- `normalizeInteractiveReply(...)`
+- `hasInteractiveReplyBlocks(...)`
+- `interactiveReplyToPresentation(...)`
+- `presentationToInteractiveReply(...)`
+- `presentationToInteractiveControlsReply(...)`
+- `resolveInteractiveTextFallback(...)`
+- `reduceInteractiveReply(...)`
+
+`presentationToInteractiveReply(...)` और
+`presentationToInteractiveControlsReply(...)` पुराने चैनल कार्यान्वयनों के लिए रेंडरर
+ब्रिज के रूप में उपलब्ध रहते हैं। नए उत्पादक कोड को इन्हें कॉल नहीं करना चाहिए;
+`presentation` भेजें और कोर/चैनल अनुकूलन को रेंडरिंग संभालने दें।
+
+अनुमोदन हेल्पर में भी प्रस्तुति-प्रथम प्रतिस्थापन हैं:
+
+- `buildApprovalInteractiveReplyFromActionDescriptors(...)` के बजाय
+  `buildApprovalPresentationFromActionDescriptors(...)` उपयोग करें
+- `buildApprovalInteractiveReply(...)` के बजाय
+  `buildApprovalPresentation(...)` उपयोग करें
+- `buildExecApprovalInteractiveReply(...)` के बजाय
+  `buildExecApprovalPresentation(...)` उपयोग करें
+
+`renderMessagePresentationFallbackText(...)` उन प्रस्तुति ब्लॉक के लिए खाली स्ट्रिंग लौटाता है
+जिनमें कोई टेक्स्ट फ़ॉलबैक नहीं होता, जैसे केवल-विभाजक प्रस्तुति।
+ऐसे ट्रांसपोर्ट जिन्हें गैर-खाली भेजने का बॉडी चाहिए, डिफ़ॉल्ट फ़ॉलबैक
+अनुबंध बदले बिना न्यूनतम बॉडी चुनने के लिए `emptyFallback` पास कर सकते हैं।
+
+## डिलीवरी पिन
+
+पिन करना डिलीवरी व्यवहार है, प्रस्तुति नहीं। `channelData.telegram.pin` जैसे
+प्रदाता-नेटिव फ़ील्ड के बजाय `delivery.pin` उपयोग करें।
+
+अर्थ:
+
+- `pin: true` पहले सफलतापूर्वक डिलीवर किए गए संदेश को पिन करता है।
+- `pin.notify` का डिफ़ॉल्ट `false` है।
+- `pin.required` का डिफ़ॉल्ट `false` है।
+- वैकल्पिक पिन विफलताएं घटकर रह जाती हैं और भेजे गए संदेश को यथावत छोड़ती हैं।
+- आवश्यक पिन विफलताएं डिलीवरी को विफल करती हैं।
+- खंडित संदेश पहले डिलीवर किए गए खंड को पिन करते हैं, अंतिम खंड को नहीं।
+
+मैन्युअल `pin`, `unpin`, और `pins` संदेश क्रियाएं अभी भी उन मौजूदा
+संदेशों के लिए मौजूद हैं जहां प्रदाता उन ऑपरेशन का समर्थन करता है।
+
+## Plugin लेखक चेकलिस्ट
+
+- जब चैनल अर्थपूर्ण प्रस्तुति को रेंडर कर सकता हो या सुरक्षित रूप से घटा सकता हो, तब
+  `describeMessageTool(...)` से `presentation` घोषित करें।
+- रनटाइम आउटबाउंड एडेप्टर में `presentationCapabilities` जोड़ें।
+- रनटाइम कोड में `renderPresentation` लागू करें, कंट्रोल-प्लेन Plugin
+  सेटअप कोड में नहीं।
+- नेटिव UI लाइब्रेरी को हॉट सेटअप/कैटलॉग पथों से बाहर रखें।
+- ज्ञात होने पर `presentationCapabilities.limits` पर सामान्य क्षमता सीमाएं घोषित करें।
+- रेंडरर और परीक्षणों में अंतिम प्लेटफ़ॉर्म सीमाएं सुरक्षित रखें।
+- असमर्थित बटन, चयन, URL बटन, शीर्षक/टेक्स्ट
+  डुप्लिकेशन, और मिश्रित `message` प्लस `presentation` भेजने के लिए फ़ॉलबैक परीक्षण जोड़ें।
+- `deliveryCapabilities.pin` और
+  `pinDeliveredMessage` के माध्यम से डिलीवरी पिन समर्थन केवल तभी जोड़ें जब प्रदाता भेजे गए संदेश id को पिन कर सके।
+- साझा संदेश क्रिया स्कीमा के माध्यम से नए प्रदाता-नेटिव कार्ड/ब्लॉक/कंपोनेंट/बटन फ़ील्ड उजागर न करें।
+
+## संबंधित दस्तावेज़
+
+- [संदेश CLI](/hi/cli/message)
+- [Plugin SDK अवलोकन](/hi/plugins/sdk-overview)
+- [Plugin आर्किटेक्चर](/hi/plugins/architecture-internals#message-tool-schemas)
+- [चैनल प्रस्तुति रीफ़ैक्टर योजना](/hi/plan/ui-channels)

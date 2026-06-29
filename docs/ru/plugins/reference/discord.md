@@ -1,0 +1,31 @@
+---
+read_when:
+    - Вы устанавливаете, настраиваете или проверяете plugin Discord
+summary: Plugin канала Discord в OpenClaw для каналов, личных сообщений, команд и событий приложения.
+title: Discord Plugin
+x-i18n:
+    generated_at: "2026-06-28T23:23:22Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
+    source_path: plugins/reference/discord.md
+    workflow: 16
+---
+
+# Plugin Discord
+
+Plugin канала Discord для OpenClaw: каналы, личные сообщения, команды и события приложения.
+
+## Распространение
+
+- Пакет: `@openclaw/discord`
+- Способ установки: npm; ClawHub
+
+## Поверхность
+
+каналы: discord; контракты: transcriptSourceProviders; Skills
+
+## Связанная документация
+
+- [discord](/ru/channels/discord)

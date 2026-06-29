@@ -3,14 +3,14 @@ read_when:
     - Quieres entender cómo funciona memory_search
     - Quieres elegir un proveedor de embeddings
     - Quieres ajustar la calidad de búsqueda
-summary: Cómo la búsqueda de memoria encuentra notas relevantes mediante embeddings y recuperación híbrida
+summary: Cómo la búsqueda en memoria encuentra notas relevantes usando embeddings y recuperación híbrida
 title: Búsqueda en memoria
 x-i18n:
-    generated_at: "2026-06-27T11:13:06Z"
+    generated_at: "2026-06-28T22:33:16Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b0bcb8cf400100ba8b6ddbb46bdf8b2a89a8bc32a550ee6df47c874e7e9e0879
+    source_hash: 32ffb9d996851566eb92b7812c5425f545ecbb5387a0a445686df35a6c8ae143
     source_path: concepts/memory-search.md
     workflow: 16
 ---
@@ -21,8 +21,8 @@ fragmentos y buscándolos mediante embeddings, palabras clave o ambas cosas.
 
 ## Inicio rápido
 
-La búsqueda de memoria usa embeddings de OpenAI de forma predeterminada. Para usar otro backend de
-embeddings, establece un proveedor explícitamente:
+La búsqueda de memoria usa embeddings de OpenAI de forma predeterminada. Para usar otro backend
+de embeddings, establece un proveedor explícitamente:
 
 ```json5
 {
@@ -52,22 +52,22 @@ para fragmentos indexados. Configúralas con `memorySearch.queryInputType` y
 
 ## Proveedores compatibles
 
-| Proveedor         | ID                  | Necesita clave de API | Notas                                |
-| ----------------- | ------------------- | --------------------- | ------------------------------------ |
-| Bedrock           | `bedrock`           | No                    | Usa la cadena de credenciales de AWS |
-| DeepInfra         | `deepinfra`         | Sí                    | Predeterminado: `BAAI/bge-m3`        |
-| Gemini            | `gemini`            | Sí                    | Admite indexación de imágenes/audio  |
-| GitHub Copilot    | `github-copilot`    | No                    | Usa la suscripción a Copilot         |
-| Local             | `local`             | No                    | Modelo GGUF, descarga de ~0,6 GB     |
-| Mistral           | `mistral`           | Sí                    |                                      |
-| Ollama            | `ollama`            | No                    | Local/autohospedado                  |
-| OpenAI            | `openai`            | Sí                    | Predeterminado                       |
-| OpenAI-compatible | `openai-compatible` | Normalmente           | `/v1/embeddings` genérico            |
-| Voyage            | `voyage`            | Sí                    |                                      |
+| Proveedor         | ID                  | Necesita clave de API | Notas                                  |
+| ----------------- | ------------------- | --------------------- | -------------------------------------- |
+| Bedrock           | `bedrock`           | No                    | Usa la cadena de credenciales de AWS   |
+| DeepInfra         | `deepinfra`         | Sí                    | Predeterminado: `BAAI/bge-m3`          |
+| Gemini            | `gemini`            | Sí                    | Admite indexación de imágenes/audio    |
+| GitHub Copilot    | `github-copilot`    | No                    | Usa la suscripción de Copilot          |
+| Local             | `local`             | No                    | Modelo GGUF, descarga de ~0,6 GB       |
+| Mistral           | `mistral`           | Sí                    |                                        |
+| Ollama            | `ollama`            | No                    | Local/autohospedado                    |
+| OpenAI            | `openai`            | Sí                    | Predeterminado                         |
+| OpenAI-compatible | `openai-compatible` | Normalmente           | `/v1/embeddings` genérico              |
+| Voyage            | `voyage`            | Sí                    |                                        |
 
 ## Cómo funciona la búsqueda
 
-OpenClaw ejecuta dos rutas de recuperación en paralelo y combina los resultados:
+OpenClaw ejecuta dos rutas de recuperación en paralelo y fusiona los resultados:
 
 ```mermaid
 flowchart LR
@@ -82,11 +82,11 @@ flowchart LR
 
 - **Búsqueda vectorial** encuentra notas con significado similar ("gateway host" coincide con
   "the machine running OpenClaw").
-- **Búsqueda de palabras clave BM25** encuentra coincidencias exactas (IDs, cadenas de error, claves de
+- **Búsqueda de palabras clave BM25** encuentra coincidencias exactas (ID, cadenas de error, claves de
   configuración).
 
-Si solo una ruta está disponible, la otra se ejecuta sola. El modo intencional
-solo FTS (`provider: "none"`) y la selección automática/predeterminada de proveedor aún pueden usar
+Si solo hay una ruta disponible, la otra se ejecuta sola. El modo intencional solo FTS
+(`provider: "none"`) y la selección automática/predeterminada del proveedor aún pueden usar
 clasificación léxica cuando los embeddings no están disponibles.
 
 Los proveedores explícitos de embeddings no locales son diferentes. Si estableces
@@ -94,34 +94,34 @@ Los proveedores explícitos de embeddings no locales son diferentes. Si establec
 no está disponible en tiempo de ejecución, `memory_search` informa que la memoria no está disponible en lugar
 de usar silenciosamente resultados solo FTS. Esto mantiene visible un proveedor semántico
 configurado que está roto. Establece `provider: "none"` para recuperación deliberada solo FTS, o corrige
-la configuración de proveedor/autenticación para restaurar la clasificación semántica.
+la configuración del proveedor/autenticación para restaurar la clasificación semántica.
 
 ## Mejorar la calidad de búsqueda
 
-Dos funciones opcionales ayudan cuando tienes un historial de notas grande:
+Dos funciones opcionales ayudan cuando tienes un historial grande de notas:
 
 ### Decaimiento temporal
 
-Las notas antiguas pierden gradualmente peso de clasificación para que la información reciente aparezca primero.
-Con la vida media predeterminada de 30 días, una nota del mes pasado puntúa al 50 % de
+Las notas antiguas pierden gradualmente peso en la clasificación para que la información reciente aparezca primero.
+Con la semivida predeterminada de 30 días, una nota del mes pasado puntúa al 50 % de
 su peso original. Los archivos permanentes como `MEMORY.md` nunca decaen.
 
 <Tip>
-Activa el decaimiento temporal si tu agente tiene meses de notas diarias y la información
-obsoleta sigue superando al contexto reciente.
+Activa el decaimiento temporal si tu agente tiene meses de notas diarias y la
+información obsoleta sigue superando al contexto reciente.
 </Tip>
 
 ### MMR (diversidad)
 
-Reduce los resultados redundantes. Si cinco notas mencionan la misma configuración del enrutador, MMR
-garantiza que los resultados principales cubran temas diferentes en lugar de repetirse.
+Reduce los resultados redundantes. Si cinco notas mencionan todas la misma configuración de router, MMR
+asegura que los resultados principales cubran temas distintos en lugar de repetirse.
 
 <Tip>
 Activa MMR si `memory_search` sigue devolviendo fragmentos casi duplicados de
-distintas notas diarias.
+diferentes notas diarias.
 </Tip>
 
-### Activar ambas
+### Activar ambos
 
 ```json5
 {
@@ -151,7 +151,17 @@ configuración.
 
 Opcionalmente, puedes indexar transcripciones de sesión para que `memory_search` pueda recordar
 conversaciones anteriores. Esto es opcional mediante
-`memorySearch.experimental.sessionMemory`. Consulta la
+`memorySearch.experimental.sessionMemory` y `sources: ["sessions"]`; la lista de fuentes predeterminada
+solo incluye memoria. La bandera experimental habilita la indexación de transcripciones de sesión,
+mientras que `sources` controla si se buscan fragmentos de sesión.
+
+Las coincidencias de sesión obedecen `tools.sessions.visibility`: la configuración predeterminada `tree` solo
+expone la sesión actual y las sesiones que generó. Para recordar una sesión no relacionada
+del mismo agente despachada por Gateway desde una sesión de DM separada, amplía
+intencionalmente la visibilidad a `agent`.
+
+Al usar QMD, también establece `memory.qmd.sessions.enabled: true` para que las transcripciones se
+exporten a una colección QMD. Consulta la
 [referencia de configuración](/es/reference/memory-config) para obtener detalles.
 
 ## Solución de problemas
