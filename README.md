@@ -1,6 +1,7 @@
 # openclaw-docs
 
-![OpenClaw Docs banner](docs/assets/readme-banner.jpg)
+<!-- Keep README-owned media outside docs/**; docs/** is mirror output and sync prunes files absent from upstream source. -->
+![OpenClaw Docs banner](.github/assets/readme-banner.jpg)
 
 Mirror repo for the published OpenClaw docs site.
 
