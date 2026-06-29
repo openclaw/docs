@@ -10,6 +10,7 @@ Temporary operator note for the current translation CI failures. Remove this fil
    - Use a conservative first-pass shard policy: `shard_total = ceil(source_doc_count / 250)`, capped to `1..4`. Source docs are an upper bound for full pending docs, so this avoids under-sharding large locales without adding locale-specific planning state. The observed `ru` case had `696` pending docs, so it should run as `3` shards.
    - Keep overall translation concurrency bounded while adding shards: preserve full batch `max-parallel: 3` and `worker_parallel: "3"` unless a separate budget review changes them. Sharding should reduce per-job duration, not increase peak active workers.
    - Prefer a locale-level finalizer for sharded full translation. Shard jobs should upload artifacts only; one finalizer for that locale should download every shard artifact, apply them together, run one docs check, push one locale commit, and dispatch one locale-scoped R2 publish. Do not let each shard independently commit and publish the same locale.
+4. Keep translation memory in sharded full artifacts. Translation memory is locale-global, so one shard artifact should carry `docs/.i18n/<locale>.tm.jsonl` for the locale finalizer; otherwise full translation shards can finish successfully while the commit/finalizer stage misses refreshed TM state.
 
 ## Post-Fix Operator Steps
 
@@ -24,5 +25,6 @@ After the workflow fixes land on `main`, publish and recover in this order:
 
 1. Trigger targeted recovery for every known incomplete language after the fix lands. At minimum, rerun `Translate Full` for `hi` and `ru`; add any other failed or cancelled locale from the latest full/incremental summaries.
 2. Confirm each targeted locale produces all expected shard artifacts, the locale-level finalizer commits the translated pages and translation memory, and the commit reaches `main`.
-3. Confirm each recovered locale dispatches and completes a locale-scoped `R2 Pages` publish. If a publish is missed but the commit is already on `main`, run a manual full `R2 Pages` publish to push the committed output.
-4. Confirm the latest full or incremental workflow summary no longer lists the recovered languages as missing, failed, cancelled, or incomplete.
+3. For any locale whose translation artifacts were produced but whose finalizer/commit failed, rerun the targeted locale workflow after the control-plane fix so translation, artifact apply, commit, and publish all use the fixed workflow code.
+4. Confirm each recovered locale dispatches and completes a locale-scoped `R2 Pages` publish. If a publish is missed but the commit is already on `main`, run a manual full `R2 Pages` publish to push the committed output.
+5. Confirm the latest full or incremental workflow summary no longer lists the recovered languages as missing, failed, cancelled, or incomplete.

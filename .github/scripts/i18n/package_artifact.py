@@ -80,7 +80,9 @@ def read_pending_allowed(workspace: Path, locale: str, locale_slug: str, shard_i
             source = Path(line.strip())
             rel = source.relative_to(docs_root).as_posix()
             allowed.add(f"docs/{locale}/{rel}")
-    if shard_total == 1:
+    # Translation memory is locale-global rather than page-sharded. Shard 0
+    # carries it so a sharded locale finalizer applies the refreshed TM once.
+    if shard_total == 1 or shard_index == 0:
         allowed.add(f"docs/.i18n/{locale}.tm.jsonl")
     return allowed
 
