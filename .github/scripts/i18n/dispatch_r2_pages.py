@@ -14,6 +14,7 @@ Parameters:
   --locale: Locale code for locale/page scoped uploads.
   --page-path: Locale-relative page route for page scoped uploads.
   --force-upload: Force R2 object audit/upload input. Default: true.
+  --no-wait: Dispatch the R2 workflow and return without waiting for result.
   --live-url: Optional live URL to verify after upload.
   --expect-h1: Expected h1 text for live URL verification.
   --dispatch-attempts: Dispatch/retry count for stale scoped uploads. Default: 3.
@@ -30,6 +31,7 @@ Examples:
   GH_TOKEN=... GITHUB_REPOSITORY=openclaw/docs python .github/scripts/i18n/dispatch_r2_pages.py
   python .github/scripts/i18n/dispatch_r2_pages.py --repo openclaw/docs --ref main --timeout-seconds 1800
   python .github/scripts/i18n/dispatch_r2_pages.py --artifact-scope page --locale zh-CN --page-path channels/line --no-force-upload
+  python .github/scripts/i18n/dispatch_r2_pages.py --artifact-scope page --locale zh-CN --page-path channels/line --no-force-upload --no-wait
 """
 
 from __future__ import annotations
@@ -240,11 +242,13 @@ def parse_args() -> argparse.Namespace:
         epilog="""Outputs:
   Prints the dispatched R2 Pages run and exits non-zero unless it completes successfully.
   When --live-url and --expect-h1 are provided, also verifies the live page h1.
+  With --no-wait, exits after dispatch resolution and skips live verification.
 
 Examples:
   GH_TOKEN=... GITHUB_REPOSITORY=openclaw/docs python .github/scripts/i18n/dispatch_r2_pages.py
   python .github/scripts/i18n/dispatch_r2_pages.py --repo openclaw/docs --ref main --timeout-seconds 1800
   python .github/scripts/i18n/dispatch_r2_pages.py --artifact-scope locale --locale ja-JP --no-force-upload
+  python .github/scripts/i18n/dispatch_r2_pages.py --artifact-scope page --locale ja-JP --page-path channels/line --no-force-upload --no-wait
   python .github/scripts/i18n/dispatch_r2_pages.py --live-url https://docs.openclaw.ai/zh-CN/channels/line --expect-h1 LINE
 """,
     )
@@ -255,6 +259,7 @@ Examples:
     parser.add_argument("--locale", default="")
     parser.add_argument("--page-path", default="")
     parser.add_argument("--force-upload", default=True, action=argparse.BooleanOptionalAction)
+    parser.add_argument("--no-wait", action="store_true")
     parser.add_argument("--live-url", default="")
     parser.add_argument("--expect-h1", default="")
     parser.add_argument("--dispatch-attempts", default=3, type=int)
@@ -293,6 +298,9 @@ def main() -> None:
             )
             if not run_id:
                 run_id = find_dispatched_run(args.workflow, args.ref, args.repo, started_at, known_run_ids, request_id)
+            if args.no_wait:
+                print(f"R2 Pages run {run_id}: dispatched without waiting")
+                return
             wait_for_run(args.repo, run_id, args.timeout_seconds, args.poll_seconds)
             break
         except SystemExit as exc:

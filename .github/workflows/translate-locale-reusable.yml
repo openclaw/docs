@@ -58,6 +58,10 @@ on:
         required: false
         default: LINE
         type: string
+      canary_publish_required:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   translate:
@@ -293,6 +297,7 @@ jobs:
         with:
           name: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
           path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
+          include-hidden-files: true
           retention-days: 7
 
       - name: Fail failed locale artifact
@@ -363,26 +368,26 @@ jobs:
             --expected-locales "${EXPECTED_LOCALES}"
 
       - name: Set up Node for locale validation
-        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
       - name: Install docs dependencies
-        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
         run: npm ci
 
       - name: Install validation system dependencies
-        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
       - name: Install Playwright browser
-        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
         run: npx playwright install --with-deps chromium
 
       - name: Check docs before artifact finalization
-        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
         run: npm run docs:check
 
       - name: Commit locale refresh
@@ -428,9 +433,16 @@ jobs:
               --locale "${{ inputs.locale }}"
               --page-path "${{ inputs.canary_live_path }}"
               --no-force-upload
-              --live-url "${CANARY_LIVE_URL}"
-              --expect-h1 "${CANARY_EXPECTED_H1}"
             )
+            if [ "${{ inputs.canary_publish_required }}" = "true" ]; then
+              args+=(
+                --live-url "${CANARY_LIVE_URL}"
+                --expect-h1 "${CANARY_EXPECTED_H1}"
+              )
+              python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"
+            elif ! python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}" --no-wait; then
+              echo "::warning::Canary scoped R2 publish dispatch failed; continuing because final publication is covered by locale/full deploys."
+            fi
           else
             args+=(
               --ref "${{ github.ref_name }}"
@@ -438,8 +450,8 @@ jobs:
               --locale "${{ inputs.locale }}"
               --no-force-upload
             )
+            python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"
           fi
-          python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"
 
       - name: Fail incomplete locale artifact
         if: steps.apply.outputs.incomplete_count != '0'

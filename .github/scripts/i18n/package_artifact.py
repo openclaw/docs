@@ -80,7 +80,9 @@ def read_pending_allowed(workspace: Path, locale: str, locale_slug: str, shard_i
             source = Path(line.strip())
             rel = source.relative_to(docs_root).as_posix()
             allowed.add(f"docs/{locale}/{rel}")
-    if shard_total == 1:
+    # Translation memory is locale-global rather than page-sharded. Shard 0
+    # carries it so a sharded locale finalizer applies the refreshed TM once.
+    if shard_total == 1 or shard_index == 0:
         allowed.add(f"docs/.i18n/{locale}.tm.jsonl")
     return allowed
 
@@ -143,7 +145,9 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         deleted = git_lines(["diff", "--name-only", "--diff-filter=D", "--", f"docs/{locale}", f"docs/.i18n/{locale}.tm.jsonl"])
 
         allowed = read_pending_allowed(workspace, locale, locale_slug, shard_index, shard_total)
-        shard_changed = [line for line in changed if line in allowed]
+        # The finalizer treats every changed-files.txt entry as a required
+        # payload file, so allowed-but-missing TM paths must not be advertised.
+        shard_changed = [line for line in changed if line in allowed and (workspace / line).is_file()]
         if os.environ.get("ARTIFACT_ROLE") == "canary":
             shard_deleted = []
         elif shard_total == 1:
