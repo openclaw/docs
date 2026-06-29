@@ -97,6 +97,7 @@ Skill **location** (precedence) और skill **visibility** (कौन सा ag
     - उस agent के लिए कोई skills expose न करने के लिए `agents.list[].skills: []` set करें।
     - non-empty `agents.list[].skills` list **final** set है — यह defaults के साथ merge नहीं होती।
     - effective allowlist prompt building, slash-command discovery, sandbox sync, और skill snapshots पर apply होती है।
+
   </Accordion>
 </AccordionGroup>
 
