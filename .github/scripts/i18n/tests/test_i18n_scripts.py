@@ -510,6 +510,64 @@ class I18NScriptTests(unittest.TestCase):
             self.assertTrue((artifact / "payload/docs/fr/index.md").exists())
             self.assertTrue((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
 
+    def test_package_artifact_carries_translation_memory_only_on_first_shard(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/guide").mkdir(parents=True)
+            (repo / "docs/guide/setup.md").write_text("# Setup\n", encoding="utf-8")
+            (repo / "docs/guide/usage.md").write_text("# Usage\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/guide").mkdir(parents=True)
+            (repo / "docs/fr/guide/setup.md").write_text("# Setup FR\n", encoding="utf-8")
+            (repo / "docs/fr/guide/usage.md").write_text("# Usage FR\n", encoding="utf-8")
+            (repo / "docs/.i18n").mkdir(parents=True)
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text('{"ok":true}\n', encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of2.txt").write_text(str(repo / "docs/guide/setup.md") + "\n", encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s1of2.txt").write_text(str(repo / "docs/guide/usage.md") + "\n", encoding="utf-8")
+
+            base_env = {
+                "GITHUB_WORKSPACE": str(repo),
+                "LOCALE": "fr",
+                "LOCALE_SLUG": "fr",
+                "SOURCE_SHA": "source-a",
+                "MODE": "full",
+                "SHARD_TOTAL": "2",
+                "WORKER_PARALLEL": "3",
+                "THINKING_EFFORT": "medium",
+                "PENDING_COUNT": "1",
+                "TOTAL_PENDING_COUNT": "2",
+                "ALL_COUNT": "2",
+                "TRANSLATE_OUTCOME": "success",
+                "MDX_CHECK_OUTCOME": "skipped",
+                "MDX_REPAIR_OUTCOME": "skipped",
+                "MDX_SCOPE_OUTCOME": "skipped",
+                "MDX_RECHECK_OUTCOME": "skipped",
+            }
+
+            with chdir(repo), env({**base_env, "SHARD_INDEX": "0"}):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of2"
+            self.assertEqual(2, metadata["changed_count"])
+            self.assertEqual(
+                ["docs/.i18n/fr.tm.jsonl", "docs/fr/guide/setup.md"],
+                (artifact / "changed-files.txt").read_text(encoding="utf-8").splitlines(),
+            )
+            self.assertTrue((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
+
+            with chdir(repo), env({**base_env, "SHARD_INDEX": "1"}):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+            artifact = repo / ".openclaw-sync/artifacts/fr-s1of2"
+            self.assertEqual(1, metadata["changed_count"])
+            self.assertEqual(
+                ["docs/fr/guide/usage.md"],
+                (artifact / "changed-files.txt").read_text(encoding="utf-8").splitlines(),
+            )
+            self.assertFalse((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
+
     def test_package_artifact_failure_writes_empty_payload_contract(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
