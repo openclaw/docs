@@ -11,6 +11,7 @@ Temporary operator note for the current translation CI failures. Remove this fil
    - Keep overall translation concurrency bounded while adding shards: preserve full batch `max-parallel: 3` and `worker_parallel: "3"` unless a separate budget review changes them. Sharding should reduce per-job duration, not increase peak active workers.
    - Prefer a locale-level finalizer for sharded full translation. Shard jobs should upload artifacts only; one finalizer for that locale should download every shard artifact, apply them together, run one docs check, push one locale commit, and dispatch one locale-scoped R2 publish. Do not let each shard independently commit and publish the same locale.
 4. Keep translation memory in sharded full artifacts. Translation memory is locale-global, so one shard artifact should carry `docs/.i18n/<locale>.tm.jsonl` for the locale finalizer; otherwise full translation shards can finish successfully while the commit/finalizer stage misses refreshed TM state.
+5. Keep canary finalization lightweight. Canary runs should verify artifact apply, canary scope enforcement, and commit control-plane behavior without running full `npm run docs:check` or waiting for a page-scoped R2 build; full locale/final publish paths remain strict.
 
 ## Post-Fix Operator Steps
 

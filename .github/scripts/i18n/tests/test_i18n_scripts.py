@@ -198,6 +198,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("canary_source_path: channels/line.md", text)
         self.assertIn("canary_live_path: channels/line", text)
         self.assertIn("canary_expected_h1: LINE", text)
+        self.assertIn("canary_publish_required: ${{ inputs.canary_only == true }}", text)
         self.assertIn("batch_1_locales:", text)
         self.assertIn("shard_index: ${{ matrix.shard_index }}", text)
         self.assertIn("shard_total: ${{ matrix.shard_total }}", text)
@@ -205,7 +206,8 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("translate-locale-finalize-reusable.yml", text)
         self.assertRegex(text, r"translate-canary:[\s\S]*?artifact_role: canary[\s\S]*?commit_locale: true")
         self.assertIn("inputs.commit_locale || inputs.artifact_role == 'canary'", reusable)
-        self.assertIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
+        self.assertNotIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
+        self.assertIn("inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("inputs.commit_locale && steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("Fail uncommitted locale refresh", reusable)
         self.assertIn("inputs.artifact_role == 'canary' || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')", reusable)
@@ -223,10 +225,13 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('--ref "${{ github.ref_name }}"', reusable)
         self.assertIn('--locale "${{ inputs.locale }}"', reusable)
         self.assertIn('--page-path "${{ inputs.canary_live_path }}"', reusable)
-        self.assertIn("--artifact-scope locale", reusable)
-        self.assertIn("--no-force-upload", reusable)
+        self.assertIn('if [ "${{ inputs.canary_publish_required }}" = "true" ]; then', reusable)
         self.assertIn('--live-url "${CANARY_LIVE_URL}"', reusable)
         self.assertIn('--expect-h1 "${CANARY_EXPECTED_H1}"', reusable)
+        self.assertIn("--no-wait", reusable)
+        self.assertIn("Canary scoped R2 publish dispatch failed; continuing", reusable)
+        self.assertIn("--artifact-scope locale", reusable)
+        self.assertIn("--no-force-upload", reusable)
         finalize_reusable = (REPO_ROOT / ".github/workflows/translate-finalize-reusable.yml").read_text(encoding="utf-8")
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', finalize_reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", finalize_reusable)
@@ -689,6 +694,43 @@ class I18NScriptTests(unittest.TestCase):
                 self.assertEqual(["docs/hi"], commit_locale_artifact.locale_pathspecs("hi"))
                 self.assertTrue(commit_locale_artifact.has_locale_changes("hi"))
 
+    def test_canary_commit_new_locale_without_tm_does_not_add_missing_tm_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            origin = tmp_path / "origin.git"
+            subprocess.run(["git", "init", "--bare", str(origin)], check=True, text=True, stdout=subprocess.PIPE)
+            repo = tmp_path / "repo"
+            repo.mkdir()
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / ".openclaw-sync/source.json").write_text(json.dumps({"repository": "openclaw/openclaw", "sha": "source-a"}) + "\n", encoding="utf-8")
+            (repo / "docs").mkdir()
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+            run_git(repo, "remote", "add", "origin", str(origin))
+            run_git(repo, "push", "-u", "origin", "main")
+
+            (repo / "docs/hi").mkdir(parents=True)
+            (repo / "docs/hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+            artifact = repo / ".openclaw-sync/i18n-artifacts/hi-s0of1"
+            artifact.mkdir(parents=True)
+            (artifact / "changed-files.txt").write_text("docs/hi/index.md\n", encoding="utf-8")
+            (artifact / "deleted-files.txt").write_text("", encoding="utf-8")
+
+            with chdir(repo):
+                committed = commit_locale_artifact.commit_locale(
+                    "hi",
+                    "source-a",
+                    1,
+                    artifact_role="canary",
+                    artifact_dir=str(artifact),
+                )
+
+            self.assertTrue(committed)
+            self.assertEqual("# Hindi\n", run_git(repo, "show", "origin/main:docs/hi/index.md"))
+            self.assertNotIn("docs/.i18n/hi.tm.jsonl", run_git(repo, "ls-tree", "-r", "--name-only", "origin/main"))
+
     def test_canary_commit_scope_rejects_unrelated_locale_deletes_not_in_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
@@ -887,6 +929,57 @@ class I18NScriptTests(unittest.TestCase):
         self.assertEqual(2, len(dispatches))
         self.assertNotEqual(dispatches[0], dispatches[1])
         self.assertEqual([("https://docs.openclaw.ai/zh-TW/channels/line", "LINE")], verified)
+
+    def test_dispatch_r2_pages_no_wait_skips_strict_publish_gate(self) -> None:
+        waited: list[str] = []
+        verified: list[tuple[str, str]] = []
+
+        def fake_dispatch(
+            workflow: str,
+            ref: str,
+            repo: str,
+            artifact_scope: str,
+            force_upload: bool,
+            locale: str = "",
+            page_path: str = "",
+            request_id: str = "",
+        ) -> str:
+            return "123"
+
+        def fake_wait(repo: str, run_id: str, timeout_seconds: int, poll_seconds: int) -> None:
+            waited.append(run_id)
+            raise SystemExit("R2 Pages run failed")
+
+        def fake_verify(url: str, expected_h1: str, timeout_seconds: int, poll_seconds: int) -> None:
+            verified.append((url, expected_h1))
+
+        argv = [
+            "dispatch_r2_pages.py",
+            "--repo",
+            "openclaw/docs",
+            "--artifact-scope",
+            "page",
+            "--locale",
+            "zh-TW",
+            "--page-path",
+            "channels/line",
+            "--no-wait",
+            "--live-url",
+            "https://docs.openclaw.ai/zh-TW/channels/line",
+            "--expect-h1",
+            "LINE",
+        ]
+        with (
+            patch.object(sys, "argv", argv),
+            patch.object(dispatch_r2_pages, "known_workflow_dispatch_run_ids", lambda workflow, ref, repo: set()),
+            patch.object(dispatch_r2_pages, "dispatch", fake_dispatch),
+            patch.object(dispatch_r2_pages, "wait_for_run", fake_wait),
+            patch.object(dispatch_r2_pages, "verify_live_h1", fake_verify),
+        ):
+            dispatch_r2_pages.main()
+
+        self.assertEqual([], waited)
+        self.assertEqual([], verified)
 
     def test_dispatch_r2_pages_rejects_ambiguous_new_runs(self) -> None:
         now = "2026-06-27T03:43:01Z"
