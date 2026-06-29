@@ -515,6 +515,60 @@ class I18NScriptTests(unittest.TestCase):
             self.assertTrue((artifact / "payload/docs/fr/index.md").exists())
             self.assertTrue((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
 
+    def test_package_artifact_excludes_allowed_tm_when_payload_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs").mkdir()
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr").mkdir(parents=True)
+            (repo / "docs/fr/index.md").write_text("# Index FR\n", encoding="utf-8")
+            (repo / "docs/.i18n").mkdir(parents=True)
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/index.md") + "\n", encoding="utf-8")
+
+            def fake_git_lines(args: list[str]) -> list[str]:
+                if "--diff-filter=ACMRT" in args:
+                    return ["docs/.i18n/fr.tm.jsonl", "docs/fr/index.md"]
+                return []
+
+            with (
+                chdir(repo),
+                patch.object(package_artifact, "git_lines", fake_git_lines),
+                env(
+                    {
+                        "GITHUB_WORKSPACE": str(repo),
+                        "LOCALE": "fr",
+                        "LOCALE_SLUG": "fr",
+                        "SOURCE_SHA": "source-a",
+                        "MODE": "full",
+                        "SHARD_INDEX": "0",
+                        "SHARD_TOTAL": "1",
+                        "WORKER_PARALLEL": "3",
+                        "THINKING_EFFORT": "medium",
+                        "PENDING_COUNT": "1",
+                        "TOTAL_PENDING_COUNT": "1",
+                        "ALL_COUNT": "1",
+                        "ARTIFACT_ROLE": "canary",
+                        "TRANSLATE_OUTCOME": "success",
+                        "MDX_CHECK_OUTCOME": "skipped",
+                        "MDX_REPAIR_OUTCOME": "skipped",
+                        "MDX_SCOPE_OUTCOME": "skipped",
+                        "MDX_RECHECK_OUTCOME": "skipped",
+                    }
+                ),
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            self.assertEqual(1, metadata["changed_count"])
+            self.assertEqual(["docs/fr/index.md"], (artifact / "changed-files.txt").read_text(encoding="utf-8").splitlines())
+            self.assertTrue((artifact / "payload/docs/fr/index.md").exists())
+            self.assertFalse((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
+
     def test_package_artifact_carries_translation_memory_only_on_first_shard(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)

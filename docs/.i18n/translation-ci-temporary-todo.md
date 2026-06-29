@@ -12,6 +12,7 @@ Temporary operator note for the current translation CI failures. Remove this fil
    - Prefer a locale-level finalizer for sharded full translation. Shard jobs should upload artifacts only; one finalizer for that locale should download every shard artifact, apply them together, run one docs check, push one locale commit, and dispatch one locale-scoped R2 publish. Do not let each shard independently commit and publish the same locale.
 4. Keep translation memory in sharded full artifacts. Translation memory is locale-global, so one shard artifact should carry `docs/.i18n/<locale>.tm.jsonl` for the locale finalizer; otherwise full translation shards can finish successfully while the commit/finalizer stage misses refreshed TM state.
 5. Keep canary finalization lightweight. Canary runs should verify artifact apply, canary scope enforcement, and commit control-plane behavior without running full `npm run docs:check` or waiting for a page-scoped R2 build; full locale/final publish paths remain strict.
+   - Canary artifacts must not list `docs/.i18n/<locale>.tm.jsonl` in `changed-files.txt` unless that TM file is present in the artifact payload. The finalizer treats every changed path as required payload, so an allowed-but-missing TM path causes a false incomplete-artifact failure before full batches can start.
 
 ## Post-Fix Operator Steps
 
@@ -29,3 +30,4 @@ After the workflow fixes land on `main`, publish and recover in this order:
 3. For any locale whose translation artifacts were produced but whose finalizer/commit failed, rerun the targeted locale workflow after the control-plane fix so translation, artifact apply, commit, and publish all use the fixed workflow code.
 4. Confirm each recovered locale dispatches and completes a locale-scoped `R2 Pages` publish. If a publish is missed but the commit is already on `main`, run a manual full `R2 Pages` publish to push the committed output.
 5. Confirm the latest full or incremental workflow summary no longer lists the recovered languages as missing, failed, cancelled, or incomplete.
+6. Trigger targeted canary validation for the fixed canary path and confirm the finalizer skips full docs check, treats page-scoped R2 dispatch as non-blocking for normal full canaries, and does not fail when the canary artifact has no TM payload.
