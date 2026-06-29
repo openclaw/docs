@@ -212,6 +212,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("Fail uncommitted locale refresh", reusable)
         self.assertIn("inputs.artifact_role == 'canary' || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')", reusable)
         self.assertIn("ARTIFACT_DIR: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}", reusable)
+        self.assertIn("include-hidden-files: true", reusable)
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"', reusable)

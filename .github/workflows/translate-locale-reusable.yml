@@ -297,6 +297,7 @@ jobs:
         with:
           name: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
           path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
+          include-hidden-files: true
           retention-days: 7
 
       - name: Fail failed locale artifact
