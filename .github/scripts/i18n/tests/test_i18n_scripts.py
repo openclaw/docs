@@ -21,6 +21,7 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 NON_CLI_SCRIPT_MODULES = {SCRIPT_DIR / "translation_plan.py"}
+WORKFLOW_TEST_ENTRYPOINTS = {SCRIPT_DIR / "tests/test_i18n_scripts.py"}
 
 
 def load_module(name: str):
@@ -107,7 +108,9 @@ class I18NScriptTests(unittest.TestCase):
                 else:
                     called_scripts.add(SCRIPT_DIR / match.group("temp"))
 
-        expected_scripts = set(SCRIPT_DIR.glob("*.py")) - {SCRIPT_DIR / "__init__.py"} - NON_CLI_SCRIPT_MODULES
+        expected_scripts = (
+            set(SCRIPT_DIR.glob("*.py")) - {SCRIPT_DIR / "__init__.py"} - NON_CLI_SCRIPT_MODULES
+        ) | WORKFLOW_TEST_ENTRYPOINTS
         self.assertEqual(expected_scripts, called_scripts)
         for script in called_scripts:
             self.assertTrue(script.exists(), f"workflow calls missing script: {script}")
@@ -294,6 +297,19 @@ class I18NScriptTests(unittest.TestCase):
         self.assertNotIn('worker_parallel: "8"', text)
         for slug in expected.values():
             self.assertIn(f'!docs/{slug}/**', text)
+
+    def test_locale_like_docs_dirs_are_supported_and_excluded_from_incremental_triggers(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
+        docs_dirs = {path.name for path in (REPO_ROOT / "docs").iterdir() if path.is_dir()}
+        supported_locales = {locale.locale for locale in translation_plan.all_locales()}
+        excluded_dirs = set(re.findall(r'!\s*docs/([^/]+)/\*\*', text))
+
+        # Locale output directories use short BCP47 tags. Treating only this
+        # shape as locale-like avoids false positives such as docs/web.
+        locale_like_dirs = {name for name in docs_dirs if re.fullmatch(r"[a-z]{2}(?:-[A-Z]{2})?", name)}
+
+        self.assertEqual(set(), locale_like_dirs - supported_locales)
+        self.assertEqual(set(), supported_locales - excluded_dirs)
 
     def test_supported_locale_dirs_are_never_source_docs_without_markers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

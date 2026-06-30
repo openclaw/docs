@@ -20,6 +20,12 @@ jobs:
 
           python .github/scripts/i18n/workflow_shell_check.py --check-bash
 
+      - name: Run i18n control-plane regressions
+        run: |
+          set -euo pipefail
+
+          python .github/scripts/i18n/tests/test_i18n_scripts.py
+
       - name: Check translation workflow budgets
         run: |
           set -euo pipefail
