@@ -1,39 +1,39 @@
 ---
 read_when:
-    - आप Gateway, कार्यस्थान, प्रमाणीकरण, चैनलों और Skills के लिए निर्देशित सेटअप चाहते हैं
+    - आप Gateway, कार्यक्षेत्र, प्रमाणीकरण, चैनल और Skills के लिए मार्गदर्शित सेटअप चाहते हैं
 summary: '`openclaw onboard` के लिए CLI संदर्भ (इंटरैक्टिव ऑनबोर्डिंग)'
-title: आरंभ करें
+title: ऑनबोर्ड
 x-i18n:
-    generated_at: "2026-06-28T22:51:12Z"
+    generated_at: "2026-06-30T22:15:22Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ffee6b90e72f1859634fbd7ccac2f44e88bc37879b9e5b099c33b760cc0e9af
+    source_hash: 6e0a3c2dea3f8116bb3282d5fb160cf34d9a6f0eefcc072abcff2287d5801184
     source_path: cli/onboard.md
     workflow: 16
 ---
 
 # `openclaw onboard`
 
-स्थानीय या रिमोट Gateway सेटअप के लिए पूरा निर्देशित ऑनबोर्डिंग। इसका उपयोग तब करें जब आप चाहते हैं कि OpenClaw एक ही प्रवाह में मॉडल प्रमाणीकरण, कार्यस्थान, Gateway, चैनल, Skills, और स्वास्थ्य जांच से होकर गुजारे।
+स्थानीय या दूरस्थ Gateway सेटअप के लिए पूर्ण निर्देशित ऑनबोर्डिंग। इसका उपयोग तब करें जब आप चाहते हैं कि OpenClaw एक ही प्रवाह में मॉडल प्रमाणीकरण, workspace, gateway, channels, skills, और health से होकर चलाए।
 
-## संबंधित गाइड
+## संबंधित मार्गदर्शिकाएँ
 
 <CardGroup cols={2}>
-  <Card title="CLI ऑनबोर्डिंग हब" href="/hi/start/wizard" icon="rocket">
+  <Card title="CLI onboarding hub" href="/hi/start/wizard" icon="rocket">
     इंटरैक्टिव CLI प्रवाह का वॉकथ्रू।
   </Card>
-  <Card title="ऑनबोर्डिंग अवलोकन" href="/hi/start/onboarding-overview" icon="map">
-    OpenClaw ऑनबोर्डिंग कैसे एक साथ फिट होती है।
+  <Card title="Onboarding overview" href="/hi/start/onboarding-overview" icon="map">
+    OpenClaw ऑनबोर्डिंग कैसे एक साथ काम करती है।
   </Card>
-  <Card title="CLI सेटअप संदर्भ" href="/hi/start/wizard-cli-reference" icon="book">
-    आउटपुट, आंतरिक विवरण, और प्रति-चरण व्यवहार।
+  <Card title="CLI setup reference" href="/hi/start/wizard-cli-reference" icon="book">
+    आउटपुट, आंतरिक विवरण, और प्रत्येक चरण का व्यवहार।
   </Card>
-  <Card title="CLI ऑटोमेशन" href="/hi/start/wizard-cli-automation" icon="terminal">
-    गैर-इंटरैक्टिव फ्लैग और स्क्रिप्टेड सेटअप।
+  <Card title="CLI automation" href="/hi/start/wizard-cli-automation" icon="terminal">
+    गैर-इंटरैक्टिव flags और scripted setups।
   </Card>
-  <Card title="macOS ऐप ऑनबोर्डिंग" href="/hi/start/onboarding" icon="apple">
-    macOS मेनू बार ऐप के लिए ऑनबोर्डिंग प्रवाह।
+  <Card title="macOS app onboarding" href="/hi/start/onboarding" icon="apple">
+    macOS menu bar app के लिए ऑनबोर्डिंग प्रवाह।
   </Card>
 </CardGroup>
 
@@ -50,25 +50,25 @@ openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--flow import` Hermes जैसे Plugin-स्वामित्व वाले माइग्रेशन प्रदाताओं का उपयोग करता है। यह केवल नए OpenClaw सेटअप पर चलता है; यदि मौजूदा कॉन्फिग, क्रेडेंशियल, सेशन, या कार्यस्थान मेमोरी/पहचान फाइलें मौजूद हैं, तो आयात करने से पहले रीसेट करें या नया सेटअप चुनें।
+`--flow import` Hermes जैसे plugin-स्वामित्व वाले migration providers का उपयोग करता है। यह केवल नए OpenClaw सेटअप पर चलता है; यदि मौजूदा config, credentials, sessions, या workspace memory/identity files मौजूद हैं, तो import करने से पहले reset करें या नया setup चुनें।
 
-`--modern` Crestodian संवादात्मक ऑनबोर्डिंग पूर्वावलोकन शुरू करता है। `--modern` के बिना, `openclaw onboard` क्लासिक ऑनबोर्डिंग प्रवाह रखता है।
+`--modern` Crestodian conversational onboarding preview शुरू करता है। `--modern` के बिना, `openclaw onboard` classic onboarding flow बनाए रखता है।
 
-नए इंस्टॉल पर, जहां सक्रिय कॉन्फिग फाइल गायब है या उसमें कोई लिखी गई सेटिंग नहीं है (खाली या केवल मेटाडेटा), केवल `openclaw` भी क्लासिक ऑनबोर्डिंग प्रवाह शुरू करता है। एक बार कॉन्फिग फाइल में लिखी गई सेटिंग हो जाने पर, केवल `openclaw` इसके बजाय Crestodian खोलता है।
+किसी नए install पर जहाँ active config file अनुपस्थित है या उसमें authored settings नहीं हैं (खाली या metadata-only), bare `openclaw` भी classic onboarding flow शुरू करता है। एक बार config file में authored settings हो जाएँ, bare `openclaw` इसके बजाय Crestodian खोलता है।
 
-Plaintext `ws://` loopback, निजी IP literals, `.local`, और Tailnet `*.ts.net` Gateway URL के लिए स्वीकार किया जाता है। अन्य विश्वसनीय निजी-DNS नामों के लिए, ऑनबोर्डिंग प्रक्रिया वातावरण में `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` सेट करें।
+Plaintext `ws://` loopback, private IP literals, `.local`, और Tailnet `*.ts.net` gateway URLs के लिए स्वीकार किया जाता है। अन्य trusted private-DNS names के लिए, onboarding process environment में `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` सेट करें।
 
-## लोकेल
+## Locale
 
-इंटरैक्टिव ऑनबोर्डिंग स्थिर सेटअप कॉपी के लिए CLI विजार्ड लोकेल का उपयोग करती है। समाधान क्रम है:
+Interactive onboarding fixed setup copy के लिए CLI wizard locale का उपयोग करता है। Resolve क्रम है:
 
 1. `OPENCLAW_LOCALE`
 2. `LC_ALL`
 3. `LC_MESSAGES`
 4. `LANG`
-5. अंग्रेज़ी फॉलबैक
+5. English fallback
 
-समर्थित विजार्ड लोकेल `en`, `zh-CN`, और `zh-TW` हैं। लोकेल मान अंडरस्कोर या POSIX suffix रूपों जैसे `zh_CN.UTF-8` का उपयोग कर सकते हैं। उत्पाद नाम, कमांड नाम, कॉन्फिग कुंजियां, URL, provider ID, model ID, और plugin/channel लेबल शाब्दिक रहते हैं।
+समर्थित wizard locales `en`, `zh-CN`, और `zh-TW` हैं। Locale values underscore या POSIX suffix forms जैसे `zh_CN.UTF-8` का उपयोग कर सकती हैं। Product names, command names, config keys, URLs, provider IDs, model IDs, और plugin/channel labels literal रहते हैं।
 
 उदाहरण:
 
@@ -76,7 +76,7 @@ Plaintext `ws://` loopback, निजी IP literals, `.local`, और Tailnet `
 OPENCLAW_LOCALE=zh-CN openclaw onboard
 ```
 
-गैर-इंटरैक्टिव कस्टम प्रदाता:
+गैर-इंटरैक्टिव custom provider:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -89,11 +89,11 @@ openclaw onboard --non-interactive \
   --custom-image-input
 ```
 
-`--custom-api-key` गैर-इंटरैक्टिव मोड में वैकल्पिक है। यदि छोड़ा गया है, तो ऑनबोर्डिंग `CUSTOM_API_KEY` जांचती है।
-OpenClaw सामान्य vision model ID को स्वतः image-capable के रूप में चिह्नित करता है। अज्ञात कस्टम vision ID के लिए `--custom-image-input` पास करें, या केवल-पाठ मेटाडेटा बाध्य करने के लिए `--custom-text-input`।
-OpenAI-compatible endpoints के लिए `--custom-compatibility openai-responses` उपयोग करें जो `/v1/responses` का समर्थन करते हैं लेकिन `/v1/chat/completions` का नहीं।
+`--custom-api-key` non-interactive mode में वैकल्पिक है। यदि छोड़ा गया हो, तो onboarding `CUSTOM_API_KEY` जाँचता है।
+OpenClaw सामान्य vision model IDs को अपने-आप image-capable के रूप में चिह्नित करता है। अज्ञात custom vision IDs के लिए `--custom-image-input` pass करें, या text-only metadata force करने के लिए `--custom-text-input`।
+ऐसे OpenAI-compatible endpoints के लिए `--custom-compatibility openai-responses` उपयोग करें जो `/v1/responses` support करते हैं लेकिन `/v1/chat/completions` नहीं।
 
-LM Studio गैर-इंटरैक्टिव मोड में प्रदाता-विशिष्ट कुंजी फ्लैग का भी समर्थन करता है:
+LM Studio non-interactive mode में provider-specific key flag भी support करता है:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -114,9 +114,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` का डिफॉल्ट `http://127.0.0.1:11434` है। `--custom-model-id` वैकल्पिक है; यदि छोड़ा गया है, तो ऑनबोर्डिंग Ollama के सुझाए गए डिफॉल्ट का उपयोग करती है। `kimi-k2.5:cloud` जैसे cloud model ID भी यहां काम करते हैं।
+`--custom-base-url` default रूप से `http://127.0.0.1:11434` होता है। `--custom-model-id` वैकल्पिक है; यदि छोड़ा गया हो, तो onboarding Ollama के suggested defaults का उपयोग करता है। `kimi-k2.5:cloud` जैसे cloud model IDs भी यहाँ काम करते हैं।
 
-प्रदाता कुंजियों को plaintext के बजाय refs के रूप में संग्रहित करें:
+Provider keys को plaintext के बजाय refs के रूप में store करें:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -125,28 +125,28 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--secret-input-mode ref` के साथ, ऑनबोर्डिंग plaintext key values के बजाय env-backed refs लिखती है।
-auth-profile backed providers के लिए यह `keyRef` प्रविष्टियां लिखता है; custom providers के लिए यह `models.providers.<id>.apiKey` को env ref के रूप में लिखता है (उदाहरण के लिए `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`)।
+`--secret-input-mode ref` के साथ, onboarding plaintext key values के बजाय env-backed refs लिखता है।
+Auth-profile backed providers के लिए यह `keyRef` entries लिखता है; custom providers के लिए यह `models.providers.<id>.apiKey` को env ref के रूप में लिखता है (उदाहरण के लिए `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`)।
 
-गैर-इंटरैक्टिव `ref` मोड अनुबंध:
+Non-interactive `ref` mode contract:
 
-- ऑनबोर्डिंग प्रक्रिया वातावरण में प्रदाता env var सेट करें (उदाहरण के लिए `OPENAI_API_KEY`)।
-- inline key flags पास न करें (उदाहरण के लिए `--openai-api-key`) जब तक कि वह env var भी सेट न हो।
-- यदि आवश्यक env var के बिना inline key flag पास किया जाता है, तो ऑनबोर्डिंग मार्गदर्शन के साथ तुरंत विफल होती है।
+- Onboarding process environment में provider env var सेट करें (उदाहरण के लिए `OPENAI_API_KEY`)।
+- Inline key flags (उदाहरण के लिए `--openai-api-key`) pass न करें, जब तक कि वह env var भी सेट न हो।
+- यदि required env var के बिना inline key flag pass किया जाता है, तो onboarding guidance के साथ तेजी से fail हो जाता है।
 
-गैर-इंटरैक्टिव मोड में Gateway token विकल्प:
+Non-interactive mode में Gateway token options:
 
-- `--gateway-auth token --gateway-token <token>` plaintext token संग्रहित करता है।
-- `--gateway-auth token --gateway-token-ref-env <name>` `gateway.auth.token` को env SecretRef के रूप में संग्रहित करता है।
-- `--gateway-token` और `--gateway-token-ref-env` परस्पर अनन्य हैं।
-- `--gateway-token-ref-env` को ऑनबोर्डिंग प्रक्रिया वातावरण में non-empty env var की आवश्यकता होती है।
-- `--install-daemon` के साथ, जब token auth को token की आवश्यकता होती है, SecretRef-managed gateway tokens सत्यापित किए जाते हैं लेकिन supervisor service environment metadata में resolved plaintext के रूप में persisted नहीं किए जाते।
-- `--install-daemon` के साथ, यदि token mode को token की आवश्यकता है और कॉन्फिगर किया गया token SecretRef unresolved है, तो ऑनबोर्डिंग remediation guidance के साथ fail closed होती है।
-- `--install-daemon` के साथ, यदि `gateway.auth.token` और `gateway.auth.password` दोनों कॉन्फिगर हैं और `gateway.auth.mode` unset है, तो ऑनबोर्डिंग install को तब तक रोकती है जब तक mode स्पष्ट रूप से सेट न हो।
-- स्थानीय ऑनबोर्डिंग कॉन्फिग में `gateway.mode="local"` लिखती है। यदि बाद की किसी कॉन्फिग फाइल में `gateway.mode` गायब है, तो उसे config damage या incomplete manual edit मानें, valid local-mode shortcut नहीं।
-- स्थानीय ऑनबोर्डिंग चुने गए setup path द्वारा आवश्यक selected downloadable plugins इंस्टॉल करती है।
-- रिमोट ऑनबोर्डिंग केवल रिमोट Gateway के लिए connection info लिखती है और local plugin packages इंस्टॉल नहीं करती।
-- `--allow-unconfigured` एक अलग gateway runtime escape hatch है। इसका मतलब यह नहीं है कि ऑनबोर्डिंग `gateway.mode` छोड़ सकती है।
+- `--gateway-auth token --gateway-token <token>` plaintext token store करता है।
+- `--gateway-auth token --gateway-token-ref-env <name>` `gateway.auth.token` को env SecretRef के रूप में store करता है।
+- `--gateway-token` और `--gateway-token-ref-env` परस्पर exclusive हैं।
+- `--gateway-token-ref-env` के लिए onboarding process environment में non-empty env var आवश्यक है।
+- `--install-daemon` के साथ, जब token auth को token की आवश्यकता होती है, SecretRef-managed gateway tokens validate किए जाते हैं लेकिन supervisor service environment metadata में resolved plaintext के रूप में persist नहीं किए जाते।
+- `--install-daemon` के साथ, यदि token mode को token की आवश्यकता है और configured token SecretRef unresolved है, तो onboarding remediation guidance के साथ fail closed होता है।
+- `--install-daemon` के साथ, यदि `gateway.auth.token` और `gateway.auth.password` दोनों configured हैं और `gateway.auth.mode` unset है, तो onboarding install को तब तक block करता है जब तक mode explicitly set न हो।
+- Local onboarding config में `gateway.mode="local"` लिखता है। यदि बाद की config file में `gateway.mode` अनुपस्थित है, तो उसे config damage या incomplete manual edit समझें, valid local-mode shortcut नहीं।
+- Local onboarding selected downloadable plugins install करता है जब चुने गए setup path को उनकी आवश्यकता होती है।
+- Remote onboarding केवल remote Gateway के लिए connection info लिखता है और local plugin packages install नहीं करता।
+- `--allow-unconfigured` एक अलग gateway runtime escape hatch है। इसका मतलब यह नहीं है कि onboarding `gateway.mode` छोड़ सकता है।
 
 उदाहरण:
 
@@ -160,27 +160,27 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-गैर-इंटरैक्टिव स्थानीय gateway health:
+गैर-इंटरैक्टिव local gateway health:
 
-- जब तक आप `--skip-health` पास नहीं करते, ऑनबोर्डिंग सफलतापूर्वक बाहर निकलने से पहले reachable local gateway की प्रतीक्षा करती है।
-- `--install-daemon` पहले managed gateway install path शुरू करता है। इसके बिना, आपके पास पहले से local gateway चल रहा होना चाहिए, उदाहरण के लिए `openclaw gateway run`।
+- जब तक आप `--skip-health` pass नहीं करते, onboarding सफलतापूर्वक exit करने से पहले reachable local gateway की प्रतीक्षा करता है।
+- `--install-daemon` managed gateway install path पहले शुरू करता है। इसके बिना, आपके पास पहले से local gateway running होना चाहिए, उदाहरण के लिए `openclaw gateway run`।
 - यदि आप automation में केवल config/workspace/bootstrap writes चाहते हैं, तो `--skip-health` उपयोग करें।
-- यदि आप workspace files स्वयं प्रबंधित करते हैं, तो `agents.defaults.skipBootstrap: true` सेट करने और `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, और `BOOTSTRAP.md` बनाना छोड़ने के लिए `--skip-bootstrap` पास करें।
-- native Windows पर, `--install-daemon` पहले Scheduled Tasks आज़माता है और यदि task creation deny हो जाए तो per-user Startup-folder login item पर fallback करता है।
+- यदि आप workspace files स्वयं manage करते हैं, तो `agents.defaults.skipBootstrap: true` सेट करने और `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, और `BOOTSTRAP.md` बनाना skip करने के लिए `--skip-bootstrap` pass करें।
+- Native Windows पर, `--install-daemon` पहले Scheduled Tasks आज़माता है और task creation denied होने पर per-user Startup-folder login item पर fallback करता है।
 
-reference mode के साथ इंटरैक्टिव ऑनबोर्डिंग व्यवहार:
+Reference mode के साथ interactive onboarding behavior:
 
-- संकेत मिलने पर **Use secret reference** चुनें।
+- Prompt होने पर **Use secret reference** चुनें।
 - फिर इनमें से कोई एक चुनें:
   - Environment variable
   - Configured secret provider (`file` या `exec`)
-- ऑनबोर्डिंग ref सहेजने से पहले fast preflight validation करती है।
-  - यदि validation विफल होता है, तो ऑनबोर्डिंग error दिखाती है और आपको retry करने देती है।
+- Onboarding ref save करने से पहले fast preflight validation करता है।
+  - यदि validation fail हो, तो onboarding error दिखाता है और आपको retry करने देता है।
 
-### गैर-इंटरैक्टिव Z.AI endpoint विकल्प
+### Non-interactive Z.AI endpoint choices
 
 <Note>
-`--auth-choice zai-api-key` आपकी key के लिए best Z.AI endpoint और model को auto-detect करता है। Coding Plan endpoints `zai/glm-5.2` को प्राथमिकता देते हैं; general API endpoints `zai/glm-5.1` का उपयोग करते हैं। Coding Plan endpoint को बाध्य करने के लिए, `zai-coding-global` या `zai-coding-cn` चुनें।
+`--auth-choice zai-api-key` आपकी key के लिए best Z.AI endpoint और model auto-detect करता है। Coding Plan endpoints `zai/glm-5.2` prefer करते हैं; general API endpoints `zai/glm-5.1` उपयोग करते हैं। Coding Plan endpoint force करने के लिए, `zai-coding-global` या `zai-coding-cn` चुनें।
 </Note>
 
 ```bash
@@ -195,7 +195,7 @@ openclaw onboard --non-interactive \
 # --auth-choice zai-cn
 ```
 
-गैर-इंटरैक्टिव Mistral उदाहरण:
+गैर-इंटरैक्टिव Mistral example:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -203,33 +203,33 @@ openclaw onboard --non-interactive \
   --mistral-api-key "$MISTRAL_API_KEY"
 ```
 
-## प्रवाह नोट्स
+## Flow notes
 
 <AccordionGroup>
-  <Accordion title="प्रवाह प्रकार">
-    - `quickstart`: न्यूनतम prompts, gateway token स्वतः generate करता है।
-    - `manual`: port, bind, और auth के लिए full prompts (`advanced` का alias)।
+  <Accordion title="Flow types">
+    - `quickstart`: न्यूनतम prompts, gateway token auto-generates करता है।
+    - `manual`: port, bind, और auth के लिए पूर्ण prompts (`advanced` का alias)।
     - `import`: detected migration provider चलाता है, plan preview करता है, फिर confirmation के बाद apply करता है।
 
   </Accordion>
-  <Accordion title="प्रदाता prefiltering">
-    जब auth choice preferred provider इंगित करता है, तो ऑनबोर्डिंग default-model और allowlist pickers को उस provider तक prefilter करती है। Volcengine और BytePlus के लिए, यह coding-plan variants (`volcengine-plan/*`, `byteplus-plan/*`) से भी match करता है।
+  <Accordion title="Provider prefiltering">
+    जब कोई auth choice preferred provider imply करती है, onboarding default-model और allowlist pickers को उस provider पर prefilter करता है। Volcengine और BytePlus के लिए, यह coding-plan variants (`volcengine-plan/*`, `byteplus-plan/*`) से भी match करता है।
 
-    यदि preferred-provider filter से अभी तक कोई loaded models नहीं मिलते, तो ऑनबोर्डिंग picker को खाली छोड़ने के बजाय unfiltered catalog पर fallback करती है।
+    यदि preferred-provider filter से अभी कोई loaded models नहीं मिलते, तो onboarding picker को खाली छोड़ने के बजाय unfiltered catalog पर fallback करता है।
 
   </Accordion>
   <Accordion title="Web-search follow-ups">
     कुछ web-search providers provider-specific follow-up prompts trigger करते हैं:
 
-    - **Grok** same xAI OAuth profile या API key और `x_search` model choice के साथ optional `x_search` setup offer कर सकता है।
-    - **Kimi** Moonshot API region (`api.moonshot.ai` vs `api.moonshot.cn`) और default Kimi web-search model के लिए पूछ सकता है।
+    - **Grok** उसी xAI OAuth profile या API key और `x_search` model choice के साथ optional `x_search` setup offer कर सकता है।
+    - **Kimi** Moonshot API region (`api.moonshot.ai` बनाम `api.moonshot.cn`) और default Kimi web-search model के लिए पूछ सकता है।
 
   </Accordion>
-  <Accordion title="अन्य व्यवहार">
-    - स्थानीय ऑनबोर्डिंग DM scope behavior: [CLI setup reference](/hi/start/wizard-cli-reference#outputs-and-internals)।
-    - सबसे तेज पहला chat: `openclaw dashboard` (Control UI, कोई channel setup नहीं)।
-    - कस्टम प्रदाता: hosted providers not listed सहित किसी भी OpenAI या Anthropic compatible endpoint से connect करें। auto-detect के लिए Unknown उपयोग करें।
-    - यदि Hermes state detected है, तो ऑनबोर्डिंग migration flow offer करती है। dry-run plans, overwrite mode, reports, और exact mappings के लिए [Migrate](/hi/cli/migrate) उपयोग करें।
+  <Accordion title="Other behaviors">
+    - Local onboarding DM scope behavior: [CLI setup reference](/hi/start/wizard-cli-reference#outputs-and-internals)।
+    - सबसे तेज़ first chat: `openclaw dashboard` (Control UI, कोई channel setup नहीं)।
+    - Custom provider: सूचीबद्ध नहीं किए गए hosted providers सहित किसी भी OpenAI या Anthropic compatible endpoint से connect करें। Auto-detect के लिए Unknown उपयोग करें।
+    - यदि Hermes state detected है, तो onboarding migration flow offer करता है। Dry-run plans, overwrite mode, reports, और exact mappings के लिए [Migrate](/hi/cli/migrate) उपयोग करें।
 
   </Accordion>
 </AccordionGroup>
@@ -242,8 +242,8 @@ openclaw configure
 openclaw agents add <name>
 ```
 
-जब आपको केवल baseline config/workspace की आवश्यकता हो, तब इसके बजाय `openclaw setup` उपयोग करें। लक्षित परिवर्तनों के लिए बाद में `openclaw configure` और केवल-channel setup के लिए `openclaw channels add` उपयोग करें।
+उसी guided onboarding entry point के रूप में `openclaw setup` उपयोग करें। जब आपको केवल baseline config/workspace चाहिए हो, तो `openclaw setup --baseline` उपयोग करें, targeted changes के लिए बाद में `openclaw configure`, और channel-only setup के लिए `openclaw channels add`।
 
 <Note>
-`--json` non-interactive mode का अर्थ नहीं रखता। scripts के लिए `--non-interactive` उपयोग करें।
+`--json` non-interactive mode imply नहीं करता। Scripts के लिए `--non-interactive` उपयोग करें।
 </Note>

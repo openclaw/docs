@@ -1,20 +1,20 @@
 ---
 read_when: Finding which docs page covers a topic before reading the page
 summary: Gegenereerde koppenkaart voor OpenClaw-documentatiepagina's
-title: Documentatiekaart
+title: Documentatieoverzicht
 x-i18n:
-    generated_at: "2026-06-30T14:12:54Z"
+    generated_at: "2026-06-30T22:24:34Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9526e7b1db302e55d7e598900c7f6db45369ef924946ba8cc0da621482f21cd1
+    source_hash: 53389be7dd9f5fba6a833b90928e1ae77745ec214640011c4f7e27c7a7b62c2b
     source_path: docs_map.md
     workflow: 16
 ---
 
 # OpenClaw-documentatiekaart
 
-Dit bestand wordt gegenereerd uit koppen in `docs/**/*.md` en `docs/**/*.mdx` om agents te helpen navigeren door de documentatiestructuur.
+Dit bestand wordt gegenereerd op basis van koppen in `docs/**/*.md` en `docs/**/*.mdx` om agents te helpen navigeren door de documentatiestructuur.
 Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 ## agent-runtime-architecture.md
@@ -33,7 +33,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: Verwijdering van BlueBubbles en het imsg iMessage-pad
   - H2: Wat is gewijzigd
-  - H2: Wat te doen
+  - H2: Wat je moet doen
   - H2: Migratie-opmerkingen
   - H2: Zie ook
 
@@ -46,11 +46,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Geschiktheidsregels
   - H3: Resolutieregels
   - H2: Portabiliteit van agentkopieën
-  - H2: Configuratie-only auth-routes
+  - H2: Auth-routes met alleen config
   - H2: Expliciete filtering van auth-volgorde
-  - H2: Resolutie van probe-doel
+  - H2: Resolutie van probe-doelen
   - H2: Detectie van externe CLI-referenties
-  - H2: OAuth SecretRef Policy Guard
+  - H2: OAuth SecretRef-beleidsbewaking
   - H2: Legacy-compatibele berichten
   - H2: Gerelateerd
 
@@ -70,12 +70,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /automation/cron-jobs
 - Koppen:
-  - H2: Snel aan de slag
+  - H2: Snelle start
   - H2: Hoe Cron werkt
   - H2: Schematypen
-  - H3: Dag-van-de-maand en dag-van-de-week gebruiken OR-logica
+  - H3: Dag-van-de-maand en dag-van-de-week gebruiken OF-logica
   - H2: Uitvoeringsstijlen
-  - H3: Command-payloads
+  - H3: Commandopayloads
   - H3: Payloadopties voor geïsoleerde taken
   - H2: Levering en uitvoer
   - H2: Uitvoertaal
@@ -90,7 +90,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Taken beheren
   - H2: Configuratie
   - H2: Probleemoplossing
-  - H3: Command-ladder
+  - H3: Commandoladder
   - H2: Gerelateerd
 
 ## automation/cron-vs-heartbeat.md
@@ -110,16 +110,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /automation/hooks
 - Koppen:
   - H2: Kies het juiste oppervlak
-  - H2: Snel aan de slag
+  - H2: Snelle start
   - H2: Gebeurtenistypen
   - H2: Hooks schrijven
-  - H3: Hook-structuur
+  - H3: Hookstructuur
   - H3: HOOK.md-indeling
-  - H3: Handler-implementatie
+  - H3: Handlerimplementatie
   - H3: Hoogtepunten van gebeurteniscontext
-  - H2: Hook-detectie
-  - H3: Hook-pakketten
-  - H2: Meegeleverde hooks
+  - H2: Hookdetectie
+  - H3: Hookpakketten
+  - H2: Gebundelde hooks
   - H3: Details van session-memory
   - H3: Configuratie van bootstrap-extra-files
   - H3: Details van command-logger
@@ -144,9 +144,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Kernconcepten
   - H3: Geplande taken (Cron)
   - H3: Taken
-  - H3: Afgeleide toezeggingen
-  - H3: Task Flow
-  - H3: Doorlopende instructies
+  - H3: Afgeleide verplichtingen
+  - H3: TaskFlow
+  - H3: Doorlopende opdrachten
   - H3: Hooks
   - H3: Heartbeat
   - H2: Hoe ze samenwerken
@@ -162,10 +162,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /automation/standing-orders
 - Koppen:
-  - H2: Waarom doorlopende instructies
+  - H2: Waarom doorlopende opdrachten
   - H2: Hoe ze werken
-  - H2: Anatomie van een doorlopende instructie
-  - H2: Doorlopende instructies plus Cron-taken
+  - H2: Anatomie van een doorlopende opdracht
+  - H2: Doorlopende opdrachten plus Cron-taken
   - H2: Voorbeelden
   - H3: Voorbeeld 1: content en sociale media (wekelijkse cyclus)
   - H3: Voorbeeld 2: financiële operaties (gebeurtenisgestuurd)
@@ -181,14 +181,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /automation/taskflow
 - Koppen:
-  - H2: Wanneer Task Flow gebruiken
+  - H2: Wanneer je TaskFlow gebruikt
   - H2: Betrouwbaar patroon voor geplande workflows
   - H2: Synchronisatiemodi
   - H3: Beheerde modus
   - H3: Gespiegelde modus
   - H2: Duurzame status en revisietracking
   - H2: Annuleringsgedrag
-  - H2: CLI-commands
+  - H2: CLI-commando's
   - H2: Hoe flows zich verhouden tot taken
   - H2: Gerelateerd
 
@@ -197,7 +197,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /automation/tasks
 - Koppen:
   - H2: TL;DR
-  - H2: Snel aan de slag
+  - H2: Snelle start
   - H2: Wat een taak aanmaakt
   - H2: Levenscyclus van taken
   - H2: Levering en meldingen
@@ -206,7 +206,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Chat-taakbord (/tasks)
   - H2: Statusintegratie (taakdruk)
   - H2: Opslag en onderhoud
-  - H3: Waar taken staan
+  - H3: Waar taken worden opgeslagen
   - H3: Automatisch onderhoud
   - H2: Hoe taken zich verhouden tot andere systemen
   - H2: Gerelateerd
@@ -234,7 +234,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/access-groups
 - Koppen:
   - H2: Statische groepen voor berichtafzenders
-  - H2: Verwijzingsgroepen uit allowlists
+  - H2: Referentiegroepen uit allowlists
   - H2: Ondersteunde paden voor berichtkanalen
   - H2: Plugin-diagnostiek
   - H2: Discord-kanaaldoelgroepen
@@ -246,7 +246,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/ambient-room-events
 - Koppen:
   - H2: Aanbevolen configuratie
-  - H2: Wat verandert
+  - H2: Wat er verandert
   - H2: Discord-voorbeeld
   - H2: Slack-voorbeeld
   - H2: Telegram-voorbeeld
@@ -261,9 +261,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/bot-loop-protection
 - Koppen:
   - H1: Bescherming tegen botloops
-  - H2: Standaardinstellingen
-  - H2: Gedeelde standaardinstellingen configureren
-  - H2: Per kanaal of account overschrijven
+  - H2: Standaardwaarden
+  - H2: Gedeelde standaardwaarden configureren
+  - H2: Overschrijven per kanaal of account
   - H2: Kanaalondersteuning
 
 ## channels/broadcast-groups.md
@@ -277,17 +277,17 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Verwerkingsstrategie
   - H3: Volledig voorbeeld
   - H2: Hoe het werkt
-  - H3: Berichtflow
-  - H3: Sessie-isolatie
+  - H3: Berichtstroom
+  - H3: Sessiescheiding
   - H3: Voorbeeld: geïsoleerde sessies
   - H2: Best practices
   - H2: Compatibiliteit
   - H3: Providers
-  - H3: Routering
+  - H3: Routing
   - H2: Probleemoplossing
   - H2: Voorbeelden
   - H2: API-referentie
-  - H3: Configuratieschema
+  - H3: Config-schema
   - H3: Velden
   - H2: Beperkingen
   - H2: Toekomstige verbeteringen
@@ -297,13 +297,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/channel-routing
 - Koppen:
-  - H1: Kanalen en routering
-  - H2: Kernbegrippen
-  - H2: Prefixen voor uitgaande doelen
+  - H1: Kanalen en routing
+  - H2: Belangrijke termen
+  - H2: Voorvoegsels voor uitgaande doelen
   - H2: Vormen van sessiesleutels (voorbeelden)
   - H2: Vastzetten van hoofd-DM-route
-  - H2: Beveiligde inkomende registratie
-  - H2: Routeringsregels (hoe een agent wordt gekozen)
+  - H2: Beschermde inkomende opname
+  - H2: Routingregels (hoe een agent wordt gekozen)
   - H2: Broadcastgroepen (meerdere agents uitvoeren)
   - H2: Configuratieoverzicht
   - H2: Sessieopslag
@@ -327,18 +327,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Snelle configuratie
   - H2: Aanbevolen: stel een guild-werkruimte in
-  - H2: Runtimemodel
+  - H2: Runtime-model
   - H2: Forumkanalen
   - H2: Interactieve componenten
-  - H2: Toegangsbeheer en routering
-  - H3: Rolgebaseerde agentroutering
-  - H2: Native commands en command-auth
+  - H2: Toegangscontrole en routing
+  - H3: Rolgebaseerde agentrouting
+  - H2: Native commando's en commando-auth
   - H2: Functiedetails
-  - H2: Tools en actiegates
-  - H2: Components v2 UI
+  - H2: Tools en actiepoorten
+  - H2: Components v2-UI
   - H2: Spraak
   - H3: Spraakkanalen
-  - H3: Gebruikers in spraak volgen
+  - H3: Gebruikers volgen in spraak
   - H3: Spraakberichten
   - H2: Probleemoplossing
   - H2: Configuratiereferentie
@@ -349,8 +349,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/feishu
 - Koppen:
-  - H2: Snel aan de slag
-  - H2: Toegangsbeheer
+  - H2: Snelle start
+  - H2: Toegangscontrole
   - H3: Directe berichten
   - H3: Groepschats
   - H2: Voorbeelden van groepsconfiguratie
@@ -359,9 +359,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Alleen specifieke groepen toestaan
   - H3: Afzenders binnen een groep beperken
   - H2: Groeps-/gebruikers-ID's ophalen
-  - H3: Groeps-ID's (chatid, indeling: ocxxx)
-  - H3: Gebruikers-ID's (openid, indeling: ouxxx)
-  - H2: Veelgebruikte commands
+  - H3: Groeps-ID's (chatid, format: ocxxx)
+  - H3: Gebruikers-ID's (openid, format: ouxxx)
+  - H2: Veelgebruikte commando's
   - H2: Probleemoplossing
   - H3: Bot reageert niet in groepschats
   - H3: Bot ontvangt geen berichten
@@ -371,11 +371,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Meerdere accounts
   - H3: Berichtlimieten
   - H3: Streaming
-  - H3: Quotaoptimalisatie
+  - H3: Quotumoptimalisatie
   - H3: ACP-sessies
-  - H4: Persistente ACP-binding
+  - H4: Permanente ACP-binding
   - H4: ACP starten vanuit chat
-  - H3: Routering voor meerdere agents
+  - H3: Multi-agentrouting
   - H2: Agentisolatie per gebruiker (dynamische agentaanmaak)
   - H3: Snelle configuratie
   - H3: Hoe het werkt
@@ -400,7 +400,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Toevoegen aan Google Chat
   - H2: Openbare URL (alleen Webhook)
   - H3: Optie A: Tailscale Funnel (aanbevolen)
-  - H3: Optie B: Reverse Proxy (Caddy)
+  - H3: Optie B: Reverse proxy (Caddy)
   - H3: Optie C: Cloudflare Tunnel
   - H2: Hoe het werkt
   - H2: Doelen
@@ -416,8 +416,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Gedrag
   - H2: Configuratievoorbeeld (WhatsApp)
-  - H3: Activatiecommand (alleen eigenaar)
-  - H2: Hoe te gebruiken
+  - H3: Activeringscommando (alleen eigenaar)
+  - H2: Gebruik
   - H2: Testen / verificatie
   - H2: Bekende aandachtspunten
   - H2: Gerelateerd
@@ -434,10 +434,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Weergavelabels
   - H2: Groepsbeleid
   - H2: Mention-gating (standaard)
-  - H2: Geconfigureerde mention-patronen scopen
+  - H2: Geconfigureerde mention-patronen beperken
   - H2: Toolbeperkingen voor groep/kanaal (optioneel)
-  - H2: Groeps-allowlists
-  - H2: Activatie (alleen eigenaar)
+  - H2: Groep-allowlists
+  - H2: Activering (alleen eigenaar)
   - H2: Contextvelden
   - H2: iMessage-specifieke details
   - H2: WhatsApp-systeemprompts
@@ -453,7 +453,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat imsg doet
   - H2: Voordat je begint
   - H2: Configuratievertaling
-  - H2: Valstrik in groepsregister
+  - H2: Valkuil in groepsregister
   - H2: Stap voor stap
   - H2: Actiepariteit in één oogopslag
   - H2: Koppeling, sessies en ACP-bindingen
@@ -466,19 +466,19 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Snelle configuratie
   - H2: Vereisten en machtigingen (macOS)
-  - H2: De privé-API van imsg inschakelen
+  - H2: De private imsg-API inschakelen
   - H3: Configuratie
   - H3: Wanneer je SIP niet kunt uitschakelen
-  - H2: Toegangsbeheer en routering
+  - H2: Toegangscontrole en routing
   - H2: ACP-gespreksbindingen
   - H2: Implementatiepatronen
-  - H2: Media, chunking en leveringsdoelen
-  - H2: Privé-API-acties
-  - H2: Configuratieschrijfacties
-  - H2: Split-send-DM's samenvoegen (command + URL in één compositie)
+  - H2: Media, opsplitsing en afleverdoelen
+  - H2: Private API-acties
+  - H2: Config-schrijfbewerkingen
+  - H2: Samengevoegde gesplitst verzonden DM's (commando + URL in één compositie)
   - H3: Scenario's en wat de agent ziet
   - H2: Inkomend herstel na herstart van een bridge of Gateway
-  - H3: Operator-zichtbaar signaal
+  - H3: Voor operators zichtbaar signaal
   - H3: Migratie
   - H2: Probleemoplossing
   - H2: Verwijzingen naar configuratiereferentie
@@ -496,14 +496,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/irc
 - Koppen:
-  - H2: Snel aan de slag
-  - H2: Beveiligingsstandaarden
-  - H2: Toegangsbeheer
+  - H2: Snelle start
+  - H2: Beveiligingsstandaardwaarden
+  - H2: Toegangscontrole
   - H3: Veelvoorkomende valkuil: allowFrom is voor DM's, niet voor kanalen
-  - H2: Antwoorden activeren (mentions)
+  - H2: Antwoorden triggeren (mentions)
   - H2: Beveiligingsopmerking (aanbevolen voor openbare kanalen)
   - H3: Dezelfde tools voor iedereen in het kanaal
-  - H3: Verschillende tools per afzender (eigenaar krijgt meer macht)
+  - H3: Verschillende tools per afzender (eigenaar krijgt meer rechten)
   - H2: NickServ
   - H2: Omgevingsvariabelen
   - H2: Probleemoplossing
@@ -539,13 +539,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat de migratie automatisch doet
   - H2: Wat de migratie niet automatisch kan doen
-  - H2: Aanbevolen upgradeproces
+  - H2: Aanbevolen upgradeflow
   - H2: Hoe versleutelde migratie werkt
   - H2: Veelvoorkomende berichten en wat ze betekenen
   - H3: Upgrade- en detectieberichten
-  - H3: Herstelberichten voor versleutelde status
+  - H3: Berichten voor herstel van versleutelde status
   - H3: Berichten voor handmatig herstel
-  - H3: Installatieberichten voor aangepaste Plugins
+  - H3: Installatieberichten voor aangepaste Plugin
   - H2: Als versleutelde geschiedenis nog steeds niet terugkomt
   - H2: Als je opnieuw wilt beginnen voor toekomstige berichten
   - H2: Gerelateerd
@@ -554,11 +554,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/matrix-presentation
 - Koppen:
-  - H2: Gebeurtenisinhoud
+  - H2: Eventinhoud
   - H2: Fallbackgedrag
   - H2: Ondersteunde blokken
   - H2: Interacties
-  - H2: Relatie tot goedkeuringsmetadata
+  - H2: Relatie met goedkeuringsmetadata
   - H2: Mediaberichten
 
 ## channels/matrix-push-rules.md
@@ -577,12 +577,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Installeren
   - H2: Instellen
-  - H3: Interactief instellen
+  - H3: Interactieve instelling
   - H3: Minimale configuratie
   - H3: Automatisch deelnemen
-  - H3: Doelformaten voor de allowlist
+  - H3: Doelformaten voor allowlist
   - H3: Normalisatie van account-ID
-  - H3: Gecachte inloggegevens
+  - H3: Gecachete inloggegevens
   - H3: Omgevingsvariabelen
   - H2: Configuratievoorbeeld
   - H2: Streamingvoorbeelden
@@ -593,16 +593,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Versleuteling en verificatie
   - H3: Versleuteling inschakelen
   - H3: Status- en vertrouwenssignalen
-  - H3: Verifieer dit apparaat met een herstelsleutel
-  - H3: Cross-signing opstarten of repareren
-  - H3: Back-up van ruimtesleutels
+  - H3: Dit apparaat verifiëren met een herstelsleutel
+  - H3: Cross-signing initialiseren of repareren
+  - H3: Back-up van kamersleutels
   - H3: Verificaties weergeven, aanvragen en beantwoorden
   - H3: Notities voor meerdere accounts
   - H2: Profielbeheer
   - H2: Threads
-  - H3: Sessieroutering (sessionScope)
+  - H3: Sessierouting (sessionScope)
   - H3: Antwoorden in threads (threadReplies)
-  - H3: Thread-overerving en slash-commando's
+  - H3: Thread-overerving en slashcommando's
   - H2: ACP-gesprekskoppelingen
   - H3: Configuratie voor threadkoppeling
   - H2: Reacties
@@ -611,7 +611,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: DM- en ruimtebeleid
   - H2: Reparatie van directe ruimtes
   - H2: Exec-goedkeuringen
-  - H2: Slash-commando's
+  - H2: Slashcommando's
   - H2: Meerdere accounts
   - H2: Private/LAN-homeservers
   - H2: Matrix-verkeer proxyen
@@ -623,7 +623,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Antwoordgedrag
   - H3: Reactie-instellingen
   - H3: Tooling en overrides per ruimte
-  - H3: Instellingen voor exec-goedkeuringen
+  - H3: Instellingen voor exec-goedkeuring
   - H2: Gerelateerd
 
 ## channels/mattermost.md
@@ -631,16 +631,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/mattermost
 - Koppen:
   - H2: Installeren
-  - H2: Snel instellen
-  - H2: Native slash-commando's
+  - H2: Snelle instelling
+  - H2: Native slashcommando's
   - H2: Omgevingsvariabelen (standaardaccount)
   - H2: Chatmodi
-  - H2: Threading en sessies
+  - H2: Threads en sessies
   - H2: Toegangscontrole (DM's)
   - H2: Kanalen (groepen)
   - H2: Doelen voor uitgaande levering
   - H2: Opnieuw proberen van DM-kanaal
-  - H2: Preview-streaming
+  - H2: Previewstreaming
   - H2: Reacties (berichttool)
   - H2: Interactieve knoppen (berichttool)
   - H3: Directe API-integratie (externe scripts)
@@ -654,27 +654,27 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/msteams
 - Koppen:
   - H2: Gebundelde Plugin
-  - H2: Snel instellen
+  - H2: Snelle instelling
   - H2: Doelen
-  - H2: Configuratieschrijfacties
+  - H2: Configuratiewijzigingen schrijven
   - H2: Toegangscontrole (DM's + groepen)
   - H3: Hoe het werkt
   - H3: Stap 1: Azure Bot maken
   - H3: Stap 2: Inloggegevens ophalen
-  - H3: Stap 3: Messaging Endpoint configureren
-  - H3: Stap 4: Teams Channel inschakelen
-  - H3: Stap 5: Teams App Manifest bouwen
+  - H3: Stap 3: Berichteindpunt configureren
+  - H3: Stap 4: Teams-kanaal inschakelen
+  - H3: Stap 5: Teams-appmanifest bouwen
   - H3: Stap 6: OpenClaw configureren
   - H3: Stap 7: De Gateway uitvoeren
-  - H2: Gefedereerde authenticatie (certificaat plus managed identity)
-  - H3: Optie A: Authenticatie op basis van certificaat
+  - H2: Federatieve authenticatie (certificaat plus beheerde identiteit)
+  - H3: Optie A: Authenticatie op basis van certificaten
   - H3: Optie B: Azure Managed Identity
   - H3: AKS Workload Identity instellen
   - H3: Vergelijking van auth-typen
   - H2: Lokale ontwikkeling (tunneling)
   - H2: De bot testen
   - H2: Omgevingsvariabelen
-  - H2: Actie voor ledeninformatie
+  - H2: Actie voor lidgegevens
   - H2: Geschiedeniscontext
   - H2: Huidige Teams RSC-machtigingen (manifest)
   - H2: Voorbeeld van Teams-manifest (geredigeerd)
@@ -684,13 +684,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Met alleen Teams RSC (app geïnstalleerd, geen Graph API-machtigingen)
   - H3: Met Teams RSC + Microsoft Graph Application-machtigingen
   - H3: RSC versus Graph API
-  - H2: Media + geschiedenis met Graph ingeschakeld (vereist voor kanalen)
+  - H2: Graph-ingeschakelde media + geschiedenis (vereist voor kanalen)
   - H2: Bekende beperkingen
   - H3: Webhook-time-outs
   - H3: Ondersteuning voor Teams-cloud en service-URL
   - H3: Opmaak
   - H2: Configuratie
-  - H2: Routering en sessies
+  - H2: Routing en sessies
   - H2: Antwoordstijl: threads versus posts
   - H3: Resolutievolgorde
   - H3: Behoud van threadcontext
@@ -700,7 +700,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Instellen
   - H3: Deelgedrag
   - H3: Fallbackgedrag
-  - H3: Locatie van opgeslagen bestanden
+  - H3: Locatie waar bestanden worden opgeslagen
   - H2: Peilingen (Adaptive Cards)
   - H2: Presentatiekaarten
   - H2: Doelformaten
@@ -719,7 +719,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/nextcloud-talk
 - Koppen:
   - H2: Gebundelde Plugin
-  - H2: Snel instellen (beginner)
+  - H2: Snelle instelling (beginner)
   - H2: Notities
   - H2: Toegangscontrole (DM's)
   - H2: Ruimtes (groepen)
@@ -733,8 +733,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Gebundelde Plugin
   - H3: Oudere/aangepaste installaties
-  - H3: Niet-interactief instellen
-  - H2: Snel instellen
+  - H3: Niet-interactieve instelling
+  - H2: Snelle instelling
   - H2: Configuratiereferentie
   - H2: Profielmetadata
   - H2: Toegangscontrole
@@ -758,14 +758,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/pairing
 - Koppen:
-  - H2: 1) DM-koppeling (inkomende chattoegang)
+  - H2: 1) DM-koppeling (toegang tot inkomende chat)
   - H3: Een afzender goedkeuren
   - H3: Herbruikbare afzendergroepen
   - H3: Waar de status wordt opgeslagen
   - H2: 2) Node-apparaatkoppeling (iOS/Android/macOS/headless nodes)
   - H3: Koppelen via Telegram (aanbevolen voor iOS)
   - H3: Een Node-apparaat goedkeuren
-  - H3: Optionele automatische goedkeuring voor trusted-CIDR-nodes
+  - H3: Optionele automatische goedkeuring van vertrouwde CIDR voor Nodes
   - H3: Opslag van Node-koppelingsstatus
   - H3: Notities
   - H2: Gerelateerde docs
@@ -790,7 +790,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Groepschats
   - H3: Spraak (STT / TTS)
   - H2: Doelformaten
-  - H2: Slash-commando's
+  - H2: Slashcommando's
   - H2: Engine-architectuur
   - H2: Onboarding met QR-code
   - H2: Probleemoplossing
@@ -813,9 +813,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/signal
 - Koppen:
   - H2: Vereisten
-  - H2: Snel instellen (beginner)
+  - H2: Snelle instelling (beginner)
   - H2: Wat het is
-  - H2: Configuratieschrijfacties
+  - H2: Configuratiewijzigingen schrijven
   - H2: Het nummermodel (belangrijk)
   - H2: Instelpad A: bestaand Signal-account koppelen (QR)
   - H2: Instelpad B: speciaal botnummer registreren (SMS, Linux)
@@ -827,7 +827,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Typen + leesbevestigingen
   - H2: Reacties (berichttool)
   - H2: Goedkeuringsreacties
-  - H2: Leveringsdoelen (CLI/cron)
+  - H2: Leveringsdoelen (CLI/Cron)
   - H2: Probleemoplossing
   - H2: Beveiligingsnotities
   - H2: Configuratiereferentie (Signal)
@@ -837,36 +837,36 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/slack
 - Koppen:
-  - H2: Socket Mode of HTTP Request URL's kiezen
-  - H3: Relay-modus
+  - H2: Kiezen tussen Socket Mode of HTTP Request URL's
+  - H3: Relaymodus
   - H2: Installeren
-  - H2: Snel instellen
-  - H2: Transportafstemming voor Socket Mode
-  - H2: Checklist voor manifest en scopes
+  - H2: Snelle instelling
+  - H2: Transportafstelling voor Socket Mode
+  - H2: Checklist voor manifest en scope
   - H3: Aanvullende manifestinstellingen
   - H2: Tokenmodel
   - H2: Acties en gates
-  - H2: Toegangscontrole en routering
-  - H2: Threading, sessies en antwoordtags
+  - H2: Toegangscontrole en routing
+  - H2: Threads, sessies en antwoordtags
   - H2: Ack-reacties
   - H3: Emoji (ackReaction)
   - H3: Scope (messages.ackReactionScope)
   - H2: Tekststreaming
   - H2: Fallback voor typreactie
   - H2: Media, opdelen en levering
-  - H2: Commando's en slash-gedrag
+  - H2: Commando's en slashgedrag
   - H2: Interactieve antwoorden
-  - H3: Modalinzendingen die eigendom zijn van Plugins
+  - H3: Modal-indieningen beheerd door de Plugin
   - H2: Native goedkeuringen in Slack
-  - H2: Gebeurtenissen en operationeel gedrag
+  - H2: Events en operationeel gedrag
   - H2: Configuratiereferentie
   - H2: Probleemoplossing
   - H2: Referentie voor bijlagevisie
   - H3: Ondersteunde mediatypen
   - H3: Inkomende pipeline
-  - H3: Overerving van bijlagen van thread-root
-  - H3: Afhandeling van meerdere bijlagen
-  - H3: Grootte-, download- en modellimieten
+  - H3: Overerving van thread-root-bijlagen
+  - H3: Verwerking van meerdere bijlagen
+  - H3: Limieten voor grootte, download en model
   - H3: Bekende limieten
   - H3: Gerelateerde documentatie
   - H2: Gerelateerd
@@ -876,18 +876,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/sms
 - Koppen:
   - H2: Voordat je begint
-  - H2: Snel instellen
+  - H2: Snelle instelling
   - H2: Configuratievoorbeelden
   - H3: Configuratiebestand
   - H3: Omgevingsvariabelen
   - H3: SecretRef-auth-token
-  - H3: Privénummer met alleen allowlist
+  - H3: Privénummer alleen via allowlist
   - H3: Afzender van Messaging Service
   - H3: Standaard uitgaand doel
   - H2: Toegangscontrole
   - H2: SMS verzenden
   - H2: Instelling verifiëren
-  - H3: End-to-end-test vanaf macOS iMessage/SMS
+  - H3: End-to-endtest vanuit macOS iMessage/SMS
   - H2: Webhook-beveiliging
   - H2: Configuratie voor meerdere accounts
   - H2: Probleemoplossing
@@ -901,7 +901,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /channels/synology-chat
 - Koppen:
   - H2: Gebundelde Plugin
-  - H2: Snel instellen
+  - H2: Snelle instelling
   - H2: Omgevingsvariabelen
   - H2: DM-beleid en toegangscontrole
   - H2: Uitgaande levering
@@ -914,13 +914,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/telegram
 - Koppen:
-  - H2: Snel instellen
+  - H2: Snelle instelling
   - H2: Instellingen aan Telegram-zijde
   - H2: Toegangscontrole en activering
   - H3: Botidentiteit in groepen
   - H2: Runtimegedrag
   - H2: Functiereferentie
-  - H2: Regelaars voor foutantwoorden
+  - H2: Bediening voor foutantwoorden
   - H2: Probleemoplossing
   - H2: Configuratiereferentie
   - H2: Gerelateerd
@@ -934,10 +934,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Private/LAN-ships
   - H2: Groepskanalen
   - H2: Toegangscontrole
-  - H2: Eigenaar- en goedkeuringssysteem
+  - H2: Eigenaar en goedkeuringssysteem
   - H2: Instellingen voor automatisch accepteren
-  - H2: Leveringsdoelen (CLI/cron)
-  - H2: Gebundelde Skills
+  - H2: Leveringsdoelen (CLI/Cron)
+  - H2: Gebundelde skill
   - H2: Mogelijkheden
   - H2: Probleemoplossing
   - H2: Configuratiereferentie
@@ -972,14 +972,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/twitch
 - Koppen:
-  - H2: Meegeleverde Plugin
+  - H2: Gebundelde Plugin
   - H2: Snelle installatie (beginner)
   - H2: Wat het is
   - H2: Installatie (gedetailleerd)
-  - H3: Referenties genereren
+  - H3: Inloggegevens genereren
   - H3: De bot configureren
   - H3: Toegangsbeheer (aanbevolen)
-  - H2: Tokenvernieuwing (optioneel)
+  - H2: Tokenverversing (optioneel)
   - H2: Ondersteuning voor meerdere accounts
   - H2: Toegangsbeheer
   - H2: Probleemoplossing
@@ -1001,7 +1001,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Inloggen
   - H2: Toegangsbeheer
   - H2: Compatibiliteit
-  - H2: Sidecar-proces
+  - H2: Sidecarproces
   - H2: Probleemoplossing
   - H2: Gerelateerde docs
 
@@ -1017,15 +1017,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Plugin-hooks en privacy
   - H2: Toegangsbeheer en activering
   - H2: Geconfigureerde ACP-bindingen
-  - H2: Gedrag voor persoonlijk nummer en zelfchat
+  - H2: Gedrag voor persoonlijk nummer en chat met jezelf
   - H2: Berichtnormalisatie en context
-  - H2: Bezorging, opdelen en media
-  - H2: Antwoordcitaten
+  - H2: Bezorging, chunking en media
+  - H2: Antwoorden citeren
   - H2: Reactieniveau
   - H2: Bevestigingsreacties
   - H2: Levenscyclusstatusreacties
-  - H2: Meerdere accounts en referenties
-  - H2: Tools, acties en configuratieschrijfacties
+  - H2: Meerdere accounts en inloggegevens
+  - H2: Tools, acties en configuratiewijzigingen
   - H2: Probleemoplossing
   - H2: Systeemprompts
   - H2: Verwijzingen naar configuratiereferentie
@@ -1035,32 +1035,32 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/yuanbao
 - Koppen:
-  - H2: Snel starten
+  - H2: Snelstart
   - H3: Interactieve installatie (alternatief)
   - H2: Toegangsbeheer
-  - H3: Direct messages
+  - H3: Directe berichten
   - H3: Groepschats
   - H2: Configuratievoorbeelden
   - H3: Basisinstallatie met open DM-beleid
   - H3: DM's beperken tot specifieke gebruikers
-  - H3: @mention-vereiste in groepen uitschakelen
+  - H3: Vereiste voor @vermelding in groepen uitschakelen
   - H3: Uitgaande berichtbezorging optimaliseren
-  - H3: Merge-tekststrategie afstemmen
+  - H3: Strategie voor tekst samenvoegen afstemmen
   - H2: Veelgebruikte opdrachten
   - H2: Probleemoplossing
   - H3: Bot reageert niet in groepschats
   - H3: Bot ontvangt geen berichten
-  - H3: Bot verzendt lege antwoorden of fallback-antwoorden
-  - H3: App Secret gelekt
+  - H3: Bot verstuurt lege antwoorden of fallback-antwoorden
+  - H3: Appgeheim gelekt
   - H2: Geavanceerde configuratie
   - H3: Meerdere accounts
   - H3: Berichtlimieten
   - H3: Streaming
-  - H3: Geschiedeniscontext van groepschat
-  - H3: Reply-to-modus
+  - H3: Context van groepschatgeschiedenis
+  - H3: Antwoordmodus
   - H3: Markdown-hintinjectie
   - H3: Debugmodus
-  - H3: Routering voor meerdere agenten
+  - H3: Routing voor meerdere agents
   - H2: Configuratiereferentie
   - H2: Ondersteunde berichttypen
   - H3: Ontvangen
@@ -1072,21 +1072,21 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/zalo
 - Koppen:
-  - H2: Meegeleverde Plugin
+  - H2: Gebundelde Plugin
   - H2: Snelle installatie (beginner)
   - H2: Wat het is
-  - H2: Installatie (snel traject)
-  - H3: 1) Een bottoken maken (Zalo Bot Platform)
-  - H3: 2) Het token configureren (env of configuratie)
+  - H2: Installatie (snelle route)
+  - H3: 1) Maak een bot-token aan (Zalo Bot Platform)
+  - H3: 2) Configureer het token (env of configuratie)
   - H2: Hoe het werkt (gedrag)
   - H2: Limieten
   - H2: Toegangsbeheer (DM's)
   - H3: DM-toegang
   - H2: Toegangsbeheer (groepen)
-  - H2: Long-polling versus webhook
+  - H2: Long-polling versus Webhook
   - H2: Ondersteunde berichttypen
   - H2: Mogelijkheden
-  - H2: Bezorgdoelen (CLI/cron)
+  - H2: Bezorgingsdoelen (CLI/Cron)
   - H2: Probleemoplossing
   - H2: Configuratiereferentie (Zalo)
   - H2: Gerelateerd
@@ -1099,10 +1099,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Vereisten
   - H2: Installeren met onboard (aanbevolen)
   - H2: Handmatige installatie
-  - H3: 1. De Plugin installeren
-  - H3: 2. De Plugin inschakelen in de configuratie
-  - H3: 3. QR-code genereren en inloggen
-  - H3: 4. De Gateway opnieuw starten
+  - H3: 1. Installeer de Plugin
+  - H3: 2. Schakel de Plugin in de configuratie in
+  - H3: 3. Genereer de QR-code en log in
+  - H3: 4. Herstart de Gateway
   - H2: Hoe het werkt
   - H2: Onder de motorkap
   - H2: Probleemoplossing
@@ -1111,7 +1111,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /channels/zalouser
 - Koppen:
-  - H2: Meegeleverde Plugin
+  - H2: Gebundelde Plugin
   - H2: Snelle installatie (beginner)
   - H2: Wat het is
   - H2: Naamgeving
@@ -1119,10 +1119,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Limieten
   - H2: Toegangsbeheer (DM's)
   - H2: Groepstoegang (optioneel)
-  - H3: Groepsmention-gating
+  - H3: Gate voor groepsvermeldingen
   - H2: Meerdere accounts
   - H2: Omgevingsvariabelen
-  - H2: Typen, reacties en bezorgbevestigingen
+  - H2: Typen, reacties en bezorgingsbevestigingen
   - H2: Probleemoplossing
   - H2: Gerelateerd
 
@@ -1130,10 +1130,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /ci
 - Koppen:
-  - H2: Pipelineoverzicht
+  - H2: Pipeline-overzicht
   - H2: Fail-fast-volgorde
   - H2: PR-context en bewijs
-  - H2: Scope en routering
+  - H2: Scope en routing
   - H2: Doorsturen van ClawSweeper-activiteit
   - H2: Handmatige dispatches
   - H2: Runners
@@ -1143,27 +1143,27 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Volledige releasevalidatie
   - H2: Live- en E2E-shards
   - H2: Pakketacceptatie
-  - H3: Jobs
+  - H3: Taken
   - H3: Kandidaatbronnen
   - H3: Suiteprofielen
   - H3: Vensters voor legacy-compatibiliteit
   - H3: Voorbeelden
   - H2: Installatiesmoke
-  - H2: Lokale Docker E2E
+  - H2: Lokale Docker-E2E
   - H3: Afstembare instellingen
   - H3: Herbruikbare live/E2E-workflow
   - H3: Releasepad-chunks
   - H2: Plugin-prerelease
-  - H2: QA Lab
+  - H2: QA-lab
   - H2: CodeQL
   - H3: Beveiligingscategorieën
   - H3: Platformspecifieke beveiligingsshards
-  - H3: Categorieën voor kritieke kwaliteit
+  - H3: Kritieke kwaliteitscategorieën
   - H2: Onderhoudsworkflows
-  - H3: Docs Agent
-  - H3: Test Performance Agent
+  - H3: Docs-agent
+  - H3: Testprestatie-agent
   - H3: Dubbele PR's na merge
-  - H2: Lokale controlegates en gewijzigde routering
+  - H2: Lokale checkgates en routering van wijzigingen
   - H2: Testbox-validatie
   - H2: Gerelateerd
 
@@ -1197,12 +1197,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Bekende beperkingen
   - H2: Gebruik
   - H2: ACP-client (debug)
-  - H2: Protocolsmoketest
+  - H2: Protocolsmoketests
   - H2: Hoe je dit gebruikt
-  - H2: Agenten selecteren
+  - H2: Agents selecteren
   - H2: Gebruiken vanuit acpx (Codex, Claude, andere ACP-clients)
   - H2: Zed-editor instellen
-  - H2: Sessie-mapping
+  - H2: Sessietoewijzing
   - H2: Opties
   - H3: acp-clientopties
   - H2: Gerelateerd
@@ -1214,8 +1214,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: openclaw agent
   - H2: Opties
   - H2: Voorbeelden
-  - H2: Opmerkingen
-  - H2: JSON-bezorgstatus
+  - H2: Notities
+  - H2: JSON-bezorgingsstatus
   - H2: Gerelateerd
 
 ## cli/agents.md
@@ -1224,7 +1224,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw agents
   - H2: Voorbeelden
-  - H2: Routeringsbindingen
+  - H2: Routingbindingen
   - H3: --bind-indeling
   - H3: Gedrag van bindingsscope
   - H2: Opdrachtoppervlak
@@ -1250,7 +1250,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Voorbeeld voor "Nooit vragen" / YOLO
   - H2: Allowlist-helpers
   - H2: Veelgebruikte opties
-  - H2: Opmerkingen
+  - H2: Notities
   - H2: Gerelateerd
 
 ## cli/backup.md
@@ -1258,7 +1258,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/backup
 - Koppen:
   - H1: openclaw backup
-  - H2: Opmerkingen
+  - H2: Notities
   - H2: Waarvan een back-up wordt gemaakt
   - H2: Gedrag bij ongeldige configuratie
   - H2: Grootte en prestaties
@@ -1270,17 +1270,17 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw browser
   - H2: Veelgebruikte flags
-  - H2: Snel starten (lokaal)
+  - H2: Snelstart (lokaal)
   - H2: Snelle probleemoplossing
   - H2: Levenscyclus
   - H2: Als de opdracht ontbreekt
   - H2: Profielen
-  - H2: Tabs
+  - H2: Tabbladen
   - H2: Snapshot / screenshot / acties
   - H2: Status en opslag
-  - H2: Debuggen
+  - H2: Debugging
   - H2: Bestaande Chrome via MCP
-  - H2: Browserbeheer op afstand (node-hostproxy)
+  - H2: Externe browserbesturing (node-hostproxy)
   - H2: Gerelateerd
 
 ## cli/channels.md
@@ -1322,7 +1322,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: openclaw completion
   - H2: Gebruik
   - H2: Opties
-  - H2: Opmerkingen
+  - H2: Notities
   - H2: Gerelateerd
 
 ## cli/config.md
@@ -1336,9 +1336,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Waarden
   - H2: config set-modi
   - H2: config patch
-  - H2: Provider-builderflags
+  - H2: Flags voor providerbuilder
   - H2: Dry run
-  - H3: JSON-uitvoervorm
+  - H3: Vorm van JSON-uitvoer
   - H2: Schrijfveiligheid
   - H2: Subopdrachten
   - H2: Valideren
@@ -1360,7 +1360,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: openclaw crestodian
   - H2: Wat Crestodian toont
   - H2: Voorbeelden
-  - H2: Veilige opstart
+  - H2: Veilig opstarten
   - H2: Bewerkingen en goedkeuring
   - H2: Setup-bootstrap
   - H2: Modelondersteunde planner
@@ -1373,27 +1373,27 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/cron
 - Koppen:
   - H1: openclaw cron
-  - H2: Snel jobs maken
+  - H2: Snel taken maken
   - H2: Sessies
   - H2: Bezorging
   - H3: Eigenaarschap van bezorging
-  - H3: Foutbezorging
+  - H3: Bezorging bij fouten
   - H2: Planning
-  - H3: Eenmalige jobs
-  - H3: Terugkerende jobs
+  - H3: Eenmalige taken
+  - H3: Terugkerende taken
   - H3: Handmatige runs
   - H2: Modellen
-  - H3: Precedentie van geïsoleerd Cron-model
+  - H3: Voorrang van geïsoleerd cronmodel
   - H3: Snelle modus
-  - H3: Nieuwe pogingen bij live modelwissel
-  - H2: Runuitvoer en weigeringen
+  - H3: Retries voor live-modelwissel
+  - H2: Run-uitvoer en weigeringen
   - H3: Onderdrukking van verouderde bevestigingen
   - H3: Onderdrukking van stille tokens
   - H3: Gestructureerde weigeringen
   - H2: Retentie
-  - H2: Oudere jobs migreren
+  - H2: Oudere taken migreren
   - H2: Veelgebruikte bewerkingen
-  - H2: Veelgebruikte beheeropdrachten
+  - H2: Veelgebruikte beheerdersopdrachten
   - H2: Gerelateerd
 
 ## cli/daemon.md
@@ -1424,13 +1424,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: openclaw devices remove
   - H3: openclaw devices clear --yes [--pending]
   - H3: openclaw devices approve [requestId] [--latest]
-  - H2: Goedkeuring bij eerste uitvoering van Paperclip / openclawgateway
+  - H2: Paperclip / openclawgateway-goedkeuring bij eerste run
   - H3: openclaw devices reject
   - H3: openclaw devices rotate --device --role [--scope ]
   - H3: openclaw devices revoke --device --role
   - H2: Veelgebruikte opties
-  - H2: Opmerkingen
-  - H2: Checklist voor herstel van tokendrift
+  - H2: Notities
+  - H2: Checklist voor herstel bij token-drift
   - H2: Gerelateerd
 
 ## cli/directory.md
@@ -1439,8 +1439,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw directory
   - H2: Veelgebruikte flags
-  - H2: Opmerkingen
-  - H2: Resultaten gebruiken met berichtverzending
+  - H2: Notities
+  - H2: Resultaten gebruiken met message send
   - H2: ID-indelingen (per kanaal)
   - H2: Zelf ("me")
   - H2: Peers (contacten/gebruikers)
@@ -1452,7 +1452,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/dns
 - Koppen:
   - H1: openclaw dns
-  - H2: Setup
+  - H2: Installatie
   - H2: dns setup
   - H2: Gerelateerd
 
@@ -1465,7 +1465,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Voorbeelden
   - H2: Hoe het werkt
   - H2: Uitvoer
-  - H2: Exitcodes
+  - H2: Afsluitcodes
   - H2: Gerelateerd
 
 ## cli/doctor.md
@@ -1478,9 +1478,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Opties
   - H2: Lintmodus
   - H2: Gestructureerde gezondheidscontroles
-  - H2: Controleselectie
-  - H2: Post-upgrademodus
-  - H2: macOS: launchctl-env-overrides
+  - H2: Checkselectie
+  - H2: Modus na upgrade
+  - H2: macOS: launchctl env-overrides
   - H2: Gerelateerd
 
 ## cli/flows.md
@@ -1489,7 +1489,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw tasks flow
   - H2: Subopdrachten
-  - H3: Statusfilterwaarden
+  - H3: Waarden voor statusfilter
   - H2: Voorbeelden
   - H2: Gerelateerd
 
@@ -1499,8 +1499,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: De Gateway uitvoeren
   - H3: Opties
-  - H2: De Gateway opnieuw starten
-  - H3: Gateway-profiling
+  - H2: De Gateway herstarten
+  - H3: Gateway-profilering
   - H2: Een draaiende Gateway opvragen
   - H3: gateway health
   - H3: gateway usage-cost
@@ -1508,7 +1508,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: gateway diagnostics export
   - H3: gateway status
   - H3: gateway probe
-  - H4: Op afstand via SSH (pariteit met Mac-app)
+  - H4: Extern via SSH (pariteit met Mac-app)
   - H3: gateway call
   - H2: De Gateway-service beheren
   - H3: Installeren met een wrapper
@@ -1530,13 +1530,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw hooks
   - H2: Alle hooks weergeven
-  - H2: Hookinformatie ophalen
+  - H2: Hook-informatie ophalen
   - H2: Geschiktheid van hooks controleren
   - H2: Een Hook inschakelen
   - H2: Een Hook uitschakelen
-  - H2: Notities
-  - H2: Hookpakketten installeren
-  - H2: Hookpakketten bijwerken
+  - H2: Opmerkingen
+  - H2: Hook-pakketten installeren
+  - H2: Hook-pakketten bijwerken
   - H2: Meegeleverde hooks
   - H3: session-memory
   - H3: bootstrap-extra-files
@@ -1552,7 +1552,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Globale flags
   - H2: Uitvoermodi
   - H2: Commandoboom
-  - H2: Slash-commands in chat
+  - H2: Chat-slashcommando's
   - H2: Gebruiksregistratie
   - H2: Gerelateerd
 
@@ -1560,7 +1560,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /cli/infer
 - Koppen:
-  - H2: Zet infer om in een skill
+  - H2: Van infer een skill maken
   - H2: Waarom infer gebruiken
   - H2: Commandoboom
   - H2: Veelvoorkomende taken
@@ -1574,7 +1574,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Embedding
   - H2: JSON-uitvoer
   - H2: Veelvoorkomende valkuilen
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/logs.md
@@ -1585,7 +1585,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Opties
   - H2: Gedeelde Gateway RPC-opties
   - H2: Voorbeelden
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/mcp.md
@@ -1599,7 +1599,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Kies een clientmodus
   - H3: Wat serve beschikbaar maakt
   - H3: Gebruik
-  - H3: Bridgetools
+  - H3: Bridge-tools
   - H3: Gebeurtenismodel
   - H3: Claude-kanaalmeldingen
   - H3: MCP-clientconfiguratie
@@ -1645,7 +1645,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Rollen / Kanalen / Leden / Spraak
   - H3: Gebeurtenissen
   - H3: Moderatie (Discord)
-  - H3: Uitzending
+  - H3: Broadcast
   - H2: Voorbeelden
   - H2: Gerelateerd
 
@@ -1658,17 +1658,17 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Veiligheidsmodel
   - H2: Claude-provider
   - H3: Wat Claude importeert
-  - H3: Archief- en handmatige-beoordelingsstatus
+  - H3: Archief- en handmatige-reviewstatus
   - H2: Codex-provider
   - H3: Wat Codex importeert
-  - H3: Codex-status voor handmatige beoordeling
+  - H3: Handmatige-review Codex-status
   - H2: Hermes-provider
   - H3: Wat Hermes importeert
   - H3: Ondersteunde .env-sleutels
   - H3: Alleen-archiefstatus
   - H3: Na toepassen
   - H2: Plugin-contract
-  - H2: Onboardingintegratie
+  - H2: Onboarding-integratie
   - H2: Gerelateerd
 
 ## cli/models.md
@@ -1677,8 +1677,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw models
   - H2: Veelvoorkomende commando's
-  - H3: Modellen scannen
-  - H3: Modelstatus
+  - H3: Models scannen
+  - H3: Models-status
   - H2: Aliassen + fallbacks
   - H2: Auth-profielen
   - H2: Gerelateerd
@@ -1688,10 +1688,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/node
 - Koppen:
   - H1: openclaw node
-  - H2: Waarom een nodehost gebruiken?
-  - H2: Browserproxy (zonder configuratie)
+  - H2: Waarom een node-host gebruiken?
+  - H2: Browserproxy (zero-config)
   - H2: Uitvoeren (voorgrond)
-  - H2: Gateway-auth voor nodehost
+  - H2: Gateway-auth voor node-host
   - H2: Service (achtergrond)
   - H2: Koppelen
   - H2: Exec-goedkeuringen
@@ -1714,8 +1714,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Gerelateerde gidsen
   - H2: Voorbeelden
   - H2: Locale
-  - H3: Niet-interactieve Z.AI-eindpuntkeuzes
-  - H2: Flownotities
+  - H3: Niet-interactieve Z.AI-endpointkeuzes
+  - H2: Flow-opmerkingen
   - H2: Veelvoorkomende vervolgcommando's
 
 ## cli/pairing.md
@@ -1726,7 +1726,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Commando's
   - H2: pairing list
   - H2: pairing approve
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/path.md
@@ -1743,7 +1743,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Adresseren op bestandstype
   - H2: Mutatiecontract
   - H2: Voorbeelden
-  - H2: Recepten op bestandstype
+  - H2: Recepten per bestandstype
   - H3: Markdown
   - H3: JSONC
   - H3: JSONL
@@ -1756,7 +1756,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: emit
   - H2: Afsluitcodes
   - H2: Uitvoermodus
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/plugins.md
@@ -1764,10 +1764,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/plugins
 - Koppen:
   - H2: Commando's
-  - H3: Auteur
+  - H3: Author
   - H3: Provider-scaffold
   - H3: Installeren
-  - H4: Marketplace-afkorting
+  - H4: Marketplace-shorthand
   - H3: Lijst
   - H3: Plugin-index
   - H3: Verwijderen
@@ -1783,23 +1783,23 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/policy
 - Koppen:
   - H1: openclaw policy
-  - H2: Snelstart
+  - H2: Snel aan de slag
   - H3: Referentie voor beleidsregels
   - H4: Scoped overlays
   - H4: Kanalen
   - H4: MCP-servers
   - H4: Modelproviders
   - H4: Netwerk
-  - H4: Ingress- en kanaaltoegang
+  - H4: Ingress en kanaaltoegang
   - H4: Gateway
-  - H4: Agentwerkruimte
-  - H4: Sandboxhouding
+  - H4: Agent-werkruimte
+  - H4: Sandbox-houding
   - H4: Gegevensverwerking
-  - H4: Secrets
+  - H4: Geheimen
   - H4: Exec-goedkeuringen
   - H4: Auth-profielen
   - H4: Toolmetadata
-  - H4: Toolhouding
+  - H4: Tool-houding
   - H2: Beleid configureren
   - H2: Beleidsstatus accepteren
   - H2: Bevindingen
@@ -1815,7 +1815,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Commando's
   - H2: Valideren
   - H2: Query-presets
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/qr.md
@@ -1825,7 +1825,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: openclaw qr
   - H2: Gebruik
   - H2: Opties
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/reset.md
@@ -1844,10 +1844,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: openclaw sandbox explain
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
-  - H2: Usecases
+  - H2: Gebruikssituaties
   - H3: Na het bijwerken van een Docker-image
-  - H3: Na het wijzigen van sandboxconfiguratie
-  - H3: Na het wijzigen van SSH-doel of SSH-auth-materiaal
+  - H3: Na het wijzigen van sandbox-configuratie
+  - H3: Na het wijzigen van SSH-doel of SSH-authmateriaal
   - H3: Na het wijzigen van OpenShell-bron, beleid of modus
   - H3: Na het wijzigen van setupCommand
   - H3: Alleen voor een specifieke agent
@@ -1885,7 +1885,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw sessions
   - H2: Opschoononderhoud
-  - H2: Een sessie compact maken
+  - H2: Een sessie comprimeren
   - H3: sessions.compact RPC
   - H2: Gerelateerd
 
@@ -1895,9 +1895,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: openclaw setup
   - H2: Opties
-  - H3: Automatisch starten van wizard
+  - H3: Baseline-modus
   - H2: Voorbeelden
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/skills.md
@@ -1924,7 +1924,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: system event
   - H2: system heartbeat last|enable|disable
   - H2: system presence
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## cli/tasks.md
@@ -1986,7 +1986,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Git-checkoutflow
   - H3: Kanaalselectie
   - H3: Updatestappen
-  - H2: --update-afkorting
+  - H2: --update-shorthand
   - H2: Gerelateerd
 
 ## cli/voicecall.md
@@ -2035,7 +2035,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /cli/wiki
 - Koppen:
   - H1: openclaw wiki
-  - H2: Waarvoor het is
+  - H2: Waarvoor het bedoeld is
   - H2: Veelvoorkomende commando's
   - H2: Commando's
   - H3: wiki status
@@ -2064,11 +2064,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: create
   - H2: show
   - H2: dispatch
-  - H2: Pariteit van slash-commands
+  - H2: Pariteit met slashcommando's
   - H2: Machtigingen
   - H2: Probleemoplossing
   - H3: Er verschijnen geen kaarten
-  - H3: Dispatch zegt alleen data
+  - H3: Dispatch zegt alleen-data
   - H3: Dispatch start niets
   - H2: Gerelateerd
 
@@ -2076,28 +2076,28 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/active-memory
 - Koppen:
-  - H2: Snelstart
+  - H2: Snel aan de slag
   - H2: Snelheidsaanbevelingen
-  - H3: Cerebras-installatie
-  - H2: Hoe u het ziet
+  - H3: Cerebras-setup
+  - H2: Hoe u het kunt zien
   - H2: Sessieschakelaar
   - H2: Wanneer het wordt uitgevoerd
   - H2: Sessietypen
   - H2: Waar het wordt uitgevoerd
-  - H2: Waarom het gebruiken
+  - H2: Waarom dit gebruiken
   - H2: Hoe het werkt
-  - H2: Querymodi
+  - H2: Query-modi
   - H2: Promptstijlen
-  - H2: Modelfallbackbeleid
-  - H2: Geheugentools
+  - H2: Model-fallbackbeleid
+  - H2: Memory-tools
   - H3: Ingebouwde memory-core
-  - H3: LanceDB-geheugen
+  - H3: LanceDB-memory
   - H3: Lossless Claw
   - H2: Geavanceerde ontsnappingsroutes
   - H2: Transcriptpersistentie
   - H2: Configuratie
-  - H2: Aanbevolen installatie
-  - H3: Cold-start-gratie
+  - H2: Aanbevolen setup
+  - H3: Cold-start-grace
   - H2: Debuggen
   - H2: Veelvoorkomende problemen
   - H2: Gerelateerde pagina's
@@ -2106,18 +2106,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/agent-loop
 - Koppen:
-  - H2: Invoerpunten
+  - H2: Entry points
   - H2: Hoe het werkt (op hoofdlijnen)
-  - H2: Wachtrijvorming + gelijktijdigheid
+  - H2: Queueing + concurrency
   - H2: Sessie- en werkruimtevoorbereiding
   - H2: Promptassemblage + systeemprompt
-  - H2: Hookpunten (waar u kunt onderscheppen)
-  - H3: Interne hooks (Gateway-hooks)
-  - H3: Plugin-hooks (agent- + Gateway-levenscyclus)
+  - H2: Hook-punten (waar u kunt onderscheppen)
+  - H3: Interne hooks (Gateway hooks)
+  - H3: Plugin-hooks (agent- + gateway-levenscyclus)
   - H2: Streaming + gedeeltelijke antwoorden
-  - H2: Tooluitvoering + berichtentools
+  - H2: Tooluitvoering + messaging-tools
   - H2: Antwoordvorming + onderdrukking
-  - H2: Compaction + nieuwe pogingen
+  - H2: Compaction + retries
   - H2: Gebeurtenisstreams (vandaag)
   - H2: Chatkanaalafhandeling
   - H2: Time-outs
@@ -2142,12 +2142,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Standaardlocatie
   - H2: Extra werkruimtemappen
-  - H2: Bestandskaart van werkruimte
+  - H2: Werkruimtebestandskaart
   - H2: Wat NIET in de werkruimte staat
   - H2: Git-back-up (aanbevolen, privé)
-  - H2: Commit geen secrets
+  - H2: Commit geen geheimen
   - H2: De werkruimte naar een nieuwe machine verplaatsen
-  - H2: Geavanceerde notities
+  - H2: Geavanceerde opmerkingen
   - H2: Gerelateerd
 
 ## concepts/agent.md
@@ -2155,13 +2155,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /concepts/agent
 - Koppen:
   - H2: Werkruimte (vereist)
-  - H2: Bootstrapbestanden (geïnjecteerd)
+  - H2: Bootstrap-bestanden (geïnjecteerd)
   - H2: Ingebouwde tools
   - H2: Skills
   - H2: Runtimegrenzen
   - H2: Sessies
-  - H2: Bijsturen tijdens streaming
-  - H2: Modelrefs
+  - H2: Sturen tijdens streaming
+  - H2: Modelverwijzingen
   - H2: Configuratie (minimaal)
   - H2: Gerelateerd
 
@@ -2175,8 +2175,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Clients (Mac-app / CLI / webbeheer)
   - H3: Nodes (macOS / iOS / Android / headless)
   - H3: WebChat
-  - H2: Levenscyclus van verbindingen (één client)
-  - H2: Draadprotocol (samenvatting)
+  - H2: Verbindingslevenscyclus (één client)
+  - H2: Wire-protocol (samenvatting)
   - H2: Koppelen + lokaal vertrouwen
   - H2: Protocoltypering en codegeneratie
   - H2: Externe toegang
@@ -2189,7 +2189,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /concepts/channel-docking
 - Koppen:
   - H2: Voorbeeld
-  - H2: Waarom dit gebruiken
+  - H2: Waarom het gebruiken
   - H2: Vereiste configuratie
   - H2: Opdrachten
   - H2: Wat verandert
@@ -2202,7 +2202,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Toezeggingen inschakelen
   - H2: Hoe het werkt
-  - H2: Bereik
+  - H2: Scope
   - H2: Toezeggingen versus herinneringen
   - H2: Toezeggingen beheren
   - H2: Privacy en kosten
@@ -2219,8 +2219,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Configuratie
   - H3: Een ander model gebruiken
   - H3: Behoud van identifiers
-  - H3: Bytebewaking van actief transcript
-  - H3: Opvolgende transcripties
+  - H3: Bytebewaking voor actief transcript
+  - H3: Opvolgende transcripten
   - H3: Compaction-meldingen
   - H3: Geheugenflush
   - H2: Inplugbare Compaction-providers
@@ -2232,9 +2232,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/context-engine
 - Koppen:
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Hoe het werkt
-  - H3: Levenscyclus van subagent (optioneel)
+  - H3: Subagentlevenscyclus (optioneel)
   - H3: Toevoeging aan systeemprompt
   - H2: De legacy-engine
   - H2: Plugin-engines
@@ -2244,7 +2244,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Foutisolatie
   - H3: ownsCompaction
   - H2: Configuratiereferentie
-  - H2: Relatie met Compaction en geheugen
+  - H2: Relatie tot Compaction en geheugen
   - H2: Tips
   - H2: Gerelateerd
 
@@ -2252,18 +2252,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/context
 - Koppen:
-  - H2: Snel starten (context inspecteren)
+  - H2: Snelstart (context inspecteren)
   - H2: Voorbeelduitvoer
   - H3: /context list
   - H3: /context detail
   - H3: /context map
   - H2: Wat meetelt voor het contextvenster
   - H2: Hoe OpenClaw de systeemprompt opbouwt
-  - H2: Geïnjecteerde werkruimtebestanden (Projectcontext)
+  - H2: Geïnjecteerde werkruimtebestanden (projectcontext)
   - H2: Skills: geïnjecteerd versus op aanvraag geladen
   - H2: Tools: er zijn twee kosten
-  - H2: Opdrachten, directives en "inline snelkoppelingen"
-  - H2: Sessies, Compaction en snoeien (wat blijft bestaan)
+  - H2: Opdrachten, richtlijnen en "inline snelkoppelingen"
+  - H2: Sessies, Compaction en snoeien (wat behouden blijft)
   - H2: Wat /context daadwerkelijk rapporteert
   - H2: Gerelateerd
 
@@ -2271,24 +2271,24 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/delegate-architecture
 - Koppen:
-  - H2: Wat is een delegate?
-  - H2: Waarom delegates?
-  - H2: Capability-niveaus
-  - H3: Niveau 1: Alleen-lezen + concept
-  - H3: Niveau 2: Verzenden namens
-  - H3: Niveau 3: Proactief
-  - H2: Vereisten: isolatie en hardening
+  - H2: Wat is een gedelegeerde?
+  - H2: Waarom gedelegeerden?
+  - H2: Capaciteitsniveaus
+  - H3: Niveau 1: alleen-lezen + concept
+  - H3: Niveau 2: namens iemand verzenden
+  - H3: Niveau 3: proactief
+  - H2: Vereisten vooraf: isolatie en hardening
   - H3: Harde blokkades (niet onderhandelbaar)
   - H3: Toolbeperkingen
   - H3: Sandboxisolatie
   - H3: Auditspoor
-  - H2: Een delegate instellen
-  - H3: 1. Maak de delegate-agent
-  - H3: 2. Configureer delegatie van de identiteitsprovider
+  - H2: Een gedelegeerde instellen
+  - H3: 1. Maak de gedelegeerde agent
+  - H3: 2. Configureer delegatie van identiteitsprovider
   - H4: Microsoft 365
   - H4: Google Workspace
-  - H3: 3. Koppel de delegate aan kanalen
-  - H3: 4. Voeg referenties toe aan de delegate-agent
+  - H3: 3. Koppel de gedelegeerde aan kanalen
+  - H3: 4. Voeg referenties toe aan de gedelegeerde agent
   - H2: Voorbeeld: organisatieassistent
   - H2: Schaalpatroon
   - H2: Gerelateerd
@@ -2299,15 +2299,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat Dreaming schrijft
   - H2: Fasemodel
-  - H2: Inname van sessietranscripties
-  - H2: Dream Diary
+  - H2: Inname van sessietranscripten
+  - H2: Droomdagboek
   - H2: Diepe rangschikkingssignalen
-  - H2: Dekking van QA-schaduwproefrapporten
+  - H2: Dekking van QA-schaduwtestrapport
   - H2: Planning
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Slash-opdracht
   - H2: CLI-workflow
-  - H2: Belangrijke standaardwaarden
+  - H2: Belangrijkste standaardwaarden
   - H2: Dreams-UI
   - H2: Dreaming wordt nooit uitgevoerd: status toont geblokkeerd
   - H2: Gerelateerd
@@ -2340,9 +2340,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Opslagmodel
   - H2: GitHub-dispatch
   - H2: Lokale CLI
-  - H2: Hydrate-modi
+  - H2: Hydratiemodi
   - H2: Interpretatie van timing
-  - H2: Bewijschecklist
+  - H2: Evidence-checklist
   - H2: Foutafhandeling
   - H2: Gerelateerd
 
@@ -2354,15 +2354,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Niet-doelen
   - H2: Eigenaarschap
   - H2: Opdrachtvorm
-  - H2: Levenscyclus van runs
+  - H2: Runlevenscyclus
   - H2: Discord-MVP
   - H2: Bestaande QA-onderdelen
-  - H2: Bewijsmodel
+  - H2: Evidence-model
   - H2: Browser en VNC
   - H2: Machines
-  - H2: Secrets
+  - H2: Geheimen
   - H2: GitHub-artefacten en PR-opmerkingen
-  - H2: Privé-implementatieopmerkingen
+  - H2: Privé-implementatienotities
   - H2: Een scenario toevoegen
   - H2: Provideruitbreiding
   - H2: Open vragen
@@ -2389,7 +2389,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat het biedt
   - H2: Aan de slag
-  - H2: Ondersteunde embeddingproviders
+  - H2: Ondersteunde embedding-providers
   - H2: Hoe indexering werkt
   - H2: Wanneer te gebruiken
   - H2: Probleemoplossing
@@ -2417,14 +2417,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat het toevoegt bovenop ingebouwd
   - H2: Aan de slag
-  - H3: Vereisten
+  - H3: Vereisten vooraf
   - H3: Inschakelen
   - H2: Hoe de sidecar werkt
   - H2: Zoekprestaties en compatibiliteit
   - H2: Modeloverschrijvingen
   - H2: Extra paden indexeren
-  - H2: Sessietranscripties indexeren
-  - H2: Zoekbereik
+  - H2: Sessietranscripten indexeren
+  - H2: Zoekscope
   - H2: Citaten
   - H2: Wanneer te gebruiken
   - H2: Probleemoplossing
@@ -2435,7 +2435,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/memory-search
 - Koppen:
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Ondersteunde providers
   - H2: Hoe zoeken werkt
   - H2: Zoekkwaliteit verbeteren
@@ -2457,13 +2457,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Actiegevoelige herinneringen
   - H2: Afgeleide toezeggingen
   - H2: Geheugentools
-  - H2: Memory Wiki-begeleidende Plugin
-  - H2: Geheugen zoeken
+  - H2: Begeleidende Memory Wiki-Plugin
+  - H2: Geheugenzoekfunctie
   - H2: Geheugenbackends
   - H2: Kenniswikilaag
   - H2: Automatische geheugenflush
   - H2: Dreaming
-  - H2: Gegronde backfill en live promotie
+  - H2: Gegronde backfill en livepromotie
   - H2: CLI
   - H2: Verder lezen
   - H2: Gerelateerd
@@ -2485,23 +2485,23 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Ontvangstbewijs
   - H2: Ontvangstcontext
   - H2: Verzendcontext
-  - H2: Live-context
+  - H2: Livecontext
   - H2: Adapteroppervlak
   - H2: Reductie van publieke SDK
   - H2: Relatie tot inkomend kanaalverkeer
-  - H2: Compatibiliteitsrails
+  - H2: Compatibiliteitsvangrails
   - H2: Interne opslag
   - H2: Foutklassen
-  - H2: Kanaaltoewijzing
+  - H2: Kanaalmapping
   - H2: Migratieplan
-  - H3: Fase 1: Intern berichtdomein
-  - H3: Fase 2: Duurzame verzendkern
-  - H3: Fase 3: Brug voor inkomend kanaalverkeer
-  - H3: Fase 4: Brug voor voorbereide dispatcher
-  - H3: Fase 5: Geünificeerde live levenscyclus
-  - H3: Fase 6: Publieke SDK
-  - H3: Fase 7: Alle verzenders
-  - H3: Fase 8: Compatibiliteit met turnnamen verwijderen
+  - H3: Fase 1: intern berichtdomein
+  - H3: Fase 2: duurzame verzendkern
+  - H3: Fase 3: brug voor inkomend kanaalverkeer
+  - H3: Fase 4: brug voor voorbereide dispatcher
+  - H3: Fase 5: uniforme livelevenscyclus
+  - H3: Fase 6: publieke SDK
+  - H3: Fase 7: alle verzenders
+  - H3: Fase 8: turn-naamcompatibiliteit verwijderen
   - H2: Testplan
   - H2: Open vragen
   - H2: Acceptatiecriteria
@@ -2512,8 +2512,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /concepts/messages
 - Koppen:
   - H2: Berichtstroom (hoog niveau)
-  - H2: Dedupe van inkomende berichten
-  - H2: Debouncing van inkomende berichten
+  - H2: Dedupe van inkomend verkeer
+  - H2: Debouncing van inkomend verkeer
   - H2: Sessies en apparaten
   - H2: Metadata van toolresultaten
   - H2: Inkomende bodies en geschiedeniscontext
@@ -2531,20 +2531,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Runtimestroom
   - H2: Beleid voor selectiebron
-  - H2: Cache voor overslaan bij auth-fout
-  - H2: Fallbackmeldingen zichtbaar voor gebruikers
+  - H2: Skipcache voor auth-fouten
+  - H2: Voor gebruikers zichtbare fallbackmeldingen
   - H2: Auth-opslag (sleutels + OAuth)
   - H2: Profiel-ID's
   - H2: Rotatievolgorde
-  - H3: Sessiekleverigheid (cachevriendelijk)
+  - H3: Sessiekleefkracht (cachevriendelijk)
   - H3: OpenAI Codex-abonnement plus API-sleutelback-up
   - H2: Cooldowns
   - H2: Facturering schakelt uit
   - H2: Modelfallback
-  - H3: Regels voor kandidaatketen
-  - H3: Welke fouten fallback voortzetten
-  - H3: Cooldown overslaan versus probe-gedrag
-  - H2: Sessieoverschrijvingen en live modelwisseling
+  - H3: Regels voor kandidatenketen
+  - H3: Welke fouten fallback verder laten gaan
+  - H3: Cooldown overslaan versus probeergedrag
+  - H2: Sessie-overschrijvingen en live modelschakeling
   - H2: Observeerbaarheid en foutensamenvattingen
   - H2: Gerelateerde configuratie
 
@@ -2554,7 +2554,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Snelle regels
   - H2: Provider-gedrag in eigendom van Plugin
-  - H2: API-sleutelrotatie
+  - H2: Rotatie van API-sleutels
   - H2: Officiële provider-Plugins
   - H3: OpenAI
   - H3: Anthropic
@@ -2566,12 +2566,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Z.AI (GLM)
   - H3: Vercel AI Gateway
   - H3: Andere gebundelde provider-Plugins
-  - H4: Eigenaardigheden die het weten waard zijn
+  - H4: Eigenaardigheden die het waard zijn om te weten
   - H2: Providers via models.providers (aangepaste/basis-URL)
   - H3: Moonshot AI (Kimi)
   - H3: Kimi-coderen
   - H3: Volcano Engine (Doubao)
-  - H3: BytePlus (Internationaal)
+  - H3: BytePlus (internationaal)
   - H3: Synthetic
   - H3: MiniMax
   - H3: LM Studio
@@ -2607,32 +2607,32 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat is "één agent"?
   - H2: Paden (snelle kaart)
-  - H3: Modus met één agent (standaard)
+  - H3: Enkele-agentmodus (standaard)
   - H2: Agenthelper
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Meerdere agents = meerdere mensen, meerdere persoonlijkheden
-  - H2: Cross-agent QMD-geheugenzoekopdracht
+  - H2: Cross-agent QMD-geheugenzoekfunctie
   - H2: Eén WhatsApp-nummer, meerdere mensen (DM-splitsing)
   - H2: Routeringsregels (hoe berichten een agent kiezen)
   - H2: Meerdere accounts / telefoonnummers
   - H2: Concepten
   - H2: Platformvoorbeelden
   - H2: Veelvoorkomende patronen
-  - H2: Sandbox en toolconfiguratie per agent
+  - H2: Sandbox- en toolconfiguratie per agent
   - H2: Gerelateerd
 
 ## concepts/oauth.md
 
 - Route: /concepts/oauth
 - Koppen:
-  - H2: De token sink (waarom die bestaat)
+  - H2: De token-sink (waarom die bestaat)
   - H2: Opslag (waar tokens staan)
-  - H2: Compatibiliteit met Anthropic legacy-token
+  - H2: Compatibiliteit met Anthropic legacy-tokens
   - H2: Migratie van Anthropic Claude CLI
-  - H2: OAuth-uitwisseling (hoe aanmelden werkt)
+  - H2: OAuth-uitwisseling (hoe inloggen werkt)
   - H3: Anthropic setup-token
   - H3: OpenAI Codex (ChatGPT OAuth)
-  - H2: Vernieuwen + vervaldatum
+  - H2: Verversen + verlopen
   - H2: Meerdere accounts (profielen) + routering
   - H3: 1) Voorkeur: afzonderlijke agents
   - H3: 2) Geavanceerd: meerdere profielen in één agent
@@ -2645,9 +2645,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Eerste principes
   - H2: Aanbevolen uitrol
   - H3: Fase 1: lane-contracten + zwaar achtergrondwerk
-  - H3: Fase 2: prioriteits- en gelijktijdigheidscontroles
+  - H3: Fase 2: prioriteits- en concurrency-instellingen
   - H3: Fase 3: coördinator / verkeersregelaar
-  - H2: Minimale lane-contractsjabloon
+  - H2: Minimale template voor lane-contract
   - H2: Gerelateerd
 
 ## concepts/personal-agent-benchmark-pack.md
@@ -2663,32 +2663,32 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /concepts/presence
 - Koppen:
   - H2: Aanwezigheidsvelden (wat wordt weergegeven)
-  - H2: Producenten (waar aanwezigheid vandaan komt)
+  - H2: Producers (waar aanwezigheid vandaan komt)
   - H3: 1) Gateway-zelfvermelding
   - H3: 2) WebSocket-verbinding
   - H4: Waarom eenmalige CLI-opdrachten niet worden weergegeven
   - H3: 3) system-event-beacons
   - H3: 4) Node maakt verbinding (role: node)
-  - H2: Regels voor samenvoegen + dedupliceren (waarom instanceId ertoe doet)
+  - H2: Samenvoeg- en deduplicatieregels (waarom instanceId ertoe doet)
   - H2: TTL en begrensde grootte
-  - H2: Waarschuwing voor extern/tunnel (loopback-IP's)
-  - H2: Consumenten
-  - H3: macOS-tabblad Instances
-  - H2: Debugtips
+  - H2: Kanttekening bij remote/tunnel (loopback-IP's)
+  - H2: Consumers
+  - H3: macOS-tabblad Instanties
+  - H2: Debuggingtips
   - H2: Gerelateerd
 
 ## concepts/progress-drafts.md
 
 - Route: /concepts/progress-drafts
 - Koppen:
-  - H2: Snelstart
+  - H2: Snel aan de slag
   - H2: Wat gebruikers zien
   - H2: Kies een modus
   - H2: Labels configureren
   - H2: Voortgangsregels beheren
   - H2: Kanaalgedrag
   - H2: Afronding
-  - H2: Probleemoplossing
+  - H2: Problemen oplossen
   - H2: Gerelateerd
 
 ## concepts/qa-e2e-automation.md
@@ -2696,14 +2696,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /concepts/qa-e2e-automation
 - Koppen:
   - H2: Opdrachtoppervlak
-  - H2: Operatorflow
+  - H2: Operatorstroom
   - H2: Live transportdekking
-  - H2: Telegram-, Discord-, Slack- en WhatsApp-QA-referentie
+  - H2: QA-referentie voor Telegram, Discord, Slack en WhatsApp
   - H3: Gedeelde CLI-vlaggen
   - H3: Telegram-QA
   - H3: Discord-QA
   - H3: Slack-QA
-  - H4: De Slack-werkruimte instellen
+  - H4: De Slack-workspace instellen
   - H3: WhatsApp-QA
   - H3: Convex-credentialpool
   - H2: Repo-ondersteunde seeds
@@ -2718,16 +2718,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/qa-matrix
 - Koppen:
-  - H2: Snelstart
+  - H2: Snel aan de slag
   - H2: Wat de lane doet
   - H2: CLI
   - H3: Algemene vlaggen
-  - H3: Provider-vlaggen
+  - H3: Providervlaggen
   - H2: Profielen
   - H2: Scenario's
   - H2: Omgevingsvariabelen
   - H2: Uitvoerartefacten
-  - H2: Triage-tips
+  - H2: Triagetips
   - H2: Live transportcontract
   - H2: Gerelateerd
 
@@ -2737,7 +2737,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Runtimegrens
   - H2: Modi
-  - H2: Burst-voorbeeld
+  - H2: Burstvoorbeeld
   - H2: Bereik
   - H2: Debounce
   - H2: Gerelateerd
@@ -2755,7 +2755,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Voorrang
   - H2: Overrides per sessie
   - H2: Bereik en garanties
-  - H2: Probleemoplossing
+  - H2: Problemen oplossen
   - H2: Gerelateerd
 
 ## concepts/retry.md
@@ -2769,7 +2769,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Discord
   - H3: Telegram
   - H2: Configuratie
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## concepts/session-pruning.md
@@ -2778,8 +2778,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Waarom het belangrijk is
   - H2: Hoe het werkt
-  - H2: Opschoning van verouderde afbeeldingen
-  - H2: Slimme standaardinstellingen
+  - H2: Opruimen van legacy-afbeeldingen
+  - H2: Slimme standaarden
   - H2: In- of uitschakelen
   - H2: Pruning versus Compaction
   - H2: Verder lezen
@@ -2791,9 +2791,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Beschikbare tools
   - H2: Sessies weergeven en lezen
-  - H2: Cross-session berichten verzenden
-  - H2: Status- en orkestratiehelpers
-  - H2: Sub-agents starten
+  - H2: Berichten tussen sessies verzenden
+  - H2: Status- en orchestratiehelpers
+  - H2: Subagents starten
   - H2: Zichtbaarheid
   - H2: Verder lezen
   - H2: Gerelateerd
@@ -2806,7 +2806,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: DM-isolatie
   - H3: Dock-gekoppelde kanalen
   - H2: Sessielecyclus
-  - H2: Waar state zich bevindt
+  - H2: Waar state staat
   - H2: Sessieonderhoud
   - H2: Sessies inspecteren
   - H2: Verder lezen
@@ -2816,7 +2816,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/soul
 - Koppen:
-  - H2: Wat in SOUL.md hoort
+  - H2: Wat thuishoort in SOUL.md
   - H2: Waarom dit werkt
   - H2: De Molty-prompt
   - H2: Hoe goed eruitziet
@@ -2829,12 +2829,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Blokstreaming (kanaalberichten)
   - H3: Medialevering met blokstreaming
-  - H2: Chunking-algoritme (lage/hoge grenzen)
-  - H2: Samenvoegen (gestreamde blokken samenvoegen)
-  - H2: Menselijk aanvoelende timing tussen blokken
+  - H2: Chunkingalgoritme (lage/hoge grenzen)
+  - H2: Coalescing (gestreamde blokken samenvoegen)
+  - H2: Menselijk tempo tussen blokken
   - H2: "Chunks streamen of alles"
   - H2: Preview-streamingmodi
-  - H3: Kanaaltoewijzing
+  - H3: Kanaalmapping
   - H3: Runtimegedrag
   - H3: Preview-updates voor toolvoortgang
   - H2: Gerelateerd
@@ -2846,7 +2846,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Structuur
   - H2: Promptmodi
   - H2: Prompt-snapshots
-  - H2: Werkruimte-bootstrapinjectie
+  - H2: Workspace-bootstrapinjectie
   - H2: Tijdafhandeling
   - H2: Skills
   - H2: Documentatie
@@ -2856,7 +2856,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /concepts/timezone
 - Koppen:
-  - H2: Drie tijdzone-oppervlakken
+  - H2: Drie tijdzoneoppervlakken
   - H2: De tijdzone van de gebruiker instellen
   - H2: Wanneer overschrijven
   - H2: Gerelateerd
@@ -2873,7 +2873,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Minimale client (Node.js)
   - H2: Uitgewerkt voorbeeld: end-to-end een methode toevoegen
   - H2: Swift-codegengedrag
-  - H2: Versiebeheer + compatibiliteit
+  - H2: Versionering + compatibiliteit
   - H2: Schemapatronen en conventies
   - H2: Live schema-JSON
   - H2: Wanneer je schema's wijzigt
@@ -2886,7 +2886,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Standaarden
   - H2: Modi
   - H2: Configuratie
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## concepts/usage-tracking.md
@@ -2894,9 +2894,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /concepts/usage-tracking
 - Koppen:
   - H2: Wat het is
-  - H2: Waar het wordt weergegeven
+  - H2: Waar het verschijnt
   - H2: Standaardmodus voor gebruiksfooter
-  - H3: Drie afzonderlijke sessiestaten
+  - H3: Drie afzonderlijke sessiestatussen
   - H3: Voorrang
   - H3: Resetten versus uitschakelen
   - H3: Toggle-gedrag
@@ -2905,7 +2905,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Vorm
   - H3: Contractpaden
   - H3: Werkwoorden
-  - H3: Stukvormen
+  - H3: Deelvormen
   - H3: Voorbeeld
   - H2: Providers + credentials
   - H2: Gerelateerd
@@ -2914,12 +2914,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /date-time
 - Koppen:
-  - H2: Bericht-envelopes (standaard lokaal)
+  - H2: Berichtenveloppen (standaard lokaal)
   - H3: Voorbeelden
   - H2: Systeemprompt: huidige datum en tijd
   - H2: Systeemeventregels (standaard lokaal)
-  - H3: Gebruikerstijdzone + formaat configureren
-  - H2: Detectie van tijdformaat (auto)
+  - H3: Gebruikertijdzone + indeling configureren
+  - H2: Detectie van tijdnotatie (automatisch)
   - H2: Toolpayloads + connectors (ruwe providertijd + genormaliseerde velden)
   - H2: Gerelateerde docs
 
@@ -2932,8 +2932,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Omgeving
   - H2: Repro (alleen Node)
   - H2: Minimale repro in repo
-  - H2: Node-versiecontrole
-  - H2: Notities / hypothese
+  - H2: Controle van Node-versie
+  - H2: Opmerkingen / hypothese
   - H2: Regressiegeschiedenis
   - H2: Workarounds
   - H2: Referenties
@@ -2947,29 +2947,29 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Hoe het werkt
   - H2: Inschakelen via config
   - H2: Env-override (eenmalig)
-  - H2: Profiling-vlaggen
+  - H2: Profilingvlaggen
   - H2: Tijdlijnartefacten
-  - H2: Waar logs terechtkomen
+  - H2: Waar logs naartoe gaan
   - H2: Logs extraheren
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## gateway/authentication.md
 
 - Route: /gateway/authentication
 - Koppen:
-  - H2: Aanbevolen installatie (API-sleutel, elke provider)
+  - H2: Aanbevolen setup (API-sleutel, elke provider)
   - H2: Anthropic: compatibiliteit met Claude CLI en token
-  - H2: Anthropic-notitie
+  - H2: Anthropic-opmerking
   - H2: Modelauthenticatiestatus controleren
-  - H2: Rotatiegedrag van API-sleutels (gateway)
-  - H2: Providerauthenticatie verwijderen terwijl de Gateway actief is
-  - H2: Beheren welke credential wordt gebruikt
-  - H3: OpenAI en verouderde openai-codex-id's
+  - H2: Rotatiegedrag van API-sleutels (Gateway)
+  - H2: Providerauthenticatie verwijderen terwijl de Gateway draait
+  - H2: Bepalen welke credential wordt gebruikt
+  - H3: OpenAI en legacy openai-codex-id's
   - H3: Tijdens login (CLI)
   - H3: Per sessie (chatopdracht)
   - H3: Per agent (CLI-override)
-  - H2: Probleemoplossing
+  - H2: Problemen oplossen
   - H3: "Geen credentials gevonden"
   - H3: Token verloopt/is verlopen
   - H2: Gerelateerd
@@ -2979,7 +2979,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/background-process
 - Koppen:
   - H2: exec-tool
-  - H2: Child process-bridging
+  - H2: Bridge voor childprocessen
   - H2: process-tool
   - H2: Voorbeelden
   - H2: Gerelateerd
@@ -2989,10 +2989,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/bonjour
 - Koppen:
   - H2: Wide-area Bonjour (Unicast DNS-SD) via Tailscale
-  - H3: Gateway-config (aanbevolen)
-  - H3: Eenmalige DNS-serverinstallatie (gatewayhost)
+  - H3: Gateway-configuratie (aanbevolen)
+  - H3: Eenmalige DNS-serverinstelling (Gateway-host)
   - H3: Tailscale-DNS-instellingen
-  - H3: Gateway-listenerbeveiliging (aanbevolen)
+  - H3: Beveiliging van Gateway-listener (aanbevolen)
   - H2: Wat adverteert
   - H2: Servicetypen
   - H2: TXT-sleutels (niet-geheime hints)
@@ -3002,8 +3002,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wanneer Bonjour inschakelen
   - H2: Wanneer Bonjour uitschakelen
   - H2: Docker-valkuilen
-  - H2: Probleemoplossing voor uitgeschakelde Bonjour
-  - H2: Veelvoorkomende faalmodi
+  - H2: Uitgeschakelde Bonjour oplossen
+  - H2: Veelvoorkomende foutmodi
   - H2: Geëscapete instantienamen (\032)
   - H2: Inschakelen / uitschakelen / configuratie
   - H2: Gerelateerde docs
@@ -3016,9 +3016,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Transport
   - H2: Handshake + koppeling
   - H2: Frames
-  - H2: Exec-lifecycle-events
+  - H2: Lifecycle-events voor exec
   - H2: Historisch tailnetgebruik
-  - H2: Versiebeheer
+  - H2: Versionering
   - H2: Gerelateerd
 
 ## gateway/cli-backends.md
@@ -3031,16 +3031,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Voorbeeldconfiguratie
   - H2: Hoe het werkt
   - H2: Sessies
-  - H2: Fallback-prelude vanuit claude-cli-sessies
+  - H2: Fallback-prelude van claude-cli-sessies
   - H2: Afbeeldingen (pass-through)
   - H2: Invoer / uitvoer
   - H2: Standaarden (eigendom van Plugin)
-  - H2: Standaarden in eigendom van Plugin
-  - H2: Eigendom van native Compaction
-  - H2: Bundel-MCP-overlays
+  - H2: Standaarden van Plugin
+  - H2: Eigenaarschap van native Compaction
+  - H2: MCP-overlays bundelen
   - H2: Limiet voor reseed-geschiedenis
   - H2: Beperkingen
-  - H2: Probleemoplossing
+  - H2: Problemen oplossen
   - H2: Gerelateerd
 
 ## gateway/config-agents.md
@@ -3056,9 +3056,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: agents.defaults.contextInjection
   - H3: agents.defaults.bootstrapMaxChars
   - H3: agents.defaults.bootstrapTotalMaxChars
-  - H3: Bootstrapprofiel-overrides per agent
+  - H3: Overrides voor bootstrapprofiel per agent
   - H3: agents.defaults.bootstrapPromptTruncationWarning
-  - H3: Eigendomskaart voor contextbudget
+  - H3: Eigenaarschapskaart voor contextbudget
   - H4: agents.defaults.startupContext
   - H4: agents.defaults.contextLimits
   - H4: agents.list[].contextLimits
@@ -3077,10 +3077,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: agents.defaults.runRetries
   - H3: agents.defaults.contextPruning
   - H3: Blokstreaming
-  - H3: Typing indicators
+  - H3: Typing-indicators
   - H3: agents.defaults.sandbox
   - H3: agents.list (overrides per agent)
-  - H2: Multi-agentrouting
+  - H2: Multiagentrouting
   - H3: Bindingsmatchvelden
   - H3: Toegangsprofielen per agent
   - H2: Sessie
@@ -3088,8 +3088,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Antwoordprefix
   - H3: Ack-reactie
   - H3: Inbound debounce
-  - H3: TTS (text-to-speech)
-  - H2: Talk
+  - H3: TTS (tekst-naar-spraak)
+  - H2: Praten
   - H2: Gerelateerd
 
 ## gateway/config-channels.md
@@ -3098,7 +3098,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Kanalen
   - H3: DM- en groepstoegang
-  - H3: Kanaalmodel-overrides
+  - H3: Overrides voor kanaalmodellen
   - H3: Kanaalstandaarden en Heartbeat
   - H3: WhatsApp
   - H3: Telegram
@@ -3112,21 +3112,21 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Microsoft Teams
   - H3: IRC
   - H3: Multi-account (alle kanalen)
-  - H3: Andere Plugin-kanalen
-  - H3: Vermeldingsgate voor groepschat
-  - H4: Limieten voor DM-geschiedenis
+  - H3: Andere pluginkanalen
+  - H3: Vermeldingspoort voor groepschat
+  - H4: Geschiedenislimieten voor DM's
   - H4: Zelfchatmodus
-  - H3: Opdrachten (chatopdrachtafhandeling)
+  - H3: Opdrachten (afhandeling van chatopdrachten)
   - H2: Gerelateerd
 
 ## gateway/config-tools.md
 
 - Route: /gateway/config-tools
 - Koppen:
-  - H2: Hulpmiddelen
-  - H3: Hulpmiddelprofielen
-  - H3: Hulpmiddelgroepen
-  - H3: MCP- en Plugin-hulpmiddelen binnen sandboxbeleid voor hulpmiddelen
+  - H2: Tools
+  - H3: Toolprofielen
+  - H3: Toolgroepen
+  - H3: MCP- en plugin-tools binnen sandbox-toolbeleid
   - H3: tools.codeMode
   - H3: tools.allow / tools.deny
   - H3: tools.byProvider
@@ -3153,14 +3153,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Snelstart
   - H3: Absoluut minimum
   - H3: Aanbevolen startconfiguratie
-  - H2: Uitgebreid voorbeeld (belangrijkste opties)
-  - H3: Met symlink gekoppelde naastliggende skill-repository
+  - H2: Uitgebreid voorbeeld (belangrijke opties)
+  - H3: Symlinked sibling skill repo
   - H2: Veelvoorkomende patronen
-  - H3: Gedeelde skill-basislijn met één overschrijving
-  - H3: Multiplatformconfiguratie
-  - H3: Automatische goedkeuring voor vertrouwd nodenetwerk
+  - H3: Gedeelde basis voor Skills met één override
+  - H3: Setup voor meerdere platformen
+  - H3: Automatische goedkeuring voor vertrouwd node-netwerk
   - H3: Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
-  - H3: Anthropic-API-sleutel + MiniMax-fallback
+  - H3: Anthropic API-sleutel + MiniMax-fallback
   - H3: Werkbot (beperkte toegang)
   - H3: Alleen lokale modellen
   - H2: Tips
@@ -3172,13 +3172,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Kanalen
   - H2: Agentstandaarden, multi-agent, sessies en berichten
-  - H2: Hulpmiddelen en aangepaste providers
+  - H2: Tools en aangepaste providers
   - H2: Modellen
   - H2: MCP
   - H2: Skills
   - H2: Plugins
-  - H3: Configuratie van Codex-harness-Plugin
-  - H2: Toezeggingen
+  - H3: Configuratie van Codex harness plugin
+  - H2: Verplichtingen
   - H2: Browser
   - H2: UI
   - H2: Gateway
@@ -3188,16 +3188,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: gateway.reload
   - H2: Hooks
   - H3: Gmail-integratie
-  - H2: Canvas-Plugin-host
-  - H2: Ontdekking
+  - H2: Canvas-pluginhost
+  - H2: Discovery
   - H3: mDNS (Bonjour)
   - H3: Wide-area (DNS-SD)
   - H2: Omgeving
-  - H3: env (inline omgevingsvariabelen)
-  - H3: Vervanging van omgevingsvariabelen
+  - H3: env (inline env-vars)
+  - H3: Env-var-substitutie
   - H2: Secrets
   - H3: SecretRef
-  - H3: Ondersteund credential-oppervlak
+  - H3: Ondersteund oppervlak voor referenties
   - H3: Configuratie van secretproviders
   - H2: Auth-opslag
   - H3: auth.cooldowns
@@ -3214,7 +3214,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: cron.failureAlert
   - H3: cron.failureDestination
   - H2: Templatevariabelen voor mediamodellen
-  - H2: Configuratie-includes ($include)
+  - H2: Config includes ($include)
   - H2: Gerelateerd
 
 ## gateway/configuration.md
@@ -3225,11 +3225,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Configuratie bewerken
   - H2: Strikte validatie
   - H2: Veelvoorkomende taken
-  - H2: Hot reload van configuratie
-  - H3: Herlaadmodi
-  - H3: Wat hot wordt toegepast versus wat een herstart vereist
-  - H3: Herladen plannen
-  - H2: Configuratie-RPC (programmatische updates)
+  - H2: Config hot reload
+  - H3: Reload-modi
+  - H3: Wat hot wordt toegepast versus wat een herstart nodig heeft
+  - H3: Reload-planning
+  - H2: Config-RPC (programmatische updates)
   - H2: Omgevingsvariabelen
   - H2: Volledige referentie
   - H2: Gerelateerd
@@ -3253,8 +3253,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Termen
   - H2: Waarom we zowel direct als SSH behouden
-  - H2: Ontdekkingsinvoer (hoe clients leren waar de gateway is)
-  - H3: 1) Bonjour / DNS-SD-ontdekking
+  - H2: Discovery-inputs (hoe clients ontdekken waar de gateway is)
+  - H3: 1) Bonjour- / DNS-SD-discovery
   - H4: Details van servicebeacon
   - H3: 2) Tailnet (cross-network)
   - H3: 3) Handmatig / SSH-doel
@@ -3271,7 +3271,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Headless- en automatiseringsmodi
   - H2: Alleen-lezen lintmodus
   - H2: Wat het doet (samenvatting)
-  - H2: Dreams-UI-backfill en reset
+  - H2: Dreams UI-backfill en reset
   - H2: Gedetailleerd gedrag en rationale
   - H2: Gerelateerd
 
@@ -3281,7 +3281,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat vandaag beschikbaar is
   - H2: Aanbevolen pad
-  - H2: App-code versus Plugin-code
+  - H2: App-code versus plugin-code
   - H2: Gerelateerd
 
 ## gateway/gateway-lock.md
@@ -3291,7 +3291,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Waarom
   - H2: Mechanisme
   - H2: Foutoppervlak
-  - H2: Operationele notities
+  - H2: Operationele opmerkingen
   - H2: Gerelateerd
 
 ## gateway/health.md
@@ -3300,11 +3300,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Snelle controles
   - H2: Diepe diagnostiek
-  - H2: Configuratie van gezondheidsmonitor
-  - H2: Uptimebewaking
-  - H3: Voorbeelden van monitoringserviceconfiguratie
-  - H2: Wanneer iets mislukt
-  - H2: Toegewijde opdracht "health"
+  - H2: Configuratie van healthmonitor
+  - H2: Uptime-monitoring
+  - H3: Setupvoorbeelden voor monitoringservice
+  - H2: Wanneer iets faalt
+  - H2: Specifieke opdracht "health"
   - H2: Gerelateerd
 
 ## gateway/heartbeat.md
@@ -3312,18 +3312,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/heartbeat
 - Koppen:
   - H2: Snelstart (beginner)
-  - H2: Standaarden
-  - H2: Waarvoor de heartbeat-prompt dient
+  - H2: Standaardwaarden
+  - H2: Waar de Heartbeat-prompt voor dient
   - H2: Responscontract
   - H2: Configuratie
   - H3: Scope en prioriteit
   - H3: Heartbeats per agent
-  - H3: Voorbeeld van actieve uren
-  - H3: 24/7-configuratie
+  - H3: Voorbeeld met actieve uren
+  - H3: 24/7-setup
   - H3: Voorbeeld met meerdere accounts
   - H3: Veldnotities
-  - H2: Aflevergedrag
-  - H2: Zichtbaarheidscontroles
+  - H2: Afleveringsgedrag
+  - H2: Zichtbaarheidsinstellingen
   - H3: Wat elke vlag doet
   - H3: Voorbeelden per kanaal versus per account
   - H3: Veelvoorkomende patronen
@@ -3333,29 +3333,29 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Handmatig wekken (op aanvraag)
   - H2: Redeneringsaflevering (optioneel)
   - H2: Kostenbewustzijn
-  - H2: Contextoverloop na heartbeat
+  - H2: Contextoverloop na Heartbeat
   - H2: Gerelateerd
 
 ## gateway/index.md
 
 - Route: /gateway
 - Koppen:
-  - H2: Lokale opstart in 5 minuten
+  - H2: Lokale start in 5 minuten
   - H2: Runtimemodel
   - H2: OpenAI-compatibele endpoints
-  - H3: Prioriteit van poort en bind
-  - H3: Hot-reloadmodi
+  - H3: Poort- en bind-prioriteit
+  - H3: Hot-reload-modi
   - H2: Opdrachtenset voor operators
-  - H2: Meerdere gateways (zelfde host)
+  - H2: Meerdere gateways (dezelfde host)
   - H2: Externe toegang
-  - H2: Supervisie en servicelevenscyclus
-  - H2: Snel pad voor dev-profiel
+  - H2: Supervisie en levenscyclus van services
+  - H2: Snelle route voor dev-profiel
   - H2: Snelle protocolreferentie (operatorweergave)
   - H2: Operationele controles
   - H3: Liveness
   - H3: Readiness
   - H3: Herstel van hiaten
-  - H2: Veelvoorkomende foutsignaturen
+  - H2: Veelvoorkomende faalsignaturen
   - H2: Veiligheidsgaranties
   - H2: Gerelateerd
 
@@ -3368,14 +3368,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Velden
   - H2: Inferrs-voorbeeld
   - H2: ds4-voorbeeld
-  - H2: Operationele notities
+  - H2: Operationele opmerkingen
   - H2: Gerelateerd
 
 ## gateway/local-models.md
 
 - Route: /gateway/local-models
 - Koppen:
-  - H2: Hardwareminimum
+  - H2: Minimale hardware
   - H2: Kies een backend
   - H2: Aanbevolen: LM Studio + groot lokaal model (Responses API)
   - H3: Hybride configuratie: gehost primair, lokale fallback
@@ -3403,14 +3403,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /gateway/multiple-gateways
 - Koppen:
-  - H2: Best aanbevolen configuratie
+  - H2: Best aanbevolen setup
   - H2: Rescue-Bot-snelstart
   - H2: Waarom dit werkt
-  - H2: Wat --profile rescue onboard verandert
-  - H2: Algemene multi-gatewayconfiguratie
+  - H2: Wat --profile rescue onboard wijzigt
+  - H2: Algemene setup voor meerdere gateways
   - H2: Isolatiechecklist
-  - H2: Poorttoewijzing (afgeleid)
-  - H2: Browser-/CDP-notities (veelvoorkomende valkuil)
+  - H2: Poortmapping (afgeleid)
+  - H2: Browser-/CDP-opmerkingen (veelvoorkomende valkuil)
   - H2: Handmatig env-voorbeeld
   - H2: Snelle controles
   - H2: Gerelateerd
@@ -3427,11 +3427,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Authenticatie
   - H2: Beveiligingsgrens (belangrijk)
-  - H2: Wanneer dit endpoint te gebruiken
-  - H2: Agent-first-modelcontract
+  - H2: Wanneer je dit endpoint gebruikt
+  - H2: Agent-first modelcontract
   - H2: Het endpoint inschakelen
   - H2: Het endpoint uitschakelen
-  - H2: Sessiedrag
+  - H2: Sessiesgedrag
   - H2: Waarom dit oppervlak belangrijk is
   - H2: Modellijst en agentroutering
   - H2: Streaming (SSE)
@@ -3441,7 +3441,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Vorm van niet-streaming toolrespons
   - H3: Vorm van streaming toolrespons
   - H3: Tool-follow-uplus
-  - H2: Snelle Open WebUI-configuratie
+  - H2: Snelle setup voor Open WebUI
   - H2: Voorbeelden
   - H2: Gerelateerd
 
@@ -3450,13 +3450,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/openresponses-http-api
 - Koppen:
   - H2: Authenticatie, beveiliging en routering
-  - H2: Sessiedrag
+  - H2: Sessiesgedrag
   - H2: Aanvraagvorm (ondersteund)
-  - H2: Items (invoer)
+  - H2: Items (input)
   - H3: message
   - H3: functioncalloutput (turn-based tools)
   - H3: reasoning en itemreference
-  - H2: Hulpmiddelen (client-side functietools)
+  - H2: Tools (client-side functietools)
   - H2: Afbeeldingen (inputimage)
   - H2: Bestanden (inputfile)
   - H2: Bestands- en afbeeldingslimieten (configuratie)
@@ -3478,12 +3478,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Een modus kiezen
   - H2: Configuratiereferentie
   - H2: Voorbeelden
-  - H3: Minimale externe configuratie
+  - H3: Minimale remote-setup
   - H3: Mirror-modus met GPU
   - H3: OpenShell per agent met aangepaste gateway
   - H2: Levenscyclusbeheer
-  - H3: Wanneer opnieuw aan te maken
-  - H2: Beveiligingsverharding
+  - H3: Wanneer opnieuw aanmaken
+  - H2: Beveiligingsversterking
   - H2: Huidige beperkingen
   - H2: Hoe het werkt
   - H2: Gerelateerd
@@ -3501,12 +3501,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Sampling en flushing
   - H2: Geëxporteerde metrics
   - H3: Modelgebruik
-  - H3: Berichtenstroom
-  - H3: Gesprek
+  - H3: Berichtstroom
+  - H3: Talk
   - H3: Wachtrijen en sessies
-  - H3: Sessieliveness-telemetrie
-  - H3: Harness-levenscyclus
-  - H3: Uitvoering van hulpmiddelen
+  - H3: Telemetrie voor sessie-liveness
+  - H3: Levenscyclus van harness
+  - H3: Tooluitvoering
   - H3: Exec
   - H3: Diagnostische internals (geheugen en toollus)
   - H2: Geëxporteerde spans
@@ -3520,11 +3520,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/operator-scopes
 - Koppen:
   - H2: Rollen
-  - H2: Scopeniveaus
-  - H2: Methodescope is alleen de eerste poort
+  - H2: Scope-niveaus
+  - H2: Methode-scope is alleen de eerste gate
   - H2: Goedkeuringen voor apparaatpairing
-  - H2: Goedkeuringen voor nodepairing
-  - H2: Auth met gedeeld geheim
+  - H2: Goedkeuringen voor node-pairing
+  - H2: Gedeelde-geheim-authenticatie
 
 ## gateway/pairing.md
 
@@ -3532,15 +3532,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Concepten
   - H2: Hoe pairing werkt
-  - H2: CLI-workflow (geschikt voor headless)
-  - H2: API-oppervlak (Gateway-protocol)
-  - H2: Node-opdrachtgating (2026.3.31+)
-  - H2: Vertrouwensgrenzen voor Node-events (2026.3.31+)
+  - H2: CLI-workflow (headless-vriendelijk)
+  - H2: API-oppervlak (gatewayprotocol)
+  - H2: Node-command gating (2026.3.31+)
+  - H2: Vertrouwensgrenzen voor node-events (2026.3.31+)
   - H2: Automatische goedkeuring (macOS-app)
-  - H2: Automatische goedkeuring van Trusted-CIDR-apparaten
+  - H2: Automatische goedkeuring voor trusted-CIDR-apparaten
   - H2: Automatische goedkeuring bij metadata-upgrade
   - H2: QR-pairinghelpers
-  - H2: Locality en doorgestuurde headers
+  - H2: Lokaliteit en forwarded headers
   - H2: Opslag (lokaal, privé)
   - H2: Transportgedrag
   - H2: Gerelateerd
@@ -3569,22 +3569,22 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Rollen
   - H3: Scopes (operator)
   - H3: Caps/opdrachten/machtigingen (node)
-  - H2: Aanwezigheid
+  - H2: Presence
   - H3: Node-background-alive-event
   - H2: Scoping van broadcast-events
   - H2: Veelvoorkomende RPC-methodefamilies
   - H3: Veelvoorkomende eventfamilies
   - H3: Node-helpermethoden
-  - H3: Taskledger-RPC's
+  - H3: Task ledger-RPC's
   - H3: Operator-helpermethoden
   - H3: models.list-weergaven
   - H2: Exec-goedkeuringen
-  - H2: Fallback voor agentaflevering
-  - H2: Versionering
+  - H2: Agentafleveringsfallback
+  - H2: Versiebeheer
   - H3: Clientconstanten
   - H2: Auth
   - H2: Apparaatidentiteit + pairing
-  - H3: Diagnostiek voor migratie van apparaatauth
+  - H3: Diagnostiek voor migratie van apparaatauthenticatie
   - H2: TLS + pinning
   - H2: Scope
   - H2: Gerelateerd
@@ -3595,7 +3595,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H1: OpenClaw.app uitvoeren met een externe Gateway
   - H2: Overzicht
-  - H2: Snelle configuratie
+  - H2: Snelle setup
   - H3: Stap 1: SSH-configuratie toevoegen
   - H3: Stap 2: SSH-sleutel kopiëren
   - H3: Stap 3: Auth voor externe Gateway configureren
@@ -3613,23 +3613,23 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/remote
 - Koppen:
   - H2: Het kernidee
-  - H2: Veelgebruikte VPN- en tailnet-configuraties
+  - H2: Gangbare VPN- en tailnet-configuraties
   - H3: Altijd actieve Gateway in je tailnet
-  - H3: Thuisdesktop draait de Gateway
-  - H3: Laptop draait de Gateway
-  - H2: Commandostroom (wat waar draait)
+  - H3: Thuisdesktop voert de Gateway uit
+  - H3: Laptop voert de Gateway uit
+  - H2: Opdrachtstroom (wat waar draait)
   - H2: SSH-tunnel (CLI + tools)
   - H2: Standaardinstellingen voor CLI op afstand
-  - H2: Voorrang van referenties
+  - H2: Prioriteit van referenties
   - H2: Externe toegang tot chat-UI
-  - H2: Externe modus van de macOS-app
+  - H2: Externe modus voor macOS-app
   - H2: Beveiligingsregels (extern/VPN)
   - H3: macOS: permanente SSH-tunnel via LaunchAgent
-  - H4: Stap 1: SSH-configuratie toevoegen
-  - H4: Stap 2: SSH-sleutel kopiëren (eenmalig)
-  - H4: Stap 3: het Gateway-token configureren
-  - H4: Stap 4: de LaunchAgent maken
-  - H4: Stap 5: de LaunchAgent laden
+  - H4: Stap 1: voeg SSH-configuratie toe
+  - H4: Stap 2: kopieer SSH-sleutel (eenmalig)
+  - H4: Stap 3: configureer het gateway-token
+  - H4: Stap 4: maak de LaunchAgent
+  - H4: Stap 5: laad de LaunchAgent
   - H4: Probleemoplossing
   - H2: Gerelateerd
 
@@ -3637,15 +3637,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /gateway/sandbox-vs-tool-policy-vs-elevated
 - Koppen:
-  - H2: Snelle foutopsporing
+  - H2: Snel debuggen
   - H2: Sandbox: waar tools draaien
   - H3: Bind mounts (snelle beveiligingscontrole)
   - H2: Toolbeleid: welke tools bestaan/aanroepbaar zijn
-  - H3: Toolgroepen (verkorte notaties)
-  - H2: Verhoogd: alleen exec "op host uitvoeren"
-  - H2: Veelvoorkomende oplossingen voor "sandboxgevangenis"
+  - H3: Toolgroepen (afkortingen)
+  - H2: Verhoogd: alleen exec "uitvoeren op host"
+  - H2: Veelvoorkomende oplossingen voor "sandbox jail"
   - H3: "Tool X geblokkeerd door sandbox-toolbeleid"
-  - H3: "Ik dacht dat dit main was, waarom zit het in een sandbox?"
+  - H3: "Ik dacht dat dit main was, waarom staat het in een sandbox?"
   - H2: Gerelateerd
 
 ## gateway/sandboxing.md
@@ -3654,35 +3654,35 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat in een sandbox wordt geplaatst
   - H2: Modi
-  - H2: Bereik
+  - H2: Scope
   - H2: Backend
   - H3: Een backend kiezen
   - H3: Docker-backend
   - H3: SSH-backend
   - H3: OpenShell-backend
-  - H4: Workspace-modi
+  - H4: Werkruimtemodi
   - H4: OpenShell-levenscyclus
-  - H2: Workspace-toegang
+  - H2: Werkruimtetoegang
   - H2: Aangepaste bind mounts
   - H2: Images en setup
   - H2: setupCommand (eenmalige container-setup)
-  - H2: Toolbeleid en uitwijkmogelijkheden
+  - H2: Toolbeleid en ontsnappingsroutes
   - H2: Multi-agent-overschrijvingen
-  - H2: Minimaal voorbeeld voor inschakelen
+  - H2: Minimaal inschakelvoorbeeld
   - H2: Gerelateerd
 
 ## gateway/secrets-plan-contract.md
 
 - Route: /gateway/secrets-plan-contract
 - Koppen:
-  - H2: Vorm van het planbestand
+  - H2: Vorm van planbestand
   - H2: Provider-upserts en verwijderingen
-  - H2: Ondersteund doelbereik
+  - H2: Ondersteunde doelscope
   - H2: Gedrag van doeltype
   - H2: Regels voor padvalidatie
-  - H2: Gedrag bij fouten
+  - H2: Foutgedrag
   - H2: Toestemmingsgedrag van exec-provider
-  - H2: Opmerkingen over runtime- en auditbereik
+  - H2: Opmerkingen over runtime- en auditscope
   - H2: Operatorcontroles
   - H2: Gerelateerde docs
 
@@ -3690,26 +3690,26 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /gateway/secrets
 - Koppen:
-  - H2: Doelen en runtime-model
-  - H2: Grens voor agenttoegang
+  - H2: Doelen en runtimemodel
+  - H2: Toegangsgrens voor agents
   - H2: Filtering van actief oppervlak
-  - H2: Diagnostiek voor Gateway-auth-oppervlak
-  - H2: Onboarding-referentiepreflight
+  - H2: Diagnostiek van Gateway-auth-oppervlak
+  - H2: Preflight voor onboardingreferentie
   - H2: SecretRef-contract
   - H2: Providerconfiguratie
   - H2: Bestandsgebaseerde API-sleutels
   - H2: Voorbeelden van exec-integratie
-  - H2: Omgevingsvariabelen van MCP-server
-  - H2: Sandbox-SSH-auth-materiaal
-  - H2: Ondersteund referentieoppervlak
-  - H2: Vereist gedrag en voorrang
-  - H2: Activatietriggers
-  - H2: Verslechterde en herstelde signalen
-  - H2: Resolutie van commandopad
-  - H2: Audit- en configure-workflow
+  - H2: Omgevingsvariabelen voor MCP-server
+  - H2: SSH-auth-materiaal voor sandbox
+  - H2: Ondersteund referentie-oppervlak
+  - H2: Vereist gedrag en prioriteit
+  - H2: Activeringstriggers
+  - H2: Signalen voor degradatie en herstel
+  - H2: Resolutie van opdrachtpaden
+  - H2: Audit- en configuratieworkflow
   - H2: Eenrichtingsveiligheidsbeleid
   - H2: Compatibiliteitsnotities voor legacy-auth
-  - H2: Opmerking over Web UI
+  - H2: Opmerking over Web-UI
   - H2: Gerelateerd
 
 ## gateway/security/audit-checks.md
@@ -3726,84 +3726,84 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Preflight-inventaris
   - H2: Baselinecontroles
   - H2: Minimale veilige baseline
-  - H2: Blootstelling van DM's en groepen
+  - H2: Blootstelling aan DM's en groepen
   - H2: Reverse-proxycontroles
   - H2: Tool- en sandboxreview
   - H2: Validatie na wijziging
-  - H2: Terugdraaiplan
+  - H2: Rollbackplan
   - H2: Reviewchecklist
 
 ## gateway/security/index.md
 
 - Route: /gateway/security
 - Koppen:
-  - H2: Eerst het bereik: beveiligingsmodel voor persoonlijke assistent
+  - H2: Eerst de scope: beveiligingsmodel voor persoonlijke assistent
   - H2: Snelle controle: openclaw security audit
-  - H3: Afhankelijkheidslock voor gepubliceerd pakket
-  - H3: Deployment en hostvertrouwen
+  - H3: Dependency-lock van gepubliceerd package
+  - H3: Vertrouwen in deployment en host
   - H3: Veilige bestandsbewerkingen
-  - H3: Gedeelde Slack-workspace: reëel risico
+  - H3: Gedeelde Slack-werkruimte: reëel risico
   - H3: Door bedrijf gedeelde agent: acceptabel patroon
   - H2: Vertrouwensconcept voor Gateway en Node
   - H2: Matrix voor vertrouwensgrenzen
-  - H2: Geen kwetsbaarheden by design
-  - H2: Versterkte baseline in 60 seconden
+  - H2: Geen kwetsbaarheden door ontwerp
+  - H2: Verstevigde baseline in 60 seconden
   - H2: Snelle regel voor gedeelde inbox
   - H2: Model voor contextzichtbaarheid
   - H2: Wat de audit controleert (hoog niveau)
   - H2: Opslagkaart voor referenties
   - H2: Checklist voor beveiligingsaudit
   - H2: Woordenlijst voor beveiligingsaudit
-  - H2: Control UI via HTTP
-  - H2: Samenvatting van onveilige of gevaarlijke vlaggen
+  - H2: Control-UI via HTTP
+  - H2: Samenvatting van onveilige of gevaarlijke flags
   - H2: Reverse-proxyconfiguratie
-  - H2: Opmerkingen over HSTS en origin
+  - H2: HSTS- en origin-notities
   - H2: Lokale sessielogs staan op schijf
   - H2: Node-uitvoering (system.run)
   - H2: Dynamische Skills (watcher / externe nodes)
   - H2: Het dreigingsmodel
   - H2: Kernconcept: toegangscontrole vóór intelligentie
-  - H2: Model voor commandoautorisatie
+  - H2: Model voor opdrachtautorisatie
   - H2: Risico van control-plane-tools
   - H2: Plugins
-  - H2: Toegangsmodel voor DM's: koppelen, allowlist, open, uitgeschakeld
+  - H2: DM-toegangsmodel: koppelen, allowlist, open, uitgeschakeld
   - H2: DM-sessie-isolatie (multi-user-modus)
   - H3: Veilige DM-modus (aanbevolen)
   - H2: Allowlists voor DM's en groepen
   - H2: Promptinjectie (wat het is, waarom het ertoe doet)
-  - H2: Sanitization van speciale tokens in externe content
-  - H2: Bypass-vlaggen voor onveilige externe content
+  - H2: Opschoning van speciale tokens in externe content
+  - H2: Flags voor bypass van onveilige externe content
   - H3: Promptinjectie vereist geen openbare DM's
   - H3: Zelfgehoste LLM-backends
-  - H3: Modelsterkte (beveiligingsopmerking)
-  - H2: Redeneren en uitgebreide uitvoer in groepen
-  - H2: Voorbeelden voor configuratieverharding
-  - H3: Bestandsrechten
+  - H3: Modelsterkte (beveiligingsnotitie)
+  - H2: Redenering en uitgebreide output in groepen
+  - H2: Voorbeelden voor configuratieversteviging
+  - H3: Bestandsmachtigingen
   - H3: Netwerkblootstelling (bind, poort, firewall)
   - H3: Docker-poortpublicatie met UFW
-  - H3: mDNS/Bonjour-discovery
-  - H3: Vergrendel de Gateway WebSocket (lokale auth)
-  - H3: Tailscale Serve-identiteitsheaders
+  - H3: mDNS/Bonjour-detectie
+  - H3: Vergrendel de Gateway-WebSocket (lokale auth)
+  - H3: Identiteitsheaders van Tailscale Serve
   - H3: Browserbesturing via node-host (aanbevolen)
   - H3: Geheimen op schijf
-  - H3: Workspace-.env-bestanden
-  - H3: Logs en transcripties (redactie en retentie)
+  - H3: Werkruimte-.env-bestanden
+  - H3: Logs en transcripties (redactie en bewaartermijn)
   - H3: DM's: standaard koppelen
   - H3: Groepen: overal vermelding vereisen
   - H3: Afzonderlijke nummers (WhatsApp, Signal, Telegram)
   - H3: Alleen-lezenmodus (via sandbox en tools)
   - H3: Veilige baseline (kopiëren/plakken)
   - H2: Sandboxing (aanbevolen)
-  - H3: Guardrail voor sub-agent-delegatie
+  - H3: Guardrail voor sub-agentdelegatie
   - H2: Risico's van browserbesturing
   - H3: Browser-SSRF-beleid (standaard strikt)
   - H2: Toegangsprofielen per agent (multi-agent)
   - H3: Voorbeeld: volledige toegang (geen sandbox)
-  - H3: Voorbeeld: alleen-lezen tools + alleen-lezen workspace
-  - H3: Voorbeeld: geen bestandssysteem-/shelltoegang (providerberichten toegestaan)
+  - H3: Voorbeeld: alleen-lezen tools + alleen-lezen werkruimte
+  - H3: Voorbeeld: geen toegang tot bestandssysteem/shell (providerberichten toegestaan)
   - H2: Incidentrespons
   - H3: Indammen
-  - H3: Roteren (ga uit van compromis als geheimen zijn gelekt)
+  - H3: Roteer (ga uit van compromittering als geheimen zijn gelekt)
   - H3: Audit
   - H3: Verzamelen voor een rapport
   - H2: Secret scanning
@@ -3823,7 +3823,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /gateway/security/shrinkwrap
 - Koppen:
   - H2: De eenvoudige versie
-  - H2: Waarom OpenClaw dit gebruikt
+  - H2: Waarom OpenClaw het gebruikt
   - H2: Technische details
 
 ## gateway/tailscale.md
@@ -3837,7 +3837,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Alleen tailnet (binden aan Tailnet-IP)
   - H3: Openbaar internet (Funnel + gedeeld wachtwoord)
   - H2: CLI-voorbeelden
-  - H2: Opmerkingen
+  - H2: Notities
   - H2: Browserbesturing (externe Gateway + lokale browser)
   - H2: Tailscale-vereisten + limieten
   - H2: Meer informatie
@@ -3849,9 +3849,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Authenticatie
   - H2: Beveiligingsgrens (belangrijk)
-  - H2: Request-body
+  - H2: Requestbody
   - H2: Beleid + routeringsgedrag
-  - H2: Antwoorden
+  - H2: Responses
   - H2: Voorbeeld
   - H2: Gerelateerd
 
@@ -3859,48 +3859,48 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /gateway/troubleshooting
 - Koppen:
-  - H2: Commandoladder
+  - H2: Opdrachtladder
   - H2: Na een update
-  - H2: Split-brain-installaties en nieuwere configuratieguard
+  - H2: Split-brain-installaties en nieuwere config-guard
   - H2: Protocolmismatch na rollback
-  - H2: Skill-symlink overgeslagen als pad-escape
-  - H2: Anthropic 429 extra gebruik vereist voor lange context
-  - H2: Upstream 403 geblokkeerde antwoorden
-  - H2: Lokale OpenAI-compatibele backend doorstaat directe probes, maar agent-runs falen
+  - H2: Skill-symlink overgeslagen als padontsnapping
+  - H2: Anthropic 429 vereist extra gebruik voor lange context
+  - H2: Upstream 403 geblokkeerde responses
+  - H2: Lokale OpenAI-compatibele backend slaagt voor directe probes, maar agentruns mislukken
   - H2: Geen antwoorden
-  - H2: Connectiviteit van Dashboard Control UI
-  - H3: Snelle kaart voor auth-detailcodes
+  - H2: Connectiviteit van dashboard-control-UI
+  - H3: Snelle kaart van auth-detailcodes
   - H2: Gateway-service draait niet
-  - H2: macOS-gateway stopt stilzwijgend met reageren en hervat daarna wanneer je het dashboard aanraakt
-  - H2: Gateway sluit af tijdens hoog geheugengebruik
-  - H2: Gateway wees ongeldige configuratie af
+  - H2: macOS-gateway stopt stil met reageren en hervat daarna wanneer je het dashboard aanraakt
+  - H2: Gateway sluit af bij hoog geheugengebruik
+  - H2: Gateway heeft ongeldige configuratie geweigerd
   - H2: Gateway-probewaarschuwingen
   - H2: Kanaal verbonden, berichten stromen niet
-  - H2: Cron- en heartbeat-levering
-  - H2: Node gekoppeld, tool faalt
-  - H2: Browsertool faalt
-  - H2: Als je hebt geüpgraded en er plots iets kapotging
+  - H2: Cron- en Heartbeat-bezorging
+  - H2: Node gekoppeld, tool mislukt
+  - H2: Browsertool mislukt
+  - H2: Als je hebt geüpgraded en er plotseling iets kapotging
   - H2: Gerelateerd
 
 ## gateway/trusted-proxy-auth.md
 
 - Route: /gateway/trusted-proxy-auth
 - Koppen:
-  - H2: Wanneer te gebruiken
-  - H2: Wanneer NIET te gebruiken
+  - H2: Wanneer gebruiken
+  - H2: Wanneer NIET gebruiken
   - H2: Hoe het werkt
-  - H2: Koppelingsgedrag van Control UI
+  - H2: Koppelgedrag van Control-UI
   - H2: Configuratie
   - H3: Configuratiereferentie
   - H2: TLS-terminatie en HSTS
   - H3: Uitrolrichtlijnen
-  - H2: Voorbeelden voor proxy-setup
+  - H2: Voorbeelden van proxysetup
   - H2: Gemengde tokenconfiguratie
-  - H2: Header voor operatorbereiken
+  - H2: Header voor operatorscopes
   - H2: Beveiligingschecklist
   - H2: Beveiligingsaudit
   - H2: Probleemoplossing
-  - H2: Migratie vanuit token-auth
+  - H2: Migratie vanaf token-auth
   - H2: Gerelateerd
 
 ## help/debugging.md
@@ -3908,36 +3908,36 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /help/debugging
 - Koppen:
   - H2: Runtime-debugoverschrijvingen
-  - H2: Sessietrace-uitvoer
-  - H2: Trace van Plugin-levenscyclus
-  - H2: CLI-startup en commandoprofilering
+  - H2: Sessietrace-output
+  - H2: Plugin-levenscyclustrace
+  - H2: CLI-opstart en opdrachtprofilering
   - H2: Gateway-watchmodus
   - H2: Dev-profiel + dev-gateway (--dev)
-  - H2: Raw stream logging (OpenClaw)
+  - H2: Raw stream-logging (OpenClaw)
   - H2: Raw OpenAI-compatibele chunklogging
-  - H2: Veiligheidsopmerkingen
-  - H2: Foutopsporing in VSCode
+  - H2: Veiligheidsnotities
+  - H2: Debuggen in VSCode
   - H3: Setup
-  - H3: Opmerkingen
+  - H3: Notities
   - H2: Gerelateerd
 
 ## help/environment.md
 
 - Route: /help/environment
 - Koppen:
-  - H2: Voorrang (hoogste → laagste)
-  - H2: Providerreferenties en workspace-.env
+  - H2: Prioriteit (hoogste → laagste)
+  - H2: Providerreferenties en werkruimte-.env
   - H2: Config-env-blok
   - H2: Shell-env-import
   - H2: Exec-shell-snapshots
   - H2: Door runtime geïnjecteerde env vars
   - H2: UI-env vars
   - H2: Env var-substitutie in config
-  - H2: Secret refs vs ${ENV}-strings
+  - H2: Secret refs versus ${ENV}-strings
   - H2: Padgerelateerde env vars
   - H2: Logging
   - H3: OPENCLAWHOME
-  - H2: nvm-gebruikers: webfetch-TLS-fouten
+  - H2: nvm-gebruikers: webfetch TLS-fouten
   - H2: Legacy-omgevingsvariabelen
   - H2: Gerelateerd
 
@@ -3945,14 +3945,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /help/faq-first-run
 - Koppen:
-  - H2: Snel starten en eerste-run-setup
+  - H2: Quickstart en eerste setup
   - H2: Gerelateerd
 
 ## help/faq-models.md
 
 - Route: /help/faq-models
 - Koppen:
-  - H2: Modellen: standaardinstellingen, selectie, aliassen, wisselen
+  - H2: Modellen: standaardwaarden, selectie, aliassen, wisselen
   - H2: Model-failover en "Alle modellen zijn mislukt"
   - H2: Auth-profielen: wat ze zijn en hoe je ze beheert
   - H2: Gerelateerd
@@ -3962,21 +3962,21 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /help/faq
 - Koppen:
   - H2: Eerste 60 seconden als er iets kapot is
-  - H2: Snel starten en eerste-run-setup
+  - H2: Quickstart en eerste setup
   - H2: Wat is OpenClaw?
   - H2: Skills en automatisering
   - H2: Sandboxing en geheugen
   - H2: Waar dingen op schijf staan
-  - H2: Basisprincipes van config
+  - H2: Configbasis
   - H2: Externe gateways en nodes
-  - H2: Env vars en .env-laden
+  - H2: Env vars en .env laden
   - H2: Sessies en meerdere chats
   - H2: Modellen, failover en auth-profielen
   - H2: Gateway: poorten, "draait al" en externe modus
-  - H2: Logging en foutopsporing
+  - H2: Logging en debuggen
   - H2: Media en bijlagen
   - H2: Beveiliging en toegangscontrole
-  - H2: Chatcommando's, taken afbreken en "het stopt niet"
+  - H2: Chatopdrachten, taken afbreken en "het stopt niet"
   - H2: Diversen
   - H2: Gerelateerd
 
@@ -4003,20 +4003,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /help/testing-live
 - Koppen:
-  - H2: Live: lokale smoke-opdrachten
+  - H2: Live: lokale smoke-commands
   - H2: Live: capaciteitssweep voor Android-node
   - H2: Live: model-smoke (profielsleutels)
-  - H3: Laag 1: directe modelaanvulling (geen Gateway)
-  - H3: Laag 2: Gateway + dev-agent-smoke (wat "@openclaw" daadwerkelijk doet)
+  - H3: Laag 1: Directe modelaanvulling (geen gateway)
+  - H3: Laag 2: Gateway + smoke voor dev-agent (wat "@openclaw" echt doet)
   - H2: Live: CLI-backend-smoke (Claude, Gemini of andere lokale CLI's)
   - H2: Live: bereikbaarheid van APNs HTTP/2-proxy
   - H2: Live: ACP-bind-smoke (/acp spawn ... --bind here)
   - H2: Live: Codex app-server-harness-smoke
   - H3: Aanbevolen live-recepten
-  - H2: Live: modelmatrix (wat we afdekken)
+  - H2: Live: modelmatrix (wat we dekken)
   - H3: Moderne smoke-set (toolaanroepen + afbeelding)
-  - H3: Baseline: toolaanroepen (Read + optioneel Exec)
-  - H3: Vision: afbeelding verzenden (bijlage → multimodaal bericht)
+  - H3: Basislijn: toolaanroepen (Read + optionele Exec)
+  - H3: Visie: afbeelding verzenden (bijlage → multimodaal bericht)
   - H3: Aggregators / alternatieve gateways
   - H2: Referenties (nooit committen)
   - H2: Deepgram live (audiotranscriptie)
@@ -4035,41 +4035,41 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat we beschermen
   - H2: Lokaal bewijs tijdens ontwikkeling
   - H2: Docker-lanes
-  - H2: Package Acceptance
-  - H2: Release-standaard
+  - H2: Pakketacceptatie
+  - H2: Standaard voor releases
   - H2: Legacy-compatibiliteit
   - H2: Dekking toevoegen
-  - H2: Fouttriage
+  - H2: Storingen triëren
 
 ## help/testing.md
 
 - Route: /help/testing
 - Koppen:
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Tijdelijke testmappen
   - H2: QA-specifieke runners
   - H3: Gedeelde Telegram-referenties via Convex (v1)
   - H3: Een kanaal toevoegen aan QA
   - H2: Testsuites (wat waar draait)
   - H3: Unit / integratie (standaard)
-  - H3: Stabiliteit (Gateway)
+  - H3: Stabiliteit (gateway)
   - H3: E2E (repo-aggregaat)
-  - H3: E2E (Gateway-smoke)
+  - H3: E2E (gateway-smoke)
   - H3: E2E (Control UI gemockte browser)
   - H3: E2E: OpenShell-backend-smoke
   - H3: Live (echte providers + echte modellen)
   - H2: Welke suite moet ik draaien?
   - H2: Live-tests (met netwerktoegang)
-  - H2: Docker-runners (optionele checks voor "werkt in Linux")
+  - H2: Docker-runners (optionele controles voor "werkt in Linux")
   - H2: Docs-sanity
-  - H2: Offline-regressie (CI-veilig)
-  - H2: Betrouwbaarheidsevaluaties voor agents (Skills)
+  - H2: Offline regressie (CI-veilig)
+  - H2: Betrouwbaarheidsevaluaties voor agenten (Skills)
   - H2: Contracttests (Plugin- en kanaalvorm)
-  - H3: Opdrachten
+  - H3: Commands
   - H3: Kanaalcontracten
   - H3: Providerstatuscontracten
   - H3: Providercontracten
-  - H3: Wanneer draaien
+  - H3: Wanneer uitvoeren
   - H2: Regressies toevoegen (richtlijnen)
   - H2: Gerelateerd
 
@@ -4083,7 +4083,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Lokale OpenAI-compatibele backend werkt direct maar faalt in OpenClaw
   - H2: Plugin-installatie faalt door ontbrekende openclaw-extensies
   - H2: Installatiebeleid blokkeert Plugin-installaties of updates
-  - H2: Plugin aanwezig maar geblokkeerd door verdacht eigendom
+  - H2: Plugin aanwezig maar geblokkeerd door verdachte eigendom
   - H2: Beslisboom
   - H2: Gerelateerd
 
@@ -4095,7 +4095,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat is OpenClaw?
   - H2: Hoe het werkt
   - H2: Belangrijkste mogelijkheden
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Dashboard
   - H2: Configuratie (optioneel)
   - H2: Begin hier
@@ -4107,14 +4107,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Vereisten
   - H2: Wat je krijgt
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Wat wordt geïnstalleerd
   - H2: Setup na installatie
-  - H3: Snelle opdrachten
+  - H3: Snelle commands
   - H2: Beveiligingsarchitectuur
   - H2: Handmatige installatie
-  - H2: Bijwerken
-  - H2: Problemen oplossen
+  - H2: Updaten
+  - H2: Probleemoplossing
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
 
@@ -4137,7 +4137,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /install/bun
 - Koppen:
   - H2: Installeren
-  - H2: Lifecycle-scripts
+  - H2: Levenscyclusscripts
   - H2: Kanttekeningen
   - H2: Gerelateerd
 
@@ -4152,7 +4152,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Web-UI en koppelen
   - H3: Setup en onderhoud
   - H3: Hulpprogramma's
-  - H2: Eerste flow
+  - H2: Flow voor de eerste keer
   - H2: Configuratie en geheimen
   - H2: Gerelateerd
 
@@ -4162,7 +4162,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Kanalen wisselen
   - H2: Eenmalig richten op versie of tag
-  - H2: Dry-run
+  - H2: Dry run
   - H2: Plugins en kanalen
   - H2: Huidige status controleren
   - H2: Best practices voor taggen
@@ -4177,7 +4177,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Setup
   - H2: Persistentie en back-ups
   - H2: Tips voor 1 GB RAM
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Volgende stappen
   - H2: Gerelateerd
 
@@ -4185,9 +4185,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /install/docker-vm-runtime
 - Koppen:
-  - H2: Vereiste binaries in de image bakken
+  - H2: Bak vereiste binaries in de image
   - H2: Bouwen en starten
-  - H2: Wat waar behouden blijft
+  - H2: Wat waar blijft bestaan
   - H2: Updates
   - H2: Gerelateerd
 
@@ -4197,21 +4197,21 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Is Docker geschikt voor mij?
   - H2: Vereisten
-  - H2: Gecontaineriseerde Gateway
+  - H2: Gecontaineriseerde gateway
   - H3: Handmatige flow
   - H3: Omgevingsvariabelen
   - H3: Observability
   - H3: Health checks
   - H3: LAN versus loopback
-  - H3: Lokale providers op host
+  - H3: Lokale providers op de host
   - H3: Claude CLI-backend in Docker
   - H3: Bonjour / mDNS
   - H3: Opslag en persistentie
   - H3: Shell-helpers (optioneel)
-  - H3: Draai je op een VPS?
+  - H3: Draait op een VPS?
   - H2: Agent-sandbox
   - H3: Snel inschakelen
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## install/exe-dev.md
@@ -4226,10 +4226,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: 2) Installeer vereisten (op de VM)
   - H2: 3) Installeer OpenClaw
   - H2: 4) Stel nginx in om OpenClaw naar poort 8000 te proxyen
-  - H2: 5) Open OpenClaw en verleen privileges
+  - H2: 5) Open OpenClaw en verleen rechten
   - H2: Setup voor extern kanaal
   - H2: Externe toegang
-  - H2: Bijwerken
+  - H2: Updaten
   - H2: Gerelateerd
 
 ## install/fly.md
@@ -4238,7 +4238,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat je nodig hebt
   - H2: Snelle route voor beginners
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H3: "App luistert niet op het verwachte adres"
   - H3: Health checks falen / verbinding geweigerd
   - H3: OOM / geheugenproblemen
@@ -4247,7 +4247,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Configuratie schrijven via SSH
   - H3: State blijft niet behouden
   - H2: Updates
-  - H3: Machine-opdracht bijwerken
+  - H3: Machine-command updaten
   - H2: Privédeployment (gehard)
   - H3: Wanneer privédeployment gebruiken
   - H3: Setup
@@ -4263,10 +4263,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /install/gcp
 - Koppen:
-  - H2: Wat doen we (in eenvoudige termen)?
+  - H2: Wat doen we (in eenvoudige woorden)?
   - H2: Snelle route (ervaren operators)
   - H2: Wat je nodig hebt
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Serviceaccounts (best practice voor beveiliging)
   - H2: Volgende stappen
   - H2: Gerelateerd
@@ -4276,7 +4276,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /install/hetzner
 - Koppen:
   - H2: Doel
-  - H2: Wat doen we (in eenvoudige termen)?
+  - H2: Wat doen we (in eenvoudige woorden)?
   - H2: Snelle route (ervaren operators)
   - H2: Wat je nodig hebt
   - H2: Infrastructure as Code (Terraform)
@@ -4288,10 +4288,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /install/hostinger
 - Koppen:
   - H2: Vereisten
-  - H2: Optie A: OpenClaw met één klik
+  - H2: Optie A: OpenClaw met 1 klik
   - H2: Optie B: OpenClaw op VPS
-  - H2: Controleer je setup
-  - H2: Problemen oplossen
+  - H2: Verifieer je setup
+  - H2: Probleemoplossing
   - H2: Volgende stappen
   - H2: Gerelateerd
 
@@ -4304,22 +4304,22 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Alternatieve installatiemethoden
   - H3: Installer met lokale prefix (install-cli.sh)
   - H3: npm, pnpm of bun
-  - H3: Vanuit source
+  - H3: Vanuit broncode
   - H3: Installeren vanuit de GitHub-main-checkout
-  - H3: Containers en package managers
-  - H2: De installatie controleren
+  - H3: Containers en pakketbeheerders
+  - H2: Verifieer de installatie
   - H2: Hosting en deployment
-  - H2: Bijwerken, migreren of verwijderen
-  - H2: Problemen oplossen: openclaw niet gevonden
+  - H2: Updaten, migreren of verwijderen
+  - H2: Probleemoplossing: openclaw niet gevonden
 
 ## install/installer.md
 
 - Route: /install/installer
 - Koppen:
-  - H2: Snelle opdrachten
+  - H2: Snelle commands
   - H2: install.sh
   - H3: Flow (install.sh)
-  - H3: Source-checkoutdetectie
+  - H3: Broncode-checkoutdetectie
   - H3: Voorbeelden (install.sh)
   - H2: install-cli.sh
   - H3: Flow (install-cli.sh)
@@ -4328,7 +4328,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Flow (install.ps1)
   - H3: Voorbeelden (install.ps1)
   - H2: CI en automatisering
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## install/kubernetes.md
@@ -4337,11 +4337,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Waarom geen Helm?
   - H2: Wat je nodig hebt
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Lokaal testen met Kind
   - H2: Stap voor stap
   - H3: 1) Deployen
-  - H3: 2) Toegang tot de Gateway
+  - H3: 2) Toegang tot de gateway
   - H2: Wat wordt gedeployed
   - H2: Aanpassing
   - H3: Agent-instructies
@@ -4349,9 +4349,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Providers toevoegen
   - H3: Aangepaste namespace
   - H3: Aangepaste image
-  - H3: Blootstellen buiten port-forward
+  - H3: Blootstellen voorbij port-forward
   - H2: Opnieuw deployen
-  - H2: Afbreken
+  - H2: Verwijderen
   - H2: Architectuurnotities
   - H2: Bestandsstructuur
   - H2: Gerelateerd
@@ -4362,7 +4362,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Aanbevolen standaard (meeste gebruikers)
   - H2: macOS-VM-opties
-  - H3: Lokale VM op je Apple Silicon Mac (Lume)
+  - H3: Lokale VM op je Apple Silicon-Mac (Lume)
   - H3: Gehoste Mac-providers (cloud)
   - H2: Snelle route (Lume, ervaren gebruikers)
   - H2: Wat je nodig hebt (Lume)
@@ -4375,9 +4375,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: 7) Configureer kanalen
   - H2: 8) Draai de VM headless
   - H2: Bonus: iMessage-integratie
-  - H2: Sla een gouden image op
+  - H2: Sla een golden image op
   - H2: 24/7 draaien
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerde docs
 
 ## install/migrating-claude.md
@@ -4391,7 +4391,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Aanbevolen flow
   - H2: Conflictafhandeling
   - H2: JSON-uitvoer voor automatisering
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## install/migrating-hermes.md
@@ -4405,14 +4405,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Conflictafhandeling
   - H2: Geheimen
   - H2: JSON-uitvoer voor automatisering
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## install/migrating.md
 
 - Route: /install/migrating
 - Koppen:
-  - H2: Importeren vanuit een ander agentsysteem
+  - H2: Importeren uit een ander agentsysteem
   - H2: OpenClaw naar een nieuwe machine verplaatsen
   - H3: Migratiestappen
   - H3: Veelvoorkomende valkuilen
@@ -4425,11 +4425,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /install/nix
 - Koppen:
   - H2: Wat je krijgt
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Runtimegedrag in Nix-modus
   - H3: Wat verandert in Nix-modus
-  - H3: Configuratie- en state-paden
-  - H3: Service-PATH-detectie
+  - H3: Configuratie- en statepaden
+  - H3: PATH-detectie voor services
   - H2: Gerelateerd
 
 ## install/node.md
@@ -4438,9 +4438,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Controleer je versie
   - H2: Installeer Node
-  - H2: Problemen oplossen
-  - H3: openclaw: opdracht niet gevonden
-  - H3: Permissiefouten bij npm install -g (Linux)
+  - H2: Probleemoplossing
+  - H3: openclaw: command niet gevonden
+  - H3: Toestemmingsfouten bij npm install -g (Linux)
   - H2: Gerelateerd
 
 ## install/northflank.mdx
@@ -4459,11 +4459,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Vereisten
   - H2: Setup
-  - H2: Controleer de beveiligingshouding
+  - H2: Verifieer de beveiligingshouding
   - H2: ARM-notities
   - H2: Persistentie en back-ups
   - H2: Fallback: SSH-tunnel
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Volgende stappen
   - H2: Gerelateerd
 
@@ -4472,12 +4472,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /install/podman
 - Koppen:
   - H2: Vereisten
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Podman en Tailscale
   - H2: Systemd (Quadlet, optioneel)
   - H2: Configuratie, env en opslag
-  - H2: Nuttige opdrachten
-  - H2: Problemen oplossen
+  - H2: Nuttige commands
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## install/railway.mdx
@@ -4489,7 +4489,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Deployen met één klik
   - H2: Wat je krijgt
   - H2: Vereiste Railway-instellingen
-  - H3: Public Networking
+  - H3: Openbaar netwerk
   - H3: Volume (vereist)
   - H3: Variabelen
   - H2: Een kanaal verbinden
@@ -4502,10 +4502,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Hardwarecompatibiliteit
   - H2: Vereisten
-  - H2: Setup
+  - H2: Installatie
   - H2: Prestatietips
-  - H2: Aanbevolen modelsetup
-  - H2: Opmerkingen over ARM-binaries
+  - H2: Aanbevolen modelconfiguratie
+  - H2: ARM-binaire opmerkingen
   - H2: Persistentie en back-ups
   - H2: Probleemoplossing
   - H2: Volgende stappen
@@ -4521,8 +4521,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: De Blueprint begrijpen
   - H2: Een abonnement kiezen
   - H2: Na implementatie
-  - H3: Toegang tot de Control UI
-  - H2: Functies van het Render Dashboard
+  - H3: De Control UI openen
+  - H2: Render Dashboard-functies
   - H3: Logs
   - H3: Shell-toegang
   - H3: Omgevingsvariabelen
@@ -4545,10 +4545,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Handmatige serviceverwijdering (CLI niet geïnstalleerd)
   - H3: macOS (launchd)
   - H3: Linux (systemd-gebruikerseenheid)
-  - H3: Windows (Geplande taak)
-  - H2: Normale installatie versus source-checkout
+  - H3: Windows (Scheduled Task)
+  - H2: Normale installatie versus broncheckout
   - H3: Normale installatie (install.sh / npm / pnpm / bun)
-  - H3: Source-checkout (git clone)
+  - H3: Broncheckout (git clone)
   - H2: Gerelateerd
 
 ## install/updating.md
@@ -4558,7 +4558,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Aanbevolen: openclaw update
   - H2: Schakelen tussen npm- en git-installaties
   - H2: Alternatief: voer het installatieprogramma opnieuw uit
-  - H2: Alternatief: handmatig npm, pnpm of bun
+  - H2: Alternatief: handmatig met npm, pnpm of bun
   - H3: Geavanceerde npm-installatieonderwerpen
   - H2: Auto-updater
   - H2: Na het bijwerken
@@ -4566,8 +4566,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: De Gateway opnieuw starten
   - H3: Verifiëren
   - H2: Terugdraaien
-  - H3: Een versie vastzetten (npm)
-  - H3: Een commit vastzetten (source)
+  - H3: Een versie vastpinnen (npm)
+  - H3: Een commit vastpinnen (bron)
   - H2: Als je vastloopt
   - H2: Gerelateerd
 
@@ -4581,7 +4581,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: OpenClaw installeren
   - H2: Onboarding uitvoeren
   - H2: De Gateway starten
-  - H2: Automatisch herstarten
+  - H2: Automatisch opnieuw starten
   - H2: Probleemoplossing
   - H2: Gerelateerd
 
@@ -4593,14 +4593,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Logs lezen
   - H3: CLI: live tail (aanbevolen)
   - H3: Control UI (web)
-  - H3: Alleen-kanaal-logs
+  - H3: Alleen kanaallogs
   - H2: Logindelingen
   - H3: Bestandslogs (JSONL)
   - H3: Console-uitvoer
   - H3: Gateway WebSocket-logs
   - H2: Logging configureren
   - H3: Logniveaus
-  - H3: Gerichte modeltransportdiagnostiek
+  - H3: Gerichte diagnostiek voor modeltransport
   - H3: Trace-correlatie
   - H3: Grootte en timing van modelaanroepen
   - H3: Consolestijlen
@@ -4613,8 +4613,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /maturity/scorecard
 - Koppen:
-  - H1: Maturiteitsscorekaart
-  - H2: Waar deze pagina voor is
+  - H1: Volwassenheidsscorekaart
+  - H2: Waarvoor deze pagina bedoeld is
   - H2: In één oogopslag
   - H2: Scorebanden
   - H2: Oppervlakverkenner
@@ -4625,12 +4625,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /maturity/taxonomy
 - Koppen:
-  - H1: Maturiteitstaxonomie
+  - H1: Volwassenheidstaxonomie
   - H2: Deze pagina lezen
-  - H2: Maturiteitsniveaus
+  - H2: Volwassenheidsniveaus
   - H2: Productgebieden
   - H2: Details
-  - H3: Core
+  - H3: Kern
   - H3: Platform
   - H3: Kanaal
   - H3: Provider en tool
@@ -4639,7 +4639,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /network
 - Koppen:
-  - H2: Core-model
+  - H2: Kernmodel
   - H2: Koppeling + identiteit
   - H2: Detectie + transporten
   - H2: Nodes + transporten
@@ -4653,14 +4653,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat werkt
   - H2: Automatische detectie (standaard)
   - H2: Configuratievoorbeelden
-  - H3: Provider + CLI-fallback (OpenAI + Whisper CLI)
+  - H3: Provider + CLI-terugval (OpenAI + Whisper CLI)
   - H3: Alleen provider met scope-gating
   - H3: Alleen provider (Deepgram)
   - H3: Alleen provider (Mistral Voxtral)
   - H3: Alleen provider (SenseAudio)
   - H3: Transcript naar chat echoën (opt-in)
   - H2: Opmerkingen en limieten
-  - H3: Ondersteuning voor proxyomgeving
+  - H3: Ondersteuning voor proxy-omgeving
   - H2: Vermeldingsdetectie in groepen
   - H2: Valkuilen
   - H2: Gerelateerd
@@ -4679,7 +4679,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Machtigingen
   - H3: Android-voorgrondvereiste
   - H3: Android-opdrachten (via Gateway node.invoke)
-  - H3: Payloadbeveiliging
+  - H3: Payload-bescherming
   - H2: macOS-app
   - H3: Gebruikersinstelling (standaard uit)
   - H3: CLI-helper (node invoke)
@@ -4694,8 +4694,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Doelen
   - H2: CLI-oppervlak
   - H2: Gedrag van WhatsApp Web-kanaal
-  - H2: Auto-reply-pijplijn
-  - H2: Inkomende media naar opdrachten
+  - H2: Pijplijn voor automatische antwoorden
+  - H2: Binnenkomende media naar opdrachten
   - H2: Limieten en fouten
   - H2: Opmerkingen voor tests
   - H2: Gerelateerd
@@ -4708,7 +4708,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Externe nodehost (system.run)
   - H3: Wat waar draait
   - H3: Een nodehost starten (voorgrond)
-  - H3: Externe Gateway via SSH-tunnel (loopback-bind)
+  - H3: Externe Gateway via SSH-tunnel (loopback-binding)
   - H3: Een nodehost starten (service)
   - H3: Koppelen + naam geven
   - H3: De opdrachten op de allowlist zetten
@@ -4716,8 +4716,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Opdrachten aanroepen
   - H2: Opdrachtbeleid
   - H2: Configuratie (openclaw.json)
-  - H2: Schermafbeeldingen (canvas-snapshots)
-  - H3: Canvas-besturing
+  - H2: Schermafbeeldingen (canvassnapshots)
+  - H3: Canvas-bedieningselementen
   - H3: A2UI (Canvas)
   - H2: Foto's + video's (nodecamera)
   - H2: Schermopnamen (nodes)
@@ -4727,7 +4727,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Systeemopdrachten (nodehost / Mac-node)
   - H2: Exec-nodebinding
   - H2: Machtigingenkaart
-  - H2: Headless nodehost (cross-platform)
+  - H2: Headless nodehost (platformoverschrijdend)
   - H2: Mac-nodemodus
 
 ## nodes/location-command.md
@@ -4741,7 +4741,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Opdracht: location.get
   - H2: Achtergrondgedrag
   - H2: Model-/toolingintegratie
-  - H2: UX-tekst (aanbevolen)
+  - H2: UX-tekst (voorgesteld)
   - H2: Gerelateerd
 
 ## nodes/media-understanding.md
@@ -4754,12 +4754,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Modelitems
   - H3: Providerreferenties (apiKey)
   - H2: Standaarden en limieten
-  - H3: Mediabegrip automatisch detecteren (standaard)
-  - H3: Ondersteuning voor proxyomgeving (providermodellen)
-  - H2: Capabilities (optioneel)
+  - H3: Media-understanding automatisch detecteren (standaard)
+  - H3: Ondersteuning voor proxy-omgeving (providermodellen)
+  - H2: Mogelijkheden (optioneel)
   - H2: Matrix voor providerondersteuning (OpenClaw-integraties)
   - H2: Richtlijnen voor modelselectie
-  - H2: Bijlagebeleid
+  - H2: Beleid voor bijlagen
   - H2: Configuratievoorbeelden
   - H2: Statusuitvoer
   - H2: Opmerkingen
@@ -4796,7 +4796,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Opslag (Gateway-host)
   - H2: Protocol
   - H3: Methoden
-  - H3: Routeringsmethoden (trigger → target)
+  - H3: Routeringsmethoden (trigger → doel)
   - H3: Gebeurtenissen
   - H2: Clientgedrag
   - H3: macOS-app
@@ -4809,7 +4809,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /openclaw-agent-runtime
 - Koppen:
   - H2: Typecontrole en linting
-  - H2: Agent Runtime Tests uitvoeren
+  - H2: Agent Runtime-tests uitvoeren
   - H2: Handmatig testen
   - H2: Schone reset
   - H2: Referenties
@@ -4829,32 +4829,32 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Doel
   - H2: Niet-doelen
   - H2: Huidige architectuur
-  - H2: Huidige lacune
+  - H2: Huidige kloof
   - H2: Gewenst gedrag
   - H2: Ontwerpbeperkingen
   - H3: Codex app-server blijft canoniek voor native threadstatus
-  - H3: Context-engine-assemblage moet in Codex-invoer worden geprojecteerd
-  - H3: Stabiliteit van prompt-cache is belangrijk
-  - H3: Semantiek voor runtimeselectie verandert niet
+  - H3: Context engine-assemblage moet worden geprojecteerd naar Codex-invoer
+  - H3: Stabiliteit van promptcache is belangrijk
+  - H3: Semantiek voor runtime-selectie verandert niet
   - H2: Implementatieplan
-  - H3: 1. Herbruikbare context-engine-pogingshelpers exporteren of verplaatsen
-  - H3: 2. Een Codex-contextprojectiehelper toevoegen
-  - H3: 3. Bootstrap vóór Codex-threadstart bedraden
-  - H3: 4. Assemble vóór thread/start / thread/resume en turn/start bedraden
-  - H3: 5. Prompt-cache-stabiele opmaak behouden
-  - H3: 6. Post-turn na transcriptmirroring bedraden
-  - H3: 7. Gebruik en prompt-cache-runtimecontext normaliseren
+  - H3: 1. Herbruikbare helpers voor context engine-pogingen exporteren of verplaatsen
+  - H3: 2. Een Codex-helper voor contextprojectie toevoegen
+  - H3: 3. Bootstrap vóór het starten van Codex-threads aansluiten
+  - H3: 4. Assemblage vóór thread/start / thread/resume en turn/start aansluiten
+  - H3: 5. Stabiele formattering voor promptcache behouden
+  - H3: 6. Post-turn aansluiten na transcriptspiegeling
+  - H3: 7. Gebruik en runtimecontext voor promptcache normaliseren
   - H3: 8. Compaction-beleid
-  - H4: /compact en expliciete OpenClaw Compaction
-  - H4: In-turn native Codex contextCompaction-gebeurtenissen
-  - H3: 9. Sessiereset en bindingsgedrag
+  - H4: /compact en expliciete OpenClaw-Compaction
+  - H4: In-turn native contextCompaction-gebeurtenissen van Codex
+  - H3: 9. Gedrag bij sessiereset en binding
   - H3: 10. Foutafhandeling
   - H2: Testplan
-  - H3: Unittests
+  - H3: Unit-tests
   - H3: Bestaande tests om bij te werken
-  - H3: Integratie-/livetests
-  - H2: Waarneembaarheid
-  - H2: Migratie / compatibiliteit
+  - H3: Integratie-/live tests
+  - H2: Observeerbaarheid
+  - H2: Migratie/compatibiliteit
   - H2: Open vragen
   - H2: Acceptatiecriteria
 
@@ -4868,7 +4868,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Niet-doelen
   - H2: Doelmodel
   - H2: Leveringsmetadata
-  - H2: Runtime-capabilitycontract
+  - H2: Runtime-mogelijkheidscontract
   - H2: Kanaaltoewijzing
   - H2: Refactorstappen
   - H2: Tests
@@ -4879,23 +4879,23 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /platforms/android
 - Koppen:
-  - H2: Ondersteuningssnapshot
-  - H2: Systeembesturing
+  - H2: Ondersteuningsmomentopname
+  - H2: Systeembeheer
   - H2: Verbindingsrunbook
   - H3: Vereisten
   - H3: 1) Start de Gateway
-  - H3: 2) Verifieer detectie (optioneel)
+  - H3: 2) Detectie verifiëren (optioneel)
   - H4: Tailnet-detectie (Wenen ⇄ Londen) via unicast DNS-SD
   - H3: 3) Verbinden vanaf Android
-  - H3: Presence-alive-beacons
+  - H3: Presence alive beacons
   - H3: 4) Koppeling goedkeuren (CLI)
-  - H3: 5) Verifieer dat de node verbonden is
+  - H3: 5) Verifiëren dat de node is verbonden
   - H3: 6) Chat + geschiedenis
   - H3: 7) Canvas + camera
   - H4: Gateway Canvas Host (aanbevolen voor webinhoud)
   - H3: 8) Spraak + uitgebreid Android-opdrachtoppervlak
-  - H2: Assistent-entrypoints
-  - H2: Doorsturen van meldingen
+  - H2: Assistant-entrypoints
+  - H2: Meldingen doorsturen
   - H2: Gerelateerd
 
 ## platforms/digitalocean.md
@@ -4921,7 +4921,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Kies je OS
   - H2: VPS en hosting
-  - H2: Algemene links
+  - H2: Gemeenschappelijke links
   - H2: Gateway-service installeren (CLI)
   - H2: Gerelateerd
 
@@ -4931,9 +4931,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Wat het doet
   - H2: Vereisten
-  - H2: Snelstart (koppelen + verbinden)
-  - H2: Push ondersteund door relay voor officiële builds
-  - H2: Achtergrond-alive-beacons
+  - H2: Snel starten (koppelen + verbinden)
+  - H2: Relay-ondersteunde push voor officiële builds
+  - H2: Background alive beacons
   - H2: Authenticatie- en vertrouwensflow
   - H2: Detectiepaden
   - H3: Bonjour (LAN)
@@ -4954,7 +4954,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Installeren
   - H2: Gateway
   - H2: Gateway-service installeren (CLI)
-  - H2: Systeembesturing (systemd-gebruikerseenheid)
+  - H2: Systeembeheer (systemd-gebruikerseenheid)
   - H2: Geheugendruk en OOM-kills
   - H2: Gerelateerd
 
@@ -4979,7 +4979,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Agent-API-oppervlak
   - H2: A2UI in Canvas
   - H3: A2UI-opdrachten (v0.8)
-  - H2: Agentruns triggeren vanuit Canvas
+  - H2: Agentruns activeren vanuit Canvas
   - H2: Beveiligingsopmerkingen
   - H2: Gerelateerd
 
@@ -4991,7 +4991,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Niet-ondertekende dev-builds
   - H2: Alleen-koppelen-modus
   - H2: Externe modus
-  - H2: Waarom we de voorkeur geven aan launchd
+  - H2: Waarom we launchd verkiezen
   - H2: Gerelateerd
 
 ## platforms/mac/dev-setup.md
@@ -5005,8 +5005,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: 3. De CLI installeren
   - H2: Probleemoplossing
   - H3: Build mislukt: toolchain- of SDK-mismatch
-  - H3: App crasht bij toekennen van toestemming
-  - H3: Gateway blijft oneindig op "Starting..."
+  - H3: App crasht bij het verlenen van machtigingen
+  - H3: Gateway blijft eindeloos op "Starting..." staan
   - H2: Gerelateerd
 
 ## platforms/mac/health.md
@@ -5031,11 +5031,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /platforms/mac/logging
 - Koppen:
-  - H1: Logging (macOS)
-  - H2: Doorlopend diagnostisch bestandslogboek (Debug-paneel)
+  - H1: Logboekregistratie (macOS)
+  - H2: Doorlopend diagnostisch bestandslogboek (Debugvenster)
   - H2: Privégegevens in unified logging op macOS
   - H2: Inschakelen voor OpenClaw (ai.openclaw)
-  - H2: Uitschakelen na debugging
+  - H2: Uitschakelen na debuggen
   - H2: Gerelateerd
 
 ## platforms/mac/menu-bar.md
@@ -5046,10 +5046,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Statusmodel
   - H2: IconState enum (Swift)
   - H3: ActivityKind → glyph
-  - H3: Visuele mapping
+  - H3: Visuele toewijzing
   - H2: Contextsubmenu
-  - H2: Tekst van statusrij (menu)
-  - H2: Event-ingestie
+  - H2: Statusrijtekst (menu)
+  - H2: Gebeurtenisinname
   - H2: Debug-override
   - H2: Testchecklist
   - H2: Gerelateerd
@@ -5061,8 +5061,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat dit is (en niet is)
   - H2: Relatie met Computer Use
   - H2: De bridge inschakelen
-  - H2: Detectievolgorde van clients
-  - H2: Beveiliging en toestemmingen
+  - H2: Volgorde voor clientdetectie
+  - H2: Beveiliging en machtigingen
   - H2: Snapshotgedrag (automatisering)
   - H2: Probleemoplossing
   - H2: Gerelateerd
@@ -5071,10 +5071,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /platforms/mac/permissions
 - Koppen:
-  - H2: Vereisten voor stabiele toestemmingen
+  - H2: Vereisten voor stabiele machtigingen
   - H2: Toegankelijkheidsmachtigingen voor Node- en CLI-runtimes
   - H2: Herstelchecklist wanneer prompts verdwijnen
-  - H2: Toestemmingen voor bestanden en mappen (Desktop/Documenten/Downloads)
+  - H2: Machtigingen voor bestanden en mappen (Desktop/Documenten/Downloads)
   - H2: Gerelateerd
 
 ## platforms/mac/remote.md
@@ -5085,10 +5085,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Externe transports
   - H2: Vereisten op de externe host
   - H2: macOS-appconfiguratie
-  - H2: Web Chat
-  - H2: Toestemmingen
-  - H2: Beveiligingsnotities
-  - H2: WhatsApp-loginflow (extern)
+  - H2: Webchat
+  - H2: Machtigingen
+  - H2: Beveiligingsopmerkingen
+  - H2: WhatsApp-inlogflow (extern)
   - H2: Probleemoplossing
   - H2: Meldingsgeluiden
   - H2: Gerelateerd
@@ -5097,10 +5097,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /platforms/mac/signing
 - Koppen:
-  - H1: mac-ondertekening (debug-builds)
+  - H1: mac-ondertekening (debugbuilds)
   - H2: Gebruik
-  - H3: Opmerking over ad-hocondertekening
-  - H2: Buildmetadata voor Over
+  - H3: Opmerking over ad-hoc-ondertekening
+  - H2: Buildmetadata voor Info
   - H2: Waarom
   - H2: Gerelateerd
 
@@ -5130,13 +5130,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /platforms/mac/voicewake
 - Koppen:
-  - H1: Voice Wake en push-to-talk
+  - H1: Voice Wake en Push-to-Talk
   - H2: Vereisten
   - H2: Modi
   - H2: Runtimegedrag (wake-word)
   - H2: Levenscyclusinvarianten
-  - H2: Foutmodus met sticky overlay (vorig)
-  - H2: Push-to-talk-specifieke details
+  - H2: Faalmodus met vastzittende overlay (voorheen)
+  - H2: Bijzonderheden voor push-to-talk
   - H2: Gebruikersgerichte instellingen
   - H2: Doorstuurgedrag
   - H2: Doorstuurpayload
@@ -5147,8 +5147,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /platforms/mac/webchat
 - Koppen:
-  - H2: Starten en debugging
-  - H2: Hoe het is verbonden
+  - H2: Starten en debuggen
+  - H2: Hoe het is gekoppeld
   - H2: Beveiligingsoppervlak
   - H2: Bekende beperkingen
   - H2: Gerelateerd
@@ -5164,7 +5164,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Node-service + app-IPC
   - H3: PeekabooBridge (UI-automatisering)
   - H2: Operationele flows
-  - H2: Hardening-notities
+  - H2: Hardening-opmerkingen
   - H2: Gerelateerd
 
 ## platforms/macos.md
@@ -5172,8 +5172,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /platforms/macos
 - Koppen:
   - H2: Downloaden
-  - H2: Eerste uitvoering
-  - H2: Kies een Gateway-modus
+  - H2: Eerste keer uitvoeren
+  - H2: Een Gateway-modus kiezen
   - H2: Waar de app eigenaar van is
   - H2: macOS-detailpagina's
   - H2: Gerelateerd
@@ -5202,13 +5202,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Native Windows-CLI en Gateway
   - H2: WSL2 Gateway
   - H2: Gateway automatisch starten vóór Windows-aanmelding
-  - H2: WSL-services blootstellen via LAN
+  - H2: WSL-services via LAN beschikbaar maken
   - H2: Probleemoplossing
   - H3: Het systeemvakpictogram verschijnt niet
   - H3: Lokale configuratie mislukt
-  - H3: De app zegt dat koppeling vereist is
-  - H3: Webchat kan geen externe Gateway bereiken
-  - H3: screen.snapshot-, camera- of audiocommando's mislukken
+  - H3: De app zegt dat koppelen vereist is
+  - H3: Webchat kan een externe Gateway niet bereiken
+  - H3: screen.snapshot-, camera- of audio-opdrachten mislukken
   - H3: Git- of GitHub-connectiviteit mislukt
   - H2: Gerelateerd
 
@@ -5216,13 +5216,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/adding-capabilities
 - Koppen:
-  - H2: Wanneer een capability maken
+  - H2: Wanneer je een capability maakt
   - H2: De standaardvolgorde
-  - H2: Wat hoort waar
-  - H2: Provider- en harness-seams
+  - H2: Wat waar hoort
+  - H2: Provider- en harness-naden
   - H2: Bestandschecklist
-  - H2: Uitgewerkt voorbeeld: afbeeldingsgeneratie
-  - H2: Embedding-providers
+  - H2: Uitgewerkt voorbeeld: afbeeldingen genereren
+  - H2: Embeddingproviders
   - H2: Reviewchecklist
   - H2: Gerelateerd
 
@@ -5230,13 +5230,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/admin-http-rpc
 - Koppen:
-  - H2: Voordat je het inschakelt
+  - H2: Voordat je dit inschakelt
   - H2: Inschakelen
   - H2: De route verifiëren
   - H2: Authenticatie
   - H2: Beveiligingsmodel
-  - H2: Request
-  - H2: Response
+  - H2: Aanvraag
+  - H2: Antwoord
   - H2: Toegestane methoden
   - H2: WebSocket-vergelijking
   - H2: Probleemoplossing
@@ -5253,26 +5253,26 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/architecture-internals
 - Koppen:
   - H2: Laadpipeline
-  - H3: Manifest-first gedrag
+  - H3: Manifest-eerst-gedrag
   - H3: Plugin-cachegrens
-  - H2: Registry-model
+  - H2: Registrymodel
   - H2: Callbacks voor gespreksbinding
-  - H2: Runtime-hooks voor providers
+  - H2: Provider-runtimehooks
   - H3: Hookvolgorde en gebruik
-  - H3: Provider-voorbeeld
+  - H3: Providervoorbeeld
   - H3: Ingebouwde voorbeelden
-  - H2: Runtime-helpers
+  - H2: Runtimehelpers
   - H3: api.runtime.imageGeneration
   - H2: Gateway HTTP-routes
   - H2: Importpaden voor Plugin SDK
   - H2: Schema's voor berichttools
-  - H2: Resolutie van kanaaldoel
-  - H2: Config-gestuurde directories
-  - H2: Provider-catalogi
+  - H2: Doelresolutie voor kanalen
+  - H2: Door configuratie ondersteunde mappen
+  - H2: Providercatalogi
   - H2: Alleen-lezen kanaalinspectie
-  - H2: Package-packs
+  - H2: Pakketpacks
   - H3: Metadata van kanaalcatalogus
-  - H2: Contextengine-plugins
+  - H2: Context-engineplugins
   - H2: Een nieuwe capability toevoegen
   - H3: Capability-checklist
   - H3: Capability-template
@@ -5282,21 +5282,21 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/architecture
 - Koppen:
-  - H2: Publiek capability-model
-  - H3: Externe compatibiliteitspositie
+  - H2: Publiek capabilitymodel
+  - H3: Standpunt voor externe compatibiliteit
   - H3: Plugin-vormen
-  - H3: Legacy-hooks
+  - H3: Legacy hooks
   - H3: Compatibiliteitssignalen
   - H2: Architectuuroverzicht
   - H3: Momentopname van Plugin-metadata en opzoektabel
   - H3: Activatieplanning
   - H3: Kanaalplugins en de gedeelde berichttool
-  - H2: Eigenaarsmodel voor capability's
+  - H2: Eigendomsmodel voor capabilities
   - H3: Capability-lagen
-  - H3: Voorbeeld van multi-capability bedrijfsplugin
-  - H3: Capability-voorbeeld: videobegrip
+  - H3: Voorbeeld van een bedrijfsplugin met meerdere capabilities
+  - H3: Capabilityvoorbeeld: videobegrip
   - H2: Contracten en handhaving
-  - H3: Wat in een contract thuishoort
+  - H3: Wat in een contract hoort
   - H2: Uitvoeringsmodel
   - H2: Exportgrens
   - H2: Internals en referentie
@@ -5313,12 +5313,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/building-plugins
 - Koppen:
   - H2: Vereisten
-  - H2: Kies de plugin-vorm
-  - H2: Quickstart
+  - H2: Kies de pluginvorm
+  - H2: Snelstart
   - H2: Tools registreren
   - H2: Importconventies
   - H2: Checklist vóór indiening
-  - H2: Testen tegen beta-releases
+  - H2: Testen tegen bèta-releases
   - H2: Volgende stappen
   - H2: Gerelateerd
 
@@ -5326,19 +5326,19 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/bundles
 - Koppen:
-  - H2: Waarom bundles bestaan
-  - H2: Een bundle installeren
-  - H2: Wat OpenClaw uit bundles mapt
+  - H2: Waarom bundels bestaan
+  - H2: Een bundel installeren
+  - H2: Wat OpenClaw uit bundels mapt
   - H3: Nu ondersteund
   - H4: Skill-inhoud
-  - H4: Hook-packs
+  - H4: Hookpacks
   - H4: MCP voor embedded OpenClaw
   - H4: Embedded OpenClaw-instellingen
   - H4: Embedded OpenClaw LSP
   - H3: Gedetecteerd maar niet uitgevoerd
-  - H2: Bundle-formaten
-  - H2: Detectievoorrang
-  - H2: Runtime-afhankelijkheden en opschoning
+  - H2: Bundelformaten
+  - H2: Detectieprioriteit
+  - H2: Runtimeafhankelijkheden en opschoning
   - H2: Beveiliging
   - H2: Probleemoplossing
   - H2: Gerelateerd
@@ -5347,11 +5347,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/cli-backend-plugins
 - Koppen:
-  - H2: Waar de plugin eigenaar van is
-  - H2: Minimale backend-plugin
-  - H2: Config-vorm
-  - H2: Geavanceerde backend-hooks
-  - H3: ownsNativeCompaction: afmelden voor OpenClaw Compaction
+  - H2: Waar de Plugin eigenaar van is
+  - H2: Minimale backendplugin
+  - H2: Configuratievorm
+  - H2: Geavanceerde backendhooks
+  - H3: ownsNativeCompaction: afzien van OpenClaw Compaction
   - H2: MCP-toolbridge
   - H2: Gebruikersconfiguratie
   - H2: Verificatie
@@ -5366,13 +5366,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: iOS-app
   - H2: Directe cua-driver MCP
   - H2: Snelle configuratie
-  - H2: Commando's
+  - H2: Opdrachten
   - H2: Marketplace-keuzes
   - H2: Gebundelde macOS-marketplace
   - H2: Limiet voor externe catalogus
   - H2: Configuratiereferentie
   - H2: Wat OpenClaw controleert
-  - H2: macOS-toestemmingen
+  - H2: macOS-machtigingen
   - H2: Probleemoplossing
   - H2: Gerelateerd
 
@@ -5380,16 +5380,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/codex-harness-reference
 - Koppen:
-  - H2: Plugin-configuratieoppervlak
+  - H2: Configuratieoppervlak van de Plugin
   - H2: App-servertransport
   - H2: Goedkeurings- en sandboxmodi
   - H2: Gesandboxte native uitvoering
-  - H2: Auth- en omgevingsisolatie
+  - H2: Isolatie van auth en omgeving
   - H2: Dynamische tools
   - H2: Time-outs
   - H2: Modeldetectie
   - H2: Workspace-bootstrapbestanden
-  - H2: Omgevingsoverschrijvingen
+  - H2: Omgevings-override
   - H2: Gerelateerd
 
 ## plugins/codex-harness-runtime.md
@@ -5397,15 +5397,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/codex-harness-runtime
 - Koppen:
   - H2: Overzicht
-  - H2: Thread-bindingen en modelwijzigingen
-  - H2: Zichtbare antwoorden en heartbeats
-  - H2: Hook-grenzen
+  - H2: Threadbindingen en modelwijzigingen
+  - H2: Zichtbare antwoorden en Heartbeats
+  - H2: Hookgrenzen
   - H2: V1-ondersteuningscontract
-  - H2: Native toestemmingen en MCP-elicitations
-  - H2: Queue-sturing
+  - H2: Native machtigingen en MCP-elicitations
+  - H2: Wachtrijsturing
   - H2: Codex-feedbackupload
   - H2: Compaction en transcriptmirror
-  - H2: Media en bezorging
+  - H2: Media en aflevering
   - H2: Gerelateerd
 
 ## plugins/codex-harness.md
@@ -5413,20 +5413,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/codex-harness
 - Koppen:
   - H2: Vereisten
-  - H2: Quickstart
+  - H2: Snelstart
   - H2: Configuratie
   - H2: Codex-runtime verifiëren
   - H2: Routing en modelselectie
-  - H2: Deploymentpatronen
-  - H3: Basis-Codex-deployment
-  - H3: Gemengde provider-deployment
-  - H3: Fail-closed Codex-deployment
+  - H2: Implementatiepatronen
+  - H3: Basisimplementatie van Codex
+  - H3: Implementatie met gemengde providers
+  - H3: Fail-closed Codex-implementatie
   - H2: App-serverbeleid
-  - H2: Commando's en diagnostiek
+  - H2: Opdrachten en diagnostiek
   - H3: Codex-threads lokaal inspecteren
   - H2: Native Codex-plugins
   - H2: Computer Use
-  - H2: Runtime-grenzen
+  - H2: Runtimegrenzen
   - H2: Probleemoplossing
   - H2: Gerelateerd
 
@@ -5435,9 +5435,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/codex-native-plugins
 - Koppen:
   - H2: Vereisten
-  - H2: Quickstart
+  - H2: Snelstart
   - H2: Plugins beheren vanuit chat
-  - H2: Hoe native plugin-configuratie werkt
+  - H2: Hoe native Plugin-configuratie werkt
   - H2: V1-ondersteuningsgrens
   - H2: App-inventaris en eigendom
   - H2: Thread-appconfiguratie
@@ -5462,9 +5462,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Acceptatielane voor maintainers
   - H2: Deprecatiebeleid
   - H2: Huidige compatibiliteitsgebieden
-  - H3: Platte aliassen voor inkomende WhatsApp-callbacks
-  - H3: Toelatingsvelden voor inkomende WhatsApp-berichten
-  - H2: Release notes
+  - H3: Platte aliassen voor WhatsApp Inbound Callback
+  - H3: WhatsApp Inbound Admission-velden
+  - H2: Releaseopmerkingen
 
 ## plugins/copilot.md
 
@@ -5472,7 +5472,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Vereisten
   - H2: Plugin-installatie
-  - H2: Quickstart
+  - H2: Snelstart
   - H2: Ondersteunde providers
   - H2: BYOK
   - H2: Auth
@@ -5482,7 +5482,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Zijvragen (/btw)
   - H2: Doctor
   - H2: Beperkingen
-  - H2: Toestemmingen en askuser
+  - H2: Machtigingen en askuser
   - H3: GitHub-token op sessieniveau
   - H2: Gerelateerd
 
@@ -5490,12 +5490,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/dependency-resolution
 - Koppen:
-  - H2: Verdeling van verantwoordelijkheid
+  - H2: Verdeling van verantwoordelijkheden
   - H2: Installatieroots
   - H2: Lokale plugins
   - H2: Opstarten en herladen
   - H2: Gebundelde plugins
-  - H2: Legacy-opschoning
+  - H2: Legacy-opruiming
 
 ## plugins/google-meet.md
 
@@ -5509,20 +5509,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Twilio
   - H2: OAuth en voorcontrole
   - H3: Google-referenties maken
-  - H3: Het vernieuwingstoken aanmaken
+  - H3: De refresh-token genereren
   - H3: OAuth verifiëren met doctor
   - H2: Configuratie
   - H2: Tool
   - H2: Agent- en bidi-modi
   - H2: Checklist voor livetests
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H3: Agent kan de Google Meet-tool niet zien
-  - H3: Geen verbonden node met Google Meet-ondersteuning
+  - H3: Geen verbonden Google Meet-geschikte Node
   - H3: Browser wordt geopend, maar agent kan niet deelnemen
   - H3: Vergadering maken mislukt
-  - H3: Agent neemt deel, maar praat niet
+  - H3: Agent neemt deel maar praat niet
   - H3: Twilio-installatiecontroles mislukken
-  - H3: Twilio-gesprek start, maar komt nooit in de vergadering
+  - H3: Twilio-oproep start maar komt nooit in de vergadering
   - H2: Opmerkingen
   - H2: Gerelateerd
 
@@ -5531,15 +5531,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/hooks
 - Koppen:
   - H2: Snelstart
-  - H2: Hookcatalogus
+  - H2: Hook-catalogus
   - H2: Runtime-hooks debuggen
   - H2: Beleid voor toolaanroepen
-  - H3: Exec-omgevingshook
+  - H3: Hook voor exec-omgeving
   - H3: Persistentie van toolresultaten
   - H2: Prompt- en modelhooks
   - H3: Sessie-uitbreidingen en injecties voor de volgende beurt
   - H2: Berichthooks
-  - H2: Installatiehooks
+  - H2: Hooks installeren
   - H2: Gateway-levenscyclus
   - H2: Aankomende afschaffingen
   - H2: Gerelateerd
@@ -5550,7 +5550,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Omgeving
   - H2: Gedrag
-  - H2: Pakket-E2E
+  - H2: Package E2E
 
 ## plugins/llama-cpp.md
 
@@ -5579,32 +5579,32 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat dit bestand doet
   - H2: Minimaal voorbeeld
   - H2: Uitgebreid voorbeeld
-  - H2: Referentie voor velden op hoofdniveau
+  - H2: Referentie voor velden op topniveau
   - H2: Referentie voor metadata van generatieprovider
   - H2: Referentie voor toolmetadata
-  - H2: Referentie voor providerAuthChoices
-  - H2: Referentie voor commandAliases
-  - H2: Referentie voor activation
-  - H2: Referentie voor qaRunners
-  - H2: Referentie voor setup
-  - H3: Referentie voor setup.providers
+  - H2: providerAuthChoices-referentie
+  - H2: commandAliases-referentie
+  - H2: activation-referentie
+  - H2: qaRunners-referentie
+  - H2: setup-referentie
+  - H3: setup.providers-referentie
   - H3: setup-velden
-  - H2: Referentie voor uiHints
-  - H2: Referentie voor contracts
-  - H2: Referentie voor mediaUnderstandingProviderMetadata
-  - H2: Referentie voor channelConfigs
-  - H3: Een andere channel-Plugin vervangen
-  - H2: Referentie voor modelSupport
-  - H2: Referentie voor modelCatalog
-  - H2: Referentie voor modelIdNormalization
-  - H2: Referentie voor providerEndpoints
-  - H2: Referentie voor providerRequest
-  - H2: Referentie voor secretProviderIntegrations
-  - H2: Referentie voor modelPricing
-  - H3: OpenClaw Provider Index
+  - H2: uiHints-referentie
+  - H2: contracts-referentie
+  - H2: mediaUnderstandingProviderMetadata-referentie
+  - H2: channelConfigs-referentie
+  - H3: Een andere kanaal-Plugin vervangen
+  - H2: modelSupport-referentie
+  - H2: modelCatalog-referentie
+  - H2: modelIdNormalization-referentie
+  - H2: providerEndpoints-referentie
+  - H2: providerRequest-referentie
+  - H2: secretProviderIntegrations-referentie
+  - H2: modelPricing-referentie
+  - H3: OpenClaw-providerindex
   - H2: Manifest versus package.json
-  - H3: package.json-velden die ontdekking beïnvloeden
-  - H2: Ontdekkingsprioriteit (dubbele Plugin-id's)
+  - H3: package.json-velden die discovery beïnvloeden
+  - H2: Voorrang bij discovery (dubbele Plugin-id's)
   - H2: Vereisten voor JSON Schema
   - H2: Validatiegedrag
   - H2: Opmerkingen
@@ -5616,17 +5616,17 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Installatie
   - H2: Snelstart
-  - H2: Provider-ondersteunde embeddings
+  - H2: Door provider ondersteunde embeddings
   - H2: Ollama-embeddings
   - H2: OpenAI-compatibele providers
-  - H2: Limieten voor recall en vastlegging
+  - H2: Limieten voor ophalen en vastleggen
   - H2: Opdrachten
   - H2: Opslag
   - H2: Runtime-afhankelijkheden
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H3: Invoerlengte overschrijdt de contextlengte
   - H3: Niet-ondersteund embeddingmodel
-  - H3: Plugin wordt geladen, maar er verschijnen geen herinneringen
+  - H3: Plugin wordt geladen maar er verschijnen geen herinneringen
   - H2: Gerelateerd
 
 ## plugins/memory-wiki.md
@@ -5638,44 +5638,44 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Aanbevolen hybride patroon
   - H2: Vault-modi
   - H3: geïsoleerd
-  - H3: bridge
-  - H3: unsafe-local
+  - H3: brug
+  - H3: onveilig-lokaal
   - H2: Vault-indeling
   - H2: Imports in Open Knowledge Format
   - H2: Gestructureerde claims en bewijs
   - H2: Entiteitsmetadata voor agents
-  - H2: Compile-pijplijn
-  - H2: Dashboards en gezondheidsrapporten
+  - H2: Compileerpijplijn
+  - H2: Dashboards en statusrapporten
   - H2: Zoeken en ophalen
-  - H2: Agenttools
+  - H2: Agent-tools
   - H2: Prompt- en contextgedrag
   - H2: Configuratie
   - H3: Voorbeeld: QMD + bridge-modus
   - H2: CLI
   - H2: Obsidian-ondersteuning
   - H2: Aanbevolen workflow
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/message-presentation.md
 
 - Route: /plugins/message-presentation
 - Koppen:
   - H2: Contract
-  - H2: Voorbeelden van producers
+  - H2: Voorbeelden van producenten
   - H2: Renderercontract
-  - H2: Kernrenderflow
+  - H2: Core-renderflow
   - H2: Degradatieregels
   - H2: Providertoewijzing
   - H2: Presentatie versus InteractiveReply
-  - H2: Bezorgingspin
+  - H2: Leveringspin
   - H2: Checklist voor Plugin-auteurs
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/oc-path.md
 
 - Route: /plugins/oc-path
 - Koppen:
-  - H2: Waarom het inschakelen
+  - H2: Waarom dit inschakelen
   - H2: Waar het draait
   - H2: Inschakelen
   - H2: Afhankelijkheden
@@ -5691,20 +5691,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Plugin-inventaris
   - H2: Definities
   - H2: Een Plugin installeren
-  - H2: Kern-npm-pakket
+  - H2: Core npm-pakket
   - H2: Officiële externe pakketten
-  - H2: Alleen broncodecheckout
+  - H2: Alleen bron-checkout
 
 ## plugins/plugin-permission-requests.md
 
 - Route: /plugins/plugin-permission-requests
 - Koppen:
   - H2: Kies de juiste gate
-  - H2: Goedkeuring vragen vóór een toolaanroep
+  - H2: Goedkeuring aanvragen vóór een toolaanroep
   - H2: Beslissingsgedrag
   - H2: Goedkeuringsprompts routeren
   - H2: Native Codex-machtigingen
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## plugins/reference.md
@@ -5720,7 +5720,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: ACPx-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/admin-http-rpc.md
 
@@ -5729,7 +5729,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Admin Http Rpc-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/alibaba.md
 
@@ -5738,7 +5738,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Alibaba-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/amazon-bedrock-mantle.md
 
@@ -5747,7 +5747,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Amazon Bedrock Mantle-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/amazon-bedrock.md
 
@@ -5756,7 +5756,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Amazon Bedrock-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/anthropic-vertex.md
 
@@ -5774,7 +5774,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Anthropic-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/arcee.md
 
@@ -5783,7 +5783,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Arcee-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/azure-speech.md
 
@@ -5792,7 +5792,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Azure Speech-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/bonjour.md
 
@@ -5809,7 +5809,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Brave-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/browser.md
 
@@ -5818,7 +5818,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Browser-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/byteplus.md
 
@@ -5843,7 +5843,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Cerebras-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/chutes.md
 
@@ -5852,7 +5852,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Chutes-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/clickclack.md
 
@@ -5861,7 +5861,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Clickclack-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/cloudflare-ai-gateway.md
 
@@ -5870,7 +5870,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Cloudflare AI Gateway-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/codex-supervisor.md
 
@@ -5888,7 +5888,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Codex-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/cohere.md
 
@@ -5897,7 +5897,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Cohere-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/comfy.md
 
@@ -5906,7 +5906,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: ComfyUI-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/copilot-proxy.md
 
@@ -5923,7 +5923,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Copilot-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/deepgram.md
 
@@ -5932,7 +5932,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Deepgram-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/deepinfra.md
 
@@ -5941,7 +5941,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: DeepInfra-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/deepseek.md
 
@@ -5950,7 +5950,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: DeepSeek-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/diagnostics-otel.md
 
@@ -5992,7 +5992,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Discord-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/document-extract.md
 
@@ -6001,7 +6001,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Document Extract-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/duckduckgo.md
 
@@ -6010,7 +6010,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: DuckDuckGo-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/elevenlabs.md
 
@@ -6019,7 +6019,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Elevenlabs-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/exa.md
 
@@ -6028,7 +6028,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Exa-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/fal.md
 
@@ -6037,7 +6037,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: fal-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/feishu.md
 
@@ -6046,7 +6046,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Feishu-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/file-transfer.md
 
@@ -6063,7 +6063,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Firecrawl-Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/fireworks.md
 
@@ -6721,7 +6721,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Venice Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/vercel-ai-gateway.md
 
@@ -6730,7 +6730,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Vercel AI Gateway Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/vllm.md
 
@@ -6739,7 +6739,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: vLLM Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/voice-call.md
 
@@ -6748,7 +6748,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Voice Call Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/volcengine.md
 
@@ -6757,7 +6757,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Volcengine Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/voyage.md
 
@@ -6774,7 +6774,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Vydra Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/web-readability.md
 
@@ -6791,7 +6791,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Webhooks Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/whatsapp.md
 
@@ -6800,7 +6800,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: WhatsApp Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/workboard.md
 
@@ -6809,7 +6809,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Workboard Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/xai.md
 
@@ -6818,7 +6818,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: xAI Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/xiaomi.md
 
@@ -6827,7 +6827,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Xiaomi Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/zai.md
 
@@ -6836,7 +6836,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Z.AI Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/zalo.md
 
@@ -6845,7 +6845,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Zalo Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/reference/zalouser.md
 
@@ -6854,24 +6854,24 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H1: Zalo Personal Plugin
   - H2: Distributie
   - H2: Oppervlak
-  - H2: Gerelateerde docs
+  - H2: Gerelateerde documentatie
 
 ## plugins/sdk-agent-harness.md
 
 - Route: /plugins/sdk-agent-harness
 - Koppen:
-  - H2: Wanneer je een harness gebruikt
-  - H2: Wat core nog steeds beheert
+  - H2: Wanneer een harness gebruiken
+  - H2: Wat de core nog steeds beheert
   - H2: Een harness registreren
   - H2: Selectiebeleid
-  - H2: Koppeling tussen provider en harness
-  - H3: Middleware voor tool-resultaten
+  - H2: Provider-plus-harness-koppeling
+  - H3: Middleware voor toolresultaten
   - H3: Classificatie van terminale uitkomst
   - H3: Neveneffecten aan agent-einde
   - H3: Gebruikersinvoer en tool-oppervlakken
   - H3: Native Codex-harnessmodus
-  - H2: Striktheid van runtime
-  - H2: Native sessies en transcriptmirror
+  - H2: Runtime-striktheid
+  - H2: Native sessies en transcriptspiegel
   - H2: Tool- en mediaresultaten
   - H2: Huidige beperkingen
   - H2: Gerelateerd
@@ -6887,11 +6887,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/sdk-channel-ingress
 - Koppen:
-  - H1: API voor kanaalingress
+  - H1: Channel-ingress-API
   - H2: Runtime-resolver
   - H2: Resultaat
   - H2: Toegangsgroepen
-  - H2: Gebeurtenismodi
+  - H2: Eventmodi
   - H2: Routes en activering
   - H2: Redactie
   - H2: Verificatie
@@ -6906,7 +6906,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /plugins/sdk-channel-outbound
 - Koppen:
   - H2: Adapter
-  - H2: Bestaande outbound-adapters
+  - H2: Bestaande uitgaande adapters
   - H2: Duurzame verzendingen
   - H2: Compatibiliteitsdispatch
 
@@ -6914,9 +6914,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/sdk-channel-plugins
 - Koppen:
-  - H2: Hoe kanaalplugins werken
-  - H2: Goedkeuringen en kanaalcapabilities
-  - H2: Beleid voor inbound-vermeldingen
+  - H2: Hoe channel-Plugins werken
+  - H2: Goedkeuringen en channel-capabilities
+  - H2: Beleid voor inkomende vermeldingen
   - H2: Walkthrough
   - H2: Bestandsstructuur
   - H2: Geavanceerde onderwerpen
@@ -6944,15 +6944,15 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/sdk-migration
 - Koppen:
-  - H2: Wat verandert
-  - H2: Waarom dit is gewijzigd
-  - H2: Migratieplan voor talk en realtime spraak
+  - H2: Wat er verandert
+  - H2: Waarom dit is veranderd
+  - H2: Migratieplan voor talk en realtime voice
   - H2: Compatibiliteitsbeleid
   - H2: Migreren
   - H2: Referentie voor importpaden
   - H2: Actieve deprecaties
   - H2: Tijdlijn voor verwijdering
-  - H2: De waarschuwingen tijdelijk onderdrukken
+  - H2: Waarschuwingen tijdelijk onderdrukken
   - H2: Gerelateerd
 
 ## plugins/sdk-overview.md
@@ -6963,18 +6963,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Subpadreferentie
   - H2: Registratie-API
   - H3: Capability-registratie
-  - H3: Tools en opdrachten
+  - H3: Tools en commando's
   - H3: Infrastructuur
-  - H3: Host-hooks voor workflowplugins
+  - H3: Host-hooks voor workflow-Plugins
   - H3: Gateway-discoveryregistratie
   - H3: CLI-registratiemetadata
   - H3: CLI-backendregistratie
   - H3: Exclusieve slots
   - H3: Verouderde memory-embedding-adapters
-  - H3: Gebeurtenissen en levenscyclus
+  - H3: Events en lifecycle
   - H3: Semantiek van hook-beslissingen
-  - H3: Velden van API-objecten
-  - H2: Conventie voor interne modules
+  - H3: API-objectvelden
+  - H2: Interne moduleconventie
   - H2: Gerelateerd
 
 ## plugins/sdk-provider-plugins.md
@@ -6992,9 +6992,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/sdk-runtime
 - Koppen:
-  - H2: Config laden en schrijven
-  - H2: Herbruikbare runtimehulpprogramma's
-  - H2: Runtime-naamruimten
+  - H2: Config laden en wegschrijven
+  - H2: Herbruikbare runtime-hulpprogramma's
+  - H2: Runtime-namespaces
   - H2: Runtime-referenties opslaan
   - H2: Andere API-velden op topniveau
   - H2: Gerelateerd
@@ -7009,13 +7009,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: openclaw.install
   - H3: Uitgestelde volledige load
   - H2: Plugin-manifest
-  - H2: ClawHub-publicatie
+  - H2: Publiceren naar ClawHub
   - H2: Setup-entry
-  - H3: Smalle imports van setuphelpers
-  - H3: Kanaaleigen promotie voor single-account
+  - H3: Smalle setup-helperimports
+  - H3: Door channel beheerde single-account-promotie
   - H2: Config-schema
-  - H3: Kanaalconfigschema's bouwen
-  - H2: Setupwizards
+  - H3: Channel-configschema's bouwen
+  - H2: Setup-wizards
   - H2: Publiceren en installeren
   - H2: Gerelateerd
 
@@ -7025,7 +7025,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Plugin-entry
   - H3: Verouderde compatibiliteits- en testhelpers
-  - H3: Gereserveerde subpaden voor gebundelde Plugin-helpers
+  - H3: Gereserveerde helper-subpaden voor gebundelde Plugins
   - H2: Gerelateerd
 
 ## plugins/sdk-testing.md
@@ -7034,18 +7034,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Testhulpprogramma's
   - H3: Beschikbare exports
-  - H3: Typen
-  - H2: Doelresolutie testen
+  - H3: Types
+  - H2: Target-resolutie testen
   - H2: Testpatronen
   - H3: Registratiecontracten testen
   - H3: Runtime-configtoegang testen
-  - H3: Unit-test van een kanaalplugin
-  - H3: Unit-test van een providerplugin
-  - H3: De Plugin-runtime mocken
+  - H3: Unit-testen van een channel-Plugin
+  - H3: Unit-testen van een provider-Plugin
+  - H3: De plugin-runtime mocken
   - H3: Testen met stubs per instantie
-  - H2: Contracttests (in-repo plugins)
+  - H2: Contracttests (in-repo Plugins)
   - H3: Scoped tests uitvoeren
-  - H2: Lintafdwinging (in-repo plugins)
+  - H2: Lint-handhaving (in-repo Plugins)
   - H2: Testconfiguratie
   - H2: Gerelateerd
 
@@ -7064,9 +7064,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Valideren in CI
   - H2: Lokaal installeren en inspecteren
   - H2: Publiceren
-  - H2: Problemen oplossen
-  - H3: plugin entry niet gevonden: ./dist/index.js
-  - H3: plugin entry stelt geen defineToolPlugin-metadata beschikbaar
+  - H2: Probleemoplossing
+  - H3: plugin-entry niet gevonden: ./dist/index.js
+  - H3: plugin-entry exposeert geen defineToolPlugin-metadata
   - H3: gegenereerde metadata van openclaw.plugin.json is verouderd
   - H3: package.json openclaw.extensions moet ./dist/index.js bevatten
   - H3: Kan pakket 'typebox' niet vinden
@@ -7077,33 +7077,33 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /plugins/voice-call
 - Koppen:
-  - H2: Snel starten
+  - H2: Snelstart
   - H2: Configuratie
-  - H2: Sessiescope
+  - H2: Sessiebereik
   - H2: Realtime spraakgesprekken
   - H3: Toolbeleid
-  - H3: Spraakcontext van agent
+  - H3: Agent-spraakcontext
   - H3: Voorbeelden van realtime providers
-  - H2: Streamingtranscriptie
-  - H3: Voorbeelden van streamingproviders
+  - H2: Streaming transcriptie
+  - H3: Voorbeelden van streaming providers
   - H2: TTS voor oproepen
   - H3: TTS-voorbeelden
-  - H2: Inbound-oproepen
+  - H2: Inkomende oproepen
   - H3: Routing per nummer
-  - H3: Contract voor gesproken output
+  - H3: Contract voor gesproken uitvoer
   - H3: Opstartgedrag van gesprekken
-  - H3: Graceperiode voor Twilio-streamdisconnect
-  - H2: Reaper voor verlopen oproepen
+  - H3: Respijtperiode voor Twilio-streamdisconnect
+  - H2: Reaper voor verouderde oproepen
   - H2: Webhook-beveiliging
   - H2: CLI
-  - H2: Agenttool
-  - H2: Gateway RPC
-  - H2: Problemen oplossen
+  - H2: Agent-tool
+  - H2: Gateway-RPC
+  - H2: Probleemoplossing
   - H3: Setup faalt bij Webhook-blootstelling
   - H3: Providerreferenties falen
   - H3: Oproepen starten, maar provider-webhooks komen niet aan
-  - H3: Handtekeningverificatie faalt
-  - H3: Google Meet Twilio-deelnames falen
+  - H3: Handtekeningverificatie mislukt
+  - H3: Google Meet Twilio-deelnames mislukken
   - H3: Realtime oproep heeft geen spraak
   - H2: Gerelateerd
 
@@ -7114,12 +7114,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Waar het draait
   - H2: Routes configureren
   - H2: Beveiligingsmodel
-  - H2: Aanvraagindeling
+  - H2: Requestformaat
   - H2: Ondersteunde acties
   - H3: createflow
   - H3: runtask
-  - H2: Responsvorm
-  - H2: Gerelateerde docs
+  - H2: Response-vorm
+  - H2: Gerelateerde documentatie
 
 ## plugins/workboard.md
 
@@ -7128,16 +7128,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Standaardstatus
   - H2: Wat kaarten bevatten
   - H2: Kaartuitvoeringen en taken
-  - H2: Agentcoördinatie
+  - H2: Agent-coördinatie
   - H3: Selectie van dispatch-worker
-  - H3: Workerprompt en levenscyclus
+  - H3: Worker-prompt en lifecycle
   - H3: Dispatch-entrypoints
-  - H2: CLI en slash-opdracht
-  - H2: Sync van sessielevenscyclus
-  - H2: Dashboardworkflow
+  - H2: CLI en slash-command
+  - H2: Synchronisatie van sessie-lifecycle
+  - H2: Dashboard-workflow
   - H2: Machtigingen
   - H2: Configuratie
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H3: Het tabblad zegt dat Workboard niet beschikbaar is
   - H3: Kaarten worden niet opgeslagen
   - H3: Het starten van een kaart opent niet de verwachte sessie
@@ -7151,11 +7151,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Naamgeving
   - H2: Waar het draait
   - H2: Installeren
-  - H3: Optie A: installeren vanaf npm
+  - H3: Optie A: installeren vanuit npm
   - H3: Optie B: installeren vanuit een lokale map (dev)
   - H2: Config
   - H2: CLI
-  - H2: Agenttool
+  - H2: Agent-tool
   - H2: Gerelateerd
 
 ## prose.md
@@ -7163,7 +7163,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /prose
 - Koppen:
   - H2: Installeren
-  - H2: Slash-opdracht
+  - H2: Slash-command
   - H2: Wat het kan doen
   - H2: Voorbeeld: parallel onderzoek en synthese
   - H2: OpenClaw-runtimekoppeling
@@ -7178,7 +7178,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Aan de slag
   - H2: Ingebouwde Wan-modellen
-  - H2: Capabilities en limieten
+  - H2: Mogelijkheden en limieten
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
 
@@ -7190,7 +7190,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Thinking-standaarden (Claude Fable 5, 4.8 en 4.6)
   - H2: Promptcaching
   - H2: Geavanceerde configuratie
-  - H2: Problemen oplossen
+  - H2: Probleemoplossing
   - H2: Gerelateerd
 
 ## providers/arcee.md
@@ -7218,7 +7218,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/bedrock-mantle
 - Koppen:
   - H2: Aan de slag
-  - H2: Automatische modelontdekking
+  - H2: Automatische modeldiscovery
   - H3: Ondersteunde regio's
   - H2: Handmatige configuratie
   - H2: Geavanceerde configuratie
@@ -7229,7 +7229,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/bedrock
 - Koppen:
   - H2: Aan de slag
-  - H2: Automatische modelontdekking
+  - H2: Automatische modeldiscovery
   - H2: Snelle setup (AWS-pad)
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
@@ -7266,7 +7266,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Aan de slag
   - H2: Ingebouwde catalogus
   - H2: Geavanceerde configuratie
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## providers/cloudflare-ai-gateway.md
@@ -7284,18 +7284,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/cohere
 - Koppen:
   - H2: Aan de slag
-  - H2: Installatie alleen via omgeving
+  - H2: Configuratie alleen via omgeving
   - H2: Gerelateerd
 
 ## providers/comfy.md
 
 - Route: /providers/comfy
 - Koppen:
-  - H2: Wat het ondersteunt
+  - H2: Wat wordt ondersteund
   - H2: Aan de slag
   - H2: Configuratie
   - H3: Gedeelde sleutels
-  - H3: Sleutels per capability
+  - H3: Sleutels per mogelijkheid
   - H2: Workflowdetails
   - H2: Gerelateerd
 
@@ -7306,7 +7306,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Aan de slag
   - H2: Configuratieopties
   - H2: Streaming-STT voor spraakoproepen
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## providers/deepinfra.md
@@ -7315,11 +7315,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Plugin installeren
   - H2: Een API-sleutel verkrijgen
-  - H2: CLI-installatie
+  - H2: CLI-configuratie
   - H2: Configuratiefragment
   - H2: Ondersteunde OpenClaw-oppervlakken
   - H2: Beschikbare modellen
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## providers/deepseek.md
@@ -7329,7 +7329,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Plugin installeren
   - H2: Aan de slag
   - H2: Ingebouwde catalogus
-  - H2: Redeneren en tools
+  - H2: Denken en tools
   - H2: Live testen
   - H2: Configuratievoorbeeld
   - H2: Gerelateerd
@@ -7372,7 +7372,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/fireworks
 - Koppen:
   - H2: Aan de slag
-  - H2: Niet-interactieve installatie
+  - H2: Niet-interactieve configuratie
   - H2: Ingebouwde catalogus
   - H2: Aangepaste Fireworks-model-id's
   - H2: Gerelateerd
@@ -7393,8 +7393,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /providers/gmi
 - Koppen:
-  - H2: Installatie
-  - H2: Standaardinstellingen
+  - H2: Configuratie
+  - H2: Standaardwaarden
   - H2: Wanneer GMI kiezen
   - H2: Modellen
   - H2: Probleemoplossing
@@ -7405,7 +7405,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/google
 - Koppen:
   - H2: Aan de slag
-  - H2: Capabilities
+  - H2: Mogelijkheden
   - H2: Zoeken op het web
   - H2: Afbeeldingen genereren
   - H2: Video genereren
@@ -7420,10 +7420,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/gradium
 - Koppen:
   - H2: Plugin installeren
-  - H2: Installatie
+  - H2: Configuratie
   - H2: Configuratie
   - H2: Stemmen
-  - H3: Stem per bericht overschrijven
+  - H3: Spraakoverschrijving per bericht
   - H2: Uitvoer
   - H2: Volgorde voor automatisch selecteren
   - H2: Gerelateerd
@@ -7445,7 +7445,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/huggingface
 - Koppen:
   - H2: Aan de slag
-  - H3: Niet-interactieve installatie
+  - H3: Niet-interactieve configuratie
   - H2: Model-id's
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
@@ -7455,7 +7455,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers
 - Koppen:
   - H2: Quickstart
-  - H2: Providerdocumentatie
+  - H2: Provider-documentatie
   - H2: Gedeelde overzichtspagina's
   - H2: Transcriptieproviders
   - H2: Communitytools
@@ -7465,7 +7465,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/inferrs
 - Koppen:
   - H2: Aan de slag
-  - H2: Volledig configuratievoorbeeld
+  - H2: Voorbeeld van volledige configuratie
   - H2: Opstarten op aanvraag
   - H2: Geavanceerde configuratie
   - H2: Probleemoplossing
@@ -7478,7 +7478,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Plugin installeren
   - H2: Aan de slag
   - H2: Configuratieopties
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## providers/kilocode.md
@@ -7512,13 +7512,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Niet-interactieve onboarding
   - H2: Configuratie
   - H3: Compatibiliteit voor streaminggebruik
-  - H3: Compatibiliteit voor redeneren
+  - H3: Denkcompatibiliteit
   - H3: Expliciete configuratie
   - H2: Probleemoplossing
   - H3: LM Studio niet gedetecteerd
   - H3: Authenticatiefouten (HTTP 401)
-  - H3: Just-in-time modellen laden
-  - H3: LAN- of tailnet-LM Studio-host
+  - H3: Just-in-time laden van modellen
+  - H3: LM Studio-host via LAN of tailnet
   - H2: Gerelateerd
 
 ## providers/minimax.md
@@ -7528,7 +7528,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Ingebouwde catalogus
   - H2: Aan de slag
   - H2: Configureren via openclaw configure
-  - H2: Capabilities
+  - H2: Mogelijkheden
   - H3: Afbeeldingen genereren
   - H3: Tekst-naar-spraak
   - H3: Muziek genereren
@@ -7536,7 +7536,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Afbeeldingen begrijpen
   - H3: Zoeken op het web
   - H2: Geavanceerde configuratie
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Probleemoplossing
   - H2: Gerelateerd
 
@@ -7566,7 +7566,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Ingebouwde modelcatalogus
   - H2: Aan de slag
-  - H2: Kimi-webzoekopdracht
+  - H2: Kimi-zoekopdracht op het web
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
 
@@ -7574,8 +7574,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /providers/novita
 - Koppen:
-  - H2: Installatie
-  - H2: Standaardinstellingen
+  - H2: Configuratie
+  - H2: Standaardwaarden
   - H2: Wanneer Novita kiezen
   - H2: Modellen
   - H2: Probleemoplossing
@@ -7589,7 +7589,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Configuratievoorbeeld
   - H2: Uitgelichte catalogus
   - H2: Nemotron 3 Ultra
-  - H2: Gebundelde fallbackcatalogus
+  - H2: Gebundelde fallback-catalogus
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
 
@@ -7597,8 +7597,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /providers/ollama-cloud
 - Koppen:
-  - H2: Installatie
-  - H2: Standaardinstellingen
+  - H2: Configuratie
+  - H2: Standaardwaarden
   - H2: Wanneer Ollama Cloud kiezen
   - H2: Modellen
   - H2: Live test
@@ -7609,13 +7609,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /providers/ollama
 - Koppen:
-  - H2: Authenticatieregels
+  - H2: Auth-regels
   - H2: Aan de slag
   - H2: Cloudmodellen
   - H2: Modeldetectie (impliciete provider)
   - H2: Visie en afbeeldingsbeschrijving
   - H2: Configuratie
-  - H2: Veelgebruikte recepten
+  - H2: Algemene recepten
   - H3: Modelselectie
   - H3: Snelle verificatie
   - H2: Ollama Web Search
@@ -7632,11 +7632,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: OpenClaw-functiedekking
   - H2: Geheugen-embeddings
   - H2: Aan de slag
-  - H2: Native Codex-appserverauthenticatie
+  - H2: Native Codex-app-server-auth
   - H2: Afbeeldingen genereren
   - H2: Video genereren
   - H2: GPT-5-promptbijdrage
-  - H2: Stem en spraak
+  - H2: Spraak en spraakherkenning
   - H2: Azure OpenAI-eindpunten
   - H3: Configuratie
   - H3: API-versie
@@ -7721,9 +7721,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /providers/qwen-oauth
 - Koppen:
-  - H2: Installatie
-  - H2: Standaardinstellingen
-  - H2: Waarin dit verschilt van Qwen
+  - H2: Configuratie
+  - H2: Standaardwaarden
+  - H2: Hoe dit verschilt van Qwen
   - H2: Wanneer Qwen OAuth / Portal kiezen
   - H2: Modellen
   - H2: Migratie
@@ -7736,9 +7736,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Plugin installeren
   - H2: Aan de slag
-  - H2: Plantypen en eindpunten
+  - H2: Abonnementstypen en eindpunten
   - H2: Ingebouwde catalogus
-  - H2: Denkbesturing
+  - H2: Denkbediening
   - H2: Multimodale add-ons
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
@@ -7796,7 +7796,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/tencent
 - Koppen:
   - H2: Quickstart
-  - H2: Niet-interactieve installatie
+  - H2: Niet-interactieve configuratie
   - H2: Ingebouwde catalogus
   - H2: Gedifferentieerde prijzen
   - H2: Geavanceerde configuratie
@@ -7821,7 +7821,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Functies
   - H2: Aan de slag
   - H2: Modelselectie
-  - H2: Replaygedrag van DeepSeek V4
+  - H2: Replay-gedrag van DeepSeek V4
   - H2: Ingebouwde catalogus (41 totaal)
   - H2: Modeldetectie
   - H2: Ondersteuning voor streaming en tools
@@ -7838,7 +7838,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Aan de slag
   - H2: Niet-interactief voorbeeld
-  - H2: Afkorting voor model-id
+  - H2: Verkorte model-id
   - H2: Geavanceerde configuratie
   - H2: Gerelateerd
 
@@ -7880,8 +7880,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Problemen met OAuth oplossen
   - H2: Ingebouwde catalogus
   - H2: OpenClaw-functiedekking
-  - H3: Fast-mode-toewijzingen
-  - H3: Legacy-compatibiliteitsaliassen
+  - H3: Toewijzingen voor snelle modus
+  - H3: Verouderde compatibiliteitsaliassen
   - H2: Functies
   - H2: Live testen
   - H2: Gerelateerd
@@ -7891,7 +7891,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /providers/xiaomi
 - Koppen:
   - H2: Aan de slag
-  - H2: Pay-as-you-go-catalogus
+  - H2: Catalogus voor betalen naar gebruik
   - H2: Token Plan-catalogus
   - H2: Tekst-naar-spraak
   - H2: Configuratievoorbeeld
@@ -7920,18 +7920,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Doelen
   - H2: Niet-doelen
   - H2: Doelmodel
-  - H3: Identiteit van Gateway-instantie
-  - H3: Eigenaarschap van ACP-sessie
+  - H3: Gateway-instantie-identiteit
+  - H3: Eigenaarschap van ACP-sessies
   - H3: ACPX-procesleases
-  - H2: Lifecycle-controller
-  - H2: Wrapper-contract
+  - H2: Levenscycluscontroller
+  - H2: Wrappercontract
   - H2: Contract voor sessiezichtbaarheid
   - H2: Migratieplan
-  - H3: Fase 1: Identiteit en leases toevoegen
-  - H3: Fase 2: Lease-first opschonen
-  - H3: Fase 3: Lease-first opruimen bij opstarten
-  - H3: Fase 4: Rijen voor sessie-eigenaarschap
-  - H3: Fase 5: Legacy-heuristieken verwijderen
+  - H3: Fase 1: identiteit en leases toevoegen
+  - H3: Fase 2: opschonen met leases eerst
+  - H3: Fase 3: opstartreaping met leases eerst
+  - H3: Fase 4: rijen voor sessie-eigenaarschap
+  - H3: Fase 5: verouderde heuristieken verwijderen
   - H2: Tests
   - H2: Compatibiliteitsnotities
   - H2: Succescriteria
@@ -7947,41 +7947,41 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Doelvorm
   - H2: Migratiestappen
   - H2: Auditchecklist
-  - H2: Verificatiecommando's
+  - H2: Verificatieopdrachten
 
 ## refactor/database-first.md
 
 - Route: /refactor/database-first
 - Koppen:
-  - H1: Database-first state-refactor
-  - H2: Beslissing
+  - H1: Database-eerst state-refactor
+  - H2: Besluit
   - H2: Hard contract
-  - H2: Doelstatus en voortgang
+  - H2: Doeltoestand en voortgang
   - H3: Hard doel
-  - H3: Doelstatussen
-  - H3: Huidige status
+  - H3: Doeltoestanden
+  - H3: Huidige toestand
   - H3: Resterend werk
-  - H3: Niet terugvallen
-  - H2: Aannames uit codelezing
-  - H2: Bevindingen uit codelezing
+  - H3: Niet laten terugvallen
+  - H2: Aannames uit codelezen
+  - H2: Bevindingen uit codelezen
   - H2: Huidige codevorm
-  - H2: Vorm van doelschema
+  - H2: Doelvorm van schema
   - H2: Vorm van doctor-migratie
   - H2: Migratie-inventaris
   - H2: Migratieplan
-  - H3: Fase 0: De grens bevriezen
-  - H3: Fase 1: Het globale besturingsvlak afronden
-  - H3: Fase 2: Databases per agent introduceren
-  - H3: Fase 3: Sessiestore-API's vervangen
-  - H3: Fase 4: Transcripten, ACP-streams, trajecten en VFS verplaatsen
-  - H3: Fase 5: Back-up, herstel, vacuum en verificatie
-  - H3: Fase 6: Worker-runtime
-  - H3: Fase 7: De oude wereld verwijderen
+  - H3: Fase 0: de grens bevriezen
+  - H3: Fase 1: het globale control plane afronden
+  - H3: Fase 2: databases per agent introduceren
+  - H3: Fase 3: sessiestore-API's vervangen
+  - H3: Fase 4: transcripten, ACP-streams, trajecten en VFS verplaatsen
+  - H3: Fase 5: back-up, herstel, vacuüm en verificatie
+  - H3: Fase 6: worker-runtime
+  - H3: Fase 7: de oude wereld verwijderen
   - H2: Back-up en herstel
   - H2: Runtime-refactorplan
   - H2: Prestatieregels
   - H2: Statische verboden
-  - H2: Gereed-criteria
+  - H2: Criteria voor gereed
 
 ## refactor/ingress-core.md
 
@@ -8004,7 +8004,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /reference/AGENTS.default
 - Koppen:
-  - H2: Eerste run (aanbevolen)
+  - H2: Eerste uitvoering (aanbevolen)
   - H2: Veiligheidsstandaarden
   - H2: Preflight voor bestaande oplossingen
   - H2: Sessiestart (vereist)
@@ -8014,7 +8014,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Tools en Skills
   - H2: Back-uptip (aanbevolen)
   - H2: Wat OpenClaw doet
-  - H2: Core Skills (inschakelen in Settings → Skills)
+  - H2: Kern-Skills (inschakelen in Instellingen → Skills)
   - H2: Gebruiksnotities
   - H2: Gerelateerd
 
@@ -8025,32 +8025,32 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Versienaamgeving
   - H2: Releasecadans
   - H2: Checklist voor release-operator
-  - H2: Afronding van stabiele main
+  - H2: Afsluiting van stabiele main
   - H2: Releasepreflight
   - H2: Releasetestboxen
   - H3: Vitest
   - H3: Docker
   - H3: QA Lab
-  - H3: Package
+  - H3: Pakket
   - H2: Automatisering voor releasepublicatie
-  - H2: NPM-workflowinputs
+  - H2: NPM-workflowinvoer
   - H2: Stabiele npm-releasereeks
-  - H2: Publieke referenties
+  - H2: Publieke verwijzingen
   - H2: Gerelateerd
 
 ## reference/api-usage-costs.md
 
 - Route: /reference/api-usage-costs
 - Koppen:
-  - H2: Waar kosten zichtbaar worden (chat + CLI)
-  - H2: Hoe sleutels worden gevonden
-  - H2: Functies die sleutels kunnen besteden
+  - H2: Waar kosten verschijnen (chat + CLI)
+  - H2: Hoe sleutels worden ontdekt
+  - H2: Functies die sleutels kunnen verbruiken
   - H3: 1) Kernmodelantwoorden (chat + tools)
   - H3: 2) Mediabegrip (audio/afbeelding/video)
   - H3: 3) Afbeeldings- en videogeneratie
   - H3: 4) Geheugen-embeddings + semantisch zoeken
   - H3: 5) Webzoektool
-  - H3: 5) Webophaaltool (Firecrawl)
+  - H3: 5) Webfetchtool (Firecrawl)
   - H3: 6) Snapshots van providergebruik (status/gezondheid)
   - H3: 7) Samenvatting als Compaction-beveiliging
   - H3: 8) Modelscan / probe
@@ -8064,14 +8064,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Doel
   - H2: Principes
-  - H2: Fase 1: Baseline-audit
-  - H2: Fase 2: Product- en UX-opruiming
-  - H2: Fase 3: Frontendarchitectuur aanscherpen
-  - H2: Fase 4: Prestaties en betrouwbaarheid
-  - H2: Fase 5: Type-, contract- en testverharding
-  - H2: Fase 6: Documentatie en releasegereedheid
-  - H2: Aanbevolen eerste slice
-  - H2: Frontend-Skill-update
+  - H2: Fase 1: basisaudit
+  - H2: Fase 2: product- en UX-opschoning
+  - H2: Fase 3: frontendarchitectuur aanscherpen
+  - H2: Fase 4: prestaties en betrouwbaarheid
+  - H2: Fase 5: type-, contract- en testverharding
+  - H2: Fase 6: documentatie en releasegereedheid
+  - H2: Aanbevolen eerste deel
+  - H2: Update van frontend-Skill
 
 ## reference/code-mode.md
 
@@ -8082,25 +8082,25 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Hoe je het inschakelt
   - H2: Technische rondleiding
   - H2: Runtimestatus
-  - H2: Scope
+  - H2: Bereik
   - H2: Termen
   - H2: Configuratie
-  - H2: Activering
+  - H2: Activatie
   - H2: Tools zichtbaar voor het model
   - H2: exec
   - H2: wait
   - H2: Gast-runtime-API
   - H2: Interne namespaces
-  - H3: Registry-lifecycle
+  - H3: Registry-levenscyclus
   - H3: Registratievorm
   - H3: Eigenaarschap en zichtbaarheid
-  - H3: Serialisatieregels voor scope
+  - H3: Regels voor serialisatie van bereik
   - H3: Prompts
   - H3: Opschoning
   - H3: Testchecklist
   - H2: Output-API
   - H2: Toolcatalogus
-  - H2: Tool Search-interactie
+  - H2: Interactie met Tool Search
   - H2: Toolnamen en botsingen
   - H2: Geneste tooluitvoering
   - H2: Runtimestatus
@@ -8110,7 +8110,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Foutcodes
   - H2: Telemetrie
   - H2: Debuggen
-  - H2: Implementatielay-out
+  - H2: Implementatie-indeling
   - H2: Validatiechecklist
   - H2: E2E-testplan
   - H2: Gerelateerd
@@ -8137,13 +8137,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /reference/full-release-validation
 - Koppen:
-  - H2: Fasen op hoofdniveau
-  - H2: Fasen voor releasecontroles
-  - H2: Chunks voor Docker-releasepad
+  - H2: Fasen op topniveau
+  - H2: Fasen voor releasechecks
+  - H2: Docker-releasepad-chunks
   - H2: Releaseprofielen
   - H2: Toevoegingen alleen voor volledig
-  - H2: Gerichte herruns
-  - H2: Te bewaren bewijs
+  - H2: Gerichte heruitvoeringen
+  - H2: Bewijs om te bewaren
   - H2: Workflowbestanden
 
 ## reference/memory-config.md
@@ -8156,13 +8156,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Configuratie van extern eindpunt
   - H2: Providerspecifieke configuratie
   - H3: Inline embedding-time-out
-  - H2: Configuratie voor hybride zoeken
+  - H2: Hybride zoekconfiguratie
   - H3: Volledig voorbeeld
-  - H2: Aanvullende geheugenpaden
+  - H2: Extra geheugenpaden
   - H2: Multimodaal geheugen (Gemini)
-  - H2: Embedding-cache
+  - H2: Embeddingcache
   - H2: Batchindexering
-  - H2: Sessiegeheugen zoeken (experimenteel)
+  - H2: Sessiegeheugenzoekopdracht (experimenteel)
   - H2: SQLite-vectorversnelling (sqlite-vec)
   - H2: Indexopslag
   - H2: QMD-backendconfiguratie
@@ -8193,7 +8193,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: OpenClaw-beschermingen voor cachestabiliteit
   - H2: Afstemmingspatronen
   - H3: Gemengd verkeer (aanbevolen standaard)
-  - H3: Cost-first baseline
+  - H3: Kosten-eerst basislijn
   - H2: Cachediagnostiek
   - H2: Live regressietests
   - H3: Anthropic live verwachtingen
@@ -8201,7 +8201,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: diagnostics.cacheTrace-configuratie
   - H3: Env-schakelaars (eenmalig debuggen)
   - H3: Wat te inspecteren
-  - H2: Snelle probleemoplossing
+  - H2: Snel problemen oplossen
   - H2: Gerelateerd
 
 ## reference/release-performance-sweep.md
@@ -8210,11 +8210,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Snapshot
   - H2: Tijdlijn van installatievoetafdruk
-  - H2: Wat veranderde in 5.28
-  - H2: Kopcijfers
+  - H2: Wat is gewijzigd in 5.28
+  - H2: Hoofdcijfers
   - H3: Installatievoetafdruk
-  - H3: npm-packagegrootte
-  - H2: Samenvatting van Kova-agentturn
+  - H3: npm-pakketgrootte
+  - H2: Samenvatting van Kova-agentbeurt
   - H2: Bronprobes
   - H2: Audit van installatievoetafdruk
   - H3: Shrinkwrap-grens
@@ -8225,7 +8225,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /reference/rich-output-protocol
 - Koppen:
   - H2: [embed ...]
-  - H2: Opgeslagen renderingvorm
+  - H2: Opgeslagen renderingsvorm
   - H2: Gerelateerd
 
 ## reference/rpc.md
@@ -8276,8 +8276,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Compaction-instellingen (reserveTokens, keepRecentTokens)
   - H2: Inplugbare Compaction-providers
   - H2: Gebruikerszichtbare oppervlakken
-  - H2: Stil onderhoud (NOREPLY)
-  - H2: "memory flush" vóór Compaction (geïmplementeerd)
+  - H2: Stil huishoudelijk onderhoud (NOREPLY)
+  - H2: "geheugenflush" vóór Compaction (geïmplementeerd)
   - H2: Checklist voor probleemoplossing
   - H2: Gerelateerd
 
@@ -8286,14 +8286,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /reference/templates/AGENTS.dev
 - Koppen:
   - H1: AGENTS.md - OpenClaw-werkruimte
-  - H2: Eerste run (eenmalig)
+  - H2: Eerste uitvoering (eenmalig)
   - H2: Back-uptip (aanbevolen)
   - H2: Veiligheidsstandaarden
   - H2: Preflight voor bestaande oplossingen
   - H2: Dagelijks geheugen (aanbevolen)
   - H2: Heartbeats (optioneel)
   - H2: Aanpassen
-  - H2: C-3PO Origin Memory
+  - H2: C-3PO-oorsprongsgeheugen
   - H3: Geboortedag: 2026-01-09
   - H3: Kernwaarheden (van Clawd)
   - H2: Gerelateerd
@@ -8320,7 +8320,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /reference/templates/HEARTBEAT
 - Koppen:
-  - H1: HEARTBEAT.md-template
+  - H1: HEARTBEAT.md-sjabloon
   - H2: Gerelateerd
 
 ## reference/templates/IDENTITY.dev.md
@@ -8332,7 +8332,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Ziel
   - H2: Relatie met Clawd
   - H2: Eigenaardigheden
-  - H2: Catchphrase
+  - H2: Slagzin
   - H2: Gerelateerd
 
 ## reference/templates/IDENTITY.md
@@ -8345,7 +8345,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## reference/templates/SOUL.dev.md
 
 - Route: /reference/templates/SOUL.dev
-- Koppen:
+- Kopteksten:
   - H1: SOUL.md - De ziel van C-3PO
   - H2: Wie ik ben
   - H2: Mijn doel
@@ -8359,19 +8359,19 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## reference/templates/SOUL.md
 
 - Route: /reference/templates/SOUL
-- Koppen:
+- Kopteksten:
   - H1: SOUL.md - Wie je bent
   - H2: Kernwaarheden
   - H2: Grenzen
-  - H2: Vibe
-  - H2: Continuiteit
+  - H2: Sfeer
+  - H2: Continuïteit
   - H2: Gerelateerd
 
 ## reference/templates/TOOLS.dev.md
 
 - Route: /reference/templates/TOOLS.dev
-- Koppen:
-  - H1: TOOLS.md - Gebruikerstoolnotities (bewerkbaar)
+- Kopteksten:
+  - H1: TOOLS.md - Gebruikersnotities voor tools (bewerkbaar)
   - H2: Voorbeelden
   - H3: imsg
   - H3: sag
@@ -8380,24 +8380,24 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## reference/templates/TOOLS.md
 
 - Route: /reference/templates/TOOLS
-- Koppen:
+- Kopteksten:
   - H1: TOOLS.md - Lokale notities
   - H2: Wat hier thuishoort
   - H2: Voorbeelden
-  - H2: Waarom gescheiden?
+  - H2: Waarom apart?
   - H2: Gerelateerd
 
 ## reference/templates/USER.dev.md
 
 - Route: /reference/templates/USER.dev
-- Koppen:
+- Kopteksten:
   - H1: USER.md - Gebruikersprofiel
   - H2: Gerelateerd
 
 ## reference/templates/USER.md
 
 - Route: /reference/templates/USER
-- Koppen:
+- Kopteksten:
   - H1: USER.md - Over je mens
   - H2: Context
   - H2: Gerelateerd
@@ -8405,11 +8405,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## reference/test.md
 
 - Route: /reference/test
-- Koppen:
-  - H2: Lokale PR-poort
+- Kopteksten:
+  - H2: Lokale PR-gate
   - H2: Benchmark voor modellatentie (lokale sleutels)
-  - H2: Benchmark voor CLI-opstart
-  - H2: Benchmark voor Gateway-opstart
+  - H2: Benchmark voor CLI-start
+  - H2: Benchmark voor Gateway-start
   - H2: Benchmark voor Gateway-herstart
   - H2: Onboarding-E2E (Docker)
   - H2: QR-importrooktest (Docker)
@@ -8418,14 +8418,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## reference/token-use.md
 
 - Route: /reference/token-use
-- Koppen:
+- Kopteksten:
   - H2: Hoe de systeemprompt wordt opgebouwd
   - H2: Wat meetelt in het contextvenster
-  - H2: Huidig tokengebruik bekijken
-  - H2: Kostenschatting (wanneer getoond)
+  - H2: Hoe je het huidige tokengebruik ziet
+  - H2: Kostenraming (wanneer getoond)
   - H2: Impact van cache-TTL en opschonen
   - H3: Voorbeeld: houd 1 uur cache warm met Heartbeat
-  - H3: Voorbeeld: gemengd verkeer met cache-strategie per agent
+  - H3: Voorbeeld: gemengd verkeer met cachestrategie per agent
   - H3: Anthropic 1M-context
   - H2: Tips om tokendruk te verminderen
   - H2: Gerelateerd
@@ -8433,33 +8433,33 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## reference/transcript-hygiene.md
 
 - Route: /reference/transcript-hygiene
-- Koppen:
+- Kopteksten:
   - H2: Globale regel: runtimecontext is geen gebruikerstranscript
   - H2: Waar dit draait
-  - H2: Globale regel: beeldsanering
+  - H2: Globale regel: afbeeldingssanering
   - H2: Globale regel: misvormde toolaanroepen
   - H2: Globale regel: onvolledige turns met alleen redenering
   - H2: Globale regel: herkomst van invoer tussen sessies
   - H2: Providermatrix (huidig gedrag)
-  - H2: Historisch gedrag (voor 2026.1.22)
+  - H2: Historisch gedrag (vóór 2026.1.22)
   - H2: Gerelateerd
 
 ## reference/wizard.md
 
 - Route: /reference/wizard
-- Koppen:
+- Kopteksten:
   - H2: Flowdetails (lokale modus)
   - H2: Niet-interactieve modus
   - H3: Agent toevoegen (niet-interactief)
   - H2: Gateway-wizard-RPC
   - H2: Signal-instelling (signal-cli)
   - H2: Wat de wizard schrijft
-  - H2: Gerelateerde documentatie
+  - H2: Gerelateerde docs
 
 ## releases/index.md
 
 - Route: /releases
-- Koppen:
+- Kopteksten:
   - H1: Releaseopmerkingen
   - H2: Binnenkort
   - H2: Ruwe releasegeschiedenis
@@ -8467,17 +8467,17 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## security/CONTRIBUTING-THREAT-MODEL.md
 
 - Route: /security/CONTRIBUTING-THREAT-MODEL
-- Koppen:
+- Kopteksten:
   - H2: Manieren om bij te dragen
   - H3: Een dreiging toevoegen
-  - H3: Een beperking voorstellen
+  - H3: Een mitigatie voorstellen
   - H3: Een aanvalsketen voorstellen
-  - H3: Bestaande inhoud herstellen of verbeteren
+  - H3: Bestaande inhoud corrigeren of verbeteren
   - H2: Wat we gebruiken
   - H3: MITRE ATLAS-framework
   - H3: Dreigings-id's
   - H3: Risiconiveaus
-  - H2: Reviewproces
+  - H2: Beoordelingsproces
   - H2: Bronnen
   - H2: Contact
   - H2: Erkenning
@@ -8486,22 +8486,22 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## security/THREAT-MODEL-ATLAS.md
 
 - Route: /security/THREAT-MODEL-ATLAS
-- Koppen:
+- Kopteksten:
   - H2: MITRE ATLAS-framework
   - H3: Frameworktoeschrijving
   - H3: Bijdragen aan dit dreigingsmodel
   - H2: 1. Inleiding
   - H3: 1.1 Doel
-  - H3: 1.2 Bereik
-  - H3: 1.3 Buiten bereik
+  - H3: 1.2 Scope
+  - H3: 1.3 Buiten scope
   - H2: 2. Systeemarchitectuur
   - H3: 2.1 Vertrouwensgrenzen
-  - H3: 2.2 Datastromen
+  - H3: 2.2 Gegevensstromen
   - H2: 3. Dreigingsanalyse per ATLAS-tactiek
   - H3: 3.1 Verkenning (AML.TA0002)
-  - H4: T-RECON-001: Detectie van agentendpoint
-  - H4: T-RECON-002: Probing van kanaalintegratie
-  - H3: 3.2 Initiele toegang (AML.TA0004)
+  - H4: T-RECON-001: Detectie van agenteindpunten
+  - H4: T-RECON-002: Probing van kanaalintegraties
+  - H3: 3.2 Initiële toegang (AML.TA0004)
   - H4: T-ACCESS-001: Onderschepping van koppelingscode
   - H4: T-ACCESS-002: AllowFrom-spoofing
   - H4: T-ACCESS-003: Tokendiefstal
@@ -8509,38 +8509,38 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H4: T-EXEC-001: Directe promptinjectie
   - H4: T-EXEC-002: Indirecte promptinjectie
   - H4: T-EXEC-003: Injectie van toolargumenten
-  - H4: T-EXEC-004: Omzeiling van uitvoeringsgoedkeuring
+  - H4: T-EXEC-004: Omzeiling van exec-goedkeuring
   - H3: 3.4 Persistentie (AML.TA0006)
-  - H4: T-PERSIST-001: Installatie van kwaadaardige Skill
-  - H4: T-PERSIST-002: Vergiftiging van Skill-update
+  - H4: T-PERSIST-001: Kwaadaardige installatie van Skills
+  - H4: T-PERSIST-002: Vergiftiging van Skill-updates
   - H4: T-PERSIST-003: Manipulatie van agentconfiguratie
-  - H3: 3.5 Verdedigingsontwijking (AML.TA0007)
-  - H4: T-EVADE-001: Omzeiling van moderatiepatroon
-  - H4: T-EVADE-002: Ontsnapping uit contentwrapper
-  - H3: 3.6 Ontdekking (AML.TA0008)
+  - H3: 3.5 Ontwijking van verdediging (AML.TA0007)
+  - H4: T-EVADE-001: Omzeiling van moderatiepatronen
+  - H4: T-EVADE-002: Ontsnappen uit contentwrapper
+  - H3: 3.6 Detectie (AML.TA0008)
   - H4: T-DISC-001: Toolenumeratie
   - H4: T-DISC-002: Extractie van sessiegegevens
   - H3: 3.7 Verzameling en exfiltratie (AML.TA0009, AML.TA0010)
-  - H4: T-EXFIL-001: Datadiefstal via webfetch
+  - H4: T-EXFIL-001: Gegevensdiefstal via webfetch
   - H4: T-EXFIL-002: Ongeautoriseerd verzenden van berichten
   - H4: T-EXFIL-003: Verzamelen van inloggegevens
   - H3: 3.8 Impact (AML.TA0011)
   - H4: T-IMPACT-001: Ongeautoriseerde opdrachtuitvoering
   - H4: T-IMPACT-002: Uitputting van resources (DoS)
   - H4: T-IMPACT-003: Reputatieschade
-  - H2: 4. ClawHub-toeleveringsketenanalyse
+  - H2: 4. Analyse van de ClawHub-toeleveringsketen
   - H3: 4.1 Huidige beveiligingscontroles
   - H3: 4.2 Patronen voor moderatievlaggen
   - H3: 4.3 Geplande verbeteringen
   - H2: 5. Risicomatrix
   - H3: 5.1 Waarschijnlijkheid versus impact
-  - H3: 5.2 Aanvalsketens op het kritieke pad
+  - H3: 5.2 Kritieke-pad-aanvalsketens
   - H2: 6. Samenvatting van aanbevelingen
-  - H3: 6.1 Onmiddellijk (P0)
+  - H3: 6.1 Direct (P0)
   - H3: 6.2 Korte termijn (P1)
   - H3: 6.3 Middellange termijn (P2)
   - H2: 7. Bijlagen
-  - H3: 7.1 ATLAS-techniekmapping
+  - H3: 7.1 Koppeling van ATLAS-technieken
   - H3: 7.2 Belangrijke beveiligingsbestanden
   - H3: 7.3 Woordenlijst
   - H2: Gerelateerd
@@ -8548,25 +8548,25 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## security/formal-verification.md
 
 - Route: /security/formal-verification
-- Koppen:
+- Kopteksten:
   - H2: Waar de modellen staan
   - H2: Belangrijke kanttekeningen
   - H2: Resultaten reproduceren
-  - H3: Gateway-blootstelling en onjuiste open-Gateway-configuratie
-  - H3: Node exec-pijplijn (capaciteit met hoogste risico)
+  - H3: Gateway-blootstelling en verkeerde configuratie van open gateway
+  - H3: Node-exec-pijplijn (capaciteit met het hoogste risico)
   - H3: Koppelingsopslag (DM-gating)
-  - H3: Ingress-gating (vermeldingen + bypass van besturingsopdrachten)
-  - H3: Isolatie van routering/sessiesleutel
+  - H3: Ingress-gating (vermeldingen + omzeiling van besturingsopdrachten)
+  - H3: Isolatie van routing-/sessiesleutels
   - H2: v1++: aanvullende begrensde modellen (concurrency, retries, trace-correctheid)
   - H3: Concurrency / idempotentie van koppelingsopslag
-  - H3: Tracecorrelatie / idempotentie van ingress
-  - H3: Voorrang van routing dmScope + identityLinks
+  - H3: Ingress-tracecorrelatie / idempotentie
+  - H3: Routingvoorrang van dmScope + identityLinks
   - H2: Gerelateerd
 
 ## security/incident-response.md
 
 - Route: /security/incident-response
-- Koppen:
+- Kopteksten:
   - H2: 1. Detectie en triage
   - H2: 2. Beoordeling
   - H2: 3. Respons
@@ -8576,12 +8576,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## security/network-proxy.md
 
 - Route: /security/network-proxy
-- Koppen:
+- Kopteksten:
   - H2: Waarom een proxy gebruiken
   - H2: Hoe OpenClaw verkeer routeert
   - H2: Gerelateerde proxytermen
   - H2: Configuratie
-  - H3: Gateway Loopback Mode
+  - H3: Gateway Loopback-modus
   - H2: Proxyvereisten
   - H2: Aanbevolen geblokkeerde bestemmingen
   - H2: Validatie
@@ -8591,13 +8591,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## specs/claw-supervisor.md
 
 - Route: /specs/claw-supervisor
-- Koppen:
+- Kopteksten:
   - H1: Claw Supervisor
   - H2: Doel
   - H2: Productmodel
   - H2: Architectuur
-  - H2: Codex app-servercontract
-  - H2: Sessieregister
+  - H2: Contract tussen Codex App-Server
+  - H2: Sesieregister
   - H2: MCP-oppervlak voor Codex
   - H2: Claw-besturingsoppervlak
   - H2: Startflow
@@ -8610,16 +8610,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## start/bootstrapping.md
 
 - Route: /start/bootstrapping
-- Koppen:
+- Kopteksten:
   - H2: Wat bootstrapping doet
   - H2: Bootstrapping overslaan
   - H2: Waar het draait
-  - H2: Gerelateerde documentatie
+  - H2: Gerelateerde docs
 
 ## start/docs-directory.md
 
 - Route: /start/docs-directory
-- Koppen:
+- Kopteksten:
   - H2: Begin hier
   - H2: Providers en UX
   - H2: Companion-apps
@@ -8629,27 +8629,27 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## start/getting-started.md
 
 - Route: /start/getting-started
-- Koppen:
+- Kopteksten:
   - H2: Wat je nodig hebt
   - H2: Snelle installatie
-  - H2: Wat je hierna doet
+  - H2: Wat je hierna kunt doen
   - H2: Gerelateerd
 
 ## start/hubs.md
 
 - Route: /start/hubs
-- Koppen:
+- Kopteksten:
   - H2: Begin hier
   - H2: Installatie + updates
   - H2: Kernconcepten
   - H2: Providers + ingress
   - H2: Gateway + operaties
   - H2: Tools + automatisering
-  - H2: Nodes, media, stem
-  - H2: Platforms
-  - H2: macOS companion-app (geavanceerd)
+  - H2: Nodes, media, spraak
+  - H2: Platformen
+  - H2: macOS-companion-app (geavanceerd)
   - H2: Plugins
-  - H2: Workspace + sjablonen
+  - H2: Werkruimte + sjablonen
   - H2: Project
   - H2: Testen + release
   - H2: Gerelateerd
@@ -8657,7 +8657,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## start/lore.md
 
 - Route: /start/lore
-- Koppen:
+- Kopteksten:
   - H1: De lore van OpenClaw 🦞📖
   - H2: Het oorsprongsverhaal
   - H2: De eerste vervelling (27 januari 2026)
@@ -8670,82 +8670,82 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: De grote incidenten
   - H3: De directorydump (3 dec. 2025)
   - H3: De grote vervelling (27 jan. 2026)
-  - H3: De uiteindelijke vorm (30 januari 2026)
-  - H3: De robotwinkelsessie (3 dec. 2025)
+  - H3: De eindvorm (30 januari 2026)
+  - H3: De robot-winkelspree (3 dec. 2025)
   - H2: Heilige teksten
   - H2: Het kreeftencredo
-  - H3: De saga van pictogramgeneratie (27 jan. 2026)
+  - H3: De saga van de pictogramgeneratie (27 jan. 2026)
   - H2: De toekomst
   - H2: Gerelateerd
 
 ## start/onboarding-overview.md
 
 - Route: /start/onboarding-overview
-- Koppen:
+- Kopteksten:
   - H2: Welk pad moet ik gebruiken?
   - H2: Wat onboarding configureert
   - H2: CLI-onboarding
-  - H2: Onboarding van de macOS-app
+  - H2: Onboarding via de macOS-app
   - H2: Aangepaste of niet-vermelde providers
   - H2: Gerelateerd
 
 ## start/onboarding.md
 
 - Route: /start/onboarding
-- Koppen:
+- Kopteksten:
   - H2: Gerelateerd
 
 ## start/openclaw.md
 
 - Route: /start/openclaw
-- Koppen:
+- Kopteksten:
   - H2: ⚠️ Veiligheid eerst
   - H2: Vereisten
-  - H2: De setup met twee telefoons (aanbevolen)
-  - H2: Quickstart van 5 minuten
-  - H2: Geef de agent een workspace (AGENTS)
-  - H2: De config die er "een assistent" van maakt
+  - H2: De configuratie met twee telefoons (aanbevolen)
+  - H2: Snelstart in 5 minuten
+  - H2: Geef de agent een werkruimte (AGENTS)
+  - H2: De configuratie die er "een assistent" van maakt
   - H2: Sessies en geheugen
   - H2: Heartbeats (proactieve modus)
   - H2: Media in en uit
-  - H2: Operatiechecklist
+  - H2: Operationele checklist
   - H2: Volgende stappen
   - H2: Gerelateerd
 
 ## start/quickstart.md
 
 - Route: /start/quickstart
-- Koppen:
+- Kopteksten:
   - H2: Gerelateerd
 
 ## start/setup.md
 
 - Route: /start/setup
-- Koppen:
+- Kopteksten:
   - H2: TL;DR
-  - H2: Vereisten (vanaf bron)
-  - H2: Aanpassingsstrategie (zodat updates geen pijn doen)
-  - H2: Voer de Gateway uit vanuit deze repo
+  - H2: Vereisten (vanuit bron)
+  - H2: Strategie voor aanpassing (zodat updates geen pijn doen)
+  - H2: De Gateway vanuit deze repo draaien
   - H2: Stabiele workflow (macOS-app eerst)
   - H2: Bleeding-edge workflow (Gateway in een terminal)
-  - H3: 0) (Optioneel) Voer ook de macOS-app uit vanaf bron
-  - H3: 1) Start de dev-Gateway
-  - H3: 2) Laat de macOS-app naar je draaiende Gateway wijzen
+  - H3: 0) (Optioneel) Draai ook de macOS-app vanuit bron
+  - H3: 1) Start de ontwikkel-Gateway
+  - H3: 2) Wijs de macOS-app naar je draaiende Gateway
   - H3: 3) Verifieer
   - H3: Veelvoorkomende valkuilen
   - H2: Kaart voor opslag van inloggegevens
   - H2: Bijwerken (zonder je setup te slopen)
   - H2: Linux (systemd-gebruikersservice)
-  - H2: Gerelateerde documentatie
+  - H2: Gerelateerde docs
 
 ## start/showcase.md
 
 - Route: /start/showcase
-- Koppen:
-  - H2: Vers van Discord
+- Kopteksten:
+  - H2: Vers uit Discord
   - H2: Automatisering en workflows
   - H2: Kennis en geheugen
-  - H2: Stem en telefoon
+  - H2: Spraak en telefoon
   - H2: Infrastructuur en deployment
   - H2: Huis en hardware
   - H2: Communityprojecten
@@ -8755,47 +8755,47 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## start/wizard-cli-automation.md
 
 - Route: /start/wizard-cli-automation
-- Koppen:
+- Kopteksten:
   - H2: Baseline niet-interactief voorbeeld
-  - H2: Providerspecifieke voorbeelden
+  - H2: Provider-specifieke voorbeelden
   - H2: Nog een agent toevoegen
-  - H2: Gerelateerde documentatie
+  - H2: Gerelateerde docs
 
 ## start/wizard-cli-reference.md
 
 - Route: /start/wizard-cli-reference
-- Koppen:
+- Kopteksten:
   - H2: Wat de wizard doet
-  - H2: Details van lokale flow
-  - H2: Details van remote modus
+  - H2: Lokale flowdetails
+  - H2: Details van externe modus
   - H2: Auth- en modelopties
   - H2: Uitvoer en internals
-  - H2: Gerelateerde documentatie
+  - H2: Gerelateerde docs
 
 ## start/wizard.md
 
 - Route: /start/wizard
-- Koppen:
+- Kopteksten:
   - H2: Locale
   - H2: QuickStart versus geavanceerd
   - H2: Wat onboarding configureert
   - H2: Nog een agent toevoegen
   - H2: Volledige referentie
-  - H2: Gerelateerde documentatie
+  - H2: Gerelateerde docs
 
 ## tools/acp-agents-setup.md
 
 - Route: /tools/acp-agents-setup
-- Koppen:
-  - H2: acpx-harnessondersteuning (huidig)
-  - H2: Vereiste config
-  - H2: Plugin-installatie voor acpx-backend
-  - H3: acpx-opdracht en versieconfiguratie
-  - H3: Automatische dependency-installatie
-  - H3: MCP-brug voor Plugin-tools
-  - H3: MCP-brug voor OpenClaw-tools
-  - H3: Configuratie van runtime-operatietime-out
-  - H3: Configuratie van healthprobe-agent
+- Kopteksten:
+  - H2: acpx-harnasondersteuning (huidig)
+  - H2: Vereiste configuratie
+  - H2: Plugin-instelling voor acpx-backend
+  - H3: acpx-opdracht- en versieconfiguratie
+  - H3: Automatische afhankelijkheidsinstallatie
+  - H3: MCP-bridge voor Plugin-tools
+  - H3: MCP-bridge voor OpenClaw-tools
+  - H3: Configuratie van runtime-operation-time-out
+  - H3: Configuratie van health-probe-agent
   - H2: Machtigingsconfiguratie
   - H3: permissionMode
   - H3: nonInteractivePermissions
@@ -8807,27 +8807,27 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/acp-agents
 - Koppen:
   - H2: Welke pagina wil ik?
-  - H2: Werkt dit direct?
+  - H2: Werkt dit standaard?
   - H2: Ondersteunde harness-doelen
-  - H2: Operator-runbook
+  - H2: Draaiboek voor operators
   - H2: ACP versus sub-agents
   - H2: Hoe ACP Claude Code uitvoert
   - H2: Gebonden sessies
   - H3: Mentaal model
-  - H3: Bindingen voor huidige conversatie
+  - H3: Bindingen voor het huidige gesprek
   - H2: Persistente kanaalbindingen
   - H3: Bindingsmodel
   - H3: Runtime-standaarden per agent
   - H3: Voorbeeld
   - H3: Gedrag
   - H2: ACP-sessies starten
-  - H3: sessionsspawn-parameters
+  - H3: parameters voor sessionsspawn
   - H2: Spawn-bindings- en threadmodi
   - H2: Leveringsmodel
   - H2: Sandbox-compatibiliteit
-  - H2: Oplossing van sessiedoelen
+  - H2: Sessie-doelresolutie
   - H2: ACP-besturing
-  - H3: Mapping van runtime-opties
+  - H3: Koppeling van runtime-opties
   - H2: acpx-harness, Plugin-installatie en machtigingen
   - H2: Probleemoplossing
   - H2: Gerelateerd
@@ -8836,8 +8836,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /tools/agent-send
 - Koppen:
-  - H2: Snel aan de slag
-  - H2: Flags
+  - H2: Snel starten
+  - H2: Vlaggen
   - H2: Gedrag
   - H2: Voorbeelden
   - H2: Gerelateerd
@@ -8847,7 +8847,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/apply-patch
 - Koppen:
   - H2: Parameters
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Voorbeeld
   - H2: Gerelateerd
 
@@ -8855,10 +8855,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /tools/brave-search
 - Koppen:
-  - H2: Een API-sleutel ophalen
-  - H2: Config-voorbeeld
+  - H2: Een API-sleutel verkrijgen
+  - H2: Configuratievoorbeeld
   - H2: Toolparameters
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## tools/browser-control.md
@@ -8866,16 +8866,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/browser-control
 - Koppen:
   - H2: Control-API (optioneel)
-  - H3: /act-foutcontract
+  - H3: Foutcontract voor /act
   - H3: Playwright-vereiste
   - H4: Docker Playwright-installatie
   - H2: Hoe het werkt (intern)
-  - H2: CLI-snelreferentie
+  - H2: Snelle CLI-referentie
   - H2: Snapshots en refs
-  - H2: Wait-power-ups
-  - H2: Debug-workflows
+  - H2: Uitbreidingen voor wachten
+  - H2: Debugworkflows
   - H2: JSON-uitvoer
-  - H2: State- en omgevingsknoppen
+  - H2: Status- en omgevingsinstellingen
   - H2: Beveiliging en privacy
   - H2: Gerelateerd
 
@@ -8886,9 +8886,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Probleem: "Failed to start Chrome CDP on port 18800"
   - H3: Hoofdoorzaak
   - H3: Oplossing 1: Installeer Google Chrome (aanbevolen)
-  - H3: Oplossing 2: Gebruik Snap Chromium met Attach-Only Mode
+  - H3: Oplossing 2: Gebruik Snap Chromium met alleen-koppelenmodus
   - H3: Controleren of de browser werkt
-  - H3: Config-referentie
+  - H3: Configuratiereferentie
   - H3: Probleem: "No Chrome tabs found for profile=\"user\""
   - H2: Gerelateerd
 
@@ -8907,14 +8907,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/browser-wsl2-windows-remote-cdp-troubleshooting
 - Koppen:
   - H2: Kies eerst de juiste browsermodus
-  - H3: Optie 1: Ruwe remote CDP van WSL2 naar Windows
-  - H3: Optie 2: Host-local Chrome MCP
+  - H3: Optie 1: Ruwe externe CDP van WSL2 naar Windows
+  - H3: Optie 2: Host-lokale Chrome MCP
   - H2: Werkende architectuur
   - H2: Waarom deze setup verwarrend is
   - H2: Kritieke regel voor de Control UI
   - H2: Valideren in lagen
   - H3: Laag 1: Controleer of Chrome CDP aanbiedt op Windows
-  - H3: Laag 2: Controleer of WSL2 dat Windows-endpoint kan bereiken
+  - H3: Laag 2: Controleer of WSL2 dat Windows-eindpunt kan bereiken
   - H3: Laag 3: Configureer het juiste browserprofiel
   - H3: Laag 4: Controleer de Control UI-laag afzonderlijk
   - H3: Laag 5: Controleer end-to-end browserbesturing
@@ -8928,23 +8928,23 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/browser
 - Koppen:
   - H2: Wat je krijgt
-  - H2: Snel aan de slag
+  - H2: Snel starten
   - H2: Plugin-besturing
-  - H2: Agent-richtlijnen
-  - H2: Ontbrekende browseropdracht of -tool
-  - H2: Profielen: openclaw versus user
+  - H2: Agentbegeleiding
+  - H2: Ontbrekende browseropdracht of tool
+  - H2: Profielen: openclaw versus gebruiker
   - H2: Configuratie
-  - H3: Screenshotvisie (ondersteuning voor text-only modellen)
-  - H2: Gebruik Brave of een andere Chromium-gebaseerde browser
-  - H2: Lokale versus remote besturing
-  - H2: Node-browserproxy (zero-config standaard)
-  - H2: Browserless (gehoste remote CDP)
+  - H3: Screenshotvisie (ondersteuning voor modellen met alleen tekst)
+  - H2: Brave of een andere Chromium-gebaseerde browser gebruiken
+  - H2: Lokale versus externe besturing
+  - H2: Node-browserproxy (standaard zonder configuratie)
+  - H2: Browserless (gehoste externe CDP)
   - H3: Browserless Docker op dezelfde host
   - H2: Directe WebSocket-CDP-providers
   - H3: Browserbase
   - H3: Notte
   - H2: Beveiliging
-  - H2: Profielen (multi-browser)
+  - H2: Profielen (meerdere browsers)
   - H2: Bestaande sessie via Chrome DevTools MCP
   - H3: Aangepaste Chrome MCP-start
   - H2: Isolatiegaranties
@@ -8952,7 +8952,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Control-API (optioneel)
   - H2: Probleemoplossing
   - H3: CDP-opstartfout versus navigatie-SSRF-blokkade
-  - H2: Agent-tools + hoe besturing werkt
+  - H2: Agenttools + hoe besturing werkt
   - H2: Gerelateerd
 
 ## tools/btw.md
@@ -8963,7 +8963,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Wat het niet doet
   - H2: Hoe context werkt
   - H2: Leveringsmodel
-  - H2: Oppervlakgedrag
+  - H2: Gedrag per oppervlak
   - H3: TUI
   - H3: Externe kanalen
   - H3: Control UI / web
@@ -9011,18 +9011,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /tools/diffs
 - Koppen:
-  - H2: Snel aan de slag
-  - H2: Ingebouwde systeemrichtlijnen uitschakelen
-  - H2: Typische agent-workflow
+  - H2: Snel starten
+  - H2: Ingebouwde systeembegeleiding uitschakelen
+  - H2: Typische agentworkflow
   - H2: Invoervoorbeelden
   - H2: Referentie voor toolinvoer
-  - H2: Syntaxisaccentuering
+  - H2: Syntaxismarkering
   - H2: Contract voor uitvoerdetails
   - H2: Samengevouwen ongewijzigde secties
   - H2: Plugin-standaarden
   - H3: Persistente viewer-URL-configuratie
   - H2: Beveiligingsconfiguratie
-  - H2: Artefactlevenscyclus en opslag
+  - H2: Levenscyclus en opslag van artefacten
   - H2: Viewer-URL en netwerkgedrag
   - H2: Beveiligingsmodel
   - H2: Browservereisten voor bestandsmodus
@@ -9035,20 +9035,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/duckduckgo-search
 - Koppen:
   - H2: Setup
-  - H2: Config
+  - H2: Configuratie
   - H2: Toolparameters
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## tools/elevated.md
 
 - Route: /tools/elevated
 - Koppen:
-  - H2: Richtlijnen
+  - H2: Directieven
   - H2: Hoe het werkt
-  - H2: Oplossingsvolgorde
+  - H2: Resolutievolgorde
   - H2: Beschikbaarheid en allowlists
-  - H2: Wat elevated niet bestuurt
+  - H2: Wat elevated niet beheert
   - H2: Gerelateerd
 
 ## tools/exa-search.md
@@ -9056,34 +9056,34 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/exa-search
 - Koppen:
   - H2: Plugin installeren
-  - H2: Een API-sleutel ophalen
-  - H2: Config
-  - H2: Base URL-override
+  - H2: Een API-sleutel verkrijgen
+  - H2: Configuratie
+  - H2: Basis-URL overschrijven
   - H2: Toolparameters
   - H3: Contentextractie
   - H3: Zoekmodi
-  - H2: Notities
+  - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## tools/exec-approvals-advanced.md
 
 - Route: /tools/exec-approvals-advanced
 - Koppen:
-  - H2: Safe bins (alleen stdin)
-  - H3: Argv-validatie en geweigerde flags
-  - H3: Vertrouwde binaire directories
-  - H3: Shell-chaining, wrappers en multiplexers
-  - H3: Safe bins versus allowlist
+  - H2: Veilige bins (alleen stdin)
+  - H3: Argv-validatie en geweigerde vlaggen
+  - H3: Vertrouwde binaire mappen
+  - H3: Shell-ketens, wrappers en multiplexers
+  - H3: Veilige bins versus allowlist
   - H2: Interpreter-/runtime-opdrachten
   - H3: Leveringsgedrag voor follow-ups
-  - H2: Goedkeuring doorsturen naar chatkanalen
-  - H3: Plugin-goedkeuring doorsturen
+  - H2: Goedkeuringsdoorsturing naar chatkanalen
+  - H3: Plugin-goedkeuringsdoorsturing
   - H3: Goedkeuringen in dezelfde chat op elk kanaal
   - H3: Native goedkeuringslevering
   - H3: macOS IPC-flow
   - H2: FAQ
-  - H3: Wanneer zouden accountId en threadId worden gebruikt op een goedkeuringsdoel?
-  - H3: Als goedkeuringen naar een sessie worden gestuurd, kan dan iedereen in die sessie ze goedkeuren?
+  - H3: Wanneer zouden accountId en threadId op een goedkeuringsdoel worden gebruikt?
+  - H3: Wanneer goedkeuringen naar een sessie worden verzonden, kan iedereen in die sessie ze dan goedkeuren?
   - H2: Gerelateerd
 
 ## tools/exec-approvals.md
@@ -9095,7 +9095,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Vertrouwensmodel
   - H3: macOS-splitsing
   - H2: Instellingen en opslag
-  - H2: Beleidsknoppen
+  - H2: Beleidsinstellingen
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
@@ -9103,17 +9103,17 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
   - H2: YOLO-modus (geen goedkeuring)
-  - H3: Persistente gateway-host "never prompt"-setup
+  - H3: Persistente gateway-host-setup voor "never prompt"
   - H3: Lokale snelkoppeling
   - H3: Node-host
-  - H3: Sessiegebonden snelkoppeling
+  - H3: Snelkoppeling alleen voor sessie
   - H2: Allowlist (per agent)
   - H3: Argumenten beperken met argPattern
   - H2: Skill-CLI's automatisch toestaan
-  - H2: Safe bins en goedkeuring doorsturen
-  - H2: Control UI-bewerking
+  - H2: Veilige bins en goedkeuringsdoorsturing
+  - H2: Bewerken in Control UI
   - H2: Goedkeuringsflow
-  - H2: Systeemgebeurtenissen
+  - H2: Systeemevenementen
   - H2: Gedrag bij geweigerde goedkeuring
   - H2: Implicaties
   - H2: Gerelateerd
@@ -9123,12 +9123,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/exec
 - Koppen:
   - H2: Parameters
-  - H2: Config
+  - H2: Configuratie
   - H3: PATH-afhandeling
-  - H2: Sessie-overrides (/exec)
+  - H2: Sessie-overschrijvingen (/exec)
   - H2: Autorisatiemodel
   - H2: Exec-goedkeuringen (companion-app / node-host)
-  - H2: Allowlist + safe bins
+  - H2: Allowlist + veilige bins
   - H2: Voorbeelden
   - H2: applypatch
   - H2: Gerelateerd
@@ -9139,7 +9139,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Koppen:
   - H2: Plugin installeren
   - H2: Webfetch zonder sleutel en API-sleutels
-  - H2: Firecrawl Search configureren
+  - H2: Firecrawl-zoekfunctie configureren
   - H2: Firecrawl-webfetch-fallback configureren
   - H3: Zelfgehoste Firecrawl
   - H2: Firecrawl-Plugin-tools
@@ -9153,12 +9153,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /tools/gemini-search
 - Koppen:
-  - H2: Een API-sleutel ophalen
-  - H2: Config
+  - H2: Een API-sleutel verkrijgen
+  - H2: Configuratie
   - H2: Hoe het werkt
   - H2: Ondersteunde parameters
   - H2: Modelselectie
-  - H2: Base URL-overrides
+  - H2: Basis-URL-overschrijvingen
   - H2: Gerelateerd
 
 ## tools/goal.md
@@ -9166,9 +9166,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/goal
 - Koppen:
   - H1: Doel
-  - H2: Snel aan de slag
+  - H2: Snel starten
   - H2: Waar doelen voor zijn
-  - H2: Opdrachtreferentie
+  - H2: Opdrachtenreferentie
   - H2: Statussen
   - H2: Tokenbudgetten
   - H2: Modeltools
@@ -9182,27 +9182,27 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/grok-search
 - Koppen:
   - H2: Onboarding en configureren
-  - H2: Inloggen of een API-sleutel ophalen
-  - H2: Config
+  - H2: Inloggen of een API-sleutel verkrijgen
+  - H2: Configuratie
   - H2: Hoe het werkt
   - H2: Ondersteunde parameters
-  - H2: Base URL-overrides
+  - H2: Basis-URL-overschrijvingen
   - H2: Gerelateerd
 
 ## tools/image-generation.md
 
 - Route: /tools/image-generation
 - Koppen:
-  - H2: Snel aan de slag
+  - H2: Snel starten
   - H2: Veelvoorkomende routes
   - H2: Ondersteunde providers
-  - H2: Provider-capabilities
+  - H2: Providermogelijkheden
   - H2: Toolparameters
   - H2: Configuratie
   - H3: Modelselectie
   - H3: Providerselectievolgorde
   - H3: Afbeeldingen bewerken
-  - H2: Provider-deep dives
+  - H2: Diepgaande provideruitleg
   - H2: Voorbeelden
   - H2: Gerelateerd
 
@@ -9215,7 +9215,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Ingebouwde toolcategorieën
   - H2: Door Plugin geleverde tools
   - H2: Toegang en goedkeuringen configureren
-  - H2: Capabilities uitbreiden
+  - H2: Mogelijkheden uitbreiden
   - H2: Ontbrekende tools oplossen
   - H2: Gerelateerd
 
@@ -9223,8 +9223,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /tools/kimi-search
 - Koppen:
-  - H2: Een API-sleutel ophalen
-  - H2: Config
+  - H2: Een API-sleutel verkrijgen
+  - H2: Configuratie
   - H2: Hoe het werkt
   - H2: Ondersteunde parameters
   - H2: Gerelateerd
@@ -9234,12 +9234,12 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 - Route: /tools/llm-task
 - Koppen:
   - H2: De Plugin inschakelen
-  - H2: Config (optioneel)
+  - H2: Configuratie (optioneel)
   - H2: Toolparameters
   - H2: Uitvoer
   - H2: Voorbeeld: Lobster-workflowstap
   - H3: Belangrijke beperking
-  - H2: Veiligheidsnotities
+  - H2: Veiligheidsopmerkingen
   - H2: Gerelateerd
 
 ## tools/lobster.md
@@ -9261,13 +9261,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: run
   - H3: resume
   - H3: Optionele invoer
-  - H2: Uitvoerenvelop
+  - H2: Uitvoer-envelop
   - H2: Goedkeuringen
   - H2: OpenProse
   - H2: Veiligheid
   - H2: Probleemoplossing
   - H2: Meer informatie
-  - H2: Casestudy: community-workflows
+  - H2: Casestudy: communityworkflows
   - H2: Gerelateerd
 
 ## tools/loop-detection.md
@@ -9278,7 +9278,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Configuratieblok
   - H3: Veldgedrag
   - H2: Aanbevolen setup
-  - H2: Post-Compaction-bescherming
+  - H2: Guard na Compaction
   - H2: Logs en verwacht gedrag
   - H2: Gerelateerd
 
@@ -9286,19 +9286,19 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 
 - Route: /tools/media-overview
 - Koppen:
-  - H2: Capabilities
-  - H2: Provider-capabilitymatrix
-  - H2: Async versus synchroon
-  - H2: Spraak-naar-tekst en Voice Call
-  - H2: Provider-mappings (hoe leveranciers over oppervlakken zijn verdeeld)
+  - H2: Mogelijkheden
+  - H2: Matrix van providermogelijkheden
+  - H2: Asynchroon versus synchroon
+  - H2: Spraak-naar-tekst en spraakoproep
+  - H2: Providertoewijzingen (hoe leveranciers over oppervlakken worden verdeeld)
   - H2: Gerelateerd
 
 ## tools/minimax-search.md
 
 - Route: /tools/minimax-search
 - Koppen:
-  - H2: Een Token Plan-referentie ophalen
-  - H2: Config
+  - H2: Een Token Plan-referentie verkrijgen
+  - H2: Configuratie
   - H2: Regioselectie
   - H2: Ondersteunde parameters
   - H2: Gerelateerd
@@ -9306,14 +9306,14 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/multi-agent-sandbox-tools.md
 
 - Route: /tools/multi-agent-sandbox-tools
-- Kopteksten:
+- Koppen:
   - H2: Configuratievoorbeelden
-  - H2: Configuratievolgorde
+  - H2: Configuratieprioriteit
   - H3: Sandboxconfiguratie
   - H3: Toolbeperkingen
   - H2: Migratie vanaf enkele agent
   - H2: Voorbeelden van toolbeperkingen
-  - H2: Veelvoorkomende valkuil: "niet-main"
+  - H2: Veelvoorkomende valkuil: "non-main"
   - H2: Testen
   - H2: Probleemoplossing
   - H2: Gerelateerd
@@ -9321,26 +9321,26 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/music-generation.md
 
 - Route: /tools/music-generation
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H2: Ondersteunde aanbieders
-  - H3: Mogelijkhedenmatrix
+  - H3: Mogelijkhedentabel
   - H2: Toolparameters
   - H2: Asynchroon gedrag
   - H3: Taaklevenscyclus
   - H2: Configuratie
   - H3: Modelselectie
-  - H3: Selectievolgorde van aanbieders
-  - H2: Opmerkingen per aanbieder
+  - H3: Volgorde voor aanbiederselectie
+  - H2: Aanbiederopmerkingen
   - H2: Het juiste pad kiezen
   - H2: Mogelijkheidsmodi van aanbieders
-  - H2: Livetests
+  - H2: Live-tests
   - H2: Gerelateerd
 
 ## tools/ollama-search.md
 
 - Route: /tools/ollama-search
-- Kopteksten:
+- Koppen:
   - H2: Instellen
   - H2: Configuratie
   - H2: Opmerkingen
@@ -9349,7 +9349,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/parallel-search.md
 
 - Route: /tools/parallel-search
-- Kopteksten:
+- Koppen:
   - H2: Plugin installeren
   - H2: API-sleutel (betaalde aanbieder)
   - H2: Configuratie
@@ -9361,10 +9361,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/pdf.md
 
 - Route: /tools/pdf
-- Kopteksten:
+- Koppen:
   - H2: Beschikbaarheid
-  - H2: Invoerreferentie
-  - H2: Ondersteunde PDF-referenties
+  - H2: Invoerverwijzing
+  - H2: Ondersteunde PDF-verwijzingen
   - H2: Uitvoeringsmodi
   - H3: Native aanbiedermodus
   - H3: Extractie-fallbackmodus
@@ -9377,20 +9377,20 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/permission-modes.md
 
 - Route: /tools/permission-modes
-- Kopteksten:
+- Koppen:
   - H2: Aanbevolen standaard
-  - H2: OpenClaw hostuitvoeringsmodi
-  - H2: Codex Guardian-koppeling
-  - H2: ACPX-harnasmachtigingen
+  - H2: OpenClaw host-execmodi
+  - H2: Codex Guardian-toewijzing
+  - H2: ACPX-harnasrechten
   - H2: Een modus kiezen
   - H2: Gerelateerd
 
 ## tools/perplexity-search.md
 
 - Route: /tools/perplexity-search
-- Kopteksten:
+- Koppen:
   - H2: Plugin installeren
-  - H2: Een Perplexity API-sleutel verkrijgen
+  - H2: Een Perplexity API-sleutel krijgen
   - H2: OpenRouter-compatibiliteit
   - H2: Configuratievoorbeelden
   - H3: Native Perplexity Search API
@@ -9404,7 +9404,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/plugin.md
 
 - Route: /tools/plugin
-- Kopteksten:
+- Koppen:
   - H2: Vereisten
   - H2: Snelstart
   - H2: Configuratie
@@ -9422,7 +9422,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/reactions.md
 
 - Route: /tools/reactions
-- Kopteksten:
+- Koppen:
   - H2: Hoe het werkt
   - H2: Kanaalgedrag
   - H2: Reactieniveau
@@ -9431,24 +9431,24 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/searxng-search.md
 
 - Route: /tools/searxng-search
-- Kopteksten:
+- Koppen:
   - H2: Instellen
   - H2: Configuratie
   - H2: Omgevingsvariabele
-  - H2: Referentie voor Plugin-configuratie
+  - H2: Verwijzing voor Plugin-configuratie
   - H2: Opmerkingen
   - H2: Gerelateerd
 
 ## tools/skill-workshop.md
 
 - Route: /tools/skill-workshop
-- Kopteksten:
+- Koppen:
   - H2: Hoe het werkt
   - H2: Levenscyclus
   - H2: Chat
   - H2: CLI
   - H2: Voorstelinhoud
-  - H2: Ondersteuningsbestanden
+  - H2: Ondersteunende bestanden
   - H2: Agenttool
   - H2: Goedkeuring en autonomie
   - H2: Gateway-methoden
@@ -9460,33 +9460,33 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/skills-config.md
 
 - Route: /tools/skills-config
-- Kopteksten:
+- Koppen:
   - H2: Laden (skills.load)
   - H2: Installeren (skills.install)
   - H2: Installatiebeleid voor operators (security.installPolicy)
-  - H2: Toestaanlijst voor meegeleverde Skills
+  - H2: Allowlist voor gebundelde Skill
   - H2: Items per Skill (skills.entries)
-  - H2: Toestaanlijsten voor agents (agents)
+  - H2: Agent-allowlists (agents)
   - H2: Workshop (skills.workshop)
-  - H2: Gesymlinkte Skill-roots
-  - H2: Gesandboxte Skills en env-vars
-  - H2: Herinnering aan laadvolgorde
+  - H2: Via symlink gekoppelde Skill-roots
+  - H2: Gesandboxte Skills en env vars
+  - H2: Herinnering voor laadvolgorde
   - H2: Gerelateerd
 
 ## tools/skills.md
 
 - Route: /tools/skills
-- Kopteksten:
+- Koppen:
   - H2: Laadvolgorde
   - H2: Skills per agent versus gedeelde Skills
-  - H2: Toestaanlijsten voor agents
+  - H2: Agent-allowlists
   - H2: Plugins en Skills
   - H2: Skill Workshop
   - H2: Installeren vanuit ClawHub
   - H2: Beveiliging
   - H2: SKILL.md-indeling
   - H3: Optionele frontmatter-sleutels
-  - H2: Gating
+  - H2: Afgrendeling
   - H3: Installatiespecificaties
   - H2: Configuratie-overschrijvingen
   - H2: Omgevingsinjectie
@@ -9497,13 +9497,13 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/slash-commands.md
 
 - Route: /tools/slash-commands
-- Kopteksten:
+- Koppen:
   - H2: Drie commandotypen
   - H2: Configuratie
   - H2: Commandolijst
   - H3: Core-commando's
   - H3: Dock-commando's
-  - H3: Commando's van meegeleverde Plugins
+  - H3: Commando's van gebundelde Plugins
   - H3: Skill-commando's
   - H2: /tools — wat de agent nu kan gebruiken
   - H2: /model — modelselectie
@@ -9514,24 +9514,24 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: /trace — Plugin-trace-uitvoer
   - H2: /btw — zijvragen
   - H2: Opmerkingen over oppervlakken
-  - H2: Aanbiedergebruik en status
+  - H2: Gebruik en status van aanbieders
   - H2: Gerelateerd
 
 ## tools/steer.md
 
 - Route: /tools/steer
-- Kopteksten:
+- Koppen:
   - H2: Huidige sessie
   - H2: Sturen versus wachtrij
-  - H2: Subagenten
+  - H2: Subagents
   - H2: ACP-sessies
   - H2: Gerelateerd
 
 ## tools/subagents.md
 
 - Route: /tools/subagents
-- Kopteksten:
-  - H2: Slash-commando
+- Koppen:
+  - H2: Slashcommand
   - H3: Besturing voor threadbinding
   - H3: Spawn-gedrag
   - H2: Contextmodi
@@ -9542,18 +9542,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Tool: sessionsyield
   - H2: Tool: subagents
   - H2: Threadgebonden sessies
-  - H3: Threadondersteunende kanalen
+  - H3: Kanalen die threads ondersteunen
   - H3: Snelle flow
-  - H3: Handmatige bediening
+  - H3: Handmatige besturing
   - H3: Configuratieschakelaars
-  - H3: Toestaanlijst
-  - H3: Ontdekking
+  - H3: Allowlist
+  - H3: Detectie
   - H3: Automatisch archiveren
-  - H2: Geneste subagenten
+  - H2: Geneste subagents
   - H3: Diepteniveaus
   - H3: Aankondigingsketen
   - H3: Toolbeleid per diepte
-  - H3: Spawnlimiet per agent
+  - H3: Spawn-limiet per agent
   - H3: Cascadestop
   - H2: Authenticatie
   - H2: Aankondigen
@@ -9563,7 +9563,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Toolbeleid
   - H3: Overschrijven via configuratie
   - H2: Gelijktijdigheid
-  - H2: Levendigheid en herstel
+  - H2: Liveness en herstel
   - H2: Stoppen
   - H2: Beperkingen
   - H2: Gerelateerd
@@ -9571,9 +9571,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/tavily.md
 
 - Route: /tools/tavily
-- Kopteksten:
+- Koppen:
   - H2: Aan de slag
-  - H2: Toolreferentie
+  - H2: Toolverwijzing
   - H3: tavilysearch
   - H3: tavilyextract
   - H2: De juiste tool kiezen
@@ -9583,9 +9583,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/thinking.md
 
 - Route: /tools/thinking
-- Kopteksten:
+- Koppen:
   - H2: Wat het doet
-  - H2: Oplossingsvolgorde
+  - H2: Resolutievolgorde
   - H2: Een sessiestandaard instellen
   - H2: Toepassing per agent
   - H2: Snelle modus (/fast)
@@ -9600,9 +9600,9 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/tokenjuice.md
 
 - Route: /tools/tokenjuice
-- Kopteksten:
+- Koppen:
   - H2: De Plugin inschakelen
-  - H2: Wat tokenjuice wijzigt
+  - H2: Wat tokenjuice verandert
   - H2: Verifiëren dat het werkt
   - H2: De Plugin uitschakelen
   - H2: Gerelateerd
@@ -9610,8 +9610,8 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/tool-search.md
 
 - Route: /tools/tool-search
-- Kopteksten:
-  - H2: Hoe een beurt verloopt
+- Koppen:
+  - H2: Hoe een beurt wordt uitgevoerd
   - H2: Modi
   - H2: Waarom dit bestaat
   - H2: API
@@ -9625,7 +9625,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/trajectory.md
 
 - Route: /tools/trajectory
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H2: Toegang
   - H2: Wat wordt vastgelegd
@@ -9640,11 +9640,11 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/tts.md
 
 - Route: /tools/tts
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H2: Ondersteunde aanbieders
   - H2: Configuratie
-  - H3: Spraakoverschrijvingen per agent
+  - H3: Stem-overschrijvingen per agent
   - H2: Persona's
   - H3: Minimale persona
   - H3: Volledige persona (aanbiederneutrale prompt)
@@ -9652,44 +9652,44 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H3: Hoe aanbieders persona-prompts gebruiken
   - H3: Fallbackbeleid
   - H2: Modelgestuurde directives
-  - H2: Slash-commando's
-  - H2: Voorkeuren per gebruiker
+  - H2: Slashcommands
+  - H2: Gebruikersvoorkeuren per gebruiker
   - H2: Uitvoerindelingen (vast)
   - H2: Auto-TTS-gedrag
   - H2: Uitvoerindelingen per kanaal
-  - H2: Veldreferentie
+  - H2: Veldverwijzing
   - H2: Agenttool
-  - H2: Gateway RPC
+  - H2: Gateway-RPC
   - H2: Servicelinks
   - H2: Gerelateerd
 
 ## tools/video-generation.md
 
 - Route: /tools/video-generation
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H2: Hoe asynchrone generatie werkt
   - H3: Taaklevenscyclus
   - H2: Ondersteunde aanbieders
-  - H3: Mogelijkhedenmatrix
+  - H3: Mogelijkhedentabel
   - H2: Toolparameters
   - H3: Vereist
-  - H3: Inhoudsinvoer
+  - H3: Contentinvoer
   - H3: Stijlbesturing
   - H3: Geavanceerd
   - H4: Fallback en getypeerde opties
   - H2: Acties
   - H2: Modelselectie
-  - H2: Opmerkingen per aanbieder
+  - H2: Aanbiederopmerkingen
   - H2: Mogelijkheidsmodi van aanbieders
-  - H2: Livetests
+  - H2: Live-tests
   - H2: Configuratie
   - H2: Gerelateerd
 
 ## tools/web-fetch.md
 
 - Route: /tools/web-fetch
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H2: Toolparameters
   - H2: Hoe het werkt
@@ -9704,10 +9704,10 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tools/web.md
 
 - Route: /tools/web
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H2: Een aanbieder kiezen
-  - H3: Aanbieders vergelijken
+  - H3: Aanbiedersvergelijking
   - H2: Automatische detectie
   - H2: Native OpenAI-webzoekfunctie
   - H2: Native Codex-webzoekfunctie
@@ -9727,16 +9727,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## tts.md
 
 - Route: /tts
-- Kopteksten:
+- Koppen:
   - H2: Gerelateerd
 
 ## vps.md
 
 - Route: /vps
-- Kopteksten:
-  - H2: Een aanbieder kiezen
-  - H2: Hoe cloudset-ups werken
-  - H2: Beheerderstoegang eerst beveiligen
+- Koppen:
+  - H2: Kies een aanbieder
+  - H2: Hoe cloudsetups werken
+  - H2: Beheerderstoegang eerst hardenen
   - H2: Gedeelde bedrijfsagent op een VPS
   - H2: Nodes gebruiken met een VPS
   - H2: Opstartafstemming voor kleine VM's en ARM-hosts
@@ -9746,7 +9746,7 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## web/control-ui.md
 
 - Route: /web/control-ui
-- Kopteksten:
+- Koppen:
   - H2: Snel openen (lokaal)
   - H2: Apparaatkoppeling (eerste verbinding)
   - H2: Persoonlijke identiteit (browserlokaal)
@@ -9755,16 +9755,16 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Weergavethema's
   - H2: Wat het kan doen (vandaag)
   - H2: MCP-pagina
-  - H2: Activiteitstabblad
+  - H2: Activiteitentabblad
   - H2: Chatgedrag
   - H2: PWA-installatie en webpush
   - H2: Gehoste embeds
   - H2: Chatberichtbreedte
   - H2: Tailnet-toegang (aanbevolen)
   - H2: Onveilige HTTP
-  - H2: Beleid voor contentbeveiliging
+  - H2: Content security policy
   - H2: Avatar-routeauthenticatie
-  - H2: Mediaroute-authenticatie van assistent
+  - H2: Routeauthenticatie voor assistentmedia
   - H2: De UI bouwen
   - H2: Lege Control UI-pagina
   - H2: Debuggen/testen: dev-server + externe Gateway
@@ -9773,39 +9773,39 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
 ## web/dashboard.md
 
 - Route: /web/dashboard
-- Kopteksten:
-  - H2: Snelste pad (aanbevolen)
-  - H2: Basisprincipes van authenticatie (lokaal versus extern)
+- Koppen:
+  - H2: Snel pad (aanbevolen)
+  - H2: Authenticatiebasis (lokaal versus extern)
   - H2: Als je "unauthorized" / 1008 ziet
   - H2: Gerelateerd
 
 ## web/index.md
 
 - Route: /web
-- Kopteksten:
+- Koppen:
   - H2: Webhooks
   - H2: Admin HTTP RPC
-  - H2: Configuratie (standaard aan)
+  - H2: Configuratie (standaard ingeschakeld)
   - H2: Tailscale-toegang
   - H3: Geïntegreerd serveren (aanbevolen)
   - H3: Tailnet-bind + token
-  - H3: Openbaar internet (Funnel)
+  - H3: Publiek internet (Funnel)
   - H2: Beveiligingsopmerkingen
   - H2: De UI bouwen
 
 ## web/tui.md
 
 - Route: /web/tui
-- Kopteksten:
+- Koppen:
   - H2: Snelstart
   - H3: Gateway-modus
   - H3: Lokale modus
   - H2: Wat je ziet
   - H2: Mentaal model: agents + sessies
   - H2: Verzenden + aflevering
-  - H2: Kiezers + overlays
+  - H2: Pickers + overlays
   - H2: Sneltoetsen
-  - H2: Slash-commando's
+  - H2: Slashcommands
   - H2: Lokale shellcommando's
   - H2: Configuraties herstellen vanuit de lokale TUI
   - H2: Tooluitvoer
@@ -9814,18 +9814,18 @@ Bewerk het niet handmatig; voer `pnpm docs:map:gen` uit.
   - H2: Verbindingsdetails
   - H2: Opties
   - H2: Probleemoplossing
-  - H2: Probleemoplossing voor verbinding
+  - H2: Verbindingsproblemen oplossen
   - H2: Gerelateerd
 
 ## web/webchat.md
 
 - Route: /web/webchat
-- Kopteksten:
+- Koppen:
   - H2: Wat het is
   - H2: Snelstart
   - H2: Hoe het werkt (gedrag)
-  - H3: Transcript en afleveringsmodel
+  - H3: Transcript en aflevermodel
   - H2: Tools-paneel voor Control UI-agents
-  - H2: Gebruik op afstand
-  - H2: Configuratiereferentie (WebChat)
+  - H2: Extern gebruik
+  - H2: Configuratieverwijzing (WebChat)
   - H2: Gerelateerd

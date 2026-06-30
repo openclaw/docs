@@ -1,27 +1,30 @@
 ---
 read_when:
-    - العثور على الأمر الفرعي `openclaw` المناسب
-    - البحث عن العلامات العامة أو قواعد تنسيق المخرجات
-summary: 'فهرس OpenClaw CLI: قائمة الأوامر، والرايات العامة، وروابط إلى صفحات كل أمر.'
+    - العثور على الأمر الفرعي `openclaw`
+    - البحث عن الأعلام العامة أو قواعد تنسيق الإخراج
+summary: 'فهرس OpenClaw CLI: قائمة الأوامر، والخيارات العامة، وروابط إلى صفحات كل أمر'
 title: مرجع CLI
 x-i18n:
-    generated_at: "2026-06-27T17:21:38Z"
+    generated_at: "2026-06-30T22:19:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7075c072fed0abf0ffa126bde01042adaf94f8ba4dffa9fef6dc99a6ab34eb43
+    source_hash: e5102afd4cfe8be5ec45b352cf714f0ecc965bbe03f6a1c3c1b22aa409cde7b9
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` هو نقطة الدخول الرئيسية لـ CLI. لكل أمر أساسي صفحة مرجعية مخصصة أو موثق مع الأمر الذي يعمل كاسم بديل له؛ يسرد هذا الفهرس الأوامر، والرايات العامة، وقواعد تنسيق المخرجات التي تنطبق عبر CLI.
+`openclaw` هي نقطة الدخول الرئيسية لـ CLI. لكل أمر أساسي إما صفحة مرجعية
+مخصصة أو يتم توثيقه مع الأمر الذي يعمل كاسم مستعار له؛ يسرد هذا
+الفهرس الأوامر، والأعلام العامة، وقواعد تنسيق المخرجات التي
+تنطبق عبر CLI.
 
 استخدم أوامر الإعداد بحسب الغرض:
 
-- ينشئ `openclaw setup` الإعداد الأساسي ومساحة العمل من دون المرور عبر تدفق التهيئة الإرشادي الكامل.
-- `openclaw onboard` هو مسار التشغيل الأول الإرشادي الكامل لـ Gateway، ومصادقة النموذج، ومساحة العمل، والقنوات، وSkills، والصحة.
-- يغير `openclaw configure` أجزاء محددة من إعداد قائم، مثل مصادقة النموذج، أو Gateway، أو القنوات، أو Plugins، أو Skills.
-- يهيئ `openclaw channels add` حسابات القنوات بعد وجود الأساس؛ شغله من دون رايات لإعداد القناة إرشاديا أو مع رايات خاصة بالقناة للسكربتات.
+- يشغّل `openclaw setup` و`openclaw onboard` مسار التشغيل الأول الموجّه الكامل لـ Gateway، ومصادقة النموذج، ومساحة العمل، والقنوات، وSkills، والصحة.
+- ينشئ `openclaw setup --baseline` إعدادات خط الأساس ومساحة العمل دون المرور بتدفق التهيئة الموجّهة.
+- يغيّر `openclaw configure` أجزاء محددة من إعداد موجود، مثل مصادقة النموذج أو Gateway أو القنوات أو Plugins أو Skills.
+- يهيئ `openclaw channels add` حسابات القنوات بعد وجود خط الأساس؛ شغّله بلا أعلام لإعداد القناة الموجّه أو مع أعلام خاصة بالقناة للسكربتات.
 
 ## صفحات الأوامر
 
@@ -32,33 +35,33 @@ x-i18n:
 | المراسلة والوكلاء | [`message`](/ar/cli/message) · [`agent`](/ar/cli/agent) · [`agents`](/ar/cli/agents) · [`acp`](/ar/cli/acp) · [`mcp`](/ar/cli/mcp)                                                                                                                       |
 | الصحة والجلسات  | [`status`](/ar/cli/status) · [`health`](/ar/cli/health) · [`sessions`](/ar/cli/sessions)                                                                                                                                                           |
 | Gateway والسجلات     | [`gateway`](/ar/cli/gateway) · [`logs`](/ar/cli/logs) · [`system`](/ar/cli/system)                                                                                                                                                                 |
-| النماذج والاستدلال | [`models`](/ar/cli/models) · [`infer`](/ar/cli/infer) · `capability` (اسم بديل لـ [`infer`](/ar/cli/infer)) · [`memory`](/ar/cli/memory) · [`commitments`](/ar/cli/commitments) · [`wiki`](/ar/cli/wiki)                                                      |
+| النماذج والاستدلال | [`models`](/ar/cli/models) · [`infer`](/ar/cli/infer) · `capability` (اسم مستعار لـ [`infer`](/ar/cli/infer)) · [`memory`](/ar/cli/memory) · [`commitments`](/ar/cli/commitments) · [`wiki`](/ar/cli/wiki)                                                      |
 | الشبكة والعقد    | [`directory`](/ar/cli/directory) · [`nodes`](/ar/cli/nodes) · [`devices`](/ar/cli/devices) · [`node`](/ar/cli/node)                                                                                                                                   |
-| وقت التشغيل وبيئة العزل  | [`approvals`](/ar/cli/approvals) · `exec-policy` (راجع [`approvals`](/ar/cli/approvals)) · [`sandbox`](/ar/cli/sandbox) · [`tui`](/ar/cli/tui) · `chat`/`terminal` (أسماء بديلة لـ [`tui --local`](/ar/cli/tui)) · [`browser`](/ar/cli/browser)                 |
+| وقت التشغيل وصندوق الرمل  | [`approvals`](/ar/cli/approvals) · `exec-policy` (راجع [`approvals`](/ar/cli/approvals)) · [`sandbox`](/ar/cli/sandbox) · [`tui`](/ar/cli/tui) · `chat`/`terminal` (أسماء مستعارة لـ [`tui --local`](/ar/cli/tui)) · [`browser`](/ar/cli/browser)                 |
 | الأتمتة           | [`cron`](/ar/cli/cron) · [`tasks`](/ar/cli/tasks) · [`hooks`](/ar/cli/hooks) · [`webhooks`](/ar/cli/webhooks) · [`transcripts`](/ar/cli/transcripts)                                                                                                     |
-| الاكتشاف والوثائق   | [`dns`](/ar/cli/dns) · [`docs`](/ar/cli/docs)                                                                                                                                                                                                   |
+| الاكتشاف والمستندات   | [`dns`](/ar/cli/dns) · [`docs`](/ar/cli/docs)                                                                                                                                                                                                   |
 | الاقتران والقنوات | [`pairing`](/ar/cli/pairing) · [`qr`](/ar/cli/qr) · [`channels`](/ar/cli/channels)                                                                                                                                                                 |
 | الأمان وPlugins | [`security`](/ar/cli/security) · [`secrets`](/ar/cli/secrets) · [`skills`](/ar/cli/skills) · [`plugins`](/ar/cli/plugins) · [`proxy`](/ar/cli/proxy)                                                                                                     |
-| الأسماء البديلة القديمة       | [`daemon`](/ar/cli/daemon) (خدمة Gateway) · [`clawbot`](/ar/cli/clawbot) (نطاق أسماء)                                                                                                                                                         |
-| Plugins (اختيارية)   | [`path`](/ar/cli/path) · [`policy`](/ar/cli/policy) · [`voicecall`](/ar/cli/voicecall) · [`workboard`](/ar/cli/workboard) (إذا كان مثبتا)                                                                                                              |
+| الأسماء المستعارة القديمة       | [`daemon`](/ar/cli/daemon) (خدمة Gateway) · [`clawbot`](/ar/cli/clawbot) (مساحة أسماء)                                                                                                                                                         |
+| Plugins (اختيارية)   | [`path`](/ar/cli/path) · [`policy`](/ar/cli/policy) · [`voicecall`](/ar/cli/voicecall) · [`workboard`](/ar/cli/workboard) (إذا كان مثبتًا)                                                                                                              |
 
-## الرايات العامة
+## الأعلام العامة
 
-| الراية                    | الغرض                                                               |
+| العلم                    | الغرض                                                               |
 | ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | يعزل الحالة ضمن `~/.openclaw-dev` ويغير المنافذ الافتراضية         |
-| `--profile <name>`      | يعزل الحالة ضمن `~/.openclaw-<name>`                              |
+| `--dev`                 | يعزل الحالة تحت `~/.openclaw-dev` ويغيّر المنافذ الافتراضية         |
+| `--profile <name>`      | يعزل الحالة تحت `~/.openclaw-<name>`                              |
 | `--container <name>`    | يستهدف حاوية مسماة للتنفيذ                                |
-| `--no-color`            | يعطل ألوان ANSI (يتم احترام `NO_COLOR=1` أيضا)                  |
+| `--no-color`            | يعطّل ألوان ANSI (يُحترم `NO_COLOR=1` أيضًا)                  |
 | `--update`              | اختصار لـ [`openclaw update`](/ar/cli/update) (لتثبيتات المصدر فقط) |
 | `-V`, `--version`, `-v` | يطبع الإصدار ويخرج                                                |
 
-## أوضاع المخرجات
+## أوضاع الإخراج
 
-- لا تظهر ألوان ANSI ومؤشرات التقدم إلا في جلسات TTY.
-- تظهر روابط OSC-8 التشعبية كروابط قابلة للنقر حيثما كان ذلك مدعوما؛ وإلا يعود
-  CLI إلى عناوين URL النصية العادية.
-- يعطل `--json` (و`--plain` حيثما كان مدعوما) التنسيق للحصول على مخرجات نظيفة.
+- لا تُعرض ألوان ANSI ومؤشرات التقدم إلا في جلسات TTY.
+- تُعرض روابط OSC-8 كروابط قابلة للنقر حيثما كان ذلك مدعومًا؛ وإلا
+  يعود CLI إلى عناوين URL عادية.
+- يعطّل `--json` (و`--plain` حيثما كان مدعومًا) التنسيق للحصول على إخراج نظيف.
 - تعرض الأوامر طويلة التشغيل مؤشر تقدم (OSC 9;4 عند دعمه).
 
 مصدر الحقيقة للوحة الألوان: `src/terminal/palette.ts`.
@@ -378,7 +381,7 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-يمكن لـ Plugins إضافة أوامر علوية إضافية، مثل
+يمكن أن تضيف Plugins أوامر إضافية على المستوى الأعلى، مثل
 [`openclaw workboard`](/ar/cli/workboard) أو `openclaw voicecall`.
 
 </Accordion>
@@ -390,16 +393,16 @@ openclaw [--dev] [--profile <name>] <command>
 أبرزها:
 
 - `/status` — تشخيصات سريعة.
-- `/trace` — أسطر تتبع/تصحيح أخطاء Plugin على مستوى الجلسة.
-- `/config` — تغييرات إعداد محفوظة.
-- `/debug` — تجاوزات إعدادات وقت التشغيل فقط (في الذاكرة، لا على القرص؛ يتطلب `commands.debug: true`).
+- `/trace` — أسطر تتبع/تصحيح Plugin ضمن نطاق الجلسة.
+- `/config` — تغييرات إعدادات مستمرة.
+- `/debug` — تجاوزات إعدادات لوقت التشغيل فقط (في الذاكرة، لا على القرص؛ تتطلب `commands.debug: true`).
 
 ## تتبع الاستخدام
 
-يعرض `openclaw status --usage` وواجهة Control UI استخدام/حصة المزود عندما
+يعرض `openclaw status --usage` وواجهة Control UI استخدام/حصة المزوّد عندما
 تتوفر بيانات اعتماد OAuth/API. تأتي البيانات مباشرة من نقاط نهاية استخدام
-المزود وتتم معايرتها إلى `X% left`. المزودون الذين لديهم نوافذ استخدام
-حالية: Anthropic، GitHub Copilot، Gemini CLI، OpenAI Codex، MiniMax،
+المزوّد وتُطبّع إلى `X% left`. المزوّدون ذوو نوافذ الاستخدام الحالية:
+Anthropic، GitHub Copilot، Gemini CLI، OpenAI Codex، MiniMax،
 Xiaomi، وz.ai.
 
 راجع [تتبع الاستخدام](/ar/concepts/usage-tracking) للتفاصيل.
@@ -407,5 +410,5 @@ Xiaomi، وz.ai.
 ## ذو صلة
 
 - [أوامر الشرطة المائلة](/ar/tools/slash-commands)
-- [الإعداد](/ar/gateway/configuration)
+- [الإعدادات](/ar/gateway/configuration)
 - [البيئة](/ar/help/environment)

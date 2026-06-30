@@ -1,68 +1,67 @@
 ---
 read_when:
-    - Tam CLI ilk kullanıma hazırlama süreci olmadan ilk çalıştırma kurulumunu yapıyorsunuz
+    - CLI ilk çalıştırma kurulumunu onboarding sihirbazıyla yapıyorsunuz
     - Varsayılan çalışma alanı yolunu ayarlamak istiyorsunuz
-    - Her bayrağı ve kurulumun temel ile sihirbaz modu arasında nasıl karar verdiğini bilmeniz gerekir
-summary: '`openclaw setup` için CLI referansı (yapılandırmayı ve çalışma alanını başlatır, isteğe bağlı olarak ilk kurulumu çalıştırır)'
+    - Betikler için yalnızca temel yapılandırma bayrağına ihtiyacınız var
+summary: '`openclaw setup` için CLI referansı (ilk kurulum için takma ad, temel kurulum bayrakla kullanılabilir)'
 title: Kurulum
 x-i18n:
-    generated_at: "2026-06-28T00:25:01Z"
+    generated_at: "2026-06-30T22:31:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 42bc570cf4c43338d6ca6202aace7c9d669fb1ac6d8bd8b61a591086fff2896a
+    source_hash: 797c023d5ba27920fbea9828c9bb12f6c10d25dd3aa6fc68fe9c742f432ebb05
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Temel yapılandırmayı ve ajan çalışma alanını başlatın. Herhangi bir onboarding bayrağı mevcutsa sihirbazı da çalıştırır.
+Tam CLI ilk kurulum akışını çalıştırın. `openclaw setup`, `openclaw onboard` için bir takma addır; sihirbaz olmadan yalnızca yapılandırma/çalışma alanı klasörlerini başlatmanız gerektiğinde `--baseline` kullanın.
 
 <Note>
-`openclaw setup`, değiştirilebilir yapılandırma kurulumları içindir. Nix modunda (`OPENCLAW_NIX_MODE=1`) OpenClaw, yapılandırma dosyası Nix tarafından yönetildiği için kurulum yazmalarını reddeder. Birinci taraf [nix-openclaw Hızlı Başlangıç](https://github.com/openclaw/nix-openclaw#quick-start) kılavuzunu veya başka bir Nix paketi için eşdeğer kaynak yapılandırmasını kullanın.
+`openclaw setup`, değiştirilebilir yapılandırma kurulumları içindir. Nix modunda (`OPENCLAW_NIX_MODE=1`) OpenClaw, yapılandırma dosyası Nix tarafından yönetildiği için kurulum yazma işlemlerini reddeder. Birinci taraf [nix-openclaw Hızlı Başlangıç](https://github.com/openclaw/nix-openclaw#quick-start) kılavuzunu veya başka bir Nix paketi için eşdeğer kaynak yapılandırmasını kullanın.
 </Note>
 
 ## Seçenekler
 
-| Bayrak                     | Açıklama                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `--workspace <dir>`        | Ajan çalışma alanı dizini (varsayılan `~/.openclaw/workspace`; `agents.defaults.workspace` olarak saklanır). |
-| `--wizard`                 | Etkileşimli onboarding çalıştırır.                                                              |
-| `--non-interactive`        | Onboarding işlemini istemler olmadan çalıştırır.                                                 |
-| `--accept-risk`            | Tam sistem ajan erişimi riskini kabul eder; `--non-interactive` ile gereklidir.                  |
-| `--mode <mode>`            | Onboarding modu: `local` veya `remote`.                                                          |
-| `--import-from <provider>` | Onboarding sırasında çalıştırılacak geçiş sağlayıcısı.                                          |
-| `--import-source <path>`   | `--import-from` için kaynak ajan ana dizini.                                                     |
-| `--import-secrets`         | Onboarding geçişi sırasında desteklenen gizli bilgileri içe aktarır.                             |
-| `--remote-url <url>`       | Uzak Gateway WebSocket URL'si.                                                                    |
-| `--remote-token <token>`   | Uzak Gateway token'ı (isteğe bağlı).                                                             |
+| Bayrak                     | Açıklama                                                                                              |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--workspace <dir>`        | Aracı çalışma alanı dizini (varsayılan `~/.openclaw/workspace`; `agents.defaults.workspace` olarak saklanır). |
+| `--baseline`               | İlk kurulum olmadan temel yapılandırma/çalışma alanı/oturum klasörleri oluşturur.                    |
+| `--wizard`                 | Uyumluluk için kabul edilir; kurulum varsayılan olarak ilk kurulumu çalıştırır.                       |
+| `--non-interactive`        | İlk kurulumu istemler olmadan çalıştırır.                                                            |
+| `--accept-risk`            | Tam sistem aracı erişim riskini kabul eder; `--non-interactive` ile gereklidir.                      |
+| `--mode <mode>`            | İlk kurulum modu: `local` veya `remote`.                                                             |
+| `--import-from <provider>` | İlk kurulum sırasında çalıştırılacak geçiş sağlayıcısı.                                              |
+| `--import-source <path>`   | `--import-from` için kaynak aracı ana dizini.                                                        |
+| `--import-secrets`         | İlk kurulum geçişi sırasında desteklenen gizli bilgileri içe aktarır.                                |
+| `--remote-url <url>`       | Uzak Gateway WebSocket URL'si.                                                                       |
+| `--remote-token <token>`   | Uzak Gateway belirteci (isteğe bağlı).                                                               |
 
-### Sihirbazın otomatik tetiklenmesi
+### Temel mod
 
-`openclaw setup`, `--wizard` olmadan bile bu bayraklardan herhangi biri açıkça mevcut olduğunda sihirbazı çalıştırır:
-
-`--wizard`, `--non-interactive`, `--accept-risk`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`.
+`openclaw setup --baseline`, eski yalnızca temel davranışı korur: yapılandırma, çalışma alanı ve oturum dizinlerini oluşturur, ardından ilk kurulumu çalıştırmadan çıkar.
 
 ## Örnekler
 
 ```bash
 openclaw setup
+openclaw setup --baseline
 openclaw setup --workspace ~/.openclaw/workspace
-openclaw setup --wizard
-openclaw setup --wizard --import-from hermes --import-source ~/.hermes
+openclaw setup --import-from hermes --import-source ~/.hermes
 openclaw setup --non-interactive --accept-risk --mode remote --remote-url wss://gateway-host:18789 --remote-token <token>
 ```
 
 ## Notlar
 
-- Düz `openclaw setup`, tam onboarding akışını çalıştırmadan yapılandırmayı ve çalışma alanını başlatır.
-- Düz kurulumdan sonra, tam rehberli süreç için `openclaw onboard`, hedefli değişiklikler için `openclaw configure` veya kanal hesapları eklemek için `openclaw channels add` çalıştırın.
-- Hermes durumu algılanırsa etkileşimli onboarding otomatik olarak geçiş önerebilir. İçe aktarmalı onboarding yeni bir kurulum gerektirir; onboarding dışında deneme çalıştırması planları, yedeklemeler ve üzerine yazma modu için [Geçiş](/tr/cli/migrate) bölümünü kullanın.
+- Düz `openclaw setup`, `openclaw onboard` ile aynı yönlendirmeli akışı çalıştırır.
+- Temel kurulumdan sonra tam yönlendirmeli akış için `openclaw setup` veya `openclaw onboard`, hedefli değişiklikler için `openclaw configure` ya da kanal hesapları eklemek için `openclaw channels add` çalıştırın.
+- Hermes durumu algılanırsa, etkileşimli ilk kurulum otomatik olarak geçiş sunabilir. İçe aktarma ilk kurulumu yeni bir kurulum gerektirir; ilk kurulum dışında prova çalıştırma planları, yedekler ve üzerine yazma modu için [Geçiş](/tr/cli/migrate) kullanın.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Onboarding (CLI)](/tr/start/wizard)
+- [İlk kurulum (CLI)](/tr/start/wizard)
 - [Başlarken](/tr/start/getting-started)
-- [Kuruluma genel bakış](/tr/install)
+- [Kurulum genel bakışı](/tr/install)

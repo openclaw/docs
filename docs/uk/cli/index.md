@@ -5,60 +5,60 @@ read_when:
 summary: 'Індекс OpenClaw CLI: список команд, глобальні прапорці та посилання на сторінки окремих команд'
 title: Довідник CLI
 x-i18n:
-    generated_at: "2026-06-27T17:20:22Z"
+    generated_at: "2026-06-30T22:34:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7075c072fed0abf0ffa126bde01042adaf94f8ba4dffa9fef6dc99a6ab34eb43
+    source_hash: e5102afd4cfe8be5ec45b352cf714f0ecc965bbe03f6a1c3c1b22aa409cde7b9
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` є головною точкою входу CLI. Кожна основна команда має або
+`openclaw` є основною точкою входу CLI. Кожна основна команда має або
 окрему довідкову сторінку, або документується разом із командою, для якої вона є псевдонімом; цей
-індекс перелічує команди, глобальні прапорці та правила стилізації виводу, що
+індекс перелічує команди, глобальні прапорці та правила стилізації виводу, які
 застосовуються в усьому CLI.
 
 Використовуйте команди налаштування відповідно до наміру:
 
-- `openclaw setup` створює базову конфігурацію та робочий простір без проходження повного керованого потоку первинного налаштування.
-- `openclaw onboard` є повним керованим шляхом першого запуску для Gateway, автентифікації моделі, робочого простору, каналів, Skills і перевірки стану.
-- `openclaw configure` змінює цільові частини наявного налаштування, як-от автентифікацію моделі, Gateway, канали, plugins або Skills.
+- `openclaw setup` і `openclaw onboard` запускають повний керований шлях першого запуску для gateway, автентифікації моделі, робочої області, каналів, Skills і стану працездатності.
+- `openclaw setup --baseline` створює базову конфігурацію та робочу область без проходження керованого потоку onboarding.
+- `openclaw configure` змінює цільові частини наявного налаштування, як-от автентифікацію моделі, gateway, канали, plugins або Skills.
 - `openclaw channels add` налаштовує облікові записи каналів після створення базової конфігурації; запускайте її без прапорців для керованого налаштування каналу або з прапорцями, специфічними для каналу, для скриптів.
 
 ## Сторінки команд
 
-| Область              | Команди                                                                                                                                                                                                                                  |
+| Область               | Команди                                                                                                                                                                                                                                  |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Налаштування та первинне введення | [`crestodian`](/uk/cli/crestodian) · [`setup`](/uk/cli/setup) · [`onboard`](/uk/cli/onboard) · [`configure`](/uk/cli/configure) · [`config`](/uk/cli/config) · [`completion`](/uk/cli/completion) · [`doctor`](/uk/cli/doctor) · [`dashboard`](/uk/cli/dashboard) |
+| Налаштування й onboarding | [`crestodian`](/uk/cli/crestodian) · [`setup`](/uk/cli/setup) · [`onboard`](/uk/cli/onboard) · [`configure`](/uk/cli/configure) · [`config`](/uk/cli/config) · [`completion`](/uk/cli/completion) · [`doctor`](/uk/cli/doctor) · [`dashboard`](/uk/cli/dashboard) |
 | Скидання та видалення | [`backup`](/uk/cli/backup) · [`reset`](/uk/cli/reset) · [`uninstall`](/uk/cli/uninstall) · [`update`](/uk/cli/update)                                                                                                                                 |
 | Обмін повідомленнями й агенти | [`message`](/uk/cli/message) · [`agent`](/uk/cli/agent) · [`agents`](/uk/cli/agents) · [`acp`](/uk/cli/acp) · [`mcp`](/uk/cli/mcp)                                                                                                                       |
-| Стан і сеанси        | [`status`](/uk/cli/status) · [`health`](/uk/cli/health) · [`sessions`](/uk/cli/sessions)                                                                                                                                                           |
+| Стан працездатності й сесії | [`status`](/uk/cli/status) · [`health`](/uk/cli/health) · [`sessions`](/uk/cli/sessions)                                                                                                                                                           |
 | Gateway і журнали    | [`gateway`](/uk/cli/gateway) · [`logs`](/uk/cli/logs) · [`system`](/uk/cli/system)                                                                                                                                                                 |
 | Моделі та інференс   | [`models`](/uk/cli/models) · [`infer`](/uk/cli/infer) · `capability` (псевдонім для [`infer`](/uk/cli/infer)) · [`memory`](/uk/cli/memory) · [`commitments`](/uk/cli/commitments) · [`wiki`](/uk/cli/wiki)                                                      |
-| Мережа та вузли      | [`directory`](/uk/cli/directory) · [`nodes`](/uk/cli/nodes) · [`devices`](/uk/cli/devices) · [`node`](/uk/cli/node)                                                                                                                                   |
-| Середовище виконання та пісочниця | [`approvals`](/uk/cli/approvals) · `exec-policy` (див. [`approvals`](/uk/cli/approvals)) · [`sandbox`](/uk/cli/sandbox) · [`tui`](/uk/cli/tui) · `chat`/`terminal` (псевдоніми для [`tui --local`](/uk/cli/tui)) · [`browser`](/uk/cli/browser)                 |
+| Мережа й вузли       | [`directory`](/uk/cli/directory) · [`nodes`](/uk/cli/nodes) · [`devices`](/uk/cli/devices) · [`node`](/uk/cli/node)                                                                                                                                   |
+| Середовище виконання й sandbox | [`approvals`](/uk/cli/approvals) · `exec-policy` (див. [`approvals`](/uk/cli/approvals)) · [`sandbox`](/uk/cli/sandbox) · [`tui`](/uk/cli/tui) · `chat`/`terminal` (псевдоніми для [`tui --local`](/uk/cli/tui)) · [`browser`](/uk/cli/browser)                 |
 | Автоматизація        | [`cron`](/uk/cli/cron) · [`tasks`](/uk/cli/tasks) · [`hooks`](/uk/cli/hooks) · [`webhooks`](/uk/cli/webhooks) · [`transcripts`](/uk/cli/transcripts)                                                                                                     |
-| Виявлення та документація | [`dns`](/uk/cli/dns) · [`docs`](/uk/cli/docs)                                                                                                                                                                                                   |
-| Сполучення та канали | [`pairing`](/uk/cli/pairing) · [`qr`](/uk/cli/qr) · [`channels`](/uk/cli/channels)                                                                                                                                                                 |
+| Виявлення й документація | [`dns`](/uk/cli/dns) · [`docs`](/uk/cli/docs)                                                                                                                                                                                                   |
+| Сполучення й канали  | [`pairing`](/uk/cli/pairing) · [`qr`](/uk/cli/qr) · [`channels`](/uk/cli/channels)                                                                                                                                                                 |
 | Безпека та plugins   | [`security`](/uk/cli/security) · [`secrets`](/uk/cli/secrets) · [`skills`](/uk/cli/skills) · [`plugins`](/uk/cli/plugins) · [`proxy`](/uk/cli/proxy)                                                                                                     |
-| Застарілі псевдоніми | [`daemon`](/uk/cli/daemon) (служба Gateway) · [`clawbot`](/uk/cli/clawbot) (простір імен)                                                                                                                                                         |
+| Застарілі псевдоніми | [`daemon`](/uk/cli/daemon) (служба gateway) · [`clawbot`](/uk/cli/clawbot) (простір імен)                                                                                                                                                         |
 | Plugins (необов’язково) | [`path`](/uk/cli/path) · [`policy`](/uk/cli/policy) · [`voicecall`](/uk/cli/voicecall) · [`workboard`](/uk/cli/workboard) (якщо встановлено)                                                                                                              |
 
 ## Глобальні прапорці
 
 | Прапорець               | Призначення                                                           |
 | ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | Ізолювати стан у `~/.openclaw-dev` і зсунути типові порти             |
+| `--dev`                 | Ізолювати стан у `~/.openclaw-dev` і змістити стандартні порти        |
 | `--profile <name>`      | Ізолювати стан у `~/.openclaw-<name>`                                 |
 | `--container <name>`    | Націлити виконання на іменований контейнер                            |
-| `--no-color`            | Вимкнути кольори ANSI (`NO_COLOR=1` також враховується)               |
-| `--update`              | Скорочення для [`openclaw update`](/uk/cli/update) (лише встановлення з джерела) |
+| `--no-color`            | Вимкнути ANSI-кольори (`NO_COLOR=1` також враховується)               |
+| `--update`              | Скорочення для [`openclaw update`](/uk/cli/update) (лише встановлення з вихідного коду) |
 | `-V`, `--version`, `-v` | Надрукувати версію та вийти                                           |
 
 ## Режими виводу
 
-- Кольори ANSI та індикатори прогресу відображаються лише в сеансах TTY.
+- ANSI-кольори та індикатори прогресу відображаються лише в TTY-сесіях.
 - Гіперпосилання OSC-8 відображаються як клікабельні посилання там, де це підтримується; інакше
   CLI повертається до звичайних URL.
 - `--json` (і `--plain`, де підтримується) вимикає стилізацію для чистого виводу.
@@ -386,21 +386,21 @@ Plugins можуть додавати додаткові команди верх
 
 </Accordion>
 
-## Команди зі скісною рискою в чаті
+## Slash-команди чату
 
-Повідомлення чату підтримують команди `/...`. Див. [команди зі скісною рискою](/uk/tools/slash-commands).
+Повідомлення чату підтримують команди `/...`. Див. [slash-команди](/uk/tools/slash-commands).
 
 Основне:
 
 - `/status` — швидка діагностика.
-- `/trace` — рядки трасування/налагодження plugin у межах сеансу.
+- `/trace` — рядки трасування/налагодження plugin у межах сесії.
 - `/config` — збережені зміни конфігурації.
-- `/debug` — перевизначення конфігурації лише для середовища виконання (у пам’яті, не на диску; вимагає `commands.debug: true`).
+- `/debug` — перевизначення конфігурації лише для середовища виконання (пам’ять, не диск; потребує `commands.debug: true`).
 
 ## Відстеження використання
 
 `openclaw status --usage` і Control UI показують використання/квоту провайдера, коли
-облікові дані OAuth/API доступні. Дані надходять безпосередньо з кінцевих точок використання
+доступні облікові дані OAuth/API. Дані надходять безпосередньо з кінцевих точок використання
 провайдера та нормалізуються до `X% left`. Провайдери з поточними
 вікнами використання: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
 Xiaomi і z.ai.
@@ -409,6 +409,6 @@ Xiaomi і z.ai.
 
 ## Пов’язане
 
-- [Команди зі скісною рискою](/uk/tools/slash-commands)
+- [Slash-команди](/uk/tools/slash-commands)
 - [Конфігурація](/uk/gateway/configuration)
 - [Середовище](/uk/help/environment)

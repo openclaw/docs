@@ -2,45 +2,45 @@
 read_when:
     - Menemukan subperintah `openclaw` yang tepat
     - Mencari flag global atau aturan gaya keluaran
-summary: 'Indeks CLI OpenClaw: daftar perintah, flag global, dan tautan ke halaman perintah masing-masing'
+summary: 'Indeks CLI OpenClaw: daftar perintah, flag global, dan tautan ke halaman per perintah'
 title: Referensi CLI
 x-i18n:
-    generated_at: "2026-06-27T17:18:50Z"
+    generated_at: "2026-06-30T22:36:25Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7075c072fed0abf0ffa126bde01042adaf94f8ba4dffa9fef6dc99a6ab34eb43
+    source_hash: e5102afd4cfe8be5ec45b352cf714f0ecc965bbe03f6a1c3c1b22aa409cde7b9
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` adalah titik masuk CLI utama. Setiap perintah inti memiliki halaman referensi khusus atau didokumentasikan bersama perintah yang menjadi aliasnya; indeks ini mencantumkan perintah, flag global, dan aturan gaya output yang berlaku di seluruh CLI.
+`openclaw` adalah titik masuk CLI utama. Setiap perintah inti memiliki halaman referensi khusus atau didokumentasikan bersama perintah yang menjadi aliasnya; indeks ini mencantumkan perintah, flag global, dan aturan gaya keluaran yang berlaku di seluruh CLI.
 
-Gunakan perintah penyiapan sesuai maksudnya:
+Gunakan perintah penyiapan sesuai maksud:
 
-- `openclaw setup` membuat konfigurasi dasar dan workspace tanpa menjalani alur onboarding terpandu secara penuh.
-- `openclaw onboard` adalah jalur first-run terpandu lengkap untuk gateway, auth model, workspace, channel, skills, dan kesehatan.
-- `openclaw configure` mengubah bagian-bagian tertentu dari penyiapan yang sudah ada, seperti auth model, gateway, channel, plugin, atau skills.
-- `openclaw channels add` mengonfigurasi akun channel setelah dasar tersedia; jalankan tanpa flag untuk penyiapan channel terpandu atau dengan flag khusus channel untuk skrip.
+- `openclaw setup` dan `openclaw onboard` menjalankan alur terpandu eksekusi pertama secara lengkap untuk gateway, autentikasi model, ruang kerja, kanal, skills, dan kesehatan.
+- `openclaw setup --baseline` membuat konfigurasi dasar dan ruang kerja tanpa menjalani alur onboarding terpandu.
+- `openclaw configure` mengubah bagian tertentu dari penyiapan yang sudah ada, seperti autentikasi model, gateway, kanal, plugins, atau skills.
+- `openclaw channels add` mengonfigurasi akun kanal setelah dasar tersedia; jalankan tanpa flag untuk penyiapan kanal terpandu atau dengan flag khusus kanal untuk skrip.
 
 ## Halaman perintah
 
 | Area                 | Perintah                                                                                                                                                                                                                                  |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Penyiapan dan onboarding | [`crestodian`](/id/cli/crestodian) · [`setup`](/id/cli/setup) · [`onboard`](/id/cli/onboard) · [`configure`](/id/cli/configure) · [`config`](/id/cli/config) · [`completion`](/id/cli/completion) · [`doctor`](/id/cli/doctor) · [`dashboard`](/id/cli/dashboard) |
-| Reset dan uninstall  | [`backup`](/id/cli/backup) · [`reset`](/id/cli/reset) · [`uninstall`](/id/cli/uninstall) · [`update`](/id/cli/update)                                                                                                                                 |
-| Messaging dan agen | [`message`](/id/cli/message) · [`agent`](/id/cli/agent) · [`agents`](/id/cli/agents) · [`acp`](/id/cli/acp) · [`mcp`](/id/cli/mcp)                                                                                                                       |
+| Reset dan hapus instalasi  | [`backup`](/id/cli/backup) · [`reset`](/id/cli/reset) · [`uninstall`](/id/cli/uninstall) · [`update`](/id/cli/update)                                                                                                                                 |
+| Pesan dan agen | [`message`](/id/cli/message) · [`agent`](/id/cli/agent) · [`agents`](/id/cli/agents) · [`acp`](/id/cli/acp) · [`mcp`](/id/cli/mcp)                                                                                                                       |
 | Kesehatan dan sesi  | [`status`](/id/cli/status) · [`health`](/id/cli/health) · [`sessions`](/id/cli/sessions)                                                                                                                                                           |
 | Gateway dan log     | [`gateway`](/id/cli/gateway) · [`logs`](/id/cli/logs) · [`system`](/id/cli/system)                                                                                                                                                                 |
 | Model dan inferensi | [`models`](/id/cli/models) · [`infer`](/id/cli/infer) · `capability` (alias untuk [`infer`](/id/cli/infer)) · [`memory`](/id/cli/memory) · [`commitments`](/id/cli/commitments) · [`wiki`](/id/cli/wiki)                                                      |
 | Jaringan dan node    | [`directory`](/id/cli/directory) · [`nodes`](/id/cli/nodes) · [`devices`](/id/cli/devices) · [`node`](/id/cli/node)                                                                                                                                   |
 | Runtime dan sandbox  | [`approvals`](/id/cli/approvals) · `exec-policy` (lihat [`approvals`](/id/cli/approvals)) · [`sandbox`](/id/cli/sandbox) · [`tui`](/id/cli/tui) · `chat`/`terminal` (alias untuk [`tui --local`](/id/cli/tui)) · [`browser`](/id/cli/browser)                 |
 | Otomasi           | [`cron`](/id/cli/cron) · [`tasks`](/id/cli/tasks) · [`hooks`](/id/cli/hooks) · [`webhooks`](/id/cli/webhooks) · [`transcripts`](/id/cli/transcripts)                                                                                                     |
-| Discovery dan docs   | [`dns`](/id/cli/dns) · [`docs`](/id/cli/docs)                                                                                                                                                                                                   |
-| Pairing dan channel | [`pairing`](/id/cli/pairing) · [`qr`](/id/cli/qr) · [`channels`](/id/cli/channels)                                                                                                                                                                 |
-| Keamanan dan plugin | [`security`](/id/cli/security) · [`secrets`](/id/cli/secrets) · [`skills`](/id/cli/skills) · [`plugins`](/id/cli/plugins) · [`proxy`](/id/cli/proxy)                                                                                                     |
-| Alias legacy       | [`daemon`](/id/cli/daemon) (layanan gateway) · [`clawbot`](/id/cli/clawbot) (namespace)                                                                                                                                                         |
-| Plugin (opsional)   | [`path`](/id/cli/path) · [`policy`](/id/cli/policy) · [`voicecall`](/id/cli/voicecall) · [`workboard`](/id/cli/workboard) (jika terpasang)                                                                                                              |
+| Penemuan dan docs   | [`dns`](/id/cli/dns) · [`docs`](/id/cli/docs)                                                                                                                                                                                                   |
+| Penyandingan dan kanal | [`pairing`](/id/cli/pairing) · [`qr`](/id/cli/qr) · [`channels`](/id/cli/channels)                                                                                                                                                                 |
+| Keamanan dan plugins | [`security`](/id/cli/security) · [`secrets`](/id/cli/secrets) · [`skills`](/id/cli/skills) · [`plugins`](/id/cli/plugins) · [`proxy`](/id/cli/proxy)                                                                                                     |
+| Alias lama       | [`daemon`](/id/cli/daemon) (layanan gateway) · [`clawbot`](/id/cli/clawbot) (namespace)                                                                                                                                                         |
+| Plugins (opsional)   | [`path`](/id/cli/path) · [`policy`](/id/cli/policy) · [`voicecall`](/id/cli/voicecall) · [`workboard`](/id/cli/workboard) (jika terinstal)                                                                                                              |
 
 ## Flag global
 
@@ -50,21 +50,21 @@ Gunakan perintah penyiapan sesuai maksudnya:
 | `--profile <name>`      | Mengisolasi state di bawah `~/.openclaw-<name>`                              |
 | `--container <name>`    | Menargetkan container bernama untuk eksekusi                                |
 | `--no-color`            | Menonaktifkan warna ANSI (`NO_COLOR=1` juga dihormati)                  |
-| `--update`              | Singkatan untuk [`openclaw update`](/id/cli/update) (hanya instalasi sumber) |
+| `--update`              | Bentuk singkat untuk [`openclaw update`](/id/cli/update) (hanya instalasi sumber) |
 | `-V`, `--version`, `-v` | Mencetak versi dan keluar                                                |
 
-## Mode output
+## Mode keluaran
 
 - Warna ANSI dan indikator progres hanya dirender dalam sesi TTY.
-- Hyperlink OSC-8 dirender sebagai tautan yang dapat diklik jika didukung; jika tidak, CLI kembali ke URL polos.
-- `--json` (dan `--plain` jika didukung) menonaktifkan styling untuk output bersih.
+- Hyperlink OSC-8 dirender sebagai tautan yang dapat diklik jika didukung; jika tidak, CLI kembali ke URL biasa.
+- `--json` (dan `--plain` jika didukung) menonaktifkan gaya untuk keluaran bersih.
 - Perintah yang berjalan lama menampilkan indikator progres (OSC 9;4 jika didukung).
 
 Sumber kebenaran palet: `src/terminal/palette.ts`.
 
 ## Pohon perintah
 
-<Accordion title="Pohon perintah lengkap">
+<Accordion title="Full command tree">
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -377,7 +377,7 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Plugin dapat menambahkan perintah tingkat atas tambahan, seperti [`openclaw workboard`](/id/cli/workboard) atau `openclaw voicecall`.
+Plugins dapat menambahkan perintah tingkat atas tambahan, seperti [`openclaw workboard`](/id/cli/workboard) atau `openclaw voicecall`.
 
 </Accordion>
 
@@ -388,13 +388,13 @@ Pesan chat mendukung perintah `/...`. Lihat [perintah slash](/id/tools/slash-com
 Sorotan:
 
 - `/status` — diagnostik cepat.
-- `/trace` — baris trace/debug plugin dalam cakupan sesi.
-- `/config` — perubahan konfigurasi persisten.
+- `/trace` — baris trace/debug plugin yang dicakup sesi.
+- `/config` — perubahan konfigurasi yang dipertahankan.
 - `/debug` — override konfigurasi hanya runtime (memori, bukan disk; memerlukan `commands.debug: true`).
 
 ## Pelacakan penggunaan
 
-`openclaw status --usage` dan Control UI menampilkan penggunaan/kuota provider saat kredensial OAuth/API tersedia. Data berasal langsung dari endpoint penggunaan provider dan dinormalisasi menjadi `X% left`. Provider dengan jendela penggunaan saat ini: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi, dan z.ai.
+`openclaw status --usage` dan Control UI menampilkan penggunaan/kuota penyedia saat kredensial OAuth/API tersedia. Data berasal langsung dari endpoint penggunaan penyedia dan dinormalisasi menjadi `X% left`. Penyedia dengan jendela penggunaan saat ini: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi, dan z.ai.
 
 Lihat [Pelacakan penggunaan](/id/concepts/usage-tracking) untuk detail.
 
