@@ -8,22 +8,19 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 - Locale translation does not run for every hot `main` commit.
 - Translation work is debounced so a burst of docs commits becomes one translation wave.
 - Locale jobs translate only pages whose source hash changed since the last successful locale output.
-- Successful locale outputs are committed together, even if one or more locale jobs fail.
+- Successful locale outputs are committed even if one or more locale jobs fail.
 - A weekly reconciliation reruns every locale/page path to repair missed or flaky translations.
+- Translation publish work is serialized through R2 Pages so deploys do not race each other.
 
 ## Event flow
 
 1. `openclaw/openclaw` syncs English docs into `openclaw/docs`.
 2. GitHub Pages deploys English/source changes immediately from the sync commit.
-3. `Translate All` is triggered by the sync commit, release dispatch, manual dispatch, or weekly schedule.
-4. The coordinator waits a cooldown window before starting translation.
-5. After the cooldown, the coordinator reads the current `origin/main` source metadata.
-6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
-7. Per-locale translation jobs run in parallel with `fail-fast: false`.
-8. Each locale job uploads an artifact for the requested source SHA.
-9. The finalizer downloads available artifacts, ignores stale or failed payloads, and pushes one aggregate i18n commit.
-10. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
-11. The Pages workflow dispatches live smoke after deployment.
+3. Translation workflows debounce hot `main` changes, then re-read the current source metadata.
+4. Incremental translation handles normal docs syncs. It runs one shard per locale, then one aggregate finalizer commits successful locale artifacts together.
+5. Full translation handles weekly repair, glossary refreshes, release dispatches, and manual recovery. It runs a canary first, then bounded sharded locale batches, then one finalizer per locale.
+6. Finalizers push translation commits and explicitly dispatch R2 Pages because `GITHUB_TOKEN` pushes do not trigger the normal publish workflow.
+7. Workflow summaries report successful, failed, skipped, stale, and incomplete locales.
 
 ## Debounce policy
 
@@ -49,12 +46,28 @@ Internal files under `docs/.i18n/**` are not translation inputs. Push-triggered 
 
 If a locale job fails, its artifact is marked failed and carries no payload. The finalizer still commits successful locales. The failed locale remains stale and is picked up by the next incremental run because its source hashes still do not match.
 
+## Full translation
+
+Full translation is a reconciliation mode. It is used for weekly repair, glossary-driven refreshes, release dispatches, and targeted manual recovery.
+
+The full workflow has three layers:
+
+- Canary: translate and commit one representative page for the selected canary locale.
+- Translation shards: split each selected locale across one or more shard jobs.
+- Locale finalizer: apply every shard for one locale, run full validation, commit that locale, and dispatch one locale-scoped R2 publish.
+
+Shard count is derived from the English source document count, not from locale-specific history. The current policy is `ceil(source_doc_count / 250)`, capped at `1..4`. This intentionally overestimates work for some locales, but it avoids under-sharding large full runs while keeping the planner stateless.
+
+Full translation keeps peak concurrency bounded: batches remain capped, shard jobs use `worker_parallel: 3`, and locale finalizers run one at a time within each batch. Sharding is meant to reduce per-job wall time, not to multiply total active model workers without review.
+
+Targeted manual runs set `target_locale` to one locale slug or locale name. Use targeted full runs to recover a failed locale after workflow-control changes; do not rerun old finalizer jobs unless the artifacts and workflow ref are known to be valid.
+
 ## Artifact contract
 
-Each locale job uploads one artifact named with locale and source SHA:
+Each locale shard uploads one artifact named with locale, shard, and source SHA:
 
 ```text
-i18n-zh-cn-<source-sha>
+i18n-zh-cn-s0of4-<source-sha>
 ```
 
 Artifact contents:
@@ -67,21 +80,27 @@ payload/docs/<locale>/**
 payload/docs/.i18n/<locale>.tm.jsonl
 ```
 
-`metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
+`metadata.json` includes the locale, locale slug, source SHA, shard index, shard total, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
+
+Translation memory is locale-global. For sharded full runs, shard 0 carries `docs/.i18n/<locale>.tm.jsonl`; other shards carry only their page payload. Artifact upload must include hidden files so `.i18n` payloads are not dropped.
+
+`changed-files.txt` is a payload contract, not just a git diff list. Every listed path must exist in the artifact payload unless it is also listed in `deleted-files.txt`. This matters for new or canary locales where the TM file may not exist yet.
 
 The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 
-## Aggregate commit
+## Commit ownership
 
-The finalizer owns the only locale push in the normal path.
+Finalizers own locale pushes. Translation shard jobs never push.
 
-Commit message:
+Incremental translation uses one aggregate finalizer and one aggregate commit:
 
 ```text
 chore(i18n): refresh translations
 ```
 
-The commit may contain a partial locale set. The job summary lists applied locales, locales with no changes, missing or failed locales, stale artifacts, and invalid artifacts.
+Full translation uses locale finalizers. Each locale finalizer commits only `docs/<locale>/**` plus `docs/.i18n/<locale>.tm.jsonl` when that TM file exists or is already tracked.
+
+The commit may contain a partial locale set. Summaries list applied locales, locales with no changes, missing or failed locales, stale artifacts, and invalid artifacts.
 
 ## Weekly reconciliation
 
@@ -89,22 +108,23 @@ The weekly run uses `full` mode. It forces a full reconciliation across every lo
 
 Glossary changes also force full reconciliation because glossary guidance can affect pages whose source hashes did not change.
 
-Expected behavior:
+The weekly run is the repair mechanism for LLM flakiness, partial failures, and missed incremental updates. It uses the full translation sharding, artifact, and locale-finalizer semantics described above.
 
-- regenerate or verify every locale page
-- prune stale locale pages
-- refresh translation memory as needed
-- still use parallel locale jobs
-- still commit one aggregate result
-- still tolerate individual locale failures
+## Canary policy
 
-The weekly run is the repair mechanism for LLM flakiness, partial failures, and missed incremental updates.
+Canary runs are a control-plane check, not a full site proof. They verify artifact apply, canary scope enforcement, commit behavior, and R2 dispatch wiring on one representative page.
+
+Canary finalization skips `npm run docs:check`; full locale finalizers and full publish paths keep strict validation. In normal full runs, page-scoped canary R2 dispatch is best-effort so stale scoped deploys or R2 failures do not block later full batches. In `canary_only=true` manual validation, canary R2 remains strict and waits for the scoped publish result.
 
 ## Deployment policy
 
 English deploys from source sync commits.
 
-Translations deploy after the aggregate i18n commit. The finalizer dispatches GitHub Pages once because GitHub suppresses normal push-triggered workflow runs from `GITHUB_TOKEN` commits. The Pages workflow dispatches live smoke after deployment so the smoke test checks the deployed site instead of racing the deploy.
+Translations deploy after finalizer commits because GitHub suppresses normal push-triggered workflow runs from `GITHUB_TOKEN` commits. Incremental translation dispatches a publish after the aggregate commit. Full translation dispatches locale-scoped publishes from locale finalizers.
+
+`R2 Pages` serializes deploys with `queue: max` and `cancel-in-progress: false`. A running upload is not cancelled, and pending uploads are queued instead of being replaced by newer waiting requests.
+
+Scoped locale/page publishes still build the site before uploading a filtered manifest subset. They are an optimization for upload scope and validation blast radius, not a separate minimal build system.
 
 A hot docs day should produce many fast English deploys, but only a small number of locale deploys.
 
