@@ -34,7 +34,7 @@ jobs:
       # Finalizers apply artifacts to latest main, but deploy/commit control
       # logic must come from this workflow ref so branch canaries test the fix.
       - name: Check out workflow scripts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -50,7 +50,7 @@ jobs:
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
       - name: Check out latest main
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
