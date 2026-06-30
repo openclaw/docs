@@ -43,6 +43,7 @@ Bir konuşma bir ACP oturumuna bağlandığında, normal metin ACP harness'ına 
     - **Yalnızca yönerge** mesajlarında (mesaj yalnızca yönergelerden oluşuyorsa), oturumda kalıcılaştırılır ve bir onay yanıtı döndürür.
     - Başka metin içeren **normal sohbet** mesajlarında satır içi ipuçları gibi davranır ve oturum ayarlarını kalıcılaştırmaz.
     - Yönergeler yalnızca **yetkili gönderenler** için uygulanır. `commands.allowFrom` ayarlanmışsa kullanılan tek izin listesi odur; aksi takdirde yetkilendirme kanal izin listelerinden/eşleştirmeden ve `commands.useAccessGroups` değerinden gelir. Yetkisiz gönderenlerin yönergeleri düz metin olarak değerlendirilir.
+
   </Accordion>
 </AccordionGroup>
 
