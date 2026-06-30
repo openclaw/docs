@@ -33,9 +33,10 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from translation_plan import is_locale_dir
+
 
 SOURCE_HASH_RE = re.compile(r"^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+source_hash: ([0-9a-f]{64})$", re.M)
-LOCALE_DIR_RE = re.compile(r"^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$")
 
 
 @dataclass(frozen=True)
@@ -45,10 +46,6 @@ class PendingResult:
     pending_count: int
     pending_path: Path
     shard_files: list[Path]
-
-
-def is_locale_dir(path: Path) -> bool:
-    return path.is_dir() and LOCALE_DIR_RE.match(path.name) is not None and (path / ".i18n" / "README.md").exists()
 
 
 def stored_source_hash(path: Path) -> str:

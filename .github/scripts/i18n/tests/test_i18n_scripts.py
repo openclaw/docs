@@ -18,6 +18,9 @@ from unittest.mock import patch
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 REPO_ROOT = Path(__file__).resolve().parents[4]
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+NON_CLI_SCRIPT_MODULES = {SCRIPT_DIR / "translation_plan.py"}
 
 
 def load_module(name: str):
@@ -32,6 +35,7 @@ def load_module(name: str):
 workflow_shell_check = load_module("workflow_shell_check")
 budget_check = load_module("budget_check")
 prepare = load_module("prepare")
+translation_plan = load_module("translation_plan")
 pending = load_module("build_pending_manifest")
 package_artifact = load_module("package_artifact")
 mdx_repair_scope = load_module("mdx_repair_scope")
@@ -39,6 +43,7 @@ apply_artifacts = load_module("apply_artifacts")
 read_source_metadata = load_module("read_source_metadata")
 prune_stale_locale_pages = load_module("prune_stale_locale_pages")
 plan_full = load_module("plan_full")
+plan_incremental = load_module("plan_incremental")
 provider_preflight = load_module("provider_preflight")
 summarize_full = load_module("summarize_full")
 commit_locale_artifact = load_module("commit_locale_artifact")
@@ -102,13 +107,13 @@ class I18NScriptTests(unittest.TestCase):
                 else:
                     called_scripts.add(SCRIPT_DIR / match.group("temp"))
 
-        expected_scripts = set(SCRIPT_DIR.glob("*.py")) - {SCRIPT_DIR / "__init__.py"}
+        expected_scripts = set(SCRIPT_DIR.glob("*.py")) - {SCRIPT_DIR / "__init__.py"} - NON_CLI_SCRIPT_MODULES
         self.assertEqual(expected_scripts, called_scripts)
         for script in called_scripts:
             self.assertTrue(script.exists(), f"workflow calls missing script: {script}")
 
     def test_i18n_scripts_expose_help(self) -> None:
-        for script in sorted(SCRIPT_DIR.glob("*.py")):
+        for script in sorted(set(SCRIPT_DIR.glob("*.py")) - NON_CLI_SCRIPT_MODULES):
             result = subprocess.run(
                 [sys.executable, str(script), "--help"],
                 cwd=REPO_ROOT,
@@ -274,11 +279,46 @@ class I18NScriptTests(unittest.TestCase):
 
     def test_incremental_workflow_schedules_all_expected_finalizer_locales(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
+        expected = apply_artifacts.parse_expected(apply_artifacts.DEFAULT_EXPECTED_LOCALES)
 
-        for locale, slug in apply_artifacts.parse_expected(apply_artifacts.DEFAULT_EXPECTED_LOCALES).items():
-            self.assertIn(f"locale: {slug}", text)
-            self.assertIn(f"locale_slug: {locale}", text)
+        self.assertEqual(expected, {locale.locale_slug: locale.locale for locale in translation_plan.all_locales()})
+        self.assertIn('python "${I18N_SCRIPT_DIR}/plan_incremental.py"', text)
+        self.assertIn("matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}", text)
+        self.assertIn("max-parallel: 12", text)
+        self.assertIn("shard_index: ${{ matrix.shard_index }}", text)
+        self.assertIn("shard_total: ${{ matrix.shard_total }}", text)
+        self.assertIn("shard_total: ${{ needs.plan.outputs.shard_total }}", text)
+        self.assertIn('worker_parallel: "3"', text)
+        self.assertNotIn('shard_index: "0"', text)
+        self.assertNotIn('shard_total: "1"', text)
+        self.assertNotIn('worker_parallel: "8"', text)
+        for slug in expected.values():
             self.assertIn(f'!docs/{slug}/**', text)
+
+    def test_supported_locale_dirs_are_never_source_docs_without_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Index\n", encoding="utf-8")
+            for locale in translation_plan.all_locales():
+                locale_dir = docs / locale.locale
+                locale_dir.mkdir()
+                (locale_dir / "index.md").write_text(f"# {locale.locale}\n", encoding="utf-8")
+
+            incremental = plan_incremental.plan_incremental(docs, target_docs_per_shard=1, max_shards=4)
+            pending_result = pending.build_pending_manifest(
+                docs_root=docs,
+                openclaw_sync_dir=Path(tmp) / ".openclaw-sync",
+                locale="de",
+                locale_slug="de",
+                mode="incremental",
+                shard_index=0,
+                shard_total=1,
+            )
+
+            self.assertEqual(1, incremental["source_doc_count"])
+            self.assertEqual(1, pending_result.all_count)
+            self.assertEqual(1, pending_result.total_pending_count)
 
     def test_full_plan_all_uses_canary_and_small_batches(self) -> None:
         result = plan_full.plan_full("all", 4, FIXTURES / "pending-docs" / "docs")
@@ -287,6 +327,16 @@ class I18NScriptTests(unittest.TestCase):
         self.assertEqual(1, result["shard_total"])
         self.assertLessEqual(max(len(batch) for batch in result["batch_locales"]), 4)
         self.assertEqual(20, sum(len(batch) for batch in result["batches"]))
+
+    def test_translation_plan_shared_shard_policy(self) -> None:
+        self.assertEqual(1, translation_plan.shard_total_for_doc_count(0, 250, 4))
+        self.assertEqual(1, translation_plan.shard_total_for_doc_count(250, 250, 4))
+        self.assertEqual(2, translation_plan.shard_total_for_doc_count(251, 250, 4))
+        self.assertEqual(4, translation_plan.shard_total_for_doc_count(1200, 250, 4))
+        with self.assertRaises(SystemExit):
+            translation_plan.shard_total_for_doc_count(10, 0, 4)
+        with self.assertRaises(SystemExit):
+            translation_plan.shard_total_for_doc_count(10, 250, 0)
 
     def test_full_plan_shards_large_batches_without_increasing_locale_batch_size(self) -> None:
         result = plan_full.plan_full("ru", 4, FIXTURES / "pending-docs" / "docs", target_docs_per_shard=1, max_shards=4)
@@ -300,6 +350,55 @@ class I18NScriptTests(unittest.TestCase):
             result["batches"][0],
         )
         self.assertEqual([[{"locale": "ru", "locale_slug": "ru", "shard_total": "2"}]], result["batch_locales"])
+
+    def test_full_plan_excludes_supported_locale_dirs_without_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Index\n", encoding="utf-8")
+            (docs / "hi").mkdir()
+            (docs / "hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+            (docs / "ru").mkdir()
+            (docs / "ru/index.md").write_text("# Russian\n", encoding="utf-8")
+            (docs / "fr/.i18n").mkdir(parents=True)
+            (docs / "fr/.i18n/README.md").write_text("# marker\n", encoding="utf-8")
+            (docs / "fr/index.md").write_text("# French\n", encoding="utf-8")
+
+            result = plan_full.plan_full("ru", 4, docs, target_docs_per_shard=1, max_shards=4)
+
+            self.assertEqual(1, result["source_doc_count"])
+            self.assertEqual(1, result["shard_total"])
+
+    def test_incremental_plan_reuses_shared_locale_and_shard_policy(self) -> None:
+        result = plan_incremental.plan_incremental(FIXTURES / "pending-docs" / "docs", target_docs_per_shard=1, max_shards=4)
+
+        self.assertEqual(20, result["locale_count"])
+        self.assertEqual(2, result["source_doc_count"])
+        self.assertEqual(2, result["shard_total"])
+        self.assertEqual(40, len(result["matrix"]["include"]))
+        self.assertEqual(
+            [
+                {"locale": "zh-CN", "locale_slug": "zh-cn", "shard_index": "0", "shard_total": "2"},
+                {"locale": "zh-CN", "locale_slug": "zh-cn", "shard_index": "1", "shard_total": "2"},
+            ],
+            result["matrix"]["include"][:2],
+        )
+
+    def test_incremental_plan_excludes_supported_locale_dirs_without_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Index\n", encoding="utf-8")
+            (docs / "hi").mkdir()
+            (docs / "hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+            (docs / "ru").mkdir()
+            (docs / "ru/index.md").write_text("# Russian\n", encoding="utf-8")
+
+            result = plan_incremental.plan_incremental(docs, target_docs_per_shard=1, max_shards=4)
+
+            self.assertEqual(1, result["source_doc_count"])
+            self.assertEqual(1, result["shard_total"])
+            self.assertEqual(20, len(result["matrix"]["include"]))
 
     def test_full_plan_manual_single_locale_only_selects_target(self) -> None:
         result = plan_full.plan_full("fr", 3, FIXTURES / "pending-docs" / "docs")
@@ -412,6 +511,33 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(2, result.all_count)
             self.assertEqual(1, result.total_pending_count)
             self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/guide/setup.mdx"))
+
+    def test_pending_manifest_excludes_supported_locale_dirs_without_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Index\n", encoding="utf-8")
+            (docs / "hi").mkdir()
+            (docs / "hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+            (docs / "ru").mkdir()
+            (docs / "ru/index.md").write_text("# Russian\n", encoding="utf-8")
+            (docs / "fr/.i18n").mkdir(parents=True)
+            (docs / "fr/.i18n/README.md").write_text("# marker\n", encoding="utf-8")
+            (docs / "fr/index.md").write_text("# French\n", encoding="utf-8")
+
+            result = pending.build_pending_manifest(
+                docs_root=docs,
+                openclaw_sync_dir=Path(tmp) / ".openclaw-sync",
+                locale="de",
+                locale_slug="de",
+                mode="incremental",
+                shard_index=0,
+                shard_total=1,
+            )
+
+            self.assertEqual(1, result.all_count)
+            self.assertEqual(1, result.total_pending_count)
+            self.assertEqual(["index.md"], [file.name for file in result.shard_files])
 
     def test_pending_manifest_canary_limit_keeps_total_count_but_limits_sample(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
