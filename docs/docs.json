@@ -1916,6 +1916,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "releases/index",
                   "maturity/scorecard",
                   "maturity/taxonomy",
                   "reference/RELEASING",
@@ -3473,6 +3474,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "zh-TW/releases/index",
                   "zh-TW/maturity/scorecard",
                   "zh-TW/maturity/taxonomy",
                   "zh-TW/reference/RELEASING",
@@ -4407,6 +4409,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ja-JP/releases/index",
                   "ja-JP/maturity/scorecard",
                   "ja-JP/maturity/taxonomy",
                   "ja-JP/reference/RELEASING",
@@ -5341,6 +5344,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "es/releases/index",
                   "es/maturity/scorecard",
                   "es/maturity/taxonomy",
                   "es/reference/RELEASING",
@@ -6275,6 +6279,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "pt-BR/releases/index",
                   "pt-BR/maturity/scorecard",
                   "pt-BR/maturity/taxonomy",
                   "pt-BR/reference/RELEASING",
@@ -7209,6 +7214,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ko/releases/index",
                   "ko/maturity/scorecard",
                   "ko/maturity/taxonomy",
                   "ko/reference/RELEASING",
@@ -8143,6 +8149,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "de/releases/index",
                   "de/maturity/scorecard",
                   "de/maturity/taxonomy",
                   "de/reference/RELEASING",
@@ -9077,6 +9084,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "fr/releases/index",
                   "fr/maturity/scorecard",
                   "fr/maturity/taxonomy",
                   "fr/reference/RELEASING",
@@ -10011,6 +10019,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "hi/releases/index",
                   "hi/maturity/scorecard",
                   "hi/maturity/taxonomy",
                   "hi/reference/RELEASING",
@@ -10945,6 +10954,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ar/releases/index",
                   "ar/maturity/scorecard",
                   "ar/maturity/taxonomy",
                   "ar/reference/RELEASING",
@@ -11879,6 +11889,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "it/releases/index",
                   "it/maturity/scorecard",
                   "it/maturity/taxonomy",
                   "it/reference/RELEASING",
@@ -12813,6 +12824,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "vi/releases/index",
                   "vi/maturity/scorecard",
                   "vi/maturity/taxonomy",
                   "vi/reference/RELEASING",
@@ -13747,6 +13759,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "nl/releases/index",
                   "nl/maturity/scorecard",
                   "nl/maturity/taxonomy",
                   "nl/reference/RELEASING",
@@ -14681,6 +14694,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "tr/releases/index",
                   "tr/maturity/scorecard",
                   "tr/maturity/taxonomy",
                   "tr/reference/RELEASING",
@@ -15615,6 +15629,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "uk/releases/index",
                   "uk/maturity/scorecard",
                   "uk/maturity/taxonomy",
                   "uk/reference/RELEASING",
@@ -16549,6 +16564,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "id/releases/index",
                   "id/maturity/scorecard",
                   "id/maturity/taxonomy",
                   "id/reference/RELEASING",
@@ -17483,6 +17499,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "pl/releases/index",
                   "pl/maturity/scorecard",
                   "pl/maturity/taxonomy",
                   "pl/reference/RELEASING",
@@ -18417,6 +18434,7 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ru/releases/index",
                   "ru/maturity/scorecard",
                   "ru/maturity/taxonomy",
                   "ru/reference/RELEASING",
