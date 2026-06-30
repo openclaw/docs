@@ -77,56 +77,58 @@ jobs:
 
           python .github/scripts/i18n/prepare.py --mode incremental --title "Translate Incremental"
 
+  plan:
+    name: Plan incremental shards
+    needs: prepare
+    if: needs.prepare.outputs.should_translate == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      locale_count: ${{ steps.plan.outputs.locale_count }}
+      source_doc_count: ${{ steps.plan.outputs.source_doc_count }}
+      shard_total: ${{ steps.plan.outputs.shard_total }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      # The planner runs workflow-control scripts from the workflow ref under
+      # test, while sizing shards from the debounced publish ref.
+      - name: Check out workflow scripts
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .openclaw-sync/workflow-ref
+          sparse-checkout: .github/scripts/i18n
+          persist-credentials: false
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
+      - name: Check out publish ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.publish_ref }}
+          persist-credentials: false
+
+      - name: Build incremental shard matrix
+        id: plan
+        run: |
+          set -euo pipefail
+          python "${I18N_SCRIPT_DIR}/plan_incremental.py"
+
   translate:
     name: Translate ${{ matrix.locale }}
     needs:
       - prepare
       - provider-preflight
+      - plan
     if: needs.prepare.outputs.should_translate == 'true'
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - locale: zh-CN
-            locale_slug: zh-cn
-          - locale: zh-TW
-            locale_slug: zh-tw
-          - locale: ja-JP
-            locale_slug: ja-jp
-          - locale: es
-            locale_slug: es
-          - locale: pt-BR
-            locale_slug: pt-br
-          - locale: ko
-            locale_slug: ko
-          - locale: de
-            locale_slug: de
-          - locale: fr
-            locale_slug: fr
-          - locale: hi
-            locale_slug: hi
-          - locale: ar
-            locale_slug: ar
-          - locale: it
-            locale_slug: it
-          - locale: vi
-            locale_slug: vi
-          - locale: nl
-            locale_slug: nl
-          - locale: fa
-            locale_slug: fa
-          - locale: ru
-            locale_slug: ru
-          - locale: tr
-            locale_slug: tr
-          - locale: uk
-            locale_slug: uk
-          - locale: id
-            locale_slug: id
-          - locale: pl
-            locale_slug: pl
-          - locale: th
-            locale_slug: th
+      max-parallel: 12
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -134,9 +136,9 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_index: "0"
-      shard_total: "1"
-      worker_parallel: "8"
+      shard_index: ${{ matrix.shard_index }}
+      shard_total: ${{ matrix.shard_total }}
+      worker_parallel: "3"
       thinking_effort: "medium"
       pending_limit: "0"
       artifact_prefix: i18n
@@ -168,10 +170,11 @@ jobs:
     needs:
       - prepare
       - provider-preflight
+      - plan
       - translate
-    if: always() && needs.prepare.result == 'success' && needs.provider-preflight.result == 'success' && needs.prepare.outputs.should_translate == 'true'
+    if: always() && needs.prepare.result == 'success' && needs.provider-preflight.result == 'success' && needs.plan.result == 'success' && needs.prepare.outputs.should_translate == 'true'
     uses: ./.github/workflows/translate-finalize-reusable.yml
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: "1"
+      shard_total: ${{ needs.plan.outputs.shard_total }}
