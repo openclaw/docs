@@ -1,74 +1,76 @@
 ---
 read_when:
-    - यह समझना कि QA स्टैक कैसे एक साथ फिट बैठता है
-    - qa-lab, qa-channel, या परिवहन अडैप्टर का विस्तार करना
-    - रिपो-समर्थित QA परिदृश्य जोड़ना
-    - Gateway डैशबोर्ड के आसपास उच्च-यथार्थ QA स्वचालन बनाना
-summary: 'QA स्टैक का अवलोकन: qa-lab, qa-channel, repo-backed परिदृश्य, लाइव ट्रांसपोर्ट लेन, ट्रांसपोर्ट एडाप्टर, और रिपोर्टिंग।'
+    - QA स्टैक आपस में कैसे जुड़ता है, इसे समझना
+    - qa-lab, qa-channel, या किसी transport adapter का विस्तार करना
+    - रेपो-समर्थित QA परिदृश्य जोड़ना
+    - Gateway डैशबोर्ड के इर्द-गिर्द उच्च-यथार्थता वाला QA ऑटोमेशन बनाना
+summary: 'QA स्टैक अवलोकन: qa-lab, qa-channel, repo-backed scenarios, लाइव ट्रांसपोर्ट लेन, ट्रांसपोर्ट अडैप्टर, और रिपोर्टिंग।'
 title: QA अवलोकन
 x-i18n:
-    generated_at: "2026-06-28T23:02:02Z"
+    generated_at: "2026-06-30T14:02:14Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8cc1e4c3f496e409b93d2ca2d3bf8107e5fe3bea37f89cc92d1936109f0f4e36
+    source_hash: 5bffd191f985255f5c830d4e3d1c4ffa250097848195bc58d74104474448e3e1
     source_path: concepts/qa-e2e-automation.md
     workflow: 16
 ---
 
-निजी QA स्टैक का उद्देश्य OpenClaw को एकल यूनिट टेस्ट की तुलना में अधिक यथार्थवादी,
-चैनल-आकार वाले तरीके से अभ्यास कराना है।
+निजी QA स्टैक का उद्देश्य OpenClaw को किसी एक यूनिट टेस्ट की तुलना में अधिक वास्तविक,
+चैनल-आकार वाले तरीके से चलाकर जांचना है।
 
-वर्तमान घटक:
+मौजूदा हिस्से:
 
 - `extensions/qa-channel`: DM, चैनल, थ्रेड,
-  रिएक्शन, एडिट, और डिलीट सतहों वाला सिंथेटिक संदेश चैनल।
-- `extensions/qa-lab`: ट्रांसक्रिप्ट देखने,
-  इनबाउंड संदेश इंजेक्ट करने, और Markdown रिपोर्ट निर्यात करने के लिए डीबगर UI और QA बस।
-- `extensions/qa-matrix`, भावी रनर Plugin: लाइव-ट्रांसपोर्ट अडैप्टर जो
-  चाइल्ड QA Gateway के अंदर वास्तविक चैनल चलाते हैं।
-- `qa/`: kickoff टास्क और बेसलाइन QA
-  परिदृश्यों के लिए रेपो-समर्थित सीड एसेट।
-- [Mantis](/hi/concepts/mantis): उन बगों के लिए पहले और बाद का लाइव सत्यापन
-  जिन्हें वास्तविक ट्रांसपोर्ट, ब्राउज़र स्क्रीनशॉट, VM स्थिति, और PR प्रमाण चाहिए।
+  reaction, edit, और delete सतहों वाला synthetic message channel।
+- `extensions/qa-lab`: transcript को देखने,
+  inbound messages इंजेक्ट करने, और Markdown रिपोर्ट export करने के लिए debugger UI और QA bus।
+- `extensions/qa-matrix`, भविष्य के runner plugins: live-transport adapters जो
+  child QA gateway के अंदर वास्तविक चैनल चलाते हैं।
+- `qa/`: kickoff task और baseline QA
+  scenarios के लिए repo-backed seed assets।
+- [Mantis](/hi/concepts/mantis): उन बगों के लिए live verification से पहले और बाद की जांच जिन्हें
+  वास्तविक transports, browser screenshots, VM state, और PR evidence चाहिए।
 
-## Command सतह
+## Command surface
 
-हर QA फ्लो `pnpm openclaw qa <subcommand>` के अंतर्गत चलता है। कई के पास `pnpm qa:*`
-स्क्रिप्ट alias हैं; दोनों रूप समर्थित हैं।
+हर QA flow `pnpm openclaw qa <subcommand>` के तहत चलता है। कई के पास `pnpm qa:*`
+script aliases हैं; दोनों रूप समर्थित हैं।
 
 | Command                                             | उद्देश्य                                                                                                                                                                                                                                                                 |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `qa run`                                            | `--qa-profile` के बिना बंडल किया गया QA स्व-जांच; `--qa-profile smoke-ci`, `--qa-profile release`, या `--qa-profile all` के साथ टैक्सोनॉमी-समर्थित maturity प्रोफ़ाइल रनर।                                                                                                      |
-| `qa suite`                                          | QA Gateway lane के विरुद्ध रेपो-समर्थित परिदृश्य चलाएं। Alias: disposable Linux VM के लिए `pnpm openclaw qa suite --runner multipass`।                                                                                                                                  |
-| `qa coverage`                                       | YAML परिदृश्य-कवरेज इन्वेंटरी प्रिंट करें (मशीन आउटपुट के लिए `--json`)।                                                                                                                                                                                               |
-| `qa parity-report`                                  | दो `qa-suite-summary.json` फ़ाइलों की तुलना करें और agentic parity रिपोर्ट लिखें, या एक runtime-pair summary से Codex-vs-OpenClaw runtime parity और token-efficiency रिपोर्ट लिखने के लिए `--runtime-axis --token-efficiency` का उपयोग करें।                                         |
-| `qa character-eval`                                 | judged रिपोर्ट के साथ कई लाइव मॉडल पर character QA परिदृश्य चलाएं। [रिपोर्टिंग](#reporting) देखें।                                                                                                                                                            |
+| `qa run`                                            | `--qa-profile` के बिना bundled QA self-check; `--qa-profile smoke-ci`, `--qa-profile release`, या `--qa-profile all` के साथ taxonomy-backed maturity profile runner।                                                                                                      |
+| `qa suite`                                          | QA gateway lane के विरुद्ध repo-backed scenarios चलाएं। Aliases: disposable Linux VM के लिए `pnpm openclaw qa suite --runner multipass`।                                                                                                                                  |
+| `qa coverage`                                       | YAML scenario-coverage inventory प्रिंट करें (machine output के लिए `--json`)।                                                                                                                                                                                               |
+| `qa parity-report`                                  | दो `qa-suite-summary.json` files की तुलना करें और agentic parity report लिखें, या एक runtime-pair summary से Codex-vs-OpenClaw runtime parity और token-efficiency reports लिखने के लिए `--runtime-axis --token-efficiency` का उपयोग करें।                                         |
+| `qa character-eval`                                 | judged report के साथ कई live models पर character QA scenario चलाएं। [Reporting](#reporting) देखें।                                                                                                                                                            |
 | `qa manual`                                         | चुने गए provider/model lane के विरुद्ध one-off prompt चलाएं।                                                                                                                                                                                                          |
-| `qa ui`                                             | QA डीबगर UI और स्थानीय QA bus शुरू करें (alias: `pnpm qa:lab:ui`)।                                                                                                                                                                                                    |
-| `qa docker-build-image`                             | prebaked QA Docker image बनाएं।                                                                                                                                                                                                                                     |
-| `qa docker-scaffold`                                | QA dashboard + Gateway lane के लिए docker-compose scaffold लिखें।                                                                                                                                                                                                    |
-| `qa up`                                             | QA site बनाएं, Docker-समर्थित stack शुरू करें, URL प्रिंट करें (alias: `pnpm qa:lab:up`; `:fast` variant `--use-prebuilt-image --bind-ui-dist --skip-ui-build` जोड़ता है)।                                                                                                  |
+| `qa ui`                                             | QA debugger UI और local QA bus शुरू करें (alias: `pnpm qa:lab:ui`)।                                                                                                                                                                                                    |
+| `qa docker-build-image`                             | prebaked QA Docker image build करें।                                                                                                                                                                                                                                     |
+| `qa docker-scaffold`                                | QA dashboard + gateway lane के लिए docker-compose scaffold लिखें।                                                                                                                                                                                                    |
+| `qa up`                                             | QA site build करें, Docker-backed stack शुरू करें, URL प्रिंट करें (alias: `pnpm qa:lab:up`; `:fast` variant `--use-prebuilt-image --bind-ui-dist --skip-ui-build` जोड़ता है)।                                                                                                  |
 | `qa aimock`                                         | केवल AIMock provider server शुरू करें।                                                                                                                                                                                                                                  |
 | `qa mock-openai`                                    | केवल scenario-aware `mock-openai` provider server शुरू करें।                                                                                                                                                                                                            |
 | `qa credentials doctor` / `add` / `list` / `remove` | साझा Convex credential pool प्रबंधित करें।                                                                                                                                                                                                                               |
-| `qa matrix`                                         | disposable Tuwunel homeserver के विरुद्ध लाइव transport lane। [Matrix QA](/hi/concepts/qa-matrix) देखें।                                                                                                                                                                      |
-| `qa telegram`                                       | वास्तविक निजी Telegram group के विरुद्ध लाइव transport lane।                                                                                                                                                                                                              |
-| `qa discord`                                        | वास्तविक निजी Discord guild channel के विरुद्ध लाइव transport lane।                                                                                                                                                                                                       |
-| `qa slack`                                          | वास्तविक निजी Slack channel के विरुद्ध लाइव transport lane।                                                                                                                                                                                                               |
-| `qa whatsapp`                                       | वास्तविक WhatsApp Web accounts के विरुद्ध लाइव transport lane।                                                                                                                                                                                                                 |
-| `qa mantis`                                         | लाइव transport bugs के लिए पहले और बाद का verification runner, Discord status-reactions evidence, Crabbox desktop/browser smoke, और Slack-in-VNC smoke के साथ। [Mantis](/hi/concepts/mantis) और [Mantis Slack Desktop Runbook](/hi/concepts/mantis-slack-desktop-runbook) देखें। |
+| `qa matrix`                                         | disposable Tuwunel homeserver के विरुद्ध live transport lane। [Matrix QA](/hi/concepts/qa-matrix) देखें।                                                                                                                                                                      |
+| `qa telegram`                                       | वास्तविक निजी Telegram group के विरुद्ध live transport lane।                                                                                                                                                                                                              |
+| `qa discord`                                        | वास्तविक निजी Discord guild channel के विरुद्ध live transport lane।                                                                                                                                                                                                       |
+| `qa slack`                                          | वास्तविक निजी Slack channel के विरुद्ध live transport lane।                                                                                                                                                                                                               |
+| `qa whatsapp`                                       | वास्तविक WhatsApp Web accounts के विरुद्ध live transport lane।                                                                                                                                                                                                                 |
+| `qa mantis`                                         | live transport bugs के लिए before और after verification runner, जिसमें Discord status-reactions evidence, Crabbox desktop/browser smoke, और Slack-in-VNC smoke शामिल हैं। [Mantis](/hi/concepts/mantis) और [Mantis Slack Desktop Runbook](/hi/concepts/mantis-slack-desktop-runbook) देखें। |
 
-Profile-backed `qa run` `taxonomy.yaml` से membership पढ़ता है, फिर resolved scenarios को `qa suite` के माध्यम से dispatch करता है। `--surface` और
-`--category` अलग lanes परिभाषित करने के बजाय चुनी गई profile को filter करते हैं।
-परिणामी `qa-evidence.json` में selected-category counts और missing coverage IDs के साथ profile scorecard summary शामिल होती है; individual evidence
+Profile-backed `qa run` `taxonomy.yaml` से membership पढ़ता है, फिर resolved scenarios को
+`qa suite` के जरिए dispatch करता है। `--surface` और
+`--category` अलग lanes परिभाषित करने के बजाय selected profile को filter करते हैं।
+नतीजे वाले `qa-evidence.json` में selected-category counts और missing coverage IDs के साथ
+profile scorecard summary शामिल होती है; individual evidence
 entries tests, coverage roles, और results के लिए source of truth बनी रहती हैं।
 Taxonomy feature coverage IDs exact proof targets हैं, aliases नहीं। Primary
-scenario coverage matching IDs पूरा करता है; secondary coverage advisory रहती है।
+scenario coverage matching IDs को पूरा करता है; secondary coverage advisory रहती है।
 Coverage IDs lowercase alphanumeric/dash segments के साथ dotted `namespace.behavior` form का उपयोग करते हैं; profile, surface, और category IDs अभी भी
-existing dashed या dotted taxonomy IDs का उपयोग कर सकते हैं।
-Slim evidence per-entry `execution` छोड़ देता है और `evidenceMode: "slim"` सेट करता है;
-`smoke-ci` slim पर default होता है, और `--evidence-mode full` full entries बहाल करता है:
+मौजूदा dashed या dotted taxonomy IDs का उपयोग कर सकते हैं।
+Slim evidence per-entry `execution` को छोड़ देता है और `evidenceMode: "slim"` set करता है;
+`smoke-ci` default रूप से slim होता है, और `--evidence-mode full` full entries restore करता है:
 
 ```bash
 pnpm openclaw qa run \
@@ -78,11 +80,12 @@ pnpm openclaw qa run \
   --output-dir .artifacts/qa-e2e/smoke-ci-profile-dispatch
 ```
 
-mock model providers और Crabline fake provider servers के साथ deterministic profile proof के लिए `smoke-ci` का उपयोग करें। live
-channels के विरुद्ध Stable/LTS proof के लिए `release` का उपयोग करें। explicit full-taxonomy evidence runs के लिए ही `all` का उपयोग करें; यह
-हर active maturity category चुनता है और `qa_profile=all` के साथ `QA Profile
-Evidence` workflow के माध्यम से dispatch किया जा सकता है। जब किसी command को OpenClaw
-root profile भी चाहिए, तो root profile को QA command से पहले रखें:
+mock model providers और Crabline local provider servers के साथ deterministic profile proof के लिए
+`smoke-ci` का उपयोग करें। live
+channels के विरुद्ध Stable/LTS proof के लिए `release` का उपयोग करें। `all` का उपयोग केवल explicit full-taxonomy evidence runs के लिए करें; यह
+हर active maturity category चुनता है और `QA Profile
+Evidence` workflow के जरिए `qa_profile=all` के साथ dispatch किया जा सकता है। जब किसी command को OpenClaw
+root profile भी चाहिए हो, तो root profile को QA command से पहले रखें:
 
 ```bash
 pnpm openclaw --profile work qa run --qa-profile smoke-ci
@@ -90,21 +93,21 @@ pnpm openclaw --profile work qa run --qa-profile smoke-ci
 
 ## Operator flow
 
-वर्तमान QA operator flow दो-pane QA site है:
+मौजूदा QA operator flow दो-pane वाली QA site है:
 
-- बायां: agent के साथ Gateway dashboard (Control UI)।
-- दायां: QA Lab, Slack-जैसा transcript और scenario plan दिखाते हुए।
+- Left: agent के साथ Gateway dashboard (Control UI)।
+- Right: Slack-ish transcript और scenario plan दिखाने वाला QA Lab।
 
-इसे इसके साथ चलाएं:
+इसे चलाएं:
 
 ```bash
 pnpm qa:lab:up
 ```
 
-यह QA site बनाता है, Docker-समर्थित Gateway lane शुरू करता है, और
+यह QA site build करता है, Docker-backed gateway lane शुरू करता है, और
 QA Lab page expose करता है जहां operator या automation loop agent को QA
-mission दे सकता है, वास्तविक channel behavior देख सकता है, और रिकॉर्ड कर सकता है कि क्या काम किया, विफल हुआ, या
-blocked रहा।
+mission दे सकता है, वास्तविक channel behavior देख सकता है, और record कर सकता है कि क्या काम किया, क्या विफल हुआ, या
+क्या blocked रहा।
 
 हर बार Docker image rebuild किए बिना तेज QA Lab UI iteration के लिए,
 bind-mounted QA Lab bundle के साथ stack शुरू करें:
@@ -121,25 +124,25 @@ pnpm qa:lab:watch
 change पर उस bundle को rebuild करता है, और QA Lab
 asset hash बदलने पर browser auto-reload होता है।
 
-स्थानीय OpenTelemetry signal smoke के लिए, चलाएं:
+local OpenTelemetry signal smoke के लिए, चलाएं:
 
 ```bash
 pnpm qa:otel:smoke
 ```
 
-यह script local OTLP/HTTP receiver शुरू करती है, `diagnostics-otel` plugin enabled के साथ `otel-trace-smoke` QA
-scenario चलाती है, फिर assert करती है कि traces,
-metrics, और logs exported हैं। यह exported protobuf trace spans को decode करती है
-और release-critical shape जांचती है:
+यह script local OTLP/HTTP receiver शुरू करता है, `diagnostics-otel` plugin enabled होने पर `otel-trace-smoke` QA
+scenario चलाता है, फिर assert करता है कि traces,
+metrics, और logs export हुए हैं। यह exported protobuf trace spans को decode करता है
+और release-critical shape जांचता है:
 `openclaw.run`, `openclaw.harness.run`, latest GenAI semantic-convention
 model-call span, `openclaw.context.assembled`, और `openclaw.message.delivery`
 मौजूद होने चाहिए। smoke
 `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental` force करता है, इसलिए model-call
-span को `{gen_ai.operation.name} {gen_ai.request.model}` name उपयोग करना चाहिए;
+span को `{gen_ai.operation.name} {gen_ai.request.model}` name का उपयोग करना चाहिए;
 successful turns पर model calls को `StreamAbandoned` export नहीं करना चाहिए; raw diagnostic IDs और
 `openclaw.content.*` attributes trace से बाहर रहने चाहिए। raw OTLP
 payloads में prompt sentinel, response sentinel, या QA session
-key नहीं होना चाहिए। यह QA suite artifacts के पास `otel-smoke-summary.json` लिखता है।
+key नहीं होनी चाहिए। यह QA suite artifacts के पास `otel-smoke-summary.json` लिखता है।
 
 collector-backed OpenTelemetry smoke के लिए, चलाएं:
 
@@ -147,8 +150,9 @@ collector-backed OpenTelemetry smoke के लिए, चलाएं:
 pnpm qa:otel:collector-smoke
 ```
 
-यह lane उसी local receiver के सामने वास्तविक OpenTelemetry Collector Docker container रखता है। endpoint wiring, collector
-compatibility, या OTLP export behavior बदलते समय इसका उपयोग करें जिसे in-process receiver mask कर सकता है।
+यह lane उसी local receiver के सामने एक वास्तविक OpenTelemetry Collector Docker container रखता है।
+इसका उपयोग endpoint wiring, collector
+compatibility, या OTLP export behavior बदलते समय करें जिसे in-process receiver छिपा सकता है।
 
 protected Prometheus scrape smoke के लिए, चलाएं:
 
@@ -156,7 +160,7 @@ protected Prometheus scrape smoke के लिए, चलाएं:
 pnpm qa:prometheus:smoke
 ```
 
-वह alias `diagnostics-prometheus` सक्षम करके `docker-prometheus-smoke` QA scenario चलाता है, पुष्टि करता है कि unauthenticated scrapes अस्वीकार किए जाते हैं, फिर जांचता है कि authenticated scrape में prompt content, response content, raw diagnostic identifiers, auth tokens, या local paths के बिना release-critical metric families शामिल हैं।
+वह alias `diagnostics-prometheus` सक्षम करके `docker-prometheus-smoke` QA परिदृश्य चलाता है, सत्यापित करता है कि अनधिकृत scrapes अस्वीकार किए जाते हैं, फिर जांचता है कि प्रमाणित scrape में prompt सामग्री, response सामग्री, raw diagnostic identifiers, auth tokens, या local paths के बिना रिलीज़-क्रिटिकल मेट्रिक परिवार शामिल हैं।
 
 दोनों observability smokes को लगातार चलाने के लिए, उपयोग करें:
 
@@ -164,22 +168,22 @@ pnpm qa:prometheus:smoke
 pnpm qa:observability:smoke
 ```
 
-collector-backed OpenTelemetry lane और protected Prometheus scrape smoke के लिए, उपयोग करें:
+collector-backed OpenTelemetry लेन और protected Prometheus scrape smoke के लिए, उपयोग करें:
 
 ```bash
 pnpm qa:observability:collector-smoke
 ```
 
-Observability QA केवल source-checkout तक सीमित रहता है। npm tarball जानबूझकर QA Lab को शामिल नहीं करता, इसलिए package Docker release lanes `qa` commands नहीं चलाते। diagnostics instrumentation बदलते समय built source checkout से `pnpm qa:otel:smoke`, `pnpm qa:prometheus:smoke`, या `pnpm qa:observability:smoke` उपयोग करें।
+Observability QA केवल source-checkout रहता है। npm tarball जानबूझकर QA Lab को छोड़ता है, इसलिए package Docker release lanes `qa` कमांड नहीं चलाते। diagnostics instrumentation बदलते समय built source checkout से `pnpm qa:otel:smoke`, `pnpm qa:prometheus:smoke`, या `pnpm qa:observability:smoke` उपयोग करें।
 
-एक transport-real Matrix smoke lane के लिए, जिसे model-provider credentials की आवश्यकता नहीं होती, deterministic mock OpenAI provider के साथ fast profile चलाएं:
+ऐसी transport-real Matrix smoke लेन के लिए जिसे model-provider credentials की आवश्यकता नहीं है, deterministic mock OpenAI provider के साथ fast profile चलाएं:
 
 ```bash
 OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000 \
   pnpm openclaw qa matrix --provider-mode mock-openai --profile fast --fail-fast
 ```
 
-live-frontier provider lane के लिए, OpenAI-compatible credentials स्पष्ट रूप से दें:
+live-frontier provider लेन के लिए, OpenAI-compatible credentials स्पष्ट रूप से दें:
 
 ```bash
 OPENCLAW_LIVE_OPENAI_KEY="${OPENAI_API_KEY}" \
@@ -187,11 +191,11 @@ OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000 \
   pnpm openclaw qa matrix --provider-mode live-frontier --profile fast --fail-fast
 ```
 
-इस lane के लिए पूरा CLI reference, profile/scenario catalog, env vars, और artifact layout [Matrix QA](/hi/concepts/qa-matrix) में हैं। संक्षेप में: यह Docker में एक disposable Tuwunel homeserver provision करता है, temporary driver/SUT/observer users register करता है, उस transport तक सीमित child QA gateway के भीतर real Matrix plugin चलाता है (कोई `qa-channel` नहीं), फिर `.artifacts/qa-e2e/matrix-<timestamp>/` के तहत Markdown report, JSON summary, observed-events artifact, और combined output log लिखता है।
+इस लेन के लिए पूरा CLI संदर्भ, profile/scenario catalog, env vars, और artifact layout [Matrix QA](/hi/concepts/qa-matrix) में हैं। संक्षेप में: यह Docker में एक disposable Tuwunel homeserver provision करता है, temporary driver/SUT/observer users register करता है, उस ट्रांसपोर्ट तक scoped child QA gateway के अंदर वास्तविक Matrix plugin चलाता है (कोई `qa-channel` नहीं), फिर `.artifacts/qa-e2e/matrix-<timestamp>/` के अंतर्गत Markdown report, JSON summary, observed-events artifact, और combined output log लिखता है।
 
-scenarios वे transport behavior cover करते हैं जिन्हें unit tests end to end साबित नहीं कर सकते: mention gating, allow-bot policies, allowlists, top-level और threaded replies, DM routing, reaction handling, inbound edit suppression, restart replay dedupe, homeserver interruption recovery, approval metadata delivery, media handling, और Matrix E2EE bootstrap/recovery/verification flows। E2EE CLI profile gateway replies जांचने से पहले उसी disposable homeserver के माध्यम से `openclaw matrix encryption setup` और verification commands भी चलाता है।
+परिदृश्य ऐसे ट्रांसपोर्ट व्यवहार को कवर करते हैं जिसे unit tests end to end सिद्ध नहीं कर सकते: mention gating, allow-bot policies, allowlists, top-level और threaded replies, DM routing, reaction handling, inbound edit suppression, restart replay dedupe, homeserver interruption recovery, approval metadata delivery, media handling, और Matrix E2EE bootstrap/recovery/verification flows। E2EE CLI profile gateway replies जांचने से पहले उसी disposable homeserver के माध्यम से `openclaw matrix encryption setup` और verification commands भी चलाता है।
 
-Discord में bug reproduction के लिए Mantis-only opt-in scenarios भी हैं। explicit status reaction timeline के लिए `--scenario discord-status-reactions-tool-only` उपयोग करें, या real Discord thread बनाने और यह verify करने के लिए कि `message.thread-reply` एक `filePath` attachment preserve करता है, `--scenario discord-thread-reply-filepath-attachment` उपयोग करें। ये scenarios default live Discord lane से बाहर रहते हैं क्योंकि वे broad smoke coverage के बजाय before/after repro probes हैं। जब QA environment में `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` या `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` configure हो, तब thread-attachment Mantis workflow logged-in Discord Web witness video भी जोड़ सकता है। वह viewer profile केवल visual capture के लिए है; pass/fail decision अब भी Discord REST oracle से आता है।
+Discord में bug reproduction के लिए Mantis-only opt-in scenarios भी हैं। explicit status reaction timeline के लिए `--scenario discord-status-reactions-tool-only` उपयोग करें, या वास्तविक Discord thread बनाने और यह सत्यापित करने के लिए `--scenario discord-thread-reply-filepath-attachment` उपयोग करें कि `message.thread-reply` एक `filePath` attachment को सुरक्षित रखता है। ये scenarios default live Discord लेन से बाहर रहते हैं क्योंकि ये broad smoke coverage के बजाय before/after repro probes हैं। जब QA environment में `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` या `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` configured हो, तो thread-attachment Mantis workflow logged-in Discord Web witness video भी जोड़ सकता है। वह viewer profile केवल visual capture के लिए है; pass/fail निर्णय अभी भी Discord REST oracle से आता है।
 
 CI `.github/workflows/qa-live-transports-convex.yml` में वही command surface उपयोग करता है। Scheduled और default manual runs QA-provided live-frontier credentials, `--fast`, और `OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000` के साथ fast Matrix profile execute करते हैं। Manual `matrix_profile=all` पांच profile shards में fan out करता है।
 
@@ -204,7 +208,7 @@ pnpm openclaw qa slack
 pnpm openclaw qa whatsapp
 ```
 
-वे दो bots या accounts (driver + SUT) वाले पहले से मौजूद real channel को target करते हैं। Required env vars, scenario lists, output artifacts, और Convex credential pool नीचे [Telegram, Discord, Slack, और WhatsApp QA reference](#telegram-discord-slack-and-whatsapp-qa-reference) में documented हैं।
+वे दो bots या accounts (driver + SUT) वाले pre-existing real channel को target करते हैं। Required env vars, scenario lists, output artifacts, और Convex credential pool नीचे [Telegram, Discord, Slack, and WhatsApp QA reference](#telegram-discord-slack-and-whatsapp-qa-reference) में documented हैं।
 
 VNC rescue के साथ full Slack desktop VM run के लिए, चलाएं:
 
@@ -215,9 +219,9 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --keep-lease
 ```
 
-वह command Crabbox desktop/browser machine lease करता है, VM के भीतर Slack live lane चलाता है, VNC browser में Slack Web खोलता है, desktop capture करता है, और video capture उपलब्ध होने पर `slack-qa/`, `slack-desktop-smoke.png`, और `slack-desktop-smoke.mp4` को वापस Mantis artifact directory में copy करता है। Crabbox desktop/browser leases capture tools और browser/native-build helper packages पहले से देते हैं, इसलिए scenario को पुराने leases पर ही fallbacks install करने चाहिए। Mantis `mantis-slack-desktop-smoke-report.md` में total और per-phase timings report करता है, ताकि slow runs दिखा सकें कि समय lease warmup, credential acquisition, remote setup, या artifact copy में गया। VNC के माध्यम से Slack Web में manually log in करने के बाद `--lease-id <cbx_...>` reuse करें; reused leases Crabbox के pnpm store cache को भी warm रखते हैं। default `--hydrate-mode source` source checkout से verify करता है और VM के भीतर install/build चलाता है। `--hydrate-mode prehydrated` केवल तब उपयोग करें जब reused remote workspace में पहले से `node_modules` और built `dist/` हो; वह mode महंगा install/build step skip करता है और workspace ready न होने पर fail closed करता है। `--gateway-setup` के साथ, Mantis VM के भीतर port `38973` पर persistent OpenClaw Slack gateway running छोड़ता है; इसके बिना, command सामान्य bot-to-bot Slack QA lane चलाता है और artifact capture के बाद exit करता है।
+यह command एक Crabbox desktop/browser machine lease करता है, VM के अंदर Slack live lane चलाता है, VNC browser में Slack Web खोलता है, desktop capture करता है, और video capture उपलब्ध होने पर `slack-qa/`, `slack-desktop-smoke.png`, और `slack-desktop-smoke.mp4` को Mantis artifact directory में वापस copy करता है। Crabbox desktop/browser leases capture tools और browser/native-build helper packages पहले से देते हैं, इसलिए scenario को केवल पुराने leases पर fallbacks install करने चाहिए। Mantis `mantis-slack-desktop-smoke-report.md` में total और per-phase timings report करता है ताकि slow runs दिखा सकें कि समय lease warmup, credential acquisition, remote setup, या artifact copy में गया। VNC के माध्यम से Slack Web में manually login करने के बाद `--lease-id <cbx_...>` reuse करें; reused leases Crabbox के pnpm store cache को भी warm रखते हैं। default `--hydrate-mode source` source checkout से verify करता है और VM के अंदर install/build चलाता है। `--hydrate-mode prehydrated` केवल तब उपयोग करें जब reused remote workspace में पहले से `node_modules` और built `dist/` हों; वह mode महंगे install/build step को skip करता है और workspace ready न होने पर fail closed करता है। `--gateway-setup` के साथ, Mantis VM के अंदर port `38973` पर persistent OpenClaw Slack gateway running छोड़ता है; इसके बिना, command सामान्य bot-to-bot Slack QA lane चलाता है और artifact capture के बाद exit करता है।
 
-desktop evidence के साथ native Slack approval UI साबित करने के लिए, Mantis approval checkpoint mode चलाएं:
+desktop evidence के साथ native Slack approval UI सिद्ध करने के लिए, Mantis approval checkpoint mode चलाएं:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -226,7 +230,7 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --credential-role maintainer
 ```
 
-यह mode `--gateway-setup` के साथ mutually exclusive है। यह Slack approval scenarios चलाता है, non-approval scenario ids अस्वीकार करता है, हर pending और resolved approval state पर wait करता है, observed Slack API message को `approval-checkpoints/<scenario>-pending.png` और `approval-checkpoints/<scenario>-resolved.png` में render करता है, फिर कोई checkpoint, message evidence, acknowledgement, या rendered screenshot missing या empty होने पर fail करता है। Cold CI leases अब भी `slack-desktop-smoke.png` में Slack sign-in दिखा सकते हैं; approval checkpoint images इस lane के लिए visual proof हैं।
+यह mode `--gateway-setup` के साथ mutually exclusive है। यह Slack approval scenarios चलाता है, non-approval scenario ids को reject करता है, हर pending और resolved approval state पर wait करता है, observed Slack API message को `approval-checkpoints/<scenario>-pending.png` और `approval-checkpoints/<scenario>-resolved.png` में render करता है, फिर यदि कोई checkpoint, message evidence, acknowledgement, या rendered screenshot missing या empty हो तो fail करता है। Cold CI leases अभी भी `slack-desktop-smoke.png` में Slack sign-in दिखा सकते हैं; approval checkpoint images इस lane के लिए visual proof हैं।
 
 operator checklist, GitHub workflow dispatch command, evidence-comment contract, hydrate-mode decision table, timing interpretation, और failure handling steps [Mantis Slack Desktop Runbook](/hi/concepts/mantis-slack-desktop-runbook) में हैं।
 
@@ -239,7 +243,7 @@ pnpm openclaw qa mantis visual-task \
   --vision-model openai/gpt-5.5
 ```
 
-`visual-task` Crabbox desktop/browser machine lease या reuse करता है, `crabbox record --while` start करता है, nested `visual-driver` के माध्यम से visible browser चलाता है, `visual-task.png` capture करता है, `--vision-mode image-describe` selected होने पर screenshot के विरुद्ध `openclaw infer image describe` चलाता है, और `visual-task.mp4`, `mantis-visual-task-summary.json`, `mantis-visual-task-driver-result.json`, और `mantis-visual-task-report.md` लिखता है। जब `--expect-text` set हो, vision prompt structured JSON verdict मांगता है और केवल तब pass करता है जब model positive visible evidence report करता है; target text को केवल quote करने वाला negative response assertion fail करता है। image-understanding provider को call किए बिना desktop, browser, screenshot, और video plumbing साबित करने वाले no-model smoke के लिए `--vision-mode metadata` उपयोग करें। `visual-task` के लिए recording required artifact है; अगर Crabbox कोई non-empty `visual-task.mp4` record नहीं करता, तो visual driver pass होने पर भी task fail करता है। failure पर, Mantis VNC के लिए lease रखता है, जब तक task पहले ही pass न हो चुका हो और `--keep-lease` set न हो।
+`visual-task` Crabbox desktop/browser machine lease या reuse करता है, `crabbox record --while` start करता है, nested `visual-driver` के माध्यम से visible browser drive करता है, `visual-task.png` capture करता है, `--vision-mode image-describe` selected होने पर screenshot के विरुद्ध `openclaw infer image describe` चलाता है, और `visual-task.mp4`, `mantis-visual-task-summary.json`, `mantis-visual-task-driver-result.json`, तथा `mantis-visual-task-report.md` लिखता है। जब `--expect-text` set हो, vision prompt structured JSON verdict मांगता है और केवल तब pass करता है जब model positive visible evidence report करता है; target text को केवल quote करने वाला negative response assertion fail करता है। image-understanding provider को call किए बिना desktop, browser, screenshot, और video plumbing सिद्ध करने वाले no-model smoke के लिए `--vision-mode metadata` उपयोग करें। Recording `visual-task` के लिए required artifact है; यदि Crabbox कोई non-empty `visual-task.mp4` record नहीं करता, तो visual driver pass होने पर भी task fail होता है। Failure पर, Mantis VNC के लिए lease रखता है जब तक task पहले ही pass न हो चुका हो और `--keep-lease` set न हो।
 
 pooled live credentials उपयोग करने से पहले, चलाएं:
 
@@ -247,15 +251,15 @@ pooled live credentials उपयोग करने से पहले, चल
 pnpm openclaw qa credentials doctor
 ```
 
-doctor Convex broker env check करता है, endpoint settings validate करता है, और maintainer secret मौजूद होने पर admin/list reachability verify करता है। यह secrets के लिए केवल set/missing status report करता है।
+doctor Convex broker env जांचता है, endpoint settings validate करता है, और maintainer secret present होने पर admin/list reachability verify करता है। यह secrets के लिए केवल set/missing status report करता है।
 
 ## Live transport coverage
 
-Live transport lanes हर एक अपना scenario list shape invent करने के बजाय एक contract share करते हैं। `qa-channel` broad synthetic product-behavior suite है और live transport coverage matrix का हिस्सा नहीं है।
+Live transport lanes प्रत्येक द्वारा अपनी scenario list shape invent करने के बजाय एक contract share करते हैं। `qa-channel` broad synthetic product-behavior suite है और live transport coverage matrix का हिस्सा नहीं है।
 
-Live transport runners को shared scenario ids, baseline coverage helpers, और scenario-selection helper `openclaw/plugin-sdk/qa-live-transport-scenarios` से import करने चाहिए।
+Live transport runners को `openclaw/plugin-sdk/qa-live-transport-scenarios` से shared scenario ids, baseline coverage helpers, और scenario-selection helper import करने चाहिए।
 
-| Lane     | Canary | Mention gating | Bot-to-bot | Allowlist block | Top-level reply | Quote reply | Restart resume | Thread follow-up | Thread isolation | Reaction observation | Help command | Native command registration |
+| लेन     | कैनरी | Mention gating | Bot-to-bot | Allowlist block | Top-level reply | Quote reply | Restart resume | Thread follow-up | Thread isolation | Reaction observation | Help command | Native command registration |
 | -------- | ------ | -------------- | ---------- | --------------- | --------------- | ----------- | -------------- | ---------------- | ---------------- | -------------------- | ------------ | --------------------------- |
 | Matrix   | x      | x              | x          | x               | x               |             | x              | x                | x                | x                    |              |                             |
 | Telegram | x      | x              | x          |                 |                 |             |                |                  |                  |                      | x            |                             |
@@ -263,7 +267,7 @@ Live transport runners को shared scenario ids, baseline coverage helpers, �
 | Slack    | x      | x              | x          | x               | x               |             | x              | x                | x                |                      |              |                             |
 | WhatsApp | x      | x              |            | x               | x               | x           | x              |                  |                  | x                    | x            |                             |
 
-यह `qa-channel` को broad product-behavior suite बनाए रखता है, जबकि Matrix, Telegram, और दूसरे live transports एक explicit transport-contract checklist share करते हैं।
+यह `qa-channel` को broad product-behavior suite बनाए रखता है जबकि Matrix, Telegram, और अन्य live transports एक explicit transport-contract checklist share करते हैं।
 
 QA path में Docker लाए बिना disposable Linux VM lane के लिए, चलाएं:
 
@@ -271,29 +275,29 @@ QA path में Docker लाए बिना disposable Linux VM lane के 
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-यह fresh Multipass guest boot करता है, dependencies install करता है, guest के भीतर OpenClaw build करता है, `qa suite` चलाता है, फिर normal QA report और summary को host पर `.artifacts/qa-e2e/...` में वापस copy करता है। यह host पर `qa suite` जैसा ही scenario-selection behavior reuse करता है। Host और Multipass suite runs default रूप से isolated gateway workers के साथ कई selected scenarios parallel में execute करते हैं। `qa-channel` default concurrency 4 रखता है, जो selected scenario count से capped है। worker count tune करने के लिए `--concurrency <count>` उपयोग करें, या serial execution के लिए `--concurrency 1` उपयोग करें। personal assistant benchmark pack चलाने के लिए `--pack personal-agent` उपयोग करें। pack selector repeated `--scenario` flags के साथ additive है: explicit scenarios पहले run होते हैं, फिर pack scenarios pack order में duplicates हटाकर run होते हैं। जब custom QA runner पहले से OpenTelemetry collector setup supply करता हो और OpenTelemetry और Prometheus diagnostics smoke scenarios को साथ select करना चाहता हो, तब `--pack observability` उपयोग करें। कोई भी scenario fail होने पर command non-zero exit करता है। जब आप failing exit code के बिना artifacts चाहते हों, तब `--allow-failures` उपयोग करें। Live runs उन supported QA auth inputs को forward करते हैं जो guest के लिए practical हैं: env-based provider keys, QA live provider config path, और मौजूद होने पर `CODEX_HOME`। `--output-dir` को repo root के तहत रखें ताकि guest mounted workspace के माध्यम से वापस write कर सके।
+यह fresh Multipass guest boot करता है, dependencies install करता है, guest के अंदर OpenClaw build करता है, `qa suite` चलाता है, फिर सामान्य QA report और summary को host पर `.artifacts/qa-e2e/...` में वापस copy करता है। यह host पर `qa suite` जैसा ही scenario-selection behavior reuse करता है। Host और Multipass suite runs default रूप से isolated gateway workers के साथ कई selected scenarios parallel में execute करते हैं। `qa-channel` concurrency 4 पर default करता है, selected scenario count से capped। worker count tune करने के लिए `--concurrency <count>` उपयोग करें, या serial execution के लिए `--concurrency 1`। personal assistant benchmark pack चलाने के लिए `--pack personal-agent` उपयोग करें। pack selector repeated `--scenario` flags के साथ additive है: explicit scenarios पहले run होते हैं, फिर pack scenarios pack order में duplicates removed के साथ run होते हैं। जब custom QA runner पहले से OpenTelemetry collector setup supply करता हो और OpenTelemetry तथा Prometheus diagnostics smoke scenarios को साथ select करना चाहता हो, तब `--pack observability` उपयोग करें। कोई भी scenario fail होने पर command non-zero exit करता है। failing exit code के बिना artifacts चाहिए हों तो `--allow-failures` उपयोग करें। Live runs guest के लिए practical supported QA auth inputs forward करते हैं: env-based provider keys, QA live provider config path, और present होने पर `CODEX_HOME`। `--output-dir` को repo root के अंदर रखें ताकि guest mounted workspace के माध्यम से वापस write कर सके।
 
 ## Telegram, Discord, Slack, और WhatsApp QA संदर्भ
 
-Matrix का एक [समर्पित पृष्ठ](/hi/concepts/qa-matrix) है क्योंकि इसमें परिदृश्यों की संख्या अधिक है और Docker-समर्थित homeserver provisioning है। Telegram, Discord, Slack, और WhatsApp पहले से मौजूद वास्तविक transports के विरुद्ध चलते हैं, इसलिए उनका संदर्भ यहां रहता है।
+Matrix के पास एक [समर्पित पृष्ठ](/hi/concepts/qa-matrix) है, क्योंकि इसके परिदृश्यों की संख्या और Docker-समर्थित homeserver प्रावधान अलग हैं। Telegram, Discord, Slack, और WhatsApp पहले से मौजूद वास्तविक transports के विरुद्ध चलते हैं, इसलिए उनका संदर्भ यहां रहता है।
 
 ### साझा CLI flags
 
 ये lanes `extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` के माध्यम से register होते हैं और समान flags स्वीकार करते हैं:
 
-| Flag                                  | Default                                            | विवरण                                                                                                                                     |
+| Flag                                  | Default                                            | Description                                                                                                                                     |
 | ------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--scenario <id>`                     | -                                                  | केवल यह scenario चलाएं। दोहराने योग्य।                                                                                                             |
-| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/<transport>-<timestamp>` | जहां reports, summaries, evidence, transport-specific artifacts, और output log लिखे जाते हैं। Relative paths `--repo-root` के सापेक्ष resolve होते हैं। |
-| `--repo-root <path>`                  | `process.cwd()`                                    | neutral cwd से invoke करते समय repository root।                                                                                               |
-| `--sut-account <id>`                  | `sut`                                              | QA gateway config के अंदर अस्थायी account id।                                                                                              |
-| `--provider-mode <mode>`              | `live-frontier`                                    | `mock-openai` या `live-frontier` (legacy `live-openai` अभी भी काम करता है)।                                                                            |
+| `--scenario <id>`                     | -                                                  | केवल यह scenario चलाएं। दोहराया जा सकता है।                                                                                                    |
+| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/<transport>-<timestamp>` | जहां reports, summaries, evidence, transport-specific artifacts, और output log लिखे जाते हैं। Relative paths `--repo-root` के आधार पर resolve होते हैं। |
+| `--repo-root <path>`                  | `process.cwd()`                                    | neutral cwd से invoke करते समय repository root।                                                                                                |
+| `--sut-account <id>`                  | `sut`                                              | QA gateway config के अंदर temporary account id।                                                                                                |
+| `--provider-mode <mode>`              | `live-frontier`                                    | `mock-openai` या `live-frontier` (legacy `live-openai` अभी भी काम करता है)।                                                                     |
 | `--model <ref>` / `--alt-model <ref>` | provider default                                   | Primary/alternate model refs।                                                                                                                   |
-| `--fast`                              | off                                                | जहां समर्थित हो वहां provider fast mode।                                                                                                             |
-| `--credential-source <env\|convex>`   | `env`                                              | [Convex credential pool](#convex-credential-pool) देखें।                                                                                          |
-| `--credential-role <maintainer\|ci>`  | CI में `ci`, अन्यथा `maintainer`                 | `--credential-source convex` होने पर उपयोग की जाने वाली भूमिका।                                                                                                    |
+| `--fast`                              | off                                                | जहां supported हो, provider fast mode।                                                                                                          |
+| `--credential-source <env\|convex>`   | `env`                                              | [Convex credential pool](#convex-credential-pool) देखें।                                                                                        |
+| `--credential-role <maintainer\|ci>`  | `ci` in CI, `maintainer` otherwise                 | `--credential-source convex` होने पर इस्तेमाल की गई role।                                                                                       |
 
-किसी भी failed scenario पर हर lane non-zero exit करता है। `--allow-failures` failing exit code set किए बिना artifacts लिखता है।
+किसी भी failed scenario पर हर lane non-zero exit करती है। `--allow-failures` failing exit code सेट किए बिना artifacts लिखता है।
 
 ### Telegram QA
 
@@ -303,7 +307,7 @@ pnpm openclaw qa telegram
 
 दो अलग-अलग bots (driver + SUT) वाले एक वास्तविक private Telegram group को target करता है। SUT bot के पास Telegram username होना चाहिए; bot-to-bot observation सबसे अच्छा तब काम करता है जब दोनों bots में `@BotFather` में **Bot-to-Bot Communication Mode** enabled हो।
 
-`--credential-source env` होने पर आवश्यक env:
+`--credential-source env` होने पर required env:
 
 - `OPENCLAW_QA_TELEGRAM_GROUP_ID` - numeric chat id (string)।
 - `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`
@@ -328,29 +332,28 @@ Scenarios (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runtime
 - `telegram-long-final-reuses-preview`
 - `telegram-long-final-three-chunks`
 
-implicit default set हमेशा canary, mention gating, native command replies, command addressing, और bot-to-bot group replies को cover करता है। `mock-openai` defaults में deterministic reply-chain और final-message streaming checks भी शामिल हैं। `telegram-current-session-status-tool` opt-in रहता है क्योंकि यह केवल canary के सीधे बाद threaded होने पर stable है, arbitrary native command replies के बाद नहीं। current default/optional split को regression refs के साथ print करने के लिए `pnpm openclaw qa telegram --list-scenarios --provider-mode mock-openai` का उपयोग करें।
+implicit default set हमेशा canary, mention gating, native command replies, command addressing, और bot-to-bot group replies को cover करता है। `mock-openai` defaults में deterministic reply-chain और final-message streaming checks भी शामिल हैं। `telegram-current-session-status-tool` opt-in रहता है क्योंकि यह केवल canary के तुरंत बाद threaded होने पर stable है, arbitrary native command replies के बाद नहीं। current default/optional split को regression refs के साथ print करने के लिए `pnpm openclaw qa telegram --list-scenarios --provider-mode mock-openai` इस्तेमाल करें।
 
 Output artifacts:
 
 - `telegram-qa-report.md`
 - `qa-evidence.json` - live transport checks के लिए evidence entries, जिनमें profile, coverage, provider, channel, artifacts, result, और RTT fields शामिल हैं।
 
-Package Telegram runs वही Telegram credential contract उपयोग करते हैं। दोहराया गया RTT
-measurement सामान्य package Telegram live lane का हिस्सा है; RTT
-distribution selected RTT check के लिए `result.timing` के अंतर्गत `qa-evidence.json` में folded है।
+Package Telegram runs समान Telegram credential contract इस्तेमाल करते हैं। Repeated RTT
+measurement normal package Telegram live lane का हिस्सा है; RTT
+distribution selected RTT check के लिए `result.timing` के अंतर्गत `qa-evidence.json` में folded होती है।
 
 ```bash
 OPENCLAW_QA_CREDENTIAL_SOURCE=convex \
 pnpm test:docker:npm-telegram-live
 ```
 
-जब `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` set होता है, package live wrapper
-एक `kind: "telegram"` credential lease करता है, leased group/driver/SUT bot
+जब `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` सेट होता है, package live wrapper
+`kind: "telegram"` credential lease करता है, leased group/driver/SUT bot
 env को installed-package run में export करता है, lease को heartbeat करता है, और
-shutdown पर इसे release करता है। Convex selected होने पर package wrapper CI के बाहर
+shutdown पर उसे release करता है। Convex selected होने पर package wrapper CI के बाहर
 `telegram-mentioned-message-reply` के 20 RTT checks, 30s RTT timeout, और Convex role
-`maintainer` पर default करता है। अलग RTT command या Telegram-specific summary format बनाए बिना
-RTT measurement tune करने के लिए
+`maintainer` पर default होता है। अलग RTT command या Telegram-specific summary format बनाए बिना RTT measurement tune करने के लिए
 `OPENCLAW_NPM_TELEGRAM_RTT_SAMPLES`, `OPENCLAW_NPM_TELEGRAM_RTT_TIMEOUT_MS`,
 या `OPENCLAW_NPM_TELEGRAM_RTT_MAX_FAILURES` override करें।
 
@@ -360,15 +363,15 @@ RTT measurement tune करने के लिए
 pnpm openclaw qa discord
 ```
 
-दो bots वाले एक वास्तविक private Discord guild channel को target करता है: harness द्वारा controlled driver bot और bundled Discord plugin के माध्यम से child OpenClaw gateway द्वारा started SUT bot। channel mention handling, यह कि SUT bot ने Discord के साथ native `/help` command register किया है, और opt-in Mantis evidence scenarios verify करता है।
+दो bots वाले एक वास्तविक private Discord guild channel को target करता है: harness द्वारा controlled driver bot और bundled Discord plugin के माध्यम से child OpenClaw gateway द्वारा शुरू किया गया SUT bot। channel mention handling, यह कि SUT bot ने Discord के साथ native `/help` command register किया है, और opt-in Mantis evidence scenarios verify करता है।
 
-`--credential-source env` होने पर आवश्यक env:
+`--credential-source env` होने पर required env:
 
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
 - `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` - Discord द्वारा लौटाए गए SUT bot user id से match होना चाहिए (अन्यथा lane fast fail होता है)।
+- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` - Discord द्वारा लौटाई गई SUT bot user id से match करना चाहिए (नहीं तो lane fast fail करती है)।
 
 Optional:
 
@@ -380,10 +383,10 @@ Scenarios (`extensions/qa-lab/src/live-transports/discord/discord-live.runtime.t
 - `discord-canary`
 - `discord-mention-gating`
 - `discord-native-help-command-registration`
-- `discord-voice-autojoin` - opt-in voice scenario। स्वयं चलता है, `channels.discord.voice.autoJoin` enable करता है, और verify करता है कि SUT bot की current Discord voice state target voice/stage channel है। Convex Discord credentials में optional `voiceChannelId` शामिल हो सकता है; अन्यथा runner guild में पहला visible voice/stage channel discover करता है।
-- `discord-status-reactions-tool-only` - opt-in Mantis scenario। स्वयं चलता है क्योंकि यह SUT को `messages.statusReactions.enabled=true` के साथ always-on, tool-only guild replies पर switch करता है, फिर REST reaction timeline plus HTML/PNG visual artifacts capture करता है। Mantis before/after reports scenario-provided MP4 artifacts को `baseline.mp4` और `candidate.mp4` के रूप में भी preserve करते हैं।
+- `discord-voice-autojoin` - opt-in voice scenario। अपने आप चलता है, `channels.discord.voice.autoJoin` enable करता है, और verify करता है कि SUT bot की current Discord voice state target voice/stage channel है। Convex Discord credentials में optional `voiceChannelId` शामिल हो सकता है; नहीं तो runner guild में पहला visible voice/stage channel discover करता है।
+- `discord-status-reactions-tool-only` - opt-in Mantis scenario। अपने आप चलता है क्योंकि यह SUT को `messages.statusReactions.enabled=true` के साथ always-on, tool-only guild replies पर switch करता है, फिर REST reaction timeline और HTML/PNG visual artifacts capture करता है। Mantis before/after reports scenario-provided MP4 artifacts को `baseline.mp4` और `candidate.mp4` के रूप में भी preserve करते हैं।
 
-Discord voice auto-join scenario को explicitly चलाएं:
+Discord voice auto-join scenario को स्पष्ट रूप से चलाएं:
 
 ```bash
 pnpm openclaw qa discord \
@@ -391,7 +394,7 @@ pnpm openclaw qa discord \
   --provider-mode mock-openai
 ```
 
-Mantis status-reaction scenario को explicitly चलाएं:
+Mantis status-reaction scenario को स्पष्ट रूप से चलाएं:
 
 ```bash
 pnpm openclaw qa discord \
@@ -406,8 +409,8 @@ Output artifacts:
 
 - `discord-qa-report.md`
 - `qa-evidence.json` - live transport checks के लिए evidence entries।
-- `discord-qa-observed-messages.json` - bodies redacted हैं जब तक `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` न हो।
-- status-reaction scenario चलने पर `discord-qa-reaction-timelines.json` और `discord-status-reactions-tool-only-timeline.png`।
+- `discord-qa-observed-messages.json` - bodies redacted रहते हैं जब तक `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` न हो।
+- `discord-qa-reaction-timelines.json` और `discord-status-reactions-tool-only-timeline.png` जब status-reaction scenario चलता है।
 
 ### Slack QA
 
@@ -415,9 +418,9 @@ Output artifacts:
 pnpm openclaw qa slack
 ```
 
-दो अलग-अलग bots वाले एक वास्तविक private Slack channel को target करता है: harness द्वारा controlled driver bot और bundled Slack plugin के माध्यम से child OpenClaw gateway द्वारा started SUT bot।
+दो अलग-अलग bots वाले एक वास्तविक private Slack channel को target करता है: harness द्वारा controlled driver bot और bundled Slack plugin के माध्यम से child OpenClaw gateway द्वारा शुरू किया गया SUT bot।
 
-`--credential-source env` होने पर आवश्यक env:
+`--credential-source env` होने पर required env:
 
 - `OPENCLAW_QA_SLACK_CHANNEL_ID`
 - `OPENCLAW_QA_SLACK_DRIVER_BOT_TOKEN`
@@ -429,9 +432,9 @@ Optional:
 - `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1` observed-message artifacts में message bodies रखता है।
 - `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR` Mantis के लिए visual approval
   checkpoints enable करता है। runner `<scenario>.pending.json` और
-  `<scenario>.resolved.json` लिखता है, फिर matching `.ack.json` files का इंतज़ार करता है।
+  `<scenario>.resolved.json` लिखता है, फिर matching `.ack.json` files की प्रतीक्षा करता है।
 - `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_TIMEOUT_MS` checkpoint
-  acknowledgement timeout को override करता है। default `120000` है।
+  acknowledgement timeout override करता है। default `120000` है।
 
 Scenarios (`extensions/qa-lab/src/live-transports/slack/slack-live.runtime.ts`):
 
@@ -443,38 +446,38 @@ Scenarios (`extensions/qa-lab/src/live-transports/slack/slack-live.runtime.ts`):
 - `slack-thread-follow-up`
 - `slack-thread-isolation`
 - `slack-approval-exec-native` - opt-in native Slack exec approval scenario।
-  Gateway के माध्यम से exec approval request करता है, verify करता है कि Slack message में
+  gateway के माध्यम से exec approval request करता है, verify करता है कि Slack message में
   native approval buttons हैं, इसे resolve करता है, और resolved Slack update verify करता है।
 - `slack-approval-plugin-native` - opt-in native Slack plugin approval scenario।
   exec और plugin approval forwarding को साथ में enable करता है ताकि plugin events
-  exec approval routing द्वारा suppressed न हों, फिर वही pending/resolved
+  exec approval routing से suppressed न हों, फिर वही pending/resolved
   native Slack UI path verify करता है।
 
 Output artifacts:
 
 - `slack-qa-report.md`
 - `qa-evidence.json` - live transport checks के लिए evidence entries।
-- `slack-qa-observed-messages.json` - bodies redacted हैं जब तक `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1` न हो।
-- `approval-checkpoints/` - केवल तब जब Mantis
-  `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR` set करता है; इसमें checkpoint JSON,
+- `slack-qa-observed-messages.json` - bodies redacted रहते हैं जब तक `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1` न हो।
+- `approval-checkpoints/` - केवल जब Mantis
+  `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR` सेट करता है; इसमें checkpoint JSON,
   acknowledgement JSON, और pending/resolved screenshots होते हैं।
 
-#### Slack workspace set up करना
+#### Slack workspace सेट करना
 
-lane को एक workspace में दो अलग-अलग Slack apps चाहिए, साथ ही एक channel जिसमें दोनों bots members हों:
+lane को एक workspace में दो अलग Slack apps, और ऐसा channel चाहिए जिसका दोनों bots हिस्सा हों:
 
-- `channelId` - उस channel की `Cxxxxxxxxxx` id जिसमें दोनों bots को invite किया गया है। dedicated channel का उपयोग करें; lane हर run पर post करता है।
+- `channelId` - उस channel का `Cxxxxxxxxxx` id जिसमें दोनों bots को invite किया गया है। dedicated channel इस्तेमाल करें; lane हर run पर post करती है।
 - `driverBotToken` - **Driver** app का bot token (`xoxb-...`)।
-- `sutBotToken` - **SUT** app का bot token (`xoxb-...`), जो driver से अलग Slack app होना चाहिए ताकि उसका bot user id distinct हो।
-- `sutAppToken` - SUT app का app-level token (`xapp-...`) जिसमें `connections:write` हो, Socket Mode द्वारा उपयोग किया जाता है ताकि SUT app events receive कर सके।
+- `sutBotToken` - **SUT** app का bot token (`xoxb-...`), जो driver से अलग Slack app होना चाहिए ताकि इसकी bot user id अलग हो।
+- `sutAppToken` - SUT app का app-level token (`xapp-...`) जिसमें `connections:write` हो, जिसका इस्तेमाल Socket Mode करता है ताकि SUT app events receive कर सके।
 
-production workspace को reuse करने की जगह QA के लिए dedicated Slack workspace को prefer करें।
+production workspace को reuse करने के बजाय QA के लिए dedicated Slack workspace को प्राथमिकता दें।
 
-नीचे दिया गया SUT manifest जानबूझकर bundled Slack plugin के production install (`extensions/slack/src/setup-shared.ts:10`) को live Slack QA suite द्वारा covered permissions और events तक narrow करता है। users जैसे production-channel setup देखते हैं उसके लिए, [Slack channel quick setup](/hi/channels/slack#quick-setup) देखें; QA Driver/SUT pair जानबूझकर अलग है क्योंकि lane को एक workspace में दो distinct bot user ids चाहिए।
+नीचे दिया गया SUT manifest bundled Slack plugin के production install (`extensions/slack/src/setup-shared.ts:10`) को जानबूझकर उन permissions और events तक सीमित करता है जिन्हें live Slack QA suite cover करता है। users को जैसा production-channel setup दिखता है, उसके लिए [Slack channel quick setup](/hi/channels/slack#quick-setup) देखें; QA Driver/SUT pair जानबूझकर अलग है क्योंकि lane को एक workspace में दो अलग bot user ids चाहिए।
 
 **1. Driver app बनाएं**
 
-[api.slack.com/apps](https://api.slack.com/apps) पर जाएं → _Create New App_ → _From a manifest_ → QA workspace चुनें, निम्न manifest पेस्ट करें, फिर _Install to Workspace_:
+[api.slack.com/apps](https://api.slack.com/apps) पर जाएं → _Create New App_ → _From a manifest_ → QA वर्कस्पेस चुनें, निम्न manifest पेस्ट करें, फिर _Install to Workspace_:
 
 ```json
 {
@@ -499,11 +502,11 @@ production workspace को reuse करने की जगह QA के लि
 }
 ```
 
-_Bot User OAuth Token_ (`xoxb-...`) कॉपी करें - वही `driverBotToken` बनता है। driver को केवल संदेश पोस्ट करने और अपनी पहचान बताने की जरूरत है; कोई events नहीं, कोई Socket Mode नहीं।
+_Bot User OAuth Token_ (`xoxb-...`) कॉपी करें - वही `driverBotToken` बनता है। ड्राइवर को केवल संदेश पोस्ट करने और स्वयं की पहचान करने की जरूरत है; कोई events नहीं, कोई Socket Mode नहीं।
 
-**2. SUT app बनाएं**
+**2. SUT ऐप बनाएं**
 
-उसी workspace में _Create New App → From a manifest_ दोहराएं। यह QA app जानबूझकर bundled Slack plugin के production manifest (`extensions/slack/src/setup-shared.ts:10`) का संकरा संस्करण इस्तेमाल करता है: reaction scopes और events छोड़े गए हैं क्योंकि live Slack QA suite अभी reaction handling को cover नहीं करता।
+उसी वर्कस्पेस में _Create New App → From a manifest_ दोहराएं। यह QA ऐप जानबूझकर bundled Slack Plugin के production manifest (`extensions/slack/src/setup-shared.ts:10`) का संकरा संस्करण उपयोग करता है: reaction scopes और events छोड़े गए हैं क्योंकि live Slack QA suite अभी reaction handling कवर नहीं करता।
 
 ```json
 {
@@ -570,27 +573,27 @@ _Bot User OAuth Token_ (`xoxb-...`) कॉपी करें - वही `drive
 }
 ```
 
-Slack द्वारा app बनाने के बाद, उसके settings page पर दो काम करें:
+Slack द्वारा ऐप बनाने के बाद, उसके settings page पर दो काम करें:
 
 - _Install to Workspace_ → _Bot User OAuth Token_ कॉपी करें → वही `sutBotToken` बनता है।
 - _Basic Information → App-Level Tokens → Generate Token and Scopes_ → scope `connections:write` जोड़ें → save करें → `xapp-...` value कॉपी करें → वही `sutAppToken` बनता है।
 
-प्रत्येक token पर `auth.test` call करके सत्यापित करें कि दोनों bots के user ids अलग-अलग हैं। runtime driver और SUT में अंतर user id से करता है; दोनों के लिए एक ही app दोबारा इस्तेमाल करने पर mention-gating तुरंत fail हो जाएगी।
+हर token पर `auth.test` call करके सत्यापित करें कि दोनों bots के user ids अलग-अलग हैं। runtime user id से driver और SUT में अंतर करता है; दोनों के लिए एक ही app फिर से उपयोग करने पर mention-gating तुरंत fail हो जाएगी।
 
 **3. channel बनाएं**
 
-QA workspace में, एक channel बनाएं (जैसे `#openclaw-qa`) और channel के अंदर से दोनों bots को invite करें:
+QA workspace में एक channel बनाएं (उदाहरण के लिए `#openclaw-qa`) और channel के अंदर से दोनों bots को invite करें:
 
 ```
 /invite @OpenClaw QA Driver
 /invite @OpenClaw QA SUT
 ```
 
-_channel info → About → Channel ID_ से `Cxxxxxxxxxx` id कॉपी करें - वही `channelId` बनता है। public channel काम करता है; यदि आप private channel इस्तेमाल करते हैं तो दोनों apps के पास पहले से `groups:history` है, इसलिए harness की history reads फिर भी सफल होंगी।
+_channel info → About → Channel ID_ से `Cxxxxxxxxxx` id कॉपी करें - वही `channelId` बनता है। public channel काम करता है; अगर आप private channel उपयोग करते हैं तो दोनों apps के पास पहले से `groups:history` है, इसलिए harness की history reads फिर भी सफल रहेंगी।
 
 **4. credentials register करें**
 
-दो विकल्प। single-machine debugging के लिए env vars इस्तेमाल करें (चार `OPENCLAW_QA_SLACK_*` variables set करें और `--credential-source env` pass करें), या shared Convex pool seed करें ताकि CI और दूसरे maintainers उन्हें lease कर सकें।
+दो विकल्प। single-machine debugging के लिए env vars उपयोग करें (चार `OPENCLAW_QA_SLACK_*` variables set करें और `--credential-source env` pass करें), या shared Convex pool seed करें ताकि CI और दूसरे maintainers उन्हें lease कर सकें।
 
 Convex pool के लिए, चार fields को JSON file में लिखें:
 
@@ -614,11 +617,11 @@ pnpm openclaw qa credentials add \
 pnpm openclaw qa credentials list --kind slack --status all --json
 ```
 
-`count: 1`, `status: "active"`, और कोई `lease` field न होने की अपेक्षा करें।
+`count: 1`, `status: "active"`, और कोई `lease` field नहीं होने की अपेक्षा करें।
 
-**5. end to end सत्यापित करें**
+**5. अंत से अंत तक सत्यापित करें**
 
-यह confirm करने के लिए lane locally चलाएं कि दोनों bots broker के जरिए एक-दूसरे से बात कर सकते हैं:
+स्थानीय रूप से lane चलाएं ताकि पुष्टि हो सके कि दोनों bots broker के जरिए एक-दूसरे से बात कर सकते हैं:
 
 ```bash
 pnpm openclaw qa slack \
@@ -627,7 +630,7 @@ pnpm openclaw qa slack \
   --output-dir .artifacts/qa-e2e/slack-local
 ```
 
-green run 30 seconds से काफी कम समय में complete होता है और `slack-qa-report.md` में `slack-canary` और `slack-mention-gating` दोनों status `pass` पर दिखते हैं। यदि lane ~90 seconds तक hang करता है और `Convex credential pool exhausted for kind "slack"` के साथ exit करता है, तो या तो pool खाली है या हर row leased है - `qa credentials list --kind slack --status all --json` आपको बताएगा कि कौन सा मामला है।
+green run 30 seconds से काफी कम समय में पूरी होती है और `slack-qa-report.md` दोनों `slack-canary` और `slack-mention-gating` को status `pass` पर दिखाती है। अगर lane लगभग 90 seconds तक hang होती है और `Convex credential pool exhausted for kind "slack"` के साथ exit करती है, तो या तो pool खाली है या हर row leased है - `qa credentials list --kind slack --status all --json` आपको बताएगा कि कौन सा मामला है।
 
 ### WhatsApp QA
 
@@ -635,19 +638,18 @@ green run 30 seconds से काफी कम समय में complete ह
 pnpm openclaw qa whatsapp
 ```
 
-दो dedicated WhatsApp Web accounts को target करता है: harness द्वारा नियंत्रित driver account और child OpenClaw gateway द्वारा bundled WhatsApp plugin के जरिए शुरू किया गया SUT account।
+दो dedicated WhatsApp Web accounts को target करता है: harness द्वारा controlled driver account और child OpenClaw Gateway द्वारा bundled WhatsApp Plugin के जरिए started SUT account।
 
-`--credential-source env` होने पर आवश्यक env:
+`--credential-source env` होने पर required env:
 
 - `OPENCLAW_QA_WHATSAPP_DRIVER_PHONE_E164`
 - `OPENCLAW_QA_WHATSAPP_SUT_PHONE_E164`
 - `OPENCLAW_QA_WHATSAPP_DRIVER_AUTH_ARCHIVE_BASE64`
 - `OPENCLAW_QA_WHATSAPP_SUT_AUTH_ARCHIVE_BASE64`
 
-वैकल्पिक:
+Optional:
 
-- `OPENCLAW_QA_WHATSAPP_GROUP_JID` group scenarios जैसे
-  `whatsapp-mention-gating` और `whatsapp-group-allowlist-block` enable करता है।
+- `OPENCLAW_QA_WHATSAPP_GROUP_JID`, `whatsapp-mention-gating` और `whatsapp-group-allowlist-block` जैसे group scenarios enable करता है।
 - `OPENCLAW_QA_WHATSAPP_CAPTURE_CONTENT=1` observed-message artifacts में message bodies रखता है।
 
 Scenario catalog (`extensions/qa-lab/src/live-transports/whatsapp/whatsapp-live.runtime.ts`):
@@ -665,7 +667,7 @@ Scenario catalog (`extensions/qa-lab/src/live-transports/whatsapp/whatsapp-live.
   `whatsapp-stream-final-message-accounting`.
 - Inbound media और structured messages: `whatsapp-inbound-image-caption`,
   `whatsapp-audio-preflight`, `whatsapp-inbound-structured-messages`,
-  `whatsapp-group-audio-gating`. ये driver के जरिए real WhatsApp image, audio,
+  `whatsapp-group-audio-gating`. ये driver के जरिए वास्तविक WhatsApp image, audio,
   document, location, contact, और sticker events भेजते हैं।
 - Outbound Gateway और message action coverage:
   `whatsapp-outbound-media-matrix`,
@@ -679,22 +681,21 @@ Scenario catalog (`extensions/qa-lab/src/live-transports/whatsapp/whatsapp-live.
   `whatsapp-approval-plugin-native`.
 - Status reactions: `whatsapp-status-reactions`.
 
-catalog में अभी 36 scenarios हैं। तेज smoke coverage के लिए `live-frontier` default lane को 10 scenarios पर छोटा रखा गया है। `mock-openai` default lane real WhatsApp transport के जरिए 31 deterministic scenarios चलाता है, जबकि केवल model output को mock करता है। Approval scenarios और कुछ भारी/blocking checks scenario id द्वारा explicit रहते हैं।
+catalog में अभी 36 scenarios हैं। `live-frontier` default lane को तेज smoke coverage के लिए 10 scenarios तक छोटा रखा गया है। `mock-openai` default lane वास्तविक WhatsApp transport के जरिए 31 deterministic scenarios चलाती है, जबकि केवल model output mock करती है। Approval scenarios और कुछ भारी/blocking checks scenario id से explicit रहते हैं।
 
 WhatsApp QA driver structured live events (`text`, `media`,
 `location`, `reaction`, और `poll`) observe करता है और सक्रिय रूप से media, polls,
-contacts, locations, और stickers भेज सकता है। QA Lab उस driver को private
-WhatsApp runtime files में जाने के बजाय `@openclaw/whatsapp/api.js` package surface के जरिए import करता है। Message content default रूप से redacted होता है। Outbound poll और upload-file coverage model-prompt-only tool invocation के बजाय deterministic gateway `poll` और `message.action` calls से run होता है।
+contacts, locations, और stickers भेज सकता है। QA Lab private WhatsApp runtime files में पहुंचने के बजाय `@openclaw/whatsapp/api.js` package surface के जरिए उस driver को import करता है। Message content default रूप से redacted होता है। Outbound poll और upload-file coverage model-prompt-only tool invocation के बजाय deterministic Gateway `poll` और `message.action` calls से चलती है।
 
 Output artifacts:
 
 - `whatsapp-qa-report.md`
-- `qa-evidence.json` - live transport checks के लिए evidence entries।
+- `qa-evidence.json` - live transport checks के लिए evidence entries.
 - `whatsapp-qa-observed-messages.json` - bodies redacted रहती हैं जब तक `OPENCLAW_QA_WHATSAPP_CAPTURE_CONTENT=1` न हो।
 
 ### Convex credential pool
 
-Telegram, Discord, Slack, और WhatsApp lanes ऊपर दिए env vars पढ़ने के बजाय shared Convex pool से credentials lease कर सकते हैं। `--credential-source convex` pass करें (या `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` set करें); QA Lab एक exclusive lease acquire करता है, run की अवधि तक उसे heartbeat करता है, और shutdown पर release करता है। Pool kinds `"telegram"`, `"discord"`, `"slack"`, और `"whatsapp"` हैं।
+Telegram, Discord, Slack, और WhatsApp lanes ऊपर दिए env vars पढ़ने के बजाय shared Convex pool से credentials lease कर सकती हैं। `--credential-source convex` pass करें (या `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` set करें); QA Lab एक exclusive lease acquire करता है, run की अवधि तक उसका Heartbeat करता है, और shutdown पर उसे release करता है। Pool kinds `"telegram"`, `"discord"`, `"slack"`, और `"whatsapp"` हैं।
 
 Payload shapes जिन्हें broker `admin/add` पर validate करता है:
 
@@ -703,13 +704,14 @@ Payload shapes जिन्हें broker `admin/add` पर validate कर�
 - Discord (`kind: "discord"`): `{ guildId: string, channelId: string, driverBotToken: string, sutBotToken: string, sutApplicationId: string }`.
 - WhatsApp (`kind: "whatsapp"`): `{ driverPhoneE164: string, sutPhoneE164: string, driverAuthArchiveBase64: string, sutAuthArchiveBase64: string, groupJid?: string }` - phone numbers अलग-अलग E.164 strings होने चाहिए।
 
-Mantis Telegram Desktop proof workflow TDLib CLI driver और Telegram Desktop witness दोनों के लिए एक exclusive Convex `telegram-user` lease रखता है, फिर proof publish करने के बाद उसे release करता है।
+Mantis Telegram Desktop proof workflow TDLib CLI driver और Telegram Desktop witness दोनों के लिए एक exclusive Convex
+`telegram-user` lease रखता है, फिर proof publish करने के बाद उसे release करता है।
 
-जब किसी PR को deterministic visual diff चाहिए, Mantis `main` और PR head पर वही mock model reply इस्तेमाल कर सकता है जबकि Telegram formatter या delivery layer बदलता है। Capture defaults PR comments के लिए tuned हैं: standard Crabbox class, 24fps desktop recording, 24fps motion GIF, और 1920px preview width। Before/after comments को ऐसा clean bundle publish करना चाहिए जिसमें केवल intended GIFs हों।
+जब किसी PR को deterministic visual diff चाहिए, तो Mantis `main` और PR head पर वही mock model reply उपयोग कर सकता है, जबकि Telegram formatter या delivery layer बदलती है। Capture defaults PR comments के लिए tuned हैं: standard Crabbox class, 24fps desktop recording, 24fps motion GIF, और 1920px preview width। Before/after comments को एक clean bundle publish करना चाहिए जिसमें केवल intended GIFs हों।
 
-Slack lanes भी pool इस्तेमाल कर सकते हैं। Slack payload shape checks अभी broker के बजाय Slack QA runner में रहते हैं; Slack channel id जैसे `Cxxxxxxxxxx` के साथ `{ channelId: string, driverBotToken: string, sutBotToken: string, sutAppToken: string }` इस्तेमाल करें। app और scope provisioning के लिए [Slack workspace set up करना](#setting-up-the-slack-workspace) देखें।
+Slack lanes भी pool उपयोग कर सकती हैं। Slack payload shape checks अभी broker के बजाय Slack QA runner में रहते हैं; `{ channelId: string, driverBotToken: string, sutBotToken: string, sutAppToken: string }` उपयोग करें, जिसमें Slack channel id `Cxxxxxxxxxx` जैसा हो। app और scope provisioning के लिए [Slack workspace set up करना](#setting-up-the-slack-workspace) देखें।
 
-Operational env vars और Convex broker endpoint contract [Testing → Shared Telegram credentials via Convex](/hi/help/testing#shared-telegram-credentials-via-convex-v1) में हैं (section name multi-channel pool से पहले का है; lease semantics सभी kinds में shared हैं)।
+Operational env vars और Convex broker endpoint contract [Testing → Convex के जरिए shared Telegram credentials](/hi/help/testing#shared-telegram-credentials-via-convex-v1) में हैं (section name multi-channel pool से पहले का है; lease semantics सभी kinds में shared हैं)।
 
 ## Repo-backed seeds
 
@@ -718,29 +720,29 @@ Seed assets `qa/` में रहते हैं:
 - `qa/scenarios/index.yaml`
 - `qa/scenarios/<theme>/*.yaml`
 
-ये जानबूझकर git में हैं ताकि QA plan humans और agent दोनों को visible रहे।
+इन्हें जानबूझकर git में रखा गया है ताकि QA plan humans और agent दोनों को visible हो।
 
-`qa-lab` को generic YAML scenario runner रहना चाहिए। प्रत्येक scenario YAML file एक test run के लिए source of truth है और इसमें define होना चाहिए:
+`qa-lab` को generic YAML scenario runner रहना चाहिए। हर scenario YAML file एक test run के लिए source of truth है और इसे define करना चाहिए:
 
 - top-level `title`
 - `scenario` metadata
-- `scenario` में optional category, capability, lane, और risk metadata
-- `scenario` में docs और code refs
-- `scenario` में optional plugin requirements
-- `scenario` में optional gateway config patch
+- optional category, capability, lane, और risk metadata `scenario` में
+- docs और code refs `scenario` में
+- optional Plugin requirements `scenario` में
+- optional Gateway config patch `scenario` में
 - flow scenarios के लिए executable top-level `flow`, या Vitest और Playwright scenarios के लिए `scenario.execution.kind` /
   `scenario.execution.path`
 
-`flow` को आधार देने वाली पुन: प्रयोज्य रनटाइम सतह को generic
-और cross-cutting रहने की अनुमति है। उदाहरण के लिए, YAML scenarios transport-side
-helpers को browser-side helpers के साथ जोड़ सकते हैं, जो किसी special-case runner को जोड़े बिना
-Gateway `browser.request` seam के माध्यम से embedded Control UI चलाते हैं।
+`flow` का आधार बनने वाली पुन: प्रयोज्य runtime सतह generic
+और cross-cutting बनी रह सकती है। उदाहरण के लिए, YAML scenarios transport-side
+helpers को browser-side helpers के साथ जोड़ सकते हैं, जो किसी special-case runner को जोड़े बिना embedded Control UI को
+Gateway `browser.request` seam के माध्यम से चलाते हैं।
 
 Scenario files को source tree folder के बजाय product capability के आधार पर समूहित किया जाना चाहिए।
-Files स्थानांतरित होने पर scenario IDs स्थिर रखें; implementation traceability के लिए `docsRefs` और `codeRefs`
+Files move होने पर scenario IDs स्थिर रखें; implementation traceability के लिए `docsRefs` और `codeRefs`
 का उपयोग करें।
 
-Baseline list इतनी व्यापक रहनी चाहिए कि यह इन्हें कवर कर सके:
+Baseline list इतनी व्यापक रहनी चाहिए कि इसमें शामिल हो:
 
 - DM और channel chat
 - thread behavior
@@ -750,46 +752,46 @@ Baseline list इतनी व्यापक रहनी चाहिए क�
 - model switching
 - subagent handoff
 - repo-reading और docs-reading
-- एक छोटा build task जैसे Lobster Invaders
+- एक छोटा build task, जैसे Lobster Invaders
 
 ## Provider mock lanes
 
 `qa suite` में दो local provider mock lanes हैं:
 
 - `mock-openai` scenario-aware OpenClaw mock है। यह repo-backed QA और parity gates के लिए default
-  deterministic mock lane रहता है।
+  deterministic mock lane बना रहता है।
 - `aimock` experimental protocol,
   fixture, record/replay, और chaos coverage के लिए AIMock-backed provider server शुरू करता है। यह additive है और
   `mock-openai` scenario dispatcher को replace नहीं करता।
 
-Provider-lane implementation `extensions/qa-lab/src/providers/` के अंतर्गत रहता है।
+Provider-lane implementation `extensions/qa-lab/src/providers/` के अंतर्गत रहती है।
 हर provider अपने defaults, local server startup, gateway model config,
-auth-profile staging needs, और live/mock capability flags का स्वामी होता है। Shared suite और
+auth-profile staging needs, और live/mock capability flags का owner होता है। Shared suite और
 gateway code को provider names पर branching करने के बजाय provider registry के माध्यम से route करना चाहिए।
 
 ## Transport adapters
 
-`qa-lab` YAML QA scenarios के लिए एक generic transport seam का स्वामी है। `qa-channel`
+`qa-lab` YAML QA scenarios के लिए generic transport seam का owner है। `qa-channel`
 synthetic default है। `crabline` local provider-shaped servers शुरू करता है और
 OpenClaw के normal channel plugins को उनके विरुद्ध चलाता है। `live` real
-provider credentials और external channels के लिए आरक्षित है।
+provider credentials और external channels के लिए reserved है।
 
-Architecture level पर, split यह है:
+Architecture level पर split यह है:
 
-- `qa-lab` generic scenario execution, worker concurrency, artifact writing, और reporting का स्वामी है।
-- Transport adapter gateway config, readiness, inbound और outbound observation, transport actions, और normalized transport state का स्वामी है।
-- `qa/scenarios/` के अंतर्गत YAML scenario files test run परिभाषित करती हैं; `qa-lab` उन्हें execute करने वाली reusable runtime surface प्रदान करता है।
+- `qa-lab` generic scenario execution, worker concurrency, artifact writing, और reporting का owner है।
+- Transport adapter gateway config, readiness, inbound और outbound observation, transport actions, और normalized transport state का owner है।
+- `qa/scenarios/` के अंतर्गत YAML scenario files test run define करते हैं; `qa-lab` उन्हें execute करने वाली reusable runtime surface प्रदान करता है।
 
 ### Channel जोड़ना
 
 YAML QA system में channel जोड़ने के लिए channel implementation और
 एक scenario pack चाहिए जो channel contract को exercise करे। Smoke CI coverage के लिए,
-matching Crabline fake provider server जोड़ें और उसे `crabline`
+matching Crabline local provider server जोड़ें और उसे `crabline`
 driver के माध्यम से expose करें।
 
-जब shared `qa-lab` host flow का स्वामी हो सकता है, तो नया top-level QA command root न जोड़ें।
+जब shared `qa-lab` host flow का owner हो सकता है, तो नया top-level QA command root न जोड़ें।
 
-`qa-lab` shared host mechanics का स्वामी है:
+`qa-lab` shared host mechanics का owner है:
 
 - `openclaw qa` command root
 - suite startup और teardown
@@ -799,33 +801,33 @@ driver के माध्यम से expose करें।
 - scenario execution
 - पुराने `qa-channel` scenarios के लिए compatibility aliases
 
-Runner plugins transport contract के स्वामी हैं:
+Runner plugins transport contract के owner हैं:
 
-- shared `qa` root के नीचे `openclaw qa <runner>` कैसे mount होता है
-- उस transport के लिए gateway कैसे configure होता है
-- readiness कैसे check होती है
-- inbound events कैसे inject होते हैं
-- outbound messages कैसे observe होते हैं
-- transcripts और normalized transport state कैसे expose होते हैं
-- transport-backed actions कैसे execute होते हैं
-- transport-specific reset या cleanup कैसे handle होता है
+- shared `qa` root के नीचे `openclaw qa <runner>` कैसे mount किया जाता है
+- उस transport के लिए gateway कैसे configured होता है
+- readiness कैसे check की जाती है
+- inbound events कैसे inject किए जाते हैं
+- outbound messages कैसे observe किए जाते हैं
+- transcripts और normalized transport state कैसे expose किए जाते हैं
+- transport-backed actions कैसे execute किए जाते हैं
+- transport-specific reset या cleanup कैसे handle किया जाता है
 
 नए channel के लिए minimum adoption bar:
 
 1. Shared `qa` root के owner के रूप में `qa-lab` रखें।
 2. Shared `qa-lab` host seam पर transport runner implement करें।
-3. Transport-specific mechanics को runner plugin या channel harness के भीतर रखें।
-4. Competing root command register करने के बजाय runner को `openclaw qa <runner>` के रूप में mount करें। Runner plugins को `openclaw.plugin.json` में `qaRunners` declare करना चाहिए और `runtime-api.ts` से matching `qaRunnerCliRegistrations` array export करना चाहिए। `runtime-api.ts` हल्का रखें; lazy CLI और runner execution अलग entrypoints के पीछे रहनी चाहिए।
+3. Transport-specific mechanics को runner plugin या channel harness के अंदर रखें।
+4. Competing root command register करने के बजाय runner को `openclaw qa <runner>` के रूप में mount करें। Runner plugins को `openclaw.plugin.json` में `qaRunners` declare करना चाहिए और `runtime-api.ts` से matching `qaRunnerCliRegistrations` array export करना चाहिए। `runtime-api.ts` को हल्का रखें; lazy CLI और runner execution अलग entrypoints के पीछे रहना चाहिए।
 5. Themed `qa/scenarios/` directories के अंतर्गत YAML scenarios author या adapt करें।
 6. नए scenarios के लिए generic scenario helpers का उपयोग करें।
-7. Existing compatibility aliases को working रखें जब तक repo intentional migration न कर रहा हो।
+7. जब तक repo intentional migration नहीं कर रहा हो, existing compatibility aliases को working रखें।
 
 Decision rule strict है:
 
 - यदि behavior को `qa-lab` में एक बार express किया जा सकता है, तो उसे `qa-lab` में रखें।
-- यदि behavior किसी एक channel transport पर निर्भर है, तो उसे उस runner plugin या plugin harness में रखें।
-- यदि scenario को ऐसी नई capability चाहिए जिसे एक से अधिक channel उपयोग कर सकते हैं, तो `suite.ts` में channel-specific branch के बजाय generic helper जोड़ें।
-- यदि behavior केवल एक transport के लिए meaningful है, तो scenario को transport-specific रखें और scenario contract में इसे explicit करें।
+- यदि behavior एक channel transport पर निर्भर करता है, तो उसे उस runner plugin या plugin harness में रखें।
+- यदि किसी scenario को ऐसी नई capability चाहिए जिसे एक से अधिक channel use कर सकते हैं, तो `suite.ts` में channel-specific branch के बजाय generic helper जोड़ें।
+- यदि कोई behavior केवल एक transport के लिए meaningful है, तो scenario को transport-specific रखें और scenario contract में इसे explicit बनाएं।
 
 ### Scenario helper names
 
@@ -844,38 +846,38 @@ Decision rule strict है:
 - `formatTransportTranscript`
 - `resetTransport`
 
-Compatibility aliases existing scenarios के लिए उपलब्ध रहते हैं - `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` - लेकिन नए scenario authoring में generic names का उपयोग करना चाहिए। Aliases flag-day migration से बचने के लिए मौजूद हैं, आगे के model के रूप में नहीं।
+Compatibility aliases existing scenarios के लिए available रहते हैं - `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` - लेकिन नए scenario authoring में generic names का उपयोग करना चाहिए। Aliases flag-day migration से बचने के लिए मौजूद हैं, आगे के model के रूप में नहीं।
 
 ## Reporting
 
 `qa-lab` observed bus timeline से Markdown protocol report export करता है।
-Report को उत्तर देना चाहिए:
+Report को इन प्रश्नों का उत्तर देना चाहिए:
 
 - क्या काम किया
 - क्या fail हुआ
 - क्या blocked रहा
 - कौन से follow-up scenarios जोड़ने योग्य हैं
 
-Available scenarios की inventory के लिए - जो follow-up work size करने या नया transport wire करने में उपयोगी है - `pnpm openclaw qa coverage` चलाएँ (machine-readable output के लिए `--json` जोड़ें)।
-Touched behavior या file path के लिए focused proof चुनते समय, `pnpm openclaw qa coverage --match <query>` चलाएँ।
-Match report scenario metadata, docs refs, code refs, coverage IDs, plugins, और provider requirements खोजती है, फिर matching `qa suite --scenario ...` targets print करती है।
+Available scenarios की inventory के लिए - follow-up work size करने या नए transport को wire करने में उपयोगी - `pnpm openclaw qa coverage` चलाएं (machine-readable output के लिए `--json` जोड़ें)।
+Touched behavior या file path के लिए focused proof चुनते समय, `pnpm openclaw qa coverage --match <query>` चलाएं।
+Match report scenario metadata, docs refs, code refs, coverage IDs, plugins, और provider requirements search करता है, फिर matching `qa suite --scenario ...` targets print करता है।
 हर `qa suite` run selected
 scenario set के लिए top-level `qa-evidence.json`,
 `qa-suite-summary.json`, और `qa-suite-report.md` artifacts लिखता है। जो scenarios `execution.kind: vitest` या
 `execution.kind: playwright` declare करते हैं, वे matching test path चलाते हैं और
 per-scenario logs भी लिखते हैं। जो scenarios `execution.kind: script` declare करते हैं, वे
-`execution.path` पर evidence producer को `node --import tsx` के माध्यम से चलाते हैं (जिसमें
-`${outputDir}` और `${scenarioId}` `execution.args` में expand होते हैं); producer
+`execution.path` पर evidence producer को `node --import tsx` के माध्यम से चलाते हैं (`execution.args` में
+`${outputDir}` और `${scenarioId}` expanded होते हैं); producer
 अपना `qa-evidence.json` लिखता है, जिसकी entries suite
-output में import होती हैं और जिसके artifact paths उस producer
+output में imported होती हैं और जिसके artifact paths उस producer
 `qa-evidence.json` के relative resolve होते हैं। जब `qa suite`
-`qa run --qa-profile` के माध्यम से पहुँचा जाता है, तो वही `qa-evidence.json` selected taxonomy categories के लिए profile
-scorecard summary भी शामिल करता है।
-इसे discovery aid मानें, gate replacement नहीं; selected scenario को अभी भी test किए जा रहे behavior के लिए सही provider mode, live transport, Multipass, Testbox, या release lane चाहिए।
+`qa run --qa-profile` के माध्यम से पहुंचता है, तो वही `qa-evidence.json` selected taxonomy categories के लिए profile
+scorecard summary भी include करता है।
+इसे discovery aid मानें, gate replacement नहीं; selected scenario को test के तहत behavior के लिए अभी भी सही provider mode, live transport, Multipass, Testbox, या release lane चाहिए।
 Scorecard context के लिए, [Maturity scorecard](/hi/maturity/scorecard) देखें।
 
-Character और style checks के लिए, वही scenario कई live model
-refs पर चलाएँ और judged Markdown report लिखें:
+Character और style checks के लिए, same scenario को multiple live model
+refs पर चलाएं और judged Markdown report लिखें:
 
 ```bash
 pnpm openclaw qa character-eval \
@@ -895,37 +897,38 @@ pnpm openclaw qa character-eval \
 ```
 
 Command local QA gateway child processes चलाता है, Docker नहीं। Character eval
-scenarios को persona `SOUL.md` के माध्यम से set करना चाहिए, फिर chat, workspace help, और small file tasks जैसे ordinary user turns चलाने चाहिए। Candidate model को
+scenarios को persona `SOUL.md` के माध्यम से set करना चाहिए, फिर ordinary user turns
+जैसे chat, workspace help, और small file tasks चलाने चाहिए। Candidate model को
 यह नहीं बताया जाना चाहिए कि उसका evaluation हो रहा है। Command हर full
 transcript preserve करता है, basic run stats record करता है, फिर judge models से fast mode में
-`xhigh` reasoning के साथ, जहाँ supported हो, runs को naturalness, vibe, और humor के आधार पर rank करने को कहता है।
-Providers की तुलना करते समय `--blind-judge-models` उपयोग करें: judge prompt को अभी भी
-हर transcript और run status मिलता है, लेकिन candidate refs neutral
-labels जैसे `candidate-01` से replace हो जाते हैं; report parsing के बाद rankings को real refs पर वापस map करती है।
-Candidate runs default रूप से `high` thinking पर होते हैं, GPT-5.5 के लिए `medium` और
-older OpenAI eval refs के लिए `xhigh`, जहाँ supported हो। किसी specific candidate को inline override करें
-`--model provider/model,thinking=<level>` के साथ। `--thinking <level>` अब भी
-global fallback set करता है, और पुराना `--model-thinking <provider/model=level>` form
+`xhigh` reasoning के साथ, जहां supported हो, runs को naturalness, vibe, और humor के आधार पर rank करने को कहता है।
+Providers compare करते समय `--blind-judge-models` का उपयोग करें: judge prompt को अभी भी
+हर transcript और run status मिलता है, लेकिन candidate refs को neutral
+labels जैसे `candidate-01` से replace किया जाता है; report parsing के बाद rankings को real refs पर map करता है।
+Candidate runs default रूप से `high` thinking use करते हैं, GPT-5.5 के लिए `medium` और
+older OpenAI eval refs के लिए `xhigh` के साथ, जहां यह supported हो। Specific candidate को inline override करें:
+`--model provider/model,thinking=<level>`। `--thinking <level>` अभी भी
+global fallback set करता है, और older `--model-thinking <provider/model=level>` form
 compatibility के लिए रखा गया है।
-OpenAI candidate refs default रूप से fast mode पर होते हैं ताकि priority processing का उपयोग हो जहाँ
-provider उसे support करता है। जब किसी single candidate या judge को override चाहिए, तो inline
-`,fast`, `,no-fast`, या `,fast=false` जोड़ें। `--fast` तभी pass करें जब आप
+OpenAI candidate refs default रूप से fast mode use करते हैं ताकि जहां
+provider support करता हो, priority processing use हो। किसी single candidate या judge को override चाहिए तो
+`,fast`, `,no-fast`, या `,fast=false` inline जोड़ें। `--fast` केवल तब pass करें जब आप
 हर candidate model के लिए fast mode force करना चाहते हों। Candidate और judge durations
-benchmark analysis के लिए report में record होते हैं, लेकिन judge prompts स्पष्ट रूप से कहते हैं
+benchmark analysis के लिए report में record किए जाते हैं, लेकिन judge prompts स्पष्ट रूप से कहते हैं
 कि speed के आधार पर rank न करें।
-Candidate और judge model runs दोनों default रूप से concurrency 16 पर होते हैं। जब provider limits या local gateway
-pressure किसी run को बहुत noisy बना दे, तो
+Candidate और judge model runs दोनों default रूप से concurrency 16 use करते हैं। Provider limits या local gateway
+pressure किसी run को बहुत noisy बना दें तो
 `--concurrency` या `--judge-concurrency` कम करें।
 जब कोई candidate `--model` pass नहीं किया जाता, character eval default रूप से
 `openai/gpt-5.5`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-8`,
 `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
 `moonshot/kimi-k2.5`, और
-`google/gemini-3.1-pro-preview` पर होता है जब कोई `--model` pass नहीं किया जाता।
+`google/gemini-3.1-pro-preview` use करता है।
 जब कोई `--judge-model` pass नहीं किया जाता, judges default रूप से
 `openai/gpt-5.5,thinking=xhigh,fast` और
-`anthropic/claude-opus-4-8,thinking=high` होते हैं।
+`anthropic/claude-opus-4-8,thinking=high` use करते हैं।
 
-## संबंधित docs
+## Related docs
 
 - [Matrix QA](/hi/concepts/qa-matrix)
 - [Maturity scorecard](/hi/maturity/scorecard)

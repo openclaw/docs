@@ -1,17 +1,17 @@
 ---
 read_when:
-    - هنوز از `openclaw daemon ...` در اسکریپت‌ها استفاده می‌کنید
-    - به فرمان‌های چرخهٔ حیات سرویس (install/start/stop/restart/status) نیاز دارید
+    - شما همچنان از `openclaw daemon ...` در اسکریپت‌ها استفاده می‌کنید
+    - به دستورهای چرخهٔ عمر سرویس نیاز دارید (install/start/stop/restart/status)
 summary: مرجع CLI برای `openclaw daemon` (نام مستعار قدیمی برای مدیریت سرویس Gateway)
 title: دیمون
 x-i18n:
-    generated_at: "2026-05-11T20:28:28Z"
+    generated_at: "2026-06-30T14:15:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0131c3838ac0240f38e755eb779134d19a935821d90bb2898648b947696be12e
+    source_hash: 1a3ec72b22907994ecefac84b2b9e5b22bf1d922e5b2822a1c0db80f0362dade
     source_path: cli/daemon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw daemon`
@@ -20,7 +20,7 @@ x-i18n:
 
 `openclaw daemon ...` به همان سطح کنترل سرویس نگاشت می‌شود که فرمان‌های سرویس `openclaw gateway ...` استفاده می‌کنند.
 
-## نحوهٔ استفاده
+## کاربرد
 
 ```bash
 openclaw daemon status
@@ -31,39 +31,39 @@ openclaw daemon restart
 openclaw daemon uninstall
 ```
 
-## زیر‌فرمان‌ها
+## زیرفرمان‌ها
 
-- `status`: وضعیت نصب سرویس را نشان می‌دهد و سلامت Gateway را بررسی می‌کند
-- `install`: سرویس را نصب می‌کند (`launchd`/`systemd`/`schtasks`)
-- `uninstall`: سرویس را حذف می‌کند
-- `start`: سرویس را شروع می‌کند
-- `stop`: سرویس را متوقف می‌کند
-- `restart`: سرویس را دوباره راه‌اندازی می‌کند
+- `status`: نمایش وضعیت نصب سرویس و بررسی سلامت Gateway
+- `install`: نصب سرویس (`launchd`/`systemd`/`schtasks`)
+- `uninstall`: حذف سرویس
+- `start`: راه‌اندازی سرویس
+- `stop`: متوقف کردن سرویس
+- `restart`: راه‌اندازی دوباره سرویس
 
 ## گزینه‌های رایج
 
 - `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
 - `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
 - `restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
-- چرخهٔ عمر (`uninstall|start|stop`): `--json`
+- چرخه عمر (`uninstall|start|stop`): `--json`
 
 نکته‌ها:
 
-- `status` در صورت امکان SecretRefهای احراز هویت پیکربندی‌شده را برای احراز هویت بررسی resolve می‌کند.
-- اگر یک SecretRef احراز هویت لازم در این مسیر فرمان resolve نشود، `daemon status --json` هنگامی که اتصال/احراز هویت بررسی شکست می‌خورد، `rpc.authWarning` را گزارش می‌کند؛ `--token`/`--password` را صریحاً پاس دهید یا ابتدا منبع secret را resolve کنید.
+- `status` در صورت امکان SecretRefهای احراز هویت پیکربندی‌شده را برای احراز هویت بررسی حل می‌کند.
+- اگر یک SecretRef احراز هویت الزامی در این مسیر فرمان حل‌نشده باشد، وقتی اتصال/احراز هویت بررسی ناموفق شود، `daemon status --json` مقدار `rpc.authWarning` را گزارش می‌کند؛ `--token`/`--password` را صراحتا بفرستید یا ابتدا منبع secret را حل کنید.
 - اگر بررسی موفق شود، هشدارهای auth-ref حل‌نشده برای جلوگیری از مثبت‌های کاذب سرکوب می‌شوند.
-- `status --deep` یک اسکن سرویس در سطح سیستم را به‌صورت best-effort اضافه می‌کند. وقتی سرویس‌های دیگری شبیه Gateway پیدا کند، خروجی انسانی راهنمایی‌های پاک‌سازی را چاپ می‌کند و هشدار می‌دهد که همچنان توصیهٔ عادی، یک Gateway برای هر ماشین است.
-- `status --deep` همچنین اعتبارسنجی پیکربندی را در حالت آگاه از Plugin اجرا می‌کند و هشدارهای مانیفست Plugin پیکربندی‌شده را نمایش می‌دهد (برای مثال نبود metadata پیکربندی کانال) تا بررسی‌های smoke نصب و به‌روزرسانی آن‌ها را پیدا کنند. `status` پیش‌فرض مسیر سریع فقط‌خواندنی را نگه می‌دارد که اعتبارسنجی Plugin را رد می‌کند.
-- در نصب‌های systemd لینوکس، بررسی‌های token-drift در `status` هر دو منبع unit یعنی `Environment=` و `EnvironmentFile=` را شامل می‌شوند.
-- بررسی‌های Drift، SecretRefهای `gateway.auth.token` را با استفاده از env زمان اجرای ادغام‌شده resolve می‌کنند (ابتدا env فرمان سرویس، سپس env فرایند به‌عنوان fallback).
-- اگر احراز هویت token عملاً فعال نباشد (`gateway.auth.mode` صریحِ `password`/`none`/`trusted-proxy`، یا mode تنظیم نشده باشد در جایی که password می‌تواند برنده شود و هیچ کاندیدای token نمی‌تواند برنده شود)، بررسی‌های token-drift از resolve کردن token پیکربندی صرف‌نظر می‌کنند.
-- وقتی احراز هویت token به token نیاز دارد و `gateway.auth.token` با SecretRef مدیریت می‌شود، `install` اعتبارسنجی می‌کند که SecretRef قابل resolve باشد اما token حل‌شده را در metadata محیط سرویس ذخیره نمی‌کند.
-- اگر احراز هویت token به token نیاز داشته باشد و SecretRef پیکربندی‌شدهٔ token resolve نشده باشد، نصب به‌صورت بسته شکست می‌خورد.
-- اگر هم `gateway.auth.token` و هم `gateway.auth.password` پیکربندی شده باشند و `gateway.auth.mode` تنظیم نشده باشد، نصب تا زمانی که mode صریحاً تنظیم شود مسدود می‌شود.
-- در macOS، `install` plistهای LaunchAgent را فقط در مالکیت owner نگه می‌دارد و مقدارهای محیط سرویس مدیریت‌شده را به‌جای سریال‌سازی کلیدهای API یا env refهای auth-profile در `EnvironmentVariables`، از طریق یک فایل و wrapper فقط در اختیار owner بارگذاری می‌کند.
-- اگر عمداً چند Gateway را روی یک میزبان اجرا می‌کنید، portها، پیکربندی/وضعیت و workspaceها را جدا کنید؛ [/gateway#multiple-gateways-same-host](/fa/gateway#multiple-gateways-same-host) را ببینید.
-- `restart --safe` از Gateway در حال اجرا می‌خواهد کار فعال را preflight کند و پس از تخلیه شدن کار فعال، یک restart ادغام‌شده را زمان‌بندی کند. `restart` ساده رفتار موجود service-manager را حفظ می‌کند؛ `--force` همچنان مسیر override فوری باقی می‌ماند.
-- `restart --safe --skip-deferral` restart امنِ آگاه از OpenClaw را اجرا می‌کند اما gate تعویق کار فعال را دور می‌زند تا Gateway حتی وقتی blockerها گزارش شده‌اند، restart را فوراً صادر کند. راه گریز operator زمانی است که یک اجرای task گیرکرده restart امن را pinned می‌کند؛ به `--safe` نیاز دارد.
+- `status --deep` یک اسکن سرویس در سطح سیستم و با بهترین تلاش اضافه می‌کند. وقتی سرویس‌های دیگری شبیه Gateway پیدا کند، خروجی انسانی نکته‌های پاک‌سازی را چاپ می‌کند و هشدار می‌دهد که همچنان توصیه عادی، یک Gateway برای هر دستگاه است.
+- `status --deep` همچنین اعتبارسنجی پیکربندی را در حالت آگاه از Plugin اجرا می‌کند و هشدارهای manifest مربوط به Pluginهای پیکربندی‌شده را نمایش می‌دهد (برای مثال نبود فراداده پیکربندی کانال) تا بررسی‌های دود نصب و به‌روزرسانی آن‌ها را پیدا کنند. `status` پیش‌فرض مسیر سریع و فقط‌خواندنی را نگه می‌دارد که اعتبارسنجی Plugin را رد می‌کند.
+- در نصب‌های systemd روی Linux، بررسی‌های token-drift در `status` هر دو منبع unit یعنی `Environment=` و `EnvironmentFile=` را شامل می‌شوند.
+- بررسی‌های drift مقدار SecretRefهای `gateway.auth.token` را با استفاده از env زمان اجرای ادغام‌شده حل می‌کنند (ابتدا env فرمان سرویس، سپس fallback به env فرایند).
+- اگر احراز هویت توکن عملا فعال نباشد (`gateway.auth.mode` صریح با مقدار `password`/`none`/`trusted-proxy`، یا mode تنظیم نشده باشد و password بتواند برنده شود و هیچ نامزد token نتواند برنده شود)، بررسی‌های token-drift حل توکن پیکربندی را رد می‌کنند.
+- وقتی احراز هویت توکن به یک توکن نیاز دارد و `gateway.auth.token` با SecretRef مدیریت می‌شود، `install` اعتبارسنجی می‌کند که SecretRef قابل حل باشد، اما توکن حل‌شده را در فراداده محیط سرویس ماندگار نمی‌کند.
+- اگر احراز هویت توکن به یک توکن نیاز داشته باشد و SecretRef توکن پیکربندی‌شده حل‌نشده باشد، نصب به‌صورت بسته و ایمن شکست می‌خورد.
+- اگر هر دو `gateway.auth.token` و `gateway.auth.password` پیکربندی شده باشند و `gateway.auth.mode` تنظیم نشده باشد، نصب تا زمانی که mode صراحتا تنظیم شود مسدود می‌شود.
+- در macOS، `install` فایل‌های plist مربوط به LaunchAgent را فقط در مالکیت مالک نگه می‌دارد و به‌جای سریال‌سازی کلیدهای API یا ارجاع‌های env مربوط به auth-profile در `EnvironmentVariables`، مقادیر محیط سرویس مدیریت‌شده را از طریق یک فایل و wrapper فقط‌مالک بارگذاری می‌کند.
+- اگر عمدا چند Gateway را روی یک میزبان اجرا می‌کنید، پورت‌ها، پیکربندی/وضعیت، و workspaceها را جدا کنید؛ [/gateway#multiple-gateways-same-host](/fa/gateway#multiple-gateways-same-host) را ببینید.
+- `restart --safe` از Gateway در حال اجرا می‌خواهد کار فعال را پیش‌بررسی کند و پس از تخلیه کار فعال، یک راه‌اندازی دوباره تجمیع‌شده زمان‌بندی کند. راه‌اندازی دوباره امن پیش‌فرض تا سقف `gateway.reload.deferralTimeoutMs` پیکربندی‌شده (پیش‌فرض ۵ دقیقه) منتظر کار فعال می‌ماند؛ وقتی این بودجه منقضی شود، راه‌اندازی دوباره اجباری می‌شود. برای انتظار امن نامحدود که هرگز اجبار نمی‌کند، `gateway.reload.deferralTimeoutMs` را روی `0` تنظیم کنید. `restart` ساده رفتار موجود مدیر سرویس را نگه می‌دارد؛ `--force` همچنان مسیر override فوری است.
+- `restart --safe --skip-deferral` راه‌اندازی دوباره امن آگاه از OpenClaw را اجرا می‌کند، اما دروازه تعویق کار فعال را دور می‌زند تا Gateway حتی وقتی مسدودکننده‌ها گزارش شده‌اند، راه‌اندازی دوباره را بلافاصله منتشر کند. این راه فرار اپراتور است وقتی یک اجرای task گیرکرده راه‌اندازی دوباره امن را نگه می‌دارد؛ به `--safe` نیاز دارد.
 
 ## ترجیح دهید
 
@@ -72,4 +72,4 @@ openclaw daemon uninstall
 ## مرتبط
 
 - [مرجع CLI](/fa/cli)
-- [Runbook Gateway](/fa/gateway)
+- [راهنمای عملیاتی Gateway](/fa/gateway)

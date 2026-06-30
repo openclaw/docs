@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Bir Plugin'den çekirdek yardımcıları çağırmanız gerekir (TTS, STT, görüntü oluşturma, web araması, alt ajan, düğümler)
-    - api.runtime öğesinin neleri sunduğunu anlamak istiyorsunuz
-    - Yapılandırma, ajan veya medya yardımcılarına Plugin kodundan erişiyorsunuz
+    - Bir Plugin içinden çekirdek yardımcılarını çağırmanız gerekiyor (TTS, STT, görsel oluşturma, web araması, alt ajan, düğümler)
+    - api.runtime'ın neleri sunduğunu anlamak istiyorsunuz
+    - Plugin kodundan yapılandırma, ajan veya medya yardımcılarına erişiyorsunuz
 sidebarTitle: Runtime helpers
-summary: api.runtime -- Plugin'lerin kullanabildiği enjekte edilen çalışma zamanı yardımcıları
+summary: api.runtime -- Plugin'ler tarafından kullanılabilen enjekte edilmiş çalışma zamanı yardımcıları
 title: Plugin çalışma zamanı yardımcıları
 x-i18n:
-    generated_at: "2026-06-28T20:44:41Z"
+    generated_at: "2026-06-30T14:23:56Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b2bd70bb36ab8fb0fbecb982f56b1302a2a01a8d7ae6f78d3558fbaa8c28742e
+    source_hash: 028e4b75840fe228ee98440f7e86030cb4e1377b2688e0564394d1424662ca39
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-Kayıt sırasında her Plugin'e enjekte edilen `api.runtime` nesnesi için başvuru. Host iç öğelerini doğrudan içe aktarmak yerine bu yardımcıları kullanın.
+Her Plugin'e kayıt sırasında enjekte edilen `api.runtime` nesnesi için referans. Host iç bileşenlerini doğrudan içe aktarmak yerine bu yardımcıları kullanın.
 
 <CardGroup cols={2}>
-  <Card title="Kanal Plugin'leri" href="/tr/plugins/sdk-channel-plugins">
+  <Card title="Channel plugins" href="/tr/plugins/sdk-channel-plugins">
     Kanal Plugin'leri için bu yardımcıları bağlam içinde kullanan adım adım kılavuz.
   </Card>
-  <Card title="Sağlayıcı Plugin'leri" href="/tr/plugins/sdk-provider-plugins">
+  <Card title="Provider plugins" href="/tr/plugins/sdk-provider-plugins">
     Sağlayıcı Plugin'leri için bu yardımcıları bağlam içinde kullanan adım adım kılavuz.
   </Card>
 </CardGroup>
@@ -33,35 +33,36 @@ register(api) {
 }
 ```
 
-## Yapılandırma yükleme ve yazma
+## Yapılandırma yükleme ve yazmalar
 
-Etkin çağrı yoluna zaten geçirilmiş yapılandırmayı tercih edin; örneğin kayıt sırasında `api.config` veya kanal/sağlayıcı geri çağrılarında bir `cfg` argümanı. Bu, sıcak yollarda yapılandırmayı yeniden ayrıştırmak yerine tek bir süreç anlık görüntüsünün iş boyunca akmasını sağlar.
+Etkin çağrı yoluna zaten geçirilmiş yapılandırmayı tercih edin; örneğin kayıt sırasında `api.config` veya kanal/sağlayıcı geri çağırmalarında bir `cfg` argümanı. Bu, sıcak yollarda yapılandırmayı yeniden ayrıştırmak yerine tek bir süreç anlık görüntüsünün iş boyunca akmasını sağlar.
 
-`api.runtime.config.current()` yalnızca uzun ömürlü bir işleyicinin mevcut süreç anlık görüntüsüne ihtiyaç duyduğu ve o işleve yapılandırma geçirilmediği durumlarda kullanın. Döndürülen değer salt okunurdur; düzenlemeden önce klonlayın veya bir mutasyon yardımcısı kullanın.
+`api.runtime.config.current()` öğesini yalnızca uzun ömürlü bir işleyicinin geçerli süreç anlık görüntüsüne ihtiyaç duyduğu ve o işleve hiçbir yapılandırmanın geçirilmediği durumlarda kullanın. Döndürülen değer salt okunurdur; düzenlemeden önce kopyalayın veya bir mutasyon yardımcısı kullanın.
 
-Araç fabrikaları `ctx.runtimeConfig` ve `ctx.getRuntimeConfig()` alır. Yapılandırma, araç tanımı oluşturulduktan sonra değişebiliyorsa getter'ı uzun ömürlü bir aracın `execute` geri çağrısı içinde kullanın.
+Araç fabrikaları `ctx.runtimeConfig` ile birlikte `ctx.getRuntimeConfig()` alır. Yapılandırma araç tanımı oluşturulduktan sonra değişebiliyorsa getter'ı uzun ömürlü bir aracın `execute` geri çağırması içinde kullanın.
 
 Değişiklikleri `api.runtime.config.mutateConfigFile(...)` veya `api.runtime.config.replaceConfigFile(...)` ile kalıcı hale getirin. Her yazma açık bir `afterWrite` politikası seçmelidir:
 
-- `afterWrite: { mode: "auto" }`, gateway yeniden yükleme planlayıcısının karar vermesini sağlar.
-- `afterWrite: { mode: "restart", reason: "..." }`, yazar sıcak yeniden yüklemenin güvenli olmadığını bildiğinde temiz bir yeniden başlatmayı zorlar.
-- `afterWrite: { mode: "none", reason: "..." }`, otomatik yeniden yükleme/yeniden başlatmayı yalnızca çağıran taraf takip adımına sahip olduğunda bastırır.
+- `afterWrite: { mode: "auto" }`, Gateway yeniden yükleme planlayıcısının karar vermesini sağlar.
+- `afterWrite: { mode: "restart", reason: "..." }`, yazıcı sıcak yeniden yüklemenin güvenli olmadığını bildiğinde temiz bir yeniden başlatmayı zorunlu kılar.
+- `afterWrite: { mode: "none", reason: "..." }`, otomatik yeniden yükleme/yeniden başlatmayı yalnızca çağıran taraf takip işleminin sahibiyse bastırır.
 
-Mutasyon yardımcıları, çağıranların yeniden başlatma isteyip istemediklerini günlüğe kaydedebilmesi veya test edebilmesi için `afterWrite` ile birlikte tipli bir `followUp` özeti döndürür. Yeniden başlatmanın gerçekten ne zaman gerçekleşeceğinin sahibi yine gateway'dir.
+Mutasyon yardımcıları `afterWrite` ile birlikte tiplenmiş bir `followUp` özeti döndürür; böylece çağıranlar yeniden başlatma isteyip istemediklerini günlüğe yazabilir veya test edebilir. Yeniden başlatmanın gerçekte ne zaman gerçekleşeceğinin sahibi yine Gateway'dir.
 
-`api.runtime.config.loadConfig()` ve `api.runtime.config.writeConfigFile(...)`, `runtime-config-load-write` altındaki kullanımdan kaldırılmış uyumluluk yardımcılarıdır. Çalışma zamanında bir kez uyarı verirler ve geçiş penceresi boyunca eski harici Plugin'ler için kullanılabilir kalırlar. Paketli Plugin'ler bunları kullanmamalıdır; Plugin kodu bunları çağırırsa veya bu yardımcıları Plugin SDK alt yollarından içe aktarırsa yapılandırma sınırı korumaları başarısız olur.
+`api.runtime.config.loadConfig()` ve `api.runtime.config.writeConfigFile(...)`, `runtime-config-load-write` altındaki kullanımdan kaldırılmış uyumluluk yardımcılarıdır. Çalışma zamanında bir kez uyarı verirler ve geçiş dönemi boyunca eski harici Plugin'ler için kullanılabilir kalırlar. Paketli Plugin'ler bunları kullanmamalıdır; Plugin kodu bunları çağırırsa veya bu yardımcıları Plugin SDK alt yollarından içe aktarırsa yapılandırma sınırı korumaları başarısız olur.
 
-Doğrudan SDK içe aktarmaları için geniş `openclaw/plugin-sdk/config-runtime` uyumluluk barrel'ı yerine odaklanmış yapılandırma alt yollarını kullanın: tipler için `config-contracts`, zaten yüklenmiş yapılandırma doğrulamaları ve Plugin giriş araması için `plugin-config-runtime`, mevcut süreç anlık görüntüleri için `runtime-config-snapshot` ve yazmalar için `config-mutation`. Paketli Plugin testleri, geniş uyumluluk barrel'ını mock'lamak yerine bu odaklanmış alt yolları doğrudan mock'lamalıdır.
+Doğrudan SDK içe aktarmaları için geniş
+`openclaw/plugin-sdk/config-runtime` uyumluluk barrel'ı yerine odaklı yapılandırma alt yollarını kullanın: tipler için `config-contracts`, zaten yüklenmiş yapılandırma doğrulamaları ve Plugin giriş araması için `plugin-config-runtime`, geçerli süreç anlık görüntüleri için `runtime-config-snapshot` ve yazmalar için `config-mutation`. Paketli Plugin testleri, geniş uyumluluk barrel'ını taklit etmek yerine bu odaklı alt yolları doğrudan taklit etmelidir.
 
-Dahili OpenClaw çalışma zamanı kodu için yön aynıdır: yapılandırmayı CLI, gateway veya süreç sınırında bir kez yükleyin, sonra bu değeri iletin. Başarılı mutasyon yazmaları süreç çalışma zamanı anlık görüntüsünü yeniler ve dahili revizyonunu ilerletir; uzun ömürlü önbellekler, yapılandırmayı yerel olarak serileştirmek yerine çalışma zamanının sahip olduğu önbellek anahtarını temel almalıdır. Uzun ömürlü çalışma zamanı modüllerinde ortamdan `loadConfig()` çağrılarına sıfır toleranslı bir tarayıcı vardır; geçirilmiş bir `cfg`, bir istek `context.getRuntimeConfig()` veya açık bir süreç sınırında `getRuntimeConfig()` kullanın.
+Dahili OpenClaw çalışma zamanı kodu için de yön aynıdır: yapılandırmayı CLI, Gateway veya süreç sınırında bir kez yükleyin, sonra bu değeri aktarın. Başarılı mutasyon yazmaları süreç çalışma zamanı anlık görüntüsünü yeniler ve iç revizyonunu ilerletir; uzun ömürlü önbellekler yapılandırmayı yerel olarak serileştirmek yerine çalışma zamanına ait önbellek anahtarını temel almalıdır. Uzun ömürlü çalışma zamanı modüllerinde ortamdan `loadConfig()` çağrılarına sıfır toleranslı bir tarayıcı vardır; geçirilmiş bir `cfg`, istek `context.getRuntimeConfig()` veya açık bir süreç sınırında `getRuntimeConfig()` kullanın.
 
-Sağlayıcı ve kanal yürütme yolları, yapılandırma geri okuması veya düzenleme için döndürülen dosya anlık görüntüsünü değil, etkin çalışma zamanı yapılandırma anlık görüntüsünü kullanmalıdır. Dosya anlık görüntüleri, UI ve yazmalar için SecretRef işaretleri gibi kaynak değerleri korur; sağlayıcı geri çağrılarının çözümlenmiş çalışma zamanı görünümüne ihtiyacı vardır. Bir yardımcı etkin kaynak anlık görüntüsü veya etkin çalışma zamanı anlık görüntüsü ile çağrılabiliyorsa, kimlik bilgilerini okumadan önce `selectApplicableRuntimeConfig()` üzerinden yönlendirin.
+Sağlayıcı ve kanal yürütme yolları, yapılandırma geri okuması veya düzenleme için döndürülen bir dosya anlık görüntüsünü değil, etkin çalışma zamanı yapılandırma anlık görüntüsünü kullanmalıdır. Dosya anlık görüntüleri UI ve yazmalar için SecretRef işaretçileri gibi kaynak değerlerini korur; sağlayıcı geri çağırmaları çözümlenmiş çalışma zamanı görünümüne ihtiyaç duyar. Bir yardımcı etkin kaynak anlık görüntüsü veya etkin çalışma zamanı anlık görüntüsü ile çağrılabiliyorsa, kimlik bilgilerini okumadan önce `selectApplicableRuntimeConfig()` üzerinden yönlendirin.
 
 ## Yeniden kullanılabilir çalışma zamanı yardımcıları
 
-Bot tarafından yazılmış gelen mesajlar için gelen `botLoopProtection` olgularını kullanın. Core, politikayı tek bir kanala bağlamadan, oturum kaydı ve dispatch öncesinde paylaşılan bellek içi kayan pencere korumasını uygular. Koruma `(scopeId, conversationId, participant pair)` anahtarlarını izler, bir çiftin iki yönünü birlikte sayar, pencere bütçesi aşıldığında bir bekleme süresi uygular ve etkin olmayan girdileri fırsat buldukça budar.
+Bot tarafından yazılmış gelen mesajlar için gelen `botLoopProtection` bilgilerini kullanın. Core, paylaşılan bellek içi kayan pencere korumasını oturum kaydından ve dağıtımdan önce, politikayı tek bir kanala bağlamadan uygular. Koruma `(scopeId, conversationId, participant pair)` anahtarlarını izler, bir çiftin iki yönünü birlikte sayar, pencere bütçesi aşıldığında bekleme süresi uygular ve etkin olmayan girişleri fırsatçı olarak budar.
 
-Bu davranışı operatörlere sunan kanal Plugin'leri, temel bütçeler için paylaşılan `channels.defaults.botLoopProtection` şeklini tercih etmeli, sonra kanal/sağlayıcıya özel geçersiz kılmaları bunun üzerine katmanlamalıdır. Paylaşılan yapılandırma kullanıcıya dönük olduğu için saniye kullanır:
+Bu davranışı operatörlere sunan kanal Plugin'leri, temel bütçeler için paylaşılan `channels.defaults.botLoopProtection` şeklini tercih etmeli, ardından kanal/sağlayıcıya özgü geçersiz kılmaları bunun üzerine katmanlamalıdır. Paylaşılan yapılandırma kullanıcıya dönük olduğu için saniye kullanır:
 
 ```typescript
 type ChannelBotLoopProtectionConfig = {
@@ -72,7 +73,7 @@ type ChannelBotLoopProtectionConfig = {
 };
 ```
 
-Çözümlenmiş turn ile normalize edilmiş bot çifti olgularını geçirin. Core varsayılanları, birim dönüşümünü ve `enabled` semantiğini çözümler:
+Çözümlenmiş dönüşle birlikte normalize edilmiş bot çifti bilgilerini geçirin. Core varsayılanları, birim dönüşümünü ve `enabled` semantiğini çözümler:
 
 ```typescript
 return {
@@ -94,13 +95,14 @@ return {
 };
 ```
 
-`openclaw/plugin-sdk/pair-loop-guard-runtime` öğesini doğrudan yalnızca paylaşılan gelen yanıt çalıştırıcısından geçmeyen özel iki taraflı olay döngüleri için kullanın.
+Paylaşılan gelen yanıt çalıştırıcısından geçmeyen özel
+iki taraflı olay döngüleri için yalnızca `openclaw/plugin-sdk/pair-loop-guard-runtime` öğesini doğrudan kullanın.
 
 ## Çalışma zamanı ad alanları
 
 <AccordionGroup>
   <Accordion title="api.runtime.agent">
-    Agent kimliği, dizinleri ve oturum yönetimi.
+    Ajan kimliği, dizinler ve oturum yönetimi.
 
     ```typescript
     // Resolve the agent's working directory
@@ -142,13 +144,13 @@ return {
     });
     ```
 
-    `runEmbeddedAgent(...)`, Plugin kodundan normal bir OpenClaw agent turn'ü başlatmak için tarafsız yardımcıdır. Kanal tetiklemeli yanıtlarla aynı sağlayıcı/model çözümlemesini ve agent harness seçimini kullanır.
+    `runEmbeddedAgent(...)`, Plugin kodundan normal bir OpenClaw ajan dönüşü başlatmak için tarafsız yardımcıdır. Kanal tarafından tetiklenen yanıtlarda kullanılan aynı sağlayıcı/model çözümlemesini ve ajan koşum takımı seçimini kullanır.
 
     `runEmbeddedPiAgent(...)`, mevcut Plugin'ler için kullanımdan kaldırılmış bir uyumluluk takma adı olarak kalır. Yeni kod `runEmbeddedAgent(...)` kullanmalıdır.
 
-    `resolveThinkingPolicy(...)`, sağlayıcı/model tarafından desteklenen düşünme seviyelerini ve isteğe bağlı varsayılanı döndürür. Sağlayıcı Plugin'leri, modele özgü profilin sahibi olan thinking hook'ları üzerinden yönetir; bu nedenle araç Plugin'leri sağlayıcı listelerini içe aktarmak veya çoğaltmak yerine bu çalışma zamanı yardımcısını çağırmalıdır.
+    `resolveThinkingPolicy(...)`, sağlayıcı/model tarafından desteklenen düşünme düzeylerini ve isteğe bağlı varsayılanı döndürür. Sağlayıcı Plugin'leri modele özgü profilin sahibidir; bu nedenle araç Plugin'leri sağlayıcı listelerini içe aktarmak veya çoğaltmak yerine bu çalışma zamanı yardımcısını çağırmalıdır.
 
-    `normalizeThinkingLevel(...)`, `on`, `x-high` veya `extra high` gibi kullanıcı metnini çözümlenmiş politikaya karşı kontrol etmeden önce kanonik saklanan seviyeye dönüştürür.
+    `normalizeThinkingLevel(...)`, `on`, `x-high` veya `extra high` gibi kullanıcı metnini, çözümlenmiş politikaya göre denetlemeden önce kanonik depolanan düzeye dönüştürür.
 
     **Oturum deposu yardımcıları** `api.runtime.agent.session` altındadır:
 
@@ -164,11 +166,11 @@ return {
     });
     ```
 
-    Oturum iş akışları için `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)` veya `upsertSessionEntry(...)` tercih edin. Bu yardımcılar oturumları agent/oturum kimliğine göre adresler, böylece Plugin'ler eski `sessions.json` depolama şekline bağımlı olmaz. Oturum etkinliğini yenilememesi gereken yalnızca metadata yamaları için `preserveActivity: true`, yalnızca geri çağrı eksiksiz bir girdi döndürdüğünde ve silinen alanlar silinmiş kalması gerektiğinde `replaceEntry: true` kullanın.
+    Oturum iş akışları için `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)` veya `upsertSessionEntry(...)` öğelerini tercih edin. Bu yardımcılar oturumları ajan/oturum kimliğiyle adresler; böylece Plugin'ler eski `sessions.json` depolama şekline bağımlı olmaz. Oturum etkinliğini yenilememesi gereken yalnızca meta veri yamaları için `preserveActivity: true`, yalnızca geri çağırma eksiksiz bir giriş döndürdüğünde ve silinen alanların silinmiş kalması gerektiğinde `replaceEntry: true` kullanın.
 
-    Transcript okuma ve yazmaları için `openclaw/plugin-sdk/session-transcript-runtime` öğesini içe aktarın ve `{ agentId, sessionKey, sessionId }` ile `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)` veya `withSessionTranscriptWriteLock(...)` kullanın. Bu API'ler Plugin'lerin bir transcript'i tanımlamasına, olaylarını okumasına, mesaj eklemesine, güncellemeler yayımlamasına ve ilgili işlemleri aynı transcript yazma kilidi altında çalıştırmasına olanak tanır. `sessionFile` geçirmek, `resolveSessionTranscriptLegacyFileTarget(...)` kullanmak veya `openclaw/plugin-sdk/agent-harness-runtime` içinden düşük seviyeli `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` içe aktarmak kullanımdan kaldırılmıştır; bu yollar yalnızca zaten etkin bir transcript artifact'i alan eski kod için vardır.
+    Transkript okumaları ve yazmaları için `openclaw/plugin-sdk/session-transcript-runtime` öğesini içe aktarın ve `{ agentId, sessionKey, sessionId }` ile `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)` veya `withSessionTranscriptWriteLock(...)` kullanın. Bu API'ler Plugin'lerin bir transkripti tanımlamasına, olaylarını okumasına, mesaj eklemesine, güncellemeler yayımlamasına ve ilgili işlemleri aynı transkript yazma kilidi altında çalıştırmasına olanak tanır. `sessionFile` geçirmek, `resolveSessionTranscriptLegacyFileTarget(...)` kullanmak veya düşük düzeyli `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` öğelerini `openclaw/plugin-sdk/agent-harness-runtime` üzerinden içe aktarmak kullanımdan kaldırılmıştır; bu yollar yalnızca halihazırda etkin bir transkript yapıtı alan eski kodlar için vardır.
 
-    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)` ve `resolveAndPersistSessionFile(...)`, hâlâ bilinçli olarak eski tüm depo veya transcript dosyası şekline bağımlı olan Plugin'ler için kullanımdan kaldırılmış uyumluluk yardımcılarıdır. Yeni Plugin kodu bu yardımcıları kullanmamalıdır ve mevcut çağıranlar giriş yardımcılarına ve transcript kimliği yardımcılarına geçmelidir.
+    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)` ve `resolveAndPersistSessionFile(...)`, hâlâ kasıtlı olarak eski bütün depo veya transkript dosyası şekline bağımlı olan Plugin'ler için kullanımdan kaldırılmış uyumluluk yardımcılarıdır. Yeni Plugin kodu bu yardımcıları kullanmamalıdır ve mevcut çağıranlar giriş yardımcılarına ve transkript kimliği yardımcılarına geçmelidir.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
@@ -182,7 +184,8 @@ return {
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    Sağlayıcı iç öğelerini içe aktarmadan veya OpenClaw model/auth/base URL hazırlığını çoğaltmadan host sahipliğinde bir metin tamamlama çalıştırın.
+    Sağlayıcı iç bileşenlerini içe aktarmadan veya OpenClaw model/kimlik doğrulama/temel URL hazırlığını
+    çoğaltmadan host'a ait bir metin tamamlama çalıştırın.
 
     ```typescript
     const result = await api.runtime.llm.complete({
@@ -193,15 +196,19 @@ return {
     });
     ```
 
-    Yardımcı, OpenClaw'ın yerleşik çalışma zamanı ile aynı basit tamamlama hazırlama yolunu ve host sahipliğindeki çalışma zamanı yapılandırma anlık görüntüsünü kullanır. Bağlam motorları oturuma bağlı bir `llm.complete` yeteneği alır; böylece model çağrıları etkin oturumun agent'ını kullanır ve sessizce varsayılan agent'a geri dönmez. Sonuç, sağlayıcı/model/agent atfının yanı sıra mevcut olduğunda normalize edilmiş token, önbellek ve tahmini maliyet kullanımını içerir.
+    Yardımcı, OpenClaw'ın yerleşik çalışma zamanı ile aynı basit tamamlama hazırlık yolunu
+    ve host'a ait çalışma zamanı yapılandırma anlık görüntüsünü kullanır. Bağlam motorları
+    oturuma bağlı bir `llm.complete` yeteneği alır; böylece model çağrıları etkin oturumun
+    ajanını kullanır ve sessizce varsayılan ajana geri dönmez. Sonuç, sağlayıcı/model/ajan atfının yanı sıra kullanılabiliyorsa normalize edilmiş belirteç,
+    önbellek ve tahmini maliyet kullanımını içerir.
 
     <Warning>
-    Model geçersiz kılmaları, yapılandırmada `plugins.entries.<id>.llm.allowModelOverride: true` üzerinden operatör onayı gerektirir. Güvenilen Plugin'leri belirli kanonik `provider/model` hedefleriyle sınırlandırmak için `plugins.entries.<id>.llm.allowedModels` kullanın. Agent'lar arası tamamlamalar `plugins.entries.<id>.llm.allowAgentIdOverride: true` gerektirir.
+    Model geçersiz kılmaları, yapılandırmada `plugins.entries.<id>.llm.allowModelOverride: true` üzerinden operatör onayı gerektirir. Güvenilir Plugin'leri belirli kanonik `provider/model` hedefleriyle sınırlamak için `plugins.entries.<id>.llm.allowedModels` kullanın. Ajanlar arası tamamlamalar `plugins.entries.<id>.llm.allowAgentIdOverride: true` gerektirir.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    Arka plan subagent çalışmalarını başlatın ve yönetin.
+    Arka plan alt ajan çalışmalarını başlatın ve yönetin.
 
     ```typescript
     // Start a subagent run
@@ -229,14 +236,14 @@ return {
     ```
 
     <Warning>
-    Model geçersiz kılmaları (`provider`/`model`), yapılandırmada `plugins.entries.<id>.subagent.allowModelOverride: true` üzerinden operatörün etkinleştirmesini gerektirir. Güvenilmeyen Plugin'ler yine de alt ajan çalıştırabilir, ancak geçersiz kılma istekleri reddedilir.
+    Model geçersiz kılmaları (`provider`/`model`), config içinde `plugins.entries.<id>.subagent.allowModelOverride: true` aracılığıyla operatör onayı gerektirir. Güvenilmeyen plugin’ler yine subagent çalıştırabilir, ancak geçersiz kılma istekleri reddedilir.
     </Warning>
 
-    `deleteSession(...)`, aynı Plugin tarafından `api.runtime.subagent.run(...)` aracılığıyla oluşturulan oturumları silebilir. Rastgele kullanıcı veya operatör oturumlarını silmek yine de admin kapsamlı bir Gateway isteği gerektirir.
+    `deleteSession(...)`, aynı plugin tarafından `api.runtime.subagent.run(...)` aracılığıyla oluşturulan oturumları silebilir. Rastgele kullanıcı veya operatör oturumlarını silmek için yine de yönetici kapsamlı bir Gateway isteği gerekir.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Bağlı Node'ları listeleyin ve Gateway tarafından yüklenen Plugin kodundan veya Plugin CLI komutlarından Node barındırıcılı bir komutu çağırın. Bunu, bir Plugin eşleştirilmiş bir cihazda yerel işi sahiplendiğinde kullanın; örneğin başka bir Mac üzerindeki tarayıcı veya ses köprüsü.
+    Bağlı Node’ları listeleyin ve Gateway tarafından yüklenen plugin kodundan veya plugin CLI komutlarından bir Node ana makine komutu çağırın. Bunu, bir plugin eşleştirilmiş bir cihazda yerel işi sahipleniyorsa kullanın; örneğin başka bir Mac’teki tarayıcı veya ses köprüsü.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -249,18 +256,22 @@ return {
     });
     ```
 
-    Gateway içinde bu çalışma zamanı süreç içindedir. Plugin CLI komutlarında yapılandırılmış Gateway'i RPC üzerinden çağırır; böylece `openclaw googlemeet recover-tab` gibi komutlar terminalden eşleştirilmiş Node'ları inceleyebilir. Node komutları yine de normal Gateway Node eşleştirmesinden, komut izin listelerinden, Plugin Node çağırma politikalarından ve Node-yerel komut işlemeden geçer.
+    Gateway içinde bu runtime işlem içindedir. Plugin CLI komutlarında yapılandırılmış Gateway’i RPC üzerinden çağırır; böylece `openclaw googlemeet recover-tab` gibi komutlar terminalden eşleştirilmiş Node’ları inceleyebilir. Node komutları yine normal Gateway Node eşleştirmesinden, komut izin listelerinden, plugin Node çağırma politikalarından ve Node yerel komut işlemesinden geçer.
 
-    Tehlikeli Node barındırıcılı komutları açığa çıkaran Plugin'ler, `api.registerNodeInvokePolicy(...)` ile bir Node çağırma politikası kaydetmelidir. Politika, Gateway içinde komut izin listesi kontrollerinden sonra ve komut Node'a iletilmeden önce çalışır; bu nedenle doğrudan `node.invoke` çağrıları ve daha üst düzey Plugin araçları aynı zorunlu uygulama yolunu paylaşır.
+    Tehlikeli Node ana makine komutları sunan plugin’ler, `api.registerNodeInvokePolicy(...)` ile bir Node çağırma politikası kaydetmelidir. Politika Gateway’de, komut izin listesi kontrollerinden sonra ve komut Node’a iletilmeden önce çalışır; böylece doğrudan `node.invoke` çağrıları ve daha üst düzey plugin araçları aynı zorlama yolunu paylaşır.
+
+    <Warning>
+    İsteğe bağlı `scopes` alanı, çağrı için Gateway operatör kapsamları ister. OpenClaw bunu yalnızca paketlenmiş plugin’ler ve güvenilir resmi plugin kurulumları için dikkate alır; diğer plugin’lerden gelen istekler çağrının yetkisini yükseltmez. Bunu yalnızca güvenilir bir plugin’in `operator.admin` gibi daha katı bir Gateway kapsamıyla Node komutu çağırması gerektiğinde kullanın.
+    </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Bir Task Flow çalışma zamanını mevcut bir OpenClaw oturum anahtarına veya güvenilir araç bağlamına bağlayın, ardından her çağrıda sahip geçmeden Task Flow'lar oluşturup yönetin.
+    Bir Task Flow runtime’ını mevcut bir OpenClaw oturum anahtarına veya güvenilir araç bağlamına bağlayın; ardından her çağrıda sahip iletmeden Task Flow’lar oluşturup yönetin.
 
-    Task Flow, kalıcı çok adımlı iş akışı durumunu izler. Bir zamanlayıcı değildir:
-    gelecekteki uyandırmalar için Cron veya `api.session.workflow.scheduleSessionTurn(...)` kullanın,
-    ardından bu iş akışı durumu, alt görevler, beklemeler veya iptal gerektirdiğinde
-    zamanlanmış turdan `managedFlows` kullanın.
+    Task Flow kalıcı çok adımlı iş akışı durumunu izler. Bir zamanlayıcı değildir:
+    gelecekteki uyandırmalar için Cron veya `api.session.workflow.scheduleSessionTurn(...)`
+    kullanın; ardından bu işin akış durumuna, alt görevlere, beklemelere veya iptale
+    ihtiyacı olduğunda zamanlanmış dönüşten `managedFlows` kullanın.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -287,7 +298,7 @@ return {
     });
     ```
 
-    Kendi bağlama katmanınızdan zaten güvenilir bir OpenClaw oturum anahtarınız olduğunda `bindSession({ sessionKey, requesterOrigin })` kullanın. Ham kullanıcı girdisinden bağlama yapmayın.
+    Kendi bağlama katmanınızdan zaten güvenilir bir OpenClaw oturum anahtarınız varsa `bindSession({ sessionKey, requesterOrigin })` kullanın. Ham kullanıcı girdisinden bağlama yapmayın.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -375,7 +386,7 @@ return {
     });
     ```
 
-    Hiçbir çıktı üretilmediğinde (ör. atlanan girdi) `{ text: undefined }` döndürür.
+    Hiç çıktı üretilmediğinde (ör. atlanan girdi) `{ text: undefined }` döndürür.
 
     <Info>
     `api.runtime.stt.transcribeAudioFile(...)`, `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` için uyumluluk takma adı olarak kalır.
@@ -409,7 +420,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.media">
-    Düşük seviyeli medya yardımcıları.
+    Düşük düzey medya yardımcıları.
 
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -434,7 +445,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    Geçerli çalışma zamanı yapılandırma anlık görüntüsü ve işlemsel yapılandırma yazımları. Etkin çağrı yoluna zaten geçirilmiş yapılandırmayı tercih edin; `current()` öğesini yalnızca işleyicinin süreç anlık görüntüsüne doğrudan ihtiyaç duyması halinde kullanın.
+    Geçerli runtime config anlık görüntüsü ve işlemsel config yazımları. Etkin çağrı yoluna zaten iletilmiş config’i tercih edin; `current()` işleyicinin işlem anlık görüntüsüne doğrudan ihtiyaç duyduğu durumlarda kullanın.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -446,7 +457,8 @@ return {
     });
     ```
 
-    `mutateConfigFile(...)` ve `replaceConfigFile(...)`, örneğin `{ mode: "restart", requiresRestart: true, reason }` gibi bir `followUp` değeri döndürür; bu değer, yeniden başlatma denetimini Gateway'den almadan yazıcının niyetini kaydeder.
+    `mutateConfigFile(...)` ve `replaceConfigFile(...)`, örneğin `{ mode: "restart", requiresRestart: true, reason }` gibi bir `followUp`
+    değeri döndürür; bu değer, yeniden başlatma kontrolünü gateway’den almadan yazıcının niyetini kaydeder.
 
   </Accordion>
   <Accordion title="api.runtime.system">
@@ -464,7 +476,12 @@ return {
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runCommandWithTimeout(...)` yakalanan `stdout` ve `stderr`, isteğe bağlı kesme sayıları, `code`, `signal`, `killed`, `termination` ve `noOutputTimedOut` döndürür. Zaman aşımı ve çıktısız zaman aşımı sonuçları, alt süreç sıfır olmayan bir çıkış kodu sağlamadığında `code: 124` bildirir. Zaman aşımı olmayan sinyal çıkışları yine de `code: null` döndürebilir; bu nedenle zaman aşımı nedenlerini ayırt etmek için `termination` ve `noOutputTimedOut` kullanın.
+    `runCommandWithTimeout(...)`, yakalanan `stdout` ve `stderr`, isteğe bağlı
+    kısaltma sayıları, `code`, `signal`, `killed`, `termination` ve
+    `noOutputTimedOut` döndürür. Zaman aşımı ve çıktı yok zaman aşımı sonuçları,
+    alt süreç sıfır olmayan bir çıkış kodu sağlamadığında `code: 124` bildirir.
+    Zaman aşımı dışındaki sinyal çıkışları yine `code: null` döndürebilir; bu yüzden
+    zaman aşımı nedenlerini ayırt etmek için `termination` ve `noOutputTimedOut` kullanın.
 
   </Accordion>
   <Accordion title="api.runtime.events">
@@ -490,7 +507,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    Model ve sağlayıcı kimlik doğrulama çözümlemesi.
+    Model ve sağlayıcı kimlik doğrulaması çözümleme.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -502,7 +519,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    Durum dizini çözümlemesi ve SQLite destekli anahtarlı depolama.
+    Durum dizini çözümleme ve SQLite destekli anahtarlı depolama.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -519,10 +536,10 @@ return {
     await store.clear();
     ```
 
-    Anahtarlı depolar yeniden başlatmalardan sonra korunur ve çalışma zamanına bağlı Plugin kimliğine göre yalıtılır. Atomik tekilleştirme talepleri için `registerIfAbsent(...)` kullanın: anahtar yoksa veya süresi dolmuşsa ve kaydedildiyse `true`, canlı bir değer zaten varsa değerini, oluşturulma zamanını veya TTL değerini üzerine yazmadan `false` döndürür. Sınırlar: ad alanı başına `maxEntries`, Plugin başına 6.000 canlı satır, 64KB altındaki JSON değerleri ve isteğe bağlı TTL süre sonu. Bir yazma işlemi Plugin satır üst sınırını aşacaksa çalışma zamanı, yazılan ad alanındaki en eski canlı satırları çıkarabilir; kardeş ad alanları bu yazma için çıkarılmaz ve ad alanı yeterli satırı boşaltamazsa yazma yine başarısız olur.
+    Anahtarlı depolar yeniden başlatmalardan sonra korunur ve çalışma zamanına bağlı plugin kimliğine göre yalıtılır. Atomik tekilleştirme hak talepleri için `registerIfAbsent(...)` kullanın: anahtar eksikse veya süresi dolmuşsa ve kaydedildiyse `true`, canlı bir değer zaten varsa ve değerin kendisi, oluşturma zamanı veya TTL üzerine yazılmadan `false` döndürür. Sınırlar: ad alanı başına `maxEntries`, plugin başına 6.000 canlı satır, 64 KB altı JSON değerleri ve isteğe bağlı TTL süresi dolumu. Bir yazma işlemi plugin satır sınırını aşacaksa çalışma zamanı, yazılan ad alanındaki en eski canlı satırları çıkarabilir; kardeş ad alanları bu yazma için çıkarılmaz ve ad alanı yeterli satır boşaltamazsa yazma yine başarısız olur.
 
     <Warning>
-    Bu sürümde yalnızca paketlenmiş Plugin'ler.
+    Bu sürümde yalnızca paketlenmiş pluginler.
     </Warning>
 
   </Accordion>
@@ -537,9 +554,9 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    Kanala özgü çalışma zamanı yardımcıları (bir kanal Plugin'i yüklendiğinde kullanılabilir).
+    Kanala özgü çalışma zamanı yardımcıları (bir kanal plugini yüklendiğinde kullanılabilir).
 
-    `api.runtime.channel.media`, kanal medyası indirmeleri ve depolaması için tercih edilen yüzeydir:
+    `api.runtime.channel.media`, kanal medya indirmeleri ve depolama için tercih edilen yüzeydir:
 
     ```typescript
     const saved = await api.runtime.channel.media.saveRemoteMedia({
@@ -550,9 +567,9 @@ return {
     });
     ```
 
-    Uzak bir URL'nin OpenClaw medyası haline gelmesi gerektiğinde `saveRemoteMedia(...)` kullanın. Plugin, Plugin'e ait kimlik doğrulama, yönlendirme veya izin listesi işlemesiyle bir `Response` değerini zaten getirdiyse `saveResponseMedia(...)` kullanın. `readRemoteMediaBuffer(...)` yalnızca Plugin'in inceleme, dönüştürme, şifre çözme veya yeniden yükleme için ham baytlara ihtiyaç duyduğu durumlarda kullanılmalıdır. `fetchRemoteMedia(...)`, `readRemoteMediaBuffer(...)` için kullanımdan kaldırılmış bir uyumluluk takma adı olarak kalır.
+    Uzak bir URL'nin OpenClaw medyası olması gerektiğinde `saveRemoteMedia(...)` kullanın. Plugin, pluginin sahip olduğu kimlik doğrulama, yönlendirme veya izin listesi işleme ile bir `Response` zaten getirdiyse `saveResponseMedia(...)` kullanın. `readRemoteMediaBuffer(...)` öğesini yalnızca pluginin inceleme, dönüştürme, şifre çözme veya yeniden yükleme için ham baytlara ihtiyaç duyduğu durumlarda kullanın. `fetchRemoteMedia(...)`, `readRemoteMediaBuffer(...)` için kullanımdan kaldırılmış bir uyumluluk takma adı olarak kalır.
 
-    `api.runtime.channel.mentions`, çalışma zamanı enjeksiyonu kullanan paketlenmiş kanal Plugin'leri için paylaşılan gelen bahsetme ilkesi yüzeyidir:
+    `api.runtime.channel.mentions`, çalışma zamanı enjeksiyonu kullanan paketlenmiş kanal pluginleri için paylaşılan gelen bahsetme ilkesi yüzeyidir:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -587,17 +604,17 @@ return {
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions`, eski `resolveMentionGating*` uyumluluk yardımcılarını kasıtlı olarak açığa çıkarmaz. Normalleştirilmiş `{ facts, policy }` yolunu tercih edin.
+    `api.runtime.channel.mentions`, eski `resolveMentionGating*` uyumluluk yardımcılarını kasıtlı olarak dışa açmaz. Normalleştirilmiş `{ facts, policy }` yolunu tercih edin.
 
   </Accordion>
 </AccordionGroup>
 
-## Çalışma zamanı referanslarını depolama
+## Çalışma zamanı başvurularını depolama
 
-`register` geri çağrısı dışında kullanmak üzere çalışma zamanı referansını depolamak için `createPluginRuntimeStore` kullanın:
+`register` geri çağrısı dışında kullanmak üzere çalışma zamanı başvurusunu depolamak için `createPluginRuntimeStore` kullanın:
 
 <Steps>
-  <Step title="Depoyu oluştur">
+  <Step title="Depoyu oluşturun">
     ```typescript
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
@@ -609,7 +626,7 @@ return {
     ```
 
   </Step>
-  <Step title="Giriş noktasına bağla">
+  <Step title="Giriş noktasına bağlayın">
     ```typescript
     export default defineChannelPluginEntry({
       id: "my-plugin",
@@ -620,7 +637,7 @@ return {
     });
     ```
   </Step>
-  <Step title="Diğer dosyalardan eriş">
+  <Step title="Diğer dosyalardan erişin">
     ```typescript
     export function getRuntime() {
       return store.getRuntime(); // throws if not initialized
@@ -635,7 +652,7 @@ return {
 </Steps>
 
 <Note>
-Çalışma zamanı deposu kimliği için `pluginId` tercih edin. Daha düşük seviyeli `key` biçimi, bir Plugin'in kasıtlı olarak birden fazla çalışma zamanı yuvasına ihtiyaç duyduğu yaygın olmayan durumlar içindir.
+Çalışma zamanı deposu kimliği için `pluginId` tercih edin. Daha düşük düzeyli `key` biçimi, bir pluginin kasıtlı olarak birden fazla çalışma zamanı yuvasına ihtiyaç duyduğu yaygın olmayan durumlar içindir.
 </Note>
 
 ## Diğer üst düzey `api` alanları
@@ -652,7 +669,7 @@ return {
   Geçerli yapılandırma anlık görüntüsü (kullanılabilir olduğunda etkin bellek içi çalışma zamanı anlık görüntüsü).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  `plugins.entries.<id>.config` içinden Plugin'e özgü yapılandırma.
+  `plugins.entries.<id>.config` içinden plugine özgü yapılandırma.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
   Kapsamlı günlükleyici (`debug`, `info`, `warn`, `error`).
@@ -661,11 +678,11 @@ return {
   Geçerli yükleme modu; `"setup-runtime"` hafif, tam giriş öncesi başlatma/kurulum penceresidir.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  Plugin köküne göreli bir yolu çözümle.
+  Plugin köküne göre göreli bir yolu çözümleyin.
 </ParamField>
 
 ## İlgili
 
 - [Plugin iç yapısı](/tr/plugins/architecture) — yetenek modeli ve kayıt defteri
 - [SDK giriş noktaları](/tr/plugins/sdk-entrypoints) — `definePluginEntry` seçenekleri
-- [SDK genel bakışı](/tr/plugins/sdk-overview) — alt yol referansı
+- [SDK genel bakış](/tr/plugins/sdk-overview) — alt yol başvurusu

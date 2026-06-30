@@ -2,16 +2,16 @@
 read_when:
     - Menggunakan atau mengonfigurasi perintah chat
     - Men-debug routing perintah atau izin
-    - Memahami cara perintah Skills didaftarkan
+    - Memahami cara perintah skill didaftarkan
 sidebarTitle: Slash commands
 summary: Semua perintah slash, direktif, dan pintasan inline yang tersedia — konfigurasi, perutean, dan perilaku per permukaan.
-title: Perintah slash
+title: Perintah garis miring
 x-i18n:
-    generated_at: "2026-06-27T18:21:14Z"
+    generated_at: "2026-06-30T14:26:26Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5f53a5209d1c99c593d646b4ecc12e7074f72766cf3d1278c4d13511369d29bc
+    source_hash: ada44bbb5623e53cc09d25f11655430fced4af2223051b88b60b2d92e6c707a3
     source_path: tools/slash-commands.md
     workflow: 16
 ---
@@ -19,41 +19,41 @@ x-i18n:
 Gateway menangani perintah yang dikirim sebagai pesan mandiri yang diawali dengan `/`.
 Perintah bash khusus host menggunakan `! <cmd>` (dengan `/bash <cmd>` sebagai alias).
 
-Saat percakapan terikat ke sesi ACP, teks biasa diarahkan ke harness ACP.
-Perintah manajemen Gateway tetap lokal: `/acp ...` selalu mencapai
-penangan perintah OpenClaw, dan `/status` serta `/unfocus` tetap lokal setiap kali
+Saat sebuah percakapan terikat ke sesi ACP, teks normal diarahkan ke harness ACP.
+Perintah pengelolaan Gateway tetap lokal: `/acp ...` selalu mencapai penangan
+perintah OpenClaw, dan `/status` serta `/unfocus` tetap lokal kapan pun
 penanganan perintah diaktifkan untuk surface tersebut.
 
 ## Tiga jenis perintah
 
 <CardGroup cols={3}>
-  <Card title="Perintah" icon="terminal">
-    Pesan `/...` mandiri yang ditangani oleh Gateway. Harus dikirim sebagai
-    satu-satunya konten dalam pesan.
+  <Card title="Commands" icon="terminal">
+    Pesan mandiri `/...` yang ditangani oleh Gateway. Harus dikirim sebagai
+    satu-satunya isi dalam pesan.
   </Card>
-  <Card title="Direktif" icon="sliders">
+  <Card title="Directives" icon="sliders">
     `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`,
     `/exec`, `/model`, `/queue` — dihapus dari pesan sebelum model
-    melihatnya. Menyimpan pengaturan sesi saat dikirim sendiri; bertindak sebagai petunjuk inline
-    saat dikirim bersama teks lain.
+    melihatnya. Menyimpan pengaturan sesi saat dikirim sendiri; bertindak
+    sebagai petunjuk inline saat dikirim bersama teks lain.
   </Card>
-  <Card title="Pintasan inline" icon="bolt">
+  <Card title="Inline shortcuts" icon="bolt">
     `/help`, `/commands`, `/status`, `/whoami` — langsung dijalankan dan
-    dihapus sebelum model melihat teks yang tersisa. Hanya pengirim terotorisasi.
+    dihapus sebelum model melihat teks yang tersisa. Hanya pengirim berwenang.
   </Card>
 </CardGroup>
 
 <AccordionGroup>
-  <Accordion title="Detail perilaku direktif">
+  <Accordion title="Directive behavior details">
     - Direktif dihapus dari pesan sebelum model melihatnya.
     - Dalam pesan **hanya direktif** (pesan hanya berisi direktif), direktif
       disimpan ke sesi dan dibalas dengan pengakuan.
-    - Dalam pesan **chat normal** dengan teks lain, direktif bertindak sebagai petunjuk inline dan
-      **tidak** menyimpan pengaturan sesi.
-    - Direktif hanya berlaku untuk **pengirim terotorisasi**. Jika `commands.allowFrom`
-      disetel, itu menjadi satu-satunya allowlist yang digunakan; jika tidak, otorisasi berasal dari
-      allowlist/pairing channel ditambah `commands.useAccessGroups`. Pengirim yang tidak terotorisasi
-      melihat direktif diperlakukan sebagai teks biasa.
+    - Dalam pesan **obrolan normal** yang berisi teks lain, direktif bertindak
+      sebagai petunjuk inline dan **tidak** menyimpan pengaturan sesi.
+    - Direktif hanya berlaku untuk **pengirim berwenang**. Jika `commands.allowFrom`
+      ditetapkan, itu menjadi satu-satunya allowlist yang digunakan; jika tidak,
+      otorisasi berasal dari allowlist/pairing channel ditambah `commands.useAccessGroups`.
+      Pengirim tidak berwenang akan melihat direktif diperlakukan sebagai teks biasa.
   </Accordion>
 </AccordionGroup>
 
@@ -85,16 +85,16 @@ penanganan perintah diaktifkan untuk surface tersebut.
 ```
 
 <ParamField path="commands.text" type="boolean" default="true">
-  Mengaktifkan parsing `/...` dalam pesan chat. Pada surface tanpa perintah native
+  Mengaktifkan parsing `/...` dalam pesan obrolan. Pada surface tanpa perintah native
   (WhatsApp, WebChat, Signal, iMessage, Google Chat, Microsoft Teams), perintah teks
-  tetap berfungsi meskipun disetel ke `false`.
+  tetap berfungsi meskipun diatur ke `false`.
 </ParamField>
 
 <ParamField path="commands.native" type='boolean | "auto"' default='"auto"'>
   Mendaftarkan perintah native. Auto: aktif untuk Discord/Telegram; nonaktif untuk Slack;
-  diabaikan untuk provider tanpa dukungan native. Timpa per-channel dengan
-  `channels.<provider>.commands.native`. Di Discord, `false` melewati pendaftaran slash-command;
-  perintah yang sebelumnya terdaftar mungkin tetap terlihat sampai dihapus.
+  diabaikan untuk penyedia tanpa dukungan native. Timpa per channel dengan
+  `channels.<provider>.commands.native`. Di Discord, `false` melewati pendaftaran
+  slash-command; perintah yang sebelumnya terdaftar dapat tetap terlihat sampai dihapus.
 </ParamField>
 
 <ParamField path="commands.nativeSkills" type='boolean | "auto"' default='"auto"'>
@@ -104,13 +104,13 @@ penanganan perintah diaktifkan untuk surface tersebut.
 </ParamField>
 
 <ParamField path="commands.bash" type="boolean" default="false">
-  Mengaktifkan `! <cmd>` untuk menjalankan perintah shell host (alias `/bash <cmd>`). Memerlukan
-  allowlist `tools.elevated`.
+  Mengaktifkan `! <cmd>` untuk menjalankan perintah shell host (alias `/bash <cmd>`).
+  Memerlukan allowlist `tools.elevated`.
 </ParamField>
 
 <ParamField path="commands.bashForegroundMs" type="number" default="2000">
   Berapa lama bash menunggu sebelum beralih ke mode latar belakang (`0` langsung
-  berjalan di latar belakang).
+  menjalankan di latar belakang).
 </ParamField>
 
 <ParamField path="commands.config" type="boolean" default="false">
@@ -122,15 +122,15 @@ penanganan perintah diaktifkan untuk surface tersebut.
 </ParamField>
 
 <ParamField path="commands.plugins" type="boolean" default="false">
-  Mengaktifkan `/plugins` (penemuan/status plugin ditambah install + enable/disable). Khusus owner untuk penulisan.
+  Mengaktifkan `/plugins` (penemuan/status plugin serta instal + aktifkan/nonaktifkan). Khusus owner untuk penulisan.
 </ParamField>
 
 <ParamField path="commands.debug" type="boolean" default="false">
-  Mengaktifkan `/debug` (override konfigurasi hanya runtime). Khusus owner.
+  Mengaktifkan `/debug` (override konfigurasi khusus runtime). Khusus owner.
 </ParamField>
 
 <ParamField path="commands.restart" type="boolean" default="true">
-  Mengaktifkan `/restart` dan aksi tool restart gateway.
+  Mengaktifkan `/restart` dan tindakan alat restart gateway.
 </ParamField>
 
 <ParamField path="commands.ownerAllowFrom" type="string[]">
@@ -139,46 +139,47 @@ penanganan perintah diaktifkan untuk surface tersebut.
 </ParamField>
 
 <ParamField path="channels.<channel>.commands.enforceOwnerForCommands" type="boolean" default="false">
-  Per-channel: mewajibkan identitas owner untuk perintah khusus owner. Saat `true`,
-  pengirim harus cocok dengan `commands.ownerAllowFrom` atau memiliki scope internal `operator.admin`.
-  Entri wildcard `allowFrom` **tidak** cukup.
+  Per channel: memerlukan identitas owner untuk perintah khusus owner. Saat `true`,
+  pengirim harus cocok dengan `commands.ownerAllowFrom` atau memiliki scope internal
+  `operator.admin`. Entri wildcard `allowFrom` **tidak** cukup.
 </ParamField>
 
 <ParamField path="commands.ownerDisplay" type='"raw" | "hash"'>
-  Mengontrol bagaimana id owner muncul dalam prompt sistem.
+  Mengontrol bagaimana id owner muncul di prompt sistem.
 </ParamField>
 
 <ParamField path="commands.ownerDisplaySecret" type="string">
-  Secret HMAC yang digunakan saat `commands.ownerDisplay: "hash"`.
+  Rahasia HMAC yang digunakan saat `commands.ownerDisplay: "hash"`.
 </ParamField>
 
 <ParamField path="commands.allowFrom" type="object">
-  Allowlist per-provider untuk otorisasi perintah. Saat dikonfigurasi, ini adalah
+  Allowlist per penyedia untuk otorisasi perintah. Saat dikonfigurasi, ini menjadi
   **satu-satunya** sumber otorisasi untuk perintah dan direktif. Gunakan `"*"` untuk
-  default global; key khusus provider menimpanya.
+  default global; key khusus penyedia akan menimpanya.
 </ParamField>
 
 <ParamField path="commands.useAccessGroups" type="boolean" default="true">
-  Menerapkan allowlist/kebijakan untuk perintah saat `commands.allowFrom` tidak disetel.
+  Menerapkan allowlist/kebijakan untuk perintah saat `commands.allowFrom` tidak ditetapkan.
 </ParamField>
 
 ## Daftar perintah
 
 Perintah berasal dari tiga sumber:
 
-- **Bawaan core:** `src/auto-reply/commands-registry.shared.ts`
+- **Bawaan inti:** `src/auto-reply/commands-registry.shared.ts`
 - **Perintah dock yang dihasilkan:** `src/auto-reply/commands-registry.data.ts`
 - **Perintah Plugin:** panggilan `registerCommand()` plugin
 
-Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang terinstal/diaktifkan.
+Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang
+terinstal/diaktifkan.
 
-### Perintah core
+### Perintah inti
 
 <AccordionGroup>
-  <Accordion title="Sesi dan run">
+  <Accordion title="Sessions and runs">
     | Perintah | Deskripsi |
     | --- | --- |
-    | `/new [model]` | Arsipkan sesi saat ini dan mulai yang baru |
+    | `/new [model]` | Arsipkan sesi saat ini dan mulai sesi baru |
     | `/reset [soft [message]]` | Reset sesi saat ini di tempat. `soft` mempertahankan transkrip, menghapus id sesi backend CLI yang digunakan ulang, dan menjalankan ulang startup |
     | `/name <title>` | Beri nama atau ganti nama sesi saat ini. Hilangkan judul untuk melihat nama saat ini dan saran |
     | `/compact [instructions]` | Padatkan konteks sesi. Lihat [Compaction](/id/concepts/compaction) |
@@ -186,61 +187,62 @@ Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang 
     | `/session idle <duration\|off>` | Kelola kedaluwarsa idle thread-binding |
     | `/session max-age <duration\|off>` | Kelola kedaluwarsa max-age thread-binding |
     | `/export-session [path]` | Ekspor sesi saat ini ke HTML. Alias: `/export` |
-    | `/export-trajectory [path]` | Ekspor bundle trajectory JSONL untuk sesi saat ini. Alias: `/trajectory` |
+    | `/export-trajectory [path]` | Ekspor bundel trajectory JSONL untuk sesi saat ini. Alias: `/trajectory` |
 
     <Note>
-      Control UI mengintersepsi `/new` yang diketik untuk membuat dan beralih ke
-      sesi dashboard baru, kecuali saat `session.dmScope: "main"` dikonfigurasi
+      Control UI mencegat `/new` yang diketik untuk membuat dan beralih ke sesi
+      dashboard baru, kecuali saat `session.dmScope: "main"` dikonfigurasi
       dan parent saat ini adalah sesi utama agent — dalam kasus itu `/new`
-      mereset sesi utama di tempat. `/reset` yang diketik tetap menjalankan reset di tempat milik Gateway.
-      Gunakan `/model default` saat Anda ingin menghapus pilihan model sesi yang dipin.
+      mereset sesi utama di tempat. `/reset` yang diketik tetap menjalankan
+      reset di tempat milik Gateway. Gunakan `/model default` saat Anda ingin
+      menghapus pilihan model sesi yang dipin.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Kontrol model dan run">
+  <Accordion title="Model and run controls">
     | Perintah | Deskripsi |
     | --- | --- |
-    | `/think <level\|default>` | Setel level berpikir atau hapus override sesi. Alias: `/thinking`, `/t` |
+    | `/think <level\|default>` | Tetapkan tingkat berpikir atau hapus override sesi. Alias: `/thinking`, `/t` |
     | `/verbose on\|off\|full` | Alihkan output verbose. Alias: `/v` |
     | `/trace on\|off` | Alihkan output trace plugin untuk sesi saat ini |
-    | `/fast [status\|auto\|on\|off\|default]` | Tampilkan, setel, atau hapus mode cepat |
+    | `/fast [status\|auto\|on\|off\|default]` | Tampilkan, tetapkan, atau hapus mode cepat |
     | `/reasoning [on\|off\|stream]` | Alihkan visibilitas reasoning. Alias: `/reason` |
     | `/elevated [on\|off\|ask\|full]` | Alihkan mode elevated. Alias: `/elev` |
-    | `/exec host=<auto\|sandbox\|gateway\|node> security=<deny\|allowlist\|full> ask=<off\|on-miss\|always> node=<id>` | Tampilkan atau setel default exec |
-    | `/model [name\|#\|status]` | Tampilkan atau setel model |
-    | `/models [provider] [page] [limit=<n>\|all]` | Daftar provider atau model yang dikonfigurasi/tersedia auth |
-    | `/queue <mode>` | Kelola perilaku queue run aktif. Lihat [Queue](/id/concepts/queue) dan [Queue steering](/id/concepts/queue-steering) |
-    | `/steer <message>` | Suntikkan panduan ke run aktif. Alias: `/tell`. Lihat [Steer](/id/tools/steer) |
+    | `/exec host=<auto\|sandbox\|gateway\|node> security=<deny\|allowlist\|full> ask=<off\|on-miss\|always> node=<id>` | Tampilkan atau tetapkan default exec |
+    | `/model [name\|#\|status]` | Tampilkan atau tetapkan model |
+    | `/models [provider] [page] [limit=<n>\|all]` | Daftar penyedia atau model yang dikonfigurasi/tersedia auth |
+    | `/queue <mode>` | Kelola perilaku antrean active-run. Lihat [Antrean](/id/concepts/queue) dan [Pengarahan antrean](/id/concepts/queue-steering) |
+    | `/steer <message>` | Sisipkan panduan ke run aktif. Alias: `/tell`. Lihat [Steer](/id/tools/steer) |
 
     <AccordionGroup>
-      <Accordion title="keamanan verbose / trace / fast / reasoning">
-        - `/verbose` untuk debugging — tetap **nonaktif** dalam penggunaan normal.
-        - `/trace` hanya mengungkap baris trace/debug milik plugin; celoteh verbose normal tetap nonaktif.
-        - `/fast auto|on|off` menyimpan override sesi; gunakan opsi `inherit` di Sessions UI untuk menghapusnya.
-        - `/fast` bersifat khusus provider: OpenAI/Codex memetakannya ke `service_tier=priority`; permintaan Anthropic langsung memetakannya ke `service_tier=auto` atau `standard_only`.
-        - `/reasoning`, `/verbose`, dan `/trace` berisiko dalam pengaturan grup — semuanya dapat mengungkap reasoning internal atau diagnostik plugin. Tetap nonaktifkan di chat grup.
+      <Accordion title="verbose / trace / fast / reasoning safety">
+        - `/verbose` untuk debugging — tetap **nonaktifkan** dalam penggunaan normal.
+        - `/trace` hanya mengungkap baris trace/debug milik plugin; obrolan verbose normal tetap nonaktif.
+        - `/fast auto|on|off` menyimpan override sesi; gunakan opsi `inherit` di UI Sessions untuk menghapusnya.
+        - `/fast` bersifat khusus penyedia: OpenAI/Codex memetakannya ke `service_tier=priority`; permintaan Anthropic langsung memetakannya ke `service_tier=auto` atau `standard_only`.
+        - `/reasoning`, `/verbose`, dan `/trace` berisiko dalam pengaturan grup — dapat mengungkap reasoning internal atau diagnostik plugin. Tetap nonaktifkan dalam obrolan grup.
 
       </Accordion>
-      <Accordion title="Detail pergantian model">
-        - `/model` segera menyimpan model baru ke sesi.
-        - Jika agent sedang idle, run berikutnya langsung menggunakannya.
-        - Jika run sedang aktif, pergantian ditandai tertunda dan diterapkan pada titik retry bersih berikutnya.
+      <Accordion title="Model switching details">
+        - `/model` langsung menyimpan model baru ke sesi.
+        - Jika agent idle, run berikutnya langsung menggunakannya.
+        - Jika ada run aktif, peralihan ditandai tertunda dan diterapkan pada titik retry bersih berikutnya.
 
       </Accordion>
     </AccordionGroup>
 
   </Accordion>
 
-  <Accordion title="Penemuan dan status">
+  <Accordion title="Discovery and status">
     | Perintah | Deskripsi |
     | --- | --- |
     | `/help` | Tampilkan ringkasan bantuan singkat |
     | `/commands` | Tampilkan katalog perintah yang dihasilkan |
-    | `/tools [compact\|verbose]` | Tampilkan apa yang dapat digunakan agent saat ini sekarang |
-    | `/status` | Tampilkan status eksekusi/runtime, uptime Gateway dan sistem, kesehatan plugin, ditambah penggunaan/kuota provider |
-    | `/status plugins` | Tampilkan kesehatan plugin secara detail: error pemuatan, karantina, kegagalan channel, masalah dependensi, pemberitahuan kompatibilitas |
-    | `/goal [status\|start\|pause\|resume\|complete\|block\|clear] ...` | Kelola [goal](/id/tools/goal) durable sesi saat ini |
+    | `/tools [compact\|verbose]` | Tampilkan apa yang dapat digunakan agent saat ini |
+    | `/status` | Tampilkan status eksekusi/runtime, uptime Gateway dan sistem, kesehatan plugin, serta penggunaan/kuota penyedia |
+    | `/status plugins` | Tampilkan kesehatan plugin secara rinci: error pemuatan, karantina, kegagalan channel, masalah dependensi, pemberitahuan kompatibilitas |
+    | `/goal [status\|start\|pause\|resume\|complete\|block\|clear] ...` | Kelola [tujuan](/id/tools/goal) tahan lama sesi saat ini |
     | `/diagnostics [note]` | Alur laporan dukungan khusus owner. Meminta persetujuan exec setiap kali |
     | `/crestodian <request>` | Jalankan pembantu setup dan perbaikan Crestodian dari DM owner |
     | `/tasks` | Daftar tugas latar belakang aktif/terbaru untuk sesi saat ini |
@@ -249,7 +251,7 @@ Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang 
     | `/usage off\|tokens\|full\|reset\|cost` | Kontrol footer penggunaan per respons (`reset`/`inherit`/`clear`/`default` menghapus override sesi agar kembali mewarisi default yang dikonfigurasi) atau cetak ringkasan biaya lokal |
   </Accordion>
 
-  <Accordion title="Skills, allowlist, persetujuan">
+  <Accordion title="Skills, allowlists, approvals">
     | Perintah | Deskripsi |
     | --- | --- |
     | `/skill <name> [input]` | Jalankan skill berdasarkan nama |
@@ -262,9 +264,9 @@ Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang 
     | Perintah | Deskripsi |
     | --- | --- |
     | `/subagents list\|log\|info` | Periksa proses subagen untuk sesi saat ini |
-    | `/acp spawn\|cancel\|steer\|close\|sessions\|status\|set-mode\|set\|cwd\|permissions\|timeout\|model\|reset-options\|doctor\|install\|help` | Kelola sesi ACP dan opsi runtime |
-    | `/focus <target>` | Ikat thread Discord saat ini atau topik Telegram ke target sesi |
-    | `/unfocus` | Hapus pengikatan thread saat ini |
+    | `/acp spawn\|cancel\|steer\|close\|sessions\|status\|set-mode\|set\|cwd\|permissions\|timeout\|model\|reset-options\|doctor\|install\|help` | Kelola sesi ACP dan opsi runtime. Kontrol runtime memerlukan pemilik eksternal atau identitas admin Gateway internal |
+    | `/focus <target>` | Ikat thread Discord atau topik Telegram saat ini ke target sesi |
+    | `/unfocus` | Hapus ikatan thread saat ini |
     | `/agents` | Cantumkan agen yang terikat thread untuk sesi saat ini |
   </Accordion>
 
@@ -279,7 +281,7 @@ Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang 
     | `/send on\|off\|inherit` | pemilik | Atur kebijakan pengiriman |
   </Accordion>
 
-  <Accordion title="Suara, TTS, kontrol channel">
+  <Accordion title="Suara, TTS, kontrol kanal">
     | Perintah | Deskripsi |
     | --- | --- |
     | `/tts on\|off\|status\|chat\|latest\|provider\|limit\|summary\|audio\|help` | Kontrol TTS. Lihat [TTS](/id/tools/tts) |
@@ -292,10 +294,10 @@ Ketersediaan bergantung pada flag konfigurasi, surface channel, dan plugin yang 
 
 ### Perintah dock
 
-Perintah dock mengalihkan rute balasan sesi aktif ke channel tertaut lain.
-Lihat [Channel docking](/id/concepts/channel-docking) untuk penyiapan dan pemecahan masalah.
+Perintah dock mengalihkan rute balasan sesi aktif ke kanal tertaut lain.
+Lihat [Docking kanal](/id/concepts/channel-docking) untuk penyiapan dan pemecahan masalah.
 
-Dihasilkan dari plugin channel dengan dukungan perintah native:
+Dihasilkan dari plugin kanal dengan dukungan perintah native:
 
 - `/dock-discord` (alias: `/dock_discord`)
 - `/dock-mattermost` (alias: `/dock_mattermost`)
@@ -307,30 +309,30 @@ harus berada dalam grup identitas yang sama.
 
 ### Perintah plugin bawaan
 
-| Perintah                                                                                     | Deskripsi                                                                                |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `/dreaming [on\|off\|status\|help]`                                                          | Aktifkan/nonaktifkan Dreaming memori. Lihat [Dreaming](/id/concepts/dreaming)               |
-| `/pair [qr\|status\|pending\|approve\|cleanup\|notify]`                                      | Kelola pemasangan perangkat. Lihat [Pemasangan](/id/channels/pairing)                       |
-| `/phone status\|arm ...\|disarm`                                                             | Aktifkan sementara perintah node ponsel berisiko tinggi                                  |
-| `/voice status\|list\|set <voiceId>`                                                         | Kelola konfigurasi suara Talk. Nama native Discord: `/talkvoice`                         |
-| `/card ...`                                                                                  | Kirim preset kartu kaya LINE. Lihat [LINE](/id/channels/line)                               |
-| `/codex status\|models\|threads\|resume\|compact\|review\|diagnostics\|account\|mcp\|skills` | Kontrol harness server aplikasi Codex. Lihat [Harness Codex](/id/plugins/codex-harness)     |
+| Perintah                                                                                     | Deskripsi                                                                                       |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `/dreaming [on\|off\|status\|help]`                                                          | Aktifkan/nonaktifkan dreaming memori (pemilik atau admin Gateway). Lihat [Dreaming](/id/concepts/dreaming) |
+| `/pair [qr\|status\|pending\|approve\|cleanup\|notify]`                                      | Kelola pemasangan perangkat. Lihat [Pemasangan](/id/channels/pairing)                              |
+| `/phone status\|arm ...\|disarm`                                                             | Aktifkan sementara perintah node telepon berisiko tinggi                                         |
+| `/voice status\|list\|set <voiceId>`                                                         | Kelola konfigurasi suara Talk. Nama native Discord: `/talkvoice`                                 |
+| `/card ...`                                                                                  | Kirim preset kartu kaya LINE. Lihat [LINE](/id/channels/line)                                      |
+| `/codex status\|models\|threads\|resume\|compact\|review\|diagnostics\|account\|mcp\|skills` | Kontrol harness app-server Codex. Lihat [Harness Codex](/id/plugins/codex-harness)                 |
 
 Khusus QQBot: `/bot-ping`, `/bot-version`, `/bot-help`, `/bot-upgrade`, `/bot-logs`
 
-### Perintah Skills
+### Perintah Skill
 
-Skills yang dapat dipanggil pengguna diekspos sebagai perintah slash:
+Skill yang dapat dipanggil pengguna diekspos sebagai perintah slash:
 
-- `/skill <name> [input]` selalu berfungsi sebagai titik masuk generik.
-- Skills dapat mendaftar sebagai perintah langsung (mis. `/prose` untuk OpenProse).
-- Pendaftaran perintah skill native dikontrol oleh `commands.nativeSkills` dan
+- `/skill <name> [input]` selalu berfungsi sebagai entrypoint generik.
+- Skills dapat mendaftar sebagai perintah langsung (misalnya `/prose` untuk OpenProse).
+- Pendaftaran perintah Skill native dikontrol oleh `commands.nativeSkills` dan
   `channels.<provider>.commands.nativeSkills`.
-- Nama disanitasi menjadi `a-z0-9_` (maks 32 karakter); tabrakan mendapat sufiks numerik.
+- Nama disanitasi menjadi `a-z0-9_` (maks. 32 karakter); tabrakan mendapat akhiran numerik.
 
 <AccordionGroup>
   <Accordion title="Dispatch perintah Skill">
-    Secara default, perintah skill dirutekan ke model sebagai permintaan normal.
+    Secara default, perintah Skill dirutekan ke model sebagai permintaan normal.
 
     Skills dapat mendeklarasikan `command-dispatch: tool` untuk merutekan langsung ke tool
     (deterministik, tanpa keterlibatan model). Contoh: `/prose` (plugin OpenProse)
@@ -338,16 +340,16 @@ Skills yang dapat dipanggil pengguna diekspos sebagai perintah slash:
 
   </Accordion>
   <Accordion title="Argumen perintah native">
-    Discord menggunakan pelengkapan otomatis untuk opsi dinamis dan menu tombol saat
-    argumen wajib dihilangkan. Telegram dan Slack menampilkan menu tombol untuk perintah dengan
-    pilihan. Pilihan dinamis diselesaikan terhadap model sesi target, sehingga opsi
-    spesifik model seperti level `/think` mengikuti penggantian `/model` sesi.
+    Discord menggunakan pelengkapan otomatis untuk opsi dinamis dan menu tombol saat argumen
+    wajib dihilangkan. Telegram dan Slack menampilkan menu tombol untuk perintah dengan
+    pilihan. Pilihan dinamis diselesaikan terhadap model sesi target, sehingga opsi khusus
+    model seperti level `/think` mengikuti override `/model` sesi.
   </Accordion>
 </AccordionGroup>
 
 ## `/tools` — apa yang dapat digunakan agen sekarang
 
-`/tools` menjawab pertanyaan runtime: **apa yang dapat digunakan agen ini sekarang dalam
+`/tools` menjawab pertanyaan runtime: **apa yang dapat digunakan agen ini saat ini dalam
 percakapan ini** — bukan katalog konfigurasi statis.
 
 ```text
@@ -355,9 +357,9 @@ percakapan ini** — bukan katalog konfigurasi statis.
 /tools verbose # dengan deskripsi singkat
 ```
 
-Hasil memiliki cakupan sesi. Mengubah agen, channel, thread, otorisasi
-pengirim, atau model dapat mengubah keluaran. Untuk pengeditan profil dan penggantian,
-gunakan panel Control UI Tools atau permukaan konfigurasi.
+Hasil dicakup per sesi. Mengubah agen, kanal, thread, otorisasi pengirim,
+atau model dapat mengubah output. Untuk pengeditan profil dan override,
+gunakan panel Tools UI Kontrol atau permukaan konfigurasi.
 
 ## `/model` — pemilihan model
 
@@ -371,8 +373,8 @@ gunakan panel Control UI Tools atau permukaan konfigurasi.
 /model status      # tampilan terperinci dengan endpoint dan mode API
 ```
 
-Di Discord, `/model` dan `/models` membuka pemilih interaktif dengan dropdown provider dan
-model. Pemilih mengikuti `agents.defaults.models`, termasuk entri
+Di Discord, `/model` dan `/models` membuka pemilih interaktif dengan dropdown penyedia dan
+model. Pemilih menghormati `agents.defaults.models`, termasuk entri
 `provider/*`.
 
 ## `/config` — penulisan konfigurasi di disk
@@ -390,7 +392,7 @@ model. Pemilih mengikuti `agents.defaults.models`, termasuk entri
 ```
 
 Konfigurasi divalidasi sebelum ditulis. Perubahan tidak valid ditolak. Pembaruan `/config`
-bertahan setelah mulai ulang.
+bertahan setelah restart.
 
 ## `/mcp` — konfigurasi server MCP
 
@@ -407,11 +409,11 @@ bertahan setelah mulai ulang.
 
 `/mcp` menyimpan konfigurasi dalam konfigurasi OpenClaw, bukan pengaturan proyek agen tertanam.
 
-## `/debug` — penggantian khusus runtime
+## `/debug` — override khusus runtime
 
 <Note>
   Khusus pemilik. Dinonaktifkan secara default — aktifkan dengan `commands.debug: true`.
-  Penggantian diterapkan segera pada pembacaan konfigurasi baru tetapi **tidak** menulis ke disk.
+  Override langsung diterapkan pada pembacaan konfigurasi baru tetapi **tidak** menulis ke disk.
 </Note>
 
 ```text
@@ -422,7 +424,7 @@ bertahan setelah mulai ulang.
 /debug reset
 ```
 
-## `/plugins` — pengelolaan plugin
+## `/plugins` — manajemen plugin
 
 <Note>
   Khusus pemilik untuk penulisan. Dinonaktifkan secara default — aktifkan dengan `commands.plugins: true`.
@@ -437,11 +439,11 @@ bertahan setelah mulai ulang.
 /plugins install ./path/to/plugin
 ```
 
-`/plugins enable|disable` memperbarui konfigurasi plugin dan memuat ulang panas runtime plugin Gateway
-untuk giliran agen baru. `/plugins install` memulai ulang Gateway terkelola
+`/plugins enable|disable` memperbarui konfigurasi plugin dan memuat ulang secara panas runtime
+plugin Gateway untuk giliran agen baru. `/plugins install` memulai ulang Gateway terkelola
 secara otomatis karena modul sumber plugin berubah.
 
-## `/trace` — keluaran trace plugin
+## `/trace` — output trace plugin
 
 ```text
 /trace          # tampilkan status trace saat ini
@@ -449,9 +451,9 @@ secara otomatis karena modul sumber plugin berubah.
 /trace off
 ```
 
-`/trace` menampilkan baris trace/debug plugin bercakupan sesi tanpa mode verbose penuh.
-Ini tidak menggantikan `/debug` (penggantian runtime) atau `/verbose` (keluaran tool
-normal).
+`/trace` menampilkan baris trace/debug plugin yang dicakup sesi tanpa mode verbose
+penuh. Ini tidak menggantikan `/debug` (override runtime) atau `/verbose` (output
+tool normal).
 
 ## `/btw` — pertanyaan sampingan
 
@@ -465,11 +467,11 @@ normal).
 Tidak seperti pesan normal:
 
 - Menggunakan sesi saat ini sebagai konteks latar belakang.
-- Dalam sesi harness Codex, berjalan sebagai thread sampingan Codex efemeral.
+- Dalam sesi harness Codex, berjalan sebagai thread sampingan Codex yang ephemeral.
 - **Tidak** mengubah konteks sesi mendatang.
 - Tidak ditulis ke riwayat transkrip.
 
-Lihat [Pertanyaan sampingan BTW](/id/tools/btw) untuk perilaku lengkap.
+Lihat [Pertanyaan sampingan BTW](/id/tools/btw) untuk perilaku lengkapnya.
 
 ## Catatan permukaan
 
@@ -489,23 +491,23 @@ Lihat [Pertanyaan sampingan BTW](/id/tools/btw) untuk perilaku lengkap.
     `/status`. Teks `/status` tetap berfungsi dalam pesan Slack.
   </Accordion>
   <Accordion title="Jalur cepat dan pintasan inline">
-    - Pesan hanya perintah dari pengirim dalam allowlist ditangani segera (melewati antrean + model).
-    - Pintasan inline (`/help`, `/commands`, `/status`, `/whoami`) juga berfungsi saat disematkan dalam pesan normal dan dihapus sebelum model melihat teks yang tersisa.
-    - Pesan hanya perintah yang tidak berwenang diabaikan diam-diam; token inline `/...` diperlakukan sebagai teks biasa.
+    - Pesan khusus perintah dari pengirim yang diizinkan ditangani langsung (melewati antrean + model).
+    - Pintasan inline (`/help`, `/commands`, `/status`, `/whoami`) juga berfungsi tertanam dalam pesan normal dan dihapus sebelum model melihat teks yang tersisa.
+    - Pesan khusus perintah yang tidak terotorisasi diabaikan secara diam-diam; token inline `/...` diperlakukan sebagai teks biasa.
 
   </Accordion>
   <Accordion title="Catatan argumen">
     - Perintah menerima `:` opsional antara perintah dan argumen (`/think: high`, `/send: on`).
-    - `/new <model>` menerima alias model, `provider/model`, atau nama provider (pencocokan fuzzy); jika tidak ada kecocokan, teks diperlakukan sebagai isi pesan.
-    - `/allowlist add|remove` memerlukan `commands.config: true` dan menghormati `configWrites` channel.
+    - `/new <model>` menerima alias model, `provider/model`, atau nama penyedia (pencocokan fuzzy); jika tidak ada kecocokan, teks diperlakukan sebagai isi pesan.
+    - `/allowlist add|remove` memerlukan `commands.config: true` dan menghormati `configWrites` kanal.
 
   </Accordion>
 </AccordionGroup>
 
-## Penggunaan dan status provider
+## Penggunaan dan status penyedia
 
-- **Penggunaan/kuota provider** (mis. "Claude 80% left") ditampilkan di `/status` untuk provider model saat ini ketika pelacakan penggunaan diaktifkan.
-- **Baris token/cache** di `/status` dapat menggunakan entri penggunaan transkrip terbaru sebagai fallback ketika snapshot sesi live jarang.
+- **Penggunaan/kuota penyedia** (misalnya, "Claude 80% left") ditampilkan di `/status` untuk penyedia model saat ini saat pelacakan penggunaan diaktifkan.
+- **Baris token/cache** di `/status` dapat fallback ke entri penggunaan transkrip terbaru saat snapshot sesi live jarang.
 - **Eksekusi vs runtime:** `/status` melaporkan `Execution` untuk jalur sandbox efektif dan `Runtime` untuk siapa yang menjalankan sesi: `OpenClaw Default`, `OpenAI Codex`, backend CLI, atau backend ACP.
 - **Token/biaya per respons:** dikontrol oleh `/usage off|tokens|full`.
 - `/model status` membahas model/auth/endpoint, bukan penggunaan.
@@ -514,10 +516,10 @@ Lihat [Pertanyaan sampingan BTW](/id/tools/btw) untuk perilaku lengkap.
 
 <CardGroup cols={2}>
   <Card title="Skills" href="/id/tools/skills" icon="puzzle-piece">
-    Bagaimana perintah slash skill didaftarkan dan dibatasi.
+    Cara perintah slash Skill didaftarkan dan diberi gate.
   </Card>
-  <Card title="Membuat skills" href="/id/tools/creating-skills" icon="hammer">
-    Buat skill yang mendaftarkan perintah slash-nya sendiri.
+  <Card title="Membuat Skill" href="/id/tools/creating-skills" icon="hammer">
+    Bangun Skill yang mendaftarkan perintah slash-nya sendiri.
   </Card>
   <Card title="BTW" href="/id/tools/btw" icon="comments">
     Pertanyaan sampingan tanpa mengubah konteks sesi.

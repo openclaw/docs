@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Devi chiamare gli helper core da un plugin (TTS, STT, generazione di immagini, ricerca web, subagent, nodi)
+    - Devi chiamare helper core da un Plugin (TTS, STT, generazione di immagini, ricerca web, sottoagente, nodi)
     - Vuoi capire cosa espone api.runtime
-    - Stai accedendo agli helper di configurazione, agente o contenuti multimediali dal codice del plugin
+    - Stai accedendo agli helper di configurazione, agente o media dal codice del plugin
 sidebarTitle: Runtime helpers
 summary: api.runtime -- gli helper di runtime iniettati disponibili per i Plugin
-title: Helper del runtime del Plugin
+title: Helper di runtime dei Plugin
 x-i18n:
-    generated_at: "2026-06-28T20:44:23Z"
+    generated_at: "2026-06-30T14:09:34Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b2bd70bb36ab8fb0fbecb982f56b1302a2a01a8d7ae6f78d3558fbaa8c28742e
+    source_hash: 028e4b75840fe228ee98440f7e86030cb4e1377b2688e0564394d1424662ca39
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ x-i18n:
 Riferimento per l'oggetto `api.runtime` iniettato in ogni plugin durante la registrazione. Usa questi helper invece di importare direttamente gli elementi interni dell'host.
 
 <CardGroup cols={2}>
-  <Card title="Channel plugins" href="/it/plugins/sdk-channel-plugins">
-    Guida dettagliata che usa questi helper nel contesto dei plugin di canale.
+  <Card title="Plugin di canale" href="/it/plugins/sdk-channel-plugins">
+    Guida passo passo che usa questi helper nel contesto dei plugin di canale.
   </Card>
-  <Card title="Provider plugins" href="/it/plugins/sdk-provider-plugins">
-    Guida dettagliata che usa questi helper nel contesto dei plugin provider.
+  <Card title="Plugin provider" href="/it/plugins/sdk-provider-plugins">
+    Guida passo passo che usa questi helper nel contesto dei plugin provider.
   </Card>
 </CardGroup>
 
@@ -35,36 +35,36 @@ register(api) {
 
 ## Caricamento e scrittura della configurazione
 
-Preferisci la configurazione già passata nel percorso di chiamata attivo, per esempio `api.config` durante la registrazione o un argomento `cfg` nelle callback di canale/provider. Questo mantiene una singola snapshot di processo lungo il lavoro invece di rieseguire il parsing della configurazione nei percorsi caldi.
+Preferisci la configurazione già passata nel percorso di chiamata attivo, per esempio `api.config` durante la registrazione o un argomento `cfg` nei callback di canale/provider. Questo mantiene uno snapshot di processo che fluisce nel lavoro invece di rianalizzare la configurazione nei percorsi critici.
 
-Usa `api.runtime.config.current()` solo quando un handler a lunga durata ha bisogno della snapshot di processo corrente e nessuna configurazione è stata passata a quella funzione. Il valore restituito è di sola lettura; clonalo o usa un helper di mutazione prima di modificarlo.
+Usa `api.runtime.config.current()` solo quando un handler a lunga durata ha bisogno dello snapshot corrente del processo e nessuna configurazione è stata passata a quella funzione. Il valore restituito è di sola lettura; clonalo o usa un helper di mutazione prima di modificarlo.
 
-Le factory degli strumenti ricevono `ctx.runtimeConfig` più `ctx.getRuntimeConfig()`. Usa il getter dentro la callback `execute` di uno strumento a lunga durata quando la configurazione può cambiare dopo la creazione della definizione dello strumento.
+Le factory di strumenti ricevono `ctx.runtimeConfig` più `ctx.getRuntimeConfig()`. Usa il getter dentro il callback `execute` di uno strumento a lunga durata quando la configurazione può cambiare dopo la creazione della definizione dello strumento.
 
-Persiste le modifiche con `api.runtime.config.mutateConfigFile(...)` o `api.runtime.config.replaceConfigFile(...)`. Ogni scrittura deve scegliere una policy `afterWrite` esplicita:
+Persisti le modifiche con `api.runtime.config.mutateConfigFile(...)` o `api.runtime.config.replaceConfigFile(...)`. Ogni scrittura deve scegliere una policy `afterWrite` esplicita:
 
-- `afterWrite: { mode: "auto" }` lascia decidere al ricaricamento del planner del gateway.
+- `afterWrite: { mode: "auto" }` lascia decidere al ricaricamento del Gateway.
 - `afterWrite: { mode: "restart", reason: "..." }` forza un riavvio pulito quando chi scrive sa che il ricaricamento a caldo non è sicuro.
-- `afterWrite: { mode: "none", reason: "..." }` sopprime il ricaricamento/riavvio automatico solo quando il chiamante possiede il follow-up.
+- `afterWrite: { mode: "none", reason: "..." }` sopprime ricaricamento/riavvio automatici solo quando il chiamante possiede il passaggio successivo.
 
-Gli helper di mutazione restituiscono `afterWrite` più un riepilogo `followUp` tipizzato, così i chiamanti possono registrare o testare se hanno richiesto un riavvio. Il gateway resta comunque responsabile di quando quel riavvio avviene davvero.
+Gli helper di mutazione restituiscono `afterWrite` più un riepilogo tipizzato `followUp`, così i chiamanti possono registrare o testare se hanno richiesto un riavvio. Il Gateway continua a possedere il momento in cui quel riavvio avviene effettivamente.
 
-`api.runtime.config.loadConfig()` e `api.runtime.config.writeConfigFile(...)` sono helper di compatibilità deprecati sotto `runtime-config-load-write`. Avvisano una volta a runtime e restano disponibili per i vecchi plugin esterni durante la finestra di migrazione. I plugin inclusi non devono usarli; le guardie del confine di configurazione falliscono se il codice del plugin li chiama o importa quegli helper dai sottopercorsi dell'SDK plugin.
+`api.runtime.config.loadConfig()` e `api.runtime.config.writeConfigFile(...)` sono helper di compatibilità deprecati sotto `runtime-config-load-write`. Avvisano una volta a runtime e restano disponibili per i vecchi plugin esterni durante la finestra di migrazione. I plugin in bundle non devono usarli; le guardie del confine di configurazione falliscono se il codice del plugin li chiama o importa quegli helper dai sottopercorsi dell'SDK dei plugin.
 
-Per import diretti dell'SDK, usa i sottopercorsi di configurazione focalizzati invece del barrel di compatibilità ampio
-`openclaw/plugin-sdk/config-runtime`: `config-contracts` per
-i tipi, `plugin-config-runtime` per le asserzioni sulla configurazione già caricata e la ricerca delle
-entry dei plugin, `runtime-config-snapshot` per le snapshot di processo correnti e
-`config-mutation` per le scritture. I test dei plugin inclusi dovrebbero mockare direttamente questi
-sottopercorsi focalizzati invece di mockare il barrel di compatibilità ampio.
+Per gli import diretti dell'SDK, usa i sottopercorsi di configurazione mirati invece del barrel di compatibilità ampio
+`openclaw/plugin-sdk/config-runtime`: `config-contracts` per i
+tipi, `plugin-config-runtime` per le asserzioni su configurazione già caricata e la ricerca
+dell'entry del plugin, `runtime-config-snapshot` per gli snapshot correnti del processo, e
+`config-mutation` per le scritture. I test dei plugin in bundle dovrebbero simulare direttamente questi sottopercorsi
+mirati invece di simulare il barrel di compatibilità ampio.
 
-Il codice runtime interno di OpenClaw segue la stessa direzione: carica la configurazione una volta al confine della CLI, del gateway o del processo, poi passa quel valore lungo il percorso. Le scritture di mutazione riuscite aggiornano la snapshot runtime di processo e avanzano la sua revisione interna; le cache a lunga durata dovrebbero usare come chiave la chiave cache posseduta dal runtime invece di serializzare localmente la configurazione. I moduli runtime a lunga durata hanno uno scanner a tolleranza zero per le chiamate ambientali a `loadConfig()`; usa un `cfg` passato, un `context.getRuntimeConfig()` di richiesta o `getRuntimeConfig()` a un confine di processo esplicito.
+Il codice runtime interno di OpenClaw segue la stessa direzione: carica la configurazione una volta al confine della CLI, del Gateway o del processo, poi passa quel valore lungo il flusso. Le scritture di mutazione riuscite aggiornano lo snapshot runtime del processo e avanzano la sua revisione interna; le cache a lunga durata dovrebbero basarsi sulla chiave cache posseduta dal runtime invece di serializzare localmente la configurazione. I moduli runtime a lunga durata hanno uno scanner a tolleranza zero per chiamate ambientali a `loadConfig()`; usa un `cfg` passato, un `context.getRuntimeConfig()` della richiesta o `getRuntimeConfig()` in un confine di processo esplicito.
 
-I percorsi di esecuzione provider e canale devono usare la snapshot della configurazione runtime attiva, non una snapshot del file restituita per rilettura o modifica della configurazione. Le snapshot del file preservano valori sorgente come i marker SecretRef per UI e scritture; le callback provider hanno bisogno della vista runtime risolta. Quando un helper può essere chiamato con la snapshot sorgente attiva o con la snapshot runtime attiva, passa tramite `selectApplicableRuntimeConfig()` prima di leggere le credenziali.
+I percorsi di esecuzione provider e canale devono usare lo snapshot della configurazione runtime attiva, non uno snapshot file restituito per rilettura o modifica della configurazione. Gli snapshot file preservano valori sorgente come i marker SecretRef per UI e scritture; i callback provider hanno bisogno della vista runtime risolta. Quando un helper può essere chiamato con lo snapshot sorgente attivo o con lo snapshot runtime attivo, passa attraverso `selectApplicableRuntimeConfig()` prima di leggere le credenziali.
 
 ## Utilità runtime riutilizzabili
 
-Usa i fatti `botLoopProtection` in ingresso per i messaggi in ingresso scritti da bot. Il core applica la guardia condivisa in memoria a finestra scorrevole prima del record di sessione e del dispatch, senza legare la policy a un solo canale. La guardia traccia chiavi `(scopeId, conversationId, participant pair)`, conta insieme entrambe le direzioni di una coppia, applica un cooldown quando il budget della finestra viene superato e pota opportunisticamente le entry inattive.
+Usa i dati `botLoopProtection` in ingresso per i messaggi in ingresso scritti da bot. Il core applica la guardia condivisa in memoria a finestra scorrevole prima della registrazione della sessione e del dispatch, senza legare la policy a un singolo canale. La guardia traccia chiavi `(scopeId, conversationId, participant pair)`, conta insieme entrambe le direzioni di una coppia, applica un cooldown una volta superato il budget della finestra e rimuove opportunisticamente le voci inattive.
 
 I plugin di canale che espongono questo comportamento agli operatori dovrebbero preferire la forma condivisa `channels.defaults.botLoopProtection` per i budget di base, poi sovrapporre override specifici di canale/provider. La configurazione condivisa usa i secondi perché è visibile all'utente:
 
@@ -77,7 +77,7 @@ type ChannelBotLoopProtectionConfig = {
 };
 ```
 
-Passa fatti normalizzati sulle coppie di bot con il turno risolto. Il core risolve default, conversione di unità e semantica di `enabled`:
+Passa i dati normalizzati della coppia di bot con il turno risolto. Il core risolve default, conversione di unità e semantica di `enabled`:
 
 ```typescript
 return {
@@ -99,8 +99,8 @@ return {
 };
 ```
 
-Usa direttamente `openclaw/plugin-sdk/pair-loop-guard-runtime` solo per loop di eventi
-personalizzati a due parti che non passano dal runner condiviso delle risposte in ingresso.
+Usa `openclaw/plugin-sdk/pair-loop-guard-runtime` direttamente solo per loop di eventi
+personalizzati tra due parti che non passano attraverso il runner condiviso delle risposte in ingresso.
 
 ## Namespace runtime
 
@@ -148,15 +148,15 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    `runEmbeddedAgent(...)` è l'helper neutro per avviare un normale turno agente OpenClaw dal codice plugin. Usa la stessa risoluzione provider/modello e la stessa selezione dell'harness agente delle risposte attivate da canale.
+    `runEmbeddedAgent(...)` è l'helper neutrale per avviare un normale turno dell'agente OpenClaw dal codice del plugin. Usa la stessa risoluzione provider/modello e la stessa selezione dell'harness dell'agente delle risposte attivate dal canale.
 
-    `runEmbeddedPiAgent(...)` resta come alias di compatibilità deprecato per i plugin esistenti. Il nuovo codice dovrebbe usare `runEmbeddedAgent(...)`.
+    `runEmbeddedPiAgent(...)` resta un alias di compatibilità deprecato per i plugin esistenti. Il nuovo codice dovrebbe usare `runEmbeddedAgent(...)`.
 
-    `resolveThinkingPolicy(...)` restituisce i livelli di pensiero supportati dal provider/modello e il default facoltativo. I plugin provider possiedono il profilo specifico del modello tramite i loro hook di pensiero, quindi i plugin di strumenti dovrebbero chiamare questo helper runtime invece di importare o duplicare liste di provider.
+    `resolveThinkingPolicy(...)` restituisce i livelli di pensiero supportati dal provider/modello e l'eventuale valore predefinito. I plugin provider possiedono il profilo specifico del modello tramite i loro hook di pensiero, quindi i plugin di strumenti dovrebbero chiamare questo helper runtime invece di importare o duplicare elenchi di provider.
 
-    `normalizeThinkingLevel(...)` converte testo utente come `on`, `x-high` o `extra high` nel livello memorizzato canonico prima di verificarlo rispetto alla policy risolta.
+    `normalizeThinkingLevel(...)` converte testo utente come `on`, `x-high` o `extra high` nel livello canonico memorizzato prima di verificarlo rispetto alla policy risolta.
 
-    Gli **helper dello store di sessione** sono sotto `api.runtime.agent.session`:
+    **Gli helper dello store sessioni** sono sotto `api.runtime.agent.session`:
 
     ```typescript
     const entry = api.runtime.agent.session.getSessionEntry({ agentId, sessionKey });
@@ -170,11 +170,11 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    Preferisci `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)` o `upsertSessionEntry(...)` per i workflow di sessione. Questi helper indirizzano le sessioni per identità agente/sessione, così i plugin non dipendono dalla forma di storage legacy `sessions.json`. Usa `preserveActivity: true` per patch di soli metadati che non dovrebbero aggiornare l'attività della sessione, e `replaceEntry: true` solo quando la callback restituisce una entry completa e i campi eliminati devono restare eliminati.
+    Preferisci `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)` o `upsertSessionEntry(...)` per i flussi di lavoro delle sessioni. Questi helper indirizzano le sessioni per identità agente/sessione, così i plugin non dipendono dalla forma di archiviazione legacy `sessions.json`. Usa `preserveActivity: true` per patch di soli metadati che non dovrebbero aggiornare l'attività della sessione, e `replaceEntry: true` solo quando il callback restituisce una voce completa e i campi eliminati devono restare eliminati.
 
-    Per letture e scritture delle trascrizioni, importa `openclaw/plugin-sdk/session-transcript-runtime` e usa `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)` o `withSessionTranscriptWriteLock(...)` con `{ agentId, sessionKey, sessionId }`. Queste API permettono ai plugin di identificare una trascrizione, leggere i suoi eventi, aggiungere messaggi, pubblicare aggiornamenti ed eseguire operazioni correlate sotto lo stesso lock di scrittura della trascrizione. Passare `sessionFile`, usare `resolveSessionTranscriptLegacyFileTarget(...)` o importare i low-level `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` da `openclaw/plugin-sdk/agent-harness-runtime` è deprecato; quei percorsi esistono solo per codice legacy che riceve già un artefatto di trascrizione attivo.
+    Per letture e scritture della trascrizione, importa `openclaw/plugin-sdk/session-transcript-runtime` e usa `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)` o `withSessionTranscriptWriteLock(...)` con `{ agentId, sessionKey, sessionId }`. Queste API consentono ai plugin di identificare una trascrizione, leggerne gli eventi, aggiungere messaggi, pubblicare aggiornamenti ed eseguire operazioni correlate sotto lo stesso lock di scrittura della trascrizione. Passare `sessionFile`, usare `resolveSessionTranscriptLegacyFileTarget(...)` o importare `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` di basso livello da `openclaw/plugin-sdk/agent-harness-runtime` è deprecato; quei percorsi esistono solo per codice legacy che riceve già un artefatto di trascrizione attivo.
 
-    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)` e `resolveAndPersistSessionFile(...)` sono helper di compatibilità deprecati per plugin che dipendono ancora intenzionalmente dalla forma legacy dell'intero store o del file di trascrizione. Il nuovo codice plugin non deve usare questi helper, e i chiamanti esistenti dovrebbero migrare agli helper di entry e agli helper di identità delle trascrizioni.
+    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)` e `resolveAndPersistSessionFile(...)` sono helper di compatibilità deprecati per plugin che dipendono ancora intenzionalmente dalla forma legacy dello store completo o del file di trascrizione. Il nuovo codice dei plugin non deve usare questi helper, e i chiamanti esistenti dovrebbero migrare agli helper di voce e agli helper di identità della trascrizione.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
@@ -188,8 +188,8 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    Esegue un completamento testuale posseduto dall'host senza importare elementi interni dei provider o
-    duplicare la preparazione di modello/autenticazione/base URL di OpenClaw.
+    Esegui un completamento testuale posseduto dall'host senza importare elementi interni del provider o
+    duplicare la preparazione di modello/autenticazione/URL di base di OpenClaw.
 
     ```typescript
     const result = await api.runtime.llm.complete({
@@ -200,20 +200,20 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    L'helper usa lo stesso percorso di preparazione per completamenti semplici del runtime
-    integrato di OpenClaw e la snapshot della configurazione runtime posseduta dall'host. I motori di contesto
-    ricevono una capability `llm.complete` vincolata alla sessione, quindi le chiamate al modello usano
+    L'helper usa lo stesso percorso di preparazione dei completamenti semplici del runtime
+    integrato di OpenClaw e lo snapshot della configurazione runtime posseduto dall'host. I motori di contesto
+    ricevono una capability `llm.complete` legata alla sessione, quindi le chiamate al modello usano
     l'agente della sessione attiva e non ripiegano silenziosamente sull'agente predefinito. Il
-    risultato include attribuzione di provider/modello/agente più utilizzo normalizzato di token,
+    risultato include attribuzione provider/modello/agente più utilizzo normalizzato di token,
     cache e costo stimato quando disponibile.
 
     <Warning>
-    Gli override del modello richiedono l'opt-in dell'operatore tramite `plugins.entries.<id>.llm.allowModelOverride: true` nella configurazione. Usa `plugins.entries.<id>.llm.allowedModels` per limitare i plugin attendibili a target canonici `provider/model` specifici. I completamenti cross-agent richiedono `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
+    Gli override del modello richiedono opt-in dell'operatore tramite `plugins.entries.<id>.llm.allowModelOverride: true` nella configurazione. Usa `plugins.entries.<id>.llm.allowedModels` per limitare i plugin attendibili a specifici target canonici `provider/model`. I completamenti tra agenti richiedono `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    Avvia e gestisce esecuzioni di subagenti in background.
+    Avvia e gestisci esecuzioni di subagenti in background.
 
     ```typescript
     // Start a subagent run
@@ -241,14 +241,14 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     ```
 
     <Warning>
-    Gli override del modello (`provider`/`model`) richiedono l'attivazione esplicita dell'operatore tramite `plugins.entries.<id>.subagent.allowModelOverride: true` nella configurazione. I Plugin non attendibili possono comunque eseguire subagent, ma le richieste di override vengono rifiutate.
+    Gli override dei modelli (`provider`/`model`) richiedono l'adesione esplicita dell'operatore tramite `plugins.entries.<id>.subagent.allowModelOverride: true` nella configurazione. I Plugin non attendibili possono comunque eseguire subagent, ma le richieste di override vengono rifiutate.
     </Warning>
 
-    `deleteSession(...)` può eliminare le sessioni create dallo stesso Plugin tramite `api.runtime.subagent.run(...)`. L'eliminazione di sessioni utente o operatore arbitrarie richiede comunque una richiesta Gateway con ambito amministratore.
+    `deleteSession(...)` può eliminare le sessioni create dallo stesso Plugin tramite `api.runtime.subagent.run(...)`. L'eliminazione di sessioni utente o operatore arbitrarie richiede comunque una richiesta Gateway con ambito admin.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Elenca i nodi connessi e invoca un comando ospitato su un nodo dal codice Plugin caricato dal Gateway o dai comandi CLI del Plugin. Usalo quando un Plugin possiede lavoro locale su un dispositivo associato, per esempio un bridge browser o audio su un altro Mac.
+    Elenca i nodi connessi e invoca un comando ospitato dal nodo dal codice del Plugin caricato dal Gateway o dai comandi CLI del Plugin. Usalo quando un Plugin possiede lavoro locale su un dispositivo abbinato, ad esempio un bridge browser o audio su un altro Mac.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -261,18 +261,21 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    All'interno del Gateway questo runtime è nello stesso processo. Nei comandi CLI del Plugin chiama il Gateway configurato tramite RPC, quindi comandi come `openclaw googlemeet recover-tab` possono ispezionare i nodi associati dal terminale. I comandi Node passano comunque attraverso la normale associazione dei nodi del Gateway, le allowlist dei comandi, le policy node-invoke del Plugin e la gestione dei comandi locale al nodo.
+    All'interno del Gateway, questo runtime è in-process. Nei comandi CLI del Plugin chiama il Gateway configurato tramite RPC, quindi comandi come `openclaw googlemeet recover-tab` possono ispezionare i nodi abbinati dal terminale. I comandi dei nodi passano comunque attraverso il normale abbinamento dei nodi del Gateway, le allowlist dei comandi, le policy node-invoke del Plugin e la gestione dei comandi locale al nodo.
 
-    I Plugin che espongono comandi ospitati su nodo pericolosi devono registrare una policy node-invoke con `api.registerNodeInvokePolicy(...)`. La policy viene eseguita nel Gateway dopo i controlli di allowlist dei comandi e prima che il comando sia inoltrato al nodo, quindi le chiamate dirette `node.invoke` e gli strumenti Plugin di livello superiore condividono lo stesso percorso di applicazione.
+    I Plugin che espongono comandi per host nodo pericolosi dovrebbero registrare una policy node-invoke con `api.registerNodeInvokePolicy(...)`. La policy viene eseguita nel Gateway dopo i controlli della allowlist dei comandi e prima che il comando venga inoltrato al nodo, quindi le chiamate dirette `node.invoke` e gli strumenti Plugin di livello superiore condividono lo stesso percorso di applicazione.
+
+    <Warning>
+    Il campo opzionale `scopes` richiede ambiti operatore del Gateway per l'invocazione. OpenClaw lo rispetta solo per i Plugin inclusi e per le installazioni di Plugin ufficiali attendibili; le richieste provenienti da altri Plugin non elevano la chiamata. Usalo solo quando un Plugin attendibile deve invocare un comando nodo con un ambito Gateway più rigoroso, come `operator.admin`.
+    </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
     Associa un runtime Task Flow a una chiave di sessione OpenClaw esistente o a un contesto strumento attendibile, quindi crea e gestisci Task Flow senza passare un proprietario a ogni chiamata.
 
-    Task Flow traccia lo stato durevole di workflow multi-step. Non è uno scheduler:
-    usa Cron o `api.session.workflow.scheduleSessionTurn(...)` per risvegli futuri,
-    poi usa `managedFlows` dal turno pianificato quando quel lavoro richiede
-    stato del flusso, task figli, attese o annullamento.
+    Task Flow traccia lo stato durevole dei workflow a più passaggi. Non è uno scheduler:
+    usa Cron o `api.session.workflow.scheduleSessionTurn(...)` per i risvegli futuri, quindi usa `managedFlows` dal turno pianificato quando quel lavoro
+    richiede stato del flusso, attività figlie, attese o annullamento.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -299,11 +302,11 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    Usa `bindSession({ sessionKey, requesterOrigin })` quando disponi già di una chiave di sessione OpenClaw attendibile dal tuo livello di binding. Non eseguire binding da input utente grezzo.
+    Usa `bindSession({ sessionKey, requesterOrigin })` quando hai già una chiave di sessione OpenClaw attendibile dal tuo livello di binding. Non associare da input utente grezzo.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
-    Sintesi text-to-speech.
+    Sintesi vocale.
 
     ```typescript
     // Standard TTS
@@ -387,7 +390,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    Restituisce `{ text: undefined }` quando non viene prodotto alcun output (ad es. input saltato).
+    Restituisce `{ text: undefined }` quando non viene prodotto alcun output (ad esempio input saltato).
 
     <Info>
     `api.runtime.stt.transcribeAudioFile(...)` rimane un alias di compatibilità per `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
@@ -408,7 +411,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.webSearch">
-    Ricerca web.
+    Ricerca Web.
 
     ```typescript
     const providers = api.runtime.webSearch.listProviders({ config: api.config });
@@ -421,7 +424,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.media">
-    Utilità media di basso livello.
+    Utilità multimediali di basso livello.
 
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -446,9 +449,9 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    Snapshot della configurazione runtime corrente e scritture transazionali della configurazione. Preferisci
+    Snapshot della configurazione runtime corrente e scritture di configurazione transazionali. Preferisci
     la configurazione già passata nel percorso di chiamata attivo; usa
-    `current()` solo quando l'handler richiede direttamente lo snapshot del processo.
+    `current()` solo quando l'handler necessita direttamente dello snapshot del processo.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -461,9 +464,9 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     ```
 
     `mutateConfigFile(...)` e `replaceConfigFile(...)` restituiscono un valore `followUp`,
-    per esempio `{ mode: "restart", requiresRestart: true, reason }`,
-    che registra l'intento dello scrittore senza sottrarre al
-    Gateway il controllo del riavvio.
+    ad esempio `{ mode: "restart", requiresRestart: true, reason }`,
+    che registra l'intento dello scrivente senza sottrarre al
+    gateway il controllo del riavvio.
 
   </Accordion>
   <Accordion title="api.runtime.system">
@@ -481,12 +484,12 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runCommandWithTimeout(...)` restituisce `stdout` e `stderr` catturati, conteggi
+    `runCommandWithTimeout(...)` restituisce `stdout` e `stderr` acquisiti, conteggi
     di troncamento opzionali, `code`, `signal`, `killed`, `termination` e
-    `noOutputTimedOut`. I risultati di timeout e di timeout senza output riportano `code: 124`
+    `noOutputTimedOut`. I risultati di timeout e no-output-timeout riportano `code: 124`
     quando il processo figlio non fornisce un codice di uscita diverso da zero. Le uscite
-    non legate a timeout causate da segnali possono comunque restituire `code: null`, quindi usa `termination` e
-    `noOutputTimedOut` per distinguere i motivi del timeout.
+    con segnale non dovute a timeout possono comunque restituire `code: null`, quindi usa `termination` e
+    `noOutputTimedOut` per distinguere i motivi di timeout.
 
   </Accordion>
   <Accordion title="api.runtime.events">
@@ -512,7 +515,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    Risoluzione dell'autenticazione di modello e provider.
+    Risoluzione dell'autenticazione di modelli e provider.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -524,7 +527,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    Risoluzione della directory di stato e archiviazione keyed basata su SQLite.
+    Risoluzione della directory di stato e storage con chiavi basato su SQLite.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -541,7 +544,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     await store.clear();
     ```
 
-    Gli store con chiave sopravvivono ai riavvii e sono isolati dall'id del plugin associato al runtime. Usa `registerIfAbsent(...)` per rivendicazioni di deduplicazione atomiche: restituisce `true` quando la chiave mancava o era scaduta ed è stata registrata, oppure `false` quando esiste già un valore attivo senza sovrascriverne valore, ora di creazione o TTL. Limiti: `maxEntries` per namespace, 6.000 righe attive per plugin, valori JSON sotto 64 KB e scadenza TTL opzionale. Quando una scrittura supererebbe il limite di righe del plugin, il runtime può eliminare le righe attive più vecchie dal namespace in scrittura; i namespace adiacenti non vengono eliminati per quella scrittura, e la scrittura fallisce comunque se il namespace non riesce a liberare abbastanza righe.
+    Gli store con chiave sopravvivono ai riavvii e sono isolati dall'id del plugin associato al runtime. Usa `registerIfAbsent(...)` per rivendicazioni atomiche di deduplicazione: restituisce `true` quando la chiave mancava o era scaduta ed è stata registrata, oppure `false` quando esiste già un valore attivo senza sovrascriverne il valore, l'ora di creazione o il TTL. Limiti: `maxEntries` per namespace, 6.000 righe attive per plugin, valori JSON inferiori a 64 KB e scadenza TTL opzionale. Quando una scrittura supererebbe il limite di righe del plugin, il runtime può eliminare le righe attive più vecchie dal namespace in scrittura; i namespace fratelli non vengono eliminati per quella scrittura, e la scrittura fallisce comunque se il namespace non riesce a liberare abbastanza righe.
 
     <Warning>
     Solo plugin in bundle in questa release.
@@ -549,7 +552,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.tools">
-    Factory di strumenti di memoria e CLI.
+    Factory degli strumenti di memoria e CLI.
 
     ```typescript
     const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -559,9 +562,9 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    Helper di runtime specifici del canale (disponibili quando viene caricato un plugin di canale).
+    Helper runtime specifici del canale (disponibili quando viene caricato un plugin di canale).
 
-    `api.runtime.channel.media` è la superficie preferita per download e archiviazione dei media del canale:
+    `api.runtime.channel.media` è la superficie preferita per il download e l'archiviazione dei contenuti multimediali del canale:
 
     ```typescript
     const saved = await api.runtime.channel.media.saveRemoteMedia({
@@ -572,9 +575,9 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    Usa `saveRemoteMedia(...)` quando un URL remoto deve diventare un media OpenClaw. Usa `saveResponseMedia(...)` quando il plugin ha già recuperato una `Response` con gestione di autenticazione, redirect o allowlist di proprietà del plugin. Usa `readRemoteMediaBuffer(...)` solo quando il plugin ha bisogno dei byte grezzi per ispezione, trasformazioni, decrittazione o nuovo caricamento. `fetchRemoteMedia(...)` resta un alias di compatibilità deprecato per `readRemoteMediaBuffer(...)`.
+    Usa `saveRemoteMedia(...)` quando un URL remoto deve diventare un contenuto multimediale OpenClaw. Usa `saveResponseMedia(...)` quando il plugin ha già recuperato una `Response` con gestione di autenticazione, reindirizzamento o allowlist di proprietà del plugin. Usa `readRemoteMediaBuffer(...)` solo quando il plugin necessita dei byte grezzi per ispezione, trasformazioni, decrittazione o nuovo caricamento. `fetchRemoteMedia(...)` rimane un alias di compatibilità deprecato per `readRemoteMediaBuffer(...)`.
 
-    `api.runtime.channel.mentions` è la superficie condivisa della policy sulle menzioni in ingresso per i plugin di canale in bundle che usano l'iniezione del runtime:
+    `api.runtime.channel.mentions` è la superficie condivisa della policy delle menzioni in ingresso per i plugin di canale in bundle che usano l'iniezione runtime:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -601,7 +604,7 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
     });
     ```
 
-    Helper per menzioni disponibili:
+    Helper delle menzioni disponibili:
 
     - `buildMentionRegexes`
     - `matchesMentionPatterns`
@@ -614,9 +617,9 @@ personalizzati a due parti che non passano dal runner condiviso delle risposte i
   </Accordion>
 </AccordionGroup>
 
-## Archiviazione dei riferimenti al runtime
+## Archiviazione dei riferimenti runtime
 
-Usa `createPluginRuntimeStore` per archiviare il riferimento al runtime da usare fuori dalla callback `register`:
+Usa `createPluginRuntimeStore` per archiviare il riferimento runtime da usare al di fuori della callback `register`:
 
 <Steps>
   <Step title="Create the store">
@@ -657,7 +660,7 @@ Usa `createPluginRuntimeStore` per archiviare il riferimento al runtime da usare
 </Steps>
 
 <Note>
-Preferisci `pluginId` per l'identità dello store di runtime. La forma di livello inferiore `key` è per casi non comuni in cui un plugin ha intenzionalmente bisogno di più di uno slot di runtime.
+Preferisci `pluginId` per l'identità del runtime-store. La forma di livello inferiore `key` è pensata per casi non comuni in cui un plugin necessita intenzionalmente di più di uno slot runtime.
 </Note>
 
 ## Altri campi `api` di primo livello
@@ -671,7 +674,7 @@ Oltre a `api.runtime`, l'oggetto API fornisce anche:
   Nome visualizzato del plugin.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  Snapshot della configurazione corrente (snapshot del runtime attivo in memoria quando disponibile).
+  Snapshot della configurazione corrente (snapshot runtime attivo in memoria quando disponibile).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
   Configurazione specifica del plugin da `plugins.entries.<id>.config`.
@@ -680,7 +683,7 @@ Oltre a `api.runtime`, l'oggetto API fornisce anche:
   Logger con ambito (`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  Modalità di caricamento corrente; `"setup-runtime"` è la finestra leggera di avvio/configurazione prima dell'entry completa.
+  Modalità di caricamento corrente; `"setup-runtime"` è la finestra leggera di avvio/configurazione precedente all'entry completa.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
   Risolve un percorso relativo alla radice del plugin.
@@ -688,6 +691,6 @@ Oltre a `api.runtime`, l'oggetto API fornisce anche:
 
 ## Correlati
 
-- [Interni dei plugin](/it/plugins/architecture) — modello di capability e registry
-- [Entry point SDK](/it/plugins/sdk-entrypoints) — opzioni di `definePluginEntry`
-- [Panoramica SDK](/it/plugins/sdk-overview) — riferimento ai subpath
+- [Interni del plugin](/it/plugins/architecture) — modello delle capability e registro
+- [Punti di ingresso SDK](/it/plugins/sdk-entrypoints) — opzioni di `definePluginEntry`
+- [Panoramica SDK](/it/plugins/sdk-overview) — riferimento dei sottopercorsi

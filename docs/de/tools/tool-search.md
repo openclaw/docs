@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Sie möchten, dass OpenClaw-Agenten einen großen Tool-Katalog verwenden, ohne jedes Tool-Schema zum Prompt hinzuzufügen.
-    - Sie möchten OpenClaw-Tools, MCP-Tools und Client-Tools über eine einzige kompakte Runtime-Oberfläche verfügbar machen
-    - Sie implementieren oder debuggen die Tool-Erkennung für OpenClaw-Ausführungen
-summary: 'Tool-Suche: große OpenClaw-Toolkataloge hinter Suche, Beschreibung und Aufruf kompakt halten'
+    - Sie möchten, dass OpenClaw-Agenten einen großen Tool-Katalog verwenden, ohne jedes Tool-Schema zum Prompt hinzuzufügen
+    - Sie möchten OpenClaw-Tools, MCP-Tools und Client-Tools über eine kompakte Runtime-Oberfläche bereitstellen
+    - Sie implementieren oder debuggen die Tool-Erkennung für OpenClaw-Läufe
+summary: 'Tool-Suche: große OpenClaw-Toolkataloge hinter Suche, Beschreibung und Aufruf kompakt bündeln'
 title: Tool-Suche
 x-i18n:
-    generated_at: "2026-06-27T18:22:27Z"
+    generated_at: "2026-06-30T13:56:54Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 23b46264bab307bbfdfeb1e358c566d498f3bcf77f187ba05d2ae319e115e1f4
+    source_hash: 81036277d763be8040526b42c116b2e503589921a58b3f765ff38670554a751c
     source_path: tools/tool-search.md
     workflow: 16
 ---
 
-Tool Search ist ein experimentelles Laufzeitfeature für OpenClaw-Agenten. Es gibt Agenten eine
-kompakte Möglichkeit, große Tool-Kataloge zu entdecken und aufzurufen. Es ist nützlich, wenn der Lauf
-viele verfügbare Tools hat, das Modell aber wahrscheinlich nur wenige davon benötigt.
+Die Werkzeugsuche ist eine experimentelle Laufzeitfunktion für OpenClaw-Agenten. Sie gibt Agenten eine
+kompakte Möglichkeit, große Tool-Kataloge zu entdecken und aufzurufen. Sie ist nützlich, wenn der Lauf
+viele verfügbare Tools hat, das Modell aber wahrscheinlich nur einige davon benötigt.
 
-Diese Seite dokumentiert die OpenClaw Tool-Suche. Sie ist nicht die Codex-native Tool-
-Suche oder die Oberfläche für dynamische Tools. Codex-nativer Code-Modus, Tool-Suche, zurückgestellte
-dynamische Tools und verschachtelte Tool-Aufrufe sind stabile Codex-Harness-Oberflächen und hängen
-nicht von `tools.toolSearch` ab.
+Diese Seite dokumentiert die OpenClaw-Werkzeugsuche. Sie ist nicht die Codex-native
+Werkzeugsuche oder Dynamic-Tools-Oberfläche. Codex-nativer Code-Modus, Werkzeugsuche, verzögerte
+dynamische Tools und verschachtelte Tool-Aufrufe sind stabile Codex-Harness-Oberflächen und
+hängen nicht von `tools.toolSearch` ab.
 
 Wenn sie für OpenClaw-Läufe aktiviert ist, erhält das Modell standardmäßig ein `tool_search_code`-Tool.
-Dieses Tool führt einen kurzen JavaScript-Body in einem isolierten Node-
-Unterprozess mit einer `openclaw.tools`-Bridge aus:
+Dieses Tool führt einen kurzen JavaScript-Body in einem isolierten Node-Unterprozess
+mit einer `openclaw.tools`-Bridge aus:
 
 ```js
 const hits = await openclaw.tools.search("create a GitHub issue");
@@ -38,32 +38,32 @@ return await openclaw.tools.call(tool.id, {
 ```
 
 Der Katalog kann OpenClaw-Tools, Plugin-Tools, MCP-Tools und
-vom Client bereitgestellte Tools enthalten. Das Modell sieht nicht jedes vollständige Schema im Voraus.
+vom Client bereitgestellte Tools enthalten. Das Modell sieht nicht jedes vollständige Schema vorab.
 Stattdessen durchsucht es kompakte Deskriptoren, beschreibt ein ausgewähltes Tool, wenn es
-das genaue Schema benötigt, und ruft dieses Tool über OpenClaw auf.
+das exakte Schema benötigt, und ruft dieses Tool über OpenClaw auf.
 
-Codex-Harness-Läufe erhalten diese experimentellen OpenClaw-Tool-Search-
-Steuerelemente nicht. OpenClaw übergibt Produktfähigkeiten als dynamische Tools an Codex, und
-Codex besitzt den stabilen nativen Code-Modus, die native Tool-Suche, zurückgestellte dynamische
+Codex-Harness-Läufe erhalten diese experimentellen Steuerelemente der OpenClaw-Werkzeugsuche
+nicht. OpenClaw übergibt Produktfähigkeiten als dynamische Tools an Codex, und
+Codex besitzt den stabilen nativen Code-Modus, die native Werkzeugsuche, verzögerte dynamische
 Tools und verschachtelte Tool-Aufrufe.
 
 ## Wie ein Turn abläuft
 
-Zur Planungszeit erstellt der eingebettete OpenClaw-Runner den effektiven Katalog für den
-Lauf:
+Zur Planungszeit baut der eingebettete OpenClaw-Runner den effektiven Katalog für den
+Lauf auf:
 
-1. Die aktive Tool-Richtlinie für Agent, Profil, Sandbox und Sitzung auflösen.
-2. Zulässige OpenClaw- und Plugin-Tools auflisten.
-3. Zulässige MCP-Tools über die MCP-Laufzeit der Sitzung auflisten.
-4. Zulässige Client-Tools hinzufügen, die für den aktuellen Lauf bereitgestellt wurden.
+1. Die aktive Tool-Policy für Agent, Profil, Sandbox und Sitzung auflösen.
+2. Berechtigte OpenClaw- und Plugin-Tools auflisten.
+3. Berechtigte MCP-Tools über die Sitzungs-MCP-Laufzeit auflisten.
+4. Berechtigte Client-Tools hinzufügen, die für den aktuellen Lauf bereitgestellt wurden.
 5. Kompakte Deskriptoren für die Suche indexieren.
-6. Die OpenClaw-Code-Bridge, die strukturierten Fallback-Tools oder die
-   kompakte Verzeichnisoberfläche für das Modell verfügbar machen.
+6. Dem Modell die OpenClaw-Code-Bridge, die strukturierten Fallback-Tools oder die
+   kompakte Verzeichnisoberfläche bereitstellen.
 
 Zur Ausführungszeit kehrt jeder echte Tool-Aufruf zu OpenClaw zurück. Die isolierte Node-
-Laufzeit hält keine Plugin-Implementierungen, MCP-Client-Objekte oder Secrets.
-`openclaw.tools.call(...)` geht über die Bridge zurück in den Gateway, wo die
-normale Richtlinien-, Freigabe-, Hook-, Logging- und Ergebnisverarbeitung weiterhin gilt.
+Laufzeit enthält keine Plugin-Implementierungen, MCP-Client-Objekte oder Secrets.
+`openclaw.tools.call(...)` überquert die Bridge zurück in den Gateway, wo die
+normale Policy-, Freigabe-, Hook-, Logging- und Ergebnisverarbeitung weiterhin gilt.
 
 ## Modi
 
@@ -71,48 +71,48 @@ normale Richtlinien-, Freigabe-, Hook-, Logging- und Ergebnisverarbeitung weiter
 
 - `code`: stellt `tool_search_code` bereit, die standardmäßige kompakte JavaScript-Bridge.
 - `tools`: stellt `tool_search`, `tool_describe` und `tool_call` als einfache
-  strukturierte Tools für Provider bereit, die keinen Code erhalten sollten.
-- `directory`: stellt `tool_search`, `tool_describe` und `tool_call` plus ein
+  strukturierte Tools für Provider bereit, die keinen Code erhalten sollen.
+- `directory`: stellt `tool_search`, `tool_describe` und `tool_call` sowie ein
   begrenztes Prompt-Verzeichnis verfügbarer Tool-Namen und Beschreibungen für
-  Provider bereit, die Tool-Namen ohne jedes vollständige Schema sehen sollten. OpenClaw kann
-  auch einen kleinen begrenzten Satz wahrscheinlicher oder erforderlicher Tool-Schemas direkt
-  für den aktuellen Turn bereitstellen.
+  Provider bereit, die Tool-Namen ohne jedes vollständige Schema sehen sollen. OpenClaw kann
+  außerdem eine kleine begrenzte Menge wahrscheinlich benötigter oder erforderlicher Tool-Schemata
+  direkt für den aktuellen Turn bereitstellen.
 
-Alle Modi verwenden denselben richtliniengefilterten Katalog und den normalen OpenClaw-
-Ausführungspfad. Wenn die aktuelle Laufzeit den isolierten Node-Child-Prozess für den Code-Modus
-nicht starten kann, fällt der Standardmodus `code` vor der Katalog-
-Compaction auf `tools` zurück. Im Modus `directory` bleiben vom Client bereitgestellte Tools
-für den aktuellen Lauf direkt sichtbar, während OpenClaw-Tools, Plugin-Tools und MCP-Tools
-hinter dem Verzeichniskatalog kompaktiert werden können. Ein direkter Aufruf eines exakten ausgeblendeten
-Verzeichnisnamens wird vor der Ausführung aus demselben autorisierten Katalog hydratisiert.
+Alle Modi verwenden denselben policy-gefilterten Katalog und den normalen OpenClaw-Ausführungspfad.
+Wenn die aktuelle Laufzeit den isolierten Node-Kindprozess für den Code-Modus nicht starten kann,
+fällt der Standardmodus `code` vor der Katalog-Compaction auf `tools` zurück. Im Modus
+`directory` bleiben vom Client bereitgestellte Tools für den aktuellen Lauf direkt sichtbar,
+während OpenClaw-Tools, Plugin-Tools und MCP-Tools hinter dem Verzeichniskatalog
+kompaktiert werden können. Ein direkter Aufruf eines exakten verborgenen
+Verzeichnisnamens wird vor der Ausführung aus demselben autorisierten Katalog hydriert.
 
 Alle Modi sind experimentell. Bevorzugen Sie direkte Tool-Bereitstellung für kleine OpenClaw-Tool-
-Kataloge und bevorzugen Sie die Codex-nativen stabilen Oberflächen für Codex-Harness-Läufe.
+Kataloge und die Codex-nativen stabilen Oberflächen für Codex-Harness-Läufe.
 
-Es gibt keine separate Konfiguration für die Quellenauswahl. Wenn Tool Search aktiviert ist, enthält der
-Katalog zulässige OpenClaw-, MCP- und Client-Tools nach normaler Richtlinien-
+Es gibt keine separate Quellenauswahlkonfiguration. Wenn die Werkzeugsuche aktiviert ist, enthält der
+Katalog berechtigte OpenClaw-, MCP- und Client-Tools nach normaler Policy-
 Filterung.
 
-## Warum es das gibt
+## Warum dies existiert
 
-Große Kataloge sind nützlich, aber teuer. Jedes Tool-Schema an das Modell zu senden
-macht die Anfrage größer, verlangsamt die Planung und erhöht die Wahrscheinlichkeit unbeabsichtigter Tool-
-Auswahl.
+Große Kataloge sind nützlich, aber teuer. Jedes Tool-Schema an das Modell zu senden,
+macht die Anfrage größer, verlangsamt die Planung und erhöht die Wahrscheinlichkeit versehentlicher
+Tool-Auswahl.
 
-Tool Search verändert die Form:
+Die Werkzeugsuche ändert die Form:
 
 - direkte Tools: Das Modell sieht jedes ausgewählte Schema vor dem ersten Token
-- Code-Modus von Tool Search: Das Modell sieht ein kompaktes Code-Tool und einen kurzen API-
+- Code-Modus der Werkzeugsuche: Das Modell sieht ein kompaktes Code-Tool und einen kurzen API-
   Vertrag
-- Tools-Modus von Tool Search: Das Modell sieht drei kompakte strukturierte Fallback-
+- Tools-Modus der Werkzeugsuche: Das Modell sieht drei kompakte strukturierte Fallback-
   Tools
-- Verzeichnismodus von Tool Search: Das Modell sieht ein begrenztes Verzeichnis plus
-  Such-/Beschreibungs-/Aufruf-Steuerelemente und einen kleinen begrenzten Satz wahrscheinlicher oder erforderlicher
-  Schemas
-- während des Turns: Das Modell kann verbleibende Schemas nach Bedarf laden
+- Verzeichnismodus der Werkzeugsuche: Das Modell sieht ein begrenztes Verzeichnis sowie
+  Such-/Beschreibungs-/Aufruf-Steuerelemente und eine kleine begrenzte Menge wahrscheinlicher oder erforderlicher
+  Schemata
+- während des Turns: Das Modell kann verbleibende Schemata bei Bedarf laden
 
-Direkte Tool-Bereitstellung bleibt der richtige Standard für kleine Kataloge. Tool Search
-ist am besten, wenn ein Lauf viele Tools sehen kann, insbesondere von MCP-Servern oder
+Direkte Tool-Bereitstellung ist weiterhin die richtige Voreinstellung für kleine Kataloge. Die Werkzeugsuche
+ist am besten geeignet, wenn ein Lauf viele Tools sehen kann, insbesondere von MCP-Servern oder
 vom Client bereitgestellten App-Tools.
 
 ## API
@@ -120,7 +120,7 @@ vom Client bereitgestellten App-Tools.
 `openclaw.tools.search(query, options?)`
 
 Durchsucht den effektiven Katalog für den aktuellen Lauf. Ergebnisse sind kompakt und sicher
-in den Prompt-Kontext zurückzugeben.
+zurück in den Prompt-Kontext zu geben.
 
 ```js
 const hits = await openclaw.tools.search("calendar event", { limit: 5 });
@@ -157,23 +157,23 @@ Der Verzeichnismodus stellt bereit:
 - `tool_describe`
 - `tool_call`
 
-Er hält außerdem vom Client bereitgestellte Tools direkt sichtbar und kann einen kleinen
-begrenzten Satz wahrscheinlicher oder erforderlicher Katalog-Tool-Schemas direkt für den aktuellen
+Er hält außerdem vom Client bereitgestellte Tools direkt sichtbar und kann eine kleine
+begrenzte Menge wahrscheinlicher oder erforderlicher Katalog-Tool-Schemata direkt für den aktuellen
 Turn bereitstellen. Wenn das begrenzte Verzeichnis Einträge auslässt, verwenden Sie `tool_search`, um sie zu finden. Wenn
-das Modell direkt einen exakten ausgeblendeten Verzeichnis-Tool-Namen anfordert, hydratisiert OpenClaw
+das Modell einen exakten verborgenen Verzeichnis-Tool-Namen direkt anfordert, hydriert OpenClaw
 ihn vor der normalen Ausführung aus dem autorisierten Katalog.
-Client-Tool-Namen im Verzeichnismodus dürfen nicht mit OpenClaw-, Plugin- oder MCP-
-Tool-Namen kollidieren, da der exakte zurückgestellte Dispatch diese Namen verwendet.
+Tool-Namen von Client-Tools im Verzeichnismodus dürfen nicht mit OpenClaw-, Plugin- oder MCP-
+Tool-Namen kollidieren, weil der exakte verzögerte Dispatch diese Namen verwendet.
 
 ## Laufzeitgrenze
 
 Die Code-Bridge läuft in einem kurzlebigen Node-Unterprozess. Der Unterprozess startet
 mit aktiviertem Node-Berechtigungsmodus, einer leeren Umgebung, ohne Dateisystem- oder
-Netzwerkberechtigungen und ohne Child-Prozess- oder Worker-Berechtigungen. OpenClaw erzwingt ein
-Wall-Clock-Timeout im Parent-Prozess und beendet den Unterprozess bei Timeout, einschließlich
+Netzwerkfreigaben und ohne Kindprozess- oder Worker-Freigaben. OpenClaw erzwingt einen
+Wall-Clock-Timeout im Elternprozess und beendet den Unterprozess bei Timeout, einschließlich
 nach asynchronen Fortsetzungen.
 
-Die Laufzeit stellt nur Folgendes bereit:
+Die Laufzeit stellt nur bereit:
 
 - `console.log`, `console.warn` und `console.error`
 - `openclaw.tools.search`
@@ -182,16 +182,16 @@ Die Laufzeit stellt nur Folgendes bereit:
 
 Normales OpenClaw-Verhalten gilt weiterhin für finale Aufrufe:
 
-- Tool-Zulassungs- und Ablehnungsrichtlinien
+- Tool-Allow- und Deny-Policies
 - Tool-Einschränkungen pro Agent und pro Sandbox
-- Tool-Richtlinie für Kanal/Laufzeit
+- Channel-/Laufzeit-Tool-Policy
 - Freigabe-Hooks
 - Plugin-`before_tool_call`-Hooks
 - Sitzungsidentität, Logs und Telemetrie
 
 ## Konfiguration
 
-Aktivieren Sie Tool Search für OpenClaw-Läufe mit der Standard-Code-Bridge:
+Aktivieren Sie die Werkzeugsuche für OpenClaw-Läufe mit der standardmäßigen Code-Bridge:
 
 ```bash
 openclaw config set tools.toolSearch true
@@ -231,7 +231,7 @@ Verwenden Sie stattdessen die kompakte Verzeichnisoberfläche für OpenClaw-Läu
 }
 ```
 
-Passen Sie Timeout im Code-Modus und Suchergebnislimits an:
+Passen Sie Timeout und Suchergebnisgrenzen für den Code-Modus an:
 
 ```json5
 {
@@ -258,54 +258,54 @@ Deaktivieren:
 
 ## Prompt und Telemetrie
 
-Tool Search zeichnet genug Telemetrie auf, um sie mit direkter Tool-Bereitstellung zu vergleichen:
+Die Werkzeugsuche zeichnet genug Telemetrie auf, um sie mit direkter Tool-Bereitstellung zu vergleichen:
 
-- insgesamt serialisierte Tool- und Prompt-Bytes, die an das Harness gesendet wurden
+- insgesamt serialisierte Tool- und Prompt-Bytes, die an den Harness gesendet wurden
 - Kataloggröße und Quellenaufschlüsselung
-- Such-, Beschreibungs- und Aufrufzahlen
+- Such-, Beschreibungs- und Aufrufanzahlen
 - finale Tool-Aufrufe, die über OpenClaw ausgeführt wurden
 - ausgewählte Tool-IDs und Quellen
 
 Sitzungslogs sollten es ermöglichen, Folgendes zu beantworten:
 
-- wie viele Tool-Schemas das Modell im Voraus gesehen hat
-- wie viele Such- und Beschreibungsvorgänge es ausgeführt hat
+- wie viele Tool-Schemata das Modell vorab gesehen hat
+- wie viele Such- und Beschreibungsoperationen es ausgeführt hat
 - welches finale Tool aufgerufen wurde
 - ob das Ergebnis von OpenClaw, MCP oder einem Client-Tool kam
 
 ## E2E-Validierung
 
-Der Gateway-E2E-Runner weist beide Pfade mit der OpenClaw-Laufzeit nach:
+Das Gateway-Szenario im QA Lab beweist beide Pfade mit der OpenClaw-Laufzeit:
 
 ```bash
-node --import tsx scripts/tool-search-gateway-e2e.ts
+pnpm openclaw qa suite --provider-mode mock-openai --scenario tool-search-gateway-e2e
 ```
 
-Er erstellt ein temporäres Fake-Plugin mit einem großen Tool-Katalog, startet den Mock-
-OpenAI-Provider, startet einen Gateway einmal im direkten Modus und einmal mit aktivierter Tool Search
-und vergleicht dann Provider-Anfragepayloads und Sitzungslogs.
+Es erstellt ein temporäres gefälschtes Plugin mit einem großen Tool-Katalog, startet den Mock-
+OpenAI-Provider, startet einen Gateway einmal im direkten Modus und einmal mit aktivierter Werkzeugsuche
+und vergleicht anschließend Provider-Request-Payloads und Sitzungslogs.
 
-Die Regression weist nach:
+Die Regression beweist:
 
-1. Der direkte Modus kann das Fake-Plugin-Tool aufrufen.
-2. Tool Search kann dasselbe Fake-Plugin-Tool aufrufen.
-3. Der direkte Modus stellt die Fake-Plugin-Tool-Schemas direkt für den Provider bereit.
-4. Tool Search stellt nur die kompakte Bridge bereit.
-5. Der Tool-Search-Anfragepayload ist für den großen Fake-Katalog kleiner.
-6. Sitzungslogs zeigen die erwarteten Tool-Aufrufzahlen und Telemetrie für Bridge-Aufrufe.
+1. Der direkte Modus kann das gefälschte Plugin-Tool aufrufen.
+2. Die Werkzeugsuche kann dasselbe gefälschte Plugin-Tool aufrufen.
+3. Der direkte Modus stellt die Schemata des gefälschten Plugin-Tools direkt dem Provider bereit.
+4. Die Werkzeugsuche stellt nur die kompakte Bridge bereit.
+5. Die Request-Payload der Werkzeugsuche ist für den großen gefälschten Katalog kleiner.
+6. Sitzungslogs zeigen die erwarteten Tool-Aufrufanzahlen und die Telemetrie für gebridgte Aufrufe.
 
 ## Fehlerverhalten
 
-Tool Search sollte geschlossen fehlschlagen:
+Die Werkzeugsuche sollte fail-closed sein:
 
-- Wenn ein Tool nicht in der effektiven Richtlinie enthalten ist, sollte die Suche es nicht zurückgeben
+- Wenn ein Tool nicht in der effektiven Policy enthalten ist, sollte die Suche es nicht zurückgeben
 - Wenn ein ausgewähltes Tool nicht mehr verfügbar ist, sollte `tool_call` fehlschlagen
-- Wenn Richtlinie oder Freigabe die Ausführung blockieren, sollte das Aufrufergebnis diese
+- Wenn Policy oder Freigabe die Ausführung blockieren, sollte das Aufrufergebnis diese
   Blockierung melden, statt sie zu umgehen
 - Wenn die Code-Bridge keine isolierte Laufzeit erstellen kann, verwenden Sie `mode: "tools"` oder
-  deaktivieren Sie Tool Search für diese Bereitstellung
+  deaktivieren Sie die Werkzeugsuche für diese Bereitstellung
 
-## Verwandt
+## Verwandte Themen
 
 - [Tools und Plugins](/de/tools)
 - [Multi-Agent-Sandbox und Tools](/de/tools/multi-agent-sandbox-tools)

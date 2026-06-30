@@ -1,138 +1,141 @@
 ---
 read_when:
     - ACP के माध्यम से कोडिंग हार्नेस चलाना
-    - मैसेजिंग चैनलों पर बातचीत-बाउंड ACP सत्र सेट अप करना
-    - संदेश-चैनल बातचीत को स्थायी ACP सत्र से बाँधना
-    - ACP बैकएंड, Plugin वायरिंग, या कंप्लीशन डिलीवरी का समस्या निवारण
+    - मैसेजिंग चैनलों पर बातचीत से बंधे ACP सत्र सेट अप करना
+    - किसी संदेश-चैनल वार्तालाप को स्थायी ACP सत्र से बाइंड करना
+    - ACP बैकएंड, plugin वायरिंग, या completion डिलीवरी का समस्या निवारण
     - चैट से /acp कमांड संचालित करना
 sidebarTitle: ACP agents
-summary: बाहरी कोडिंग हार्नेस (Claude Code, Cursor, Gemini CLI, स्पष्ट Codex ACP, OpenClaw ACP, OpenCode) को ACP बैकएंड के माध्यम से चलाएँ
-title: ACP एजेंट्स
+summary: ACP बैकएंड के माध्यम से बाहरी कोडिंग हार्नेस (Claude Code, Cursor, Gemini CLI, explicit Codex ACP, OpenClaw ACP, OpenCode) चलाएँ
+title: ACP एजेंट
 x-i18n:
-    generated_at: "2026-06-29T00:15:58Z"
+    generated_at: "2026-06-30T14:07:24Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a9ad2fd3dec35062209b5e66a3ec301e8fa247d10a48787e54b938b10b314aee
+    source_hash: c61edbc3b5a8303dc88e27a1315fe996da70eeee7aa211877d5680eb150e36cb
     source_path: tools/acp-agents.md
     workflow: 16
 ---
 
 [Agent Client Protocol (ACP)](https://agentclientprotocol.com/) सत्र
-OpenClaw को ACP बैकएंड Plugin के माध्यम से बाहरी कोडिंग हार्नेस (उदाहरण के लिए Claude Code,
-Cursor, Copilot, Droid, OpenClaw ACP, OpenCode, Gemini CLI, और अन्य
-समर्थित ACPX हार्नेस) चलाने देते हैं।
+OpenClaw को किसी ACP बैकएंड Plugin के ज़रिए बाहरी कोडिंग हार्नेस
+(उदाहरण के लिए Claude Code, Cursor, Copilot, Droid, OpenClaw ACP,
+OpenCode, Gemini CLI, और अन्य समर्थित ACPX हार्नेस) चलाने देते हैं।
 
-प्रत्येक ACP सत्र स्पॉन को [पृष्ठभूमि कार्य](/hi/automation/tasks) के रूप में ट्रैक किया जाता है।
+हर ACP सत्र स्पॉन को [पृष्ठभूमि कार्य](/hi/automation/tasks) के रूप में ट्रैक किया जाता है।
 
 <Note>
-**ACP बाहरी-हार्नेस पथ है, डिफ़ॉल्ट Codex पथ नहीं।** नेटिव Codex app-server Plugin `/codex ...` नियंत्रणों और एजेंट टर्न के लिए डिफ़ॉल्ट
-`openai/gpt-*` एम्बेडेड रनटाइम का स्वामी है; ACP
+**ACP बाहरी-हार्नेस पथ है, डिफ़ॉल्ट Codex पथ नहीं।** नेटिव
+Codex ऐप-सर्वर Plugin `/codex ...` नियंत्रणों और एजेंट टर्न के लिए डिफ़ॉल्ट
+`openai/gpt-*` एंबेडेड रनटाइम का स्वामी है; ACP
 `/acp ...` नियंत्रणों और `sessions_spawn({ runtime: "acp" })` सत्रों का स्वामी है।
 
-यदि आप चाहते हैं कि Codex या Claude Code बाहरी MCP क्लाइंट के रूप में
-मौजूदा OpenClaw चैनल वार्तालापों से सीधे जुड़े, तो ACP के बजाय
+यदि आप चाहते हैं कि Codex या Claude Code किसी बाहरी MCP क्लाइंट के रूप में
+मौजूदा OpenClaw चैनल वार्तालापों से सीधे कनेक्ट हो, तो ACP के बजाय
 [`openclaw mcp serve`](/hi/cli/mcp) का उपयोग करें।
 </Note>
 
-## मुझे कौन-सा पेज चाहिए?
+## मुझे कौन-सा पृष्ठ चाहिए?
 
-| आप चाहते हैं…                                                                                    | इसका उपयोग करें                              | नोट्स                                                                                                                                                                                         |
+| आप यह करना चाहते हैं…                                                                          | इसका उपयोग करें                       | नोट्स                                                                                                                                                                                         |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| मौजूदा वार्तालाप में Codex को बाइंड या नियंत्रित करना                                               | `/codex bind`, `/codex threads`       | जब `codex` Plugin सक्षम हो तो नेटिव Codex app-server पथ; इसमें बाउंड चैट उत्तर, इमेज फ़ॉरवर्डिंग, मॉडल/फास्ट/अनुमतियां, रोकना और दिशा-निर्देशन नियंत्रण शामिल हैं। ACP एक स्पष्ट फ़ॉलबैक है |
-| Claude Code, Gemini CLI, स्पष्ट Codex ACP, या किसी अन्य बाहरी हार्नेस को OpenClaw _के माध्यम से_ चलाना | यह पेज                             | चैट-बाउंड सत्र, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, पृष्ठभूमि कार्य, रनटाइम नियंत्रण                                                                                   |
-| किसी editor या क्लाइंट के लिए OpenClaw Gateway सत्र को ACP सर्वर _के रूप में_ उजागर करना                   | [`openclaw acp`](/hi/cli/acp)            | ब्रिज मोड। IDE/क्लाइंट stdio/WebSocket पर ACP के जरिए OpenClaw से बात करता है                                                                                                                            |
-| किसी local AI CLI को केवल-पाठ फ़ॉलबैक मॉडल के रूप में पुन: उपयोग करना                                              | [CLI बैकएंड](/hi/gateway/cli-backends) | ACP नहीं। कोई OpenClaw टूल नहीं, कोई ACP नियंत्रण नहीं, कोई हार्नेस रनटाइम नहीं                                                                                                                               |
+| मौजूदा वार्तालाप में Codex को बाइंड या नियंत्रित करना                                           | `/codex bind`, `/codex threads`       | जब `codex` Plugin सक्षम हो, तो नेटिव Codex ऐप-सर्वर पथ; इसमें बाउंड चैट उत्तर, इमेज फ़ॉरवर्डिंग, मॉडल/फ़ास्ट/अनुमतियाँ, स्टॉप, और स्टीयर नियंत्रण शामिल हैं। ACP एक स्पष्ट फ़ॉलबैक है |
+| Claude Code, Gemini CLI, स्पष्ट Codex ACP, या कोई अन्य बाहरी हार्नेस OpenClaw _के ज़रिए_ चलाना | यह पृष्ठ                             | चैट-बाउंड सत्र, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, पृष्ठभूमि कार्य, रनटाइम नियंत्रण                                                                                   |
+| किसी OpenClaw Gateway सत्र को किसी एडिटर या क्लाइंट के लिए ACP सर्वर _के रूप में_ उजागर करना     | [`openclaw acp`](/hi/cli/acp)            | ब्रिज मोड। IDE/क्लाइंट stdio/WebSocket पर OpenClaw से ACP के माध्यम से बात करता है                                                                                                                            |
+| किसी स्थानीय AI CLI को केवल-पाठ फ़ॉलबैक मॉडल के रूप में फिर से उपयोग करना                       | [CLI बैकएंड](/hi/gateway/cli-backends) | ACP नहीं। कोई OpenClaw टूल नहीं, कोई ACP नियंत्रण नहीं, कोई हार्नेस रनटाइम नहीं                                                                                                                               |
 
-## क्या यह सीधे काम करता है?
+## क्या यह बिना अतिरिक्त सेटअप के काम करता है?
 
-हां, आधिकारिक ACP रनटाइम Plugin इंस्टॉल करने के बाद:
+हाँ, आधिकारिक ACP रनटाइम Plugin इंस्टॉल करने के बाद:
 
 ```bash
 openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-सोर्स checkout `pnpm install` के बाद स्थानीय `extensions/acpx` workspace Plugin का उपयोग कर सकते हैं। तैयारी जांच के लिए `/acp doctor` चलाएं।
+सोर्स चेकआउट `pnpm install` के बाद स्थानीय `extensions/acpx` वर्कस्पेस
+Plugin का उपयोग कर सकते हैं। तैयारी जाँच के लिए `/acp doctor` चलाएँ।
 
-OpenClaw एजेंटों को ACP spawning के बारे में केवल तभी सिखाता है जब ACP **वास्तव में
-उपयोग योग्य** हो: ACP सक्षम होना चाहिए, dispatch अक्षम नहीं होना चाहिए, मौजूदा
-सत्र sandbox-blocked नहीं होना चाहिए, और रनटाइम बैकएंड
-लोड होना चाहिए। यदि ये शर्तें पूरी नहीं होतीं, तो ACP Plugin Skills और
-`sessions_spawn` ACP guidance छिपी रहती है ताकि एजेंट किसी अनुपलब्ध
-बैकएंड का सुझाव न दे।
+OpenClaw एजेंटों को ACP स्पॉनिंग के बारे में केवल तब सिखाता है जब ACP **वास्तव में
+उपयोग योग्य** हो: ACP सक्षम होना चाहिए, डिस्पैच अक्षम नहीं होना चाहिए, मौजूदा
+सत्र sandbox से अवरुद्ध नहीं होना चाहिए, और रनटाइम बैकएंड लोड होना चाहिए।
+यदि ये शर्तें पूरी नहीं हैं, तो ACP Plugin Skills और
+`sessions_spawn` ACP मार्गदर्शन छिपा रहता है ताकि एजेंट अनुपलब्ध बैकएंड
+का सुझाव न दे।
 
 <AccordionGroup>
-  <Accordion title="पहली बार चलाने की सावधानियां">
-    - यदि `plugins.allow` सेट है, तो यह प्रतिबंधात्मक Plugin inventory है और इसमें `acpx` **ज़रूर** शामिल होना चाहिए; अन्यथा इंस्टॉल किया गया ACP बैकएंड जानबूझकर ब्लॉक किया जाता है और `/acp doctor` missing allowlist entry रिपोर्ट करता है।
-    - Codex ACP adapter `acpx` Plugin के साथ staged होता है और संभव होने पर स्थानीय रूप से लॉन्च किया जाता है।
-    - Codex ACP एक अलग `CODEX_HOME` के साथ चलता है; OpenClaw होस्ट Codex config से trusted project entries और सुरक्षित model/provider routing config कॉपी करता है, जबकि auth, notifications, और hooks होस्ट config पर रहते हैं।
-    - अन्य target harness adapters पहली बार उपयोग करते समय अभी भी मांग पर `npx` से fetched हो सकते हैं।
-    - उस harness के लिए vendor auth अभी भी host पर मौजूद होना चाहिए।
-    - यदि host के पास npm या network access नहीं है, तो first-run adapter fetches तब तक fail होते हैं जब तक caches pre-warmed न हों या adapter किसी और तरीके से installed न हो।
+  <Accordion title="First-run gotchas">
+    - यदि `plugins.allow` सेट है, तो यह एक प्रतिबंधात्मक Plugin इन्वेंटरी है और इसमें **अवश्य** `acpx` शामिल होना चाहिए; अन्यथा इंस्टॉल किया गया ACP बैकएंड जानबूझकर अवरुद्ध किया जाता है और `/acp doctor` अनुपलब्ध allowlist प्रविष्टि की रिपोर्ट करता है।
+    - Codex ACP अडैप्टर `acpx` Plugin के साथ स्टेज किया जाता है और संभव होने पर स्थानीय रूप से लॉन्च किया जाता है।
+    - Codex ACP एक अलग `CODEX_HOME` के साथ चलता है; OpenClaw होस्ट Codex कॉन्फ़िग से विश्वसनीय प्रोजेक्ट प्रविष्टियाँ और सुरक्षित मॉडल/प्रदाता रूटिंग कॉन्फ़िग कॉपी करता है, जबकि auth, नोटिफ़िकेशन, और hooks होस्ट कॉन्फ़िग पर रहते हैं।
+    - अन्य लक्ष्य हार्नेस अडैप्टर पहली बार उपयोग करने पर अभी भी माँग पर `npx` से फ़ेच किए जा सकते हैं।
+    - उस हार्नेस के लिए विक्रेता auth अभी भी होस्ट पर मौजूद होना चाहिए।
+    - यदि होस्ट के पास npm या नेटवर्क एक्सेस नहीं है, तो पहली बार अडैप्टर फ़ेच तब तक विफल होते हैं जब तक caches पहले से तैयार न हों या अडैप्टर किसी दूसरे तरीके से इंस्टॉल न किया गया हो।
 
   </Accordion>
-  <Accordion title="रनटाइम prerequisites">
-    ACP एक वास्तविक बाहरी harness process लॉन्च करता है। OpenClaw routing,
-    background-task state, delivery, bindings, और policy का स्वामी है; harness
-    अपने provider login, model catalog, filesystem behavior, और
-    native tools का स्वामी है।
+  <Accordion title="Runtime prerequisites">
+    ACP एक वास्तविक बाहरी हार्नेस प्रक्रिया लॉन्च करता है। OpenClaw रूटिंग,
+    पृष्ठभूमि-कार्य स्थिति, डिलीवरी, बाइंडिंग, और नीति का स्वामी है; हार्नेस
+    अपने प्रदाता लॉगिन, मॉडल कैटलॉग, फ़ाइलसिस्टम व्यवहार, और नेटिव टूल्स
+    का स्वामी है।
 
-    OpenClaw को दोष देने से पहले सत्यापित करें:
+    OpenClaw को दोष देने से पहले, सत्यापित करें:
 
-    - `/acp doctor` enabled, healthy backend रिपोर्ट करता है।
-    - जब allowlist सेट हो, target id `acp.allowedAgents` द्वारा allowed हो।
-    - harness command Gateway host पर start हो सकता है।
-    - उस harness (`claude`, `codex`, `gemini`, `opencode`, `droid`, आदि) के लिए provider auth मौजूद है।
-    - चुना गया model उस harness के लिए मौजूद है - model ids harnesses के बीच portable नहीं हैं।
-    - अनुरोधित `cwd` मौजूद और accessible है, या `cwd` छोड़ दें और backend को उसका default उपयोग करने दें।
-    - Permission mode काम से मेल खाता है। Non-interactive sessions native permission prompts पर click नहीं कर सकते, इसलिए write/exec-heavy coding runs को आमतौर पर ऐसे ACPX permission profile की ज़रूरत होती है जो headlessly आगे बढ़ सके।
+    - `/acp doctor` सक्षम, स्वस्थ बैकएंड की रिपोर्ट करता है।
+    - जब allowlist सेट हो, तो लक्ष्य id `acp.allowedAgents` द्वारा अनुमत है।
+    - हार्नेस कमांड Gateway होस्ट पर शुरू हो सकता है।
+    - उस हार्नेस (`claude`, `codex`, `gemini`, `opencode`, `droid`, आदि) के लिए प्रदाता auth मौजूद है।
+    - चयनित मॉडल उस हार्नेस के लिए मौजूद है - मॉडल ids हार्नेसों के बीच पोर्टेबल नहीं होते।
+    - अनुरोधित `cwd` मौजूद और सुलभ है, या `cwd` छोड़ दें और बैकएंड को अपना डिफ़ॉल्ट उपयोग करने दें।
+    - अनुमति मोड काम से मेल खाता है। नॉन-इंटरैक्टिव सत्र नेटिव अनुमति प्रॉम्प्ट पर क्लिक नहीं कर सकते, इसलिए write/exec-भारी कोडिंग रन को आमतौर पर ऐसे ACPX अनुमति प्रोफ़ाइल की आवश्यकता होती है जो headlessly आगे बढ़ सके।
 
   </Accordion>
 </AccordionGroup>
 
-OpenClaw Plugin tools और built-in OpenClaw tools डिफ़ॉल्ट रूप से
-ACP harnesses को expose **नहीं** किए जाते। [ACP agents - setup](/hi/tools/acp-agents-setup) में explicit MCP bridges केवल तभी सक्षम करें जब harness
-को वे tools सीधे call करने चाहिए।
+OpenClaw Plugin टूल और बिल्ट-इन OpenClaw टूल डिफ़ॉल्ट रूप से
+ACP हार्नेसों को उजागर **नहीं** किए जाते। [ACP एजेंट - सेटअप](/hi/tools/acp-agents-setup)
+में स्पष्ट MCP ब्रिज केवल तब सक्षम करें जब हार्नेस को उन टूल्स को सीधे
+कॉल करना चाहिए।
 
-## समर्थित harness targets
+## समर्थित हार्नेस लक्ष्य
 
-`acpx` backend के साथ, इन harness ids को `/acp spawn <id>`
-या `sessions_spawn({ runtime: "acp", agentId: "<id>" })` targets के रूप में उपयोग करें:
+`acpx` बैकएंड के साथ, इन हार्नेस ids को `/acp spawn <id>`
+या `sessions_spawn({ runtime: "acp", agentId: "<id>" })` लक्ष्य के रूप में उपयोग करें:
 
-| Harness id | सामान्य backend                                | नोट्स                                                                               |
+| हार्नेस id | सामान्य बैकएंड                                | नोट्स                                                                               |
 | ---------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `claude`   | Claude Code ACP adapter                        | Host पर Claude Code auth आवश्यक है।                                              |
-| `codex`    | Codex ACP adapter                              | केवल तब explicit ACP fallback जब native `/codex` unavailable हो या ACP requested हो। |
-| `copilot`  | GitHub Copilot ACP adapter                     | Copilot CLI/runtime auth आवश्यक है।                                                  |
-| `cursor`   | Cursor CLI ACP (`cursor-agent acp`)            | यदि local install कोई अलग ACP entrypoint expose करता है, तो acpx command override करें।    |
-| `droid`    | Factory Droid CLI                              | Harness environment में Factory/Droid auth या `FACTORY_API_KEY` आवश्यक है।        |
-| `gemini`   | Gemini CLI ACP adapter                         | Gemini CLI auth या API key setup आवश्यक है।                                          |
-| `iflow`    | iFlow CLI                                      | Adapter availability और model control installed CLI पर निर्भर करते हैं।                 |
-| `kilocode` | Kilo Code CLI                                  | Adapter availability और model control installed CLI पर निर्भर करते हैं।                 |
-| `kimi`     | Kimi/Moonshot CLI                              | Host पर Kimi/Moonshot auth आवश्यक है।                                            |
-| `kiro`     | Kiro CLI                                       | Adapter availability और model control installed CLI पर निर्भर करते हैं।                 |
-| `opencode` | OpenCode ACP adapter                           | OpenCode CLI/provider auth आवश्यक है।                                                |
-| `openclaw` | `openclaw acp` के माध्यम से OpenClaw Gateway bridge | ACP-aware harness को OpenClaw Gateway session से वापस बात करने देता है।                 |
-| `qwen`     | Qwen Code / Qwen CLI                           | Host पर Qwen-compatible auth आवश्यक है।                                          |
+| `claude`   | Claude Code ACP अडैप्टर                        | होस्ट पर Claude Code auth आवश्यक है।                                              |
+| `codex`    | Codex ACP अडैप्टर                              | केवल स्पष्ट ACP फ़ॉलबैक, जब नेटिव `/codex` अनुपलब्ध हो या ACP का अनुरोध किया गया हो। |
+| `copilot`  | GitHub Copilot ACP अडैप्टर                     | Copilot CLI/रनटाइम auth आवश्यक है।                                                  |
+| `cursor`   | Cursor CLI ACP (`cursor-agent acp`)            | यदि स्थानीय इंस्टॉल अलग ACP entrypoint उजागर करता है, तो acpx कमांड override करें।    |
+| `droid`    | Factory Droid CLI                              | हार्नेस वातावरण में Factory/Droid auth या `FACTORY_API_KEY` आवश्यक है।        |
+| `gemini`   | Gemini CLI ACP अडैप्टर                         | Gemini CLI auth या API key सेटअप आवश्यक है।                                          |
+| `iflow`    | iFlow CLI                                      | अडैप्टर उपलब्धता और मॉडल नियंत्रण इंस्टॉल किए गए CLI पर निर्भर करते हैं।                 |
+| `kilocode` | Kilo Code CLI                                  | अडैप्टर उपलब्धता और मॉडल नियंत्रण इंस्टॉल किए गए CLI पर निर्भर करते हैं।                 |
+| `kimi`     | Kimi/Moonshot CLI                              | होस्ट पर Kimi/Moonshot auth आवश्यक है।                                            |
+| `kiro`     | Kiro CLI                                       | अडैप्टर उपलब्धता और मॉडल नियंत्रण इंस्टॉल किए गए CLI पर निर्भर करते हैं।                 |
+| `opencode` | OpenCode ACP अडैप्टर                           | OpenCode CLI/प्रदाता auth आवश्यक है।                                                |
+| `openclaw` | `openclaw acp` के ज़रिए OpenClaw Gateway ब्रिज | ACP-सक्षम हार्नेस को OpenClaw Gateway सत्र से वापस बात करने देता है।                 |
+| `qwen`     | Qwen Code / Qwen CLI                           | होस्ट पर Qwen-संगत auth आवश्यक है।                                          |
 
-Custom acpx agent aliases स्वयं acpx में configured किए जा सकते हैं, लेकिन OpenClaw
-policy फिर भी dispatch से पहले `acp.allowedAgents` और किसी भी
-`agents.list[].runtime.acp.agent` mapping की जांच करती है।
+कस्टम acpx एजेंट उपनाम acpx में ही कॉन्फ़िग किए जा सकते हैं, लेकिन OpenClaw
+नीति फिर भी डिस्पैच से पहले `acp.allowedAgents` और किसी भी
+`agents.list[].runtime.acp.agent` मैपिंग की जाँच करती है।
 
-## ऑपरेटर runbook
+## ऑपरेटर रनबुक
 
-Chat से त्वरित `/acp` flow:
+चैट से त्वरित `/acp` फ़्लो:
 
 <Steps>
   <Step title="Spawn">
     `/acp spawn claude --bind here`,
-    `/acp spawn gemini --mode persistent --thread auto`, या explicit
+    `/acp spawn gemini --mode persistent --thread auto`, या स्पष्ट
     `/acp spawn codex --bind here`.
   </Step>
   <Step title="Work">
-    Bound conversation या thread में जारी रखें (या session
-    key को explicitly target करें).
+    बाउंड वार्तालाप या थ्रेड में जारी रखें (या सत्र
+    key को स्पष्ट रूप से लक्षित करें)।
   </Step>
   <Step title="Check state">
     `/acp status`
@@ -143,139 +146,139 @@ Chat से त्वरित `/acp` flow:
     `/acp timeout <seconds>`.
   </Step>
   <Step title="Steer">
-    Context बदले बिना: `/acp steer tighten logging and continue`.
+    संदर्भ बदले बिना: `/acp steer tighten logging and continue`.
   </Step>
   <Step title="Stop">
-    `/acp cancel` (current turn) या `/acp close` (session + bindings).
+    `/acp cancel` (मौजूदा टर्न) या `/acp close` (सत्र + बाइंडिंग)।
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="Lifecycle details">
-    - Spawn ACP runtime session बनाता या resume करता है, OpenClaw session store में ACP metadata record करता है, और जब run parent-owned हो तो background task बना सकता है।
-    - Parent-owned ACP sessions को background work माना जाता है, भले ही runtime session persistent हो; completion और cross-surface delivery सामान्य user-facing chat session की तरह act करने के बजाय parent task notifier से गुजरते हैं।
-    - Task maintenance terminal या orphaned parent-owned one-shot ACP sessions को close करता है। Persistent ACP sessions तब तक preserved रहते हैं जब तक active conversation binding बनी रहे; active binding के बिना stale persistent sessions close कर दिए जाते हैं ताकि owning task done होने या task record gone होने के बाद वे silently resumed न हो सकें।
-    - Bound follow-up messages binding closed, unfocused, reset, या expired होने तक सीधे ACP session को जाते हैं।
-    - Gateway commands local रहते हैं। `/acp ...`, `/status`, और `/unfocus` कभी भी bound ACP harness को normal prompt text के रूप में नहीं भेजे जाते।
-    - `cancel` active turn को abort करता है जब backend cancellation support करता है; यह binding या session metadata delete नहीं करता।
-    - `close` OpenClaw के दृष्टिकोण से ACP session समाप्त करता है और binding हटाता है। यदि harness resume support करता है, तो वह अपना upstream history अभी भी रख सकता है।
-    - acpx Plugin `close` के बाद OpenClaw-owned wrapper और adapter process trees clean up करता है, और Gateway startup के दौरान stale OpenClaw-owned ACPX orphans को reap करता है।
-    - Idle runtime workers `acp.runtime.ttlMinutes` के बाद cleanup के eligible होते हैं; stored session metadata `/acp sessions` के लिए available रहता है।
+    - स्पॉन ACP रनटाइम सत्र बनाता या फिर से शुरू करता है, OpenClaw सत्र स्टोर में ACP मेटाडेटा रिकॉर्ड करता है, और जब रन parent-owned हो तो पृष्ठभूमि कार्य बना सकता है।
+    - Parent-owned ACP सत्रों को पृष्ठभूमि कार्य माना जाता है, भले ही रनटाइम सत्र persistent हो; पूर्णता और cross-surface डिलीवरी सामान्य user-facing चैट सत्र की तरह कार्य करने के बजाय parent task notifier से गुजरती है।
+    - कार्य रखरखाव terminal या orphaned parent-owned one-shot ACP सत्रों को बंद करता है। Persistent ACP सत्र तब तक संरक्षित रहते हैं जब तक सक्रिय वार्तालाप बाइंडिंग बनी रहती है; सक्रिय बाइंडिंग के बिना stale persistent सत्र बंद कर दिए जाते हैं ताकि owning task पूरा होने या उसका task record हट जाने के बाद उन्हें चुपचाप फिर से शुरू न किया जा सके।
+    - बाउंड follow-up संदेश सीधे ACP सत्र में जाते हैं जब तक बाइंडिंग बंद, unfocused, reset, या expired न हो जाए।
+    - Gateway कमांड स्थानीय रहते हैं। `/acp ...`, `/status`, और `/unfocus` को कभी भी सामान्य prompt text के रूप में बाउंड ACP हार्नेस को नहीं भेजा जाता।
+    - जब बैकएंड cancellation का समर्थन करता है, तो `cancel` सक्रिय टर्न को रोकता है; यह बाइंडिंग या सत्र मेटाडेटा को नहीं हटाता।
+    - `close` OpenClaw के दृष्टिकोण से ACP सत्र समाप्त करता है और बाइंडिंग हटाता है। यदि हार्नेस resume का समर्थन करता है, तो वह अभी भी अपना upstream history रख सकता है।
+    - acpx Plugin `close` के बाद OpenClaw-owned wrapper और अडैप्टर process trees साफ करता है, और Gateway startup के दौरान stale OpenClaw-owned ACPX orphans को reap करता है।
+    - Idle रनटाइम workers `acp.runtime.ttlMinutes` के बाद cleanup के पात्र होते हैं; संग्रहित सत्र मेटाडेटा `/acp sessions` के लिए उपलब्ध रहता है।
 
   </Accordion>
   <Accordion title="Native Codex routing rules">
-    Natural-language triggers जिन्हें enabled होने पर **native Codex
-    Plugin** को route करना चाहिए:
+    Natural-language triggers जिन्हें सक्षम होने पर **नेटिव Codex
+    Plugin** तक route होना चाहिए:
 
-    - "इस Discord channel को Codex से bind करें।"
-    - "इस chat को Codex thread `<id>` से attach करें।"
-    - "Codex threads दिखाएं, फिर इसे bind करें।"
+    - "इस Discord चैनल को Codex से bind करें।"
+    - "इस चैट को Codex thread `<id>` से attach करें।"
+    - "Codex threads दिखाएँ, फिर इसे bind करें।"
 
-    मूल Codex वार्तालाप बाइंडिंग डिफ़ॉल्ट चैट-नियंत्रण पथ है।
-    OpenClaw डायनेमिक टूल अभी भी OpenClaw के माध्यम से निष्पादित होते हैं, जबकि
-    शेल/apply-patch जैसे Codex-मूल टूल Codex के अंदर निष्पादित होते हैं।
-    Codex-मूल टूल इवेंट के लिए, OpenClaw प्रति-टर्न मूल
-    हुक रिले इंजेक्ट करता है ताकि plugin हुक `before_tool_call` को ब्लॉक कर सकें,
-    `after_tool_call` को देख सकें, और Codex `PermissionRequest` इवेंट को
-    OpenClaw अनुमोदनों के माध्यम से रूट कर सकें। Codex `Stop` हुक
-    OpenClaw `before_agent_finalize` तक रिले किए जाते हैं, जहाँ plugin Codex के अपना उत्तर
-    अंतिम करने से पहले एक और मॉडल पास का अनुरोध कर सकते हैं। रिले जानबूझकर
-    रूढ़िवादी रहता है: यह Codex-मूल टूल
-    आर्ग्युमेंट को बदलता नहीं है या Codex थ्रेड रिकॉर्ड को फिर से नहीं लिखता है। स्पष्ट ACP का उपयोग केवल
-    तब करें जब आप ACP रनटाइम/सेशन मॉडल चाहते हों। एम्बेडेड Codex
-    समर्थन सीमा
-    [Codex हार्नेस v1 समर्थन अनुबंध](/hi/plugins/codex-harness-runtime#v1-support-contract) में दस्तावेज़ित है।
+    नेटिव Codex बातचीत बाइंडिंग डिफ़ॉल्ट चैट-नियंत्रण पथ है।
+    OpenClaw डायनामिक टूल अब भी OpenClaw के माध्यम से निष्पादित होते हैं, जबकि
+    shell/apply-patch जैसे Codex-नेटिव टूल Codex के भीतर निष्पादित होते हैं।
+    Codex-नेटिव टूल इवेंट्स के लिए, OpenClaw प्रति-टर्न नेटिव
+    hook relay इंजेक्ट करता है ताकि plugin hooks `before_tool_call` को ब्लॉक कर सकें, `after_tool_call` को देख सकें,
+    और Codex `PermissionRequest` इवेंट्स को
+    OpenClaw अनुमोदनों के माध्यम से रूट कर सकें। Codex `Stop` hooks को
+    OpenClaw `before_agent_finalize` तक रिले किया जाता है, जहां plugins Codex द्वारा अपना उत्तर अंतिम करने से पहले एक और
+    model pass का अनुरोध कर सकते हैं। relay जानबूझकर
+    संयमित रहता है: यह Codex-नेटिव टूल
+    arguments को mutate नहीं करता या Codex thread records को rewrite नहीं करता। स्पष्ट ACP का उपयोग केवल
+    तब करें जब आप ACP runtime/session model चाहते हों। embedded Codex
+    support boundary को
+    [Codex harness v1 support contract](/hi/plugins/codex-harness-runtime#v1-support-contract) में दस्तावेज़ित किया गया है।
 
   </Accordion>
-  <Accordion title="Model / provider / runtime selection cheat sheet">
-    - लेगेसी Codex मॉडल रेफ़ - लेगेसी Codex OAuth/सदस्यता मॉडल रूट doctor द्वारा सुधारा गया।
-    - `openai/*` - OpenAI एजेंट टर्न के लिए मूल Codex ऐप-सर्वर एम्बेडेड रनटाइम।
-    - `/codex ...` - मूल Codex वार्तालाप नियंत्रण।
-    - `/acp ...` या `runtime: "acp"` - स्पष्ट ACP/acpx नियंत्रण।
+  <Accordion title="Model / provider / runtime चयन cheat sheet">
+    - legacy Codex model refs - legacy Codex OAuth/subscription model route जिसे doctor द्वारा सुधारा गया।
+    - `openai/*` - OpenAI agent turns के लिए नेटिव Codex app-server embedded runtime।
+    - `/codex ...` - नेटिव Codex conversation control।
+    - `/acp ...` या `runtime: "acp"` - स्पष्ट ACP/acpx control।
 
   </Accordion>
   <Accordion title="ACP-routing natural-language triggers">
-    वे ट्रिगर जिन्हें ACP रनटाइम पर रूट होना चाहिए:
+    वे triggers जिन्हें ACP runtime पर route होना चाहिए:
 
-    - "इसे एक-बारगी Claude Code ACP सेशन के रूप में चलाएँ और परिणाम का सारांश दें।"
-    - "इस कार्य के लिए Gemini CLI का उपयोग एक थ्रेड में करें, फिर फ़ॉलो-अप उसी थ्रेड में रखें।"
-    - "Codex को ACP के माध्यम से बैकग्राउंड थ्रेड में चलाएँ।"
+    - "इसे one-shot Claude Code ACP session के रूप में चलाएं और परिणाम का सारांश दें।"
+    - "इस task के लिए Gemini CLI को thread में उपयोग करें, फिर follow-ups उसी thread में रखें।"
+    - "Codex को ACP के माध्यम से background thread में चलाएं।"
 
-    OpenClaw `runtime: "acp"` चुनता है, हार्नेस `agentId` को रिज़ॉल्व करता है,
-    समर्थित होने पर वर्तमान वार्तालाप या थ्रेड से बाइंड करता है, और
-    बंद/समाप्ति तक फ़ॉलो-अप को उस सेशन पर रूट करता है। Codex इस पथ का पालन केवल
-    तब करता है जब ACP/acpx स्पष्ट हो या अनुरोधित ऑपरेशन के लिए मूल Codex
-    plugin उपलब्ध न हो।
+    OpenClaw `runtime: "acp"` चुनता है, harness `agentId` resolve करता है,
+    supported होने पर current conversation या thread से bind करता है, और
+    close/expiry तक follow-ups को उस session में route करता है। Codex इस path का अनुसरण केवल
+    तब करता है जब ACP/acpx स्पष्ट हो या native Codex
+    plugin requested operation के लिए unavailable हो।
 
-    `sessions_spawn` के लिए, `runtime: "acp"` केवल तब विज्ञापित किया जाता है जब ACP
-    सक्षम हो, अनुरोधकर्ता सैंडबॉक्स्ड न हो, और कोई ACP रनटाइम
-    बैकएंड लोड हो। `acp.dispatch.enabled=false` स्वचालित
-    ACP थ्रेड डिस्पैच को रोकता है, लेकिन स्पष्ट
-    `sessions_spawn({ runtime: "acp" })` कॉल को छिपाता या ब्लॉक नहीं करता। यह `codex`,
-    `claude`, `droid`, `gemini`, या `opencode` जैसे ACP हार्नेस id को लक्षित करता है। `agents_list` से कोई सामान्य
-    OpenClaw कॉन्फ़िग एजेंट id पास न करें, जब तक कि वह एंट्री
-    स्पष्ट रूप से `agents.list[].runtime.type="acp"` के साथ कॉन्फ़िग न हो;
-    अन्यथा डिफ़ॉल्ट सब-एजेंट रनटाइम का उपयोग करें। जब कोई OpenClaw एजेंट
-    `runtime.type="acp"` के साथ कॉन्फ़िग होता है, OpenClaw अंतर्निहित हार्नेस id के रूप में
-    `runtime.acp.agent` का उपयोग करता है।
+    `sessions_spawn` के लिए, `runtime: "acp"` केवल तब advertised होता है जब ACP
+    enabled हो, requester sandboxed न हो, और ACP runtime
+    backend loaded हो। `acp.dispatch.enabled=false` automatic
+    ACP thread dispatch को pause करता है, लेकिन explicit
+    `sessions_spawn({ runtime: "acp" })` calls को hide या block नहीं करता। यह `codex`,
+    `claude`, `droid`, `gemini`, या `opencode` जैसे ACP harness ids को target करता है। `agents_list` से कोई normal
+    OpenClaw config agent id pass न करें, जब तक वह entry
+    explicitly `agents.list[].runtime.type="acp"` के साथ configured न हो;
+    अन्यथा default sub-agent runtime का उपयोग करें। जब कोई OpenClaw agent
+    `runtime.type="acp"` के साथ configured होता है, OpenClaw
+    `runtime.acp.agent` को underlying harness id के रूप में उपयोग करता है।
 
   </Accordion>
 </AccordionGroup>
 
-## ACP बनाम सब-एजेंट
+## ACP बनाम sub-agents
 
-जब आप बाहरी हार्नेस रनटाइम चाहते हों, ACP का उपयोग करें। जब `codex`
-plugin सक्षम हो, Codex वार्तालाप बाइंडिंग/नियंत्रण के लिए **मूल Codex
-ऐप-सर्वर** का उपयोग करें। जब आप OpenClaw-मूल
-डेलीगेटेड रन चाहते हों, **सब-एजेंट** का उपयोग करें।
+जब आप external harness runtime चाहते हों तो ACP का उपयोग करें। `codex`
+plugin enabled होने पर Codex conversation binding/control के लिए **native Codex
+app-server** का उपयोग करें। जब आप OpenClaw-native
+delegated runs चाहते हों तो **sub-agents** का उपयोग करें।
 
-| क्षेत्र          | ACP सेशन                           | सब-एजेंट रन                      |
+| क्षेत्र          | ACP session                           | Sub-agent run                      |
 | ------------- | ------------------------------------- | ---------------------------------- |
-| रनटाइम       | ACP बैकएंड plugin (उदाहरण के लिए acpx) | OpenClaw मूल सब-एजेंट रनटाइम  |
-| सेशन कुंजी   | `agent:<agentId>:acp:<uuid>`          | `agent:<agentId>:subagent:<uuid>`  |
-| मुख्य कमांड | `/acp ...`                            | `/subagents ...`                   |
-| स्पॉन टूल    | `runtime:"acp"` के साथ `sessions_spawn` | `sessions_spawn` (डिफ़ॉल्ट रनटाइम) |
+| Runtime       | ACP backend plugin (उदाहरण के लिए acpx) | OpenClaw native sub-agent runtime  |
+| Session key   | `agent:<agentId>:acp:<uuid>`          | `agent:<agentId>:subagent:<uuid>`  |
+| मुख्य commands | `/acp ...`                            | `/subagents ...`                   |
+| Spawn tool    | `sessions_spawn` with `runtime:"acp"` | `sessions_spawn` (default runtime) |
 
-[सब-एजेंट](/hi/tools/subagents) भी देखें।
+यह भी देखें [Sub-agents](/hi/tools/subagents)।
 
 ## ACP Claude Code कैसे चलाता है
 
-ACP के माध्यम से Claude Code के लिए, स्टैक है:
+ACP के माध्यम से Claude Code के लिए, stack है:
 
-1. OpenClaw ACP सेशन नियंत्रण प्लेन।
-2. आधिकारिक `@openclaw/acpx` रनटाइम plugin।
-3. Claude ACP एडैप्टर।
-4. Claude-पक्ष रनटाइम/सेशन मशीनरी।
+1. OpenClaw ACP session control plane।
+2. Official `@openclaw/acpx` runtime plugin।
+3. Claude ACP adapter।
+4. Claude-side runtime/session machinery।
 
-ACP Claude ACP नियंत्रणों, सेशन रिज़्यूम,
-बैकग्राउंड-टास्क ट्रैकिंग, और वैकल्पिक वार्तालाप/थ्रेड बाइंडिंग वाला एक **हार्नेस सेशन** है।
+ACP Claude एक **harness session** है जिसमें ACP controls, session resume,
+background-task tracking, और optional conversation/thread binding होते हैं।
 
-CLI बैकएंड अलग टेक्स्ट-केवल स्थानीय फ़ॉलबैक रनटाइम हैं - देखें
-[CLI बैकएंड](/hi/gateway/cli-backends)।
+CLI backends अलग text-only local fallback runtimes हैं - देखें
+[CLI Backends](/hi/gateway/cli-backends)।
 
-ऑपरेटरों के लिए, व्यावहारिक नियम है:
+Operators के लिए, practical rule है:
 
-- **`/acp spawn`, बाइंड किए जा सकने वाले सेशन, रनटाइम नियंत्रण, या स्थायी हार्नेस कार्य चाहते हैं?** ACP का उपयोग करें।
-- **कच्चे CLI के माध्यम से सरल स्थानीय टेक्स्ट फ़ॉलबैक चाहते हैं?** CLI बैकएंड का उपयोग करें।
+- **क्या `/acp spawn`, bindable sessions, runtime controls, या persistent harness work चाहिए?** ACP का उपयोग करें।
+- **क्या raw CLI के माध्यम से simple local text fallback चाहिए?** CLI backends का उपयोग करें।
 
-## बाउंड सेशन
+## Bound sessions
 
-### मानसिक मॉडल
+### Mental model
 
-- **चैट सतह** - जहाँ लोग बातचीत जारी रखते हैं (Discord चैनल, Telegram टॉपिक, iMessage चैट)।
-- **ACP सेशन** - टिकाऊ Codex/Claude/Gemini रनटाइम स्थिति जिस पर OpenClaw रूट करता है।
-- **चाइल्ड थ्रेड/टॉपिक** - केवल `--thread ...` द्वारा बनाई गई वैकल्पिक अतिरिक्त मैसेजिंग सतह।
-- **रनटाइम वर्कस्पेस** - फ़ाइलसिस्टम स्थान (`cwd`, रेपो चेकआउट, बैकएंड वर्कस्पेस) जहाँ हार्नेस चलता है। चैट सतह से स्वतंत्र।
+- **Chat surface** - जहां लोग बात करना जारी रखते हैं (Discord channel, Telegram topic, iMessage chat)।
+- **ACP session** - टिकाऊ Codex/Claude/Gemini runtime state जिसे OpenClaw route करता है।
+- **Child thread/topic** - केवल `--thread ...` द्वारा बनाया गया optional extra messaging surface।
+- **Runtime workspace** - filesystem location (`cwd`, repo checkout, backend workspace) जहां harness चलता है। chat surface से स्वतंत्र।
 
-### वर्तमान-वार्तालाप बाइंड
+### Current-conversation binds
 
-`/acp spawn <harness> --bind here` वर्तमान वार्तालाप को
-स्पॉन किए गए ACP सेशन से पिन करता है - कोई चाइल्ड थ्रेड नहीं, वही चैट सतह। OpenClaw
-ट्रांसपोर्ट, ऑथ, सुरक्षा, और डिलीवरी का स्वामित्व बनाए रखता है। उस
-वार्तालाप में फ़ॉलो-अप संदेश उसी सेशन पर रूट होते हैं; `/new` और `/reset`
-सेशन को उसी जगह रीसेट करते हैं; `/acp close` बाइंडिंग हटाता है।
+`/acp spawn <harness> --bind here` current conversation को
+spawned ACP session से pin करता है - कोई child thread नहीं, वही chat surface। OpenClaw
+transport, auth, safety, और delivery का स्वामी बना रहता है। उस
+conversation में follow-up messages उसी session पर route होते हैं; `/new` और `/reset`
+session को वहीं reset करते हैं; `/acp close` binding को हटाता है।
 
-उदाहरण:
+Examples:
 
 ```text
 /codex bind                                              # native Codex bind, route future messages here
@@ -288,96 +291,96 @@ CLI बैकएंड अलग टेक्स्ट-केवल स्था
 
 <AccordionGroup>
   <Accordion title="Binding rules and exclusivity">
-    - `--bind here` और `--thread ...` परस्पर अनन्य हैं।
-    - `--bind here` केवल उन चैनलों पर काम करता है जो वर्तमान-वार्तालाप बाइंडिंग विज्ञापित करते हैं; अन्यथा OpenClaw स्पष्ट असमर्थित संदेश लौटाता है। बाइंडिंग Gateway रीस्टार्ट के पार बनी रहती हैं।
-    - Discord पर, `spawnSessions` `--thread auto|here` के लिए चाइल्ड थ्रेड निर्माण को गेट करता है - `--bind here` को नहीं।
-    - यदि आप `--cwd` के बिना किसी अलग ACP एजेंट पर स्पॉन करते हैं, तो OpenClaw डिफ़ॉल्ट रूप से **लक्ष्य एजेंट का** वर्कस्पेस इनहेरिट करता है। अनुपस्थित इनहेरिट किए गए पथ (`ENOENT`/`ENOTDIR`) बैकएंड डिफ़ॉल्ट पर फ़ॉलबैक करते हैं; अन्य एक्सेस त्रुटियाँ (जैसे `EACCES`) स्पॉन त्रुटियों के रूप में सामने आती हैं।
-    - Gateway प्रबंधन कमांड बाउंड वार्तालापों में स्थानीय रहते हैं - `/acp ...` कमांड OpenClaw द्वारा संभाले जाते हैं, भले ही सामान्य फ़ॉलो-अप टेक्स्ट बाउंड ACP सेशन पर रूट हो; `/status` और `/unfocus` भी जब भी उस सतह के लिए कमांड हैंडलिंग सक्षम हो, स्थानीय रहते हैं।
+    - `--bind here` और `--thread ...` परस्पर exclusive हैं।
+    - `--bind here` केवल उन channels पर काम करता है जो current-conversation binding advertise करते हैं; अन्यथा OpenClaw एक स्पष्ट unsupported message लौटाता है। Bindings gateway restarts के पार persist रहती हैं।
+    - Discord पर, `spawnSessions` `--thread auto|here` के लिए child thread creation को gate करता है - `--bind here` को नहीं।
+    - यदि आप `--cwd` के बिना किसी अलग ACP agent पर spawn करते हैं, तो OpenClaw default रूप से **target agent's** workspace inherit करता है। Missing inherited paths (`ENOENT`/`ENOTDIR`) backend default पर fall back करते हैं; अन्य access errors (जैसे `EACCES`) spawn errors के रूप में surface होते हैं।
+    - Gateway management commands bound conversations में local रहती हैं - `/acp ...` commands OpenClaw द्वारा handled होती हैं, भले ही normal follow-up text bound ACP session पर route हो; `/status` और `/unfocus` भी तब local रहते हैं जब उस surface के लिए command handling enabled हो।
 
   </Accordion>
   <Accordion title="Thread-bound sessions">
-    जब किसी चैनल एडैप्टर के लिए थ्रेड बाइंडिंग सक्षम हों:
+    जब किसी channel adapter के लिए thread bindings enabled हों:
 
-    - OpenClaw किसी थ्रेड को लक्ष्य ACP सेशन से बाइंड करता है।
-    - उस थ्रेड में फ़ॉलो-अप संदेश बाउंड ACP सेशन पर रूट होते हैं।
-    - ACP आउटपुट उसी थ्रेड में वापस डिलीवर किया जाता है।
-    - अनफ़ोकस/बंद/आर्काइव/आइडल-टाइमआउट या अधिकतम-आयु समाप्ति बाइंडिंग हटाती है।
-    - `/acp close`, `/acp cancel`, `/acp status`, `/status`, और `/unfocus` Gateway कमांड हैं, ACP हार्नेस के लिए प्रॉम्प्ट नहीं।
+    - OpenClaw किसी thread को target ACP session से bind करता है।
+    - उस thread में follow-up messages bound ACP session पर route होते हैं।
+    - ACP output उसी thread में वापस delivered होता है।
+    - Unfocus/close/archive/idle-timeout या max-age expiry binding को हटा देता है।
+    - `/acp close`, `/acp cancel`, `/acp status`, `/status`, और `/unfocus` Gateway commands हैं, ACP harness के लिए prompts नहीं।
 
-    थ्रेड-बाउंड ACP के लिए आवश्यक फ़ीचर फ़्लैग:
+    Thread-bound ACP के लिए आवश्यक feature flags:
 
     - `acp.enabled=true`
-    - `acp.dispatch.enabled` डिफ़ॉल्ट रूप से चालू है (स्वचालित ACP थ्रेड डिस्पैच रोकने के लिए `false` सेट करें; स्पष्ट `sessions_spawn({ runtime: "acp" })` कॉल अभी भी काम करते हैं)।
-    - चैनल-एडैप्टर थ्रेड सेशन स्पॉन सक्षम (डिफ़ॉल्ट: `true`):
+    - `acp.dispatch.enabled` default रूप से on है (`false` set करें ताकि automatic ACP thread dispatch pause हो; explicit `sessions_spawn({ runtime: "acp" })` calls फिर भी काम करते हैं)।
+    - Channel-adapter thread session spawns enabled (default: `true`):
       - Discord: `channels.discord.threadBindings.spawnSessions=true`
       - Telegram: `channels.telegram.threadBindings.spawnSessions=true`
 
-    थ्रेड बाइंडिंग समर्थन एडैप्टर-विशिष्ट है। यदि सक्रिय चैनल
-    एडैप्टर थ्रेड बाइंडिंग का समर्थन नहीं करता, तो OpenClaw स्पष्ट
-    असमर्थित/अनुपलब्ध संदेश लौटाता है।
+    Thread binding support adapter-specific है। यदि active channel
+    adapter thread bindings support नहीं करता, तो OpenClaw एक स्पष्ट
+    unsupported/unavailable message लौटाता है।
 
   </Accordion>
   <Accordion title="Thread-supporting channels">
-    - कोई भी चैनल एडैप्टर जो सेशन/थ्रेड बाइंडिंग क्षमता उजागर करता है।
-    - वर्तमान अंतर्निहित समर्थन: **Discord** थ्रेड/चैनल, **Telegram** टॉपिक (समूहों/सुपरग्रुप में फ़ोरम टॉपिक और DM टॉपिक)।
-    - Plugin चैनल उसी बाइंडिंग इंटरफ़ेस के माध्यम से समर्थन जोड़ सकते हैं।
+    - कोई भी channel adapter जो session/thread binding capability expose करता है।
+    - Current built-in support: **Discord** threads/channels, **Telegram** topics (groups/supergroups में forum topics और DM topics)।
+    - Plugin channels उसी binding interface के माध्यम से support जोड़ सकते हैं।
 
   </Accordion>
 </AccordionGroup>
 
-## स्थायी चैनल बाइंडिंग
+## Persistent channel bindings
 
-गैर-क्षणिक वर्कफ़्लो के लिए, शीर्ष-स्तरीय
-`bindings[]` एंट्री में स्थायी ACP बाइंडिंग कॉन्फ़िग करें।
+Non-ephemeral workflows के लिए, persistent ACP bindings को
+top-level `bindings[]` entries में configure करें।
 
-### बाइंडिंग मॉडल
+### Binding model
 
 <ParamField path="bindings[].type" type='"acp"'>
-  स्थायी ACP वार्तालाप बाइंडिंग को चिह्नित करता है।
+  Persistent ACP conversation binding mark करता है।
 </ParamField>
 <ParamField path="bindings[].match" type="object">
-  लक्ष्य वार्तालाप की पहचान करता है। प्रति-चैनल आकार:
+  Target conversation identify करता है। Per-channel shapes:
 
-- **Discord चैनल/थ्रेड:** `match.channel="discord"` + `match.peer.id="<channelOrThreadId>"`
-- **Slack चैनल/DM:** `match.channel="slack"` + `match.peer.id="<channelId|channel:<channelId>|#<channelId>|userId|user:<userId>|slack:<userId>|<@userId>>"`। स्थिर Slack ids को प्राथमिकता दें; चैनल बाइंडिंग उस चैनल के थ्रेड के अंदर जवाबों से भी मेल खाती हैं।
-- **Telegram फ़ोरम टॉपिक:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
-- **WhatsApp DM/समूह:** `match.channel="whatsapp"` + `match.peer.id="<E.164|group JID>"`। सीधे चैट के लिए `+15555550123` जैसे E.164 नंबर और समूहों के लिए `120363424282127706@g.us` जैसे WhatsApp समूह JID उपयोग करें।
-- **iMessage DM/समूह:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`। स्थिर समूह बाइंडिंग के लिए `chat_id:*` को प्राथमिकता दें।
+- **Discord channel/thread:** `match.channel="discord"` + `match.peer.id="<channelOrThreadId>"`
+- **Slack channel/DM:** `match.channel="slack"` + `match.peer.id="<channelId|channel:<channelId>|#<channelId>|userId|user:<userId>|slack:<userId>|<@userId>>"`। Stable Slack ids को prefer करें; channel bindings उस channel के threads के अंदर replies से भी match करती हैं।
+- **Telegram forum topic:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
+- **WhatsApp DM/group:** `match.channel="whatsapp"` + `match.peer.id="<E.164|group JID>"`। Direct chats के लिए `+15555550123` जैसे E.164 numbers और groups के लिए `120363424282127706@g.us` जैसे WhatsApp group JIDs उपयोग करें।
+- **iMessage DM/group:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`। Stable group bindings के लिए `chat_id:*` prefer करें।
 
 </ParamField>
 <ParamField path="bindings[].agentId" type="string">
-  स्वामी OpenClaw एजेंट id।
+  Owning OpenClaw agent id।
 </ParamField>
 <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
-  वैकल्पिक ACP ओवरराइड।
+  Optional ACP override।
 </ParamField>
 <ParamField path="bindings[].acp.label" type="string">
-  वैकल्पिक ऑपरेटर-समक्ष लेबल।
+  Optional operator-facing label।
 </ParamField>
 <ParamField path="bindings[].acp.cwd" type="string">
-  वैकल्पिक रनटाइम कार्यशील डायरेक्टरी।
+  Optional runtime working directory।
 </ParamField>
 <ParamField path="bindings[].acp.backend" type="string">
-  वैकल्पिक बैकएंड ओवरराइड।
+  Optional backend override।
 </ParamField>
 
-### प्रति एजेंट रनटाइम डिफ़ॉल्ट
+### Runtime defaults per agent
 
-प्रति एजेंट एक बार ACP डिफ़ॉल्ट परिभाषित करने के लिए `agents.list[].runtime` का उपयोग करें:
+प्रति agent ACP defaults को एक बार define करने के लिए `agents.list[].runtime` का उपयोग करें:
 
 - `agents.list[].runtime.type="acp"`
-- `agents.list[].runtime.acp.agent` (हार्नेस id, जैसे `codex` या `claude`)
+- `agents.list[].runtime.acp.agent` (harness id, जैसे `codex` या `claude`)
 - `agents.list[].runtime.acp.backend`
 - `agents.list[].runtime.acp.mode`
 - `agents.list[].runtime.acp.cwd`
 
-**ACP बाउंड सेशन के लिए ओवरराइड प्राथमिकता:**
+**ACP bound sessions के लिए override precedence:**
 
 1. `bindings[].acp.*`
 2. `agents.list[].runtime.acp.*`
-3. वैश्विक ACP डिफ़ॉल्ट (जैसे `acp.backend`)
+3. Global ACP defaults (जैसे `acp.backend`)
 
-### उदाहरण
+### Example
 
 ```json5
 {
@@ -459,21 +462,21 @@ CLI बैकएंड अलग टेक्स्ट-केवल स्था
 
 ### व्यवहार
 
-- OpenClaw चैनल-विशिष्ट प्रवेश के बाद और उपयोग से पहले सुनिश्चित करता है कि कॉन्फ़िगर किया गया ACP सेशन मौजूद है।
-- उस चैनल, टॉपिक या चैट के संदेश कॉन्फ़िगर किए गए ACP सेशन पर रूट होते हैं।
-- कॉन्फ़िगर की गई ACP bindings अपने सेशन रूट की मालिक होती हैं। चैनल broadcast fan-out मिलान वाली binding के लिए कॉन्फ़िगर किए गए ACP सेशन को प्रतिस्थापित नहीं करता।
-- बाउंड बातचीत में, `/new` और `/reset` उसी ACP सेशन कुंजी को उसी स्थान पर रीसेट करते हैं।
-- अस्थायी runtime bindings (उदाहरण के लिए thread-focus flows द्वारा बनाई गई) मौजूद होने पर अब भी लागू होती हैं।
-- स्पष्ट `cwd` के बिना cross-agent ACP spawns के लिए, OpenClaw agent config से target agent workspace इनहेरिट करता है।
-- गुम inherited workspace paths backend default cwd पर fallback करते हैं; गैर-गुम access failures spawn errors के रूप में सामने आते हैं।
+- OpenClaw चैनल-विशिष्ट प्रवेश के बाद और उपयोग से पहले सुनिश्चित करता है कि कॉन्फ़िगर किया गया ACP सत्र मौजूद है।
+- उस चैनल, टॉपिक, या चैट के संदेश कॉन्फ़िगर किए गए ACP सत्र पर रूट होते हैं।
+- कॉन्फ़िगर किए गए ACP बाइंडिंग अपने सत्र रूट के स्वामी होते हैं। चैनल ब्रॉडकास्ट फैन-आउट किसी मिलान हुए बाइंडिंग के लिए कॉन्फ़िगर किए गए ACP सत्र को प्रतिस्थापित नहीं करता।
+- बाउंड बातचीत में, `/new` और `/reset` उसी ACP सत्र कुंजी को उसी स्थान पर रीसेट करते हैं।
+- अस्थायी रनटाइम बाइंडिंग (उदाहरण के लिए थ्रेड-फोकस फ्लो द्वारा बनाए गए) जहां मौजूद हों वहां अब भी लागू होते हैं।
+- स्पष्ट `cwd` के बिना क्रॉस-एजेंट ACP स्पॉन के लिए, OpenClaw एजेंट कॉन्फ़िगरेशन से लक्ष्य एजेंट वर्कस्पेस इनहेरिट करता है।
+- अनुपस्थित इनहेरिट किए गए वर्कस्पेस पथ बैकएंड डिफ़ॉल्ट cwd पर वापस जाते हैं; गैर-अनुपस्थित एक्सेस विफलताएं स्पॉन त्रुटियों के रूप में सतह पर आती हैं।
 
-## ACP सेशन शुरू करें
+## ACP सत्र शुरू करें
 
-ACP सेशन शुरू करने के दो तरीके:
+ACP सत्र शुरू करने के दो तरीके:
 
 <Tabs>
-  <Tab title="From sessions_spawn">
-    agent turn या tool call से ACP सेशन शुरू करने के लिए `runtime: "acp"` का उपयोग करें।
+  <Tab title="sessions_spawn से">
+    एजेंट टर्न या टूल कॉल से ACP सत्र शुरू करने के लिए `runtime: "acp"` का उपयोग करें।
 
     ```json
     {
@@ -486,11 +489,14 @@ ACP सेशन शुरू करने के दो तरीके:
     ```
 
     <Note>
-    `runtime` का default `subagent` है, इसलिए ACP सेशन के लिए `runtime: "acp"` स्पष्ट रूप से सेट करें। यदि `agentId` छोड़ा गया है, तो कॉन्फ़िगर होने पर OpenClaw `acp.defaultAgent` का उपयोग करता है। `mode: "session"` को persistent bound conversation बनाए रखने के लिए `thread: true` चाहिए।
+    `runtime` डिफ़ॉल्ट रूप से `subagent` होता है, इसलिए ACP सत्रों के लिए स्पष्ट रूप से
+    `runtime: "acp"` सेट करें। यदि `agentId` छोड़ा गया है, तो OpenClaw कॉन्फ़िगर होने पर
+    `acp.defaultAgent` का उपयोग करता है। स्थायी बाउंड बातचीत बनाए रखने के लिए
+    `mode: "session"` को `thread: true` की आवश्यकता होती है।
     </Note>
 
   </Tab>
-  <Tab title="From /acp command">
+  <Tab title="/acp कमांड से">
     चैट से स्पष्ट ऑपरेटर नियंत्रण के लिए `/acp spawn` का उपयोग करें।
 
     ```text
@@ -500,7 +506,7 @@ ACP सेशन शुरू करने के दो तरीके:
     /acp spawn codex --thread here
     ```
 
-    मुख्य flags:
+    मुख्य फ़्लैग:
 
     - `--mode persistent|oneshot`
     - `--bind here|off`
@@ -508,7 +514,7 @@ ACP सेशन शुरू करने के दो तरीके:
     - `--cwd <absolute-path>`
     - `--label <name>`
 
-    [Slash commands](/hi/tools/slash-commands) देखें।
+    [स्लैश कमांड](/hi/tools/slash-commands) देखें।
 
   </Tab>
 </Tabs>
@@ -516,141 +522,169 @@ ACP सेशन शुरू करने के दो तरीके:
 ### `sessions_spawn` पैरामीटर
 
 <ParamField path="task" type="string" required>
-  ACP सेशन को भेजा गया प्रारंभिक prompt।
+  ACP सत्र को भेजा गया प्रारंभिक प्रॉम्प्ट।
 </ParamField>
 <ParamField path="runtime" type='"acp"' required>
-  ACP सेशन के लिए `"acp"` होना चाहिए।
+  ACP सत्रों के लिए `"acp"` होना चाहिए।
 </ParamField>
 <ParamField path="agentId" type="string">
-  ACP target harness id। सेट होने पर `acp.defaultAgent` पर fallback करता है।
+  ACP लक्ष्य हार्नेस id। सेट होने पर `acp.defaultAgent` पर वापस जाता है।
 </ParamField>
 <ParamField path="thread" type="boolean" default="false">
-  जहां समर्थित हो, thread binding flow का अनुरोध करें।
+  जहां समर्थित हो वहां थ्रेड बाइंडिंग फ्लो का अनुरोध करें।
 </ParamField>
 <ParamField path="mode" type='"run" | "session"' default="run">
-  `"run"` one-shot है; `"session"` persistent है। यदि `thread: true` है और
-  `mode` छोड़ा गया है, तो OpenClaw runtime path के अनुसार persistent behaviour को default कर सकता है। `mode: "session"` को `thread: true` चाहिए।
+  `"run"` वन-शॉट है; `"session"` स्थायी है। यदि `thread: true` है और
+  `mode` छोड़ा गया है, तो OpenClaw रनटाइम पथ के अनुसार स्थायी व्यवहार को डिफ़ॉल्ट कर सकता है।
+  `mode: "session"` को `thread: true` की आवश्यकता होती है।
 </ParamField>
 <ParamField path="cwd" type="string">
-  अनुरोधित runtime working directory (backend/runtime policy द्वारा validate की गई)। यदि छोड़ा गया है, तो ACP spawn कॉन्फ़िगर होने पर target agent workspace इनहेरिट करता है; गुम inherited paths backend defaults पर fallback करते हैं, जबकि वास्तविक access errors लौटाए जाते हैं।
+  अनुरोधित रनटाइम कार्यशील डायरेक्टरी (बैकएंड/रनटाइम नीति द्वारा सत्यापित)।
+  यदि छोड़ा गया है, तो ACP स्पॉन कॉन्फ़िगर होने पर लक्ष्य एजेंट वर्कस्पेस इनहेरिट करता है;
+  अनुपस्थित इनहेरिट किए गए पथ बैकएंड डिफ़ॉल्ट पर वापस जाते हैं, जबकि वास्तविक एक्सेस त्रुटियां लौटाई जाती हैं।
 </ParamField>
 <ParamField path="label" type="string">
-  सेशन/banner text में उपयोग होने वाला operator-facing label।
+  सत्र/बैनर टेक्स्ट में उपयोग किया जाने वाला ऑपरेटर-फेसिंग लेबल।
 </ParamField>
 <ParamField path="resumeSessionId" type="string">
-  नया बनाने के बजाय मौजूदा ACP सेशन resume करें। agent अपनी conversation history को `session/load` के माध्यम से replay करता है। `runtime: "acp"` आवश्यक है।
+  नया सत्र बनाने के बजाय मौजूदा ACP सत्र फिर से शुरू करें। एजेंट
+  `session/load` के जरिए अपने बातचीत इतिहास को फिर से चलाता है। `runtime: "acp"` आवश्यक है।
 </ParamField>
 <ParamField path="streamTo" type='"parent"'>
-  `"parent"` प्रारंभिक ACP run progress summaries को system events के रूप में requester session पर वापस stream करता है। स्वीकृत responses में session-scoped JSONL log की ओर इशारा करने वाला `streamLogPath` शामिल है
-  (`<sessionId>.acp-stream.jsonl`) जिसे आप पूर्ण relay history के लिए tail कर सकते हैं।
-  Parent progress streams default रूप से assistant commentary और ACP status progress दिखाते हैं, जब तक `streaming.progress.commentary=false` न हो। जब कोई stream mode कॉन्फ़िगर नहीं होता, तो Discord भी parent previews को default रूप से progress mode में रखता है। Status progress अब भी `acp.stream.tagVisibility` का पालन करता है, इसलिए `plan` जैसे tags स्पष्ट रूप से enabled न होने तक छिपे रहते हैं।
+  `"parent"` प्रारंभिक ACP रन प्रगति सारांशों को सिस्टम ईवेंट के रूप में
+  अनुरोधकर्ता सत्र में वापस स्ट्रीम करता है। स्वीकृत प्रतिक्रियाओं में
+  `streamLogPath` शामिल है जो सत्र-स्कोप्ड JSONL लॉग
+  (`<sessionId>.acp-stream.jsonl`) की ओर संकेत करता है, जिसे आप पूर्ण रिले इतिहास के लिए tail कर सकते हैं।
+  पैरेंट प्रगति स्ट्रीम डिफ़ॉल्ट रूप से सहायक टिप्पणी और ACP स्थिति प्रगति दिखाते हैं,
+  जब तक `streaming.progress.commentary=false` न हो। कोई स्ट्रीम मोड कॉन्फ़िगर न होने पर Discord भी
+  पैरेंट प्रीव्यू को डिफ़ॉल्ट रूप से प्रगति मोड में रखता है। स्थिति प्रगति अब भी
+  `acp.stream.tagVisibility` का सम्मान करती है, इसलिए `plan` जैसे टैग स्पष्ट रूप से सक्षम न होने तक छिपे रहते हैं।
 </ParamField>
 
-ACP `sessions_spawn` runs अपने default child turn limit के लिए `agents.defaults.subagents.runTimeoutSeconds` का उपयोग करते हैं। tool per-call timeout overrides स्वीकार नहीं करता।
+ACP `sessions_spawn` रन अपने डिफ़ॉल्ट चाइल्ड टर्न सीमा के लिए
+`agents.defaults.subagents.runTimeoutSeconds` का उपयोग करते हैं। टूल प्रति-कॉल टाइमआउट
+ओवरराइड स्वीकार नहीं करता।
 
 <ParamField path="model" type="string">
-  ACP child session के लिए स्पष्ट model override। Codex ACP spawns `openai/gpt-5.4` जैसे OpenAI refs को `session/new` से पहले Codex ACP startup config में normalize करते हैं; `openai/gpt-5.4/high` जैसे slash forms Codex ACP reasoning effort भी सेट करते हैं।
-  छोड़े जाने पर, `sessions_spawn({ runtime: "acp" })` कॉन्फ़िगर होने पर मौजूदा subagent model defaults (`agents.defaults.subagents.model` या
-  `agents.list[].subagents.model`) का उपयोग करता है; अन्यथा यह ACP harness को अपना default model उपयोग करने देता है।
-  अन्य harnesses को ACP `models` advertise करने और `session/set_model` support करने होंगे; अन्यथा OpenClaw/acpx target agent default पर चुपचाप fallback करने के बजाय स्पष्ट रूप से fail करता है।
+  ACP चाइल्ड सत्र के लिए स्पष्ट मॉडल ओवरराइड। Codex ACP स्पॉन
+  `session/new` से पहले `openai/gpt-5.4` जैसे OpenAI refs को Codex ACP स्टार्टअप
+  कॉन्फ़िगरेशन में सामान्यीकृत करते हैं; `openai/gpt-5.4/high` जैसे स्लैश रूप
+  Codex ACP reasoning effort भी सेट करते हैं।
+  छोड़े जाने पर, `sessions_spawn({ runtime: "acp" })` कॉन्फ़िगर होने पर मौजूदा
+  सबएजेंट मॉडल डिफ़ॉल्ट (`agents.defaults.subagents.model` या
+  `agents.list[].subagents.model`) का उपयोग करता है; अन्यथा यह ACP हार्नेस को
+  अपना डिफ़ॉल्ट मॉडल उपयोग करने देता है।
+  अन्य हार्नेस को ACP `models` विज्ञापित करने और
+  `session/set_model` का समर्थन करने की आवश्यकता है; अन्यथा OpenClaw/acpx लक्ष्य एजेंट डिफ़ॉल्ट पर चुपचाप
+  वापस जाने के बजाय स्पष्ट रूप से विफल होता है।
 </ParamField>
 <ParamField path="thinking" type="string">
-  स्पष्ट thinking/reasoning effort। Codex ACP के लिए, `minimal` low effort पर map होता है, `low`/`medium`/`high`/`xhigh` सीधे map होते हैं, और `off` reasoning-effort startup override को छोड़ देता है।
-  छोड़े जाने पर, ACP spawns selected model के लिए मौजूदा subagent thinking defaults और per-model `agents.defaults.models["provider/model"].params.thinking` का उपयोग करते हैं।
+  स्पष्ट सोच/reasoning effort। Codex ACP के लिए, `minimal` कम प्रयास पर मैप होता है,
+  `low`/`medium`/`high`/`xhigh` सीधे मैप होते हैं, और `off`
+  reasoning-effort स्टार्टअप ओवरराइड को छोड़ देता है।
+  छोड़े जाने पर, ACP स्पॉन चयनित मॉडल के लिए मौजूदा सबएजेंट thinking डिफ़ॉल्ट और
+  प्रति-मॉडल `agents.defaults.models["provider/model"].params.thinking`
+  का उपयोग करते हैं।
 </ParamField>
 
-## Spawn bind और thread modes
+## स्पॉन बाइंड और थ्रेड मोड
 
 <Tabs>
   <Tab title="--bind here|off">
-    | Mode   | व्यवहार                                                               |
+    | मोड   | व्यवहार                                                               |
     | ------ | ---------------------------------------------------------------------- |
-    | `here` | वर्तमान active conversation को उसी स्थान पर bind करें; कोई active न हो तो fail करें। |
-    | `off`  | current-conversation binding न बनाएं।                          |
+    | `here` | वर्तमान सक्रिय बातचीत को उसी स्थान पर बाइंड करें; कोई सक्रिय न हो तो विफल हों। |
+    | `off`  | वर्तमान-बातचीत बाइंडिंग न बनाएं।                          |
 
-    नोट्स:
+    नोट:
 
-    - `--bind here` "इस channel या chat को Codex-backed बनाएं" के लिए सबसे सरल operator path है।
-    - `--bind here` child thread नहीं बनाता।
-    - `--bind here` केवल उन channels पर उपलब्ध है जो current-conversation binding support expose करते हैं।
-    - `--bind` और `--thread` को एक ही `/acp spawn` call में combine नहीं किया जा सकता।
+    - `--bind here` "इस चैनल या चैट को Codex-समर्थित बनाएं" के लिए सबसे सरल ऑपरेटर पथ है।
+    - `--bind here` चाइल्ड थ्रेड नहीं बनाता।
+    - `--bind here` केवल उन चैनलों पर उपलब्ध है जो वर्तमान-बातचीत बाइंडिंग समर्थन उजागर करते हैं।
+    - एक ही `/acp spawn` कॉल में `--bind` और `--thread` को साथ नहीं जोड़ा जा सकता।
 
   </Tab>
   <Tab title="--thread auto|here|off">
-    | Mode   | व्यवहार                                                                                            |
+    | मोड   | व्यवहार                                                                                            |
     | ------ | --------------------------------------------------------------------------------------------------- |
-    | `auto` | active thread में: उस thread को bind करें। thread के बाहर: supported होने पर child thread create/bind करें। |
-    | `here` | current active thread आवश्यक है; उसमें न होने पर fail करें।                                                  |
-    | `off`  | कोई binding नहीं। Session unbound शुरू होता है।                                                                 |
+    | `auto` | सक्रिय थ्रेड में: उस थ्रेड को बाइंड करें। थ्रेड के बाहर: समर्थित होने पर चाइल्ड थ्रेड बनाएं/बाइंड करें। |
+    | `here` | वर्तमान सक्रिय थ्रेड आवश्यक है; यदि उसमें नहीं हैं तो विफल हों।                                                  |
+    | `off`  | कोई बाइंडिंग नहीं। सत्र अनबाउंड शुरू होता है।                                                                 |
 
-    नोट्स:
+    नोट:
 
-    - non-thread binding surfaces पर, default behavior प्रभावी रूप से `off` है।
-    - Thread-bound spawn को channel policy support चाहिए:
+    - गैर-थ्रेड बाइंडिंग सतहों पर, डिफ़ॉल्ट व्यवहार प्रभावी रूप से `off` है।
+    - थ्रेड-बाउंड स्पॉन को चैनल नीति समर्थन की आवश्यकता होती है:
       - Discord: `channels.discord.threadBindings.spawnSessions=true`
       - Telegram: `channels.telegram.threadBindings.spawnSessions=true`
-    - जब आप child thread बनाए बिना current conversation को pin करना चाहते हैं, तो `--bind here` का उपयोग करें।
+    - जब आप चाइल्ड थ्रेड बनाए बिना वर्तमान बातचीत को पिन करना चाहते हों, तो `--bind here` का उपयोग करें।
 
   </Tab>
 </Tabs>
 
 ## डिलीवरी मॉडल
 
-ACP सेशन या तो interactive workspaces हो सकते हैं या parent-owned background work। delivery path उस shape पर निर्भर करता है।
+ACP सत्र या तो इंटरैक्टिव वर्कस्पेस हो सकते हैं या पैरेंट-स्वामित्व वाला
+बैकग्राउंड कार्य। डिलीवरी पथ उस रूप पर निर्भर करता है।
 
 <AccordionGroup>
-  <Accordion title="Interactive ACP sessions">
-    Interactive sessions का उद्देश्य visible chat surface पर बातचीत जारी रखना है:
+  <Accordion title="इंटरैक्टिव ACP सत्र">
+    इंटरैक्टिव सत्रों का उद्देश्य दृश्यमान चैट सतह पर बातचीत जारी रखना है:
 
-    - `/acp spawn ... --bind here` current conversation को ACP session से bind करता है।
-    - `/acp spawn ... --thread ...` channel thread/topic को ACP session से bind करता है।
-    - Persistent configured `bindings[].type="acp"` matching conversations को उसी ACP session पर route करते हैं।
+    - `/acp spawn ... --bind here` वर्तमान बातचीत को ACP सत्र से बाइंड करता है।
+    - `/acp spawn ... --thread ...` चैनल थ्रेड/टॉपिक को ACP सत्र से बाइंड करता है।
+    - स्थायी कॉन्फ़िगर किए गए `bindings[].type="acp"` मिलती हुई बातचीतों को उसी ACP सत्र पर रूट करते हैं।
 
-    bound conversation में follow-up messages सीधे ACP session पर route होते हैं, और ACP output उसी channel/thread/topic पर वापस deliver होता है।
+    बाउंड बातचीत में फॉलो-अप संदेश सीधे ACP सत्र पर रूट होते हैं, और ACP आउटपुट उसी
+    चैनल/थ्रेड/टॉपिक पर वापस डिलीवर किया जाता है।
 
-    OpenClaw harness को क्या भेजता है:
+    OpenClaw हार्नेस को क्या भेजता है:
 
-    - सामान्य bound follow-ups prompt text के रूप में भेजे जाते हैं, साथ में attachments केवल तब जब harness/backend उनका support करता है।
-    - `/acp` management commands और local Gateway commands ACP dispatch से पहले intercept किए जाते हैं।
-    - Runtime-generated completion events per target materialize किए जाते हैं। OpenClaw agents को OpenClaw का internal runtime-context envelope मिलता है; external ACP harnesses को child result और instruction के साथ plain prompt मिलता है। raw `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>` envelope को external harnesses पर कभी नहीं भेजना चाहिए या ACP user transcript text के रूप में persist नहीं करना चाहिए।
-    - ACP transcript entries user-visible trigger text या plain completion prompt का उपयोग करती हैं। Internal event metadata जहां संभव हो OpenClaw में structured रहता है और user-authored chat content के रूप में treat नहीं किया जाता।
-
-  </Accordion>
-  <Accordion title="Parent-owned one-shot ACP sessions">
-    दूसरे agent run द्वारा spawned one-shot ACP sessions, sub-agents की तरह, background children होते हैं:
-
-    - parent `sessions_spawn({ runtime: "acp", mode: "run" })` के साथ work मांगता है।
-    - child अपने ACP harness session में चलता है।
-    - Child turns native sub-agent spawns द्वारा उपयोग की जाने वाली उसी background lane पर चलते हैं, इसलिए धीमा ACP harness unrelated main-session work को block नहीं करता।
-    - Completion task-completion announce path के माध्यम से वापस report होती है। OpenClaw internal completion metadata को external harness पर भेजने से पहले plain ACP prompt में convert करता है, इसलिए harnesses OpenClaw-only runtime context markers नहीं देखते।
-    - user-facing reply उपयोगी होने पर parent child result को normal assistant voice में rewrite करता है।
-
-    इस path को parent और child के बीच peer-to-peer chat के रूप में **न** मानें। child के पास parent तक वापस completion channel पहले से है।
+    - सामान्य बाउंड फॉलो-अप प्रॉम्प्ट टेक्स्ट के रूप में भेजे जाते हैं, साथ में अटैचमेंट केवल तब जब हार्नेस/बैकएंड उनका समर्थन करता हो।
+    - ACP डिस्पैच से पहले `/acp` प्रबंधन कमांड और स्थानीय Gateway कमांड इंटरसेप्ट किए जाते हैं।
+    - रनटाइम-जनित completion ईवेंट प्रति लक्ष्य materialized होते हैं। OpenClaw एजेंटों को OpenClaw का आंतरिक runtime-context envelope मिलता है; बाहरी ACP हार्नेस को चाइल्ड परिणाम और निर्देश के साथ एक सामान्य प्रॉम्प्ट मिलता है। कच्चा `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>` envelope कभी भी बाहरी हार्नेस को नहीं भेजा जाना चाहिए या ACP उपयोगकर्ता transcript टेक्स्ट के रूप में persisted नहीं होना चाहिए।
+    - ACP transcript प्रविष्टियां उपयोगकर्ता-दृश्यमान ट्रिगर टेक्स्ट या सामान्य completion प्रॉम्प्ट का उपयोग करती हैं। आंतरिक ईवेंट मेटाडेटा जहां संभव हो OpenClaw में संरचित रहता है और उसे उपयोगकर्ता-लिखित चैट सामग्री की तरह नहीं माना जाता।
 
   </Accordion>
-  <Accordion title="sessions_send and A2A delivery">
-    `sessions_send` spawn के बाद किसी अन्य session को target कर सकता है। सामान्य peer sessions के लिए, OpenClaw message inject करने के बाद agent-to-agent (A2A) follow-up path का उपयोग करता है:
+  <Accordion title="पैरेंट-स्वामित्व वाले वन-शॉट ACP सत्र">
+    किसी अन्य एजेंट रन द्वारा स्पॉन किए गए वन-शॉट ACP सत्र बैकग्राउंड
+    चाइल्ड होते हैं, सब-एजेंटों जैसे:
 
-    - target session के reply की प्रतीक्षा करें।
-    - वैकल्पिक रूप से requester और target को follow-up turns की bounded number exchange करने दें।
-    - target से announce message produce करने को कहें।
-    - उस announce को visible channel या thread पर deliver करें।
+    - पैरेंट `sessions_spawn({ runtime: "acp", mode: "run" })` के साथ कार्य मांगता है।
+    - चाइल्ड अपने ACP हार्नेस सत्र में चलता है।
+    - चाइल्ड टर्न उसी बैकग्राउंड लेन पर चलते हैं जिसका उपयोग native सब-एजेंट स्पॉन करते हैं, इसलिए धीमा ACP हार्नेस असंबंधित मुख्य-सत्र कार्य को ब्लॉक नहीं करता।
+    - completion task-completion announce पथ के जरिए वापस रिपोर्ट करता है। OpenClaw आंतरिक completion मेटाडेटा को बाहरी हार्नेस को भेजने से पहले सामान्य ACP प्रॉम्प्ट में बदलता है, ताकि हार्नेस OpenClaw-only रनटाइम context markers न देखें।
+    - जब उपयोगकर्ता-फेसिंग उत्तर उपयोगी हो, तो पैरेंट चाइल्ड परिणाम को सामान्य सहायक आवाज़ में फिर से लिखता है।
 
-    वह A2A path peer sends के लिए fallback है जहां sender को visible follow-up चाहिए। यह तब enabled रहता है जब unrelated session ACP target को देख और message कर सकता है, उदाहरण के लिए व्यापक `tools.sessions.visibility` settings के अंतर्गत।
-
-    OpenClaw A2A फ़ॉलो-अप को केवल तब छोड़ता है जब अनुरोधकर्ता अपने
-    ही पैरेंट-स्वामित्व वाले वन-शॉट ACP चाइल्ड का पैरेंट हो। उस स्थिति में,
-    टास्क पूरा होने के ऊपर A2A चलाने से पैरेंट चाइल्ड के परिणाम के साथ जाग सकता है,
-    पैरेंट का उत्तर वापस चाइल्ड में फ़ॉरवर्ड हो सकता है, और
-    पैरेंट/चाइल्ड इको लूप बन सकता है। `sessions_send` परिणाम
-    उस स्वामित्व वाले-चाइल्ड मामले के लिए `delivery.status="skipped"` रिपोर्ट करता है क्योंकि
-    completion path पहले से ही परिणाम के लिए जिम्मेदार है।
+    इस पथ को पैरेंट और चाइल्ड के बीच peer-to-peer चैट के रूप में **न** मानें। चाइल्ड के पास पहले से ही पैरेंट तक वापस completion चैनल है।
 
   </Accordion>
-  <Accordion title="मौजूदा सत्र फिर से शुरू करें">
-    नए सिरे से शुरू करने के बजाय पिछले ACP सत्र को जारी रखने के लिए
-    `resumeSessionId` का उपयोग करें। एजेंट अपना बातचीत इतिहास
-    `session/load` के ज़रिए फिर से चलाता है, इसलिए वह पहले हुई बातों के पूरे संदर्भ के साथ आगे बढ़ता है।
+  <Accordion title="sessions_send और A2A डिलीवरी">
+    `sessions_send` स्पॉन के बाद किसी अन्य सत्र को लक्षित कर सकता है। सामान्य
+    peer सत्रों के लिए, OpenClaw संदेश इंजेक्ट करने के बाद agent-to-agent (A2A) फॉलो-अप पथ का उपयोग करता है:
+
+    - लक्ष्य सत्र के उत्तर की प्रतीक्षा करें।
+    - वैकल्पिक रूप से अनुरोधकर्ता और लक्ष्य को फॉलो-अप टर्न की सीमित संख्या का आदान-प्रदान करने दें।
+    - लक्ष्य से announce संदेश बनाने को कहें।
+    - उस announce को दृश्यमान चैनल या थ्रेड पर डिलीवर करें।
+
+    वह A2A पथ peer sends के लिए fallback है जहां प्रेषक को दृश्यमान फॉलो-अप की आवश्यकता होती है।
+    यह तब सक्षम रहता है जब कोई असंबंधित सत्र ACP लक्ष्य को देख और संदेश भेज सकता है,
+    उदाहरण के लिए व्यापक `tools.sessions.visibility` सेटिंग्स के अंतर्गत।
+
+    OpenClaw A2A फ़ॉलो-अप केवल तब छोड़ता है जब अनुरोधकर्ता अपने ही
+    parent-स्वामित्व वाले एक-बार चलने वाले ACP child का parent हो। उस स्थिति में,
+    task completion के ऊपर A2A चलाने से parent child के परिणाम के साथ जाग सकता है,
+    parent का उत्तर वापस child में फ़ॉरवर्ड हो सकता है, और
+    parent/child echo loop बन सकता है। `sessions_send` परिणाम उस
+    owned-child मामले के लिए `delivery.status="skipped"` रिपोर्ट करता है क्योंकि
+    completion path पहले से ही परिणाम के लिए ज़िम्मेदार है।
+
+  </Accordion>
+  <Accordion title="मौजूदा session फिर से शुरू करें">
+    नया शुरू करने के बजाय पिछली ACP session जारी रखने के लिए `resumeSessionId` का उपयोग करें।
+    agent अपनी conversation history को `session/load` के ज़रिए फिर से चलाता है,
+    इसलिए यह पहले के पूरे संदर्भ के साथ आगे बढ़ता है।
 
     ```json
     {
@@ -661,170 +695,175 @@ ACP सेशन या तो interactive workspaces हो सकते है
     }
     ```
 
-    सामान्य उपयोग मामले:
+    सामान्य उपयोग के मामले:
 
-    - अपने लैपटॉप से फ़ोन पर Codex सत्र सौंपें - अपने एजेंट से कहें कि जहाँ आपने छोड़ा था, वहीं से आगे बढ़े।
-    - CLI में इंटरैक्टिव रूप से शुरू किए गए कोडिंग सत्र को अब अपने एजेंट के ज़रिए हेडलेस रूप से जारी रखें।
-    - Gateway रीस्टार्ट या निष्क्रियता टाइमआउट से बाधित हुए काम को फिर से शुरू करें।
+    - अपने laptop से अपने phone पर Codex session hand off करें - अपने agent को वहीं से आगे बढ़ने को कहें जहाँ आपने छोड़ा था।
+    - CLI में interactively शुरू की गई coding session को अब अपने agent के ज़रिए headlessly जारी रखें।
+    - gateway restart या idle timeout से बाधित हुआ काम फिर से शुरू करें।
 
     नोट्स:
 
-    - `resumeSessionId` केवल तब लागू होता है जब `runtime: "acp"` हो; डिफ़ॉल्ट सब-एजेंट रनटाइम इस केवल-ACP फ़ील्ड को अनदेखा करता है।
-    - `streamTo` केवल तब लागू होता है जब `runtime: "acp"` हो; डिफ़ॉल्ट सब-एजेंट रनटाइम इस केवल-ACP फ़ील्ड को अनदेखा करता है।
-    - `resumeSessionId` एक होस्ट-लोकल ACP/हार्नेस रिज़्यूम id है, OpenClaw चैनल सत्र कुंजी नहीं; OpenClaw डिस्पैच से पहले अब भी ACP स्पॉन नीति और लक्ष्य एजेंट नीति जाँचता है, जबकि ACP बैकएंड या हार्नेस उस अपस्ट्रीम id को लोड करने के प्राधिकरण का स्वामी होता है।
-    - `resumeSessionId` अपस्ट्रीम ACP बातचीत इतिहास को पुनर्स्थापित करता है; `thread` और `mode` आपके बनाए जा रहे नए OpenClaw सत्र पर अब भी सामान्य रूप से लागू होते हैं, इसलिए `mode: "session"` के लिए अब भी `thread: true` आवश्यक है।
-    - लक्ष्य एजेंट को `session/load` का समर्थन करना चाहिए (Codex और Claude Code करते हैं)।
-    - यदि सत्र id नहीं मिलता है, तो स्पॉन स्पष्ट त्रुटि के साथ विफल होता है - नए सत्र पर कोई मौन फ़ॉलबैक नहीं होता।
+    - `resumeSessionId` केवल तब लागू होता है जब `runtime: "acp"` हो; default sub-agent runtime इस ACP-only field को अनदेखा करता है।
+    - `streamTo` केवल तब लागू होता है जब `runtime: "acp"` हो; default sub-agent runtime इस ACP-only field को अनदेखा करता है।
+    - `resumeSessionId` एक host-local ACP/harness resume id है, OpenClaw channel session key नहीं; OpenClaw dispatch से पहले अब भी ACP spawn policy और target agent policy की जाँच करता है, जबकि ACP backend या harness उस upstream id को load करने की authorization का स्वामी होता है।
+    - `resumeSessionId` upstream ACP conversation history को restore करता है; `thread` और `mode` आपके बनाए जा रहे नए OpenClaw session पर सामान्य रूप से लागू होते हैं, इसलिए `mode: "session"` के लिए अब भी `thread: true` आवश्यक है।
+    - target agent को `session/load` support करना चाहिए (Codex और Claude Code करते हैं)।
+    - यदि session id नहीं मिलती, तो spawn स्पष्ट error के साथ fail होता है - नए session पर कोई silent fallback नहीं।
 
   </Accordion>
-  <Accordion title="परिनियोजन के बाद स्मोक टेस्ट">
-    Gateway परिनियोजन के बाद, यूनिट टेस्ट पर भरोसा करने के बजाय
-    लाइव एंड-टू-एंड जाँच चलाएँ:
+  <Accordion title="Deploy के बाद smoke test">
+    gateway deploy के बाद, unit tests पर भरोसा करने के बजाय live end-to-end check चलाएँ:
 
-    1. लक्ष्य होस्ट पर परिनियोजित Gateway संस्करण और कमिट सत्यापित करें।
-    2. किसी लाइव एजेंट के लिए अस्थायी ACPX ब्रिज सत्र खोलें।
-    3. उस एजेंट से `runtime: "acp"`, `agentId: "codex"`, `mode: "run"`, और टास्क `Reply with exactly LIVE-ACP-SPAWN-OK` के साथ `sessions_spawn` कॉल करने को कहें।
-    4. `accepted=yes`, वास्तविक `childSessionKey`, और कोई वैलिडेटर त्रुटि न होना सत्यापित करें।
-    5. अस्थायी ब्रिज सत्र साफ़ करें।
+    1. target host पर deployed gateway version और commit verify करें।
+    2. live agent के लिए अस्थायी ACPX bridge session खोलें।
+    3. उस agent से `runtime: "acp"`, `agentId: "codex"`, `mode: "run"` और task `Reply with exactly LIVE-ACP-SPAWN-OK` के साथ `sessions_spawn` call करने को कहें।
+    4. `accepted=yes`, वास्तविक `childSessionKey`, और कोई validator error न होना verify करें।
+    5. अस्थायी bridge session clean up करें।
 
-    गेट को `mode: "run"` पर रखें और `streamTo: "parent"` छोड़ दें -
-    थ्रेड-बाउंड `mode: "session"` और स्ट्रीम-रिले पथ अलग
-    अधिक समृद्ध इंटीग्रेशन पास हैं।
+    gate को `mode: "run"` पर रखें और `streamTo: "parent"` skip करें -
+    thread-bound `mode: "session"` और stream-relay paths अलग
+    अधिक समृद्ध integration passes हैं।
 
   </Accordion>
 </AccordionGroup>
 
-## सैंडबॉक्स संगतता
+## Sandbox compatibility
 
-ACP सत्र वर्तमान में होस्ट रनटाइम पर चलते हैं, OpenClaw सैंडबॉक्स के
-अंदर **नहीं**।
+ACP sessions अभी host runtime पर चलती हैं, OpenClaw sandbox के अंदर **नहीं**।
 
 <Warning>
-**सुरक्षा सीमा:**
+**Security boundary:**
 
-- बाहरी हार्नेस अपनी CLI अनुमतियों और चुने गए `cwd` के अनुसार पढ़/लिख सकता है।
-- OpenClaw की सैंडबॉक्स नीति ACP हार्नेस निष्पादन को **नहीं** लपेटती।
-- OpenClaw अब भी ACP फ़ीचर गेट, अनुमत एजेंट, सत्र स्वामित्व, चैनल बाइंडिंग, और Gateway डिलीवरी नीति लागू करता है।
-- सैंडबॉक्स-लागू OpenClaw-नेटिव काम के लिए `runtime: "subagent"` का उपयोग करें।
+- external harness अपनी CLI permissions और चुने गए `cwd` के अनुसार read/write कर सकता है।
+- OpenClaw की sandbox policy ACP harness execution को wrap **नहीं** करती।
+- OpenClaw अब भी ACP feature gates, allowed agents, session ownership, channel bindings, और Gateway delivery policy लागू करता है।
+- sandbox-enforced OpenClaw-native work के लिए `runtime: "subagent"` का उपयोग करें।
 
 </Warning>
 
-वर्तमान सीमाएँ:
+मौजूदा सीमाएँ:
 
-- यदि अनुरोधकर्ता सत्र सैंडबॉक्स्ड है, तो ACP स्पॉन `sessions_spawn({ runtime: "acp" })` और `/acp spawn` दोनों के लिए ब्लॉक होते हैं।
-- `runtime: "acp"` के साथ `sessions_spawn`, `sandbox: "require"` का समर्थन नहीं करता।
+- यदि requester session sandboxed है, तो ACP spawns `sessions_spawn({ runtime: "acp" })` और `/acp spawn` दोनों के लिए blocked होते हैं।
+- `runtime: "acp"` के साथ `sessions_spawn`, `sandbox: "require"` support नहीं करता।
 
-## सत्र लक्ष्य समाधान
+## Session target resolution
 
-अधिकांश `/acp` कार्रवाइयाँ वैकल्पिक सत्र लक्ष्य (`session-key`,
-`session-id`, या `session-label`) स्वीकार करती हैं।
+अधिकांश `/acp` actions एक वैकल्पिक session target (`session-key`,
+`session-id`, या `session-label`) स्वीकार करते हैं।
 
-**समाधान क्रम:**
+**Resolution order:**
 
-1. स्पष्ट लक्ष्य आर्ग्युमेंट (या `/acp steer` के लिए `--session`)
-   - कुंजी आज़माता है
-   - फिर UUID-आकार का सत्र id
-   - फिर लेबल
-2. वर्तमान थ्रेड बाइंडिंग (यदि यह बातचीत/थ्रेड किसी ACP सत्र से बंधा है)।
-3. वर्तमान अनुरोधकर्ता सत्र फ़ॉलबैक।
+1. Explicit target argument (या `/acp steer` के लिए `--session`)
+   - पहले key आज़माता है
+   - फिर UUID-shaped session id
+   - फिर label
+2. Current thread binding (यदि यह conversation/thread किसी ACP session से bound है)।
+3. Current requester session fallback।
 
-वर्तमान-बातचीत बाइंडिंग और थ्रेड बाइंडिंग दोनों
-चरण 2 में भाग लेते हैं।
+Current-conversation bindings और thread bindings दोनों
+step 2 में भाग लेते हैं।
 
-यदि कोई लक्ष्य हल नहीं होता, तो OpenClaw स्पष्ट त्रुटि लौटाता है
+यदि कोई target resolve नहीं होता, तो OpenClaw स्पष्ट error लौटाता है
 (`Unable to resolve session target: ...`)।
 
-## ACP नियंत्रण
+## ACP controls
 
-| कमांड              | यह क्या करता है                                              | उदाहरण                                                       |
+| Command              | यह क्या करता है                                           | उदाहरण                                                       |
 | -------------------- | --------------------------------------------------------- | ------------------------------------------------------------- |
-| `/acp spawn`         | ACP सत्र बनाएँ; वैकल्पिक वर्तमान बाइंड या थ्रेड बाइंड। | `/acp spawn codex --bind here --cwd /repo`                    |
-| `/acp cancel`        | लक्ष्य सत्र के लिए चल रहा टर्न रद्द करें।                 | `/acp cancel agent:codex:acp:<uuid>`                          |
-| `/acp steer`         | चल रहे सत्र को steer निर्देश भेजें।                | `/acp steer --session support inbox prioritize failing tests` |
-| `/acp close`         | सत्र बंद करें और थ्रेड लक्ष्यों को अनबाइंड करें।                  | `/acp close`                                                  |
-| `/acp status`        | बैकएंड, मोड, स्थिति, रनटाइम विकल्प, क्षमताएँ दिखाएँ। | `/acp status`                                                 |
-| `/acp set-mode`      | लक्ष्य सत्र के लिए रनटाइम मोड सेट करें।                      | `/acp set-mode plan`                                          |
-| `/acp set`           | सामान्य रनटाइम कॉन्फ़िग विकल्प लिखें।                      | `/acp set model openai/gpt-5.4`                               |
-| `/acp cwd`           | रनटाइम कार्यशील डायरेक्टरी ओवरराइड सेट करें।                   | `/acp cwd /Users/user/Projects/repo`                          |
-| `/acp permissions`   | अनुमोदन नीति प्रोफ़ाइल सेट करें।                              | `/acp permissions strict`                                     |
-| `/acp timeout`       | रनटाइम टाइमआउट (सेकंड) सेट करें।                            | `/acp timeout 120`                                            |
-| `/acp model`         | रनटाइम मॉडल ओवरराइड सेट करें।                               | `/acp model anthropic/claude-opus-4-6`                        |
-| `/acp reset-options` | सत्र रनटाइम विकल्प ओवरराइड हटाएँ।                  | `/acp reset-options`                                          |
-| `/acp sessions`      | स्टोर से हाल के ACP सत्र सूचीबद्ध करें।                      | `/acp sessions`                                               |
-| `/acp doctor`        | बैकएंड स्वास्थ्य, क्षमताएँ, कार्रवाई योग्य सुधार।           | `/acp doctor`                                                 |
-| `/acp install`       | निर्धारक इंस्टॉल और सक्षम करने के चरण प्रिंट करें।             | `/acp install`                                                |
+| `/acp spawn`         | ACP session बनाएँ; वैकल्पिक current bind या thread bind। | `/acp spawn codex --bind here --cwd /repo`                    |
+| `/acp cancel`        | target session के in-flight turn को cancel करें।          | `/acp cancel agent:codex:acp:<uuid>`                          |
+| `/acp steer`         | running session को steer instruction भेजें।               | `/acp steer --session support inbox prioritize failing tests` |
+| `/acp close`         | session बंद करें और thread targets unbind करें।           | `/acp close`                                                  |
+| `/acp status`        | backend, mode, state, runtime options, capabilities दिखाएँ। | `/acp status`                                                 |
+| `/acp set-mode`      | target session के लिए runtime mode set करें।              | `/acp set-mode plan`                                          |
+| `/acp set`           | generic runtime config option write।                      | `/acp set model openai/gpt-5.4`                               |
+| `/acp cwd`           | runtime working directory override set करें।              | `/acp cwd /Users/user/Projects/repo`                          |
+| `/acp permissions`   | approval policy profile set करें।                         | `/acp permissions strict`                                     |
+| `/acp timeout`       | runtime timeout (seconds) set करें।                       | `/acp timeout 120`                                            |
+| `/acp model`         | runtime model override set करें।                          | `/acp model anthropic/claude-opus-4-6`                        |
+| `/acp reset-options` | session runtime option overrides हटाएँ।                   | `/acp reset-options`                                          |
+| `/acp sessions`      | store से हाल की ACP sessions list करें।                   | `/acp sessions`                                               |
+| `/acp doctor`        | backend health, capabilities, actionable fixes।           | `/acp doctor`                                                 |
+| `/acp install`       | deterministic install और enable steps print करें।         | `/acp install`                                                |
 
-`/acp status` प्रभावी रनटाइम विकल्पों के साथ रनटाइम-स्तर और
-बैकएंड-स्तर सत्र पहचानकर्ता दिखाता है। जब किसी बैकएंड में क्षमता नहीं होती,
-तो असमर्थित-नियंत्रण त्रुटियाँ स्पष्ट रूप से सामने आती हैं। `/acp sessions`
-वर्तमान बाउंड या अनुरोधकर्ता सत्र के लिए स्टोर पढ़ता है; लक्ष्य टोकन
-(`session-key`, `session-id`, या `session-label`) Gateway सत्र खोज के ज़रिए
-हल होते हैं, जिसमें कस्टम प्रति-एजेंट `session.store`
-रूट शामिल हैं।
+Runtime controls (`spawn`, `cancel`, `steer`, `close`, `status`, `set-mode`,
+`set`, `cwd`, `permissions`, `timeout`, `model`, और `reset-options`) को
+external channels से owner identity और internal Gateway clients से
+`operator.admin` की आवश्यकता होती है। Authorized non-owner senders अब भी
+`sessions`, `doctor`, `install`, और `help` का उपयोग कर सकते हैं।
 
-### रनटाइम विकल्प मैपिंग
+`/acp status` effective runtime options के साथ runtime-level और
+backend-level session identifiers दिखाता है। जब किसी backend में capability नहीं होती,
+unsupported-control errors स्पष्ट रूप से दिखते हैं। `/acp sessions`
+current bound या requester session के लिए store पढ़ता है; target tokens
+(`session-key`, `session-id`, या `session-label`)
+gateway session discovery के ज़रिए resolve होते हैं, जिसमें custom per-agent
+`session.store` roots शामिल हैं।
 
-`/acp` में सुविधा कमांड और एक सामान्य सेटर है। समतुल्य
-ऑपरेशन:
+### Runtime options mapping
 
-| कमांड                      | इससे मैप होता है                              | नोट्स                                                                                                                                                                                                      |
+`/acp` में convenience commands और generic setter है। Equivalent
+operations:
+
+| Command                      | इससे map होता है                     | नोट्स                                                                                                                                                                                                      |
 | ---------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/acp model <id>`            | रनटाइम कॉन्फ़िग कुंजी `model`           | Codex ACP के लिए, OpenClaw `openai/<model>` को एडेप्टर मॉडल id में सामान्यीकृत करता है और `openai/gpt-5.4/high` जैसे स्लैश reasoning प्रत्ययों को `reasoning_effort` से मैप करता है।                                         |
-| `/acp set thinking <level>`  | canonical विकल्प `thinking`          | OpenClaw मौजूद होने पर बैकएंड-विज्ञापित समतुल्य भेजता है, `thinking`, फिर `effort`, `reasoning_effort`, या `thought_level` को प्राथमिकता देता है। Codex ACP के लिए, एडेप्टर मानों को `reasoning_effort` से मैप करता है। |
-| `/acp permissions <profile>` | canonical विकल्प `permissionProfile` | OpenClaw मौजूद होने पर बैकएंड-विज्ञापित समतुल्य भेजता है, जैसे `approval_policy`, `permission_profile`, `permissions`, या `permission_mode`।                                                       |
-| `/acp timeout <seconds>`     | canonical विकल्प `timeoutSeconds`    | OpenClaw मौजूद होने पर बैकएंड-विज्ञापित समतुल्य भेजता है, जैसे `timeout` या `timeout_seconds`।                                                                                                     |
-| `/acp cwd <path>`            | रनटाइम cwd ओवरराइड                 | सीधा अपडेट।                                                                                                                                                                                             |
-| `/acp set <key> <value>`     | सामान्य                              | `key=cwd` cwd ओवरराइड पथ का उपयोग करता है।                                                                                                                                                                      |
-| `/acp reset-options`         | सभी रनटाइम ओवरराइड साफ़ करता है         | -                                                                                                                                                                                                          |
+| `/acp model <id>`            | runtime config key `model`           | Codex ACP के लिए, OpenClaw `openai/<model>` को adapter model id में normalize करता है और `openai/gpt-5.4/high` जैसे slash reasoning suffixes को `reasoning_effort` में map करता है।                                         |
+| `/acp set thinking <level>`  | canonical option `thinking`          | OpenClaw present होने पर backend-advertised equivalent भेजता है, `thinking`, फिर `effort`, `reasoning_effort`, या `thought_level` को preference देता है। Codex ACP के लिए, adapter values को `reasoning_effort` में map करता है। |
+| `/acp permissions <profile>` | canonical option `permissionProfile` | OpenClaw present होने पर backend-advertised equivalent भेजता है, जैसे `approval_policy`, `permission_profile`, `permissions`, या `permission_mode`।                                                       |
+| `/acp timeout <seconds>`     | canonical option `timeoutSeconds`    | OpenClaw present होने पर backend-advertised equivalent भेजता है, जैसे `timeout` या `timeout_seconds`।                                                                                                     |
+| `/acp cwd <path>`            | runtime cwd override                 | Direct update।                                                                                                                                                                                             |
+| `/acp set <key> <value>`     | generic                              | `key=cwd` cwd override path का उपयोग करता है।                                                                                                                                                                      |
+| `/acp reset-options`         | सभी runtime overrides clear करता है  | -                                                                                                                                                                                                          |
 
-## acpx हार्नेस, Plugin सेटअप, और अनुमतियाँ
+## acpx harness, plugin setup, और permissions
 
-acpx हार्नेस कॉन्फ़िगरेशन (Claude Code / Codex / Gemini CLI
-उपनाम), plugin-tools और OpenClaw-tools MCP ब्रिज, और ACP
-अनुमति मोड के लिए, देखें
-[ACP एजेंट - सेटअप](/hi/tools/acp-agents-setup).
+acpx harness configuration (Claude Code / Codex / Gemini CLI
+aliases), plugin-tools और OpenClaw-tools MCP bridges, और ACP
+permission modes के लिए, देखें
+[ACP agents - setup](/hi/tools/acp-agents-setup).
 
-## समस्या निवारण
+## Troubleshooting
 
-| लक्षण                                                                       | संभावित कारण                                                                                                           | सुधार                                                                                                                                                                      |
+| लक्षण                                                                     | संभावित कारण                                                                                                           | समाधान                                                                                                                                                                      |
 | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ACP runtime backend is not configured`                                     | बैकएंड Plugin अनुपस्थित, अक्षम है, या `plugins.allow` से अवरुद्ध है।                                                       | बैकएंड Plugin इंस्टॉल और सक्षम करें, जब वह allowlist सेट हो तो `plugins.allow` में `acpx` शामिल करें, फिर `/acp doctor` चलाएँ।                                                 |
+| `ACP runtime backend is not configured`                                     | Backend Plugin गायब है, अक्षम है, या `plugins.allow` से अवरुद्ध है।                                                       | Backend Plugin इंस्टॉल और सक्षम करें, जब वह allowlist सेट हो तो `plugins.allow` में `acpx` शामिल करें, फिर `/acp doctor` चलाएँ।                                                 |
 | `ACP is disabled by policy (acp.enabled=false)`                             | ACP वैश्विक रूप से अक्षम है।                                                                                                 | `acp.enabled=true` सेट करें।                                                                                                                                                  |
-| `ACP dispatch is disabled by policy (acp.dispatch.enabled=false)`           | सामान्य थ्रेड संदेशों से स्वचालित डिस्पैच अक्षम है।                                                               | स्वचालित थ्रेड रूटिंग फिर से शुरू करने के लिए `acp.dispatch.enabled=true` सेट करें; स्पष्ट `sessions_spawn({ runtime: "acp" })` कॉल अब भी काम करती हैं।                                      |
-| `ACP agent "<id>" is not allowed by policy`                                 | एजेंट allowlist में नहीं है।                                                                                                | अनुमत `agentId` का उपयोग करें या `acp.allowedAgents` अपडेट करें।                                                                                                                     |
-| `/acp doctor` रिपोर्ट करता है कि बैकएंड स्टार्टअप के तुरंत बाद तैयार नहीं है                 | बैकएंड Plugin अनुपस्थित है, अक्षम है, allow/deny नीति से अवरुद्ध है, या उसका कॉन्फ़िगर किया गया executable उपलब्ध नहीं है।        | बैकएंड Plugin इंस्टॉल/सक्षम करें, `/acp doctor` फिर से चलाएँ, और अगर वह अस्वस्थ रहता है तो बैकएंड इंस्टॉल या नीति त्रुटि की जाँच करें।                                           |
-| हार्नेस कमांड नहीं मिला                                                   | Adapter CLI इंस्टॉल नहीं है, बाहरी Plugin अनुपस्थित है, या non-Codex adapter के लिए पहली बार का `npx` fetch विफल हुआ। | `/acp doctor` चलाएँ, Gateway होस्ट पर adapter इंस्टॉल/prewarm करें, या acpx एजेंट कमांड स्पष्ट रूप से कॉन्फ़िगर करें।                                                      |
-| हार्नेस से model-not-found                                            | मॉडल id किसी अन्य provider/हार्नेस के लिए मान्य है, लेकिन इस ACP लक्ष्य के लिए नहीं।                                                | उस हार्नेस द्वारा सूचीबद्ध मॉडल का उपयोग करें, हार्नेस में मॉडल कॉन्फ़िगर करें, या override छोड़ दें।                                                                            |
-| हार्नेस से vendor auth त्रुटि                                          | OpenClaw स्वस्थ है, लेकिन लक्ष्य CLI/provider लॉग इन नहीं है।                                                     | Gateway होस्ट environment पर लॉग इन करें या आवश्यक provider key दें।                                                                                             |
-| `Unable to resolve session target: ...`                                     | खराब key/id/label token।                                                                                                | `/acp sessions` चलाएँ, सटीक key/label कॉपी करें, फिर से प्रयास करें।                                                                                                                        |
-| `--bind here requires running /acp spawn inside an active ... conversation` | `--bind here` का उपयोग सक्रिय bindable conversation के बिना किया गया।                                                            | लक्ष्य chat/channel पर जाएँ और फिर से प्रयास करें, या unbound spawn का उपयोग करें।                                                                                                         |
-| `Conversation bindings are unavailable for <channel>.`                      | Adapter में current-conversation ACP binding क्षमता नहीं है।                                                             | जहाँ समर्थित हो वहाँ `/acp spawn ... --thread ...` का उपयोग करें, top-level `bindings[]` कॉन्फ़िगर करें, या समर्थित channel पर जाएँ।                                                     |
-| `--thread here requires running /acp spawn inside an active ... thread`     | `--thread here` का उपयोग thread context के बाहर किया गया।                                                                         | लक्ष्य thread पर जाएँ या `--thread auto`/`off` का उपयोग करें।                                                                                                                      |
-| `Only <user-id> can rebind this channel/conversation/thread.`               | कोई दूसरा user सक्रिय binding target का owner है।                                                                           | Owner के रूप में rebind करें या अलग conversation या thread का उपयोग करें।                                                                                                               |
-| `Thread bindings are unavailable for <channel>.`                            | Adapter में thread binding क्षमता नहीं है।                                                                               | `--thread off` का उपयोग करें या समर्थित adapter/channel पर जाएँ।                                                                                                                 |
-| `Sandboxed sessions cannot spawn ACP sessions ...`                          | ACP runtime होस्ट-साइड है; requester session sandboxed है।                                                              | sandboxed sessions से `runtime="subagent"` का उपयोग करें, या non-sandboxed session से ACP spawn चलाएँ।                                                                         |
-| `sessions_spawn sandbox="require" is unsupported for runtime="acp" ...`     | ACP runtime के लिए `sandbox="require"` अनुरोधित किया गया।                                                                         | आवश्यक sandboxing के लिए `runtime="subagent"` का उपयोग करें, या non-sandboxed session से `sandbox="inherit"` के साथ ACP का उपयोग करें।                                                      |
-| `Cannot apply --model ... did not advertise model support`                  | लक्ष्य हार्नेस generic ACP model switching उजागर नहीं करता।                                                        | ऐसा हार्नेस उपयोग करें जो ACP `models`/`session/set_model` advertise करता हो, Codex ACP model refs उपयोग करें, या अगर उसका अपना startup flag है तो मॉडल सीधे हार्नेस में कॉन्फ़िगर करें। |
-| bound session के लिए ACP metadata अनुपस्थित                                      | पुराना/हटाया गया ACP session metadata।                                                                                    | `/acp spawn` से फिर से बनाएँ, फिर thread को rebind/focus करें।                                                                                                                    |
-| `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`    | `permissionMode` non-interactive ACP session में writes/exec को अवरुद्ध करता है।                                                    | `plugins.entries.acpx.config.permissionMode` को `approve-all` पर सेट करें और gateway restart करें। [अनुमति कॉन्फ़िगरेशन](/hi/tools/acp-agents-setup#permission-configuration) देखें। |
-| ACP session कम output के साथ जल्दी विफल हो जाता है                                  | Permission prompts `permissionMode`/`nonInteractivePermissions` से अवरुद्ध हैं।                                        | `AcpRuntimeError` के लिए gateway logs देखें। पूर्ण permissions के लिए, `permissionMode=approve-all` सेट करें; graceful degradation के लिए, `nonInteractivePermissions=deny` सेट करें।        |
-| ACP session काम पूरा करने के बाद अनिश्चितकाल तक अटका रहता है                       | हार्नेस process समाप्त हो गया लेकिन ACP session ने completion रिपोर्ट नहीं की।                                                    | OpenClaw अपडेट करें; वर्तमान acpx cleanup close और Gateway startup पर OpenClaw-owned stale wrapper और adapter processes को reap करता है।                                             |
-| हार्नेस `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>` देखता है                        | आंतरिक event envelope ACP boundary के पार leak हो गया।                                                                | OpenClaw अपडेट करें और completion flow फिर से चलाएँ; बाहरी harnesses को केवल plain completion prompts मिलने चाहिए।                                                          |
+| `ACP dispatch is disabled by policy (acp.dispatch.enabled=false)`           | सामान्य thread संदेशों से स्वचालित dispatch अक्षम है।                                                               | स्वचालित thread routing फिर से शुरू करने के लिए `acp.dispatch.enabled=true` सेट करें; स्पष्ट `sessions_spawn({ runtime: "acp" })` कॉल अब भी काम करते हैं।                                      |
+| `ACP agent "<id>" is not allowed by policy`                                 | Agent allowlist में नहीं है।                                                                                                | अनुमत `agentId` इस्तेमाल करें या `acp.allowedAgents` अपडेट करें।                                                                                                                     |
+| `/acp doctor` startup के तुरंत बाद backend तैयार नहीं बताता                 | Backend Plugin गायब है, अक्षम है, allow/deny policy से अवरुद्ध है, या उसका configured executable उपलब्ध नहीं है।        | Backend Plugin इंस्टॉल/सक्षम करें, `/acp doctor` फिर से चलाएँ, और अगर वह अस्वस्थ रहता है तो backend install या policy error जाँचें।                                           |
+| Harness command नहीं मिला                                                   | Adapter CLI इंस्टॉल नहीं है, external Plugin गायब है, या non-Codex adapter के लिए पहली बार का `npx` fetch विफल हुआ। | `/acp doctor` चलाएँ, Gateway host पर adapter इंस्टॉल/prewarm करें, या acpx agent command को स्पष्ट रूप से configure करें।                                                      |
+| Harness से model-not-found                                            | Model id किसी दूसरे provider/harness के लिए valid है, लेकिन इस ACP target के लिए नहीं।                                                | उस harness द्वारा सूचीबद्ध model इस्तेमाल करें, harness में model configure करें, या override छोड़ दें।                                                                            |
+| Harness से vendor auth error                                          | OpenClaw स्वस्थ है, लेकिन target CLI/provider logged in नहीं है।                                                     | Gateway host environment पर log in करें या आवश्यक provider key दें।                                                                                             |
+| `Unable to resolve session target: ...`                                     | गलत key/id/label token।                                                                                                | `/acp sessions` चलाएँ, सटीक key/label copy करें, retry करें।                                                                                                                        |
+| `--bind here requires running /acp spawn inside an active ... conversation` | `--bind here` को active bindable conversation के बिना इस्तेमाल किया गया।                                                            | target chat/channel में जाएँ और retry करें, या unbound spawn इस्तेमाल करें।                                                                                                         |
+| `Conversation bindings are unavailable for <channel>.`                      | Adapter में current-conversation ACP binding capability नहीं है।                                                             | जहाँ supported हो वहाँ `/acp spawn ... --thread ...` इस्तेमाल करें, top-level `bindings[]` configure करें, या supported channel पर जाएँ।                                                     |
+| `--thread here requires running /acp spawn inside an active ... thread`     | `--thread here` को thread context के बाहर इस्तेमाल किया गया।                                                                         | target thread में जाएँ या `--thread auto`/`off` इस्तेमाल करें।                                                                                                                      |
+| `Only <user-id> can rebind this channel/conversation/thread.`               | active binding target का owner कोई और user है।                                                                           | owner के रूप में rebind करें या कोई अलग conversation या thread इस्तेमाल करें।                                                                                                               |
+| `Thread bindings are unavailable for <channel>.`                            | Adapter में thread binding capability नहीं है।                                                                               | `--thread off` इस्तेमाल करें या supported adapter/channel पर जाएँ।                                                                                                                 |
+| `Sandboxed sessions cannot spawn ACP sessions ...`                          | ACP runtime host-side है; requester session sandboxed है।                                                              | sandboxed sessions से `runtime="subagent"` इस्तेमाल करें, या ACP spawn को non-sandboxed session से चलाएँ।                                                                         |
+| `sessions_spawn sandbox="require" is unsupported for runtime="acp" ...`     | ACP runtime के लिए `sandbox="require"` माँगा गया।                                                                         | required sandboxing के लिए `runtime="subagent"` इस्तेमाल करें, या non-sandboxed session से `sandbox="inherit"` के साथ ACP इस्तेमाल करें।                                                      |
+| `Cannot apply --model ... did not advertise model support`                  | target harness generic ACP model switching expose नहीं करता।                                                        | ऐसा harness इस्तेमाल करें जो ACP `models`/`session/set_model` advertise करता हो, Codex ACP model refs इस्तेमाल करें, या अगर harness का अपना startup flag है तो model को सीधे harness में configure करें। |
+| bound session के लिए ACP metadata missing                                      | stale/deleted ACP session metadata।                                                                                    | `/acp spawn` से फिर बनाएँ, फिर thread को rebind/focus करें।                                                                                                                    |
+| `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`    | `permissionMode` non-interactive ACP session में writes/exec रोकता है।                                                    | `plugins.entries.acpx.config.permissionMode` को `approve-all` पर सेट करें और gateway restart करें। [Permission configuration](/hi/tools/acp-agents-setup#permission-configuration) देखें। |
+| ACP session बहुत कम output के साथ जल्दी fail हो जाता है                                  | Permission prompts `permissionMode`/`nonInteractivePermissions` से blocked हैं।                                        | `AcpRuntimeError` के लिए gateway logs जाँचें। full permissions के लिए `permissionMode=approve-all` सेट करें; graceful degradation के लिए `nonInteractivePermissions=deny` सेट करें।        |
+| ACP session काम पूरा करने के बाद अनिश्चित काल तक stall रहता है                       | Harness process समाप्त हो गया, लेकिन ACP session ने completion report नहीं की।                                                    | OpenClaw अपडेट करें; current acpx cleanup close और Gateway startup पर OpenClaw-owned stale wrapper और adapter processes को reap करता है।                                             |
+| Harness को `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>` दिखता है                        | Internal event envelope ACP boundary के पार leak हो गया।                                                                | OpenClaw अपडेट करें और completion flow फिर से चलाएँ; external harnesses को केवल plain completion prompts मिलने चाहिए।                                                          |
 
 <Note>
-`Command blocked by PreToolUse hook: Native hook relay unavailable`
-native Codex hook relay से संबंधित है, ACP/acpx से नहीं। Bound Codex chat में, `/new` या `/reset` से नई
-session शुरू करें; अगर यह एक बार काम करता है और फिर अगली native tool call पर लौट आता है, तो
-`/new` दोहराने के बजाय Codex app-server या OpenClaw Gateway restart करें। [Codex हार्नेस troubleshooting](/hi/plugins/codex-harness#troubleshooting) देखें।
+`Command blocked by PreToolUse hook: Native hook relay unavailable` native Codex hook relay से संबंधित है,
+ACP/acpx से नहीं। bound Codex chat में, `/new` या `/reset` से fresh
+session शुरू करें; अगर यह एक बार काम करता है और फिर अगली
+native tool call पर लौट आता है, तो बार-बार `/new` चलाने के बजाय
+Codex app-server या OpenClaw Gateway restart करें। [Codex harness troubleshooting](/hi/plugins/codex-harness#troubleshooting) देखें।
 </Note>
 
 ## संबंधित
 
 - [ACP agents - setup](/hi/tools/acp-agents-setup)
-- [Agent भेजना](/hi/tools/agent-send)
-- [CLI बैकएंड](/hi/gateway/cli-backends)
-- [Codex हार्नेस](/hi/plugins/codex-harness)
-- [Codex हार्नेस runtime](/hi/plugins/codex-harness-runtime)
-- [बहु-एजेंट सैंडबॉक्स टूल](/hi/tools/multi-agent-sandbox-tools)
+- [Agent send](/hi/tools/agent-send)
+- [CLI Backends](/hi/gateway/cli-backends)
+- [Codex harness](/hi/plugins/codex-harness)
+- [Codex harness runtime](/hi/plugins/codex-harness-runtime)
+- [Multi-agent sandbox tools](/hi/tools/multi-agent-sandbox-tools)
 - [`openclaw acp` (bridge mode)](/hi/cli/acp)
-- [उप-एजेंट](/hi/tools/subagents)
+- [Sub-agents](/hi/tools/subagents)

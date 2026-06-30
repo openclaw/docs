@@ -1,16 +1,16 @@
 ---
 read_when:
-    - คุณต้องการทำดัชนีหรือค้นหา semantic memory
-    - คุณกำลังดีบักความพร้อมใช้งานของหน่วยความจำหรือการทำดัชนี
-    - คุณต้องการยกระดับความจำระยะสั้นที่เรียกคืนมาเป็น `MEMORY.md`
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
+    - คุณต้องการจัดทำดัชนีหรือค้นหาหน่วยความจำเชิงความหมาย
+    - คุณกำลังดีบักความพร้อมใช้งานของหน่วยความจำหรือการจัดทำดัชนี
+    - คุณต้องการเลื่อนระดับความจำระยะสั้นที่เรียกคืนมาเป็น `MEMORY.md`
+summary: คู่มืออ้างอิง CLI สำหรับ `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
 title: หน่วยความจำ
 x-i18n:
-    generated_at: "2026-06-27T17:21:34Z"
+    generated_at: "2026-06-30T14:30:43Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 553c69ccc92d398e765a33bfadb8cc9a0bf9e0f86b319fb4fcff05464ebebe7c
+    source_hash: 74b85d7299cc12e6133a10678f7c8fe17ee704e029993aebea417727ba94e629
     source_path: cli/memory.md
     workflow: 16
 ---
@@ -18,9 +18,9 @@ x-i18n:
 # `openclaw memory`
 
 จัดการการทำดัชนีและการค้นหาหน่วยความจำเชิงความหมาย
-จัดให้โดย Plugin `memory-core` ที่รวมมาให้ คำสั่งนี้จะพร้อมใช้งานเมื่อ
-`plugins.slots.memory` เลือก `memory-core` (ค่าเริ่มต้น); Plugin หน่วยความจำอื่นๆ
-จะแสดงเนมสเปซ CLI ของตนเอง
+ให้บริการโดย Plugin `memory-core` ที่รวมมาให้ คำสั่งนี้พร้อมใช้งานเมื่อ
+`plugins.slots.memory` เลือก `memory-core` (ค่าเริ่มต้น); Plugin หน่วยความจำอื่น
+จะแสดง namespace ของ CLI ของตนเอง
 
 ที่เกี่ยวข้อง:
 
@@ -56,17 +56,17 @@ openclaw memory index --agent main --verbose
 
 `memory status` และ `memory index`:
 
-- `--agent <id>`: จำกัดขอบเขตไปยัง agent เดียว หากไม่มีตัวเลือกนี้ คำสั่งเหล่านี้จะทำงานกับ agent ที่กำหนดค่าไว้แต่ละตัว; หากไม่ได้กำหนดค่ารายชื่อ agent ไว้ จะย้อนกลับไปใช้ agent เริ่มต้น
+- `--agent <id>`: จำกัดขอบเขตไปยังเอเจนต์เดียว หากไม่ระบุ คำสั่งเหล่านี้จะทำงานกับเอเจนต์ที่กำหนดค่าไว้แต่ละตัว; หากไม่ได้กำหนดค่ารายการเอเจนต์ไว้ จะย้อนกลับไปใช้เอเจนต์เริ่มต้น
 - `--verbose`: แสดงบันทึกโดยละเอียดระหว่างการตรวจสอบและการทำดัชนี
 
 `memory status`:
 
-- `--deep`: ตรวจสอบความพร้อมของ vector store ภายในเครื่อง, ความพร้อมของ embedding provider และความพร้อมของการค้นหาเวกเตอร์เชิงความหมาย `memory status` แบบปกติจะยังรวดเร็วและไม่ทำงาน embedding สดหรือการค้นพบ provider; สถานะ vector store หรือ semantic vector ที่ไม่ทราบหมายความว่าสถานะนั้นไม่ได้ถูกตรวจสอบในคำสั่งนั้น QMD lexical `searchMode: "search"` จะข้ามการตรวจสอบ semantic vector และการบำรุงรักษา embedding แม้ใช้ `--deep`
-- `--index`: เรียกทำดัชนีใหม่หาก store มีสถานะ dirty (หมายรวมถึง `--deep`)
-- `--fix`: ซ่อมแซม recall lock ที่ค้างเก่าและทำให้เมทาดาทาการ promote เป็นรูปแบบปกติ
-- `--json`: พิมพ์ผลลัพธ์เป็น JSON
+- `--deep`: ตรวจสอบความพร้อมของ vector store ในเครื่อง, ความพร้อมของ embedding provider และความพร้อมของการค้นหาเวกเตอร์เชิงความหมาย `memory status` แบบปกติจะยังคงรวดเร็วและไม่เรียกใช้งาน embedding แบบสดหรือการค้นพบ provider; สถานะ vector store หรือ semantic vector ที่ไม่ทราบหมายความว่าไม่ได้ถูกตรวจสอบในคำสั่งนั้น โหมดคำศัพท์ QMD `searchMode: "search"` จะข้ามการตรวจสอบเวกเตอร์เชิงความหมายและการดูแลรักษา embedding แม้ใช้ `--deep`
+- `--index`: เรียกทำดัชนีใหม่หาก store สกปรก (มีนัยถึง `--deep`)
+- `--fix`: ซ่อมแซม stale recall locks และปรับ metadata ของ promotion ให้เป็นมาตรฐาน
+- `--json`: พิมพ์ผลลัพธ์ JSON
 
-หาก `memory status` แสดง `Dreaming status: blocked` แปลว่า managed dreaming cron เปิดใช้งานอยู่ แต่ Heartbeat ที่ขับเคลื่อนมันไม่ได้ทำงานสำหรับ agent เริ่มต้น ดู [Dreaming ไม่เคยทำงาน](/th/concepts/dreaming#dreaming-never-runs-status-shows-blocked) สำหรับสาเหตุที่พบบ่อยสองข้อ
+หาก `memory status` แสดง `Dreaming status: blocked` หมายความว่า cron ของ Dreaming ที่จัดการไว้ถูกเปิดใช้งาน แต่ Heartbeat ที่ขับเคลื่อนมันไม่ทำงานสำหรับเอเจนต์เริ่มต้น ดู [Dreaming ไม่เคยทำงาน](/th/concepts/dreaming#dreaming-never-runs-status-shows-blocked) สำหรับสาเหตุทั่วไปสองข้อ
 
 `memory index`:
 
@@ -74,85 +74,88 @@ openclaw memory index --agent main --verbose
 
 `memory search`:
 
-- อินพุตคำค้น: ส่งได้ทั้ง `[query]` แบบ positional หรือ `--query <text>`
-- หากระบุทั้งสองแบบ `--query` จะมีผลเหนือกว่า
-- หากไม่ระบุทั้งสองแบบ คำสั่งจะออกพร้อมข้อผิดพลาด
-- `--agent <id>`: จำกัดขอบเขตไปยัง agent เดียว (ค่าเริ่มต้น: agent เริ่มต้น)
+- อินพุตคำค้น: ส่ง `[query]` แบบ positional หรือ `--query <text>`
+- หากระบุทั้งสองอย่าง `--query` จะมีผลเหนือกว่า
+- หากไม่ระบุทั้งสองอย่าง คำสั่งจะออกพร้อมข้อผิดพลาด
+- `--agent <id>`: จำกัดขอบเขตไปยังเอเจนต์เดียว (ค่าเริ่มต้น: เอเจนต์เริ่มต้น)
 - `--max-results <n>`: จำกัดจำนวนผลลัพธ์ที่ส่งคืน
 - `--min-score <n>`: กรองรายการที่มีคะแนนต่ำออก
-- `--json`: พิมพ์ผลลัพธ์เป็น JSON
+- `--json`: พิมพ์ผลลัพธ์ JSON
 
 `memory promote`:
 
-แสดงตัวอย่างและใช้การ promote หน่วยความจำระยะสั้น
+ดูตัวอย่างและปรับใช้การ promote หน่วยความจำระยะสั้น
 
 ```bash
 openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
 ```
 
-- `--apply` -- เขียนการ promote ลงใน `MEMORY.md` (ค่าเริ่มต้น: แสดงตัวอย่างเท่านั้น)
-- `--limit <n>` -- จำกัดจำนวน candidate ที่แสดง
-- `--include-promoted` -- รวม entry ที่เคยถูก promote แล้วในรอบก่อนหน้า
+- `--apply` -- เขียน promotions ลงใน `MEMORY.md` (ค่าเริ่มต้น: แสดงตัวอย่างเท่านั้น)
+- `--limit <n>` -- จำกัดจำนวน candidates ที่แสดง
+- `--include-promoted` -- รวมรายการที่ถูก promote แล้วในรอบก่อนหน้า
 
 ตัวเลือกทั้งหมด:
 
-- จัดอันดับ candidate ระยะสั้นจาก `memory/YYYY-MM-DD.md` โดยใช้สัญญาณการ promote แบบถ่วงน้ำหนัก (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`)
-- ใช้สัญญาณระยะสั้นจากทั้งการ recall หน่วยความจำและรอบ daily ingestion รวมถึงสัญญาณเสริมแรงจาก phase light/REM
-- เมื่อเปิดใช้งาน Dreaming แล้ว `memory-core` จะจัดการ cron job หนึ่งงานโดยอัตโนมัติ ซึ่งรันการกวาดแบบเต็ม (`light -> REM -> deep`) ในพื้นหลัง (ไม่จำเป็นต้องใช้ `openclaw cron add` ด้วยตนเอง)
-- `--agent <id>`: จำกัดขอบเขตไปยัง agent เดียว (ค่าเริ่มต้น: agent เริ่มต้น)
-- `--limit <n>`: จำนวน candidate สูงสุดที่จะส่งคืน/นำไปใช้
-- `--min-score <n>`: คะแนนการ promote แบบถ่วงน้ำหนักขั้นต่ำ
+- จัดอันดับ candidates ระยะสั้นจาก `memory/YYYY-MM-DD.md` โดยใช้สัญญาณ promotion แบบถ่วงน้ำหนัก (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`)
+- ใช้สัญญาณระยะสั้นจากทั้ง memory recalls และ daily-ingestion passes รวมถึงสัญญาณเสริมแรงจากเฟส light/REM
+- เมื่อเปิดใช้งาน Dreaming, `memory-core` จะจัดการ cron job หนึ่งงานโดยอัตโนมัติ ซึ่งทำ full sweep (`light -> REM -> deep`) ในเบื้องหลัง (ไม่จำเป็นต้องเรียก `openclaw cron add` ด้วยตนเอง)
+- `--agent <id>`: จำกัดขอบเขตไปยังเอเจนต์เดียว (ค่าเริ่มต้น: เอเจนต์เริ่มต้น)
+- `--limit <n>`: จำนวน candidates สูงสุดที่จะส่งคืน/ปรับใช้
+- `--min-score <n>`: คะแนน promotion แบบถ่วงน้ำหนักขั้นต่ำ
 - `--min-recall-count <n>`: จำนวน recall ขั้นต่ำที่ candidate ต้องมี
-- `--min-unique-queries <n>`: จำนวน query ที่แตกต่างกันขั้นต่ำที่ candidate ต้องมี
-- `--apply`: ผนวก candidate ที่เลือกเข้าไปใน `MEMORY.md` และทำเครื่องหมายว่า promote แล้ว
-- `--include-promoted`: รวม candidate ที่ promote แล้วในผลลัพธ์
-- `--json`: พิมพ์ผลลัพธ์เป็น JSON
+- `--min-unique-queries <n>`: จำนวนคำค้นที่แตกต่างกันขั้นต่ำที่ candidate ต้องมี
+- `--apply`: เพิ่ม candidates ที่เลือกลงใน `MEMORY.md` และทำเครื่องหมายว่า promoted
+- `--include-promoted`: รวม candidates ที่ promoted แล้วในผลลัพธ์
+- `--json`: พิมพ์ผลลัพธ์ JSON
 
 `memory promote-explain`:
 
-อธิบาย candidate สำหรับการ promote รายหนึ่งและรายละเอียดคะแนนของ candidate นั้น
+อธิบาย candidate ของ promotion ที่ระบุและรายละเอียดการแยกคะแนน
 
 ```bash
 openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `<selector>`: key ของ candidate, fragment ของ path หรือ fragment ของ snippet ที่ต้องการค้นหา
-- `--agent <id>`: จำกัดขอบเขตไปยัง agent เดียว (ค่าเริ่มต้น: agent เริ่มต้น)
-- `--include-promoted`: รวม candidate ที่ promote แล้ว
-- `--json`: พิมพ์ผลลัพธ์เป็น JSON
+- `<selector>`: คีย์ candidate, ส่วนหนึ่งของ path หรือส่วนหนึ่งของ snippet ที่จะค้นหา
+- `--agent <id>`: จำกัดขอบเขตไปยังเอเจนต์เดียว (ค่าเริ่มต้น: เอเจนต์เริ่มต้น)
+- `--include-promoted`: รวม candidates ที่ promoted แล้ว
+- `--json`: พิมพ์ผลลัพธ์ JSON
 
 `memory rem-harness`:
 
-แสดงตัวอย่าง reflection ของ REM, candidate truth และผลลัพธ์การ promote แบบ deep โดยไม่เขียนสิ่งใด
+ดูตัวอย่าง reflections ของ REM, truths ที่เป็น candidate และผลลัพธ์ deep promotion โดยไม่เขียนสิ่งใด
 
 ```bash
 openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `--agent <id>`: จำกัดขอบเขตไปยัง agent เดียว (ค่าเริ่มต้น: agent เริ่มต้น)
-- `--include-promoted`: รวม candidate แบบ deep ที่ promote แล้ว
-- `--json`: พิมพ์ผลลัพธ์เป็น JSON
+- `--agent <id>`: จำกัดขอบเขตไปยังเอเจนต์เดียว (ค่าเริ่มต้น: เอเจนต์เริ่มต้น)
+- `--include-promoted`: รวม deep candidates ที่ promoted แล้ว
+- `--json`: พิมพ์ผลลัพธ์ JSON
 
 ## Dreaming
 
-Dreaming คือระบบรวมหน่วยความจำในพื้นหลังที่มีสาม phase ซึ่งทำงานร่วมกัน:
-**light** (จัดเรียง/เตรียม material ระยะสั้น), **deep** (promote
-fact ที่คงทนเข้าไปใน `MEMORY.md`) และ **REM** (สะท้อนคิดและยก theme ขึ้นมาให้เห็น)
+Dreaming คือระบบรวบรวมหน่วยความจำในเบื้องหลังที่มีสามเฟสซึ่งทำงานร่วมกัน:
+**light** (จัดเรียง/เตรียม material ระยะสั้น), **deep** (promote ข้อเท็จจริงที่คงทน
+ลงใน `MEMORY.md`) และ **REM** (สะท้อนและนำ themes ขึ้นมาแสดง)
 
 - เปิดใช้งานด้วย `plugins.entries.memory-core.config.dreaming.enabled: true`
-- สลับสถานะจากแชทด้วย `/dreaming on|off` (หรือตรวจดูด้วย `/dreaming status`)
-- Dreaming ทำงานตามตาราง sweep ที่จัดการไว้หนึ่งชุด (`dreaming.frequency`) และดำเนิน phase ตามลำดับ: light, REM, deep
-- มีเพียง phase deep เท่านั้นที่เขียนหน่วยความจำแบบคงทนไปยัง `MEMORY.md`
-- ผลลัพธ์ของ phase และ entry ไดอารีแบบอ่านได้โดยมนุษย์จะถูกเขียนลงใน `DREAMS.md` (หรือ `dreams.md` ที่มีอยู่) พร้อมรายงานต่อ phase แบบเลือกได้ใน `memory/dreaming/<phase>/YYYY-MM-DD.md`
-- การจัดอันดับใช้สัญญาณแบบถ่วงน้ำหนัก: ความถี่การ recall, relevance ของการดึงข้อมูล, ความหลากหลายของ query, ความใหม่ตามเวลา, การ consolidate ข้ามวัน และความมั่งคั่งเชิงแนวคิดที่ได้มา
-- การ promote จะอ่าน daily note สดซ้ำก่อนเขียนไปยัง `MEMORY.md` ดังนั้น snippet ระยะสั้นที่ถูกแก้ไขหรือลบแล้วจะไม่ถูก promote จาก snapshot recall store ที่ค้างเก่า
-- การรันตามกำหนดเวลาและ `memory promote` แบบ manual ใช้ค่าเริ่มต้นของ phase deep เดียวกัน เว้นแต่คุณส่งค่า override threshold ผ่าน CLI
-- การรันอัตโนมัติจะแผ่การทำงานไปยัง memory workspace ที่กำหนดค่าไว้
+- สลับจากแชตด้วย `/dreaming on|off` (หรือตรวจสอบด้วย `/dreaming status`)
+  ผู้เรียกจาก channel ต้องเป็นเจ้าของจึงจะเปลี่ยนการตั้งค่าได้; Gateway clients ต้องมี
+  `operator.admin` สถานะและความช่วยเหลือแบบอ่านอย่างเดียวยังคงพร้อมใช้งานสำหรับ
+  ผู้ส่งคำสั่งที่ได้รับอนุญาต
+- Dreaming ทำงานตามกำหนด sweep ที่จัดการไว้หนึ่งรายการ (`dreaming.frequency`) และเรียกใช้เฟสตามลำดับ: light, REM, deep
+- เฉพาะเฟส deep เท่านั้นที่เขียนหน่วยความจำถาวรลงใน `MEMORY.md`
+- ผลลัพธ์ของเฟสและรายการไดอารี่ที่มนุษย์อ่านได้จะถูกเขียนลงใน `DREAMS.md` (หรือ `dreams.md` ที่มีอยู่) พร้อมรายงานต่อเฟสแบบไม่บังคับใน `memory/dreaming/<phase>/YYYY-MM-DD.md`
+- การจัดอันดับใช้สัญญาณถ่วงน้ำหนัก: ความถี่ของ recall, ความเกี่ยวข้องของ retrieval, ความหลากหลายของคำค้น, ความใหม่ตามเวลา, การรวบรวมข้ามวัน และความสมบูรณ์ของแนวคิดที่อนุมานได้
+- Promotion จะอ่าน live daily note ซ้ำก่อนเขียนลง `MEMORY.md` ดังนั้น snippets ระยะสั้นที่ถูกแก้ไขหรือลบจะไม่ถูก promote จาก snapshots ของ recall store ที่ล้าสมัย
+- การเรียกใช้งานตามกำหนดและการเรียก `memory promote` ด้วยตนเองใช้ค่าเริ่มต้นของเฟส deep เดียวกัน เว้นแต่คุณจะส่งค่า threshold overrides ผ่าน CLI
+- การเรียกใช้งานอัตโนมัติจะกระจายไปยัง memory workspaces ที่กำหนดค่าไว้
 
-การจัดตารางค่าเริ่มต้น:
+การกำหนดเวลาเริ่มต้น:
 
-- **รอบการ sweep**: `dreaming.frequency = 0 3 * * *`
-- **threshold ของ deep**: `minScore=0.8`, `minRecallCount=3`, `minUniqueQueries=3`, `recencyHalfLifeDays=14`, `maxAgeDays=30`
+- **จังหวะ sweep**: `dreaming.frequency = 0 3 * * *`
+- **thresholds ของ deep**: `minScore=0.8`, `minRecallCount=3`, `minUniqueQueries=3`, `recencyHalfLifeDays=14`, `maxAgeDays=30`
 
 ตัวอย่าง:
 
@@ -174,18 +177,18 @@ fact ที่คงทนเข้าไปใน `MEMORY.md`) และ **REM*
 
 หมายเหตุ:
 
-- `memory index --verbose` พิมพ์รายละเอียดต่อ phase (provider, model, source, กิจกรรม batch)
-- `memory status` รวม path เพิ่มเติมใดๆ ที่กำหนดค่าผ่าน `memorySearch.extraPaths`
-- หาก field ของ Active Memory remote API key ที่มีผลใช้งานถูกกำหนดค่าเป็น SecretRefs คำสั่งจะ resolve ค่าเหล่านั้นจาก snapshot ของ Gateway ที่ active อยู่ หาก Gateway ไม่พร้อมใช้งาน คำสั่งจะล้มเหลวทันที
+- `memory index --verbose` พิมพ์รายละเอียดต่อเฟส (provider, model, sources, batch activity)
+- `memory status` รวม path เพิ่มเติมใด ๆ ที่กำหนดค่าผ่าน `memorySearch.extraPaths`
+- หากฟิลด์คีย์ API ระยะไกลของ active memory ที่มีผลถูกกำหนดค่าเป็น SecretRefs คำสั่งจะ resolve ค่าเหล่านั้นจาก snapshot ของ gateway ที่ active หาก gateway ไม่พร้อมใช้งาน คำสั่งจะล้มเหลวอย่างรวดเร็ว
 - หมายเหตุเรื่องความคลาดเคลื่อนของเวอร์ชัน Gateway: path คำสั่งนี้ต้องใช้ gateway ที่รองรับ `secrets.resolve`; gateway รุ่นเก่าจะส่งคืนข้อผิดพลาด unknown-method
-- ปรับรอบการ sweep ตามกำหนดเวลาด้วย `dreaming.frequency` นอกเหนือจากนั้น policy การ promote แบบ deep จะเป็นภายใน ยกเว้น `dreaming.phases.deep.maxPromotedSnippetTokens` ซึ่งจำกัดความยาว snippet ที่ถูก promote โดยยังคงแสดงที่มาไว้ ใช้ flag ของ CLI บน `memory promote` เมื่อคุณต้องการ override threshold แบบ manual เฉพาะครั้ง
-- `memory rem-harness --path <file-or-dir> --grounded` แสดงตัวอย่าง `What Happened`, `Reflections` และ `Possible Lasting Updates` แบบ grounded จาก daily note ในอดีตโดยไม่เขียนสิ่งใด
-- `memory rem-backfill --path <file-or-dir>` เขียน entry ไดอารีแบบ grounded ที่ย้อนกลับได้เข้าไปใน `DREAMS.md` เพื่อให้ UI ตรวจทาน
-- `memory rem-backfill --path <file-or-dir> --stage-short-term` ยัง seed candidate แบบ grounded durable เข้าไปใน live short-term promotion store เพื่อให้ phase deep ปกติสามารถจัดอันดับได้
-- `memory rem-backfill --rollback` ลบ entry ไดอารีแบบ grounded ที่เคยเขียนไว้ก่อนหน้า และ `memory rem-backfill --rollback-short-term` ลบ candidate ระยะสั้นแบบ grounded ที่เคย stage ไว้ก่อนหน้า
-- ดู [Dreaming](/th/concepts/dreaming) สำหรับคำอธิบาย phase ทั้งหมดและอ้างอิงการกำหนดค่า
+- ปรับจังหวะ sweep ตามกำหนดด้วย `dreaming.frequency` นโยบาย deep promotion นอกเหนือจากนี้เป็นภายใน ยกเว้น `dreaming.phases.deep.maxPromotedSnippetTokens` ซึ่งจำกัดความยาว snippet ที่ promoted โดยยังคงแสดง provenance ไว้ ใช้ flags ของ CLI กับ `memory promote` เมื่อคุณต้องการ threshold overrides แบบใช้ครั้งเดียวด้วยตนเอง
+- `memory rem-harness --path <file-or-dir> --grounded` แสดงตัวอย่าง `What Happened`, `Reflections` และ `Possible Lasting Updates` แบบ grounded จาก daily notes ในอดีตโดยไม่เขียนสิ่งใด
+- `memory rem-backfill --path <file-or-dir>` เขียนรายการไดอารี่แบบ grounded ที่ย้อนกลับได้ลงใน `DREAMS.md` เพื่อการตรวจทานใน UI
+- `memory rem-backfill --path <file-or-dir> --stage-short-term` ยัง seed grounded durable candidates ลงใน live short-term promotion store เพื่อให้เฟส deep ปกติสามารถจัดอันดับได้
+- `memory rem-backfill --rollback` ลบรายการไดอารี่แบบ grounded ที่เขียนไว้ก่อนหน้า และ `memory rem-backfill --rollback-short-term` ลบ grounded short-term candidates ที่ stage ไว้ก่อนหน้า
+- ดู [Dreaming](/th/concepts/dreaming) สำหรับคำอธิบายเฟสทั้งหมดและข้อมูลอ้างอิงการกำหนดค่า
 
 ## ที่เกี่ยวข้อง
 
-- [อ้างอิง CLI](/th/cli)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
 - [ภาพรวมหน่วยความจำ](/th/concepts/memory)
