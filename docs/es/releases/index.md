@@ -1,13 +1,13 @@
 ---
 description: Browse polished OpenClaw release notes with highlights, reader-facing context, source links, and contributor credits.
-summary: Notas de lanzamiento seleccionadas de OpenClaw para quienes quieren la historia del producto, no el registro de cambios sin procesar.
+summary: Notas de la versión de OpenClaw seleccionadas para quienes quieren la historia del producto, no el registro de cambios sin procesar.
 title: Notas de la versión
 x-i18n:
-    generated_at: "2026-06-30T13:48:44Z"
+    generated_at: "2026-07-01T02:59:22Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1f0888e4ba8e8b9709bf3da72b4f1594e833a457a14a49345e9e460b32fa7e8
+    source_hash: f0528fd717dbd98f1191e24b640866735f4b32d3c1421deac9324115e6059903
     source_path: releases/index.md
     workflow: 16
 ---
@@ -15,13 +15,13 @@ x-i18n:
 # Notas de la versión
 
 Estas páginas serán la versión orientada al lector de las versiones de OpenClaw. Mantienen
-juntos la historia principal, el impacto práctico, los enlaces de origen y el crédito a los colaboradores
-sin obligarte a revisar primero el changelog sin procesar.
+unidas la historia principal, el impacto práctico, los enlaces a las fuentes y el crédito a los colaboradores
+sin obligarte a revisar primero el registro de cambios sin procesar.
 
-## Próximamente
+## Versiones
 
-El archivo de versiones se está completando retrospectivamente. Las nuevas notas de versión pulidas aparecerán
-aquí después de que se finalice el texto de la versión.
+- [v2026.6.11](/releases/2026.6.11) - Correcciones de fiabilidad para respuestas, envíos,
+  reconexiones, configuración de modelos, sesiones y valores predeterminados de administración más seguros.
 
 ## Historial de versiones sin procesar
 
