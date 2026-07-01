@@ -1,31 +1,30 @@
 ---
 read_when:
-    - انتخاب زیرمسیر مناسب plugin-sdk برای import یک Plugin
-    - ممیزی زیرمسیرها و سطوح کمکی Pluginهای همراه
-summary: 'کاتالوگ زیربخش‌های Plugin SDK: کدام importها کجا قرار دارند، گروه‌بندی‌شده بر اساس حوزه'
+    - انتخاب زیرمسیر درست plugin-sdk برای import در یک Plugin
+    - ممیزی زیرمسیرهای Plugin بسته‌بندی‌شده و سطوح کمکی
+summary: 'کاتالوگ زیرمسیرهای Plugin SDK: هر import کجا قرار دارد، گروه‌بندی‌شده بر اساس حوزه'
 title: زیرمسیرهای SDK Plugin
 x-i18n:
-    generated_at: "2026-07-01T13:15:21Z"
+    generated_at: "2026-07-01T20:28:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 589b5581626e50ddb5056ff2aaa60a0af48b92e09c0ca5aa22e2dbf2aed736db
+    source_hash: d67ec0c9d837fa23a80abe46e5bab981e82e6c7a29cfbf84ff47a9eca5cc582f
     source_path: plugins/sdk-subpaths.md
     workflow: 16
 ---
 
 SDK مربوط به Plugin به‌صورت مجموعه‌ای از زیرمسیرهای عمومی محدود در
 `openclaw/plugin-sdk/` ارائه می‌شود. این صفحه زیرمسیرهای رایج را بر اساس
-هدف دسته‌بندی و فهرست می‌کند. فهرست تولیدشدهٔ نقطهٔ ورود کامپایلر در
-`scripts/lib/plugin-sdk-entrypoints.json` قرار دارد؛ خروجی‌های بسته، زیرمجموعهٔ عمومی
-پس از کم‌کردن زیرمسیرهای آزمون/داخلیِ محلی مخزن هستند که در
+هدف دسته‌بندی و فهرست می‌کند. موجودی نقطه ورود تولیدشده برای کامپایلر در
+`scripts/lib/plugin-sdk-entrypoints.json` قرار دارد؛ خروجی‌های package زیرمجموعه عمومی هستند
+پس از کم‌کردن زیرمسیرهای آزمون/داخلی مختص repo-local که در
 `scripts/lib/plugin-sdk-private-local-only-subpaths.json` فهرست شده‌اند. نگه‌دارندگان می‌توانند
-تعداد خروجی‌های عمومی را با `pnpm plugin-sdk:surface` و زیرمسیرهای کمکی رزروشدهٔ
-فعال را با `pnpm plugins:boundary-report:summary` بازبینی کنند؛ خروجی‌های کمکی رزروشدهٔ
-استفاده‌نشده، به‌جای باقی‌ماندن در SDK عمومی به‌عنوان بدهی سازگاری غیرفعال،
-گزارش CI را ناموفق می‌کنند.
+تعداد خروجی‌های عمومی را با `pnpm plugin-sdk:surface` و زیرمسیرهای helper رزروشده فعال را
+با `pnpm plugins:boundary-report:summary` ممیزی کنند؛ خروجی‌های helper رزروشده استفاده‌نشده
+به‌جای ماندن در SDK عمومی به‌عنوان بدهی سازگاری غیرفعال، گزارش CI را ناموفق می‌کنند.
 
-برای راهنمای نویسندگی Plugin، [مرور کلی Plugin SDK](/fa/plugins/sdk-overview) را ببینید.
+برای راهنمای نویسندگی Plugin، [نمای کلی Plugin SDK](/fa/plugins/sdk-overview) را ببینید.
 
 ## ورود Plugin
 
@@ -35,373 +34,374 @@ SDK مربوط به Plugin به‌صورت مجموعه‌ای از زیرمسی
 | `plugin-sdk/core`              | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`, `buildJsonChannelConfigSchema` |
 | `plugin-sdk/config-schema`     | `OpenClawSchema`                                                                                                                                                       |
 | `plugin-sdk/provider-entry`    | `defineSingleProviderPluginEntry`                                                                                                                                      |
-| `plugin-sdk/migration`         | کمک‌کننده‌های موردی ارائه‌دهندهٔ مهاجرت مانند `createMigrationItem`، ثابت‌های دلیل، نشانگرهای وضعیت مورد، کمک‌کننده‌های ویرایش محرمانه، و `summarizeMigrationItems`                 |
-| `plugin-sdk/migration-runtime` | کمک‌کننده‌های مهاجرت زمان اجرا مانند `copyMigrationFileItem`، `withCachedMigrationConfigRuntime`، و `writeMigrationReport`                                              |
-| `plugin-sdk/health`            | ثبت بررسی سلامت Doctor، تشخیص، تعمیر، انتخاب، شدت، و انواع یافته برای مصرف‌کنندگان سلامتِ همراه                                               |
+| `plugin-sdk/migration`         | helperهای مورد migration مانند `createMigrationItem`، ثابت‌های reason، نشانگرهای وضعیت مورد، helperهای redaction، و `summarizeMigrationItems`                 |
+| `plugin-sdk/migration-runtime` | helperهای runtime migration مانند `copyMigrationFileItem`، `withCachedMigrationConfigRuntime`، و `writeMigrationReport`                                              |
+| `plugin-sdk/health`            | ثبت health-check در Doctor، detection، repair، selection، severity، و نوع‌های finding برای مصرف‌کنندگان health بسته‌بندی‌شده                                               |
 
-### سازگاری منسوخ‌شده و کمک‌کننده‌های آزمون
+### helperهای سازگاری منسوخ و آزمون
 
-زیرمسیرهای منسوخ‌شده برای Pluginهای قدیمی‌تر همچنان خروجی داده می‌شوند، اما کد جدید باید از
-زیرمسیرهای متمرکز SDK در پایین استفاده کند. فهرست نگه‌داری‌شده در
-`scripts/lib/plugin-sdk-deprecated-public-subpaths.json` قرار دارد؛ CI واردکردن‌های تولیدیِ
-همراه را از آن رد می‌کند. Barrelهای گسترده مانند `compat`، `config-types`،
+زیرمسیرهای منسوخ برای Pluginهای قدیمی‌تر همچنان خروجی داده می‌شوند، اما کد جدید باید از
+زیرمسیرهای متمرکز SDK در پایین استفاده کند. فهرست نگه‌داری‌شده
+`scripts/lib/plugin-sdk-deprecated-public-subpaths.json` است؛ CI واردکردن‌های production بسته‌بندی‌شده
+از آن را رد می‌کند. barrelهای گسترده مانند `compat`، `config-types`،
 `infra-runtime`، `text-runtime`، و `zod` فقط برای سازگاری هستند. `zod` را
-مستقیما از `zod` وارد کنید.
+مستقیماً از `zod` وارد کنید.
 
-زیرمسیرهای کمک‌کنندهٔ آزمونِ مبتنی بر Vitest در OpenClaw فقط محلیِ مخزن هستند و دیگر
-خروجی‌های بسته نیستند: `agent-runtime-test-contracts`,
-`channel-contract-testing`, `channel-target-testing`, `channel-test-helpers`,
-`plugin-test-api`, `plugin-test-contracts`, `plugin-test-runtime`,
-`provider-http-test-mocks`, `provider-test-contracts`, `test-env`,
-`test-fixtures`, `test-node-mocks`, و `testing`.
+زیرمسیرهای test-helper مبتنی بر Vitest در OpenClaw فقط repo-local هستند و دیگر
+خروجی package نیستند: `agent-runtime-test-contracts`،
+`channel-contract-testing`، `channel-target-testing`، `channel-test-helpers`،
+`plugin-test-api`، `plugin-test-contracts`، `plugin-test-runtime`،
+`provider-http-test-mocks`، `provider-test-contracts`، `test-env`،
+`test-fixtures`، `test-node-mocks`، و `testing`.
 
-### زیرمسیرهای کمکی رزروشدهٔ Plugin همراه
+### زیرمسیرهای helper رزروشده برای Pluginهای بسته‌بندی‌شده
 
-این زیرمسیرها سطح‌های سازگاریِ متعلق به Plugin برای Plugin همراهِ مالک خود هستند،
+این زیرمسیرها سطح‌های سازگاری تحت مالکیت Plugin برای Plugin بسته‌بندی‌شده مالک خود هستند،
 نه APIهای عمومی SDK: `plugin-sdk/codex-mcp-projection` و
-`plugin-sdk/codex-native-task-runtime`. واردکردن‌های افزونهٔ میان‌مالک با
-حفاظ‌های قرارداد بسته مسدود می‌شوند.
+`plugin-sdk/codex-native-task-runtime`. واردکردن‌های extension میان‌مالک با
+محافظ‌های قرارداد package مسدود می‌شوند.
 
 <AccordionGroup>
   <Accordion title="زیرمسیرهای کانال">
     | زیرمسیر | خروجی‌های کلیدی |
     | --- | --- |
-    | `plugin-sdk/channel-core` | `defineChannelPluginEntry`، `defineSetupPluginEntry`، `createChatChannelPlugin`، `createChannelPluginBase` |
+    | `plugin-sdk/channel-core` | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
     | `plugin-sdk/config-schema` | خروجی طرح‌واره Zod ریشه `openclaw.json` (`OpenClawSchema`) |
     | `plugin-sdk/json-schema-runtime` | راهنمای اعتبارسنجی JSON Schema کش‌شده برای طرح‌واره‌های متعلق به Plugin |
-    | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`، `createOptionalChannelSetupAdapter`، `createOptionalChannelSetupWizard`، به‌علاوه `DEFAULT_ACCOUNT_ID`، `createTopLevelChannelDmPolicy`، `setSetupChannelEnabled`، `splitSetupEntries` |
-    | `plugin-sdk/setup` | راهنماهای مشترک جادوگر راه‌اندازی، مترجم راه‌اندازی، اعلان‌های فهرست مجاز، سازنده‌های وضعیت راه‌اندازی |
-    | `plugin-sdk/setup-runtime` | `createSetupTranslator`، `createPatchedAccountSetupAdapter`، `createEnvPatchedAccountSetupAdapter`، `createSetupInputPresenceValidator`، `noteChannelLookupFailure`، `noteChannelLookupSummary`، `promptResolvedAllowFrom`، `splitSetupEntries`، `createAllowlistSetupWizardProxy`، `createDelegatedSetupWizardProxy` |
-    | `plugin-sdk/setup-adapter-runtime` | نام مستعار سازگاری منسوخ‌شده؛ از `plugin-sdk/setup-runtime` استفاده کنید |
-    | `plugin-sdk/setup-tools` | `formatCliCommand`، `detectBinary`، `extractArchive`، `resolveBrewExecutable`، `formatDocsLink`، `CONFIG_DIR` |
-    | `plugin-sdk/account-core` | راهنماهای پیکربندی چندحسابی/دروازه اقدام، راهنماهای مسیر جایگزین حساب پیش‌فرض |
-    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`، راهنماهای نرمال‌سازی شناسه حساب |
-    | `plugin-sdk/account-resolution` | راهنماهای جست‌وجوی حساب + مسیر جایگزین پیش‌فرض |
+    | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`، به‌همراه `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
+    | `plugin-sdk/setup` | راهنماهای مشترک جادوگر راه‌اندازی، مترجم راه‌اندازی، اعلان‌های allowlist، سازنده‌های وضعیت راه‌اندازی |
+    | `plugin-sdk/setup-runtime` | `createSetupTranslator`, `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
+    | `plugin-sdk/setup-adapter-runtime` | نام مستعار سازگاری منسوخ؛ از `plugin-sdk/setup-runtime` استفاده کنید |
+    | `plugin-sdk/setup-tools` | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
+    | `plugin-sdk/account-core` | راهنماهای پیکربندی چندحسابی/دروازه اقدام، راهنماهای بازگشت به حساب پیش‌فرض |
+    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`، راهنماهای عادی‌سازی شناسه حساب |
+    | `plugin-sdk/account-resolution` | راهنماهای جست‌وجوی حساب + بازگشت به پیش‌فرض |
     | `plugin-sdk/account-helpers` | راهنماهای محدود فهرست حساب/اقدام حساب |
-    | `plugin-sdk/access-groups` | راهنماهای تجزیه فهرست مجاز گروه دسترسی و عیب‌یابی‌های گروهی ویرایش‌شده |
+    | `plugin-sdk/access-groups` | راهنماهای تجزیه allowlist گروه دسترسی و عیب‌یابی گروه با داده‌های پوشانده‌شده |
     | `plugin-sdk/channel-pairing` | `createChannelPairingController` |
-    | `plugin-sdk/channel-reply-pipeline` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter`، `resolveChannelDmAccess`، `resolveChannelDmAllowFrom`، `resolveChannelDmPolicy`، `normalizeChannelDmPolicy`، `normalizeLegacyDmAliases` |
-    | `plugin-sdk/channel-config-schema` | اولیه‌های مشترک طرح‌واره پیکربندی کانال به‌علاوه سازنده‌های Zod و مستقیم JSON/TypeBox |
-    | `plugin-sdk/bundled-channel-config-schema` | طرح‌واره‌های پیکربندی کانال بسته‌بندی‌شده OpenClaw فقط برای Pluginهای بسته‌بندی‌شده نگهداری‌شده |
-    | `plugin-sdk/chat-channel-ids` | `BUNDLED_CHAT_CHANNEL_IDS`، `BUNDLED_CHAT_CHANNEL_ENVELOPE_PREFIXES`، `ChatChannelId`. شناسه‌های متعارف کانال گفت‌وگوی بسته‌بندی‌شده/رسمی به‌علاوه برچسب‌ها/نام‌های مستعار قالب‌بند برای Pluginهایی که باید متن دارای پیشوند پاکت را بدون کدنویسی ثابت جدول خودشان تشخیص دهند. |
-    | `plugin-sdk/channel-config-schema-legacy` | نام مستعار سازگاری منسوخ‌شده برای طرح‌واره‌های پیکربندی کانال بسته‌بندی‌شده |
-    | `plugin-sdk/telegram-command-config` | راهنماهای نرمال‌سازی/اعتبارسنجی دستور سفارشی Telegram با مسیر جایگزین قرارداد بسته‌بندی‌شده |
+    | `plugin-sdk/channel-reply-pipeline` | نمای سازگاری منسوخ. از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
+    | `plugin-sdk/channel-config-schema` | سازه‌های اولیه طرح‌واره پیکربندی کانال مشترک، به‌همراه سازنده‌های Zod و JSON/TypeBox مستقیم |
+    | `plugin-sdk/bundled-channel-config-schema` | طرح‌واره‌های پیکربندی کانال OpenClaw باندل‌شده فقط برای Pluginهای باندل‌شده نگه‌داری‌شده |
+    | `plugin-sdk/chat-channel-ids` | `BUNDLED_CHAT_CHANNEL_IDS`, `BUNDLED_CHAT_CHANNEL_ENVELOPE_PREFIXES`, `ChatChannelId`. شناسه‌های کانال گفت‌وگوی باندل‌شده/رسمی استاندارد، به‌همراه برچسب‌ها/نام‌های مستعار قالب‌بند برای Pluginهایی که باید متن دارای پیشوند پاکت را بدون سخت‌کدن جدول خودشان تشخیص دهند. |
+    | `plugin-sdk/channel-config-schema-legacy` | نام مستعار سازگاری منسوخ برای طرح‌واره‌های پیکربندی کانال باندل‌شده |
+    | `plugin-sdk/telegram-command-config` | راهنماهای عادی‌سازی/اعتبارسنجی دستور سفارشی Telegram با بازگشت قرارداد باندل‌شده |
     | `plugin-sdk/command-gating` | راهنماهای محدود دروازه مجوزدهی دستور |
     | `plugin-sdk/channel-policy` | `resolveChannelGroupRequireMention` |
-    | `plugin-sdk/channel-ingress` | نمای سازگاری منسوخ‌شده ورود کانال سطح پایین. مسیرهای دریافت جدید باید از `plugin-sdk/channel-ingress-runtime` استفاده کنند. |
-    | `plugin-sdk/channel-ingress-runtime` | حل‌کننده runtime ورود کانال سطح بالا و آزمایشی و سازنده‌های واقعیت مسیر برای مسیرهای دریافت کانال مهاجرت‌یافته. این را به مونتاژ فهرست‌های مجاز مؤثر، فهرست‌های مجاز دستور، و تصویرسازی‌های قدیمی در هر Plugin ترجیح دهید. [API ورود کانال](/fa/plugins/sdk-channel-ingress) را ببینید. |
-    | `plugin-sdk/channel-lifecycle` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/channel-outbound` | قراردادهای چرخه عمر پیام به‌علاوه گزینه‌های خط لوله پاسخ، رسیدها، پیش‌نمایش/استریمینگ زنده، راهنماهای چرخه عمر، هویت خروجی، برنامه‌ریزی payload، ارسال‌های پایدار، و راهنماهای زمینه ارسال پیام. [API خروجی کانال](/fa/plugins/sdk-channel-outbound) را ببینید. |
-    | `plugin-sdk/channel-message` | نام مستعار سازگاری منسوخ‌شده برای `plugin-sdk/channel-outbound` به‌علاوه نماهای قدیمی ارسال پاسخ. |
-    | `plugin-sdk/channel-message-runtime` | نام مستعار سازگاری منسوخ‌شده برای `plugin-sdk/channel-outbound` به‌علاوه نماهای قدیمی ارسال پاسخ. |
-    | `plugin-sdk/inbound-envelope` | راهنماهای مشترک مسیر ورودی + سازنده پاکت |
-    | `plugin-sdk/inbound-reply-dispatch` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-inbound` برای اجراکننده‌های ورودی و گزاره‌های ارسال، و از `plugin-sdk/channel-outbound` برای راهنماهای تحویل پیام استفاده کنید. |
-    | `plugin-sdk/messaging-targets` | نام مستعار تجزیه هدف منسوخ‌شده؛ از `plugin-sdk/channel-targets` استفاده کنید |
+    | `plugin-sdk/channel-ingress` | نمای سازگاری ورودی کانال سطح پایین منسوخ. مسیرهای دریافت جدید باید از `plugin-sdk/channel-ingress-runtime` استفاده کنند. |
+    | `plugin-sdk/channel-ingress-runtime` | حل‌گر آزمایشی زمان اجرای ورودی کانال سطح بالا و سازنده‌های فکت مسیر برای مسیرهای دریافت کانال مهاجرت‌داده‌شده. این را به مونتاژ allowlistهای مؤثر، allowlistهای دستور، و پروجکشن‌های legacy در هر Plugin ترجیح دهید. [API ورودی کانال](/fa/plugins/sdk-channel-ingress) را ببینید. |
+    | `plugin-sdk/channel-lifecycle` | نمای سازگاری منسوخ. از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/channel-outbound` | قراردادهای چرخه عمر پیام، به‌همراه گزینه‌های خط لوله پاسخ، رسیدها، پیش‌نمایش/استریم زنده، راهنماهای چرخه عمر، هویت خروجی، برنامه‌ریزی payload، ارسال‌های بادوام، و راهنماهای زمینه ارسال پیام. [API خروجی کانال](/fa/plugins/sdk-channel-outbound) را ببینید. |
+    | `plugin-sdk/channel-message` | نام مستعار سازگاری منسوخ برای `plugin-sdk/channel-outbound` به‌همراه نماهای legacy ارسال پاسخ. |
+    | `plugin-sdk/channel-message-runtime` | نام مستعار سازگاری منسوخ برای `plugin-sdk/channel-outbound` به‌همراه نماهای legacy ارسال پاسخ. |
+    | `plugin-sdk/inbound-envelope` | راهنماهای مشترک سازنده مسیر ورودی + پاکت |
+    | `plugin-sdk/inbound-reply-dispatch` | نمای سازگاری منسوخ. برای اجراکننده‌های ورودی و گزاره‌های ارسال از `plugin-sdk/channel-inbound`، و برای راهنماهای تحویل پیام از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/messaging-targets` | نام مستعار منسوخ تجزیه مقصد؛ از `plugin-sdk/channel-targets` استفاده کنید |
     | `plugin-sdk/outbound-media` | راهنماهای مشترک بارگذاری رسانه خروجی و وضعیت رسانه میزبانی‌شده |
-    | `plugin-sdk/outbound-send-deps` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/outbound-runtime` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/poll-runtime` | راهنماهای محدود نرمال‌سازی نظرسنجی |
-    | `plugin-sdk/thread-bindings-runtime` | راهنماهای چرخه عمر و آداپتور اتصال رشته |
-    | `plugin-sdk/agent-media-payload` | سازنده قدیمی payload رسانه عامل |
+    | `plugin-sdk/outbound-send-deps` | نمای سازگاری منسوخ. از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/outbound-runtime` | نمای سازگاری منسوخ. از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/poll-runtime` | راهنماهای محدود عادی‌سازی نظرسنجی |
+    | `plugin-sdk/thread-bindings-runtime` | راهنماهای چرخه عمر و آداپتر اتصال رشته |
+    | `plugin-sdk/agent-media-payload` | سازنده legacy payload رسانه عامل |
     | `plugin-sdk/conversation-runtime` | راهنماهای مکالمه/اتصال رشته، جفت‌سازی، و اتصال پیکربندی‌شده |
-    | `plugin-sdk/runtime-config-snapshot` | راهنمای snapshot پیکربندی runtime |
-    | `plugin-sdk/runtime-group-policy` | راهنماهای حل سیاست گروه runtime |
+    | `plugin-sdk/runtime-config-snapshot` | راهنمای snapshot پیکربندی زمان اجرا |
+    | `plugin-sdk/runtime-group-policy` | راهنماهای حل سیاست گروه در زمان اجرا |
     | `plugin-sdk/channel-status` | راهنماهای مشترک snapshot/خلاصه وضعیت کانال |
-    | `plugin-sdk/channel-config-primitives` | اولیه‌های محدود طرح‌واره پیکربندی کانال |
+    | `plugin-sdk/channel-config-primitives` | سازه‌های اولیه محدود طرح‌واره پیکربندی کانال |
     | `plugin-sdk/channel-config-writes` | راهنماهای مجوزدهی نوشتن پیکربندی کانال |
     | `plugin-sdk/channel-plugin-common` | خروجی‌های مشترک مقدمه Plugin کانال |
-    | `plugin-sdk/allowlist-config-edit` | راهنماهای ویرایش/خواندن پیکربندی فهرست مجاز |
-    | `plugin-sdk/group-access` | راهنماهای مشترک تصمیم‌گیری دسترسی گروه |
-    | `plugin-sdk/direct-dm`، `plugin-sdk/direct-dm-access` | نماهای سازگاری منسوخ‌شده. از `plugin-sdk/channel-inbound` استفاده کنید. |
-    | `plugin-sdk/direct-dm-guard-policy` | راهنماهای محدود سیاست محافظ DM مستقیم پیش از رمزنگاری |
-    | `plugin-sdk/discord` | نمای سازگاری منسوخ‌شده Discord برای `@openclaw/discord@2026.3.13` منتشرشده و سازگاری مالک پیگیری‌شده؛ Pluginهای جدید باید از زیرمسیرهای عمومی SDK کانال استفاده کنند |
-    | `plugin-sdk/telegram-account` | نمای سازگاری منسوخ‌شده حل حساب Telegram برای سازگاری مالک پیگیری‌شده؛ Pluginهای جدید باید از راهنماهای runtime تزریق‌شده یا زیرمسیرهای عمومی SDK کانال استفاده کنند |
-    | `plugin-sdk/zalouser` | نمای سازگاری منسوخ‌شده Zalo Personal برای بسته‌های منتشرشده Lark/Zalo که هنوز مجوزدهی دستور فرستنده را import می‌کنند؛ Pluginهای جدید باید از `plugin-sdk/command-auth` استفاده کنند |
-    | `plugin-sdk/interactive-runtime` | ارائه، تحویل، و راهنماهای قدیمی پاسخ تعاملی پیام معنایی. [ارائه پیام](/fa/plugins/message-presentation) را ببینید |
-    | `plugin-sdk/channel-inbound` | راهنماهای مشترک ورودی برای طبقه‌بندی رویداد، ساخت زمینه، قالب‌بندی، ریشه‌ها، debounce، تطبیق اشاره، سیاست اشاره، و ثبت ورودی |
+    | `plugin-sdk/allowlist-config-edit` | راهنماهای ویرایش/خواندن پیکربندی allowlist |
+    | `plugin-sdk/group-access` | راهنماهای مشترک تصمیم‌گیری دسترسی گروهی |
+    | `plugin-sdk/direct-dm`, `plugin-sdk/direct-dm-access` | نماهای سازگاری منسوخ. از `plugin-sdk/channel-inbound` استفاده کنید. |
+    | `plugin-sdk/direct-dm-guard-policy` | راهنماهای محدود سیاست نگهبان direct-DM پیش از رمزنگاری |
+    | `plugin-sdk/discord` | نمای سازگاری منسوخ Discord برای `@openclaw/discord@2026.3.13` منتشرشده و سازگاری رهگیری‌شده مالک؛ Pluginهای جدید باید از زیرمسیرهای عمومی SDK کانال استفاده کنند |
+    | `plugin-sdk/telegram-account` | نمای سازگاری منسوخ حل حساب Telegram برای سازگاری رهگیری‌شده مالک؛ Pluginهای جدید باید از راهنماهای زمان اجرای تزریق‌شده یا زیرمسیرهای عمومی SDK کانال استفاده کنند |
+    | `plugin-sdk/zalouser` | نمای سازگاری منسوخ Zalo Personal برای بسته‌های منتشرشده Lark/Zalo که هنوز مجوزدهی دستور فرستنده را import می‌کنند؛ Pluginهای جدید باید از `plugin-sdk/command-auth` استفاده کنند |
+    | `plugin-sdk/interactive-runtime` | ارائه معنایی پیام، تحویل، و راهنماهای legacy پاسخ تعاملی. [ارائه پیام](/fa/plugins/message-presentation) را ببینید |
+    | `plugin-sdk/channel-inbound` | راهنماهای مشترک ورودی برای طبقه‌بندی رویداد، ساخت زمینه، قالب‌بندی، ریشه‌ها، debounce، تطبیق mention، سیاست mention، و لاگ‌گیری ورودی |
     | `plugin-sdk/channel-inbound-debounce` | راهنماهای محدود debounce ورودی |
-    | `plugin-sdk/channel-mention-gating` | راهنماهای محدود سیاست اشاره، نشانگر اشاره، و متن اشاره بدون سطح گسترده‌تر runtime ورودی |
-    | `plugin-sdk/channel-envelope`، `plugin-sdk/channel-inbound-roots`، `plugin-sdk/channel-location`، `plugin-sdk/channel-logging` | نماهای سازگاری منسوخ‌شده. از `plugin-sdk/channel-inbound` یا `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/channel-pairing-paths` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-pairing` استفاده کنید. |
-    | `plugin-sdk/channel-reply-options-runtime` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/channel-streaming` | نمای سازگاری منسوخ‌شده. از `plugin-sdk/channel-outbound` استفاده کنید. |
-    | `plugin-sdk/channel-send-result` | نوع‌های نتیجه پاسخ |
-    | `plugin-sdk/channel-actions` | راهنماهای اقدام پیام کانال، به‌علاوه راهنماهای طرح‌واره بومی منسوخ‌شده که برای سازگاری Plugin نگه داشته شده‌اند |
-    | `plugin-sdk/channel-route` | نرمال‌سازی مشترک مسیر، حل هدف مبتنی بر parser، رشته‌سازی شناسه رشته، کلیدهای مسیر dedupe/compact، نوع‌های هدف تجزیه‌شده، و راهنماهای مقایسه مسیر/هدف |
-    | `plugin-sdk/channel-targets` | راهنماهای تجزیه هدف؛ فراخوان‌های مقایسه مسیر باید از `plugin-sdk/channel-route` استفاده کنند |
-    | `plugin-sdk/channel-contract` | نوع‌های قرارداد کانال |
+    | `plugin-sdk/channel-mention-gating` | راهنماهای محدود سیاست mention، نشانگر mention، و متن mention بدون سطح گسترده‌تر زمان اجرای ورودی |
+    | `plugin-sdk/channel-envelope`, `plugin-sdk/channel-inbound-roots`, `plugin-sdk/channel-location`, `plugin-sdk/channel-logging` | نماهای سازگاری منسوخ. از `plugin-sdk/channel-inbound` یا `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/channel-pairing-paths` | نمای سازگاری منسوخ. از `plugin-sdk/channel-pairing` استفاده کنید. |
+    | `plugin-sdk/channel-reply-options-runtime` | نمای سازگاری منسوخ. از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/channel-streaming` | نمای سازگاری منسوخ. از `plugin-sdk/channel-outbound` استفاده کنید. |
+    | `plugin-sdk/channel-send-result` | انواع نتیجه پاسخ |
+    | `plugin-sdk/channel-actions` | راهنماهای اقدام پیام کانال، به‌همراه راهنماهای طرح‌واره native منسوخ که برای سازگاری Plugin نگه داشته شده‌اند |
+    | `plugin-sdk/channel-route` | عادی‌سازی مسیر مشترک، حل مقصد مبتنی بر parser، رشته‌سازی شناسه رشته، کلیدهای مسیر dedupe/compact، انواع مقصد تجزیه‌شده، و راهنماهای مقایسه مسیر/مقصد |
+    | `plugin-sdk/channel-targets` | راهنماهای تجزیه مقصد؛ فراخوان‌های مقایسه مسیر باید از `plugin-sdk/channel-route` استفاده کنند |
+    | `plugin-sdk/channel-contract` | انواع قرارداد کانال |
     | `plugin-sdk/channel-feedback` | سیم‌کشی بازخورد/واکنش |
-    | `plugin-sdk/channel-secret-runtime` | راهنماهای محدود قرارداد secret مانند `collectSimpleChannelFieldAssignments`، `getChannelSurface`، `pushAssignment`، و نوع‌های هدف secret |
+    | `plugin-sdk/channel-secret-runtime` | راهنماهای محدود قرارداد secret مانند `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`، و انواع مقصد secret |
   </Accordion>
 
-خانواده‌های راهنمای کانال منسوخ‌شده فقط برای سازگاری با Pluginهای
-منتشرشده در دسترس می‌مانند. برنامه حذف این است: آن‌ها را در طول بازه
-مهاجرت Plugin خارجی نگه دارید، Pluginهای مخزن/بسته‌بندی‌شده را روی
-`channel-inbound` و `channel-outbound` نگه دارید، سپس زیرمسیرهای
-سازگاری را در پاک‌سازی major بعدی SDK حذف کنید. این شامل خانواده‌های
-قدیمی پیام/runtime کانال، استریمینگ کانال، دسترسی direct-DM، انشعاب
-راهنمای ورودی، گزینه‌های پاسخ، و pairing-path می‌شود.
+خانواده‌های راهنمای کانال منسوخ فقط برای سازگاری با Pluginهای منتشرشده
+در دسترس می‌مانند. برنامه حذف این است: آن‌ها را در طول بازه مهاجرت Plugin
+خارجی نگه دارید، Pluginهای repo/باندل‌شده را روی `channel-inbound` و
+`channel-outbound` نگه دارید، سپس زیرمسیرهای سازگاری را در پاک‌سازی major
+بعدی SDK حذف کنید. این شامل خانواده‌های قدیمی پیام/زمان اجرای کانال، استریم
+کانال، دسترسی direct-DM، شاخه‌های راهنمای ورودی، گزینه‌های پاسخ،
+و مسیرهای جفت‌سازی می‌شود.
 
   <Accordion title="زیرمسیرهای ارائه‌دهنده">
     | زیرمسیر | خروجی‌های کلیدی |
     | --- | --- |
     | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry` |
-    | `plugin-sdk/lmstudio` | نمای پشتیبانی‌شدهٔ ارائه‌دهندهٔ LM Studio برای راه‌اندازی، کشف کاتالوگ، و آماده‌سازی مدل در زمان اجرا |
-    | `plugin-sdk/lmstudio-runtime` | نمای پشتیبانی‌شدهٔ زمان اجرای LM Studio برای پیش‌فرض‌های سرور محلی، کشف مدل، سرآیندهای درخواست، و کمک‌کننده‌های مدل بارگذاری‌شده |
-    | `plugin-sdk/provider-setup` | کمک‌کننده‌های برگزیدهٔ راه‌اندازی ارائه‌دهندهٔ محلی/خودمیزبان |
-    | `plugin-sdk/self-hosted-provider-setup` | کمک‌کننده‌های متمرکز راه‌اندازی ارائه‌دهندهٔ خودمیزبان سازگار با OpenAI |
-    | `plugin-sdk/cli-backend` | پیش‌فرض‌های بک‌اند CLI + ثابت‌های نگهبان |
+    | `plugin-sdk/lmstudio` | نمای پشتیبانی‌شده ارائه‌دهنده LM Studio برای راه‌اندازی، کشف کاتالوگ، و آماده‌سازی مدل در زمان اجرا |
+    | `plugin-sdk/lmstudio-runtime` | نمای پشتیبانی‌شده زمان اجرای LM Studio برای پیش‌فرض‌های سرور محلی، کشف مدل، سرآیندهای درخواست، و کمک‌کننده‌های مدل بارگذاری‌شده |
+    | `plugin-sdk/provider-setup` | کمک‌کننده‌های گزینش‌شده راه‌اندازی ارائه‌دهنده محلی/خودمیزبان |
+    | `plugin-sdk/self-hosted-provider-setup` | کمک‌کننده‌های متمرکز راه‌اندازی ارائه‌دهنده خودمیزبان سازگار با OpenAI |
+    | `plugin-sdk/cli-backend` | پیش‌فرض‌های بک‌اند CLI + ثابت‌های ناظر |
     | `plugin-sdk/provider-auth-runtime` | کمک‌کننده‌های رفع کلید API در زمان اجرا برای Pluginهای ارائه‌دهنده |
-    | `plugin-sdk/provider-oauth-runtime` | انواع عمومی callback ارائه‌دهنده برای OAuth، رندر صفحهٔ callback، کمک‌کننده‌های PKCE/وضعیت، تجزیهٔ ورودی مجوز، کمک‌کننده‌های انقضای توکن، و کمک‌کننده‌های لغو |
-    | `plugin-sdk/provider-auth-api-key` | کمک‌کننده‌های پذیرش اولیه/نوشتن پروفایل کلید API مانند `upsertApiKeyProfile` |
-    | `plugin-sdk/provider-auth-result` | سازندهٔ استاندارد نتیجهٔ احراز هویت OAuth |
+    | `plugin-sdk/provider-oauth-runtime` | نوع‌های عمومی فراخوان بازگشتی OAuth ارائه‌دهنده، رندر صفحه فراخوان بازگشتی، کمک‌کننده‌های PKCE/وضعیت، تجزیه ورودی مجوزدهی، کمک‌کننده‌های انقضای توکن، و کمک‌کننده‌های لغو |
+    | `plugin-sdk/provider-auth-api-key` | کمک‌کننده‌های ورود اولیه/نوشتن پروفایل کلید API مانند `upsertApiKeyProfile` |
+    | `plugin-sdk/provider-auth-result` | سازنده استاندارد نتیجه احراز هویت OAuth |
     | `plugin-sdk/provider-env-vars` | کمک‌کننده‌های جست‌وجوی متغیر محیطی احراز هویت ارائه‌دهنده |
-    | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials`, کمک‌کننده‌های وارد کردن احراز هویت OpenAI Codex، خروجی سازگاری منسوخ `resolveOpenClawAgentDir` |
-    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, سازنده‌های مشترک سیاست بازپخش، کمک‌کننده‌های نقطهٔ پایانی ارائه‌دهنده، و کمک‌کننده‌های مشترک نرمال‌سازی شناسهٔ مدل |
-    | `plugin-sdk/provider-catalog-live-runtime` | کمک‌کننده‌های کاتالوگ زندهٔ مدل ارائه‌دهنده برای کشف محافظت‌شده به سبک `/models`: `buildLiveModelProviderConfig`, `fetchLiveProviderModelRows`, `getCachedLiveProviderModelRows`, `fetchLiveProviderModelIds`, `LiveModelCatalogHttpError`, `clearLiveCatalogCacheForTests`, فیلتر کردن شناسهٔ مدل، کش TTL، و بازگشت ثابت |
-    | `plugin-sdk/provider-catalog-runtime` | هوک زمان اجرای تقویت کاتالوگ ارائه‌دهنده و seamهای رجیستری Plugin-ارائه‌دهنده برای تست‌های قرارداد |
+    | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials`, کمک‌کننده‌های درون‌ریزی احراز هویت OpenAI Codex، خروجی سازگاری منسوخ `resolveOpenClawAgentDir` |
+    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, سازنده‌های مشترک سیاست بازپخش، کمک‌کننده‌های نقطه پایانی ارائه‌دهنده، و کمک‌کننده‌های مشترک نرمال‌سازی شناسه مدل |
+    | `plugin-sdk/provider-catalog-live-runtime` | کمک‌کننده‌های کاتالوگ زنده مدل ارائه‌دهنده برای کشف محافظت‌شده به سبک `/models`: `buildLiveModelProviderConfig`, `fetchLiveProviderModelRows`, `getCachedLiveProviderModelRows`, `fetchLiveProviderModelIds`, `LiveModelCatalogHttpError`, `clearLiveCatalogCacheForTests`, پالایش شناسه مدل، کش TTL، و جایگزین ایستا |
+    | `plugin-sdk/provider-catalog-runtime` | قلاب زمان اجرای غنی‌سازی کاتالوگ ارائه‌دهنده و درزهای رجیستری Plugin-ارائه‌دهنده برای تست‌های قرارداد |
     | `plugin-sdk/provider-catalog-shared` | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-    | `plugin-sdk/provider-http` | کمک‌کننده‌های عمومی قابلیت HTTP/نقطهٔ پایانی ارائه‌دهنده، خطاهای HTTP ارائه‌دهنده، و کمک‌کننده‌های فرم چندبخشی رونویسی صوتی |
-    | `plugin-sdk/provider-web-fetch-contract` | کمک‌کننده‌های محدود قرارداد پیکربندی/انتخاب واکشی وب مانند `enablePluginInConfig` و `WebFetchProviderPlugin` |
-    | `plugin-sdk/provider-web-fetch` | کمک‌کننده‌های ثبت/کش ارائه‌دهندهٔ واکشی وب |
-    | `plugin-sdk/provider-web-search-config-contract` | کمک‌کننده‌های محدود پیکربندی/اعتبارنامهٔ جست‌وجوی وب برای ارائه‌دهندگانی که به سیم‌کشی فعال‌سازی Plugin نیاز ندارند |
-    | `plugin-sdk/provider-web-search-contract` | کمک‌کننده‌های محدود قرارداد پیکربندی/اعتبارنامهٔ جست‌وجوی وب مانند `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`، و تنظیم‌کننده‌ها/گیرنده‌های اعتبارنامه با دامنهٔ محدود |
-    | `plugin-sdk/provider-web-search` | کمک‌کننده‌های ثبت/کش/زمان اجرای ارائه‌دهندهٔ جست‌وجوی وب |
-    | `plugin-sdk/embedding-providers` | انواع عمومی ارائه‌دهندهٔ embedding و کمک‌کننده‌های خواندن، شامل `EmbeddingProviderAdapter`، `getEmbeddingProvider(...)`، و `listEmbeddingProviders(...)`؛ Pluginها ارائه‌دهنده‌ها را از طریق `api.registerEmbeddingProvider(...)` ثبت می‌کنند تا مالکیت manifest اعمال شود |
-    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`، و پاک‌سازی schema + عیب‌یابی DeepSeek/Gemini/OpenAI |
-    | `plugin-sdk/provider-usage` | انواع snapshot مصرف ارائه‌دهنده، کمک‌کننده‌های مشترک واکشی مصرف، و واکشنده‌های ارائه‌دهنده مانند `fetchClaudeUsage` |
-    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`، انواع wrapper جریان، سازگاری فراخوانی ابزار متن ساده، و کمک‌کننده‌های wrapper مشترک Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
-    | `plugin-sdk/provider-stream-shared` | کمک‌کننده‌های عمومی و مشترک wrapper جریان ارائه‌دهنده شامل `composeProviderStreamWrappers`, `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPlainTextToolCallCompatWrapper`, `createPayloadPatchStreamWrapper`, `createToolStreamWrapper`, `normalizeOpenAICompatibleReasoningPayload`, `setQwenChatTemplateThinking`، و ابزارهای جریان سازگار با Anthropic/DeepSeek/OpenAI |
-    | `plugin-sdk/provider-transport-runtime` | کمک‌کننده‌های انتقال بومی ارائه‌دهنده مانند fetch محافظت‌شده، استخراج متن نتیجهٔ ابزار، تبدیل‌های پیام انتقال، و جریان‌های رویداد انتقال قابل نوشتن |
-    | `plugin-sdk/provider-onboard` | کمک‌کننده‌های patch پیکربندی پذیرش اولیه |
+    | `plugin-sdk/provider-http` | کمک‌کننده‌های عمومی قابلیت HTTP/نقطه پایانی ارائه‌دهنده، خطاهای HTTP ارائه‌دهنده، و کمک‌کننده‌های فرم چندبخشی رونویسی صوتی |
+    | `plugin-sdk/provider-web-fetch-contract` | کمک‌کننده‌های محدود قرارداد پیکربندی/گزینش واکشی وب مانند `enablePluginInConfig` و `WebFetchProviderPlugin` |
+    | `plugin-sdk/provider-web-fetch` | کمک‌کننده‌های ثبت/کش ارائه‌دهنده واکشی وب |
+    | `plugin-sdk/provider-web-search-config-contract` | کمک‌کننده‌های محدود پیکربندی/اعتبارنامه جست‌وجوی وب برای ارائه‌دهندگانی که به سیم‌کشی فعال‌سازی Plugin نیاز ندارند |
+    | `plugin-sdk/provider-web-search-contract` | کمک‌کننده‌های محدود قرارداد پیکربندی/اعتبارنامه جست‌وجوی وب مانند `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`, و تنظیم‌کننده‌ها/گیرنده‌های اعتبارنامه با دامنه محدود |
+    | `plugin-sdk/provider-web-search` | کمک‌کننده‌های ثبت/کش/زمان اجرای ارائه‌دهنده جست‌وجوی وب |
+    | `plugin-sdk/embedding-providers` | نوع‌های عمومی ارائه‌دهنده embedding و کمک‌کننده‌های خواندن، از جمله `EmbeddingProviderAdapter`, `getEmbeddingProvider(...)`, و `listEmbeddingProviders(...)`؛ Pluginها ارائه‌دهندگان را از طریق `api.registerEmbeddingProvider(...)` ثبت می‌کنند تا مالکیت manifest اعمال شود |
+    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, و پاک‌سازی schema + عیب‌یابی DeepSeek/Gemini/OpenAI |
+    | `plugin-sdk/provider-usage` | نوع‌های snapshot مصرف ارائه‌دهنده، کمک‌کننده‌های مشترک واکشی مصرف، و واکش‌گرهای ارائه‌دهنده مانند `fetchClaudeUsage` |
+    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, نوع‌های wrapper جریان، سازگاری فراخوان ابزار متن ساده، و کمک‌کننده‌های مشترک wrapper برای Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
+    | `plugin-sdk/provider-stream-shared` | کمک‌کننده‌های عمومی مشترک wrapper جریان ارائه‌دهنده شامل `composeProviderStreamWrappers`, `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPlainTextToolCallCompatWrapper`, `createPayloadPatchStreamWrapper`, `createToolStreamWrapper`, `normalizeOpenAICompatibleReasoningPayload`, `setQwenChatTemplateThinking`, و ابزارهای جریان سازگار با Anthropic/DeepSeek/OpenAI |
+    | `plugin-sdk/provider-transport-runtime` | کمک‌کننده‌های انتقال بومی ارائه‌دهنده مانند واکشی محافظت‌شده، استخراج متن نتیجه ابزار، تبدیل‌های پیام انتقال، و جریان‌های رویداد انتقال قابل نوشتن |
+    | `plugin-sdk/provider-onboard` | کمک‌کننده‌های patch پیکربندی ورود اولیه |
     | `plugin-sdk/global-singleton` | کمک‌کننده‌های singleton/map/cache محلی فرایند |
-    | `plugin-sdk/group-activation` | کمک‌کننده‌های محدود حالت فعال‌سازی گروه و تجزیهٔ فرمان |
+    | `plugin-sdk/group-activation` | کمک‌کننده‌های محدود حالت فعال‌سازی گروه و تجزیه فرمان |
   </Accordion>
 
-snapshotهای مصرف ارائه‌دهنده معمولاً یک یا چند `windows` سهمیه را گزارش می‌کنند که هرکدام
-یک برچسب، درصد استفاده‌شده، و زمان بازنشانی اختیاری دارند. ارائه‌دهندگانی که به‌جای
-پنجره‌های سهمیهٔ قابل بازنشانی، متن موجودی یا وضعیت حساب را ارائه می‌کنند باید
-`summary` را همراه با آرایهٔ خالی `windows` برگردانند، نه اینکه درصدهای ساختگی بسازند.
+snapshotهای مصرف ارائه‌دهنده معمولا یک یا چند `windows` سهمیه را گزارش می‌کنند که هرکدام
+یک برچسب، درصد استفاده‌شده، و زمان بازنشانی اختیاری دارند. ارائه‌دهندگانی که به‌جای پنجره‌های
+سهمیه قابل بازنشانی، متن موجودی یا وضعیت حساب را آشکار می‌کنند، باید
+`summary` را با آرایه خالی `windows` برگردانند، نه اینکه درصدهای ساختگی تولید کنند.
 OpenClaw آن متن خلاصه را در خروجی وضعیت نمایش می‌دهد؛ فقط وقتی از `error` استفاده کنید که
-نقطهٔ پایانی مصرف ناموفق بوده یا هیچ دادهٔ مصرف قابل استفاده‌ای برنگردانده باشد.
+نقطه پایانی مصرف شکست خورده باشد یا هیچ داده مصرف قابل استفاده‌ای برنگردانده باشد.
 
   <Accordion title="زیرمسیرهای احراز هویت و امنیت">
     | زیرمسیر | خروجی‌های کلیدی |
     | --- | --- |
-    | `plugin-sdk/command-auth` | `resolveControlCommandGate`، کمک‌کننده‌های رجیستری فرمان شامل قالب‌بندی پویای منوی آرگومان، کمک‌کننده‌های مجوزدهی فرستنده |
+    | `plugin-sdk/command-auth` | `resolveControlCommandGate`, کمک‌کننده‌های رجیستری فرمان شامل قالب‌بندی پویای منوی آرگومان، کمک‌کننده‌های مجوزدهی فرستنده |
     | `plugin-sdk/command-status` | سازنده‌های پیام فرمان/راهنما مانند `buildCommandsMessagePaginated` و `buildHelpMessage` |
-    | `plugin-sdk/approval-auth-runtime` | کمک‌کننده‌های رفع تأییدکننده و احراز هویت اقدام در همان چت |
+    | `plugin-sdk/approval-auth-runtime` | رفع تأییدکننده و کمک‌کننده‌های احراز هویت کنش در همان چت |
     | `plugin-sdk/approval-client-runtime` | کمک‌کننده‌های پروفایل/فیلتر تأیید اجرای بومی |
     | `plugin-sdk/approval-delivery-runtime` | آداپتورهای قابلیت/تحویل تأیید بومی |
-    | `plugin-sdk/approval-gateway-runtime` | کمک‌کنندهٔ مشترک رفع Gateway تأیید |
-    | `plugin-sdk/approval-handler-adapter-runtime` | کمک‌کننده‌های سبک بارگذاری آداپتور تأیید بومی برای entrypointهای داغ کانال |
-    | `plugin-sdk/approval-handler-runtime` | کمک‌کننده‌های گسترده‌تر زمان اجرای handler تأیید؛ وقتی seamهای محدودتر آداپتور/Gateway کافی هستند، آن‌ها را ترجیح دهید |
-    | `plugin-sdk/approval-native-runtime` | کمک‌کننده‌های هدف تأیید بومی، اتصال حساب، گیت مسیر، بازگشت ارسال، و سرکوب prompt اجرای بومی محلی |
-    | `plugin-sdk/approval-reaction-runtime` | bindingهای hardcoded واکنش تأیید، payloadهای prompt واکنش، ذخیره‌گاه‌های هدف واکنش، و خروجی سازگاری برای سرکوب prompt اجرای بومی محلی |
+    | `plugin-sdk/approval-gateway-runtime` | کمک‌کننده مشترک رفع Gateway تأیید |
+    | `plugin-sdk/approval-handler-adapter-runtime` | کمک‌کننده‌های سبک بارگذاری آداپتور تأیید بومی برای نقاط ورود داغ کانال |
+    | `plugin-sdk/approval-handler-runtime` | کمک‌کننده‌های گسترده‌تر زمان اجرای کنترل‌کننده تأیید؛ وقتی درزهای محدودتر آداپتور/Gateway کافی هستند، همان‌ها را ترجیح دهید |
+    | `plugin-sdk/approval-native-runtime` | هدف تأیید بومی، اتصال حساب، گیت مسیر، جایگزین بازارسال، و کمک‌کننده‌های سرکوب prompt اجرای بومی محلی |
+    | `plugin-sdk/approval-reaction-runtime` | اتصال‌های hardcoded واکنش تأیید، payloadهای prompt واکنش، storeهای هدف واکنش، و خروجی سازگاری برای سرکوب prompt اجرای بومی محلی |
     | `plugin-sdk/approval-reply-runtime` | کمک‌کننده‌های payload پاسخ تأیید exec/Plugin |
-    | `plugin-sdk/approval-runtime` | کمک‌کننده‌های payload تأیید exec/Plugin، کمک‌کننده‌های مسیریابی/زمان اجرای تأیید بومی، و کمک‌کننده‌های نمایش ساختاریافتهٔ تأیید مانند `formatApprovalDisplayPath` |
+    | `plugin-sdk/approval-runtime` | کمک‌کننده‌های payload تأیید exec/Plugin، کمک‌کننده‌های مسیریابی/زمان اجرای تأیید بومی، و کمک‌کننده‌های نمایش ساخت‌یافته تأیید مانند `formatApprovalDisplayPath` |
     | `plugin-sdk/reply-dedupe` | کمک‌کننده‌های محدود بازنشانی حذف تکرار پاسخ ورودی |
-    | `plugin-sdk/channel-contract-testing` | کمک‌کننده‌های محدود تست قرارداد کانال بدون barrel گستردهٔ تست |
-    | `plugin-sdk/command-auth-native` | احراز هویت فرمان بومی، قالب‌بندی پویای منوی آرگومان، و کمک‌کننده‌های هدف نشست بومی |
+    | `plugin-sdk/channel-contract-testing` | کمک‌کننده‌های محدود تست قرارداد کانال بدون barrel گسترده تست |
+    | `plugin-sdk/command-auth-native` | احراز هویت فرمان بومی، قالب‌بندی پویای منوی آرگومان، و کمک‌کننده‌های هدف جلسه بومی |
     | `plugin-sdk/command-detection` | کمک‌کننده‌های مشترک تشخیص فرمان |
-    | `plugin-sdk/command-primitives-runtime` | گزاره‌های سبک متن فرمان برای مسیرهای داغ کانال |
-    | `plugin-sdk/command-surface` | کمک‌کننده‌های نرمال‌سازی بدنهٔ فرمان و سطح فرمان |
+    | `plugin-sdk/command-primitives-runtime` | predicateهای سبک متن فرمان برای مسیرهای داغ کانال |
+    | `plugin-sdk/command-surface` | نرمال‌سازی بدنه فرمان و کمک‌کننده‌های سطح فرمان |
     | `plugin-sdk/allow-from` | `formatAllowFromLowercase` |
+    | `plugin-sdk/provider-auth-login-flow-runtime` | کمک‌کننده‌های lazy جریان ورود احراز هویت ارائه‌دهنده برای کانال خصوصی و جفت‌سازی کد دستگاه Web UI |
     | `plugin-sdk/channel-secret-runtime` | کمک‌کننده‌های محدود گردآوری قرارداد secret برای سطوح secret کانال/Plugin |
-    | `plugin-sdk/secret-ref-runtime` | کمک‌کننده‌های محدود `coerceSecretRef` و تایپ‌گذاری SecretRef برای تجزیهٔ قرارداد/p پیکربندی secret |
-    | `plugin-sdk/secret-provider-integration` | قراردادهای فقط-نوع manifest یکپارچه‌سازی ارائه‌دهندهٔ SecretRef و preset برای Pluginهایی که presetهای ارائه‌دهندهٔ secret خارجی منتشر می‌کنند |
-    | `plugin-sdk/security-runtime` | کمک‌کننده‌های مشترک اعتماد، گیت DM، فایل/مسیر محدود به ریشه شامل نوشتن فقط-ایجاد، جایگزینی اتمیک فایل همگام/ناهمگام، نوشتن‌های موقت sibling، بازگشت جابه‌جایی بین‌دستگاهی، کمک‌کننده‌های ذخیره‌گاه فایل خصوصی، محافظ‌های والد symlink، محتوای خارجی، redaction متن حساس، مقایسهٔ secret با زمان ثابت، و کمک‌کننده‌های گردآوری secret |
-    | `plugin-sdk/ssrf-policy` | کمک‌کننده‌های allowlist میزبان و سیاست SSRF شبکهٔ خصوصی |
-    | `plugin-sdk/ssrf-dispatcher` | کمک‌کننده‌های محدود pinned-dispatcher بدون سطح گستردهٔ زمان اجرای زیرساخت |
-    | `plugin-sdk/ssrf-runtime` | pinned-dispatcher، fetch محافظت‌شده با SSRF، خطای SSRF، و کمک‌کننده‌های سیاست SSRF |
-    | `plugin-sdk/secret-input` | کمک‌کننده‌های تجزیهٔ ورودی secret |
-    | `plugin-sdk/webhook-ingress` | کمک‌کننده‌های درخواست/هدف Webhook و هم‌تافت‌سازی خام websocket/body |
-    | `plugin-sdk/webhook-request-guards` | کمک‌کننده‌های اندازهٔ بدنهٔ درخواست/timeout |
+    | `plugin-sdk/secret-ref-runtime` | کمک‌کننده‌های محدود `coerceSecretRef` و نوع‌گذاری SecretRef برای تجزیه قرارداد secret/پیکربندی |
+    | `plugin-sdk/secret-provider-integration` | قراردادهای manifest و preset یکپارچه‌سازی ارائه‌دهنده SecretRef فقط-نوع برای Pluginهایی که presetهای ارائه‌دهنده secret خارجی منتشر می‌کنند |
+    | `plugin-sdk/security-runtime` | کمک‌کننده‌های مشترک اعتماد، گیت‌گذاری DM، فایل/مسیر محدود به root شامل نوشتن‌های فقط-ایجاد، جایگزینی اتمیک فایل همگام/ناهمگام، نوشتن‌های موقت sibling، جایگزین جابه‌جایی بین‌دستگاهی، کمک‌کننده‌های file-store خصوصی، محافظ‌های parent symlink، محتوای خارجی، حذف متن حساس، مقایسه secret با زمان ثابت، و کمک‌کننده‌های گردآوری secret |
+    | `plugin-sdk/ssrf-policy` | کمک‌کننده‌های فهرست مجاز host و سیاست SSRF شبکه خصوصی |
+    | `plugin-sdk/ssrf-dispatcher` | کمک‌کننده‌های محدود pinned-dispatcher بدون سطح گسترده زمان اجرای زیرساخت |
+    | `plugin-sdk/ssrf-runtime` | pinned-dispatcher، واکشی محافظت‌شده با SSRF، خطای SSRF، و کمک‌کننده‌های سیاست SSRF |
+    | `plugin-sdk/secret-input` | کمک‌کننده‌های تجزیه ورودی secret |
+    | `plugin-sdk/webhook-ingress` | کمک‌کننده‌های درخواست/هدف Webhook و تبدیل raw websocket/body |
+    | `plugin-sdk/webhook-request-guards` | کمک‌کننده‌های اندازه/timeout بدنه درخواست |
   </Accordion>
 
   <Accordion title="Runtime and storage subpaths">
-    | زیرمسیر | خروجی‌های کلیدی |
+    | زیربخش | خروجی‌های کلیدی |
     | --- | --- |
-    | `plugin-sdk/runtime` | ابزارهای کمکی گسترده برای زمان اجرا/لاگ‌گیری/پشتیبان‌گیری/نصب Plugin |
-    | `plugin-sdk/runtime-env` | ابزارهای کمکی محدود برای env زمان اجرا، logger، timeout، retry و backoff |
-    | `plugin-sdk/browser-config` | facade پیکربندی مرورگر پشتیبانی‌شده برای profile/defaults نرمال‌شده، پردازش URL مربوط به CDP، و ابزارهای کمکی احراز هویت کنترل مرورگر |
-    | `plugin-sdk/agent-harness-task-runtime` | ابزارهای کمکی عمومی برای چرخه عمر task و تحویل تکمیل برای agentهای مبتنی بر harness که از محدوده task صادرشده توسط host استفاده می‌کنند |
-    | `plugin-sdk/codex-mcp-projection` | ابزار کمکی رزروشده Codex بسته‌بندی‌شده برای فرافکنی پیکربندی server کاربر MCP به پیکربندی thread در Codex؛ برای Pluginهای شخص ثالث نیست |
-    | `plugin-sdk/codex-native-task-runtime` | ابزار کمکی خصوصی Codex بسته‌بندی‌شده برای اتصال mirror/runtime مربوط به task بومی؛ برای Pluginهای شخص ثالث نیست |
-    | `plugin-sdk/channel-runtime-context` | ابزارهای کمکی عمومی برای ثبت و جست‌وجوی context زمان اجرای کانال |
-    | `plugin-sdk/matrix` | facade سازگاری Matrix منسوخ‌شده برای بسته‌های کانال شخص ثالث قدیمی‌تر؛ Pluginهای جدید باید مستقیما `plugin-sdk/run-command` را import کنند |
-    | `plugin-sdk/mattermost` | facade سازگاری Mattermost منسوخ‌شده برای بسته‌های کانال شخص ثالث قدیمی‌تر؛ Pluginهای جدید باید زیرمسیرهای عمومی SDK را مستقیما import کنند |
+    | `plugin-sdk/runtime` | توابع کمکی گسترده برای runtime، ثبت لاگ، پشتیبان‌گیری، و نصب Plugin |
+    | `plugin-sdk/runtime-env` | توابع کمکی محدود برای محیط runtime، logger، timeout، retry، و backoff |
+    | `plugin-sdk/browser-config` | facade پیکربندی مرورگر پشتیبانی‌شده برای profile/defaults نرمال‌سازی‌شده، تجزیه URL مربوط به CDP، و توابع کمکی auth برای کنترل مرورگر |
+    | `plugin-sdk/agent-harness-task-runtime` | توابع کمکی عمومی برای چرخه عمر task و تحویل تکمیل برای agentهای متکی به harness که از محدوده task صادرشده توسط host استفاده می‌کنند |
+    | `plugin-sdk/codex-mcp-projection` | تابع کمکی bundled و رزروشده Codex برای projection پیکربندی MCP server کاربر به پیکربندی thread در Codex؛ برای Pluginهای شخص ثالث نیست |
+    | `plugin-sdk/codex-native-task-runtime` | تابع کمکی private و bundled Codex برای native task mirror/runtime wiring؛ برای Pluginهای شخص ثالث نیست |
+    | `plugin-sdk/channel-runtime-context` | توابع کمکی عمومی برای ثبت و جست‌وجوی context مربوط به runtime کانال |
+    | `plugin-sdk/matrix` | facade سازگاری منسوخ‌شده Matrix برای بسته‌های کانال شخص ثالث قدیمی‌تر؛ Pluginهای جدید باید مستقیماً `plugin-sdk/run-command` را import کنند |
+    | `plugin-sdk/mattermost` | facade سازگاری منسوخ‌شده Mattermost برای بسته‌های کانال شخص ثالث قدیمی‌تر؛ Pluginهای جدید باید مستقیماً زیربخش‌های عمومی SDK را import کنند |
     | `plugin-sdk/runtime-store` | `createPluginRuntimeStore` |
-    | `plugin-sdk/plugin-runtime` | ابزارهای کمکی مشترک command/hook/http/interactive برای Plugin |
-    | `plugin-sdk/hook-runtime` | ابزارهای کمکی مشترک برای pipeline مربوط به Webhook/hook داخلی |
-    | `plugin-sdk/lazy-runtime` | ابزارهای کمکی import/binding تنبل زمان اجرا مانند `createLazyRuntimeModule`، `createLazyRuntimeMethod` و `createLazyRuntimeSurface` |
-    | `plugin-sdk/process-runtime` | ابزارهای کمکی اجرای process |
-    | `plugin-sdk/cli-runtime` | ابزارهای کمکی قالب‌بندی CLI، انتظار، نسخه، فراخوانی آرگومان، و گروه command تنبل |
-    | `plugin-sdk/qa-live-transport-scenarios` | شناسه‌های سناریوی QA مشترک برای انتقال live، ابزارهای کمکی پوشش baseline، و ابزار کمکی انتخاب سناریو |
-    | `plugin-sdk/gateway-method-runtime` | ابزار کمکی رزروشده dispatch متد Gateway برای مسیرهای HTTP مربوط به Plugin که `contracts.gatewayMethodDispatch: ["authenticated-request"]` را اعلام می‌کنند |
-    | `plugin-sdk/gateway-runtime` | کلاینت Gateway، ابزار کمکی شروع کلاینت آماده event-loop، RPC مربوط به CLI برای Gateway، خطاهای پروتکل Gateway، تشخیص host اعلام‌شده LAN، و ابزارهای کمکی patch وضعیت کانال |
-    | `plugin-sdk/config-contracts` | سطح پیکربندی متمرکز و فقط نوعی برای شکل‌های پیکربندی Plugin مانند `OpenClawConfig` و نوع‌های پیکربندی کانال/provider |
-    | `plugin-sdk/plugin-config-runtime` | ابزارهای کمکی جست‌وجوی پیکربندی Plugin در زمان اجرا مانند `requireRuntimeConfig`، `resolvePluginConfigObject` و `resolveLivePluginConfigObject` |
-    | `plugin-sdk/config-mutation` | ابزارهای کمکی تغییر تراکنشی پیکربندی مانند `mutateConfigFile`، `replaceConfigFile` و `logConfigUpdated` |
-    | `plugin-sdk/message-tool-delivery-hints` | رشته‌های راهنمای metadata مشترک برای تحویل message-tool |
-    | `plugin-sdk/runtime-config-snapshot` | ابزارهای کمکی snapshot پیکربندی process فعلی مانند `getRuntimeConfig`، `getRuntimeConfigSnapshot` و setterهای snapshot آزمایشی |
-    | `plugin-sdk/telegram-command-config` | نرمال‌سازی نام/توضیح command در Telegram و بررسی‌های تکرار/تداخل، حتی وقتی سطح contract بسته‌بندی‌شده Telegram در دسترس نیست |
-    | `plugin-sdk/text-autolink-runtime` | تشخیص autolink برای ارجاع فایل بدون barrel گسترده متن |
-    | `plugin-sdk/approval-reaction-runtime` | bindingهای hardcoded مربوط به reaction تأیید، payloadهای prompt برای reaction، storeهای target مربوط به reaction، و export سازگاری برای سرکوب prompt اجرای بومی محلی |
-    | `plugin-sdk/approval-runtime` | ابزارهای کمکی تأیید exec/Plugin، سازنده‌های capability تأیید، ابزارهای کمکی auth/profile، ابزارهای کمکی routing/runtime بومی، و قالب‌بندی مسیر نمایش ساخت‌یافته تأیید |
-    | `plugin-sdk/reply-runtime` | ابزارهای کمکی مشترک زمان اجرا برای ورودی/پاسخ، chunking، dispatch، Heartbeat، برنامه‌ریز پاسخ |
-    | `plugin-sdk/reply-dispatch-runtime` | ابزارهای کمکی محدود برای dispatch/finalize پاسخ و برچسب conversation |
-    | `plugin-sdk/reply-history` | ابزارهای کمکی مشترک تاریخچه پاسخ در پنجره کوتاه. کد جدید message-turn باید از `createChannelHistoryWindow` استفاده کند؛ ابزارهای کمکی map سطح پایین فقط به‌عنوان exportهای سازگاری منسوخ باقی می‌مانند |
+    | `plugin-sdk/plugin-runtime` | توابع کمکی مشترک برای command/hook/http/interactive مربوط به Plugin |
+    | `plugin-sdk/hook-runtime` | توابع کمکی مشترک برای pipeline مربوط به webhook/internal hook |
+    | `plugin-sdk/lazy-runtime` | توابع کمکی import/binding تنبل runtime مانند `createLazyRuntimeModule`، `createLazyRuntimeMethod`، و `createLazyRuntimeSurface` |
+    | `plugin-sdk/process-runtime` | توابع کمکی اجرای process |
+    | `plugin-sdk/cli-runtime` | توابع کمکی CLI برای قالب‌بندی، wait، version، argument-invocation، و گروه command تنبل |
+    | `plugin-sdk/qa-live-transport-scenarios` | شناسه‌های سناریوی QA برای transport زنده، توابع کمکی baseline coverage، و تابع کمکی انتخاب سناریو |
+    | `plugin-sdk/gateway-method-runtime` | تابع کمکی رزروشده Gateway برای dispatch متد در routeهای HTTP مربوط به Plugin که `contracts.gatewayMethodDispatch: ["authenticated-request"]` را اعلام می‌کنند |
+    | `plugin-sdk/gateway-runtime` | Gateway client، تابع کمکی شروع client آماده برای event-loop، RPC مربوط به CLI در Gateway، خطاهای پروتکل Gateway، حل advertised LAN host، و توابع کمکی patch وضعیت کانال |
+    | `plugin-sdk/config-contracts` | سطح پیکربندی متمرکز و فقط-نوع برای شکل‌های پیکربندی Plugin مانند `OpenClawConfig` و نوع‌های پیکربندی کانال/provider |
+    | `plugin-sdk/plugin-config-runtime` | توابع کمکی جست‌وجوی plugin-config در runtime مانند `requireRuntimeConfig`، `resolvePluginConfigObject`، و `resolveLivePluginConfigObject` |
+    | `plugin-sdk/config-mutation` | توابع کمکی جهش transactional پیکربندی مانند `mutateConfigFile`، `replaceConfigFile`، و `logConfigUpdated` |
+    | `plugin-sdk/message-tool-delivery-hints` | رشته‌های hint مشترک برای metadata تحویل message-tool |
+    | `plugin-sdk/runtime-config-snapshot` | توابع کمکی snapshot پیکربندی process فعلی مانند `getRuntimeConfig`، `getRuntimeConfigSnapshot`، و setterهای snapshot تست |
+    | `plugin-sdk/telegram-command-config` | نرمال‌سازی نام/توضیح command در Telegram و بررسی‌های duplicate/conflict، حتی وقتی سطح contract مربوط به Telegram bundled در دسترس نیست |
+    | `plugin-sdk/text-autolink-runtime` | تشخیص autolink ارجاع فایل بدون barrel گسترده متن |
+    | `plugin-sdk/approval-reaction-runtime` | bindingهای hardcoded واکنش approval، payloadهای prompt واکنش، storeهای target واکنش، و export سازگاری برای سرکوب prompt اجرای native محلی |
+    | `plugin-sdk/approval-runtime` | توابع کمکی approval برای exec/Plugin، سازنده‌های approval-capability، توابع کمکی auth/profile، توابع کمکی native routing/runtime، و قالب‌بندی ساختاریافته مسیر نمایش approval |
+    | `plugin-sdk/reply-runtime` | توابع کمکی مشترک inbound/reply runtime، chunking، dispatch، Heartbeat، reply planner |
+    | `plugin-sdk/reply-dispatch-runtime` | توابع کمکی محدود برای dispatch/finalize پاسخ و label مکالمه |
+    | `plugin-sdk/reply-history` | توابع کمکی مشترک reply-history با پنجره کوتاه. کد جدید message-turn باید از `createChannelHistoryWindow` استفاده کند؛ توابع کمکی map سطح پایین‌تر فقط به‌عنوان exportهای سازگاری منسوخ‌شده باقی می‌مانند |
     | `plugin-sdk/reply-reference` | `createReplyReferencePlanner` |
-    | `plugin-sdk/reply-chunking` | ابزارهای کمکی محدود chunking متن/Markdown |
-    | `plugin-sdk/session-store-runtime` | ابزارهای کمکی workflow مربوط به session (`getSessionEntry`، `listSessionEntries`، `patchSessionEntry`، `upsertSessionEntry`)، خواندن‌های محدود متن transcript اخیر user/assistant بر اساس هویت session، ابزارهای کمکی legacy برای مسیر store مربوط به session و session-key، خواندن‌های updated-at، و ابزارهای کمکی سازگاری فقط در مرحله transition برای whole-store/file-path |
-    | `plugin-sdk/session-transcript-runtime` | هویت transcript، ابزارهای کمکی target/read/write محدوده‌دار، انتشار update، قفل‌های write، و کلیدهای hit حافظه transcript |
-    | `plugin-sdk/sqlite-runtime` | ابزارهای کمکی متمرکز SQLite برای schema عامل، مسیر، و تراکنش در زمان اجرای first-party |
-    | `plugin-sdk/cron-store-runtime` | ابزارهای کمکی مسیر/load/save برای store مربوط به Cron |
-    | `plugin-sdk/state-paths` | ابزارهای کمکی مسیر دایرکتوری State/OAuth |
-    | `plugin-sdk/plugin-state-runtime` | نوع‌های keyed-state مربوط به SQLite جانبی Plugin به‌همراه راه‌اندازی متمرکز pragma اتصال و نگهداری WAL برای پایگاه‌داده‌های متعلق به Plugin |
-    | `plugin-sdk/routing` | ابزارهای کمکی route/session-key/account binding مانند `resolveAgentRoute`، `buildAgentSessionKey` و `resolveDefaultAgentBoundAccountId` |
-    | `plugin-sdk/status-helpers` | ابزارهای کمکی مشترک خلاصه وضعیت کانال/account، defaultهای runtime-state، و ابزارهای کمکی metadata مربوط به issue |
-    | `plugin-sdk/target-resolver-runtime` | ابزارهای کمکی مشترک target resolver |
-    | `plugin-sdk/string-normalization-runtime` | ابزارهای کمکی نرمال‌سازی slug/string |
-    | `plugin-sdk/request-url` | استخراج URLهای رشته‌ای از ورودی‌های مشابه fetch/request |
-    | `plugin-sdk/run-command` | اجراکننده command زمان‌دار با نتیجه‌های stdout/stderr نرمال‌شده |
-    | `plugin-sdk/param-readers` | readerهای مشترک param برای tool/CLI |
-    | `plugin-sdk/tool-plugin` | تعریف یک Plugin ساده typed برای agent-tool و ارائه metadata ایستا برای تولید manifest |
-    | `plugin-sdk/tool-payload` | استخراج payloadهای نرمال‌شده از objectهای نتیجه tool |
-    | `plugin-sdk/tool-send` | استخراج fieldهای canonical target ارسال از args مربوط به tool |
-    | `plugin-sdk/sandbox` | نوع‌های backend مربوط به sandbox و ابزارهای کمکی command برای SSH/OpenShell، شامل preflight command اجرای fail-fast |
-    | `plugin-sdk/temp-path` | ابزارهای کمکی مشترک مسیر temp-download و workspaceهای temp امن خصوصی |
-    | `plugin-sdk/logging-core` | ابزارهای کمکی logger و redaction برای subsystem |
-    | `plugin-sdk/markdown-table-runtime` | ابزارهای کمکی حالت جدول Markdown و تبدیل |
-    | `plugin-sdk/model-session-runtime` | ابزارهای کمکی override مدل/session مانند `applyModelOverrideToSessionEntry` و `resolveAgentMaxConcurrent` |
-    | `plugin-sdk/talk-config-runtime` | ابزارهای کمکی resolution پیکربندی provider مربوط به Talk |
-    | `plugin-sdk/json-store` | ابزارهای کمکی کوچک read/write وضعیت JSON |
-    | `plugin-sdk/json-unsafe-integers` | ابزارهای کمکی parsing JSON که literalهای عدد صحیح ناامن را به‌صورت رشته حفظ می‌کنند |
-    | `plugin-sdk/file-lock` | ابزارهای کمکی file-lock قابل re-entrant |
-    | `plugin-sdk/persistent-dedupe` | ابزارهای کمکی cache dedupe مبتنی بر دیسک |
-    | `plugin-sdk/acp-runtime` | ابزارهای کمکی runtime/session و reply-dispatch مربوط به ACP |
-    | `plugin-sdk/acp-runtime-backend` | ابزارهای کمکی سبک برای ثبت backend و reply-dispatch مربوط به ACP برای Pluginهایی که هنگام startup load می‌شوند |
-    | `plugin-sdk/acp-binding-resolve-runtime` | resolution فقط‌خواندنی binding مربوط به ACP بدون importهای startup چرخه عمر |
-    | `plugin-sdk/agent-config-primitives` | primitiveهای محدود schema پیکربندی زمان اجرای agent |
-    | `plugin-sdk/boolean-param` | reader آزاد param بولی |
-    | `plugin-sdk/dangerous-name-runtime` | ابزارهای کمکی resolution برای matching نام خطرناک |
-    | `plugin-sdk/device-bootstrap` | ابزارهای کمکی bootstrap دستگاه و token جفت‌سازی |
-    | `plugin-sdk/extension-shared` | primitiveهای کمکی مشترک برای passive-channel، status و ambient proxy |
-    | `plugin-sdk/models-provider-runtime` | ابزارهای کمکی پاسخ command/provider برای `/models` |
-    | `plugin-sdk/skill-commands-runtime` | ابزارهای کمکی فهرست‌کردن command مربوط به Skill |
-    | `plugin-sdk/native-command-registry` | ابزارهای کمکی registry/build/serialize برای command بومی |
-    | `plugin-sdk/agent-harness` | سطح آزمایشی trusted-Plugin برای harnessهای سطح پایین agent: نوع‌های harness، ابزارهای کمکی steer/abort برای active-run، ابزارهای کمکی bridge ابزار OpenClaw، ابزارهای کمکی policy ابزار runtime-plan، طبقه‌بندی outcome نهایی، ابزارهای کمکی قالب‌بندی/جزئیات progress ابزار، و utilityهای نتیجه attempt |
-    | `plugin-sdk/provider-zai-endpoint` | facade منسوخ‌شده تشخیص endpoint متعلق به provider مربوط به Z.AI؛ از API عمومی Plugin مربوط به Z.AI استفاده کنید |
-    | `plugin-sdk/async-lock-runtime` | ابزار کمکی async lock محلی process برای فایل‌های کوچک وضعیت زمان اجرا |
-    | `plugin-sdk/channel-activity-runtime` | ابزار کمکی telemetry فعالیت کانال |
-    | `plugin-sdk/concurrency-runtime` | ابزار کمکی concurrency محدود برای task async |
-    | `plugin-sdk/dedupe-runtime` | ابزارهای کمکی cache dedupe در حافظه |
-    | `plugin-sdk/delivery-queue-runtime` | ابزار کمکی drain برای pending-delivery خروجی |
-    | `plugin-sdk/file-access-runtime` | ابزارهای کمکی امن مسیر local-file و media-source |
-    | `plugin-sdk/heartbeat-runtime` | ابزارهای کمکی wake، event و visibility مربوط به Heartbeat |
-    | `plugin-sdk/number-runtime` | ابزار کمکی coercion عددی |
-    | `plugin-sdk/secure-random-runtime` | ابزارهای کمکی token/UUID امن |
-    | `plugin-sdk/system-event-runtime` | ابزارهای کمکی صف event سیستم |
-    | `plugin-sdk/transport-ready-runtime` | ابزار کمکی انتظار برای readiness انتقال |
-    | `plugin-sdk/exec-approvals-runtime` | ابزارهای کمکی فایل policy تأیید exec بدون barrel گسترده infra-runtime |
-    | `plugin-sdk/infra-runtime` | shim سازگاری منسوخ‌شده؛ از زیرمسیرهای متمرکز زمان اجرا در بالا استفاده کنید |
-    | `plugin-sdk/collection-runtime` | ابزارهای کمکی کوچک cache محدود |
-    | `plugin-sdk/diagnostic-runtime` | ابزارهای کمکی flag، event و trace-context تشخیصی |
-    | `plugin-sdk/error-runtime` | ابزارهای کمکی graph خطا، قالب‌بندی، طبقه‌بندی مشترک خطا، `isApprovalNotFoundError` |
-    | `plugin-sdk/fetch-runtime` | fetch پوشش‌داده‌شده، proxy، گزینه EnvHttpProxyAgent، و ابزارهای کمکی lookup پین‌شده |
-    | `plugin-sdk/runtime-fetch` | fetch زمان اجرا آگاه از dispatcher بدون importهای proxy/guarded-fetch |
-    | `plugin-sdk/inline-image-data-url-runtime` | ابزارهای کمکی پاک‌سازی URL داده image inline و sniff کردن signature بدون سطح گسترده runtime رسانه |
-    | `plugin-sdk/response-limit-runtime` | reader محدود response-body بدون سطح گسترده runtime رسانه |
-    | `plugin-sdk/session-binding-runtime` | وضعیت binding مربوط به conversation فعلی بدون routing پیکربندی‌شده binding یا storeهای pairing |
-    | `plugin-sdk/session-store-runtime` | ابزارهای کمکی session-store بدون importهای گسترده write/maintenance پیکربندی |
-    | `plugin-sdk/sqlite-runtime` | ابزارهای کمکی متمرکز SQLite برای schema عامل، مسیر، و تراکنش بدون کنترل‌های چرخه عمر پایگاه‌داده |
-    | `plugin-sdk/context-visibility-runtime` | resolution دیدپذیری context و filtering context تکمیلی بدون importهای گسترده پیکربندی/امنیت |
-    | `plugin-sdk/string-coerce-runtime` | ابزارهای کمکی محدود برای coercion و نرمال‌سازی record/string primitive بدون importهای markdown/logging |
-    | `plugin-sdk/host-runtime` | ابزارهای کمکی نرمال‌سازی hostname و host مربوط به SCP |
-    | `plugin-sdk/retry-runtime` | ابزارهای کمکی پیکربندی retry و runner مربوط به retry |
-    | `plugin-sdk/agent-runtime` | ابزارهای کمکی dir/identity/workspace برای agent، شامل `resolveAgentDir`، `resolveDefaultAgentDir` و export سازگاری منسوخ‌شده `resolveOpenClawAgentDir` |
-    | `plugin-sdk/directory-runtime` | query/dedup دایرکتوری مبتنی بر پیکربندی |
+    | `plugin-sdk/reply-chunking` | توابع کمکی محدود برای chunking متن/markdown |
+    | `plugin-sdk/session-store-runtime` | توابع کمکی workflow نشست (`getSessionEntry`، `listSessionEntries`، `patchSessionEntry`، `upsertSessionEntry`)، خواندن‌های محدود متن transcript اخیر کاربر/assistant بر اساس identity نشست، توابع کمکی legacy برای مسیر session store/session-key، خواندن updated-at، و توابع کمکی سازگاری whole-store/file-path فقط برای transition |
+    | `plugin-sdk/session-transcript-runtime` | identity مربوط به transcript، توابع کمکی target/read/write دارای scope، انتشار update، write lockها، و کلیدهای hit حافظه transcript |
+    | `plugin-sdk/sqlite-runtime` | توابع کمکی متمرکز SQLite برای agent-schema، مسیر، و transaction در runtimeهای first-party |
+    | `plugin-sdk/cron-store-runtime` | توابع کمکی مسیر/load/save برای store مربوط به Cron |
+    | `plugin-sdk/state-paths` | توابع کمکی مسیر dir مربوط به State/OAuth |
+    | `plugin-sdk/plugin-state-runtime` | نوع‌های keyed-state مبتنی بر SQLite sidecar برای Plugin به‌همراه pragma متمرکز connection و راه‌اندازی نگهداری WAL برای databaseهای متعلق به Plugin |
+    | `plugin-sdk/routing` | توابع کمکی route/session-key/account binding مانند `resolveAgentRoute`، `buildAgentSessionKey`، و `resolveDefaultAgentBoundAccountId` |
+    | `plugin-sdk/status-helpers` | توابع کمکی مشترک خلاصه وضعیت کانال/account، defaultهای runtime-state، و توابع کمکی metadata مربوط به issue |
+    | `plugin-sdk/target-resolver-runtime` | توابع کمکی مشترک target resolver |
+    | `plugin-sdk/string-normalization-runtime` | توابع کمکی نرمال‌سازی slug/string |
+    | `plugin-sdk/request-url` | استخراج URLهای رشته‌ای از ورودی‌های شبیه fetch/request |
+    | `plugin-sdk/run-command` | runner اجرای command زمان‌دار با نتایج stdout/stderr نرمال‌سازی‌شده |
+    | `plugin-sdk/param-readers` | readerهای رایج پارامتر tool/CLI |
+    | `plugin-sdk/tool-plugin` | تعریف یک Plugin ساده و typed برای agent-tool و ارائه metadata ایستا برای تولید manifest |
+    | `plugin-sdk/tool-payload` | استخراج payloadهای نرمال‌سازی‌شده از objectهای نتیجه tool |
+    | `plugin-sdk/tool-send` | استخراج فیلدهای canonical target ارسال از args مربوط به tool |
+    | `plugin-sdk/sandbox` | نوع‌های backend مربوط به sandbox و توابع کمکی command برای SSH/OpenShell، شامل preflight اجرای command با fail-fast |
+    | `plugin-sdk/temp-path` | توابع کمکی مشترک مسیر temp-download و workspaceهای temp امن private |
+    | `plugin-sdk/logging-core` | logger زیرسامانه و توابع کمکی redaction |
+    | `plugin-sdk/markdown-table-runtime` | توابع کمکی mode و conversion جدول Markdown |
+    | `plugin-sdk/model-session-runtime` | توابع کمکی override مدل/نشست مانند `applyModelOverrideToSessionEntry` و `resolveAgentMaxConcurrent` |
+    | `plugin-sdk/talk-config-runtime` | توابع کمکی حل پیکربندی talk provider |
+    | `plugin-sdk/json-store` | توابع کمکی کوچک برای خواندن/نوشتن state در JSON |
+    | `plugin-sdk/json-unsafe-integers` | توابع کمکی parsing JSON که literalهای عدد صحیح unsafe را به‌صورت string حفظ می‌کنند |
+    | `plugin-sdk/file-lock` | توابع کمکی file-lock بازدرآیند |
+    | `plugin-sdk/persistent-dedupe` | توابع کمکی cache حذف تکرار متکی به disk |
+    | `plugin-sdk/acp-runtime` | توابع کمکی ACP runtime/session و reply-dispatch |
+    | `plugin-sdk/acp-runtime-backend` | توابع کمکی سبک برای ثبت backend مربوط به ACP و reply-dispatch برای Pluginهایی که در startup بارگذاری می‌شوند |
+    | `plugin-sdk/acp-binding-resolve-runtime` | حل read-only مربوط به ACP binding بدون importهای startup چرخه عمر |
+    | `plugin-sdk/agent-config-primitives` | primitiveهای محدود schema پیکربندی runtime مربوط به agent |
+    | `plugin-sdk/boolean-param` | reader پارامتر boolean با تفسیر loose |
+    | `plugin-sdk/dangerous-name-runtime` | توابع کمکی حل matching برای dangerous-name |
+    | `plugin-sdk/device-bootstrap` | توابع کمکی bootstrap دستگاه و pairing token |
+    | `plugin-sdk/extension-shared` | primitiveهای مشترک برای passive-channel، status، و ambient proxy helper |
+    | `plugin-sdk/models-provider-runtime` | توابع کمکی پاسخ برای command/provider مربوط به `/models` |
+    | `plugin-sdk/skill-commands-runtime` | توابع کمکی فهرست‌کردن command مربوط به Skill |
+    | `plugin-sdk/native-command-registry` | توابع کمکی registry/build/serialize برای commandهای native |
+    | `plugin-sdk/agent-harness` | سطح آزمایشی trusted-plugin برای harnessهای سطح پایین agent: نوع‌های harness، توابع کمکی steer/abort برای active-run، توابع کمکی bridge مربوط به tool در OpenClaw، توابع کمکی policy مربوط به tool در runtime-plan، طبقه‌بندی terminal outcome، توابع کمکی قالب‌بندی/جزئیات progress مربوط به tool، و ابزارهای attempt result |
+    | `plugin-sdk/provider-zai-endpoint` | facade منسوخ‌شده تشخیص endpoint متعلق به provider برای Z.AI؛ از API عمومی Plugin مربوط به Z.AI استفاده کنید |
+    | `plugin-sdk/async-lock-runtime` | تابع کمکی async lock محلی به process برای فایل‌های کوچک state در runtime |
+    | `plugin-sdk/channel-activity-runtime` | تابع کمکی telemetry فعالیت کانال |
+    | `plugin-sdk/concurrency-runtime` | تابع کمکی concurrency محدود برای taskهای async |
+    | `plugin-sdk/dedupe-runtime` | توابع کمکی cache حذف تکرار در حافظه |
+    | `plugin-sdk/delivery-queue-runtime` | تابع کمکی drain برای pending-delivery خروجی |
+    | `plugin-sdk/file-access-runtime` | توابع کمکی امن برای مسیر local-file و media-source |
+    | `plugin-sdk/heartbeat-runtime` | توابع کمکی wake، event، و visibility مربوط به Heartbeat |
+    | `plugin-sdk/number-runtime` | تابع کمکی coercion عددی |
+    | `plugin-sdk/secure-random-runtime` | توابع کمکی token/UUID امن |
+    | `plugin-sdk/system-event-runtime` | توابع کمکی queue رویداد system |
+    | `plugin-sdk/transport-ready-runtime` | تابع کمکی انتظار برای آمادگی transport |
+    | `plugin-sdk/exec-approvals-runtime` | توابع کمکی فایل policy مربوط به exec approval بدون barrel گسترده infra-runtime |
+    | `plugin-sdk/infra-runtime` | shim سازگاری منسوخ‌شده؛ از زیربخش‌های متمرکز runtime بالا استفاده کنید |
+    | `plugin-sdk/collection-runtime` | توابع کمکی کوچک برای cache محدود |
+    | `plugin-sdk/diagnostic-runtime` | توابع کمکی flag، event، و trace-context مربوط به diagnostic |
+    | `plugin-sdk/error-runtime` | توابع کمکی graph خطا، قالب‌بندی، طبقه‌بندی مشترک خطا، `isApprovalNotFoundError` |
+    | `plugin-sdk/fetch-runtime` | fetch wrapperشده، proxy، گزینه EnvHttpProxyAgent، و توابع کمکی pinned lookup |
+    | `plugin-sdk/runtime-fetch` | fetch مربوط به runtime با آگاهی از dispatcher بدون importهای proxy/guarded-fetch |
+    | `plugin-sdk/inline-image-data-url-runtime` | sanitizer برای URL داده inline image و توابع کمکی signature sniffing بدون سطح گسترده media runtime |
+    | `plugin-sdk/response-limit-runtime` | reader محدود response-body بدون سطح گسترده media runtime |
+    | `plugin-sdk/session-binding-runtime` | state فعلی binding مکالمه بدون routing پیکربندی‌شده binding یا storeهای pairing |
+    | `plugin-sdk/session-store-runtime` | توابع کمکی session-store بدون importهای گسترده برای نوشتن/نگهداری پیکربندی |
+    | `plugin-sdk/sqlite-runtime` | توابع کمکی متمرکز SQLite برای agent-schema، مسیر، و transaction بدون کنترل‌های چرخه عمر database |
+    | `plugin-sdk/context-visibility-runtime` | حل visibility مربوط به context و filtering محتوای supplemental بدون importهای گسترده config/security |
+    | `plugin-sdk/string-coerce-runtime` | توابع کمکی محدود برای coercion و نرمال‌سازی record/string primitive بدون importهای markdown/logging |
+    | `plugin-sdk/host-runtime` | توابع کمکی نرمال‌سازی hostname و SCP host |
+    | `plugin-sdk/retry-runtime` | توابع کمکی پیکربندی retry و runner مربوط به retry |
+    | `plugin-sdk/agent-runtime` | توابع کمکی dir/identity/workspace مربوط به agent، شامل `resolveAgentDir`، `resolveDefaultAgentDir`، و export سازگاری منسوخ‌شده `resolveOpenClawAgentDir` |
+    | `plugin-sdk/directory-runtime` | query/dedup directory مبتنی بر config |
     | `plugin-sdk/keyed-async-queue` | `KeyedAsyncQueue` |
   </Accordion>
 
-  <Accordion title="زیرمسیرهای قابلیت و آزمایش">
+  <Accordion title="زیرمسیرهای قابلیت و آزمون">
     | زیرمسیر | خروجی‌های کلیدی |
     | --- | --- |
-    | `plugin-sdk/media-runtime` | کمک‌ابزارهای مشترک دریافت/تبدیل/ذخیره‌سازی رسانه شامل `saveRemoteMedia`، `saveResponseMedia`، `readRemoteMediaBuffer` و `fetchRemoteMedia` منسوخ‌شده؛ وقتی یک URL باید به رسانه OpenClaw تبدیل شود، پیش از خواندن بافرها، کمک‌ابزارهای ذخیره‌سازی را ترجیح دهید |
-    | `plugin-sdk/media-mime` | نرمال‌سازی محدود MIME، نگاشت پسوند فایل، تشخیص MIME و کمک‌ابزارهای نوع رسانه |
-    | `plugin-sdk/media-store` | کمک‌ابزارهای محدود ذخیره‌سازی رسانه مانند `saveMediaBuffer` و `saveMediaStream` |
-    | `plugin-sdk/media-generation-runtime` | کمک‌ابزارهای مشترک جابه‌جایی در خطای تولید رسانه، انتخاب نامزد و پیام‌رسانی مدلِ ناموجود |
-    | `plugin-sdk/media-understanding` | نوع‌های ارائه‌دهنده فهم رسانه به‌همراه خروجی‌های کمک‌ابزارهای تصویر/صوت/استخراج ساختاریافته رو به ارائه‌دهنده |
-    | `plugin-sdk/text-chunking` | کمک‌ابزارهای تکه‌بندی/رندر متن و markdown، تبدیل جدول markdown، حذف برچسب‌های دستوری و ابزارهای متن ایمن |
-    | `plugin-sdk/text-chunking` | کمک‌ابزار تکه‌بندی متن خروجی |
-    | `plugin-sdk/speech` | نوع‌های ارائه‌دهنده گفتار به‌همراه خروجی‌های دستورالعمل، رجیستری، اعتبارسنجی، سازنده TTS سازگار با OpenAI و کمک‌ابزارهای گفتار رو به ارائه‌دهنده |
-    | `plugin-sdk/speech-core` | نوع‌های مشترک ارائه‌دهنده گفتار، رجیستری، دستورالعمل، نرمال‌سازی و خروجی‌های کمک‌ابزار گفتار |
-    | `plugin-sdk/realtime-transcription` | نوع‌های ارائه‌دهنده رونویسی بلادرنگ، کمک‌ابزارهای رجیستری و کمک‌ابزار مشترک نشست WebSocket |
-    | `plugin-sdk/realtime-bootstrap-context` | کمک‌ابزار راه‌اندازی اولیه پروفایل بلادرنگ برای تزریق محدود زمینه `IDENTITY.md`، `USER.md` و `SOUL.md` |
-    | `plugin-sdk/realtime-voice` | نوع‌های ارائه‌دهنده صدای بلادرنگ، کمک‌ابزارهای رجیستری و کمک‌ابزارهای مشترک رفتار صدای بلادرنگ، شامل ردیابی فعالیت خروجی |
-    | `plugin-sdk/image-generation` | نوع‌های ارائه‌دهنده تولید تصویر به‌همراه کمک‌ابزارهای دارایی تصویر/داده URL و سازنده ارائه‌دهنده تصویر سازگار با OpenAI |
-    | `plugin-sdk/image-generation-core` | نوع‌های مشترک تولید تصویر، جابه‌جایی در خطا، احراز هویت و کمک‌ابزارهای رجیستری |
-    | `plugin-sdk/music-generation` | نوع‌های ارائه‌دهنده/درخواست/نتیجه تولید موسیقی |
-    | `plugin-sdk/music-generation-core` | نوع‌های مشترک تولید موسیقی، کمک‌ابزارهای جابه‌جایی در خطا، جست‌وجوی ارائه‌دهنده و تجزیه ارجاع مدل |
-    | `plugin-sdk/video-generation` | نوع‌های ارائه‌دهنده/درخواست/نتیجه تولید ویدئو |
-    | `plugin-sdk/video-generation-core` | نوع‌های مشترک تولید ویدئو، کمک‌ابزارهای جابه‌جایی در خطا، جست‌وجوی ارائه‌دهنده و تجزیه ارجاع مدل |
-    | `plugin-sdk/transcripts` | نوع‌های مشترک ارائه‌دهنده منبع رونوشت‌ها، کمک‌ابزارهای رجیستری، توصیفگرهای نشست و فراداده گفتار |
-    | `plugin-sdk/webhook-targets` | رجیستری مقصد Webhook و کمک‌ابزارهای نصب مسیر |
-    | `plugin-sdk/webhook-path` | نام مستعار سازگاری منسوخ‌شده؛ از `plugin-sdk/webhook-ingress` استفاده کنید |
-    | `plugin-sdk/web-media` | کمک‌ابزارهای مشترک بارگذاری رسانه دور/محلی |
-    | `plugin-sdk/zod` | بازصادرات سازگاری منسوخ‌شده؛ `zod` را مستقیما از `zod` وارد کنید |
-    | `plugin-sdk/testing` | barrel سازگاری منسوخ‌شده محلیِ مخزن برای آزمایش‌های قدیمی OpenClaw. آزمایش‌های جدید مخزن باید به‌جای آن زیرمسیرهای محلی متمرکز مانند `plugin-sdk/agent-runtime-test-contracts`، `plugin-sdk/plugin-test-runtime`، `plugin-sdk/channel-test-helpers`، `plugin-sdk/test-env` یا `plugin-sdk/test-fixtures` را وارد کنند |
-    | `plugin-sdk/plugin-test-api` | کمک‌ابزار حداقلی محلیِ مخزن `createTestPluginApi` برای آزمایش‌های واحد ثبت مستقیم Plugin بدون وارد کردن پل‌های کمک‌آزمایشی مخزن |
-    | `plugin-sdk/agent-runtime-test-contracts` | fixtureهای قرارداد adapter بومی agent-runtime محلیِ مخزن برای آزمایش‌های احراز هویت، تحویل، fallback، tool-hook، prompt-overlay، schema و projection رونوشت |
-    | `plugin-sdk/channel-test-helpers` | کمک‌ابزارهای آزمایشی کانال‌محور محلیِ مخزن برای قراردادهای generic actions/setup/status، assertionهای directory، چرخه عمر startup حساب، send-config threading، runtime mockها، status issueها، تحویل outbound و ثبت hook |
-    | `plugin-sdk/channel-target-testing` | مجموعه مشترک محلیِ مخزن برای موردهای خطای target-resolution در آزمایش‌های کانال |
-    | `plugin-sdk/plugin-test-contracts` | کمک‌ابزارهای قرارداد محلیِ مخزن برای package، registration، public artifact، direct import، runtime API و import side-effect در Plugin |
-    | `plugin-sdk/provider-test-contracts` | کمک‌ابزارهای قرارداد محلیِ مخزن برای runtime ارائه‌دهنده، احراز هویت، discovery، onboard، catalog، wizard، قابلیت رسانه، policy بازپخش، realtime STT live-audio، web-search/fetch و stream |
-    | `plugin-sdk/provider-http-test-mocks` | mockهای HTTP/auth اختیاری محلیِ مخزن برای Vitest در آزمایش‌های ارائه‌دهنده که `plugin-sdk/provider-http` را اجرا می‌کنند |
-    | `plugin-sdk/test-fixtures` | fixtureهای عمومی محلیِ مخزن برای capture زمان اجرای CLI، زمینه sandbox، skill writer، agent-message، system-event، بارگذاری دوباره module، مسیر Plugin بسته‌بندی‌شده، terminal-text، chunking، auth-token و typed-case |
-    | `plugin-sdk/test-node-mocks` | کمک‌ابزارهای mock متمرکز برای builtinهای Node، محلیِ مخزن، برای استفاده داخل factoryهای Vitest `vi.mock("node:*")` |
+    | `plugin-sdk/media-runtime` | راهنماهای مشترک واکشی/تبدیل/ذخیره رسانه، شامل `saveRemoteMedia`، `saveResponseMedia`، `readRemoteMediaBuffer` و `fetchRemoteMedia` منسوخ؛ وقتی یک URL باید به رسانه OpenClaw تبدیل شود، پیش از خواندن buffer، راهنماهای store را ترجیح دهید |
+    | `plugin-sdk/media-mime` | عادی‌سازی محدود MIME، نگاشت پسوند فایل، تشخیص MIME، و راهنماهای نوع رسانه |
+    | `plugin-sdk/media-store` | راهنماهای محدود store رسانه مانند `saveMediaBuffer` و `saveMediaStream` |
+    | `plugin-sdk/media-generation-runtime` | راهنماهای مشترک failover تولید رسانه، انتخاب candidate، و پیام‌رسانی مدلِ گمشده |
+    | `plugin-sdk/media-understanding` | نوع‌های provider درک رسانه به‌همراه خروجی‌های راهنمای image/audio/structured-extraction رو به provider |
+    | `plugin-sdk/text-chunking` | راهنماهای chunk/render متن و markdown، تبدیل جدول markdown، حذف directive-tag، و ابزارهای متن امن |
+    | `plugin-sdk/text-chunking` | راهنمای chunk کردن متن خروجی |
+    | `plugin-sdk/speech` | نوع‌های provider گفتار به‌همراه خروجی‌های directive، registry، validation، سازنده TTS سازگار با OpenAI، و راهنماهای گفتار رو به provider |
+    | `plugin-sdk/speech-core` | نوع‌های مشترک provider گفتار، registry، directive، normalization، و خروجی‌های راهنمای گفتار |
+    | `plugin-sdk/realtime-transcription` | نوع‌های provider رونویسی بلادرنگ، راهنماهای registry، و راهنمای مشترک session WebSocket |
+    | `plugin-sdk/realtime-bootstrap-context` | راهنمای bootstrap پروفایل بلادرنگ برای تزریق محدود context در `IDENTITY.md`، `USER.md` و `SOUL.md` |
+    | `plugin-sdk/realtime-voice` | نوع‌های provider صدای بلادرنگ، راهنماهای registry، و راهنماهای مشترک رفتار صدای بلادرنگ، شامل ردیابی activity خروجی |
+    | `plugin-sdk/image-generation` | نوع‌های provider تولید تصویر به‌همراه راهنماهای URL داده/asset تصویر و سازنده provider تصویر سازگار با OpenAI |
+    | `plugin-sdk/image-generation-core` | نوع‌های مشترک تولید تصویر، failover، auth، و راهنماهای registry |
+    | `plugin-sdk/music-generation` | نوع‌های provider/request/result تولید موسیقی |
+    | `plugin-sdk/music-generation-core` | نوع‌های مشترک تولید موسیقی، راهنماهای failover، جست‌وجوی provider، و تجزیه model-ref |
+    | `plugin-sdk/video-generation` | نوع‌های provider/request/result تولید ویدئو |
+    | `plugin-sdk/video-generation-core` | نوع‌های مشترک تولید ویدئو، راهنماهای failover، جست‌وجوی provider، و تجزیه model-ref |
+    | `plugin-sdk/transcripts` | نوع‌های مشترک provider منبع transcripts، راهنماهای registry، توصیف‌گرهای session، و فراداده utterance |
+    | `plugin-sdk/webhook-targets` | راهنماهای registry هدف Webhook و نصب route |
+    | `plugin-sdk/webhook-path` | alias سازگاری منسوخ؛ از `plugin-sdk/webhook-ingress` استفاده کنید |
+    | `plugin-sdk/web-media` | راهنماهای مشترک بارگذاری رسانه remote/local |
+    | `plugin-sdk/zod` | re-export سازگاری منسوخ؛ `zod` را مستقیماً از `zod` import کنید |
+    | `plugin-sdk/testing` | barrel سازگاری منسوخ محلیِ مخزن برای آزمون‌های قدیمی OpenClaw. آزمون‌های جدید مخزن باید به‌جای آن زیرمسیرهای محلی متمرکز آزمون مانند `plugin-sdk/agent-runtime-test-contracts`، `plugin-sdk/plugin-test-runtime`، `plugin-sdk/channel-test-helpers`، `plugin-sdk/test-env` یا `plugin-sdk/test-fixtures` را import کنند |
+    | `plugin-sdk/plugin-test-api` | راهنمای حداقلی `createTestPluginApi` محلیِ مخزن برای آزمون‌های واحد ثبت مستقیم Plugin، بدون import کردن bridgeهای راهنمای آزمون مخزن |
+    | `plugin-sdk/agent-runtime-test-contracts` | fixtureهای contract adapter بومی agent-runtime محلیِ مخزن برای آزمون‌های auth، delivery، fallback، tool-hook، prompt-overlay، schema، و projection transcript |
+    | `plugin-sdk/channel-test-helpers` | راهنماهای آزمون channel-محور محلیِ مخزن برای contractهای generic actions/setup/status، assertionهای directory، چرخه عمر account startup، threading پیکربندی ارسال، mockهای runtime، issueهای status، delivery خروجی، و ثبت hook |
+    | `plugin-sdk/channel-target-testing` | مجموعه مشترک caseهای خطای target-resolution محلیِ مخزن برای آزمون‌های channel |
+    | `plugin-sdk/plugin-test-contracts` | راهنماهای contract محلیِ مخزن برای بسته Plugin، registration، artifact عمومی، import مستقیم، runtime API، و side-effectهای import |
+    | `plugin-sdk/provider-test-contracts` | راهنماهای contract محلیِ مخزن برای runtime provider، auth، discovery، onboard، catalog، wizard، قابلیت رسانه، policy replay، صوت زنده realtime STT، web-search/fetch، و stream |
+    | `plugin-sdk/provider-http-test-mocks` | mockهای opt-in مربوط به Vitest HTTP/auth محلیِ مخزن برای آزمون‌های provider که `plugin-sdk/provider-http` را exercise می‌کنند |
+    | `plugin-sdk/test-fixtures` | fixtureهای generic محلیِ مخزن برای capture runtime CLI، sandbox context، skill writer، agent-message، system-event، reload ماژول، مسیر Plugin bundled، terminal-text، chunking، auth-token، و typed-case |
+    | `plugin-sdk/test-node-mocks` | راهنماهای mock متمرکز Node builtin محلیِ مخزن برای استفاده داخل factoryهای Vitest `vi.mock("node:*")` |
   </Accordion>
 
-  <Accordion title="زیرمسیرهای حافظه">
+  <Accordion title="زیرمسیرهای Memory">
     | زیرمسیر | خروجی‌های کلیدی |
     | --- | --- |
-    | `plugin-sdk/memory-core` | سطح کمک‌ابزار memory-core بسته‌بندی‌شده برای کمک‌ابزارهای manager/config/file/CLI |
-    | `plugin-sdk/memory-core-engine-runtime` | facade زمان اجرای نمایه/جست‌وجوی حافظه |
-    | `plugin-sdk/memory-core-host-embedding-registry` | کمک‌ابزارهای سبک رجیستری ارائه‌دهنده embedding حافظه |
-    | `plugin-sdk/memory-core-host-engine-foundation` | خروجی‌های موتور بنیاد میزبان حافظه |
-    | `plugin-sdk/memory-core-host-engine-embeddings` | قراردادهای embedding میزبان حافظه، دسترسی رجیستری، ارائه‌دهنده محلی و کمک‌ابزارهای عمومی batch/remote. `registerMemoryEmbeddingProvider` روی این سطح منسوخ شده است؛ برای ارائه‌دهندگان جدید از API عمومی ارائه‌دهنده embedding استفاده کنید. |
-    | `plugin-sdk/memory-core-host-engine-qmd` | خروجی‌های موتور QMD میزبان حافظه |
-    | `plugin-sdk/memory-core-host-engine-storage` | خروجی‌های موتور ذخیره‌سازی میزبان حافظه |
-    | `plugin-sdk/memory-core-host-multimodal` | کمک‌ابزارهای چندوجهی میزبان حافظه |
-    | `plugin-sdk/memory-core-host-query` | کمک‌ابزارهای پرس‌وجوی میزبان حافظه |
-    | `plugin-sdk/memory-core-host-secret` | کمک‌ابزارهای secret میزبان حافظه |
-    | `plugin-sdk/memory-core-host-events` | نام مستعار سازگاری منسوخ‌شده؛ از `plugin-sdk/memory-host-events` استفاده کنید |
-    | `plugin-sdk/memory-core-host-status` | کمک‌ابزارهای وضعیت میزبان حافظه |
-    | `plugin-sdk/memory-core-host-runtime-cli` | کمک‌ابزارهای زمان اجرای CLI میزبان حافظه |
-    | `plugin-sdk/memory-core-host-runtime-core` | کمک‌ابزارهای زمان اجرای core میزبان حافظه |
-    | `plugin-sdk/memory-core-host-runtime-files` | کمک‌ابزارهای file/runtime میزبان حافظه |
-    | `plugin-sdk/memory-host-core` | نام مستعار خنثی نسبت به vendor برای کمک‌ابزارهای زمان اجرای core میزبان حافظه |
-    | `plugin-sdk/memory-host-events` | نام مستعار خنثی نسبت به vendor برای کمک‌ابزارهای journal رویداد میزبان حافظه |
-    | `plugin-sdk/memory-host-files` | نام مستعار سازگاری منسوخ‌شده؛ از `plugin-sdk/memory-core-host-runtime-files` استفاده کنید |
-    | `plugin-sdk/memory-host-markdown` | کمک‌ابزارهای مشترک managed-markdown برای Pluginهای نزدیک به حافظه |
-    | `plugin-sdk/memory-host-search` | facade زمان اجرای active memory برای دسترسی search-manager |
-    | `plugin-sdk/memory-host-status` | نام مستعار سازگاری منسوخ‌شده؛ از `plugin-sdk/memory-core-host-status` استفاده کنید |
+    | `plugin-sdk/memory-core` | سطح راهنمای memory-core همراه‌شده برای راهنماهای manager/config/file/CLI |
+    | `plugin-sdk/memory-core-engine-runtime` | facade runtime برای index/search در Memory |
+    | `plugin-sdk/memory-core-host-embedding-registry` | راهنماهای سبک registry provider embedding در Memory |
+    | `plugin-sdk/memory-core-host-engine-foundation` | خروجی‌های engine foundation میزبان Memory |
+    | `plugin-sdk/memory-core-host-engine-embeddings` | contractهای embedding میزبان Memory، دسترسی registry، provider محلی، و راهنماهای generic batch/remote. `registerMemoryEmbeddingProvider` روی این سطح منسوخ است؛ برای providerهای جدید از API عمومی provider embedding استفاده کنید. |
+    | `plugin-sdk/memory-core-host-engine-qmd` | خروجی‌های engine QMD میزبان Memory |
+    | `plugin-sdk/memory-core-host-engine-storage` | خروجی‌های engine storage میزبان Memory |
+    | `plugin-sdk/memory-core-host-multimodal` | راهنماهای multimodal میزبان Memory |
+    | `plugin-sdk/memory-core-host-query` | راهنماهای query میزبان Memory |
+    | `plugin-sdk/memory-core-host-secret` | راهنماهای secret میزبان Memory |
+    | `plugin-sdk/memory-core-host-events` | alias سازگاری منسوخ؛ از `plugin-sdk/memory-host-events` استفاده کنید |
+    | `plugin-sdk/memory-core-host-status` | راهنماهای status میزبان Memory |
+    | `plugin-sdk/memory-core-host-runtime-cli` | راهنماهای runtime CLI میزبان Memory |
+    | `plugin-sdk/memory-core-host-runtime-core` | راهنماهای runtime core میزبان Memory |
+    | `plugin-sdk/memory-core-host-runtime-files` | راهنماهای file/runtime میزبان Memory |
+    | `plugin-sdk/memory-host-core` | alias بی‌طرف نسبت به vendor برای راهنماهای runtime core میزبان Memory |
+    | `plugin-sdk/memory-host-events` | alias بی‌طرف نسبت به vendor برای راهنماهای event journal میزبان Memory |
+    | `plugin-sdk/memory-host-files` | alias سازگاری منسوخ؛ از `plugin-sdk/memory-core-host-runtime-files` استفاده کنید |
+    | `plugin-sdk/memory-host-markdown` | راهنماهای مشترک managed-markdown برای Pluginهای مجاور Memory |
+    | `plugin-sdk/memory-host-search` | facade runtime برای Active Memory جهت دسترسی search-manager |
+    | `plugin-sdk/memory-host-status` | alias سازگاری منسوخ؛ از `plugin-sdk/memory-core-host-status` استفاده کنید |
   </Accordion>
 
-  <Accordion title="زیرمسیرهای کمک‌ابزار بسته‌بندی‌شده رزروشده">
-    زیرمسیرهای SDK کمک‌ابزار بسته‌بندی‌شده رزروشده، سطح‌های محدود و مختص مالک برای
-    کد Plugin بسته‌بندی‌شده هستند. آن‌ها در فهرست SDK ردیابی می‌شوند تا buildهای
-    package و aliasing قطعی بمانند، اما APIهای عمومی
-    تألیف Plugin نیستند. قراردادهای میزبان قابل استفاده مجدد جدید باید از زیرمسیرهای عمومی SDK
+  <Accordion title="زیرمسیرهای رزروشده bundled-helper">
+    زیرمسیرهای SDK رزروشده bundled-helper سطح‌های محدود و مالک‌محور برای
+    کد Pluginهای همراه‌شده هستند. آن‌ها در موجودی SDK ردیابی می‌شوند تا buildهای
+    بسته و aliasing قطعی بمانند، اما APIهای عمومی برای نوشتن Plugin
+    نیستند. contractهای میزبان قابل‌استفاده‌مجدد جدید باید از زیرمسیرهای generic SDK
     مانند `plugin-sdk/gateway-runtime`، `plugin-sdk/security-runtime` و
     `plugin-sdk/plugin-config-runtime` استفاده کنند.
 
     | زیرمسیر | مالک و هدف |
     | --- | --- |
-    | `plugin-sdk/codex-mcp-projection` | کمک‌ابزار Plugin بسته‌بندی‌شده Codex برای project کردن پیکربندی MCP server کاربر به پیکربندی thread در Codex app-server |
-    | `plugin-sdk/codex-native-task-runtime` | کمک‌ابزار Plugin بسته‌بندی‌شده Codex برای mirror کردن subagentهای native در Codex app-server به وضعیت task در OpenClaw |
+    | `plugin-sdk/codex-mcp-projection` | راهنمای Plugin همراه‌شده Codex برای project کردن پیکربندی server MCP کاربر به پیکربندی thread در app-server Codex |
+    | `plugin-sdk/codex-native-task-runtime` | راهنمای Plugin همراه‌شده Codex برای mirror کردن subagentهای native در app-server Codex به state تسک OpenClaw |
 
   </Accordion>
 </AccordionGroup>

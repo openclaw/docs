@@ -1,0 +1,151 @@
+---
+read_when:
+    - ClawHub क्या है, यह समझाना
+    - Skills या Plugins को खोजना, इंस्टॉल करना या अपडेट करना
+    - Skills या Plugins को रजिस्ट्री में प्रकाशित करना
+    - openclaw और ClawHub CLI प्रवाहों के बीच चयन
+sidebarTitle: ClawHub
+summary: डिस्कवरी, इंस्टॉल, प्रकाशन, सुरक्षा, और clawhub CLI के लिए सार्वजनिक ClawHub अवलोकन।
+title: ClawHub
+x-i18n:
+    generated_at: "2026-07-01T20:20:12Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: fde96ccb410b84dc4d3a48d42bbdbc0a80ac11dfb053afac2ee9e7e9d1605a5b
+    source_path: clawhub/index.md
+    workflow: 16
+---
+
+# ClawHub
+
+ClawHub, OpenClaw Skills और plugins के लिए सार्वजनिक registry है।
+
+- Skills खोजने, install करने और update करने तथा ClawHub से plugins install करने के लिए मूल `openclaw` commands का उपयोग करें।
+- registry auth, publishing, और delete/undelete workflows के लिए अलग `clawhub` CLI का उपयोग करें।
+
+Site: [clawhub.ai](https://clawhub.ai)
+
+## त्वरित शुरुआत
+
+OpenClaw के साथ Skills खोजें और install करें:
+
+```bash
+openclaw skills search "calendar"
+openclaw skills install @openclaw/demo
+openclaw skills update --all
+```
+
+OpenClaw के साथ plugins खोजें और install करें:
+
+```bash
+openclaw plugins search "calendar"
+openclaw plugins install clawhub:<package>
+openclaw plugins update --all
+```
+
+जब आपको publish या delete/undelete जैसे registry-authenticated workflows चाहिए हों, तब ClawHub CLI install करें:
+
+```bash
+npm i -g clawhub
+# or
+pnpm add -g clawhub
+```
+
+## ClawHub क्या host करता है
+
+| Surface        | यह क्या store करता है                                      | सामान्य command                              |
+| -------------- | ------------------------------------------------------------ | -------------------------------------------- |
+| Skills         | `SKILL.md` और सहायक files वाले versioned text bundles        | `openclaw skills install @openclaw/demo`     |
+| Code plugins   | compatibility metadata वाले OpenClaw plugin packages         | `openclaw plugins install clawhub:<package>` |
+| Bundle plugins | OpenClaw distribution के लिए packaged plugin bundles         | `clawhub package publish <source>`           |
+
+ClawHub semver versions, `latest` जैसे tags, changelogs, files, downloads, stars, और security scan summaries track करता है। Public pages वर्तमान registry state दिखाते हैं ताकि users किसी skill या plugin को install करने से पहले inspect कर सकें।
+
+## Native OpenClaw flows
+
+Native OpenClaw commands active OpenClaw workspace में install करते हैं और source metadata persist करते हैं, ताकि बाद के update commands ClawHub पर बने रह सकें।
+
+जब plugin install ClawHub के माध्यम से resolve होना चाहिए, तब `clawhub:<package>` का उपयोग करें। Bare npm-safe plugin specs launch cutovers के दौरान npm के माध्यम से resolve हो सकते हैं, और जब source स्पष्ट होना जरूरी हो, तब `npm:<package>` केवल npm रहता है।
+
+Plugin installs archive install चलने से पहले advertised `pluginApi` और `minGatewayVersion` compatibility validate करते हैं। जब कोई package version ClawPack artifact publish करता है, तो OpenClaw exact uploaded npm-pack `.tgz` को प्राथमिकता देता है, ClawHub digest header और downloaded bytes verify करता है, और बाद के updates के लिए artifact metadata record करता है।
+
+## ClawHub CLI
+
+ClawHub CLI registry-authenticated work के लिए है:
+
+```bash
+clawhub login
+clawhub whoami
+clawhub search "postgres backups"
+clawhub skill publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0
+clawhub package explore --family code-plugin
+clawhub package inspect episodic-claw
+clawhub package publish your-org/your-plugin --dry-run
+clawhub package publish your-org/your-plugin
+```
+
+CLI में direct registry workflows के लिए skill install/update commands भी हैं:
+
+```bash
+clawhub install @openclaw/demo
+clawhub update @openclaw/demo
+clawhub update --all
+clawhub list
+```
+
+ये commands current working directory के अंतर्गत `./skills` में skills install करते हैं और installed versions को `.clawhub/lock.json` में record करते हैं।
+
+## Publishing
+
+`SKILL.md` वाली local folder से skills publish करें:
+
+```bash
+clawhub skill publish <path>
+```
+
+सामान्य publish options:
+
+- `--slug <slug>`: published skill URL name.
+- `--name <name>`: display name.
+- `--version <version>`: semver version.
+- `--changelog <text>`: changelog text.
+- `--tags <tags>`: comma-separated tags, default `latest` पर।
+
+Local folder, `owner/repo`, `owner/repo@ref`, या GitHub URL से plugins publish करें:
+
+```bash
+clawhub package publish <source>
+```
+
+बिना upload किए exact publish plan build करने के लिए `--dry-run` का उपयोग करें, और CI-friendly output के लिए `--json` का।
+
+Code plugins में `package.json` में आवश्यक OpenClaw compatibility metadata शामिल होना चाहिए, जिसमें `openclaw.compat.pluginApi` और `openclaw.build.openclawVersion` शामिल हैं। पूरे command reference के लिए [CLI](/hi/clawhub/cli) और skill metadata के लिए [Skill format](/clawhub/skill-format) देखें।
+
+## Security और moderation
+
+ClawHub default रूप से open है: कोई भी upload कर सकता है, लेकिन publishing के लिए ऐसा GitHub account चाहिए जो upload gate pass करने के लिए पर्याप्त पुराना हो। Public detail pages install या download से पहले latest scan state का सारांश देते हैं।
+
+ClawHub published skills और plugin releases पर automated checks चलाता है। Scan-held या blocked releases public catalog और install surfaces से गायब हो सकते हैं, जबकि `/dashboard` में अपने owner को visible रहते हैं।
+
+Signed-in users skills और packages report कर सकते हैं। Moderators reports review कर सकते हैं, content hide या restore कर सकते हैं, और abusive accounts ban कर सकते हैं। Policy और enforcement details के लिए [Security](/hi/clawhub/security), [Security Audits](/clawhub/security-audits), [Moderation and Account Safety](/clawhub/moderation), और [Acceptable usage](/hi/clawhub/acceptable-usage) देखें।
+
+## Telemetry और environment
+
+जब आप logged in रहते हुए `clawhub install` चलाते हैं, तो CLI best-effort install event भेज सकता है ताकि ClawHub aggregate install counts compute कर सके। इसे इससे disable करें:
+
+```bash
+export CLAWHUB_DISABLE_TELEMETRY=1
+```
+
+उपयोगी environment overrides:
+
+| Variable                      | Effect                                            |
+| ----------------------------- | ------------------------------------------------- |
+| `CLAWHUB_SITE`                | browser login के लिए उपयोग किया गया site URL override करें। |
+| `CLAWHUB_REGISTRY`            | registry API URL override करें।                  |
+| `CLAWHUB_CONFIG_PATH`         | CLI token/config state कहाँ store करता है, इसे override करें। |
+| `CLAWHUB_WORKDIR`             | default working directory override करें।          |
+| `CLAWHUB_DISABLE_TELEMETRY=1` | install telemetry disable करें।                  |
+
+अधिक गहन reference material के लिए [Telemetry](/clawhub/telemetry), [HTTP API](/clawhub/http-api), और [Troubleshooting](/hi/clawhub/troubleshooting) देखें।
