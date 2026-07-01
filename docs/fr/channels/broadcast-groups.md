@@ -1,17 +1,17 @@
 ---
 read_when:
     - Configuration des groupes de diffusion
-    - Débogage des réponses multi-agents dans WhatsApp
+    - Déboguer les réponses multi-agents dans WhatsApp
 sidebarTitle: Broadcast groups
 status: experimental
 summary: Diffuser un message WhatsApp à plusieurs agents
 title: Groupes de diffusion
 x-i18n:
-    generated_at: "2026-06-27T17:09:17Z"
+    generated_at: "2026-07-01T05:39:06Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a89b936322baf0fea7b487cb5354b9fad3fc021abb2970f7cd934b1880da2a0e
+    source_hash: 97e8c2ade5d12a437864e6aca0d475e586289f71155188afed216881ebf89f88
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
@@ -20,13 +20,15 @@ x-i18n:
 **Statut :** Expérimental. Ajouté dans 2026.1.9.
 </Note>
 
-## Vue d’ensemble
+## Présentation
 
 Les groupes de diffusion permettent à plusieurs agents de traiter le même message et d’y répondre simultanément. Cela vous permet de créer des équipes d’agents spécialisés qui travaillent ensemble dans un seul groupe WhatsApp ou message privé, le tout avec un seul numéro de téléphone.
 
 Périmètre actuel : **WhatsApp uniquement** (canal web).
 
 Les groupes de diffusion sont évalués après les listes d’autorisation de canal et les règles d’activation de groupe. Dans les groupes WhatsApp, cela signifie que les diffusions se produisent lorsque OpenClaw répondrait normalement (par exemple : lors d’une mention, selon vos paramètres de groupe).
+
+La voie QA WhatsApp en direct inclut `whatsapp-broadcast-group-fanout`, qui vérifie qu’un message de groupe mentionné peut produire des réponses visibles distinctes de deux agents configurés.
 
 ## Cas d’utilisation
 
@@ -43,7 +45,7 @@ Les groupes de diffusion sont évalués après les listes d’autorisation de ca
       - TestGenerator (suggests test cases)
     ```
 
-    Chaque agent traite le même message et apporte son point de vue spécialisé.
+    Chaque agent traite le même message et fournit son point de vue spécialisé.
 
   </Accordion>
   <Accordion title="2. Prise en charge multilingue">
@@ -91,7 +93,7 @@ Ajoutez une section `broadcast` de premier niveau (à côté de `bindings`). Les
 }
 ```
 
-**Résultat :** Lorsque OpenClaw répondrait dans cette discussion, il exécutera les trois agents.
+**Résultat :** Quand OpenClaw répondrait dans cette discussion, il exécutera les trois agents.
 
 ### Stratégie de traitement
 
@@ -99,7 +101,7 @@ Contrôlez la façon dont les agents traitent les messages :
 
 <Tabs>
   <Tab title="parallel (par défaut)">
-    Tous les agents traitent simultanément :
+    Tous les agents traitent le message simultanément :
 
     ```json
     {
@@ -112,7 +114,7 @@ Contrôlez la façon dont les agents traitent les messages :
 
   </Tab>
   <Tab title="sequential">
-    Les agents traitent dans l’ordre (chacun attend que le précédent ait terminé) :
+    Les agents traitent le message dans l’ordre (chacun attend que le précédent ait terminé) :
 
     ```json
     {
@@ -167,18 +169,18 @@ Contrôlez la façon dont les agents traitent les messages :
 
 <Steps>
   <Step title="Arrivée d’un message entrant">
-    Un message de groupe WhatsApp ou de message privé arrive.
+    Un message de groupe WhatsApp ou un message privé arrive.
   </Step>
   <Step title="Routage et admission">
-    OpenClaw applique les listes d’autorisation de canal, les règles d’activation de groupe et la propriété des liaisons ACP configurées.
+    OpenClaw applique les listes d’autorisation de canal, les règles d’activation de groupe et la propriété de liaison ACP configurée.
   </Step>
-  <Step title="Vérification de diffusion">
-    Si aucune liaison ACP configurée ne possède la route, OpenClaw vérifie si l’ID du pair figure dans `broadcast`.
+  <Step title="Vérification de la diffusion">
+    Si aucune liaison ACP configurée ne possède la route, OpenClaw vérifie si l’ID du pair se trouve dans `broadcast`.
   </Step>
   <Step title="Si la diffusion s’applique">
     - Tous les agents listés traitent le message.
-    - Chaque agent dispose de sa propre clé de session et d’un contexte isolé.
-    - Les agents traitent en parallèle (par défaut) ou séquentiellement.
+    - Chaque agent possède sa propre clé de session et son propre contexte isolé.
+    - Les agents traitent le message en parallèle (par défaut) ou séquentiellement.
 
   </Step>
   <Step title="Si la diffusion ne s’applique pas">
@@ -187,26 +189,26 @@ Contrôlez la façon dont les agents traitent les messages :
 </Steps>
 
 <Note>
-Les groupes de diffusion ne contournent pas les listes d’autorisation de canal ni les règles d’activation de groupe (mentions/commandes/etc.). Ils changent uniquement _quels agents s’exécutent_ lorsqu’un message est éligible au traitement.
+Les groupes de diffusion ne contournent pas les listes d’autorisation de canal ni les règles d’activation de groupe (mentions/commandes/etc.). Ils changent uniquement _les agents exécutés_ lorsqu’un message est admissible au traitement.
 </Note>
 
 ### Isolation des sessions
 
-Chaque agent dans un groupe de diffusion conserve des éléments entièrement séparés :
+Chaque agent d’un groupe de diffusion conserve des éléments complètement séparés :
 
-- **Clés de session** (`agent:alfred:whatsapp:group:120363...` contre `agent:baerbel:whatsapp:group:120363...`)
+- **Clés de session** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
 - **Historique de conversation** (l’agent ne voit pas les messages des autres agents)
-- **Espace de travail** (sandboxes séparés si configurés)
+- **Espace de travail** (bacs à sable séparés si configurés)
 - **Accès aux outils** (listes d’autorisation/refus différentes)
 - **Mémoire/contexte** (IDENTITY.md, SOUL.md, etc. séparés)
-- **Tampon de contexte de groupe** (messages récents du groupe utilisés pour le contexte) partagé par pair, afin que tous les agents de diffusion voient le même contexte lorsqu’ils sont déclenchés
+- **Tampon de contexte de groupe** (messages récents du groupe utilisés comme contexte) partagé par pair, de sorte que tous les agents de diffusion voient le même contexte lorsqu’ils sont déclenchés
 
 Cela permet à chaque agent d’avoir :
 
 - Des personnalités différentes
-- Un accès aux outils différent (par ex. lecture seule contre lecture-écriture)
-- Des modèles différents (par ex. opus contre sonnet)
-- Différents Skills installés
+- Des accès aux outils différents (par ex. lecture seule vs lecture-écriture)
+- Des modèles différents (par ex. opus vs sonnet)
+- Des Skills différents installés
 
 ### Exemple : sessions isolées
 
@@ -249,7 +251,7 @@ Dans le groupe `120363403215116621@g.us` avec les agents `["alfred", "baerbel"]`
 
   </Accordion>
   <Accordion title="2. Utiliser des noms descriptifs">
-    Indiquez clairement ce que fait chaque agent :
+    Rendez clair ce que fait chaque agent :
 
     ```json
     {
@@ -262,7 +264,7 @@ Dans le groupe `120363403215116621@g.us` avec les agents `["alfred", "baerbel"]`
     ```
 
   </Accordion>
-  <Accordion title="3. Configurer différents accès aux outils">
+  <Accordion title="3. Configurer des accès aux outils différents">
     Donnez aux agents uniquement les outils dont ils ont besoin :
 
     ```json
@@ -284,8 +286,8 @@ Dans le groupe `120363403215116621@g.us` avec les agents `["alfred", "baerbel"]`
   <Accordion title="4. Surveiller les performances">
     Avec de nombreux agents, envisagez :
 
-    - D’utiliser `"strategy": "parallel"` (par défaut) pour la vitesse
-    - De limiter les groupes de diffusion à 5-10 agents
+    - D’utiliser `"strategy": "parallel"` (par défaut) pour la rapidité
+    - De limiter les groupes de diffusion à 5 à 10 agents
     - D’utiliser des modèles plus rapides pour les agents plus simples
 
   </Accordion>
@@ -333,7 +335,7 @@ Les groupes de diffusion fonctionnent avec le routage existant :
 - `GROUP_B` : agent1 ET agent2 répondent (diffusion).
 
 <Note>
-**Priorité :** `broadcast` est prioritaire sur les liaisons de route ordinaires. Les liaisons ACP configurées (`bindings[].type="acp"`) sont exclusives : lorsqu’une correspondance est trouvée, OpenClaw distribue vers la session ACP configurée au lieu d’une diffusion en éventail.
+**Priorité :** `broadcast` est prioritaire sur les liaisons de route ordinaires. Les liaisons ACP configurées (`bindings[].type="acp"`) sont exclusives : lorsqu’une correspondance existe, OpenClaw distribue à la session ACP configurée au lieu d’une diffusion en éventail.
 </Note>
 
 ## Dépannage
@@ -342,9 +344,9 @@ Les groupes de diffusion fonctionnent avec le routage existant :
   <Accordion title="Les agents ne répondent pas">
     **Vérifiez :**
 
-    1. Les ID d’agents existent dans `agents.list`.
-    2. Le format de l’ID de pair est correct (par ex. `120363403215116621@g.us`).
-    3. Les agents ne sont pas dans des listes de refus.
+    1. Les ID d’agent existent dans `agents.list`.
+    2. Le format de l’ID du pair est correct (par ex. `120363403215116621@g.us`).
+    3. Les agents ne figurent pas dans des listes de refus.
 
     **Débogage :**
 
@@ -354,17 +356,17 @@ Les groupes de diffusion fonctionnent avec le routage existant :
 
   </Accordion>
   <Accordion title="Un seul agent répond">
-    **Cause :** L’ID de pair peut se trouver dans les liaisons de route ordinaires mais pas dans `broadcast`, ou il peut correspondre à une liaison ACP configurée exclusive.
+    **Cause :** L’ID du pair peut être dans les liaisons de route ordinaires mais pas dans `broadcast`, ou il peut correspondre à une liaison ACP configurée exclusive.
 
     **Correction :** Ajoutez les pairs liés à une route ordinaire à la configuration de diffusion, ou supprimez/modifiez la liaison ACP configurée si une diffusion en éventail est souhaitée.
 
   </Accordion>
   <Accordion title="Problèmes de performances">
-    Si le système est lent avec de nombreux agents :
+    Si le traitement est lent avec de nombreux agents :
 
     - Réduisez le nombre d’agents par groupe.
     - Utilisez des modèles plus légers (sonnet au lieu d’opus).
-    - Vérifiez le temps de démarrage du sandbox.
+    - Vérifiez le temps de démarrage du bac à sable.
 
   </Accordion>
 </AccordionGroup>
@@ -372,7 +374,7 @@ Les groupes de diffusion fonctionnent avec le routage existant :
 ## Exemples
 
 <AccordionGroup>
-  <Accordion title="Exemple 1 : équipe de revue de code">
+  <Accordion title="Exemple 1 : Équipe de revue de code">
     ```json
     {
       "broadcast": {
@@ -417,7 +419,7 @@ Les groupes de diffusion fonctionnent avec le routage existant :
     - docs-checker : "Missing docstring for function `process_data`"
 
   </Accordion>
-  <Accordion title="Exemple 2 : prise en charge multilingue">
+  <Accordion title="Exemple 2 : Prise en charge multilingue">
     ```json
     {
       "broadcast": {
@@ -436,7 +438,7 @@ Les groupes de diffusion fonctionnent avec le routage existant :
   </Accordion>
 </AccordionGroup>
 
-## Référence d’API
+## Référence API
 
 ### Schéma de configuration
 
@@ -452,7 +454,7 @@ interface OpenClawConfig {
 ### Champs
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Comment traiter les agents. `parallel` exécute tous les agents simultanément ; `sequential` les exécute dans l’ordre du tableau.
+  Méthode de traitement des agents. `parallel` exécute tous les agents simultanément ; `sequential` les exécute dans l’ordre du tableau.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
   JID de groupe WhatsApp, numéro E.164 ou autre ID de pair. La valeur est le tableau des ID d’agents qui doivent traiter les messages.
@@ -460,24 +462,24 @@ interface OpenClawConfig {
 
 ## Limitations
 
-1. **Nombre maximal d’agents :** Aucune limite stricte, mais plus de 10 agents peuvent être lents.
-2. **Contexte partagé :** Les agents ne voient pas les réponses des autres (par conception).
+1. **Nombre maximal d’agents :** Aucune limite stricte, mais 10 agents ou plus peuvent être lents.
+2. **Contexte partagé :** Les agents ne voient pas les réponses des autres agents (par conception).
 3. **Ordre des messages :** Les réponses parallèles peuvent arriver dans n’importe quel ordre.
-4. **Limites de débit :** Tous les agents sont pris en compte dans les limites de débit de WhatsApp.
+4. **Limites de débit :** Tous les agents comptent dans les limites de débit de WhatsApp.
 
 ## Améliorations futures
 
 Fonctionnalités prévues :
 
-- [ ] Mode de contexte partagé (les agents voient les réponses des autres)
+- [ ] Mode de contexte partagé (les agents voient les réponses des autres agents)
 - [ ] Coordination des agents (les agents peuvent se signaler entre eux)
-- [ ] Sélection dynamique des agents (choisir les agents selon le contenu du message)
-- [ ] Priorités des agents (certains agents répondent avant les autres)
+- [ ] Sélection dynamique des agents (choisir les agents en fonction du contenu du message)
+- [ ] Priorités des agents (certains agents répondent avant d’autres)
 
-## Voir aussi
+## Articles liés
 
 - [Routage des canaux](/fr/channels/channel-routing)
 - [Groupes](/fr/channels/groups)
-- [Outils de sandbox multi-agent](/fr/tools/multi-agent-sandbox-tools)
+- [Outils de bac à sable multi-agent](/fr/tools/multi-agent-sandbox-tools)
 - [Appairage](/fr/channels/pairing)
 - [Gestion des sessions](/fr/concepts/session)

@@ -7,11 +7,11 @@ status: experimental
 summary: Transmitir un mensaje de WhatsApp a varios agentes
 title: Grupos de difusión
 x-i18n:
-    generated_at: "2026-06-27T10:35:46Z"
+    generated_at: "2026-07-01T05:27:32Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a89b936322baf0fea7b487cb5354b9fad3fc021abb2970f7cd934b1880da2a0e
+    source_hash: 97e8c2ade5d12a437864e6aca0d475e586289f71155188afed216881ebf89f88
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
@@ -22,17 +22,19 @@ x-i18n:
 
 ## Descripción general
 
-Los grupos de difusión permiten que varios agentes procesen y respondan al mismo mensaje simultáneamente. Esto te permite crear equipos de agentes especializados que trabajan juntos en un único grupo o DM de WhatsApp, todo usando un solo número de teléfono.
+Los Grupos de difusión permiten que varios agentes procesen y respondan al mismo mensaje simultáneamente. Esto te permite crear equipos de agentes especializados que trabajan juntos en un único grupo o DM de WhatsApp, todo usando un solo número de teléfono.
 
 Alcance actual: **solo WhatsApp** (canal web).
 
-Los grupos de difusión se evalúan después de las listas de permitidos del canal y las reglas de activación de grupos. En los grupos de WhatsApp, esto significa que las difusiones ocurren cuando OpenClaw respondería normalmente (por ejemplo: al mencionarlo, según la configuración de tu grupo).
+Los grupos de difusión se evalúan después de las listas de permitidos del canal y las reglas de activación de grupos. En grupos de WhatsApp, esto significa que las difusiones ocurren cuando OpenClaw normalmente respondería (por ejemplo: al mencionarlo, según la configuración de tu grupo).
+
+La vía de QA en vivo de WhatsApp incluye `whatsapp-broadcast-group-fanout`, que verifica que un mensaje de grupo con mención pueda producir respuestas visibles distintas de dos agentes configurados.
 
 ## Casos de uso
 
 <AccordionGroup>
   <Accordion title="1. Equipos de agentes especializados">
-    Despliega varios agentes con responsabilidades atómicas y enfocadas:
+    Implementa varios agentes con responsabilidades atómicas y enfocadas:
 
     ```
     Group: "Development Team"
@@ -43,7 +45,7 @@ Los grupos de difusión se evalúan después de las listas de permitidos del can
       - TestGenerator (suggests test cases)
     ```
 
-    Cada agente procesa el mismo mensaje y proporciona su perspectiva especializada.
+    Cada agente procesa el mismo mensaje y aporta su perspectiva especializada.
 
   </Accordion>
   <Accordion title="2. Soporte multilingüe">
@@ -55,7 +57,7 @@ Los grupos de difusión se evalúan después de las listas de permitidos del can
       - Agent_ES (responds in Spanish)
     ```
   </Accordion>
-  <Accordion title="3. Flujos de trabajo de control de calidad">
+  <Accordion title="3. Flujos de trabajo de aseguramiento de calidad">
     ```
     Group: "Customer Support"
     Agents:
@@ -78,9 +80,9 @@ Los grupos de difusión se evalúan después de las listas de permitidos del can
 
 ### Configuración básica
 
-Añade una sección `broadcast` de nivel superior (junto a `bindings`). Las claves son ID de pares de WhatsApp:
+Añade una sección `broadcast` de nivel superior (junto a `bindings`). Las claves son ids de pares de WhatsApp:
 
-- chats de grupo: JID del grupo (por ejemplo, `120363403215116621@g.us`)
+- chats de grupo: JID de grupo (por ejemplo, `120363403215116621@g.us`)
 - DM: número de teléfono E.164 (por ejemplo, `+15551234567`)
 
 ```json
@@ -112,7 +114,7 @@ Controla cómo los agentes procesan los mensajes:
 
   </Tab>
   <Tab title="sequential">
-    Los agentes procesan en orden (uno espera a que el anterior termine):
+    Los agentes procesan en orden (uno espera a que termine el anterior):
 
     ```json
     {
@@ -170,10 +172,10 @@ Controla cómo los agentes procesan los mensajes:
     Llega un mensaje de grupo o DM de WhatsApp.
   </Step>
   <Step title="Enrutamiento y admisión">
-    OpenClaw aplica listas de permitidos del canal, reglas de activación de grupos y la propiedad configurada de enlaces ACP.
+    OpenClaw aplica listas de permitidos del canal, reglas de activación de grupos y la propiedad de bindings ACP configurados.
   </Step>
   <Step title="Comprobación de difusión">
-    Si ningún enlace ACP configurado posee la ruta, OpenClaw comprueba si el ID del par está en `broadcast`.
+    Si ningún binding ACP configurado es propietario de la ruta, OpenClaw comprueba si el ID de par está en `broadcast`.
   </Step>
   <Step title="Si se aplica la difusión">
     - Todos los agentes listados procesan el mensaje.
@@ -190,27 +192,27 @@ Controla cómo los agentes procesan los mensajes:
 Los grupos de difusión no omiten las listas de permitidos del canal ni las reglas de activación de grupos (menciones/comandos/etc.). Solo cambian _qué agentes se ejecutan_ cuando un mensaje es elegible para procesamiento.
 </Note>
 
-### Aislamiento de sesiones
+### Aislamiento de sesión
 
 Cada agente en un grupo de difusión mantiene completamente separados:
 
 - **Claves de sesión** (`agent:alfred:whatsapp:group:120363...` frente a `agent:baerbel:whatsapp:group:120363...`)
 - **Historial de conversación** (el agente no ve los mensajes de otros agentes)
 - **Workspace** (sandboxes separados si están configurados)
-- **Acceso a herramientas** (listas de permitidos/denegados diferentes)
+- **Acceso a herramientas** (listas de permitir/denegar diferentes)
 - **Memoria/contexto** (IDENTITY.md, SOUL.md, etc. separados)
-- **Búfer de contexto de grupo** (mensajes recientes del grupo usados como contexto) se comparte por par, por lo que todos los agentes de difusión ven el mismo contexto cuando se activan
+- **Búfer de contexto del grupo** (mensajes recientes del grupo usados como contexto) se comparte por par, por lo que todos los agentes de difusión ven el mismo contexto cuando se activan
 
 Esto permite que cada agente tenga:
 
 - Personalidades diferentes
-- Acceso a herramientas diferente (por ejemplo, solo lectura frente a lectura y escritura)
+- Acceso a herramientas diferente (por ejemplo, solo lectura frente a lectura-escritura)
 - Modelos diferentes (por ejemplo, opus frente a sonnet)
 - Skills diferentes instaladas
 
 ### Ejemplo: sesiones aisladas
 
-En el grupo `120363403215116621@g.us` con los agentes `["alfred", "baerbel"]`:
+En el grupo `120363403215116621@g.us` con agentes `["alfred", "baerbel"]`:
 
 <Tabs>
   <Tab title="Contexto de Alfred">
@@ -231,11 +233,11 @@ En el grupo `120363403215116621@g.us` con los agentes `["alfred", "baerbel"]`:
   </Tab>
 </Tabs>
 
-## Prácticas recomendadas
+## Mejores prácticas
 
 <AccordionGroup>
   <Accordion title="1. Mantén los agentes enfocados">
-    Diseña cada agente con una responsabilidad única y clara:
+    Diseña cada agente con una única responsabilidad clara:
 
     ```json
     {
@@ -245,7 +247,7 @@ En el grupo `120363403215116621@g.us` con los agentes `["alfred", "baerbel"]`:
     }
     ```
 
-    ✅ **Bien:** Cada agente tiene una tarea. ❌ **Mal:** Un agente genérico "dev-helper".
+    ✅ **Bueno:** Cada agente tiene una tarea. ❌ **Malo:** Un agente genérico "dev-helper".
 
   </Accordion>
   <Accordion title="2. Usa nombres descriptivos">
@@ -304,7 +306,7 @@ En el grupo `120363403215116621@g.us` con los agentes `["alfred", "baerbel"]`:
 
 ### Proveedores
 
-Actualmente, los grupos de difusión funcionan con:
+Actualmente los grupos de difusión funcionan con:
 
 - ✅ WhatsApp (implementado)
 - 🚧 Telegram (planificado)
@@ -333,7 +335,7 @@ Los grupos de difusión funcionan junto con el enrutamiento existente:
 - `GROUP_B`: responden agent1 Y agent2 (difusión).
 
 <Note>
-**Precedencia:** `broadcast` tiene prioridad sobre los enlaces de ruta ordinarios. Los enlaces ACP configurados (`bindings[].type="acp"`) son exclusivos: cuando uno coincide, OpenClaw despacha a la sesión ACP configurada en lugar de hacer difusión en abanico.
+**Precedencia:** `broadcast` tiene prioridad sobre los bindings de ruta ordinarios. Los bindings ACP configurados (`bindings[].type="acp"`) son exclusivos: cuando uno coincide, OpenClaw despacha a la sesión ACP configurada en lugar de la difusión en abanico.
 </Note>
 
 ## Solución de problemas
@@ -343,8 +345,8 @@ Los grupos de difusión funcionan junto con el enrutamiento existente:
     **Comprueba:**
 
     1. Los ID de agente existen en `agents.list`.
-    2. El formato del ID del par es correcto (por ejemplo, `120363403215116621@g.us`).
-    3. Los agentes no están en listas de denegados.
+    2. El formato del ID de par es correcto (por ejemplo, `120363403215116621@g.us`).
+    3. Los agentes no están en listas de denegación.
 
     **Depuración:**
 
@@ -354,9 +356,9 @@ Los grupos de difusión funcionan junto con el enrutamiento existente:
 
   </Accordion>
   <Accordion title="Solo responde un agente">
-    **Causa:** El ID del par podría estar en enlaces de ruta ordinarios pero no en `broadcast`, o podría coincidir con un enlace ACP configurado exclusivo.
+    **Causa:** El ID de par podría estar en bindings de ruta ordinarios pero no en `broadcast`, o podría coincidir con un binding ACP configurado exclusivo.
 
-    **Solución:** Añade los pares vinculados a rutas ordinarias a la configuración de difusión, o elimina/cambia el enlace ACP configurado si se desea difusión en abanico.
+    **Solución:** Añade los pares vinculados a rutas ordinarias a la configuración de difusión, o elimina/cambia el binding ACP configurado si se desea difusión en abanico.
 
   </Accordion>
   <Accordion title="Problemas de rendimiento">
@@ -452,22 +454,22 @@ interface OpenClawConfig {
 ### Campos
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Cómo procesar los agentes. `parallel` ejecuta todos los agentes simultáneamente; `sequential` los ejecuta en orden de array.
+  Cómo procesar agentes. `parallel` ejecuta todos los agentes simultáneamente; `sequential` los ejecuta en el orden del arreglo.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  JID de grupo de WhatsApp, número E.164 u otro ID de par. El valor es el array de ID de agentes que deben procesar mensajes.
+  JID de grupo de WhatsApp, número E.164 u otro ID de par. El valor es el arreglo de IDs de agente que deben procesar mensajes.
 </ParamField>
 
 ## Limitaciones
 
-1. **Máximo de agentes:** Sin límite estricto, pero más de 10 agentes pueden ser lentos.
+1. **Máximo de agentes:** No hay un límite estricto, pero 10+ agentes pueden ser lentos.
 2. **Contexto compartido:** Los agentes no ven las respuestas de los demás (por diseño).
-3. **Orden de los mensajes:** Las respuestas paralelas pueden llegar en cualquier orden.
-4. **Límites de frecuencia:** Todos los agentes cuentan para los límites de frecuencia de WhatsApp.
+3. **Orden de mensajes:** Las respuestas paralelas pueden llegar en cualquier orden.
+4. **Límites de tasa:** Todos los agentes cuentan para los límites de tasa de WhatsApp.
 
 ## Mejoras futuras
 
-Funciones planificadas:
+Funcionalidades planificadas:
 
 - [ ] Modo de contexto compartido (los agentes ven las respuestas de los demás)
 - [ ] Coordinación de agentes (los agentes pueden enviarse señales entre sí)
@@ -480,4 +482,4 @@ Funciones planificadas:
 - [Grupos](/es/channels/groups)
 - [Herramientas de sandbox multiagente](/es/tools/multi-agent-sandbox-tools)
 - [Emparejamiento](/es/channels/pairing)
-- [Administración de sesiones](/es/concepts/session)
+- [Gestión de sesiones](/es/concepts/session)

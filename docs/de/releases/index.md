@@ -1,32 +1,32 @@
 ---
 description: Browse polished OpenClaw release notes with highlights, reader-facing context, source links, and contributor credits.
-summary: Kuratiert aufbereitete OpenClaw-Versionshinweise für Personen, die die Produktgeschichte möchten, nicht das rohe Changelog.
+summary: Kuratierten OpenClaw-Versionshinweise für Personen, die die Produktgeschichte lesen möchten, nicht das rohe Changelog.
 title: Versionshinweise
 x-i18n:
-    generated_at: "2026-06-30T13:56:34Z"
+    generated_at: "2026-07-01T05:36:19Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1f0888e4ba8e8b9709bf3da72b4f1594e833a457a14a49345e9e460b32fa7e8
+    source_hash: f0528fd717dbd98f1191e24b640866735f4b32d3c1421deac9324115e6059903
     source_path: releases/index.md
     workflow: 16
 ---
 
 # Versionshinweise
 
-Diese Seiten werden die leserorientierte Version der OpenClaw-Versionen sein. Sie führen
-die Hauptgeschichte, praktische Auswirkungen, Quelllinks und Beiträge von Mitwirkenden zusammen,
+Diese Seiten sind die leserorientierte Version der OpenClaw-Releases. Sie halten
+die zentrale Geschichte, die praktischen Auswirkungen, Quelllinks und den Dank an Beitragende zusammen,
 ohne dass Sie zuerst das rohe Changelog durchsuchen müssen.
 
-## Demnächst verfügbar
+## Releases
 
-Das Release-Archiv wird nachträglich befüllt. Neue, ausgearbeitete Versionshinweise erscheinen
-hier, nachdem der Veröffentlichungstext finalisiert wurde.
+- [v2026.6.11](/releases/2026.6.11) - Zuverlässigkeitskorrekturen für Antworten, Senden,
+  Wiederverbindungen, Modelleinrichtung, Sessions und sicherere Admin-Standardwerte.
 
-## Roher Versionsverlauf
+## Rohe Release-Historie
 
-Verwenden Sie die kuratierten Hinweise, wenn Sie die Produktgeschichte verstehen möchten. Verwenden Sie den rohen Verlauf, wenn
-Sie eine kompakte Übersicht für Maintainer benötigen:
+Verwenden Sie die kuratierten Hinweise, wenn Sie die Produktgeschichte möchten. Verwenden Sie die rohe Historie, wenn
+Sie eine kompakte Maintainer-Abrechnung benötigen:
 
 - [GitHub-Releases](https://github.com/openclaw/openclaw/releases)
 - [CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)

@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Configurer le comportement de chargement, d’installation ou de restriction des Skills
-    - Définition de la visibilité des Skills par agent
-    - Ajuster les limites ou la politique d’approbation de Skill Workshop
+    - Configurer le comportement de chargement, d’installation ou de contrôle d’accès des Skills
+    - Définir la visibilité des Skills par agent
+    - Ajuster les limites de Skill Workshop ou la politique d’approbation
 sidebarTitle: Skills config
-summary: Référence complète pour le schéma de configuration skills.*, les listes d’autorisation des agents, les paramètres d’atelier et la gestion des variables d’environnement du bac à sable.
-title: Configuration des Skills
+summary: Référence complète pour le schéma de configuration skills.*, les listes d’autorisation d’agents, les paramètres d’atelier et la gestion des variables d’environnement du bac à sable.
+title: Configuration Skills
 x-i18n:
-    generated_at: "2026-06-27T18:20:57Z"
+    generated_at: "2026-07-01T05:41:42Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c1ba6beb1e06e7090dd6669320a91893bf26abe71633914e7564aebb59c637f
+    source_hash: 37251cd12162c3083b8b9e1a84c462233eb44656a84ca915705859a352c9557b
     source_path: tools/skills-config.md
     workflow: 16
 ---
 
-La plupart de la configuration des Skills se trouve sous `skills` dans
+La majeure partie de la configuration des Skills se trouve sous `skills` dans
 `~/.openclaw/openclaw.json`. La visibilité propre aux agents se trouve sous
 `agents.defaults.skills` et `agents.list[].skills`.
 
@@ -57,41 +57,41 @@ La plupart de la configuration des Skills se trouve sous `skills` dans
 
 <Note>
   Pour la génération d’images intégrée, utilisez `agents.defaults.imageGenerationModel`
-  avec l’outil principal `image_generate` plutôt que `skills.entries`. Les entrées de
-  Skills sont réservées aux workflows Skills personnalisés ou tiers.
+  ainsi que l’outil principal `image_generate` au lieu de `skills.entries`. Les
+  entrées de Skills servent uniquement aux workflows de Skills personnalisés ou tiers.
 </Note>
 
 ## Chargement (`skills.load`)
 
 <ParamField path="skills.load.extraDirs" type="string[]">
-  Répertoires Skills supplémentaires à analyser, avec la priorité la plus basse
-  (après les Skills groupées et de plugin). Les chemins sont développés avec la
-  prise en charge de `~`.
+  Répertoires de Skills supplémentaires à analyser, avec la priorité la plus
+  basse (après les Skills groupés et de Plugin). Les chemins sont développés avec
+  la prise en charge de `~`.
 </ParamField>
 
 <ParamField path="skills.load.allowSymlinkTargets" type="string[]">
-  Répertoires cibles réels de confiance vers lesquels les dossiers Skills liés
-  symboliquement peuvent pointer, même lorsque le lien symbolique se trouve hors
-  de la racine configurée. Utilisez ceci pour les dispositions intentionnelles
-  de dépôts voisins, comme
+  Répertoires cibles réels et approuvés vers lesquels les dossiers de Skills sous
+  forme de liens symboliques peuvent résoudre, même lorsque le lien symbolique se
+  trouve hors de la racine configurée. Utilisez ceci pour les dispositions
+  intentionnelles de dépôts voisins, comme
   `<workspace>/skills/manager -> ~/Projects/manager/skills`. Gardez cette liste
-  restreinte — ne pointez pas vers des racines larges comme `~` ou `~/Projects`.
+  restreinte — ne la faites pas pointer vers des racines larges comme `~` ou `~/Projects`.
 </ParamField>
 
 <ParamField path="skills.load.watch" type="boolean" default="true">
-  Surveille les dossiers Skills et actualise l’instantané des Skills quand les
-  fichiers `SKILL.md` changent. Couvre les fichiers imbriqués sous les racines
-  Skills groupées.
+  Surveille les dossiers de Skills et actualise l’instantané des Skills lorsque
+  les fichiers `SKILL.md` changent. Couvre les fichiers imbriqués sous les
+  racines de Skills groupées.
 </ParamField>
 
 <ParamField path="skills.load.watchDebounceMs" type="number" default="250">
-  Fenêtre d’anti-rebond pour les événements du surveillant de Skills, en millisecondes.
+  Fenêtre d’anti-rebond pour les événements de surveillance des Skills, en millisecondes.
 </ParamField>
 
 ## Installation (`skills.install`)
 
 <ParamField path="skills.install.preferBrew" type="boolean" default="true">
-  Privilégie les installateurs Homebrew quand `brew` est disponible.
+  Privilégie les installateurs Homebrew lorsque `brew` est disponible.
 </ParamField>
 
 <ParamField path="skills.install.nodeManager" type='"npm" | "pnpm" | "yarn" | "bun"' default='"npm"'>
@@ -103,20 +103,20 @@ La plupart de la configuration des Skills se trouve sous `skills` dans
 </ParamField>
 
 <ParamField path="skills.install.allowUploadedArchives" type="boolean" default="false">
-  Autorise les clients Gateway `operator.admin` de confiance à installer des
-  archives zip privées préparées via `skills.upload.*`. Les installations
-  ClawHub normales n’ont pas besoin de ce paramètre.
+  Autorise les clients Gateway `operator.admin` approuvés à installer des archives
+  zip privées préparées via `skills.upload.*`. Les installations ClawHub normales
+  n’ont pas besoin de ce paramètre.
 </ParamField>
 
 ## Politique d’installation opérateur (`security.installPolicy`)
 
 Utilisez `security.installPolicy` lorsque les opérateurs ont besoin d’une
-commande locale de confiance pour approuver ou bloquer les installations de
-Skills et de plugins avec une politique propre à l’hôte. La politique s’exécute
-après qu’OpenClaw a préparé le matériel source et avant que l’installation ou la
-mise à jour continue. Elle s’applique aux Skills ClawHub, aux Skills téléversées,
-aux Skills Git/locales, aux installateurs de dépendances de Skills et aux sources
-d’installation/mise à jour de plugins.
+commande locale approuvée pour autoriser ou bloquer les installations de Skills
+et de Plugins avec une politique propre à l’hôte. La politique s’exécute après
+qu’OpenClaw a préparé les sources et avant que l’installation ou la mise à jour
+ne continue. Elle s’applique aux Skills ClawHub, aux Skills téléversés, aux
+Skills Git/locaux, aux installateurs de dépendances de Skills et aux sources
+d’installation/mise à jour de Plugins.
 
 ```json5
 {
@@ -148,30 +148,30 @@ d’installation/mise à jour de plugins.
 
 <ParamField path="security.installPolicy.targets" type='("skill" | "plugin")[]'>
   Filtre de cible facultatif. Lorsqu’il est omis, la politique s’applique à
-  toutes les cibles prises en charge afin que les nouvelles installations
-  n’échouent pas inopinément en mode ouvert.
+  toutes les cibles prises en charge afin que les nouvelles installations ne
+  s’ouvrent pas de façon inattendue.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.command" type="string">
-  Chemin absolu vers l’exécutable de politique de confiance. OpenClaw l’exécute
-  sans shell et valide le chemin avant utilisation.
+  Chemin absolu vers l’exécutable de politique approuvé. OpenClaw l’exécute sans
+  shell et valide le chemin avant utilisation.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.args" type="string[]">
-  Arguments statiques passés après `command`.
+  Arguments statiques transmis après `command`.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.timeoutMs" type="number" default="10000">
-  Durée d’exécution maximale, en temps réel, pour une décision de politique.
+  Durée maximale en temps réel pour une décision de politique.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.noOutputTimeoutMs" type="number" default="timeoutMs">
-  Temps maximal sans sortie stdout ou stderr avant que la politique échoue en
+  Durée maximale sans sortie stdout ou stderr avant que la politique échoue en
   mode fermé.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.maxOutputBytes" type="number" default="1048576">
-  Nombre maximal d’octets stdout et stderr combinés accepté depuis le processus
+  Nombre maximal d’octets stdout et stderr combinés acceptés depuis le processus
   de politique.
 </ParamField>
 
@@ -180,47 +180,47 @@ d’installation/mise à jour de plugins.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.passEnv" type="string[]">
-  Noms de variables d’environnement copiés depuis le processus OpenClaw vers le
+  Noms des variables d’environnement copiées du processus OpenClaw vers le
   processus de politique. Seules les variables nommées sont transmises.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.trustedDirs" type="string[]">
-  Liste d’autorisation facultative des répertoires pouvant contenir
-  l’exécutable de politique.
+  Liste d’autorisation facultative des répertoires pouvant contenir l’exécutable
+  de politique.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.allowInsecurePath" type="boolean" default="false">
   Contourne les vérifications de propriété et d’autorisations du chemin de la
-  commande. À utiliser uniquement lorsque le chemin est protégé par un autre
-  mécanisme.
+  commande. À utiliser uniquement lorsque le chemin est protégé par un autre mécanisme.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.allowSymlinkCommand" type="boolean" default="false">
   Autorise le chemin de commande configuré à être un lien symbolique. La cible
   résolue doit tout de même satisfaire les autres vérifications de chemin. Les
   arguments de script d’interpréteur doivent être des fichiers réguliers directs,
-  pas des liens symboliques.
+  et non des liens symboliques.
 </ParamField>
 
 La politique reçoit un objet JSON sur stdin avec `protocolVersion: 1`,
 `openclawVersion`, `targetType`, `targetName`, `sourcePath`, `sourcePathKind`,
-un `source` structuré facultatif, `origin` et `request` structurés. Elle doit
-écrire un objet JSON sur stdout : `{ "protocolVersion": 1, "decision": "allow" }`
-ou `{ "protocolVersion": 1, "decision": "block", "reason": "..." }`. Une sortie
-non nulle, un délai dépassé, du JSON mal formé, des champs manquants ou des
+un champ structuré facultatif `source`, ainsi que `origin` et `request`
+structurés. Elle doit écrire un objet JSON sur stdout :
+`{ "protocolVersion": 1, "decision": "allow" }` ou
+`{ "protocolVersion": 1, "decision": "block", "reason": "..." }`. Une sortie non
+nulle, un délai d’expiration, un JSON mal formé, des champs manquants ou des
 versions de protocole non prises en charge échouent en mode fermé.
 
 OpenClaw n’exécute pas la politique d’installation pendant le démarrage normal
 du Gateway. Les installations et mises à jour échouent en mode fermé lorsque la
 politique est activée mais indisponible. `openclaw doctor` effectue une
 validation statique, et `openclaw doctor --deep` exécute une sonde
-d’installation synthétique sur la commande configurée.
+d’installation synthétique contre la commande configurée.
 
 Les mises à jour en masse appliquent la politique par cible : une mise à jour de
-Skill ou de plugin bloquée échoue pour cette cible sans désactiver la politique
+Skill ou de Plugin bloquée échoue pour cette cible sans désactiver la politique
 ni ignorer les cibles suivantes du lot.
 
-Exemple de stdin :
+Exemple stdin :
 
 ```json
 {
@@ -279,47 +279,45 @@ process.stdin.on("end", () => {
 });
 ```
 
-## Liste d’autorisation des Skills intégrées
+## Liste d’autorisation des Skills groupés
 
 <ParamField path="skills.allowBundled" type="string[]">
-  Liste d’autorisation facultative pour les Skills **intégrées** uniquement.
-  Lorsqu’elle est définie, seules les Skills intégrées dans la liste sont
-  admissibles. Les Skills gérées, au niveau agent et d’espace de travail ne sont
-  pas affectées.
+  Liste d’autorisation facultative pour les Skills **groupés** uniquement. Une
+  fois définie, seuls les Skills groupés de la liste sont éligibles. Les Skills
+  gérés, au niveau de l’agent et de l’espace de travail ne sont pas affectés.
 </ParamField>
 
 ## Entrées par Skill (`skills.entries`)
 
-Les clés sous `entries` correspondent par défaut au `name` de la Skill. Si une
-Skill définit `metadata.openclaw.skillKey`, utilisez cette clé à la place.
-Mettez les noms avec trait d’union entre guillemets (JSON5 autorise les clés
-entre guillemets).
+Les clés sous `entries` correspondent par défaut au `name` du Skill. Si un Skill
+définit `metadata.openclaw.skillKey`, utilisez cette clé à la place. Mettez les
+noms avec trait d’union entre guillemets (JSON5 autorise les clés entre guillemets).
 
 <ParamField path="skills.entries.<key>.enabled" type="boolean">
-  `false` désactive la Skill même lorsqu’elle est intégrée ou installée. La
-  Skill intégrée `coding-agent` est opt-in — définissez-la sur `true` et
-  assurez-vous que l’un de `claude`, `codex`, `opencode` ou une autre CLI prise
-  en charge est installé et authentifié.
+  `false` désactive le Skill même lorsqu’il est groupé ou installé. Le Skill
+  groupé `coding-agent` est opt-in — définissez-le sur `true` et assurez-vous
+  que l’un de `claude`, `codex`, `opencode` ou une autre CLI prise en charge est
+  installé et authentifié.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.apiKey" type='string | { source, provider, id }'>
   Champ pratique pour les Skills qui déclarent `metadata.openclaw.primaryEnv`.
-  Prend en charge une chaîne en clair ou une SecretRef : `{ source: "env", provider: "default", id: "VAR_NAME" }`.
+  Prend en charge une chaîne en clair ou un SecretRef : `{ source: "env", provider: "default", id: "VAR_NAME" }`.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.env" type="Record<string, string>">
-  Variables d’environnement injectées pour l’exécution de l’agent. Injectées
-  uniquement lorsque la variable n’est pas déjà définie dans le processus.
+  Variables d’environnement injectées pour l’exécution de l’agent. Elles sont
+  injectées uniquement lorsque la variable n’est pas déjà définie dans le processus.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.config" type="object">
-  Sac facultatif pour les champs de configuration personnalisés par Skill.
+  Conteneur facultatif pour les champs de configuration personnalisés par Skill.
 </ParamField>
 
-## Listes d’autorisation d’agents (`agents`)
+## Listes d’autorisation des agents (`agents`)
 
-Utilisez la configuration d’agent lorsque vous souhaitez les mêmes racines
-Skills de machine/espace de travail, mais un ensemble de Skills visible
+Utilisez la configuration d’agent lorsque vous voulez les mêmes racines de
+Skills pour une machine/un espace de travail, mais un ensemble de Skills visible
 différent par agent.
 
 ```json5
@@ -338,7 +336,7 @@ différent par agent.
 ```
 
 <ParamField path="agents.defaults.skills" type="string[]">
-  Liste d’autorisation de base partagée héritée par les agents qui omettent
+  Liste d’autorisation de référence partagée héritée par les agents qui omettent
   `agents.list[].skills`. Omettez-la entièrement pour laisser les Skills sans
   restriction par défaut.
 </ParamField>
@@ -346,8 +344,23 @@ différent par agent.
 <ParamField path="agents.list[].skills" type="string[]">
   Ensemble final explicite de Skills pour cet agent. Les listes explicites
   **remplacent** les valeurs par défaut héritées — elles ne fusionnent pas.
-  Définissez sur `[]` pour n’exposer aucune Skill à cet agent.
+  Définissez sur `[]` pour n’exposer aucun Skill à cet agent.
 </ParamField>
+
+<Warning>
+  Les listes d’autorisation de Skills d’agent sont un filtre de visibilité et de
+  chargement pour la découverte des Skills OpenClaw, les prompts, la découverte
+  des commandes slash, la synchronisation du sandbox et les instantanés de
+  Skills. Elles ne constituent pas une frontière d’autorisation au moment du
+  shell. Si un agent peut exécuter `exec` sur l’hôte, ce shell peut toujours
+  lancer des clients externes ou lire des fichiers hôte visibles pour
+  l’utilisateur d’exécution, y compris des registres de clients MCP comme
+  `~/.openclaw/skills/config/mcporter.json`. Pour l’isolation MCP par agent,
+  combinez les listes d’autorisation de Skills avec l’isolation par sandbox ou
+  utilisateur du système d’exploitation, refusez ou restreignez strictement
+  `exec` sur l’hôte, et privilégiez les identifiants par agent au niveau du
+  serveur MCP.
+</Warning>
 
 ## Workshop (`skills.workshop`)
 
@@ -359,16 +372,15 @@ différent par agent.
 </ParamField>
 
 <ParamField path="skills.workshop.approvalPolicy" type='"pending" | "auto"' default='"pending"'>
-  `pending` exige l’approbation de l’opérateur avant une application, un rejet
-  ou une mise en quarantaine initiés par l’agent. `auto` autorise ces actions
-  sans approbation.
+  `pending` exige l’approbation de l’opérateur avant une application, un rejet ou
+  une mise en quarantaine initiés par l’agent. `auto` autorise ces actions sans approbation.
 </ParamField>
 
 <ParamField path="skills.workshop.allowSymlinkTargetWrites" type="boolean" default="false">
-  Autorise l’application par Skill Workshop à écrire à travers les liens
-  symboliques de Skills d’espace de travail dont la cible réelle est déjà
-  approuvée par `skills.load.allowSymlinkTargets`. Gardez ceci désactivé sauf si
-  les applications de propositions générées doivent modifier cette racine Skills
+  Autoriser l’application de Skill Workshop à écrire à travers les liens symboliques
+  de Skills de l’espace de travail dont la cible réelle est déjà approuvée par
+  `skills.load.allowSymlinkTargets`. Gardez cette option désactivée sauf si les
+  applications de propositions générées doivent modifier cette racine de Skill
   partagée.
 </ParamField>
 
@@ -377,17 +389,19 @@ différent par agent.
 </ParamField>
 
 <ParamField path="skills.workshop.maxSkillBytes" type="number" default="40000">
-  Taille maximale du corps d’une proposition en octets. Les descriptions de propositions sont strictement limitées à
-  160 octets, car elles apparaissent dans la sortie de découverte et de liste.
+  Taille maximale du corps de proposition en octets. Les descriptions de
+  propositions sont strictement limitées à 160 octets, car elles apparaissent
+  dans la découverte et la sortie de listage.
 </ParamField>
 
-## Racines de Skills liées par symlink
+## Racines de Skills liées par lien symbolique
 
-Par défaut, les racines de Skills d’espace de travail, d’agent de projet, de répertoire supplémentaire et intégrées sont
-des limites de confinement. Un dossier de Skill lié par symlink sous `<workspace>/skills`
-qui se résout en dehors de la racine est ignoré avec un message de journal.
+Par défaut, les racines de Skills d’espace de travail, d’agent de projet, de
+répertoire supplémentaire et groupées sont des limites de confinement. Un
+dossier de Skill lié par lien symbolique sous `<workspace>/skills` qui se résout
+en dehors de la racine est ignoré avec un message de journal.
 
-Pour autoriser une disposition intentionnelle par symlink, déclarez la cible approuvée :
+Pour autoriser une disposition intentionnelle avec lien symbolique, déclarez la cible approuvée :
 
 ```json5
 {
@@ -401,12 +415,13 @@ Pour autoriser une disposition intentionnelle par symlink, déclarez la cible ap
 ```
 
 Avec cette configuration, `<workspace>/skills/manager -> ~/Projects/manager/skills` est
-accepté après résolution realpath. `extraDirs` analyse directement le dépôt voisin ;
-`allowSymlinkTargets` préserve le chemin lié par symlink pour les dispositions existantes.
+accepté après résolution realpath. `extraDirs` analyse directement le dépôt
+voisin ; `allowSymlinkTargets` préserve le chemin lié par lien symbolique pour
+les dispositions existantes.
 
-Par défaut, l’application de Skill Workshop n’écrit pas à travers ces symlinks. Pour permettre à
-Workshop apply de modifier les Skills sous des cibles de symlink déjà approuvées, activez cette option
-séparément :
+Par défaut, l’application de Skill Workshop n’écrit pas à travers ces liens
+symboliques. Pour permettre à Workshop apply de modifier des Skills sous des
+cibles de liens symboliques déjà approuvées, activez cette option séparément :
 
 ```json5
 {
@@ -422,19 +437,19 @@ séparément :
 ```
 
 Les répertoires gérés `~/.openclaw/skills` et personnels `~/.agents/skills`
-acceptent déjà les symlinks de répertoires de Skills (le confinement `SKILL.md` propre à chaque Skill
-s’applique toujours).
+acceptent déjà les liens symboliques de répertoires de Skills (le confinement
+`SKILL.md` par Skill s’applique toujours).
 
-## Skills en sandbox et variables d’environnement
+## Skills sandboxés et variables d’environnement
 
 <Warning>
-  `skills.entries.<skill>.env` et `apiKey` s’appliquent uniquement aux exécutions sur **l’hôte**. Dans
-  une sandbox, ils n’ont aucun effet — un Skill qui dépend de `GEMINI_API_KEY` échouera
-  avec `apiKey not configured`, sauf si la variable est fournie à la sandbox
-  séparément.
+  `skills.entries.<skill>.env` et `apiKey` s’appliquent uniquement aux exécutions
+  **hôte**. Dans un sandbox, ils n’ont aucun effet — un Skill qui dépend de
+  `GEMINI_API_KEY` échouera avec `apiKey not configured` sauf si la variable est
+  fournie séparément au sandbox.
 </Warning>
 
-Transmettez des secrets à une sandbox Docker avec :
+Transmettez des secrets à un sandbox Docker avec :
 
 ```json5
 {
@@ -451,9 +466,10 @@ Transmettez des secrets à une sandbox Docker avec :
 ```
 
 <Note>
-  Les utilisateurs ayant accès au daemon Docker peuvent inspecter les valeurs `sandbox.docker.env`
-  via les métadonnées Docker. Utilisez un fichier de secret monté, une image personnalisée ou
-  un autre chemin de livraison lorsque cette exposition n’est pas acceptable.
+  Les utilisateurs ayant accès au daemon Docker peuvent inspecter les valeurs
+  `sandbox.docker.env` via les métadonnées Docker. Utilisez un fichier secret
+  monté, une image personnalisée ou un autre chemin de livraison lorsque cette
+  exposition n’est pas acceptable.
 </Note>
 
 ## Rappel de l’ordre de chargement
@@ -467,22 +483,23 @@ bundled skills
 skills.load.extraDirs (lowest)
 ```
 
-Les modifications apportées aux Skills et à la configuration prennent effet lors de la nouvelle session suivante lorsque le
-watcher est activé, ou au prochain tour d’agent lorsque le watcher détecte une modification.
+Les modifications apportées aux Skills et à la configuration prennent effet lors
+de la nouvelle session suivante lorsque le watcher est activé, ou lors du tour
+d’agent suivant lorsque le watcher détecte une modification.
 
-## Connexe
+## Associés
 
 <CardGroup cols={2}>
-  <Card title="Référence des Skills" href="/fr/tools/skills" icon="puzzle-piece">
-    Ce que sont les Skills, l’ordre de chargement, le contrôle d’accès et le format SKILL.md.
+  <Card title="Skills reference" href="/fr/tools/skills" icon="puzzle-piece">
+    Ce que sont les Skills, l’ordre de chargement, le gating et le format SKILL.md.
   </Card>
-  <Card title="Créer des Skills" href="/fr/tools/creating-skills" icon="hammer">
-    Création de Skills personnalisés pour l’espace de travail.
+  <Card title="Creating skills" href="/fr/tools/creating-skills" icon="hammer">
+    Création de Skills d’espace de travail personnalisés.
   </Card>
   <Card title="Skill Workshop" href="/fr/tools/skill-workshop" icon="flask">
     File de propositions pour les Skills rédigés par l’agent.
   </Card>
-  <Card title="Commandes slash" href="/fr/tools/slash-commands" icon="terminal">
+  <Card title="Slash commands" href="/fr/tools/slash-commands" icon="terminal">
     Catalogue natif de commandes slash et directives de chat.
   </Card>
 </CardGroup>

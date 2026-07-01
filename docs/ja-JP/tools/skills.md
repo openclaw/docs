@@ -1,79 +1,81 @@
 ---
 read_when:
     - Skills の追加または変更
-    - Skill のゲート制御、許可リスト、読み込みルールの変更
+    - スキルのゲーティング、許可リスト、または読み込みルールの変更
     - スキルの優先順位とスナップショット動作を理解する
 sidebarTitle: Skills
-summary: Skills は、エージェントにツールの使い方を教えます。Skills がどのように読み込まれるか、優先順位がどのように機能するか、ゲーティング、許可リスト、環境注入をどのように設定するかを学びます。
+summary: Skills は、エージェントにツールの使い方を教えます。読み込み方法、優先順位の仕組み、ゲーティング、許可リスト、環境インジェクションの設定方法を学びます。
 title: Skills
 x-i18n:
-    generated_at: "2026-06-27T13:17:33Z"
+    generated_at: "2026-07-01T05:30:16Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e42d89d47125a4d92f68a20d754de571d5582858a9c44618b999a27335e78ab2
+    source_hash: d278a83bcd92e8c24ad0e01ec8fbf462450556493453ca1152e317727be34400
     source_path: tools/skills.md
     workflow: 16
 ---
 
-Skills は、エージェントにツールの使い方と使うタイミングを教える Markdown 指示ファイルです。各 Skills は、YAML フロントマターと Markdown 本文を含む `SKILL.md` ファイルが入ったディレクトリにあります。OpenClaw は同梱 Skills とローカル上書きを読み込み、環境、設定、バイナリの有無に基づいて読み込み時にフィルタリングします。
+Skills は、エージェントにツールを使う方法とタイミングを教える markdown 指示ファイルです。各 skill は、YAML frontmatter と markdown 本文を含む `SKILL.md` ファイルがあるディレクトリ内に置かれます。OpenClaw はバンドルされた Skills とローカルのオーバーライドを読み込み、環境、設定、バイナリの有無に基づいて読み込み時にフィルタリングします。
 
 <CardGroup cols={2}>
-  <Card title="Skills の作成" href="/ja-JP/tools/creating-skills" icon="hammer">
-    カスタム Skills をゼロから構築してテストします。
+  <Card title="Creating skills" href="/ja-JP/tools/creating-skills" icon="hammer">
+    カスタム skill をゼロから構築してテストします。
   </Card>
-  <Card title="Skills ワークショップ" href="/ja-JP/tools/skill-workshop" icon="flask">
-    エージェントが下書きした Skills 提案をレビューして承認します。
+  <Card title="Skill Workshop" href="/ja-JP/tools/skill-workshop" icon="flask">
+    エージェントが下書きした skill 提案をレビューして承認します。
   </Card>
-  <Card title="Skills 設定" href="/ja-JP/tools/skills-config" icon="gear">
+  <Card title="Skills config" href="/ja-JP/tools/skills-config" icon="gear">
     完全な `skills.*` 設定スキーマとエージェント許可リスト。
   </Card>
-  <Card title="ClawHub" href="/ja-JP/clawhub" icon="cloud">
+  <Card title="ClawHub" href="/clawhub" icon="cloud">
     コミュニティ Skills を参照してインストールします。
   </Card>
 </CardGroup>
 
-## 読み込み順
+## 読み込み順序
 
-OpenClaw は次のソースから、**優先度が高い順**に読み込みます。同じ Skills 名が複数の場所にある場合は、最も高いソースが優先されます。
+OpenClaw は次のソースから、**優先度の高い順**に読み込みます。同じ skill 名が複数の場所にある場合、最も高いソースが優先されます。
 
 | 優先度      | ソース                 | パス                                    |
 | ----------- | ---------------------- | --------------------------------------- |
 | 1 — 最高    | ワークスペース Skills  | `<workspace>/skills`                    |
 | 2           | プロジェクトエージェント Skills | `<workspace>/.agents/skills`            |
 | 3           | 個人エージェント Skills | `~/.agents/skills`                      |
-| 4           | 管理対象 / ローカル Skills | `~/.openclaw/skills`                    |
-| 5           | 同梱 Skills            | インストールに含まれるもの              |
-| 6 — 最低    | 追加ディレクトリ       | `skills.load.extraDirs` + Plugin Skills |
+| 4           | 管理 / ローカル Skills | `~/.openclaw/skills`                    |
+| 5           | バンドル Skills        | インストールに同梱                      |
+| 6 — 最低    | 追加ディレクトリ       | `skills.load.extraDirs` + plugin skills |
 
-Skills ルートはグループ化されたレイアウトをサポートします。OpenClaw は、設定済みルート配下のどこかに `SKILL.md` が現れるたびに Skills を検出します。
+Skill ルートはグループ化されたレイアウトをサポートします。OpenClaw は、設定済みルート配下のどこかに `SKILL.md` が現れると skill を検出します。
 
 ```text
 <workspace>/skills/research/SKILL.md          ✓ found as "research"
 <workspace>/skills/personal/research/SKILL.md ✓ also found as "research"
 ```
 
-フォルダパスは整理のためだけに使われます。Skills の名前、スラッシュコマンド、許可リストキーはすべて、`name` フロントマターフィールドから取得されます（`name` がない場合はディレクトリ名）。
+フォルダパスは整理用にすぎません。skill の名前、スラッシュコマンド、許可リストキーはすべて `name` frontmatter フィールドから取得されます（`name` がない場合はディレクトリ名）。
 
 <Note>
-  Codex CLI ネイティブの `$CODEX_HOME/skills` ディレクトリは、OpenClaw の Skills ルートでは**ありません**。`openclaw migrate plan codex` を使ってそれらの Skills を棚卸しし、その後 `openclaw migrate codex` で OpenClaw ワークスペースにコピーします。
+  Codex CLI のネイティブな `$CODEX_HOME/skills` ディレクトリは、OpenClaw の
+  skill ルートでは**ありません**。`openclaw migrate plan codex` を使ってそれらの Skills を棚卸しし、その後
+  `openclaw migrate codex` で OpenClaw ワークスペースにコピーしてください。
 </Note>
 
 ## エージェントごとの Skills と共有 Skills
 
-マルチエージェント構成では、各エージェントに独自のワークスペースがあります。必要な可視性に合うパスを使用してください。
+マルチエージェント構成では、各エージェントが独自のワークスペースを持ちます。必要な可視性に合うパスを使用してください。
 
 | スコープ       | パス                         | 表示対象                    |
 | -------------- | ---------------------------- | --------------------------- |
 | エージェントごと | `<workspace>/skills`         | そのエージェントのみ        |
 | プロジェクトエージェント | `<workspace>/.agents/skills` | そのワークスペースのエージェントのみ |
 | 個人エージェント | `~/.agents/skills`           | このマシン上のすべてのエージェント |
-| 共有管理対象   | `~/.openclaw/skills`         | このマシン上のすべてのエージェント |
+| 共有管理       | `~/.openclaw/skills`         | このマシン上のすべてのエージェント |
 | 追加ディレクトリ | `skills.load.extraDirs`      | このマシン上のすべてのエージェント |
 
 ## エージェント許可リスト
 
-Skills の**場所**（優先度）と Skills の**可視性**（どのエージェントが使用できるか）は別々の制御です。読み込み元に関係なく、エージェントに表示される Skills を制限するには許可リストを使用します。
+Skill の**場所**（優先度）と skill の**可視性**（どのエージェントが使えるか）は別々の制御です。どこから読み込まれたかに関係なく、エージェントが参照できる Skills を制限するには許可リストを使用します。
 
 ```json5
 {
@@ -91,27 +93,27 @@ Skills の**場所**（優先度）と Skills の**可視性**（どのエージ
 ```
 
 <AccordionGroup>
-  <Accordion title="許可リストのルール">
-    - デフォルトで全 Skills を制限しない場合は、`agents.defaults.skills` を省略します。
+  <Accordion title="Allowlist rules">
+    - 既定ではすべての Skills を制限しない場合は、`agents.defaults.skills` を省略します。
     - `agents.defaults.skills` を継承するには、`agents.list[].skills` を省略します。
-    - そのエージェントに Skills を一切公開しないには、`agents.list[].skills: []` を設定します。
-    - 空でない `agents.list[].skills` リストは**最終的な**集合です。デフォルトとはマージされません。
-    - 有効な許可リストは、プロンプト構築、スラッシュコマンド検出、サンドボックス同期、Skills スナップショット全体に適用されます。
-
+    - そのエージェントに Skills を一切公開しない場合は、`agents.list[].skills: []` を設定します。
+    - 空でない `agents.list[].skills` リストは**最終的な**集合です。defaults とはマージされません。
+    - 有効な許可リストは、プロンプト構築、スラッシュコマンド検出、サンドボックス同期、skill スナップショット全体に適用されます。
+    - これはホストシェルの認可境界ではありません。同じエージェントが `exec` を使える場合は、サンドボックス化、OS ユーザー分離、exec 拒否/許可リスト、リソースごとの認証情報で、そのシェルを別途制約してください。
   </Accordion>
 </AccordionGroup>
 
-## Plugin と Skills
+## Plugins と Skills
 
-Plugin は、`openclaw.plugin.json` に `skills` ディレクトリを列挙することで（パスは Plugin ルートからの相対）、独自の Skills を同梱できます。Plugin Skills は Plugin が有効なときに読み込まれます。たとえば、ブラウザ Plugin は複数ステップのブラウザ制御用に `browser-automation` Skills を同梱しています。
+Plugins は `openclaw.plugin.json` に `skills` ディレクトリを列挙することで、独自の Skills を同梱できます（パスは plugin ルートからの相対パス）。Plugin Skills は plugin が有効なときに読み込まれます。たとえば browser plugin は、複数ステップのブラウザ制御用に `browser-automation` skill を同梱しています。
 
-Plugin Skills ディレクトリは、`skills.load.extraDirs` と同じ低優先度レベルでマージされるため、同名の同梱、管理対象、エージェント、またはワークスペース Skills がそれらを上書きします。Plugin の設定エントリで `metadata.openclaw.requires.config` を使ってゲートしてください。
+Plugin skill ディレクトリは `skills.load.extraDirs` と同じ低優先度レベルでマージされるため、同名のバンドル、管理、エージェント、またはワークスペースの skill がそれらをオーバーライドします。plugin の設定エントリで `metadata.openclaw.requires.config` によりゲートしてください。
 
-Plugin システム全体については、[Plugin](/ja-JP/tools/plugin) と [ツール](/ja-JP/tools) を参照してください。
+完全な plugin システムについては、[Plugins](/ja-JP/tools/plugin) と [Tools](/ja-JP/tools) を参照してください。
 
-## Skills ワークショップ
+## Skill Workshop
 
-[Skills ワークショップ](/ja-JP/tools/skill-workshop) は、エージェントとアクティブな Skills ファイルの間にある提案キューです。エージェントが再利用可能な作業を見つけると、`SKILL.md` に直接書き込む代わりに提案を下書きします。変更が行われる前に、レビューして承認します。
+[Skill Workshop](/ja-JP/tools/skill-workshop) は、エージェントとアクティブな skill ファイルの間にある提案キューです。エージェントが再利用可能な作業を見つけると、`SKILL.md` に直接書き込む代わりに提案を下書きします。変更が入る前にレビューして承認します。
 
 ```bash
 openclaw skills workshop list
@@ -119,58 +121,70 @@ openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop apply <proposal-id>
 ```
 
-ライフサイクル全体、CLI リファレンス、設定については、[Skills ワークショップ](/ja-JP/tools/skill-workshop) を参照してください。
+完全なライフサイクル、CLI リファレンス、設定については [Skill Workshop](/ja-JP/tools/skill-workshop) を参照してください。
 
 ## ClawHub からのインストール
 
-[ClawHub](https://clawhub.ai) は公開 Skills レジストリです。インストールと更新には `openclaw skills` コマンドを使用し、公開と同期には `clawhub` CLI を使用します。
+[ClawHub](https://clawhub.ai) は公開 Skills レジストリです。インストールと更新には `openclaw skills` コマンドを、公開と同期には `clawhub` CLI を使用します。
 
 | アクション                         | コマンド                                               |
 | ---------------------------------- | ------------------------------------------------------ |
-| ワークスペースに Skills をインストールする | `openclaw skills install @owner/<slug>`                |
-| Git リポジトリからインストールする | `openclaw skills install git:owner/repo@ref`           |
-| ローカル Skills ディレクトリをインストールする | `openclaw skills install ./path/to/skill --as my-tool` |
-| すべてのローカルエージェント向けにインストールする | `openclaw skills install @owner/<slug> --global`       |
-| すべてのワークスペース Skills を更新する | `openclaw skills update --all`                         |
-| 共有管理対象 Skills を更新する     | `openclaw skills update @owner/<slug> --global`        |
-| すべての共有管理対象 Skills を更新する | `openclaw skills update --all --global`                |
-| Skills の信頼エンベロープを検証する | `openclaw skills verify @owner/<slug>`                 |
-| 生成された Skills Card を出力する  | `openclaw skills verify @owner/<slug> --card`          |
-| ClawHub CLI 経由で公開 / 同期する  | `clawhub sync --all`                                   |
+| skill をワークスペースにインストール | `openclaw skills install @owner/<slug>`                |
+| Git リポジトリからインストール      | `openclaw skills install git:owner/repo@ref`           |
+| ローカル skill ディレクトリをインストール | `openclaw skills install ./path/to/skill --as my-tool` |
+| すべてのローカルエージェント向けにインストール | `openclaw skills install @owner/<slug> --global`       |
+| すべてのワークスペース Skills を更新 | `openclaw skills update --all`                         |
+| 共有管理 skill を更新              | `openclaw skills update @owner/<slug> --global`        |
+| すべての共有管理 Skills を更新     | `openclaw skills update --all --global`                |
+| skill の信頼エンベロープを検証      | `openclaw skills verify @owner/<slug>`                 |
+| 生成された Skill Card を出力        | `openclaw skills verify @owner/<slug> --card`          |
+| ClawHub CLI 経由で公開 / 同期       | `clawhub sync --all`                                   |
 
 <AccordionGroup>
-  <Accordion title="インストールの詳細">
-    `openclaw skills install` はデフォルトで、アクティブなワークスペースの `skills/` ディレクトリにインストールします。`--global` を追加すると、共有 `~/.openclaw/skills` ディレクトリにインストールされ、エージェント許可リストで絞り込まれていない限り、すべてのローカルエージェントから見えるようになります。
+  <Accordion title="Install details">
+    `openclaw skills install` は既定で、アクティブなワークスペースの `skills/`
+    ディレクトリにインストールします。共有
+    `~/.openclaw/skills` ディレクトリにインストールするには `--global` を追加します。これは、エージェント許可リストで絞り込まれない限り、すべてのローカルエージェントから見えます。
 
-    Git およびローカルインストールでは、ソースルートに `SKILL.md` があることを想定します。slug は、有効な場合は `SKILL.md` フロントマターの `name` から取得され、その後ディレクトリ名またはリポジトリ名にフォールバックします。上書きするには `--as <slug>` を使用します。`openclaw skills update` は ClawHub インストールのみを追跡します。Git またはローカルソースを更新するには再インストールしてください。
-
-  </Accordion>
-  <Accordion title="検証とセキュリティスキャン">
-    `openclaw skills verify @owner/<slug>` は、Skills の `clawhub.skill.verify.v1` 信頼エンベロープを ClawHub に要求します。インストール済みの ClawHub Skills は、`.clawhub/origin.json` に記録されたバージョンとレジストリに対して検証されます。既存のインストール済み Skills または曖昧でない Skills では bare slug も引き続き受け入れられますが、owner 付きの参照は公開者の曖昧さを避けられます。
-
-    ClawHub の Skills ページでは、インストール前に最新のセキュリティスキャン状態を表示し、VirusTotal、ClawScan、静的解析の詳細ページも提供します。ClawHub が検証失敗とマークした場合、コマンドは非ゼロで終了します。公開者は ClawHub ダッシュボードまたは `clawhub skill rescan @owner/<slug>` を通じて誤検知を復旧できます。
+    Git とローカルインストールでは、ソースルートに `SKILL.md` があることを想定します。slug は、有効な場合は `SKILL.md` frontmatter の `name` から取得され、その後ディレクトリ名またはリポジトリ名にフォールバックします。上書きするには `--as <slug>` を使用します。
+    `openclaw skills update` は ClawHub インストールのみを追跡します。Git またはローカルソースを更新するには再インストールしてください。
 
   </Accordion>
-  <Accordion title="プライベートアーカイブのインストール">
-    ClawHub 以外の配布が必要な Gateway クライアントは、`skills.upload.begin`、`skills.upload.chunk`、`skills.upload.commit` で zip Skills アーカイブをステージングし、その後 `skills.install({ source: "upload", ... })` でインストールできます。このパスはデフォルトで無効で、`openclaw.json` に `skills.install.allowUploadedArchives: true` が必要です。通常の ClawHub インストールでは、この設定は不要です。
+  <Accordion title="Verification and security scanning">
+    `openclaw skills verify @owner/<slug>` は、skill の
+    `clawhub.skill.verify.v1` 信頼エンベロープを ClawHub に問い合わせます。インストール済みの ClawHub Skills は、`.clawhub/origin.json` に記録されたバージョンとレジストリに対して検証されます。
+    bare slug は既存のインストール済み skill や曖昧でない skill では引き続き受け入れられますが、owner 修飾付き参照は公開者の曖昧さを避けられます。
+
+    ClawHub の skill ページでは、インストール前に最新のセキュリティスキャン状態が公開され、VirusTotal、ClawScan、静的解析の詳細ページも表示されます。
+    ClawHub が検証失敗とマークした場合、このコマンドは非ゼロで終了します。公開者は ClawHub ダッシュボードまたは
+    `clawhub skill rescan @owner/<slug>` を通じて誤検知から回復できます。
+
+  </Accordion>
+  <Accordion title="Private archive installs">
+    ClawHub 以外の配信が必要な Gateway クライアントは、`skills.upload.begin`、`skills.upload.chunk`、`skills.upload.commit` で zip skill アーカイブをステージし、その後 `skills.install({ source: "upload", ... })` でインストールできます。このパスは既定ではオフで、`openclaw.json` で `skills.install.allowUploadedArchives: true` が必要です。通常の ClawHub インストールでは、この設定は不要です。
   </Accordion>
 </AccordionGroup>
 
 ## セキュリティ
 
 <Warning>
-  サードパーティ Skills は**信頼できないコード**として扱ってください。有効化する前に読んでください。信頼できない入力や危険なツールには、サンドボックス化された実行を推奨します。エージェント側の制御については、[サンドボックス](/ja-JP/gateway/sandboxing) を参照してください。
+  サードパーティの Skills は**信頼できないコード**として扱ってください。有効化する前に読んでください。
+  信頼できない入力やリスクの高いツールには、サンドボックス化された実行を推奨します。エージェント側の制御については
+  [サンドボックス化](/ja-JP/gateway/sandboxing) を参照してください。
 </Warning>
 
 <AccordionGroup>
-  <Accordion title="パスの閉じ込め">
-    ワークスペース、プロジェクトエージェント、追加ディレクトリの Skills 検出は、解決された realpath が設定済みルートの内側に留まる Skills ルートのみを受け入れます。ただし、`skills.load.allowSymlinkTargets` がターゲットルートを明示的に信頼している場合を除きます。Skills ワークショップは、`skills.workshop.allowSymlinkTargetWrites` が有効な場合にのみ、それらの信頼済みターゲットを通じて書き込みます。管理対象の `~/.openclaw/skills` と個人用の `~/.agents/skills` にはシンボリックリンクされた Skills フォルダを含められますが、各 `SKILL.md` の realpath は引き続き、解決された Skills ディレクトリの内側に留まる必要があります。
+  <Accordion title="Path containment">
+    ワークスペース、プロジェクトエージェント、追加ディレクトリの skill 検出では、解決された realpath が設定済みルート内に収まる skill ルートのみを受け入れます。ただし、`skills.load.allowSymlinkTargets` が対象ルートを明示的に信頼している場合を除きます。
+    Skill Workshop は、`skills.workshop.allowSymlinkTargetWrites` が有効な場合に限り、それらの信頼済みターゲットへ書き込みます。
+    管理対象の `~/.openclaw/skills` と個人用の `~/.agents/skills` にはシンボリックリンクされた skill フォルダを含められますが、すべての `SKILL.md` realpath は引き続き解決済みの skill ディレクトリ内に収まる必要があります。
   </Accordion>
-  <Accordion title="オペレーターのインストールポリシー">
-    Skills のインストールを続行する前に信頼済みローカルポリシーコマンドを実行するには、`security.installPolicy` を設定します。このポリシーはメタデータとステージング済みソースパスを受け取り、ClawHub、アップロード、Git、ローカル、更新、依存関係インストーラーの各パスに適用され、コマンドが有効な判断を返せない場合は閉じた状態で失敗します。
+  <Accordion title="Operator install policy">
+    skill インストールを続行する前に信頼済みローカルポリシーコマンドを実行するには、`security.installPolicy` を設定します。ポリシーはメタデータとステージ済みソースパスを受け取り、ClawHub、アップロード、Git、ローカル、更新、依存インストーラーパスに適用され、コマンドが有効な判断を返せない場合は fail closed します。
   </Accordion>
-  <Accordion title="シークレット注入のスコープ">
-    `skills.entries.*.env` と `skills.entries.*.apiKey` は、そのエージェントターンの間だけ **host** プロセスにシークレットを注入します。サンドボックスには注入しません。シークレットをプロンプトやログに含めないでください。
+  <Accordion title="Secret injection scope">
+    `skills.entries.*.env` と `skills.entries.*.apiKey` は、そのエージェントターンの間だけ、**ホスト**プロセスにシークレットを注入します。サンドボックスには注入しません。
+    シークレットをプロンプトやログに入れないでください。
   </Accordion>
 </AccordionGroup>
 
@@ -178,7 +192,7 @@ openclaw skills workshop apply <proposal-id>
 
 ## SKILL.md 形式
 
-すべての Skills には、少なくともフロントマター内の `name` と `description` が必要です。
+すべての skill には、frontmatter に少なくとも `name` と `description` が必要です。
 
 ```markdown
 ---
@@ -190,25 +204,26 @@ When the user asks to generate an image, use the `image_generate` tool...
 ```
 
 <Note>
-  OpenClaw は [AgentSkills](https://agentskills.io) 仕様に従います。フロントマターパーサーは**単一行キーのみ**をサポートします。`metadata` は単一行の JSON オブジェクトである必要があります。Skills フォルダパスを参照するには、本文内で `{baseDir}` を使用します。
+  OpenClaw は [AgentSkills](https://agentskills.io) 仕様に従います。
+  frontmatter パーサーは**単一行キーのみ**をサポートします。`metadata` は単一行の JSON オブジェクトでなければなりません。skill フォルダパスを参照するには、本文で `{baseDir}` を使用してください。
 </Note>
 
-### 任意のフロントマターキー
+### 任意の frontmatter キー
 
 <ParamField path="homepage" type="string">
   macOS Skills UI で「Website」として表示される URL。`metadata.openclaw.homepage` 経由でもサポートされます。
 </ParamField>
 
 <ParamField path="user-invocable" type="boolean" default="true">
-  `true` の場合、Skills はユーザーが呼び出せるスラッシュコマンドとして公開されます。
+  `true` の場合、skill はユーザーが呼び出せるスラッシュコマンドとして公開されます。
 </ParamField>
 
 <ParamField path="disable-model-invocation" type="boolean" default="false">
-  `true` の場合、OpenClaw は Skills の指示をエージェントの通常プロンプトから除外します。`user-invocable` も `true` の場合、Skills は引き続きスラッシュコマンドとして利用できます。
+  `true` の場合、OpenClaw は skill の指示をエージェントの通常プロンプトから除外します。`user-invocable` も `true` の場合、skill は引き続きスラッシュコマンドとして利用できます。
 </ParamField>
 
 <ParamField path="command-dispatch" type='"tool"'>
-  `tool` に設定すると、スラッシュコマンドはモデルをバイパスし、登録済みツールに直接ディスパッチします。
+  `tool` に設定すると、スラッシュコマンドはモデルをバイパスし、登録済みツールへ直接ディスパッチします。
 </ParamField>
 
 <ParamField path="command-tool" type="string">
@@ -216,14 +231,15 @@ When the user asks to generate an image, use the `image_generate` tool...
 </ParamField>
 
 <ParamField path="command-arg-mode" type='"raw"' default="raw">
-  ツールディスパッチでは、コア解析なしで raw args 文字列をツールに転送します。ツールは `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }` を受け取ります。
+  ツールディスパッチでは、コアによる解析なしで raw args 文字列をツールへ転送します。ツールは
+  `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }`
+  を受け取ります。
 </ParamField>
 
 ## ゲート
 
-OpenClaw はロード時に `metadata.openclaw`（frontmatter 内の単一行
-JSON）を使って Skills をフィルタリングします。`metadata.openclaw` ブロックがない skill は、明示的に無効化されていない限り常に
-対象になります。
+OpenClaw は読み込み時に `metadata.openclaw`（frontmatter 内の単一行
+JSON）を使用してスキルをフィルタリングします。`metadata.openclaw` ブロックがないスキルは、明示的に無効化されていない限り常に対象になります。
 
 ```markdown
 ---
@@ -241,19 +257,19 @@ metadata:
 ```
 
 <ParamField path="always" type="boolean">
-  `true` の場合、常に skill を含め、他のすべてのゲートをスキップします。
+  `true` の場合、常にスキルを含め、他のすべてのゲートをスキップします。
 </ParamField>
 
 <ParamField path="emoji" type="string">
-  macOS Skills UI に表示される任意の絵文字。
+  macOS Skills UI に表示される任意の絵文字です。
 </ParamField>
 
 <ParamField path="homepage" type="string">
-  macOS Skills UI で「Webサイト」として表示される任意の URL。
+  macOS Skills UI で「Web サイト」として表示される任意の URL です。
 </ParamField>
 
 <ParamField path="os" type='"darwin" | "linux" | "win32"'>
-  プラットフォームフィルター。設定すると、その skill は列挙された OS でのみ対象になります。
+  プラットフォームフィルターです。設定すると、そのスキルは列挙された OS でのみ対象になります。
 </ParamField>
 
 <ParamField path="requires.bins" type="string[]">
@@ -265,7 +281,7 @@ metadata:
 </ParamField>
 
 <ParamField path="requires.env" type="string[]">
-  各環境変数はプロセス内に存在するか、config 経由で提供される必要があります。
+  各環境変数はプロセス内に存在するか、config 経由で提供されている必要があります。
 </ParamField>
 
 <ParamField path="requires.config" type="string[]">
@@ -273,21 +289,21 @@ metadata:
 </ParamField>
 
 <ParamField path="primaryEnv" type="string">
-  `skills.entries.<name>.apiKey` に関連付けられた環境変数名。
+  `skills.entries.<name>.apiKey` に関連付けられた環境変数名です。
 </ParamField>
 
 <ParamField path="install" type="object[]">
-  macOS Skills UI で使用される任意のインストーラー仕様（brew / node / go / uv / download）。
+  macOS Skills UI で使用される任意のインストーラー仕様です（brew / node / go / uv / download）。
 </ParamField>
 
 <Note>
-  `metadata.openclaw` がない場合、レガシーの `metadata.clawdbot` ブロックも引き続き受け入れられるため、古いインストール済み Skills は依存関係ゲートとインストーラーヒントを維持します。新しい Skills では
+  `metadata.openclaw` が存在しない場合、レガシーの `metadata.clawdbot` ブロックも引き続き受け付けられるため、古いインストール済みスキルは依存関係ゲートとインストーラーヒントを維持します。新しいスキルでは
   `metadata.openclaw` を使用してください。
 </Note>
 
 ### インストーラー仕様
 
-インストーラー仕様は、依存関係のインストール方法を macOS Skills UI に伝えます。
+インストーラー仕様は、依存関係をインストールする方法を macOS Skills UI に伝えます。
 
 ```markdown
 ---
@@ -315,35 +331,31 @@ metadata:
 ```
 
 <AccordionGroup>
-  <Accordion title="Installer selection rules">
-    - 複数のインストーラーが列挙されている場合、gateway は優先オプションを 1 つ選択します
-      （利用可能な場合は brew、それ以外は node）。
-    - すべてのインストーラーが `download` の場合、OpenClaw は各エントリを列挙するため、利用可能なすべてのアーティファクトを確認できます。
-    - 仕様には、プラットフォームでフィルタリングするために `os: ["darwin"|"linux"|"win32"]` を含めることができます。
-    - Node インストールは `openclaw.json` 内の `skills.install.nodeManager` に従います
-      （デフォルト: npm、オプション: npm / pnpm / yarn / bun）。これは skill のインストールにのみ影響します。Gateway ランタイムは引き続き Node である必要があります。
-    - Gateway インストーラーの優先順: Homebrew → uv → 設定済みの node manager →
+  <Accordion title="インストーラー選択ルール">
+    - 複数のインストーラーが列挙されている場合、Gateway は優先オプションを 1 つ選びます（利用可能なら brew、それ以外は node）。
+    - すべてのインストーラーが `download` の場合、OpenClaw は各エントリを列挙し、利用可能なすべての成果物を確認できるようにします。
+    - 仕様には、プラットフォームでフィルタリングするために `os: ["darwin"|"linux"|"win32"]` を含められます。
+    - Node インストールは `openclaw.json` の `skills.install.nodeManager` に従います
+      （デフォルト: npm、オプション: npm / pnpm / yarn / bun）。これはスキルのインストールにのみ影響します。Gateway ランタイムは引き続き Node である必要があります。
+    - Gateway のインストーラー優先順位: Homebrew → uv → 設定済み node manager →
       go → download。
   </Accordion>
-  <Accordion title="Per-installer details">
-    - **Homebrew:** OpenClaw は Homebrew を自動インストールしたり、brew
-      formula をシステムパッケージコマンドに変換したりしません。`brew` がない Linux コンテナでは、brew 専用インストーラーは非表示になります。カスタムイメージを使用するか、依存関係を手動でインストールしてください。
-    - **Go:** `go` がなく `brew` が利用可能な場合、gateway は先に
-      Homebrew 経由で Go をインストールし、`GOBIN` を Homebrew の `bin` に設定します。
+  <Accordion title="インストーラーごとの詳細">
+    - **Homebrew:** OpenClaw は Homebrew を自動インストールせず、brew の formula をシステムパッケージコマンドへ変換しません。`brew` がない Linux コンテナでは、brew のみのインストーラーは非表示になります。カスタムイメージを使うか、依存関係を手動でインストールしてください。
+    - **Go:** `go` がなく `brew` が利用可能な場合、Gateway はまず Homebrew 経由で Go をインストールし、`GOBIN` を Homebrew の `bin` に設定します。
     - **Download:** `url`（必須）、`archive`（`tar.gz` | `tar.bz2` | `zip`）、
-      `extract`（デフォルト: アーカイブ検出時は auto）、`stripComponents`、
+      `extract`（デフォルト: archive が検出された場合は auto）、`stripComponents`、
       `targetDir`（デフォルト: `~/.openclaw/tools/<skillKey>`）。
   </Accordion>
-  <Accordion title="Sandboxing notes">
-    `requires.bins` は skill ロード時に**ホスト**上で確認されます。agent が
-    sandbox 内で実行される場合、バイナリは**コンテナ内**にも存在する必要があります。
-    `agents.defaults.sandbox.docker.setupCommand` またはカスタムイメージ経由でインストールしてください。`setupCommand` はコンテナ作成後に 1 回実行され、ネットワーク egress、書き込み可能な root FS、sandbox 内の root ユーザーが必要です。
+  <Accordion title="サンドボックス化の注意">
+    `requires.bins` はスキル読み込み時に **ホスト** 上で確認されます。エージェントがサンドボックス内で実行される場合、そのバイナリは **コンテナ内** にも存在する必要があります。
+    `agents.defaults.sandbox.docker.setupCommand` またはカスタムイメージ経由でインストールしてください。`setupCommand` はコンテナ作成後に 1 回実行され、ネットワークへの送信、書き込み可能なルート FS、サンドボックス内の root ユーザーを必要とします。
   </Accordion>
 </AccordionGroup>
 
 ## Config オーバーライド
 
-`~/.openclaw/openclaw.json` の `skills.entries` で、バンドルまたは管理対象の Skills を切り替え、設定します。
+同梱または管理対象のスキルは、`~/.openclaw/openclaw.json` の `skills.entries` で切り替えおよび設定します。
 
 ```json5
 {
@@ -366,78 +378,75 @@ metadata:
 ```
 
 <ParamField path="enabled" type="boolean">
-  `false` は、バンドル済みまたはインストール済みであっても skill を無効化します。`coding-agent`
-  バンドル skill はオプトインです。`skills.entries.coding-agent.enabled: true`
-  を設定し、`claude`、`codex`、`opencode`、または別の対応 CLI のいずれかがインストールされ認証済みであることを確認してください。
+  `false` は、同梱またはインストール済みであってもスキルを無効化します。`coding-agent`
+  同梱スキルは opt-in です。`skills.entries.coding-agent.enabled: true` を設定し、
+  `claude`、`codex`、`opencode`、または別のサポート対象 CLI のいずれかがインストール済みで認証済みであることを確認してください。
 </ParamField>
 
 <ParamField path="apiKey" type='string | { source, provider, id }'>
-  `metadata.openclaw.primaryEnv` を宣言する Skills 向けの便利フィールド。
+  `metadata.openclaw.primaryEnv` を宣言するスキル向けの便利なフィールドです。
   平文文字列または SecretRef オブジェクトをサポートします。
 </ParamField>
 
 <ParamField path="env" type="Record<string, string>">
-  agent run に注入される環境変数。変数がプロセス内でまだ設定されていない場合にのみ注入されます。
+  エージェント実行に注入される環境変数です。変数がプロセス内でまだ設定されていない場合にのみ注入されます。
 </ParamField>
 
 <ParamField path="config" type="object">
-  skill ごとのカスタム設定フィールド用の任意の入れ物。
+  スキルごとのカスタム設定フィールド用の任意のバッグです。
 </ParamField>
 
 <ParamField path="allowBundled" type="string[]">
-  **バンドル済み** Skills のみを対象とする任意の allowlist。設定すると、リスト内のバンドル済み Skills のみが対象になります。管理対象および workspace Skills には影響しません。
+  **同梱** スキル専用の任意の許可リストです。設定すると、リスト内の同梱スキルだけが対象になります。管理対象およびワークスペースのスキルには影響しません。
 </ParamField>
 
 <Note>
-  Config キーはデフォルトで **skill name** と一致します。skill が
-  `metadata.openclaw.skillKey` を定義している場合は、`skills.entries` の下でそのキーを使用してください。ハイフンを含む名前は引用符で囲んでください。JSON5 では quoted keys が許可されています。
+  Config キーはデフォルトで **スキル名** と一致します。スキルが
+  `metadata.openclaw.skillKey` を定義している場合は、`skills.entries` 配下でそのキーを使用してください。ハイフンを含む名前は引用符で囲んでください。JSON5 では引用符付きキーが許可されています。
 </Note>
 
-## 環境の注入
+## 環境注入
 
-agent run が開始されると、OpenClaw は次を行います。
+エージェント実行が開始されると、OpenClaw は次を行います。
 
 <Steps>
-  <Step title="Reads skill metadata">
-    OpenClaw は agent の有効な skill リストを解決し、ゲート規則、
-    allowlist、config オーバーライドを適用します。
+  <Step title="スキルメタデータを読み取る">
+    OpenClaw は、ゲート規則、許可リスト、config オーバーライドを適用して、エージェントに有効なスキル一覧を解決します。
   </Step>
-  <Step title="Injects env and API keys">
-    `skills.entries.<key>.env` と `skills.entries.<key>.apiKey` は、
-    run の間 `process.env` に適用されます。
+  <Step title="env と API キーを注入する">
+    `skills.entries.<key>.env` と `skills.entries.<key>.apiKey` が、実行中の
+    `process.env` に適用されます。
   </Step>
-  <Step title="Builds the system prompt">
-    対象の Skills はコンパクトな XML ブロックにコンパイルされ、system prompt に注入されます。
+  <Step title="システムプロンプトを構築する">
+    対象スキルはコンパクトな XML ブロックにコンパイルされ、システムプロンプトに注入されます。
   </Step>
-  <Step title="Restores the environment">
-    run が終了すると、元の環境が復元されます。
+  <Step title="環境を復元する">
+    実行終了後、元の環境が復元されます。
   </Step>
 </Steps>
 
 <Warning>
-  環境の注入は、sandbox ではなく**ホスト**の agent run にスコープされます。
-  sandbox 内では、`env` と `apiKey` は効果がありません。sandbox 化された run に secret を渡す方法については、
+  Env 注入のスコープは **ホスト** のエージェント実行であり、サンドボックスではありません。サンドボックス内では、
+  `env` と `apiKey` は効果がありません。サンドボックス化された実行へシークレットを渡す方法については
   [Skills config](/ja-JP/tools/skills-config#sandboxed-skills-and-env-vars) を参照してください。
 </Warning>
 
-バンドル済みの `claude-cli` backend では、OpenClaw は同じ対象 skill snapshot も一時的な Claude Code Plugin として具体化し、
-`--plugin-dir` 経由で渡します。他の CLI backend は prompt catalog のみを使用します。
+同梱の `claude-cli` バックエンドでは、OpenClaw は同じ対象スキルスナップショットを一時的な Claude Code Plugin として具現化し、`--plugin-dir` 経由で渡します。他の CLI バックエンドはプロンプトカタログのみを使用します。
 
-## Snapshot と更新
+## スナップショットと更新
 
-OpenClaw は**セッション開始時**に対象 Skills の snapshot を作成し、そのリストをセッション内の以降すべての turn で再利用します。Skills または config への変更は、次の新しいセッションで反映されます。
+OpenClaw は **セッション開始時** に対象スキルのスナップショットを作成し、そのセッション内の後続のすべてのターンでその一覧を再利用します。スキルまたは config の変更は、次の新しいセッションで有効になります。
 
-Skills はセッション中に 2 つの場合で更新されます。
+セッション中にスキルが更新されるのは次の 2 つの場合です。
 
 - Skills watcher が `SKILL.md` の変更を検出した場合。
-- 新しい対象 remote node が接続した場合。
+- 新しい対象リモートノードが接続した場合。
 
-更新されたリストは、次の agent turn で使用されます。有効な agent allowlist が変わると、OpenClaw は snapshot を更新して、表示される Skills の整合性を保ちます。
+更新された一覧は、次のエージェントターンで取得されます。有効なエージェント許可リストが変更された場合、OpenClaw はスナップショットを更新し、表示されるスキルを揃えます。
 
 <AccordionGroup>
   <Accordion title="Skills watcher">
-    デフォルトでは、OpenClaw は skill フォルダーを監視し、
-    `SKILL.md` ファイルが変更されると snapshot を進めます。`skills.load` の下で設定します。
+    デフォルトでは、OpenClaw はスキルフォルダーを監視し、`SKILL.md` ファイルが変更されるとスナップショットを更新します。`skills.load` 配下で設定します。
 
     ```json5
     {
@@ -452,57 +461,55 @@ Skills はセッション中に 2 つの場合で更新されます。
     }
     ```
 
-    skill root の symlink が設定済み root の外を指す意図的な symlink レイアウトでは、
-    `allowSymlinkTargets` を使用してください。例:
-    `<workspace>/skills/manager -> ~/Projects/manager/skills`。
-    Skill Workshop がそれらの信頼済み symlink パスを通じて proposal も適用する必要がある場合にのみ、
-    `skills.workshop.allowSymlinkTargetWrites` を有効化してください。
+    スキルルートのシンボリックリンクが設定済みルートの外を指す、意図的なシンボリックリンク構成では `allowSymlinkTargets` を使用してください。たとえば
+    `<workspace>/skills/manager -> ~/Projects/manager/skills` です。
+    Skill Workshop がそれらの信頼済みシンボリックリンクパス経由でも提案を適用すべき場合にのみ、
+    `skills.workshop.allowSymlinkTargetWrites` を有効にしてください。
 
   </Accordion>
-  <Accordion title="Remote macOS nodes (Linux gateway)">
-    Gateway が Linux 上で実行されていても、`system.run` が許可された
-    **macOS node** が接続されている場合、必要なバイナリがその node 上に存在すれば、OpenClaw は macOS 専用 Skills を対象として扱うことができます。agent はそれらの Skills を `host=node` 付きの `exec` tool 経由で実行する必要があります。
+  <Accordion title="リモート macOS ノード（Linux Gateway）">
+    Gateway が Linux 上で実行されているが、**macOS ノード** が接続されていて
+    `system.run` が許可されている場合、OpenClaw は必要なバイナリがそのノード上に存在するとき、macOS 専用スキルを対象として扱えます。エージェントはそれらのスキルを `host=node` 付きの `exec` ツール経由で実行する必要があります。
 
-    オフライン node は remote 専用 Skills を表示しません。node が bin probe に応答しなくなると、OpenClaw はキャッシュ済みの bin match をクリアします。
+    オフラインのノードは、リモート専用スキルを表示対象にしません。ノードが bin プローブに応答しなくなった場合、OpenClaw はキャッシュ済みの bin 一致をクリアします。
 
   </Accordion>
 </AccordionGroup>
 
 ## トークンへの影響
 
-Skills が対象になると、OpenClaw はコンパクトな XML ブロックを system
-prompt に注入します。コストは決定的です。
+スキルが対象になると、OpenClaw はコンパクトな XML ブロックをシステムプロンプトに注入します。コストは決定的です。
 
 ```text
 total = 195 + Σ (97 + len(name) + len(description) + len(filepath))
 ```
 
-- **基本オーバーヘッド**（skill が 1 つ以上ある場合のみ）: 約 195 文字
-- **skill ごと:** 約 97 文字 + `name`、`description`、`location` フィールドの長さ
-- XML escaping は `& < > " '` を entity に展開し、出現ごとに数文字を追加します
-- 約 4 文字/token とすると、97 文字はフィールド長を含める前で skill あたり約 24 tokens です
+- **ベースオーバーヘッド**（スキルが 1 つ以上ある場合のみ）: 約 195 文字
+- **スキルごと:** 約 97 文字 + `name`、`description`、`location` フィールドの長さ
+- XML エスケープにより `& < > " '` はエンティティに展開され、出現ごとに数文字増えます
+- 約 4 文字/token とすると、97 文字はフィールド長を除いてスキルあたり約 24 token です
 
-prompt オーバーヘッドを最小化するため、description は短く説明的にしてください。
+プロンプトのオーバーヘッドを最小化するため、説明は短く具体的にしてください。
 
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Creating skills" href="/ja-JP/tools/creating-skills" icon="hammer">
-    カスタム skill を作成するためのステップバイステップガイド。
+  <Card title="スキルの作成" href="/ja-JP/tools/creating-skills" icon="hammer">
+    カスタムスキルを作成するためのステップバイステップガイドです。
   </Card>
   <Card title="Skill Workshop" href="/ja-JP/tools/skill-workshop" icon="flask">
-    agent が下書きした Skills の proposal queue。
+    エージェントが下書きしたスキルの提案キューです。
   </Card>
   <Card title="Skills config" href="/ja-JP/tools/skills-config" icon="gear">
-    完全な `skills.*` config schema と agent allowlist。
+    完全な `skills.*` config スキーマとエージェント許可リストです。
   </Card>
-  <Card title="Slash commands" href="/ja-JP/tools/slash-commands" icon="terminal">
-    skill slash command が登録およびルーティングされる方法。
+  <Card title="スラッシュコマンド" href="/ja-JP/tools/slash-commands" icon="terminal">
+    スキルのスラッシュコマンドがどのように登録およびルーティングされるか。
   </Card>
-  <Card title="ClawHub" href="/ja-JP/clawhub" icon="cloud">
-    public registry で Skills を参照し公開します。
+  <Card title="ClawHub" href="/clawhub" icon="cloud">
+    パブリックレジストリでスキルを閲覧および公開します。
   </Card>
   <Card title="Plugins" href="/ja-JP/tools/plugin" icon="plug">
-    Plugins は、ドキュメント化する tools と一緒に Skills を同梱できます。
+    Plugins は、ドキュメント化するツールと一緒にスキルを同梱できます。
   </Card>
 </CardGroup>
