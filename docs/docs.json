@@ -1796,6 +1796,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "cli/attach",
                       "cli/dashboard",
                       "cli/tui"
                     ]
@@ -3360,6 +3361,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "zh-TW/cli/attach",
                       "zh-TW/cli/dashboard",
                       "zh-TW/cli/tui"
                     ]
@@ -4301,6 +4303,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "ja-JP/cli/attach",
                       "ja-JP/cli/dashboard",
                       "ja-JP/cli/tui"
                     ]
@@ -5242,6 +5245,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "es/cli/attach",
                       "es/cli/dashboard",
                       "es/cli/tui"
                     ]
@@ -6183,6 +6187,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "pt-BR/cli/attach",
                       "pt-BR/cli/dashboard",
                       "pt-BR/cli/tui"
                     ]
@@ -7124,6 +7129,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "ko/cli/attach",
                       "ko/cli/dashboard",
                       "ko/cli/tui"
                     ]
@@ -8065,6 +8071,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "de/cli/attach",
                       "de/cli/dashboard",
                       "de/cli/tui"
                     ]
@@ -9006,6 +9013,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "fr/cli/attach",
                       "fr/cli/dashboard",
                       "fr/cli/tui"
                     ]
@@ -9947,6 +9955,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "hi/cli/attach",
                       "hi/cli/dashboard",
                       "hi/cli/tui"
                     ]
@@ -10888,6 +10897,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "ar/cli/attach",
                       "ar/cli/dashboard",
                       "ar/cli/tui"
                     ]
@@ -11829,6 +11839,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "it/cli/attach",
                       "it/cli/dashboard",
                       "it/cli/tui"
                     ]
@@ -12770,6 +12781,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "vi/cli/attach",
                       "vi/cli/dashboard",
                       "vi/cli/tui"
                     ]
@@ -13711,6 +13723,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "nl/cli/attach",
                       "nl/cli/dashboard",
                       "nl/cli/tui"
                     ]
@@ -14652,6 +14665,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "tr/cli/attach",
                       "tr/cli/dashboard",
                       "tr/cli/tui"
                     ]
@@ -15593,6 +15607,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "uk/cli/attach",
                       "uk/cli/dashboard",
                       "uk/cli/tui"
                     ]
@@ -16534,6 +16549,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "id/cli/attach",
                       "id/cli/dashboard",
                       "id/cli/tui"
                     ]
@@ -17475,6 +17491,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "pl/cli/attach",
                       "pl/cli/dashboard",
                       "pl/cli/tui"
                     ]
@@ -18416,6 +18433,7 @@
                   {
                     "group": "Interfaces",
                     "pages": [
+                      "ru/cli/attach",
                       "ru/cli/dashboard",
                       "ru/cli/tui"
                     ]
