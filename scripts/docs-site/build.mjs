@@ -4,7 +4,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { Worker } from "node:worker_threads";
 
-import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
+import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
@@ -72,27 +72,6 @@ if (previewMode) {
   pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
   navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
 }
-const localeFlags = {
-  en: "🇺🇸",
-  "zh-CN": "🇨🇳",
-  "zh-TW": "🇨🇳",
-  "ja-JP": "🇯🇵",
-  es: "🇪🇸",
-  "pt-BR": "🇧🇷",
-  ko: "🇰🇷",
-  de: "🇩🇪",
-  fr: "🇫🇷",
-  ar: "🇸🇦",
-  it: "🇮🇹",
-  vi: "🇻🇳",
-  nl: "🇳🇱",
-  tr: "🇹🇷",
-  uk: "🇺🇦",
-  id: "🇮🇩",
-  pl: "🇵🇱",
-  fa: "🇮🇷",
-  th: "🇹🇭"
-};
 const localePickerLabels = {
   "pt-BR": "Português (BR)"
 };

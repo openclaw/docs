@@ -8,6 +8,7 @@ export const localeLabels = {
   ko: "한국어",
   de: "Deutsch",
   fr: "Français",
+  hi: "हिन्दी",
   ar: "العربية",
   it: "Italiano",
   vi: "Tiếng Việt",
@@ -17,7 +18,32 @@ export const localeLabels = {
   uk: "Українська",
   id: "Bahasa Indonesia",
   pl: "Polski",
+  ru: "Русский",
   th: "ไทย"
+};
+
+export const localeFlags = {
+  en: "🇺🇸",
+  "zh-CN": "🇨🇳",
+  "zh-TW": "🇨🇳",
+  "ja-JP": "🇯🇵",
+  es: "🇪🇸",
+  "pt-BR": "🇧🇷",
+  ko: "🇰🇷",
+  de: "🇩🇪",
+  fr: "🇫🇷",
+  hi: "🇮🇳",
+  ar: "🇸🇦",
+  it: "🇮🇹",
+  vi: "🇻🇳",
+  nl: "🇳🇱",
+  fa: "🇮🇷",
+  tr: "🇹🇷",
+  uk: "🇺🇦",
+  id: "🇮🇩",
+  pl: "🇵🇱",
+  ru: "🇷🇺",
+  th: "🇹🇭"
 };
 
 export const mintlifyLocaleToDir = {
@@ -30,6 +56,7 @@ export const mintlifyLocaleToDir = {
   ko: "ko",
   de: "de",
   fr: "fr",
+  hi: "hi",
   ar: "ar",
   it: "it",
   vi: "vi",
@@ -39,6 +66,7 @@ export const mintlifyLocaleToDir = {
   uk: "uk",
   id: "id",
   pl: "pl",
+  ru: "ru",
   th: "th"
 };
 
