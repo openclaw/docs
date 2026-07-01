@@ -1,25 +1,25 @@
 ---
 read_when: Finding which docs page covers a topic before reading the page
-summary: Sơ đồ tiêu đề được tạo cho các trang tài liệu OpenClaw
+summary: Bản đồ tiêu đề được tạo cho các trang tài liệu OpenClaw
 title: Bản đồ tài liệu
 x-i18n:
-    generated_at: "2026-07-01T08:13:49Z"
+    generated_at: "2026-07-01T13:05:11Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b4432132487530461411880c0d073c223e02b550cb2deb874fae2f7cfe737888
+    source_hash: 9942f57ca1e0a9ae1a0fc8a766c0a0d1429856dc906bb5acb60eda38f927b607
     source_path: docs_map.md
     workflow: 16
 ---
 
-# Sơ đồ tài liệu OpenClaw
+# Bản đồ tài liệu OpenClaw
 
-Tệp này được tạo từ các tiêu đề `docs/**/*.md` và `docs/**/*.mdx` để giúp các tác tử điều hướng cây tài liệu.
+Tệp này được tạo từ các tiêu đề trong `docs/**/*.md` và `docs/**/*.mdx` để giúp agent điều hướng cây tài liệu.
 Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## agent-runtime-architecture.md
 
-- Route: /agent-runtime-architecture
+- Tuyến: /agent-runtime-architecture
 - Tiêu đề:
   - H2: Bố cục runtime
   - H2: Ranh giới
@@ -29,48 +29,48 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## announcements/bluebubbles-imessage.md
 
-- Route: /announcements/bluebubbles-imessage
+- Tuyến: /announcements/bluebubbles-imessage
 - Tiêu đề:
-  - H1: Việc gỡ bỏ BlueBubbles và lộ trình imsg iMessage
-  - H2: Những gì đã thay đổi
-  - H2: Cần làm gì
+  - H1: Việc gỡ bỏ BlueBubbles và đường dẫn iMessage imsg
+  - H2: Điều đã thay đổi
+  - H2: Việc cần làm
   - H2: Ghi chú di chuyển
   - H2: Xem thêm
 
 ## auth-credential-semantics.md
 
-- Route: /auth-credential-semantics
+- Tuyến: /auth-credential-semantics
 - Tiêu đề:
   - H2: Mã lý do thăm dò ổn định
-  - H2: Thông tin xác thực bằng token
+  - H2: Thông tin xác thực token
   - H3: Quy tắc đủ điều kiện
   - H3: Quy tắc phân giải
-  - H2: Tính di động của bản sao tác tử
-  - H2: Tuyến xác thực chỉ qua cấu hình
-  - H2: Lọc thứ tự xác thực rõ ràng
-  - H2: Phân giải đích thăm dò
-  - H2: Phát hiện thông tin xác thực CLI bên ngoài
-  - H2: Trình bảo vệ chính sách OAuth SecretRef
+  - H2: Tính di động của bản sao agent
+  - H2: Tuyến xác thực chỉ bằng cấu hình
+  - H2: Lọc thứ tự xác thực tường minh
+  - H2: Phân giải mục tiêu thăm dò
+  - H2: Khám phá thông tin xác thực CLI bên ngoài
+  - H2: Bộ bảo vệ chính sách OAuth SecretRef
   - H2: Nhắn tin tương thích với bản cũ
   - H2: Liên quan
 
 ## automation/auth-monitoring.md
 
-- Route: /automation/auth-monitoring
+- Tuyến: /automation/auth-monitoring
 - Tiêu đề:
   - H2: Liên quan
 
 ## automation/clawflow.md
 
-- Route: /automation/clawflow
+- Tuyến: /automation/clawflow
 - Tiêu đề:
   - H2: Liên quan
 
 ## automation/cron-jobs.md
 
-- Route: /automation/cron-jobs
+- Tuyến: /automation/cron-jobs
 - Tiêu đề:
-  - H2: Khởi động nhanh
+  - H2: Bắt đầu nhanh
   - H2: Cách cron hoạt động
   - H2: Loại lịch
   - H3: Ngày trong tháng và ngày trong tuần dùng logic OR
@@ -95,29 +95,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## automation/cron-vs-heartbeat.md
 
-- Route: /automation/cron-vs-heartbeat
+- Tuyến: /automation/cron-vs-heartbeat
 - Tiêu đề:
   - H2: Liên quan
 
 ## automation/gmail-pubsub.md
 
-- Route: /automation/gmail-pubsub
+- Tuyến: /automation/gmail-pubsub
 - Tiêu đề:
   - H2: Liên quan
 
 ## automation/hooks.md
 
-- Route: /automation/hooks
+- Tuyến: /automation/hooks
 - Tiêu đề:
   - H2: Chọn bề mặt phù hợp
-  - H2: Khởi động nhanh
+  - H2: Bắt đầu nhanh
   - H2: Loại sự kiện
   - H2: Viết hook
   - H3: Cấu trúc hook
   - H3: Định dạng HOOK.md
   - H3: Triển khai handler
-  - H3: Điểm nổi bật của ngữ cảnh sự kiện
-  - H2: Phát hiện hook
+  - H3: Điểm nổi bật trong ngữ cảnh sự kiện
+  - H2: Khám phá hook
   - H3: Gói hook
   - H2: Hook đi kèm
   - H3: Chi tiết session-memory
@@ -130,22 +130,22 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tham chiếu CLI
   - H2: Thực hành tốt nhất
   - H2: Khắc phục sự cố
-  - H3: Không phát hiện thấy hook
+  - H3: Không phát hiện hook
   - H3: Hook không đủ điều kiện
   - H3: Hook không thực thi
   - H2: Liên quan
 
 ## automation/index.md
 
-- Route: /automation
+- Tuyến: /automation
 - Tiêu đề:
   - H2: Hướng dẫn quyết định nhanh
-  - H3: Tác vụ đã lên lịch (Cron) so với Heartbeat
+  - H3: Tác vụ theo lịch (Cron) so với Heartbeat
   - H2: Khái niệm cốt lõi
-  - H3: Tác vụ đã lên lịch (cron)
+  - H3: Tác vụ theo lịch (cron)
   - H3: Tác vụ
   - H3: Cam kết được suy luận
-  - H3: Task Flow
+  - H3: TaskFlow
   - H3: Lệnh thường trực
   - H3: Hook
   - H3: Heartbeat
@@ -154,18 +154,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## automation/poll.md
 
-- Route: /automation/poll
+- Tuyến: /automation/poll
 - Tiêu đề:
   - H2: Liên quan
 
 ## automation/standing-orders.md
 
-- Route: /automation/standing-orders
+- Tuyến: /automation/standing-orders
 - Tiêu đề:
-  - H2: Vì sao dùng lệnh thường trực
+  - H2: Vì sao cần lệnh thường trực
   - H2: Cách chúng hoạt động
-  - H2: Cấu trúc của lệnh thường trực
-  - H2: Lệnh thường trực cộng với tác vụ cron
+  - H2: Cấu tạo của một lệnh thường trực
+  - H2: Lệnh thường trực cùng tác vụ cron
   - H2: Ví dụ
   - H3: Ví dụ 1: nội dung và mạng xã hội (chu kỳ hằng tuần)
   - H3: Ví dụ 2: vận hành tài chính (kích hoạt theo sự kiện)
@@ -179,12 +179,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## automation/taskflow.md
 
-- Route: /automation/taskflow
+- Tuyến: /automation/taskflow
 - Tiêu đề:
-  - H2: Khi nào dùng Task Flow
-  - H2: Mẫu quy trình làm việc đã lên lịch đáng tin cậy
+  - H2: Khi nào dùng TaskFlow
+  - H2: Mẫu workflow theo lịch đáng tin cậy
   - H2: Chế độ đồng bộ
-  - H3: Chế độ được quản lý
+  - H3: Chế độ quản lý
   - H3: Chế độ phản chiếu
   - H2: Trạng thái bền vững và theo dõi bản sửa đổi
   - H2: Hành vi hủy
@@ -194,10 +194,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## automation/tasks.md
 
-- Route: /automation/tasks
+- Tuyến: /automation/tasks
 - Tiêu đề:
-  - H2: TL;DR
-  - H2: Khởi động nhanh
+  - H2: Tóm tắt
+  - H2: Bắt đầu nhanh
   - H2: Điều gì tạo ra một tác vụ
   - H2: Vòng đời tác vụ
   - H2: Phân phối và thông báo
@@ -206,35 +206,35 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bảng tác vụ trong chat (/tasks)
   - H2: Tích hợp trạng thái (áp lực tác vụ)
   - H2: Lưu trữ và bảo trì
-  - H3: Nơi tác vụ được lưu
+  - H3: Nơi lưu tác vụ
   - H3: Bảo trì tự động
-  - H2: Cách tác vụ liên quan đến các hệ thống khác
+  - H2: Cách tác vụ liên quan đến hệ thống khác
   - H2: Liên quan
 
 ## automation/troubleshooting.md
 
-- Route: /automation/troubleshooting
+- Tuyến: /automation/troubleshooting
 - Tiêu đề:
   - H2: Liên quan
 
 ## automation/webhook.md
 
-- Route: /automation/webhook
+- Tuyến: /automation/webhook
 - Tiêu đề:
   - H2: Liên quan
 
 ## brave-search.md
 
-- Route: /brave-search
+- Tuyến: /brave-search
 - Tiêu đề:
   - H2: Liên quan
 
 ## channels/access-groups.md
 
-- Route: /channels/access-groups
+- Tuyến: /channels/access-groups
 - Tiêu đề:
   - H2: Nhóm người gửi tin nhắn tĩnh
-  - H2: Tham chiếu nhóm từ allowlist
+  - H2: Nhóm tham chiếu từ allowlist
   - H2: Đường dẫn kênh tin nhắn được hỗ trợ
   - H2: Chẩn đoán Plugin
   - H2: Đối tượng kênh Discord
@@ -243,14 +243,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/ambient-room-events.md
 
-- Route: /channels/ambient-room-events
+- Tuyến: /channels/ambient-room-events
 - Tiêu đề:
   - H2: Thiết lập khuyến nghị
-  - H2: Những gì thay đổi
+  - H2: Điều thay đổi
   - H2: Ví dụ Discord
   - H2: Ví dụ Slack
   - H2: Ví dụ Telegram
-  - H2: Chính sách theo tác tử
+  - H2: Chính sách dành riêng cho agent
   - H2: Chế độ trả lời hiển thị
   - H2: Lịch sử
   - H2: Khắc phục sự cố
@@ -258,7 +258,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/bot-loop-protection.md
 
-- Route: /channels/bot-loop-protection
+- Tuyến: /channels/bot-loop-protection
 - Tiêu đề:
   - H1: Bảo vệ vòng lặp bot
   - H2: Mặc định
@@ -268,7 +268,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/broadcast-groups.md
 
-- Route: /channels/broadcast-groups
+- Tuyến: /channels/broadcast-groups
 - Tiêu đề:
   - H2: Tổng quan
   - H2: Trường hợp sử dụng
@@ -287,7 +287,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khắc phục sự cố
   - H2: Ví dụ
   - H2: Tham chiếu API
-  - H3: Schema cấu hình
+  - H3: Lược đồ cấu hình
   - H3: Trường
   - H2: Giới hạn
   - H2: Cải tiến trong tương lai
@@ -295,16 +295,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/channel-routing.md
 
-- Route: /channels/channel-routing
+- Tuyến: /channels/channel-routing
 - Tiêu đề:
-  - H1: Kênh & định tuyến
+  - H1: Kênh và định tuyến
   - H2: Thuật ngữ chính
-  - H2: Tiền tố đích gửi đi
-  - H2: Hình dạng khóa phiên (ví dụ)
+  - H2: Tiền tố mục tiêu gửi ra
+  - H2: Dạng khóa phiên (ví dụ)
   - H2: Ghim tuyến DM chính
-  - H2: Ghi nhận đầu vào có bảo vệ
-  - H2: Quy tắc định tuyến (cách chọn tác tử)
-  - H2: Nhóm phát sóng (chạy nhiều tác tử)
+  - H2: Ghi nhận tin đến có bảo vệ
+  - H2: Quy tắc định tuyến (cách chọn agent)
+  - H2: Nhóm phát sóng (chạy nhiều agent)
   - H2: Tổng quan cấu hình
   - H2: Lưu trữ phiên
   - H2: Hành vi WebChat
@@ -313,26 +313,26 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/clickclack.md
 
-- Route: /channels/clickclack
+- Tuyến: /channels/clickclack
 - Tiêu đề:
   - H2: Thiết lập nhanh
   - H2: Nhiều bot
-  - H2: Đích
+  - H2: Mục tiêu
   - H2: Quyền
   - H2: Khắc phục sự cố
 
 ## channels/discord.md
 
-- Route: /channels/discord
+- Tuyến: /channels/discord
 - Tiêu đề:
   - H2: Thiết lập nhanh
-  - H2: Khuyến nghị: Thiết lập không gian làm việc guild
+  - H2: Khuyến nghị: Thiết lập workspace guild
   - H2: Mô hình runtime
   - H2: Kênh diễn đàn
   - H2: Thành phần tương tác
   - H2: Kiểm soát truy cập và định tuyến
-  - H3: Định tuyến tác tử dựa trên vai trò
-  - H2: Lệnh gốc và xác thực lệnh
+  - H3: Định tuyến agent theo vai trò
+  - H2: Lệnh native và xác thực lệnh
   - H2: Chi tiết tính năng
   - H2: Công cụ và cổng hành động
   - H2: Giao diện Components v2
@@ -347,36 +347,36 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/feishu.md
 
-- Route: /channels/feishu
+- Tuyến: /channels/feishu
 - Tiêu đề:
-  - H2: Khởi động nhanh
+  - H2: Bắt đầu nhanh
   - H2: Kiểm soát truy cập
   - H3: Tin nhắn trực tiếp
   - H3: Chat nhóm
   - H2: Ví dụ cấu hình nhóm
-  - H3: Cho phép tất cả nhóm, không cần @mention
+  - H3: Cho phép tất cả nhóm, không yêu cầu @mention
   - H3: Cho phép tất cả nhóm, vẫn yêu cầu @mention
   - H3: Chỉ cho phép nhóm cụ thể
   - H3: Hạn chế người gửi trong một nhóm
   - H2: Lấy ID nhóm/người dùng
   - H3: ID nhóm (chatid, định dạng: ocxxx)
   - H3: ID người dùng (openid, định dạng: ouxxx)
-  - H2: Lệnh thường dùng
+  - H2: Lệnh phổ biến
   - H2: Khắc phục sự cố
   - H3: Bot không phản hồi trong chat nhóm
   - H3: Bot không nhận tin nhắn
   - H3: Thiết lập QR không phản ứng trong ứng dụng di động Feishu
-  - H3: App Secret bị rò rỉ
+  - H3: App Secret bị lộ
   - H2: Cấu hình nâng cao
   - H3: Nhiều tài khoản
   - H3: Giới hạn tin nhắn
   - H3: Streaming
-  - H3: Tối ưu hóa hạn mức
+  - H3: Tối ưu hóa quota
   - H3: Phiên ACP
   - H4: Liên kết ACP bền vững
-  - H4: Tạo ACP từ chat
-  - H3: Định tuyến nhiều tác tử
-  - H2: Cô lập tác tử theo người dùng (Tạo tác tử động)
+  - H4: Sinh ACP từ chat
+  - H3: Định tuyến nhiều agent
+  - H2: Cô lập agent theo người dùng (Tạo agent động)
   - H3: Thiết lập nhanh
   - H3: Cách hoạt động
   - H3: Tùy chọn cấu hình
@@ -393,7 +393,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/googlechat.md
 
-- Route: /channels/googlechat
+- Tuyến: /channels/googlechat
 - Tiêu đề:
   - H2: Cài đặt
   - H2: Thiết lập nhanh (người mới bắt đầu)
@@ -403,8 +403,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Tùy chọn B: Reverse Proxy (Caddy)
   - H3: Tùy chọn C: Cloudflare Tunnel
   - H2: Cách hoạt động
-  - H2: Đích
-  - H2: Điểm nổi bật cấu hình
+  - H2: Mục tiêu
+  - H2: Điểm chính trong cấu hình
   - H2: Khắc phục sự cố
   - H3: 405 Method Not Allowed
   - H3: Vấn đề khác
@@ -412,7 +412,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/group-messages.md
 
-- Route: /channels/group-messages
+- Tuyến: /channels/group-messages
 - Tiêu đề:
   - H2: Hành vi
   - H2: Ví dụ cấu hình (WhatsApp)
@@ -424,45 +424,45 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/groups.md
 
-- Route: /channels/groups
+- Tuyến: /channels/groups
 - Tiêu đề:
-  - H2: Giới thiệu cho người mới bắt đầu (2 phút)
-  - H2: Trả lời hiển thị
-  - H2: Khả năng hiển thị ngữ cảnh và allowlist
+  - H2: Giới thiệu cho người mới (2 phút)
+  - H2: Phản hồi hiển thị
+  - H2: Mức hiển thị ngữ cảnh và allowlist
   - H2: Khóa phiên
-  - H2: Mẫu: DM cá nhân + nhóm công khai (một tác tử)
+  - H2: Mẫu: DM cá nhân + nhóm công khai (một agent)
   - H2: Nhãn hiển thị
   - H2: Chính sách nhóm
-  - H2: Cổng đề cập (mặc định)
-  - H2: Phạm vi mẫu đề cập đã cấu hình
+  - H2: Cổng mention (mặc định)
+  - H2: Phạm vi mẫu mention đã cấu hình
   - H2: Hạn chế công cụ theo nhóm/kênh (tùy chọn)
   - H2: Allowlist nhóm
   - H2: Kích hoạt (chỉ chủ sở hữu)
   - H2: Trường ngữ cảnh
   - H2: Chi tiết riêng của iMessage
-  - H2: System prompt của WhatsApp
+  - H2: System prompt WhatsApp
   - H2: Chi tiết riêng của WhatsApp
   - H2: Liên quan
 
 ## channels/imessage-from-bluebubbles.md
 
-- Route: /channels/imessage-from-bluebubbles
+- Tuyến: /channels/imessage-from-bluebubbles
 - Tiêu đề:
-  - H2: Danh sách kiểm di chuyển
-  - H2: Khi nào nên thực hiện di chuyển này
+  - H2: Danh sách kiểm tra di chuyển
+  - H2: Khi nào việc di chuyển này phù hợp
   - H2: imsg làm gì
   - H2: Trước khi bắt đầu
   - H2: Chuyển đổi cấu hình
-  - H2: Điểm dễ sai của sổ đăng ký nhóm
+  - H2: Bẫy registry nhóm
   - H2: Từng bước
-  - H2: Tổng quan nhanh về mức tương đương hành động
-  - H2: Ghép cặp, phiên và liên kết ACP
+  - H2: Tóm tắt mức tương đương hành động
+  - H2: Ghép nối, phiên và liên kết ACP
   - H2: Không có kênh rollback
   - H2: Liên quan
 
 ## channels/imessage.md
 
-- Route: /channels/imessage
+- Tuyến: /channels/imessage
 - Tiêu đề:
   - H2: Thiết lập nhanh
   - H2: Yêu cầu và quyền (macOS)
@@ -470,14 +470,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Thiết lập
   - H3: Khi bạn không thể tắt SIP
   - H2: Kiểm soát truy cập và định tuyến
-  - H2: Liên kết hội thoại ACP
+  - H2: Liên kết cuộc trò chuyện ACP
   - H2: Mẫu triển khai
-  - H2: Phương tiện, chia đoạn và đích phân phối
+  - H2: Phương tiện, chia đoạn và mục tiêu phân phối
   - H2: Hành động API riêng tư
   - H2: Ghi cấu hình
   - H2: Gộp DM gửi tách (lệnh + URL trong một lần soạn)
-  - H3: Kịch bản và những gì tác tử thấy
-  - H2: Khôi phục đầu vào sau khi bridge hoặc Gateway khởi động lại
+  - H3: Kịch bản và điều agent thấy
+  - H2: Khôi phục tin đến sau khi bridge hoặc gateway khởi động lại
   - H3: Tín hiệu hiển thị cho operator
   - H3: Di chuyển
   - H2: Khắc phục sự cố
@@ -486,7 +486,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/index.md
 
-- Route: /channels
+- Tuyến: /channels
 - Tiêu đề:
   - H2: Ghi chú phân phối
   - H2: Kênh được hỗ trợ
@@ -494,13 +494,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## channels/irc.md
 
-- Route: /channels/irc
+- Tuyến: /channels/irc
 - Tiêu đề:
-  - H2: Khởi động nhanh
+  - H2: Bắt đầu nhanh
   - H2: Mặc định bảo mật
   - H2: Kiểm soát truy cập
-  - H3: Lỗi thường gặp: allowFrom dành cho DM, không phải kênh
-  - H2: Kích hoạt trả lời (đề cập)
+  - H3: Điểm dễ nhầm phổ biến: allowFrom dành cho DM, không phải kênh
+  - H2: Kích hoạt trả lời (mention)
   - H2: Ghi chú bảo mật (khuyến nghị cho kênh công khai)
   - H3: Cùng công cụ cho mọi người trong kênh
   - H3: Công cụ khác nhau theo người gửi (chủ sở hữu có nhiều quyền hơn)
@@ -537,17 +537,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /channels/matrix-migration
 - Tiêu đề:
-  - H2: Quá trình di chuyển tự động thực hiện những gì
-  - H2: Quá trình di chuyển không thể tự động thực hiện những gì
+  - H2: Quá trình di chuyển tự động làm gì
+  - H2: Quá trình di chuyển không thể tự động làm gì
   - H2: Luồng nâng cấp được khuyến nghị
-  - H2: Cách di chuyển được mã hóa hoạt động
-  - H2: Các thông báo thường gặp và ý nghĩa của chúng
+  - H2: Cách di chuyển mã hóa hoạt động
+  - H2: Thông báo thường gặp và ý nghĩa của chúng
   - H3: Thông báo nâng cấp và phát hiện
   - H3: Thông báo khôi phục trạng thái mã hóa
   - H3: Thông báo khôi phục thủ công
-  - H3: Thông báo cài đặt plugin tùy chỉnh
-  - H2: Nếu lịch sử được mã hóa vẫn không quay lại
-  - H2: Nếu bạn muốn bắt đầu mới cho các tin nhắn sau này
+  - H3: Thông báo cài đặt Plugin tùy chỉnh
+  - H2: Nếu lịch sử mã hóa vẫn không quay lại
+  - H2: Nếu bạn muốn bắt đầu mới cho các tin nhắn trong tương lai
   - H2: Liên quan
 
 ## channels/matrix-presentation.md
@@ -580,7 +580,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Thiết lập tương tác
   - H3: Cấu hình tối thiểu
   - H3: Tự động tham gia
-  - H3: Định dạng đích trong danh sách cho phép
+  - H3: Định dạng mục tiêu trong danh sách cho phép
   - H3: Chuẩn hóa ID tài khoản
   - H3: Thông tin xác thực được lưu trong bộ nhớ đệm
   - H3: Biến môi trường
@@ -588,21 +588,21 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bản xem trước phát trực tuyến
   - H2: Tin nhắn thoại
   - H2: Siêu dữ liệu phê duyệt
-  - H3: Quy tắc đẩy tự lưu trữ cho bản xem trước đã hoàn tất yên tĩnh
-  - H2: Phòng bot với bot
+  - H3: Quy tắc đẩy tự lưu trữ cho bản xem trước đã hoàn tất ở chế độ yên lặng
+  - H2: Phòng bot-với-bot
   - H2: Mã hóa và xác minh
   - H3: Bật mã hóa
-  - H3: Trạng thái và tín hiệu tin cậy
+  - H3: Tín hiệu trạng thái và tin cậy
   - H3: Xác minh thiết bị này bằng khóa khôi phục
-  - H3: Khởi tạo hoặc sửa chữ ký chéo
+  - H3: Khởi tạo hoặc sửa cross-signing
   - H3: Sao lưu khóa phòng
   - H3: Liệt kê, yêu cầu và phản hồi xác minh
   - H3: Ghi chú về nhiều tài khoản
   - H2: Quản lý hồ sơ
   - H2: Luồng
   - H3: Định tuyến phiên (sessionScope)
-  - H3: Tạo luồng trả lời (threadReplies)
-  - H3: Kế thừa luồng và lệnh slash
+  - H3: Trả lời theo luồng (threadReplies)
+  - H3: Kế thừa luồng và lệnh gạch chéo
   - H2: Liên kết cuộc trò chuyện ACP
   - H3: Cấu hình liên kết luồng
   - H2: Phản ứng
@@ -611,18 +611,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chính sách DM và phòng
   - H2: Sửa phòng trực tiếp
   - H2: Phê duyệt exec
-  - H2: Lệnh slash
+  - H2: Lệnh gạch chéo
   - H2: Nhiều tài khoản
-  - H2: Homeserver riêng/LAN
+  - H2: Homeserver riêng tư/LAN
   - H2: Proxy lưu lượng Matrix
-  - H2: Phân giải đích
+  - H2: Phân giải mục tiêu
   - H2: Tham chiếu cấu hình
   - H3: Tài khoản và kết nối
   - H3: Mã hóa
   - H3: Truy cập và chính sách
   - H3: Hành vi trả lời
   - H3: Cài đặt phản ứng
-  - H3: Công cụ và ghi đè theo phòng
+  - H3: Công cụ và ghi đè theo từng phòng
   - H3: Cài đặt phê duyệt exec
   - H2: Liên quan
 
@@ -632,19 +632,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Cài đặt
   - H2: Thiết lập nhanh
-  - H2: Lệnh slash gốc
+  - H2: Lệnh gạch chéo gốc
   - H2: Biến môi trường (tài khoản mặc định)
   - H2: Chế độ trò chuyện
-  - H2: Tạo luồng và phiên
+  - H2: Phân luồng và phiên
   - H2: Kiểm soát truy cập (DM)
   - H2: Kênh (nhóm)
-  - H2: Đích để gửi đi
+  - H2: Mục tiêu cho gửi đi
   - H2: Thử lại kênh DM
   - H2: Phát trực tuyến bản xem trước
   - H2: Phản ứng (công cụ tin nhắn)
   - H2: Nút tương tác (công cụ tin nhắn)
-  - H3: Tích hợp API trực tiếp (tập lệnh bên ngoài)
-  - H2: Bộ điều hợp thư mục
+  - H3: Tích hợp API trực tiếp (script bên ngoài)
+  - H2: Bộ chuyển đổi thư mục
   - H2: Nhiều tài khoản
   - H2: Khắc phục sự cố
   - H2: Liên quan
@@ -663,10 +663,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Bước 2: Lấy thông tin xác thực
   - H3: Bước 3: Cấu hình điểm cuối nhắn tin
   - H3: Bước 4: Bật kênh Teams
-  - H3: Bước 5: Xây dựng manifest ứng dụng Teams
+  - H3: Bước 5: Tạo Teams App Manifest
   - H3: Bước 6: Cấu hình OpenClaw
   - H3: Bước 7: Chạy Gateway
-  - H2: Xác thực liên kết (chứng chỉ cộng với danh tính được quản lý)
+  - H2: Xác thực liên kết (chứng chỉ cộng với managed identity)
   - H3: Tùy chọn A: Xác thực dựa trên chứng chỉ
   - H3: Tùy chọn B: Azure Managed Identity
   - H3: Thiết lập AKS Workload Identity
@@ -677,16 +677,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Hành động thông tin thành viên
   - H2: Ngữ cảnh lịch sử
   - H2: Quyền Teams RSC hiện tại (manifest)
-  - H2: Ví dụ manifest Teams (đã biên tập)
+  - H2: Ví dụ Teams manifest (đã biên tập)
   - H3: Lưu ý về manifest (trường bắt buộc)
   - H3: Cập nhật ứng dụng hiện có
   - H2: Khả năng: chỉ RSC so với Graph
   - H3: Chỉ với Teams RSC (ứng dụng đã cài đặt, không có quyền Graph API)
-  - H3: Với Teams RSC + quyền ứng dụng Microsoft Graph
+  - H3: Với Teams RSC + quyền Microsoft Graph Application
   - H3: RSC so với Graph API
-  - H2: Phương tiện + lịch sử có Graph hỗ trợ (bắt buộc cho kênh)
+  - H2: Phương tiện + lịch sử bật Graph (bắt buộc cho kênh)
   - H2: Hạn chế đã biết
-  - H3: Webhook hết thời gian chờ
+  - H3: Hết thời gian Webhook
   - H3: Hỗ trợ đám mây Teams và URL dịch vụ
   - H3: Định dạng
   - H2: Cấu hình
@@ -696,19 +696,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Bảo toàn ngữ cảnh luồng
   - H2: Tệp đính kèm và hình ảnh
   - H2: Gửi tệp trong cuộc trò chuyện nhóm
-  - H3: Vì sao cuộc trò chuyện nhóm cần SharePoint
+  - H3: Vì sao trò chuyện nhóm cần SharePoint
   - H3: Thiết lập
   - H3: Hành vi chia sẻ
   - H3: Hành vi dự phòng
   - H3: Vị trí lưu trữ tệp
-  - H2: Cuộc thăm dò ý kiến (Adaptive Cards)
+  - H2: Bình chọn (Adaptive Cards)
   - H2: Thẻ trình bày
-  - H2: Định dạng đích
+  - H2: Định dạng mục tiêu
   - H2: Nhắn tin chủ động
-  - H2: ID Nhóm và Kênh (lỗi thường gặp)
+  - H2: ID Team và Channel (lỗi thường gặp)
   - H2: Kênh riêng tư
   - H2: Khắc phục sự cố
-  - H3: Sự cố thường gặp
+  - H3: Vấn đề thường gặp
   - H3: Lỗi tải manifest lên
   - H3: Quyền RSC không hoạt động
   - H2: Tham chiếu
@@ -748,7 +748,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Kiểm thử thủ công
   - H2: Khắc phục sự cố
   - H3: Không nhận được tin nhắn
-  - H3: Không gửi phản hồi
+  - H3: Không gửi được phản hồi
   - H3: Phản hồi trùng lặp
   - H2: Bảo mật
   - H2: Hạn chế (MVP)
@@ -758,15 +758,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /channels/pairing
 - Tiêu đề:
-  - H2: 1) Ghép nối DM (truy cập trò chuyện đến)
+  - H2: 1) Ghép đôi DM (truy cập trò chuyện đến)
   - H3: Phê duyệt người gửi
   - H3: Nhóm người gửi có thể tái sử dụng
   - H3: Nơi lưu trạng thái
-  - H2: 2) Ghép nối thiết bị Node (node iOS/Android/macOS/headless)
-  - H3: Ghép nối qua Telegram (khuyến nghị cho iOS)
+  - H2: 2) Ghép đôi thiết bị Node (node iOS/Android/macOS/headless)
+  - H3: Ghép đôi qua Telegram (khuyến nghị cho iOS)
   - H3: Phê duyệt thiết bị node
-  - H3: Tùy chọn tự động phê duyệt node CIDR tin cậy
-  - H3: Lưu trữ trạng thái ghép nối Node
+  - H3: Tự động phê duyệt node trusted-CIDR tùy chọn
+  - H3: Lưu trữ trạng thái ghép đôi Node
   - H3: Ghi chú
   - H2: Tài liệu liên quan
 
@@ -789,8 +789,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Thiết lập nhiều tài khoản
   - H3: Trò chuyện nhóm
   - H3: Thoại (STT / TTS)
-  - H2: Định dạng đích
-  - H2: Lệnh slash
+  - H2: Định dạng mục tiêu
+  - H2: Lệnh gạch chéo
   - H2: Kiến trúc engine
   - H2: Onboarding bằng mã QR
   - H2: Khắc phục sự cố
@@ -816,7 +816,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Thiết lập nhanh (người mới bắt đầu)
   - H2: Đây là gì
   - H2: Ghi cấu hình
-  - H2: Mô hình số (quan trọng)
+  - H2: Mô hình số điện thoại (quan trọng)
   - H2: Đường dẫn thiết lập A: liên kết tài khoản Signal hiện có (QR)
   - H2: Đường dẫn thiết lập B: đăng ký số bot chuyên dụng (SMS, Linux)
   - H2: Chế độ daemon bên ngoài (httpUrl)
@@ -827,7 +827,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Đang nhập + biên nhận đã đọc
   - H2: Phản ứng (công cụ tin nhắn)
   - H2: Phản ứng phê duyệt
-  - H2: Đích gửi (CLI/cron)
+  - H2: Mục tiêu gửi (CLI/cron)
   - H2: Khắc phục sự cố
   - H2: Ghi chú bảo mật
   - H2: Tham chiếu cấu hình (Signal)
@@ -837,34 +837,34 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /channels/slack
 - Tiêu đề:
-  - H2: Chọn Socket Mode hoặc URL yêu cầu HTTP
+  - H2: Chọn Socket Mode hoặc HTTP Request URLs
   - H3: Chế độ relay
   - H2: Cài đặt
   - H2: Thiết lập nhanh
-  - H2: Tinh chỉnh transport Socket Mode
-  - H2: Danh sách kiểm tra manifest và phạm vi
+  - H2: Tinh chỉnh truyền tải Socket Mode
+  - H2: Danh sách kiểm tra manifest và scope
   - H3: Cài đặt manifest bổ sung
   - H2: Mô hình token
   - H2: Hành động và cổng kiểm soát
   - H2: Kiểm soát truy cập và định tuyến
-  - H2: Tạo luồng, phiên và thẻ trả lời
+  - H2: Phân luồng, phiên và thẻ trả lời
   - H2: Phản ứng xác nhận
   - H3: Emoji (ackReaction)
-  - H3: Phạm vi (messages.ackReactionScope)
+  - H3: Scope (messages.ackReactionScope)
   - H2: Phát trực tuyến văn bản
-  - H2: Dự phòng phản ứng đang nhập
+  - H2: Dự phòng bằng phản ứng đang nhập
   - H2: Phương tiện, chia đoạn và gửi
-  - H2: Lệnh và hành vi slash
+  - H2: Lệnh và hành vi gạch chéo
   - H2: Trả lời tương tác
   - H3: Gửi modal do Plugin sở hữu
   - H2: Phê duyệt gốc trong Slack
   - H2: Sự kiện và hành vi vận hành
   - H2: Tham chiếu cấu hình
   - H2: Khắc phục sự cố
-  - H2: Tham chiếu tầm nhìn tệp đính kèm
+  - H2: Tham chiếu thị giác tệp đính kèm
   - H3: Loại phương tiện được hỗ trợ
-  - H3: Pipeline đến
-  - H3: Kế thừa tệp đính kèm gốc luồng
+  - H3: Pipeline đầu vào
+  - H3: Kế thừa tệp đính kèm từ gốc luồng
   - H3: Xử lý nhiều tệp đính kèm
   - H3: Kích thước, tải xuống và giới hạn mô hình
   - H3: Giới hạn đã biết
@@ -881,9 +881,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Tệp cấu hình
   - H3: Biến môi trường
   - H3: Token xác thực SecretRef
-  - H3: Số riêng tư chỉ theo danh sách cho phép
+  - H3: Số riêng tư chỉ dùng danh sách cho phép
   - H3: Người gửi Messaging Service
-  - H3: Đích gửi đi mặc định
+  - H3: Mục tiêu gửi đi mặc định
   - H2: Kiểm soát truy cập
   - H2: Gửi SMS
   - H2: Xác minh thiết lập
@@ -892,7 +892,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cấu hình nhiều tài khoản
   - H2: Khắc phục sự cố
   - H3: Twilio trả về 403 hoặc OpenClaw từ chối Webhook
-  - H3: Không có yêu cầu ghép nối nào xuất hiện
+  - H3: Không có yêu cầu ghép đôi nào xuất hiện
   - H3: Gửi đi thất bại
   - H3: Tin nhắn đến nhưng agent không trả lời
 
@@ -917,7 +917,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Thiết lập nhanh
   - H2: Cài đặt phía Telegram
   - H2: Kiểm soát truy cập và kích hoạt
-  - H3: Danh tính bot nhóm
+  - H3: Danh tính bot trong nhóm
   - H2: Hành vi runtime
   - H2: Tham chiếu tính năng
   - H2: Điều khiển trả lời lỗi
@@ -931,12 +931,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Plugin đi kèm
   - H2: Thiết lập
-  - H2: Tàu riêng/LAN
+  - H2: Ship riêng tư/LAN
   - H2: Kênh nhóm
   - H2: Kiểm soát truy cập
-  - H2: Chủ sở hữu và hệ thống phê duyệt
+  - H2: Hệ thống chủ sở hữu và phê duyệt
   - H2: Cài đặt tự động chấp nhận
-  - H2: Đích gửi (CLI/cron)
+  - H2: Mục tiêu gửi (CLI/cron)
   - H2: Skill đi kèm
   - H2: Khả năng
   - H2: Khắc phục sự cố
@@ -972,20 +972,20 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /channels/twitch
 - Tiêu đề:
-  - H2: Plugin tích hợp sẵn
+  - H2: Plugin được đóng gói kèm
   - H2: Thiết lập nhanh (người mới bắt đầu)
   - H2: Đây là gì
   - H2: Thiết lập (chi tiết)
   - H3: Tạo thông tin xác thực
   - H3: Cấu hình bot
-  - H3: Kiểm soát quyền truy cập (khuyến nghị)
+  - H3: Kiểm soát truy cập (khuyến nghị)
   - H2: Làm mới token (tùy chọn)
   - H2: Hỗ trợ nhiều tài khoản
-  - H2: Kiểm soát quyền truy cập
+  - H2: Kiểm soát truy cập
   - H2: Khắc phục sự cố
   - H2: Cấu hình
   - H3: Cấu hình tài khoản
-  - H3: Tùy chọn provider
+  - H3: Tùy chọn nhà cung cấp
   - H2: Hành động công cụ
   - H2: An toàn và vận hành
   - H2: Giới hạn
@@ -995,11 +995,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /channels/wechat
 - Tiêu đề:
-  - H2: Cách đặt tên
+  - H2: Đặt tên
   - H2: Cách hoạt động
   - H2: Cài đặt
   - H2: Đăng nhập
-  - H2: Kiểm soát quyền truy cập
+  - H2: Kiểm soát truy cập
   - H2: Khả năng tương thích
   - H2: Tiến trình sidecar
   - H2: Khắc phục sự cố
@@ -1009,17 +1009,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /channels/whatsapp
 - Tiêu đề:
-  - H2: Cài đặt (khi cần)
+  - H2: Cài đặt (theo nhu cầu)
   - H2: Thiết lập nhanh
   - H2: Mẫu triển khai
   - H2: Mô hình runtime
   - H2: Lời nhắc phê duyệt
   - H2: Hook Plugin và quyền riêng tư
-  - H2: Kiểm soát quyền truy cập và kích hoạt
+  - H2: Kiểm soát truy cập và kích hoạt
   - H2: Liên kết ACP đã cấu hình
   - H2: Hành vi số cá nhân và tự trò chuyện
   - H2: Chuẩn hóa tin nhắn và ngữ cảnh
-  - H2: Gửi, chia đoạn và phương tiện
+  - H2: Phân phối, chia đoạn và phương tiện
   - H2: Trích dẫn trả lời
   - H2: Mức phản ứng
   - H2: Phản ứng xác nhận
@@ -1027,7 +1027,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Nhiều tài khoản và thông tin xác thực
   - H2: Công cụ, hành động và ghi cấu hình
   - H2: Khắc phục sự cố
-  - H2: Lời nhắc hệ thống
+  - H2: Prompt hệ thống
   - H2: Con trỏ tham chiếu cấu hình
   - H2: Liên quan
 
@@ -1036,57 +1036,57 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /channels/yuanbao
 - Tiêu đề:
   - H2: Bắt đầu nhanh
-  - H3: Thiết lập tương tác (thay thế)
-  - H2: Kiểm soát quyền truy cập
+  - H3: Thiết lập tương tác (phương án thay thế)
+  - H2: Kiểm soát truy cập
   - H3: Tin nhắn trực tiếp
   - H3: Trò chuyện nhóm
   - H2: Ví dụ cấu hình
   - H3: Thiết lập cơ bản với chính sách DM mở
-  - H3: Giới hạn DM cho người dùng cụ thể
+  - H3: Hạn chế DM cho người dùng cụ thể
   - H3: Tắt yêu cầu @mention trong nhóm
-  - H3: Tối ưu hóa việc gửi tin nhắn đi
+  - H3: Tối ưu hóa phân phối tin nhắn gửi đi
   - H3: Tinh chỉnh chiến lược merge-text
-  - H2: Lệnh phổ biến
+  - H2: Lệnh thường dùng
   - H2: Khắc phục sự cố
   - H3: Bot không phản hồi trong trò chuyện nhóm
   - H3: Bot không nhận tin nhắn
-  - H3: Bot gửi trả lời trống hoặc dự phòng
-  - H3: App Secret bị rò rỉ
+  - H3: Bot gửi trả lời rỗng hoặc dự phòng
+  - H3: App Secret bị lộ
   - H2: Cấu hình nâng cao
   - H3: Nhiều tài khoản
   - H3: Giới hạn tin nhắn
   - H3: Streaming
   - H3: Ngữ cảnh lịch sử trò chuyện nhóm
-  - H3: Chế độ trả lời tới
-  - H3: Chèn gợi ý Markdown
-  - H3: Chế độ gỡ lỗi
+  - H3: Chế độ reply-to
+  - H3: Tiêm gợi ý Markdown
+  - H3: Chế độ debug
   - H3: Định tuyến nhiều agent
   - H2: Tham chiếu cấu hình
   - H2: Loại tin nhắn được hỗ trợ
   - H3: Nhận
   - H3: Gửi
-  - H3: Luồng và trả lời
+  - H3: Chủ đề và trả lời
   - H2: Liên quan
 
 ## channels/zalo.md
 
 - Tuyến: /channels/zalo
 - Tiêu đề:
-  - H2: Plugin tích hợp sẵn
+  - H2: Plugin được đóng gói kèm
   - H2: Thiết lập nhanh (người mới bắt đầu)
   - H2: Đây là gì
   - H2: Thiết lập (đường nhanh)
   - H3: 1) Tạo token bot (Zalo Bot Platform)
-  - H3: 2) Cấu hình token (env hoặc cấu hình)
+  - H3: 2) Cấu hình token (env hoặc config)
   - H2: Cách hoạt động (hành vi)
   - H2: Giới hạn
-  - H2: Kiểm soát quyền truy cập (DM)
+  - H2: Kiểm soát truy cập (DM)
   - H3: Truy cập DM
-  - H2: Kiểm soát quyền truy cập (Nhóm)
+  - H2: Kiểm soát truy cập (Nhóm)
   - H2: Long-polling so với webhook
   - H2: Loại tin nhắn được hỗ trợ
-  - H2: Khả năng
-  - H2: Đích gửi (CLI/cron)
+  - H2: Năng lực
+  - H2: Đích phân phối (CLI/cron)
   - H2: Khắc phục sự cố
   - H2: Tham chiếu cấu hình (Zalo)
   - H2: Liên quan
@@ -1104,25 +1104,25 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: 3. Tạo mã QR và đăng nhập
   - H3: 4. Khởi động lại Gateway
   - H2: Cách hoạt động
-  - H2: Bên trong hệ thống
+  - H2: Bên dưới hệ thống
   - H2: Khắc phục sự cố
 
 ## channels/zalouser.md
 
 - Tuyến: /channels/zalouser
 - Tiêu đề:
-  - H2: Plugin tích hợp sẵn
+  - H2: Plugin được đóng gói kèm
   - H2: Thiết lập nhanh (người mới bắt đầu)
   - H2: Đây là gì
-  - H2: Cách đặt tên
+  - H2: Đặt tên
   - H2: Tìm ID (thư mục)
   - H2: Giới hạn
-  - H2: Kiểm soát quyền truy cập (DM)
-  - H2: Quyền truy cập nhóm (tùy chọn)
-  - H3: Cổng kiểm soát mention trong nhóm
+  - H2: Kiểm soát truy cập (DM)
+  - H2: Truy cập nhóm (tùy chọn)
+  - H3: Cổng kiểm soát bằng nhắc tên nhóm
   - H2: Nhiều tài khoản
   - H2: Biến môi trường
-  - H2: Đang nhập, phản ứng và xác nhận gửi
+  - H2: Đang nhập, phản ứng và xác nhận phân phối
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
@@ -1146,22 +1146,22 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Job
   - H3: Nguồn ứng viên
   - H3: Hồ sơ bộ kiểm thử
-  - H3: Cửa sổ tương thích legacy
+  - H3: Khoảng tương thích legacy
   - H3: Ví dụ
   - H2: Smoke cài đặt
   - H2: Docker E2E cục bộ
   - H3: Tham số tinh chỉnh
-  - H3: Workflow live/E2E có thể tái sử dụng
-  - H3: Phần theo đường phát hành
-  - H2: Plugin trước phát hành
+  - H3: Workflow live/E2E tái sử dụng
+  - H3: Chunk đường dẫn phát hành
+  - H2: Plugin Prerelease
   - H2: QA Lab
   - H2: CodeQL
   - H3: Danh mục bảo mật
   - H3: Shard bảo mật theo nền tảng
-  - H3: Danh mục chất lượng quan trọng
+  - H3: Danh mục chất lượng trọng yếu
   - H2: Workflow bảo trì
-  - H3: Agent tài liệu
-  - H3: Agent hiệu năng kiểm thử
+  - H3: Docs Agent
+  - H3: Test Performance Agent
   - H3: PR trùng lặp sau khi merge
   - H2: Cổng kiểm tra cục bộ và định tuyến thay đổi
   - H2: Xác thực Testbox
@@ -1171,7 +1171,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /clawhub/cli
 - Tiêu đề:
-  - H1: CLI ClawHub
+  - H1: ClawHub CLI
   - H2: Khám phá và cài đặt
   - H2: Xuất bản và bảo trì
   - H2: Liên quan
@@ -1183,7 +1183,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H1: Xuất bản trên ClawHub
   - H2: Chủ sở hữu
   - H2: Skills
-  - H2: Plugin
+  - H2: Plugins
   - H2: Luồng phát hành
   - H2: Câu hỏi thường gặp
   - H3: Phạm vi gói phải khớp với chủ sở hữu đã chọn
@@ -1195,16 +1195,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Đây không phải là gì
   - H2: Ma trận tương thích
   - H2: Giới hạn đã biết
-  - H2: Cách sử dụng
-  - H2: ACP client (gỡ lỗi)
-  - H2: Kiểm thử smoke giao thức
-  - H2: Cách dùng mục này
+  - H2: Cách dùng
+  - H2: Máy khách ACP (debug)
+  - H2: Smoke test giao thức
+  - H2: Cách sử dụng phần này
   - H2: Chọn agent
-  - H2: Dùng từ acpx (Codex, Claude, các ACP client khác)
-  - H2: Thiết lập trình soạn thảo Zed
+  - H2: Sử dụng từ acpx (Codex, Claude, máy khách ACP khác)
+  - H2: Thiết lập trình biên tập Zed
   - H2: Ánh xạ phiên
   - H2: Tùy chọn
-  - H3: Tùy chọn acp client
+  - H3: Tùy chọn máy khách acp
   - H2: Liên quan
 
 ## cli/agent.md
@@ -1215,7 +1215,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tùy chọn
   - H2: Ví dụ
   - H2: Ghi chú
-  - H2: Trạng thái gửi JSON
+  - H2: Trạng thái phân phối JSON
   - H2: Liên quan
 
 ## cli/agents.md
@@ -1245,11 +1245,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: openclaw approvals
   - H2: openclaw exec-policy
-  - H2: Lệnh phổ biến
+  - H2: Lệnh thường dùng
   - H2: Thay thế phê duyệt từ một tệp
-  - H2: Ví dụ "Never prompt" / YOLO
-  - H2: Helper allowlist
-  - H2: Tùy chọn phổ biến
+  - H2: Ví dụ "Không bao giờ nhắc" / YOLO
+  - H2: Trình trợ giúp allowlist
+  - H2: Tùy chọn thường dùng
   - H2: Ghi chú
   - H2: Liên quan
 
@@ -1259,8 +1259,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: openclaw backup
   - H2: Ghi chú
-  - H2: Những gì được sao lưu
-  - H2: Hành vi khi cấu hình không hợp lệ
+  - H2: Nội dung được sao lưu
+  - H2: Hành vi cấu hình không hợp lệ
   - H2: Kích thước và hiệu năng
   - H2: Liên quan
 
@@ -1269,16 +1269,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/browser
 - Tiêu đề:
   - H1: openclaw browser
-  - H2: Cờ phổ biến
+  - H2: Cờ thường dùng
   - H2: Bắt đầu nhanh (cục bộ)
   - H2: Khắc phục sự cố nhanh
   - H2: Vòng đời
-  - H2: Nếu thiếu lệnh
+  - H2: Nếu lệnh bị thiếu
   - H2: Hồ sơ
   - H2: Tab
   - H2: Snapshot / ảnh chụp màn hình / hành động
   - H2: Trạng thái và lưu trữ
-  - H2: Gỡ lỗi
+  - H2: Debug
   - H2: Chrome hiện có qua MCP
   - H2: Điều khiển trình duyệt từ xa (proxy máy chủ node)
   - H2: Liên quan
@@ -1288,13 +1288,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/channels
 - Tiêu đề:
   - H1: openclaw channels
-  - H2: Lệnh phổ biến
-  - H2: Trạng thái / khả năng / resolve / nhật ký
+  - H2: Lệnh thường dùng
+  - H2: Trạng thái / năng lực / phân giải / nhật ký
   - H2: Thêm / xóa tài khoản
   - H2: Đăng nhập và đăng xuất (tương tác)
   - H2: Khắc phục sự cố
-  - H2: Thăm dò khả năng
-  - H2: Resolve tên thành ID
+  - H2: Probe năng lực
+  - H2: Phân giải tên thành ID
   - H2: Liên quan
 
 ## cli/clawbot.md
@@ -1309,7 +1309,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /cli/commitments
 - Tiêu đề:
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Tùy chọn
   - H2: Ví dụ
   - H2: Đầu ra
@@ -1320,7 +1320,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/completion
 - Tiêu đề:
   - H1: openclaw completion
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Tùy chọn
   - H2: Ghi chú
   - H2: Liên quan
@@ -1331,12 +1331,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Tùy chọn gốc
   - H2: Ví dụ
-  - H3: config schema
+  - H3: Lược đồ config
   - H3: Đường dẫn
   - H2: Giá trị
   - H2: Chế độ config set
   - H2: config patch
-  - H2: Cờ trình tạo provider
+  - H2: Cờ trình tạo nhà cung cấp
   - H2: Chạy thử
   - H3: Dạng đầu ra JSON
   - H2: An toàn ghi
@@ -1358,13 +1358,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/crestodian
 - Tiêu đề:
   - H1: openclaw crestodian
-  - H2: Crestodian hiển thị gì
+  - H2: Nội dung Crestodian hiển thị
   - H2: Ví dụ
   - H2: Khởi động an toàn
   - H2: Vận hành và phê duyệt
   - H2: Bootstrap thiết lập
   - H2: Bộ lập kế hoạch có mô hình hỗ trợ
-  - H2: Chuyển sang agent
+  - H2: Chuyển sang một agent
   - H2: Chế độ cứu tin nhắn
   - H2: Liên quan
 
@@ -1375,10 +1375,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H1: openclaw cron
   - H2: Tạo job nhanh
   - H2: Phiên
-  - H2: Gửi
-  - H3: Quyền sở hữu việc gửi
-  - H3: Gửi khi thất bại
-  - H2: Lập lịch
+  - H2: Phân phối
+  - H3: Quyền sở hữu phân phối
+  - H3: Phân phối khi lỗi
+  - H2: Lên lịch
   - H3: Job chạy một lần
   - H3: Job định kỳ
   - H3: Chạy thủ công
@@ -1392,8 +1392,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Từ chối có cấu trúc
   - H2: Lưu giữ
   - H2: Di chuyển job cũ
-  - H2: Chỉnh sửa phổ biến
-  - H2: Lệnh quản trị phổ biến
+  - H2: Chỉnh sửa thường dùng
+  - H2: Lệnh quản trị thường dùng
   - H2: Liên quan
 
 ## cli/daemon.md
@@ -1401,9 +1401,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/daemon
 - Tiêu đề:
   - H1: openclaw daemon
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Lệnh con
-  - H2: Tùy chọn phổ biến
+  - H2: Tùy chọn thường dùng
   - H2: Ưu tiên
   - H2: Liên quan
 
@@ -1428,9 +1428,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: openclaw devices reject
   - H3: openclaw devices rotate --device --role [--scope ]
   - H3: openclaw devices revoke --device --role
-  - H2: Tùy chọn phổ biến
+  - H2: Tùy chọn thường dùng
   - H2: Ghi chú
-  - H2: Checklist khôi phục drift token
+  - H2: Danh sách kiểm tra khôi phục lệch token
   - H2: Liên quan
 
 ## cli/directory.md
@@ -1438,12 +1438,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/directory
 - Tiêu đề:
   - H1: openclaw directory
-  - H2: Cờ phổ biến
+  - H2: Cờ thường dùng
   - H2: Ghi chú
-  - H2: Dùng kết quả với message send
+  - H2: Sử dụng kết quả với gửi tin nhắn
   - H2: Định dạng ID (theo kênh)
   - H2: Bản thân ("me")
-  - H2: Peer (liên hệ/người dùng)
+  - H2: Ngang hàng (liên hệ/người dùng)
   - H2: Nhóm
   - H2: Liên quan
 
@@ -1461,7 +1461,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/docs
 - Tiêu đề:
   - H1: openclaw docs
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Ví dụ
   - H2: Cách hoạt động
   - H2: Đầu ra
@@ -1473,12 +1473,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/doctor
 - Tiêu đề:
   - H1: openclaw doctor
-  - H2: Vì sao nên dùng
+  - H2: Tại sao nên dùng
   - H2: Ví dụ
   - H2: Tùy chọn
   - H2: Chế độ lint
-  - H2: Kiểm tra tình trạng có cấu trúc
-  - H2: Lựa chọn kiểm tra
+  - H2: Kiểm tra sức khỏe có cấu trúc
+  - H2: Chọn kiểm tra
   - H2: Chế độ sau nâng cấp
   - H2: macOS: ghi đè env launchctl
   - H2: Liên quan
@@ -1500,7 +1500,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chạy Gateway
   - H3: Tùy chọn
   - H2: Khởi động lại Gateway
-  - H3: Hồ sơ hiệu năng Gateway
+  - H3: Lập hồ sơ Gateway
   - H2: Truy vấn Gateway đang chạy
   - H3: gateway health
   - H3: gateway usage-cost
@@ -1532,8 +1532,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Liệt kê tất cả hook
   - H2: Lấy thông tin hook
   - H2: Kiểm tra điều kiện dùng hook
-  - H2: Bật một Hook
-  - H2: Tắt một Hook
+  - H2: Bật Hook
+  - H2: Tắt Hook
   - H2: Ghi chú
   - H2: Cài đặt các gói hook
   - H2: Cập nhật các gói hook
@@ -1593,28 +1593,28 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/mcp
 - Tiêu đề:
   - H2: Chọn đường dẫn MCP phù hợp
-  - H2: OpenClaw làm máy chủ MCP
+  - H2: OpenClaw dưới dạng máy chủ MCP
   - H3: Khi nào dùng serve
   - H3: Cách hoạt động
   - H3: Chọn chế độ client
-  - H3: serve cung cấp những gì
-  - H3: Cách sử dụng
-  - H3: Công cụ bridge
+  - H3: Những gì serve cung cấp
+  - H3: Cách dùng
+  - H3: Công cụ cầu nối
   - H3: Mô hình sự kiện
   - H3: Thông báo kênh Claude
   - H3: Cấu hình client MCP
   - H3: Tùy chọn
-  - H3: Ranh giới bảo mật và tin cậy
+  - H3: Bảo mật và ranh giới tin cậy
   - H3: Kiểm thử
   - H3: Khắc phục sự cố
-  - H2: OpenClaw làm registry client MCP
+  - H2: OpenClaw dưới dạng registry client MCP
   - H3: Định nghĩa máy chủ MCP đã lưu
   - H3: Công thức máy chủ phổ biến
-  - H3: Hình dạng đầu ra JSON
-  - H3: Truyền tải stdio
-  - H3: Truyền tải SSE / HTTP
+  - H3: Dạng đầu ra JSON
+  - H3: Transport Stdio
+  - H3: Transport SSE / HTTP
   - H3: Quy trình OAuth
-  - H3: Truyền tải HTTP có thể stream
+  - H3: Transport HTTP có thể stream
   - H2: Giao diện điều khiển
   - H2: Giới hạn hiện tại
   - H2: Liên quan
@@ -1634,18 +1634,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/message
 - Tiêu đề:
   - H1: openclaw message
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Cờ phổ biến
   - H2: Hành vi SecretRef
   - H2: Hành động
   - H3: Lõi
   - H3: Luồng
   - H3: Emoji
-  - H3: Nhãn dán
+  - H3: Sticker
   - H3: Vai trò / Kênh / Thành viên / Thoại
   - H3: Sự kiện
-  - H3: Điều phối (Discord)
-  - H3: Phát sóng
+  - H3: Kiểm duyệt (Discord)
+  - H3: Phát rộng
   - H2: Ví dụ
   - H2: Liên quan
 
@@ -1657,13 +1657,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Lệnh
   - H2: Mô hình an toàn
   - H2: Nhà cung cấp Claude
-  - H3: Claude nhập những gì
-  - H3: Trạng thái lưu trữ và xem xét thủ công
+  - H3: Những gì Claude nhập
+  - H3: Trạng thái lưu trữ và cần xem xét thủ công
   - H2: Nhà cung cấp Codex
-  - H3: Codex nhập những gì
-  - H3: Trạng thái Codex xem xét thủ công
+  - H3: Những gì Codex nhập
+  - H3: Trạng thái Codex cần xem xét thủ công
   - H2: Nhà cung cấp Hermes
-  - H3: Hermes nhập những gì
+  - H3: Những gì Hermes nhập
   - H3: Khóa .env được hỗ trợ
   - H3: Trạng thái chỉ lưu trữ
   - H3: Sau khi áp dụng
@@ -1693,7 +1693,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chạy (foreground)
   - H2: Xác thực Gateway cho máy chủ node
   - H2: Dịch vụ (background)
-  - H2: Ghép cặp
+  - H2: Ghép nối
   - H2: Phê duyệt exec
   - H2: Liên quan
 
@@ -1713,9 +1713,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H1: openclaw onboard
   - H2: Hướng dẫn liên quan
   - H2: Ví dụ
-  - H2: Ngôn ngữ
+  - H2: Locale
   - H3: Lựa chọn endpoint Z.AI không tương tác
-  - H2: Ghi chú luồng
+  - H2: Cờ không tương tác bổ sung
+  - H2: Ghi chú về luồng
   - H2: Lệnh tiếp theo phổ biến
 
 ## cli/pairing.md
@@ -1784,24 +1785,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: openclaw policy
   - H2: Bắt đầu nhanh
-  - H3: Tham chiếu quy tắc chính sách
+  - H3: Tham chiếu quy tắc policy
   - H4: Lớp phủ theo phạm vi
   - H4: Kênh
   - H4: Máy chủ MCP
   - H4: Nhà cung cấp mô hình
   - H4: Mạng
-  - H4: Ingress và quyền truy cập kênh
+  - H4: Truy cập ingress và kênh
   - H4: Gateway
-  - H4: Không gian làm việc agent
+  - H4: Workspace của agent
   - H4: Tư thế sandbox
   - H4: Xử lý dữ liệu
   - H4: Bí mật
   - H4: Phê duyệt exec
   - H4: Hồ sơ xác thực
-  - H4: Siêu dữ liệu công cụ
+  - H4: Metadata công cụ
   - H4: Tư thế công cụ
-  - H2: Cấu hình chính sách
-  - H2: Chấp nhận trạng thái chính sách
+  - H2: Cấu hình policy
+  - H2: Chấp nhận trạng thái policy
   - H2: Phát hiện
   - H2: Sửa chữa
   - H2: Mã thoát
@@ -1823,7 +1824,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/qr
 - Tiêu đề:
   - H1: openclaw qr
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Tùy chọn
   - H2: Ghi chú
   - H2: Liên quan
@@ -1848,7 +1849,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Sau khi cập nhật image Docker
   - H3: Sau khi thay đổi cấu hình sandbox
   - H3: Sau khi thay đổi đích SSH hoặc vật liệu xác thực SSH
-  - H3: Sau khi thay đổi nguồn, chính sách hoặc chế độ OpenShell
+  - H3: Sau khi thay đổi nguồn, policy hoặc chế độ OpenShell
   - H3: Sau khi thay đổi setupCommand
   - H3: Chỉ cho một agent cụ thể
   - H2: Vì sao cần điều này
@@ -1862,9 +1863,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: openclaw secrets
   - H2: Tải lại snapshot runtime
-  - H2: Kiểm toán
-  - H2: Cấu hình (trình trợ giúp tương tác)
-  - H2: Áp dụng một kế hoạch đã lưu
+  - H2: Audit
+  - H2: Cấu hình (trình hỗ trợ tương tác)
+  - H2: Áp dụng kế hoạch đã lưu
   - H2: Vì sao không có bản sao lưu rollback
   - H2: Ví dụ
   - H2: Liên quan
@@ -1874,7 +1875,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/security
 - Tiêu đề:
   - H1: openclaw security
-  - H2: Kiểm toán
+  - H2: Audit
   - H2: Đầu ra JSON
   - H2: Những gì --fix thay đổi
   - H2: Liên quan
@@ -1885,7 +1886,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: openclaw sessions
   - H2: Bảo trì dọn dẹp
-  - H2: Compact một phiên
+  - H2: Thu gọn một phiên
   - H3: RPC sessions.compact
   - H2: Liên quan
 
@@ -1931,7 +1932,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /cli/tasks
 - Tiêu đề:
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Tùy chọn gốc
   - H2: Lệnh con
   - H3: list
@@ -1951,7 +1952,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Lệnh
   - H2: Đầu ra
   - H2: Nhiều cuộc họp mỗi ngày
-  - H2: Thiếu bản tóm tắt
+  - H2: Thiếu tóm tắt
   - H2: Cấu hình
 
 ## cli/tui.md
@@ -1976,13 +1977,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/update
 - Tiêu đề:
   - H1: openclaw update
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: Tùy chọn
   - H2: update status
   - H2: update repair
   - H2: update wizard
-  - H2: Nó làm gì
-  - H3: Hình dạng phản hồi control-plane
+  - H2: Những gì nó làm
+  - H3: Dạng phản hồi control-plane
   - H2: Luồng checkout Git
   - H3: Chọn kênh
   - H3: Các bước cập nhật
@@ -2006,10 +2007,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: dtmf
   - H3: end
   - H3: status
-  - H2: Nhật ký và chỉ số
+  - H2: Log và chỉ số
   - H3: tail
   - H3: latency
-  - H2: Công khai Webhook
+  - H2: Công khai webhooks
   - H3: expose
   - H2: Liên quan
 
@@ -2024,7 +2025,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Tùy chọn Pub/Sub
   - H3: Tùy chọn phân phối OpenClaw
   - H3: Tùy chọn gog watch serve
-  - H3: Công khai qua Tailscale
+  - H3: Phơi bày qua Tailscale
   - H3: Đầu ra
   - H2: webhooks gmail run
   - H2: Luồng đầu cuối
@@ -2035,7 +2036,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /cli/wiki
 - Tiêu đề:
   - H1: openclaw wiki
-  - H2: Nó dùng để làm gì
+  - H2: Dùng để làm gì
   - H2: Lệnh phổ biến
   - H2: Lệnh
   - H3: wiki status
@@ -2059,7 +2060,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /cli/workboard
 - Tiêu đề:
-  - H2: Cách sử dụng
+  - H2: Cách dùng
   - H2: list
   - H2: create
   - H2: show
@@ -2068,8 +2069,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Quyền
   - H2: Khắc phục sự cố
   - H3: Không có thẻ nào xuất hiện
-  - H3: Dispatch báo chỉ dữ liệu
-  - H3: Dispatch không khởi chạy gì
+  - H3: Dispatch báo chỉ có dữ liệu
+  - H3: Dispatch không khởi động gì
   - H2: Liên quan
 
 ## concepts/active-memory.md
@@ -2077,29 +2078,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/active-memory
 - Tiêu đề:
   - H2: Bắt đầu nhanh
-  - H2: Khuyến nghị về tốc độ
+  - H2: Khuyến nghị tốc độ
   - H3: Thiết lập Cerebras
   - H2: Cách xem nó
-  - H2: Bật/tắt theo phiên
+  - H2: Công tắc phiên
   - H2: Khi nào nó chạy
   - H2: Loại phiên
-  - H2: Nó chạy ở đâu
+  - H2: Nơi nó chạy
   - H2: Vì sao dùng nó
   - H2: Cách hoạt động
   - H2: Chế độ truy vấn
   - H2: Kiểu prompt
-  - H2: Chính sách fallback mô hình
+  - H2: Policy fallback mô hình
   - H2: Công cụ bộ nhớ
   - H3: memory-core tích hợp sẵn
   - H3: Bộ nhớ LanceDB
   - H3: Lossless Claw
   - H2: Lối thoát nâng cao
-  - H2: Lưu giữ transcript
+  - H2: Lưu giữ bản ghi
   - H2: Cấu hình
-  - H2: Thiết lập được khuyến nghị
-  - H3: Thời gian gia hạn cold-start
+  - H2: Thiết lập khuyến nghị
+  - H3: Thời gian ân hạn cold-start
   - H2: Gỡ lỗi
-  - H2: Vấn đề thường gặp
+  - H2: Vấn đề phổ biến
   - H2: Trang liên quan
 
 ## concepts/agent-loop.md
@@ -2109,14 +2110,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Điểm vào
   - H2: Cách hoạt động (cấp cao)
   - H2: Xếp hàng + đồng thời
-  - H2: Chuẩn bị phiên + không gian làm việc
-  - H2: Lắp ráp prompt + system prompt
+  - H2: Chuẩn bị phiên + workspace
+  - H2: Lắp ráp prompt + prompt hệ thống
   - H2: Điểm hook (nơi bạn có thể chặn)
   - H3: Hook nội bộ (hook Gateway)
   - H3: Hook Plugin (vòng đời agent + gateway)
-  - H2: Streaming + phản hồi một phần
+  - H2: Streaming + phản hồi từng phần
   - H2: Thực thi công cụ + công cụ nhắn tin
-  - H2: Định hình phản hồi + chặn hiển thị
+  - H2: Định hình phản hồi + suppression
   - H2: Compaction + thử lại
   - H2: Luồng sự kiện (hiện nay)
   - H2: Xử lý kênh chat
@@ -2130,7 +2131,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bề mặt Codex
   - H2: Quyền sở hữu runtime
-  - H2: Chọn runtime
+  - H2: Lựa chọn runtime
   - H2: Runtime agent GitHub Copilot
   - H2: Hợp đồng tương thích
   - H2: Nhãn trạng thái
@@ -2141,12 +2142,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/agent-workspace
 - Tiêu đề:
   - H2: Vị trí mặc định
-  - H2: Thư mục không gian làm việc bổ sung
-  - H2: Sơ đồ tệp không gian làm việc
-  - H2: Những gì KHÔNG có trong không gian làm việc
+  - H2: Thư mục workspace bổ sung
+  - H2: Bản đồ tệp workspace
+  - H2: Những gì KHÔNG có trong workspace
   - H2: Sao lưu Git (khuyến nghị, riêng tư)
   - H2: Không commit bí mật
-  - H2: Di chuyển không gian làm việc sang máy mới
+  - H2: Di chuyển workspace sang máy mới
   - H2: Ghi chú nâng cao
   - H2: Liên quan
 
@@ -2155,12 +2156,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/agent
 - Tiêu đề:
   - H2: Không gian làm việc (bắt buộc)
-  - H2: Tệp khởi động (được chèn)
+  - H2: Tệp bootstrap (được chèn)
   - H2: Công cụ tích hợp sẵn
   - H2: Skills
   - H2: Ranh giới runtime
   - H2: Phiên
-  - H2: Điều hướng khi đang truyền phát
+  - H2: Điều hướng khi đang stream
   - H2: Tham chiếu mô hình
   - H2: Cấu hình (tối thiểu)
   - H2: Liên quan
@@ -2172,12 +2173,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tổng quan
   - H2: Thành phần và luồng
   - H3: Gateway (daemon)
-  - H3: Máy khách (ứng dụng mac / CLI / quản trị web)
+  - H3: Máy khách (ứng dụng Mac / CLI / quản trị web)
   - H3: Node (macOS / iOS / Android / không giao diện)
   - H3: WebChat
   - H2: Vòng đời kết nối (một máy khách)
-  - H2: Giao thức dây (tóm tắt)
-  - H2: Ghép nối + tin cậy cục bộ
+  - H2: Giao thức truyền dẫn (tóm tắt)
+  - H2: Ghép cặp + tin cậy cục bộ
   - H2: Định kiểu giao thức và sinh mã
   - H2: Truy cập từ xa
   - H2: Ảnh chụp nhanh vận hành
@@ -2192,8 +2193,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Vì sao dùng nó
   - H2: Cấu hình bắt buộc
   - H2: Lệnh
-  - H2: Những gì thay đổi
-  - H2: Những gì không thay đổi
+  - H2: Điều gì thay đổi
+  - H2: Điều gì không thay đổi
   - H2: Khắc phục sự cố
 
 ## concepts/commitments.md
@@ -2217,13 +2218,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tự động Compaction
   - H2: Compaction thủ công
   - H2: Cấu hình
-  - H3: Dùng một mô hình khác
-  - H3: Bảo toàn mã định danh
-  - H3: Bộ bảo vệ byte bản ghi phiên hoạt động
-  - H3: Bản ghi phiên kế nhiệm
+  - H3: Dùng mô hình khác
+  - H3: Giữ nguyên mã định danh
+  - H3: Bộ chặn byte bản ghi hoạt động
+  - H3: Bản ghi kế nhiệm
   - H3: Thông báo Compaction
   - H3: Xả bộ nhớ
-  - H2: Nhà cung cấp Compaction có thể cắm được
+  - H2: Nhà cung cấp Compaction có thể cắm vào
   - H2: Compaction so với cắt tỉa
   - H2: Khắc phục sự cố
   - H2: Liên quan
@@ -2236,12 +2237,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cách hoạt động
   - H3: Vòng đời subagent (tùy chọn)
   - H3: Phần bổ sung system prompt
-  - H2: Engine kế thừa
+  - H2: Engine cũ
   - H2: Engine Plugin
   - H3: Giao diện ContextEngine
   - H3: Thiết lập runtime
   - H3: Yêu cầu host
-  - H3: Cách ly lỗi
+  - H3: Cô lập lỗi
   - H3: ownsCompaction
   - H2: Tham chiếu cấu hình
   - H2: Quan hệ với Compaction và bộ nhớ
@@ -2260,10 +2261,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Những gì tính vào cửa sổ ngữ cảnh
   - H2: Cách OpenClaw xây dựng system prompt
   - H2: Tệp không gian làm việc được chèn (Ngữ cảnh dự án)
-  - H2: Skills: được chèn so với tải theo yêu cầu
+  - H2: Skills: được chèn so với tải theo nhu cầu
   - H2: Công cụ: có hai loại chi phí
   - H2: Lệnh, chỉ thị và "lối tắt nội tuyến"
-  - H2: Phiên, Compaction và cắt tỉa (những gì được lưu lại)
+  - H2: Phiên, Compaction và cắt tỉa (những gì được lưu giữ)
   - H2: /context thực sự báo cáo gì
   - H2: Liên quan
 
@@ -2273,24 +2274,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Delegate là gì?
   - H2: Vì sao dùng delegate?
-  - H2: Các tầng năng lực
-  - H3: Tầng 1: Chỉ đọc + bản nháp
-  - H3: Tầng 2: Gửi thay mặt
-  - H3: Tầng 3: Chủ động
-  - H2: Điều kiện tiên quyết: cách ly và gia cố
-  - H3: Chặn cứng (không thương lượng)
+  - H2: Cấp năng lực
+  - H3: Cấp 1: Chỉ đọc + nháp
+  - H3: Cấp 2: Gửi thay mặt
+  - H3: Cấp 3: Chủ động
+  - H2: Điều kiện tiên quyết: cô lập và gia cố
+  - H3: Chặn cứng (không thể thương lượng)
   - H3: Hạn chế công cụ
-  - H3: Cách ly sandbox
-  - H3: Nhật ký kiểm tra
+  - H3: Cô lập sandbox
+  - H3: Dấu vết kiểm toán
   - H2: Thiết lập delegate
   - H3: 1. Tạo agent delegate
   - H3: 2. Cấu hình ủy quyền nhà cung cấp danh tính
   - H4: Microsoft 365
   - H4: Google Workspace
-  - H3: 3. Liên kết delegate với các kênh
+  - H3: 3. Gắn delegate vào kênh
   - H3: 4. Thêm thông tin xác thực vào agent delegate
   - H2: Ví dụ: trợ lý tổ chức
-  - H2: Mẫu mở rộng quy mô
+  - H2: Mẫu mở rộng
   - H2: Liên quan
 
 ## concepts/dreaming.md
@@ -2300,15 +2301,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Dreaming ghi gì
   - H2: Mô hình pha
   - H2: Nạp bản ghi phiên
-  - H2: Nhật ký Dream
+  - H2: Nhật ký giấc mơ
   - H2: Tín hiệu xếp hạng sâu
   - H2: Phạm vi báo cáo thử nghiệm bóng QA
   - H2: Lập lịch
   - H2: Bắt đầu nhanh
-  - H2: Lệnh slash
+  - H2: Lệnh gạch chéo
   - H2: Quy trình CLI
   - H2: Mặc định chính
-  - H2: Giao diện Dreams
+  - H2: Giao diện giấc mơ
   - H2: Dreaming không bao giờ chạy: trạng thái hiển thị bị chặn
   - H2: Liên quan
 
@@ -2317,8 +2318,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/experimental-features
 - Tiêu đề:
   - H2: Cờ hiện được ghi tài liệu
-  - H2: Chế độ tinh gọn cho mô hình cục bộ
-  - H3: Vì sao dùng ba công cụ này
+  - H2: Chế độ gọn nhẹ cho mô hình cục bộ
+  - H3: Vì sao là ba công cụ này
   - H3: Khi nào bật
   - H3: Khi nào để tắt
   - H3: Bật
@@ -2341,8 +2342,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Điều phối GitHub
   - H2: CLI cục bộ
   - H2: Chế độ hydrate
-  - H2: Diễn giải thời điểm
-  - H2: Danh sách kiểm tra bằng chứng
+  - H2: Diễn giải thời gian
+  - H2: Danh sách kiểm chứng bằng chứng
   - H2: Xử lý lỗi
   - H2: Liên quan
 
@@ -2351,9 +2352,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/mantis
 - Tiêu đề:
   - H2: Mục tiêu
-  - H2: Phi mục tiêu
+  - H2: Không phải mục tiêu
   - H2: Quyền sở hữu
-  - H2: Hình dạng lệnh
+  - H2: Dạng lệnh
   - H2: Vòng đời chạy
   - H2: Discord MVP
   - H2: Các phần QA hiện có
@@ -2361,7 +2362,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Trình duyệt và VNC
   - H2: Máy
   - H2: Bí mật
-  - H2: Hiện vật GitHub và bình luận PR
+  - H2: Artifact GitHub và bình luận PR
   - H2: Ghi chú triển khai riêng tư
   - H2: Thêm một kịch bản
   - H2: Mở rộng nhà cung cấp
@@ -2387,7 +2388,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/memory-builtin
 - Tiêu đề:
-  - H2: Những gì nó cung cấp
+  - H2: Nó cung cấp gì
   - H2: Bắt đầu
   - H2: Nhà cung cấp embedding được hỗ trợ
   - H2: Cách lập chỉ mục hoạt động
@@ -2400,13 +2401,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/memory-honcho
 - Tiêu đề:
-  - H2: Những gì nó cung cấp
+  - H2: Nó cung cấp gì
   - H2: Công cụ có sẵn
   - H2: Bắt đầu
   - H2: Cấu hình
   - H2: Di chuyển bộ nhớ hiện có
   - H2: Cách hoạt động
-  - H2: Honcho so với bộ nhớ tích hợp
+  - H2: Honcho so với bộ nhớ tích hợp sẵn
   - H2: Lệnh CLI
   - H2: Đọc thêm
   - H2: Liên quan
@@ -2415,14 +2416,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/memory-qmd
 - Tiêu đề:
-  - H2: Những gì nó bổ sung so với bản tích hợp
+  - H2: Nó bổ sung gì so với tích hợp sẵn
   - H2: Bắt đầu
   - H3: Điều kiện tiên quyết
   - H3: Bật
-  - H2: Cách sidecar hoạt động
+  - H2: Sidecar hoạt động như thế nào
   - H2: Hiệu năng tìm kiếm và khả năng tương thích
   - H2: Ghi đè mô hình
-  - H2: Lập chỉ mục các đường dẫn bổ sung
+  - H2: Lập chỉ mục đường dẫn bổ sung
   - H2: Lập chỉ mục bản ghi phiên
   - H2: Phạm vi tìm kiếm
   - H2: Trích dẫn
@@ -2453,17 +2454,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/memory
 - Tiêu đề:
   - H2: Cách hoạt động
-  - H2: Nội dung nào đặt ở đâu
+  - H2: Cái gì đi đâu
   - H2: Bộ nhớ nhạy cảm với hành động
   - H2: Cam kết được suy luận
   - H2: Công cụ bộ nhớ
-  - H2: Plugin đồng hành Memory Wiki
+  - H2: Plugin đồng hành Wiki bộ nhớ
   - H2: Tìm kiếm bộ nhớ
   - H2: Backend bộ nhớ
   - H2: Lớp wiki tri thức
   - H2: Tự động xả bộ nhớ
   - H2: Dreaming
-  - H2: Backfill có nền tảng và quảng bá trực tiếp
+  - H2: Backfill có căn cứ và quảng bá trực tiếp
   - H2: CLI
   - H2: Đọc thêm
   - H2: Liên quan
@@ -2474,12 +2475,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Vấn đề
   - H2: Mục tiêu
-  - H2: Phi mục tiêu
+  - H2: Không phải mục tiêu
   - H2: Mô hình tham chiếu
   - H2: Mô hình lõi
-  - H2: Thuật ngữ thông điệp
-  - H3: Thông điệp
-  - H3: Mục tiêu
+  - H2: Thuật ngữ tin nhắn
+  - H3: Tin nhắn
+  - H3: Đích
   - H3: Quan hệ
   - H3: Nguồn gốc
   - H3: Biên nhận
@@ -2487,21 +2488,21 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Ngữ cảnh gửi
   - H2: Ngữ cảnh trực tiếp
   - H2: Bề mặt adapter
-  - H2: Rút gọn SDK công khai
-  - H2: Quan hệ với đầu vào kênh
-  - H2: Rào chắn tương thích
+  - H2: Giảm SDK công khai
+  - H2: Quan hệ với inbound của kênh
+  - H2: Lan can tương thích
   - H2: Lưu trữ nội bộ
   - H2: Lớp lỗi
   - H2: Ánh xạ kênh
   - H2: Kế hoạch di chuyển
-  - H3: Giai đoạn 1: Miền thông điệp nội bộ
+  - H3: Giai đoạn 1: Miền tin nhắn nội bộ
   - H3: Giai đoạn 2: Lõi gửi bền vững
-  - H3: Giai đoạn 3: Cầu nối đầu vào kênh
-  - H3: Giai đoạn 4: Cầu nối bộ điều phối đã chuẩn bị
+  - H3: Giai đoạn 3: Cầu inbound của kênh
+  - H3: Giai đoạn 4: Cầu dispatcher đã chuẩn bị
   - H3: Giai đoạn 5: Vòng đời trực tiếp hợp nhất
   - H3: Giai đoạn 6: SDK công khai
-  - H3: Giai đoạn 7: Tất cả bộ gửi
-  - H3: Giai đoạn 8: Gỡ bỏ khả năng tương thích đặt tên theo lượt
+  - H3: Giai đoạn 7: Tất cả sender
+  - H3: Giai đoạn 8: Gỡ tương thích theo tên turn
   - H2: Kế hoạch kiểm thử
   - H2: Câu hỏi mở
   - H2: Tiêu chí chấp nhận
@@ -2511,17 +2512,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/messages
 - Tiêu đề:
-  - H2: Luồng thông điệp (cấp cao)
-  - H2: Khử trùng lặp đầu vào
-  - H2: Chống rung đầu vào
+  - H2: Luồng tin nhắn (cấp cao)
+  - H2: Khử trùng lặp inbound
+  - H2: Debounce inbound
   - H2: Phiên và thiết bị
   - H2: Siêu dữ liệu kết quả công cụ
-  - H2: Nội dung đầu vào và ngữ cảnh lịch sử
-  - H2: Xếp hàng và theo dõi
+  - H2: Nội dung inbound và ngữ cảnh lịch sử
+  - H2: Xếp hàng và theo dõi tiếp
   - H2: Quyền sở hữu lượt chạy kênh
-  - H2: Truyền phát, chia đoạn và gom lô
-  - H2: Khả năng hiển thị suy luận và token
-  - H2: Tiền tố, luồng thảo luận và trả lời
+  - H2: Streaming, chia đoạn và gom lô
+  - H2: Khả năng hiển thị reasoning và token
+  - H2: Tiền tố, phân luồng và trả lời
   - H2: Trả lời im lặng
   - H2: Liên quan
 
@@ -2531,20 +2532,20 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Luồng runtime
   - H2: Chính sách nguồn lựa chọn
-  - H2: Bộ nhớ đệm bỏ qua lỗi xác thực
+  - H2: Cache bỏ qua lỗi xác thực
   - H2: Thông báo fallback hiển thị cho người dùng
   - H2: Lưu trữ xác thực (khóa + OAuth)
   - H2: ID hồ sơ
   - H2: Thứ tự xoay vòng
-  - H3: Độ bám phiên (thân thiện với bộ nhớ đệm)
-  - H3: Gói đăng ký OpenAI Codex cộng bản sao lưu API-key
-  - H2: Thời gian chờ
-  - H2: Tắt do thanh toán
+  - H3: Độ bám phiên (thân thiện với cache)
+  - H3: Gói đăng ký OpenAI Codex cộng với API-key dự phòng
+  - H2: Cooldown
+  - H2: Vô hiệu hóa do thanh toán
   - H2: Fallback mô hình
   - H3: Quy tắc chuỗi ứng viên
-  - H3: Lỗi nào kích hoạt fallback
+  - H3: Lỗi nào chuyển tiếp fallback
   - H3: Hành vi bỏ qua cooldown so với probe
-  - H2: Ghi đè phiên và chuyển mô hình trực tiếp
+  - H2: Ghi đè phiên và chuyển đổi mô hình trực tiếp
   - H2: Khả năng quan sát và tóm tắt lỗi
   - H2: Cấu hình liên quan
 
@@ -2554,14 +2555,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Quy tắc nhanh
   - H2: Hành vi nhà cung cấp do Plugin sở hữu
-  - H2: Xoay vòng khóa API
+  - H2: Xoay vòng API key
   - H2: Plugin nhà cung cấp chính thức
   - H3: OpenAI
   - H3: Anthropic
   - H3: OpenAI ChatGPT/Codex OAuth
-  - H3: Tùy chọn host dạng đăng ký khác
+  - H3: Tùy chọn lưu trữ kiểu đăng ký khác
   - H3: OpenCode
-  - H3: Google Gemini (khóa API)
+  - H3: Google Gemini (API key)
   - H3: Google Vertex và Gemini CLI
   - H3: Z.AI (GLM)
   - H3: Vercel AI Gateway
@@ -2569,9 +2570,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H4: Điểm đặc thù đáng biết
   - H2: Nhà cung cấp qua models.providers (URL tùy chỉnh/cơ sở)
   - H3: Moonshot AI (Kimi)
-  - H3: Lập trình Kimi
+  - H3: Kimi coding
   - H3: Volcano Engine (Doubao)
-  - H3: BytePlus (Quốc tế)
+  - H3: BytePlus (quốc tế)
   - H3: Synthetic
   - H3: MiniMax
   - H3: LM Studio
@@ -2592,12 +2593,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Onboarding (khuyến nghị)
   - H2: Khóa cấu hình (tổng quan)
   - H3: Chỉnh sửa allowlist an toàn
-  - H2: "Mô hình không được phép" (và vì sao trả lời dừng)
+  - H2: "Mô hình không được phép" (và vì sao phản hồi dừng)
   - H2: Chuyển mô hình trong chat (/model)
   - H2: Lệnh CLI
   - H3: models list
   - H3: models status
-  - H2: Quét (mô hình OpenRouter miễn phí)
+  - H2: Quét (mô hình miễn phí OpenRouter)
   - H2: Registry mô hình (models.json)
   - H2: Liên quan
 
@@ -2608,29 +2609,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: "Một agent" là gì?
   - H2: Đường dẫn (bản đồ nhanh)
   - H3: Chế độ một agent (mặc định)
-  - H2: Trình trợ giúp agent
+  - H2: Trợ lý agent
   - H2: Bắt đầu nhanh
-  - H2: Nhiều agent = nhiều người, nhiều cá tính
-  - H2: Tìm kiếm bộ nhớ QMD liên agent
+  - H2: Nhiều agent = nhiều người, nhiều tính cách
+  - H2: Tìm kiếm bộ nhớ QMD giữa các agent
   - H2: Một số WhatsApp, nhiều người (tách DM)
-  - H2: Quy tắc định tuyến (cách thông điệp chọn agent)
+  - H2: Quy tắc định tuyến (cách tin nhắn chọn agent)
   - H2: Nhiều tài khoản / số điện thoại
   - H2: Khái niệm
   - H2: Ví dụ nền tảng
   - H2: Mẫu phổ biến
-  - H2: Sandbox và cấu hình công cụ theo agent
+  - H2: Sandbox và cấu hình công cụ theo từng agent
   - H2: Liên quan
 
 ## concepts/oauth.md
 
 - Tuyến: /concepts/oauth
 - Tiêu đề:
-  - H2: Bộ nhận token (vì sao tồn tại)
-  - H2: Lưu trữ (nơi token tồn tại)
-  - H2: Tương thích token Anthropic kế thừa
+  - H2: Token sink (vì sao nó tồn tại)
+  - H2: Lưu trữ (token nằm ở đâu)
+  - H2: Tương thích token Anthropic cũ
   - H2: Di chuyển Anthropic Claude CLI
   - H2: Trao đổi OAuth (cách đăng nhập hoạt động)
-  - H3: setup-token Anthropic
+  - H3: Anthropic setup-token
   - H3: OpenAI Codex (ChatGPT OAuth)
   - H2: Làm mới + hết hạn
   - H2: Nhiều tài khoản (hồ sơ) + định tuyến
@@ -2643,9 +2644,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/parallel-specialist-lanes
 - Tiêu đề:
   - H2: Nguyên tắc nền tảng
-  - H2: Lộ trình triển khai được khuyến nghị
+  - H2: Triển khai được khuyến nghị
   - H3: Giai đoạn 1: hợp đồng lane + công việc nặng chạy nền
-  - H3: Giai đoạn 2: điều khiển ưu tiên và đồng thời
+  - H3: Giai đoạn 2: kiểm soát mức ưu tiên và đồng thời
   - H3: Giai đoạn 3: bộ điều phối / bộ điều khiển lưu lượng
   - H2: Mẫu hợp đồng lane tối thiểu
   - H2: Liên quan
@@ -2656,24 +2657,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Kịch bản
   - H2: Mô hình quyền riêng tư
-  - H2: Mở rộng bộ này
+  - H2: Mở rộng bộ
 
 ## concepts/presence.md
 
 - Tuyến: /concepts/presence
 - Tiêu đề:
-  - H2: Trường presence (những gì hiển thị)
-  - H2: Bộ tạo (presence đến từ đâu)
-  - H3: 1) Mục tự nhập của Gateway
+  - H2: Trường hiện diện (những gì hiển thị)
+  - H2: Nguồn tạo (hiện diện đến từ đâu)
+  - H3: 1) Mục tự khai của Gateway
   - H3: 2) Kết nối WebSocket
   - H4: Vì sao các lệnh CLI chạy một lần không hiển thị
-  - H3: 3) beacon system-event
+  - H3: 3) Beacon system-event
   - H3: 4) Node kết nối (role: node)
-  - H2: Quy tắc hợp nhất + khử trùng lặp (vì sao instanceId quan trọng)
+  - H2: Quy tắc hợp nhất + loại trùng lặp (vì sao instanceId quan trọng)
   - H2: TTL và kích thước giới hạn
-  - H2: Lưu ý về remote/tunnel (IP loopback)
-  - H2: Bộ tiêu thụ
-  - H3: Thẻ phiên bản macOS
+  - H2: Lưu ý về điều khiển từ xa/tunnel (IP loopback)
+  - H2: Bên tiêu thụ
+  - H3: Tab Phiên bản macOS
   - H2: Mẹo gỡ lỗi
   - H2: Liên quan
 
@@ -2683,9 +2684,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H2: Những gì người dùng thấy
-  - H2: Chọn một chế độ
+  - H2: Chọn chế độ
   - H2: Cấu hình nhãn
-  - H2: Kiểm soát các dòng tiến độ
+  - H2: Kiểm soát dòng tiến trình
   - H2: Hành vi kênh
   - H2: Hoàn tất
   - H2: Khắc phục sự cố
@@ -2697,7 +2698,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bề mặt lệnh
   - H2: Luồng vận hành
-  - H2: Phạm vi bao phủ transport trực tiếp
+  - H2: Phạm vi transport trực tiếp
   - H2: Tham chiếu QA cho Telegram, Discord, Slack và WhatsApp
   - H3: Cờ CLI dùng chung
   - H3: QA Telegram
@@ -2707,7 +2708,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: QA WhatsApp
   - H3: Nhóm thông tin xác thực Convex
   - H2: Seed dựa trên repo
-  - H2: Lane giả lập provider
+  - H2: Lane giả lập nhà cung cấp
   - H2: Bộ chuyển đổi transport
   - H3: Thêm một kênh
   - H3: Tên helper kịch bản
@@ -2719,10 +2720,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/qa-matrix
 - Tiêu đề:
   - H2: Bắt đầu nhanh
-  - H2: Lane làm gì
+  - H2: Lane này làm gì
   - H2: CLI
   - H3: Cờ phổ biến
-  - H3: Cờ provider
+  - H3: Cờ nhà cung cấp
   - H2: Hồ sơ
   - H2: Kịch bản
   - H2: Biến môi trường
@@ -2746,13 +2747,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/queue
 - Tiêu đề:
-  - H2: Vì sao
+  - H2: Lý do
   - H2: Cách hoạt động
   - H2: Mặc định
   - H2: Chế độ hàng đợi
   - H2: Tùy chọn hàng đợi
   - H2: Điều hướng và streaming
-  - H2: Độ ưu tiên
+  - H2: Thứ tự ưu tiên
   - H2: Ghi đè theo phiên
   - H2: Phạm vi và bảo đảm
   - H2: Khắc phục sự cố
@@ -2765,7 +2766,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Mục tiêu
   - H2: Mặc định
   - H2: Hành vi
-  - H3: Provider mô hình
+  - H3: Nhà cung cấp mô hình
   - H3: Discord
   - H3: Telegram
   - H2: Cấu hình
@@ -2778,10 +2779,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Vì sao điều này quan trọng
   - H2: Cách hoạt động
-  - H2: Dọn dẹp ảnh legacy
+  - H2: Dọn dẹp hình ảnh legacy
   - H2: Mặc định thông minh
   - H2: Bật hoặc tắt
-  - H2: Pruning so với Compaction
+  - H2: Pruning so với compaction
   - H2: Đọc thêm
   - H2: Liên quan
 
@@ -2789,11 +2790,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/session-tool
 - Tiêu đề:
-  - H2: Công cụ khả dụng
+  - H2: Công cụ có sẵn
   - H2: Liệt kê và đọc phiên
   - H2: Gửi tin nhắn liên phiên
   - H2: Helper trạng thái và điều phối
-  - H2: Sinh sub-agent
+  - H2: Tạo sub-agent
   - H2: Khả năng hiển thị
   - H2: Đọc thêm
   - H2: Liên quan
@@ -2804,9 +2805,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Cách định tuyến tin nhắn
   - H2: Cô lập DM
-  - H3: Kênh liên kết Dock
+  - H3: Kênh được liên kết với Dock
   - H2: Vòng đời phiên
-  - H2: Trạng thái nằm ở đâu
+  - H2: Trạng thái được lưu ở đâu
   - H2: Bảo trì phiên
   - H2: Kiểm tra phiên
   - H2: Đọc thêm
@@ -2816,10 +2817,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/soul
 - Tiêu đề:
-  - H2: Những gì thuộc về SOUL.md
+  - H2: Nội dung nên có trong SOUL.md
   - H2: Vì sao cách này hiệu quả
   - H2: Prompt Molty
-  - H2: Kết quả tốt trông như thế nào
+  - H2: Dấu hiệu của kết quả tốt
   - H2: Một cảnh báo
   - H2: Liên quan
 
@@ -2828,16 +2829,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/streaming
 - Tiêu đề:
   - H2: Streaming theo khối (tin nhắn kênh)
-  - H3: Phân phối media bằng streaming theo khối
-  - H2: Thuật toán chia đoạn (giới hạn thấp/cao)
-  - H2: Gộp (hợp nhất các khối streamed)
-  - H2: Nhịp độ giống con người giữa các khối
-  - H2: "Stream các đoạn hoặc mọi thứ"
+  - H3: Phân phối media với streaming theo khối
+  - H2: Thuật toán chia chunk (giới hạn thấp/cao)
+  - H2: Hợp nhất (gộp các khối được stream)
+  - H2: Nhịp giống con người giữa các khối
+  - H2: "Stream từng chunk hoặc toàn bộ"
   - H2: Chế độ streaming bản xem trước
   - H3: Ánh xạ kênh
   - H3: Hành vi runtime
-  - H3: Cập nhật bản xem trước tiến độ công cụ
-  - H3: Lane tiến độ commentary
+  - H3: Cập nhật bản xem trước tiến trình công cụ
+  - H3: Lane tiến trình commentary
   - H2: Liên quan
 
 ## concepts/system-prompt.md
@@ -2858,7 +2859,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /concepts/timezone
 - Tiêu đề:
   - H2: Ba bề mặt múi giờ
-  - H2: Đặt múi giờ người dùng
+  - H2: Thiết lập múi giờ của người dùng
   - H2: Khi nào ghi đè
   - H2: Liên quan
 
@@ -2872,7 +2873,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cách schema được dùng trong runtime
   - H2: Frame ví dụ
   - H2: Client tối thiểu (Node.js)
-  - H2: Ví dụ thực hành: thêm một method từ đầu đến cuối
+  - H2: Ví dụ đầy đủ: thêm một phương thức từ đầu đến cuối
   - H2: Hành vi codegen Swift
   - H2: Phiên bản hóa + tương thích
   - H2: Mẫu và quy ước schema
@@ -2894,13 +2895,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /concepts/usage-tracking
 - Tiêu đề:
-  - H2: Nó là gì
+  - H2: Đây là gì
   - H2: Nó hiển thị ở đâu
-  - H2: Chế độ footer sử dụng mặc định
+  - H2: Chế độ footer usage mặc định
   - H3: Ba trạng thái phiên riêng biệt
-  - H3: Độ ưu tiên
+  - H3: Thứ tự ưu tiên
   - H3: Đặt lại so với tắt
-  - H3: Hành vi toggle
+  - H3: Hành vi bật/tắt
   - H3: Cấu hình
   - H2: Footer /usage full tùy chỉnh
   - H3: Hình dạng
@@ -2908,27 +2909,27 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Động từ
   - H3: Dạng mảnh
   - H3: Ví dụ
-  - H2: Provider + thông tin xác thực
+  - H2: Nhà cung cấp + thông tin xác thực
   - H2: Liên quan
 
 ## date-time.md
 
 - Tuyến: /date-time
 - Tiêu đề:
-  - H2: Envelope tin nhắn (mặc định theo local)
+  - H2: Envelope tin nhắn (mặc định theo giờ địa phương)
   - H3: Ví dụ
   - H2: System prompt: ngày và giờ hiện tại
-  - H2: Dòng sự kiện hệ thống (mặc định theo local)
+  - H2: Dòng sự kiện hệ thống (mặc định theo giờ địa phương)
   - H3: Cấu hình múi giờ người dùng + định dạng
   - H2: Phát hiện định dạng thời gian (tự động)
-  - H2: Payload công cụ + connector (thời gian provider thô + trường đã chuẩn hóa)
+  - H2: Payload công cụ + connector (thời gian thô của nhà cung cấp + trường đã chuẩn hóa)
   - H2: Tài liệu liên quan
 
 ## debug/node-issue.md
 
 - Tuyến: /debug/node-issue
 - Tiêu đề:
-  - H1: Sự cố Node + tsx "\\name is not a function"
+  - H1: Node + tsx gặp sự cố "\\name is not a function"
   - H2: Tóm tắt
   - H2: Môi trường
   - H2: Tái hiện (chỉ Node)
@@ -2950,7 +2951,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Ghi đè env (một lần)
   - H2: Cờ profiling
   - H2: Artifact timeline
-  - H2: Log được ghi ở đâu
+  - H2: Log được lưu ở đâu
   - H2: Trích xuất log
   - H2: Ghi chú
   - H2: Liên quan
@@ -2959,12 +2960,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /gateway/authentication
 - Tiêu đề:
-  - H2: Thiết lập được khuyến nghị (API key, bất kỳ provider nào)
-  - H2: Anthropic: khả năng tương thích Claude CLI và token
+  - H2: Thiết lập được khuyến nghị (API key, bất kỳ nhà cung cấp nào)
+  - H2: Anthropic: Claude CLI và khả năng tương thích token
   - H2: Ghi chú về Anthropic
   - H2: Kiểm tra trạng thái xác thực mô hình
-  - H2: Hành vi xoay vòng API key (Gateway)
-  - H2: Gỡ xác thực provider khi Gateway đang chạy
+  - H2: Hành vi xoay vòng API key (gateway)
+  - H2: Gỡ xác thực nhà cung cấp khi gateway đang chạy
   - H2: Kiểm soát thông tin xác thực được dùng
   - H3: OpenAI và id openai-codex legacy
   - H3: Trong lúc đăng nhập (CLI)
@@ -2980,7 +2981,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /gateway/background-process
 - Tiêu đề:
   - H2: công cụ exec
-  - H2: Bắt cầu tiến trình con
+  - H2: Cầu nối tiến trình con
   - H2: công cụ process
   - H2: Ví dụ
   - H2: Liên quan
@@ -2990,11 +2991,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /gateway/bonjour
 - Tiêu đề:
   - H2: Bonjour diện rộng (Unicast DNS-SD) qua Tailscale
-  - H3: Cấu hình Gateway (được khuyến nghị)
-  - H3: Thiết lập máy chủ DNS một lần (host Gateway)
-  - H3: Cài đặt DNS Tailscale
-  - H3: Bảo mật listener Gateway (được khuyến nghị)
-  - H2: Những gì quảng bá
+  - H3: Cấu hình Gateway (khuyến nghị)
+  - H3: Thiết lập máy chủ DNS một lần (máy chủ gateway)
+  - H3: Thiết lập DNS Tailscale
+  - H3: Bảo mật listener Gateway (khuyến nghị)
+  - H2: Những gì được quảng bá
   - H2: Loại dịch vụ
   - H2: Khóa TXT (gợi ý không bí mật)
   - H2: Gỡ lỗi trên macOS
@@ -3002,10 +3003,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Gỡ lỗi trên node iOS
   - H2: Khi nào bật Bonjour
   - H2: Khi nào tắt Bonjour
-  - H2: Vấn đề thường gặp với Docker
+  - H2: Lưu ý Docker
   - H2: Khắc phục sự cố Bonjour bị tắt
   - H2: Chế độ lỗi phổ biến
-  - H2: Tên instance đã escape (\032)
+  - H2: Tên phiên bản đã escape (\032)
   - H2: Bật / tắt / cấu hình
   - H2: Tài liệu liên quan
 
@@ -3033,14 +3034,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cách hoạt động
   - H2: Phiên
   - H2: Prelude fallback từ phiên claude-cli
-  - H2: Ảnh (truyền qua)
+  - H2: Hình ảnh (truyền qua)
   - H2: Đầu vào / đầu ra
   - H2: Mặc định (do Plugin sở hữu)
   - H2: Mặc định do Plugin sở hữu
-  - H2: Quyền sở hữu Compaction native
-  - H2: Overlay MCP bundle
+  - H2: Quyền sở hữu Compaction gốc
+  - H2: Lớp phủ MCP bundle
   - H2: Giới hạn reseed lịch sử
-  - H2: Giới hạn
+  - H2: Hạn chế
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
@@ -3048,7 +3049,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /gateway/config-agents
 - Tiêu đề:
-  - H2: Mặc định agent
+  - H2: Mặc định của agent
   - H3: agents.defaults.workspace
   - H3: agents.defaults.repoRoot
   - H3: agents.defaults.skills
@@ -3099,7 +3100,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Kênh
   - H3: Quyền truy cập DM và nhóm
-  - H3: Ghi đè mô hình kênh
+  - H3: Ghi đè mô hình theo kênh
   - H3: Mặc định kênh và Heartbeat
   - H3: WhatsApp
   - H3: Telegram
@@ -3112,11 +3113,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Matrix
   - H3: Microsoft Teams
   - H3: IRC
-  - H3: Nhiều tài khoản (mọi kênh)
+  - H3: Đa tài khoản (tất cả kênh)
   - H3: Kênh Plugin khác
-  - H3: Cổng kiểm soát mention trong chat nhóm
+  - H3: Cổng nhắc tên trong chat nhóm
   - H4: Giới hạn lịch sử DM
-  - H4: Chế độ self-chat
+  - H4: Chế độ tự chat
   - H3: Lệnh (xử lý lệnh chat)
   - H2: Liên quan
 
@@ -3127,7 +3128,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Công cụ
   - H3: Hồ sơ công cụ
   - H3: Nhóm công cụ
-  - H3: Công cụ MCP và plugin bên trong chính sách công cụ sandbox
+  - H3: Công cụ MCP và Plugin trong chính sách công cụ sandbox
   - H3: tools.codeMode
   - H3: tools.allow / tools.deny
   - H3: tools.byProvider
@@ -3153,16 +3154,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H3: Tối thiểu tuyệt đối
-  - H3: Cấu hình khởi đầu được khuyến nghị
+  - H3: Khởi đầu được đề xuất
   - H2: Ví dụ mở rộng (các tùy chọn chính)
-  - H3: Kho skill ngang cấp được liên kết bằng symlink
-  - H2: Mẫu thường gặp
-  - H3: Đường cơ sở skill dùng chung với một ghi đè
+  - H3: Kho kỹ năng anh em được liên kết tượng trưng
+  - H2: Mẫu thường dùng
+  - H3: Đường cơ sở kỹ năng dùng chung với một ghi đè
   - H3: Thiết lập đa nền tảng
-  - H3: Tự động phê duyệt mạng nút tin cậy
-  - H3: Chế độ DM an toàn (hộp thư đến dùng chung / DM nhiều người dùng)
-  - H3: Khóa API Anthropic + phương án dự phòng MiniMax
-  - H3: Bot công việc (quyền truy cập hạn chế)
+  - H3: Tự động phê duyệt mạng Node tin cậy
+  - H3: Chế độ DM bảo mật (hộp thư đến dùng chung / DM nhiều người dùng)
+  - H3: Khóa API Anthropic + dự phòng MiniMax
+  - H3: Bot công việc (quyền truy cập bị hạn chế)
   - H3: Chỉ mô hình cục bộ
   - H2: Mẹo
   - H2: Liên quan
@@ -3172,44 +3173,44 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /gateway/configuration-reference
 - Tiêu đề:
   - H2: Kênh
-  - H2: Mặc định agent, đa agent, phiên và tin nhắn
+  - H2: Mặc định tác tử, đa tác tử, phiên và tin nhắn
   - H2: Công cụ và nhà cung cấp tùy chỉnh
   - H2: Mô hình
   - H2: MCP
   - H2: Skills
   - H2: Plugins
-  - H3: Cấu hình plugin bộ chạy Codex
+  - H3: Cấu hình Plugin bộ điều khiển Codex
   - H2: Cam kết
   - H2: Trình duyệt
   - H2: UI
   - H2: Gateway
   - H3: Điểm cuối tương thích OpenAI
-  - H3: Cô lập nhiều phiên bản
+  - H3: Cô lập đa phiên bản
   - H3: gateway.tls
   - H3: gateway.reload
   - H2: Hook
   - H3: Tích hợp Gmail
-  - H2: Máy chủ plugin Canvas
+  - H2: Máy chủ Plugin Canvas
   - H2: Khám phá
   - H3: mDNS (Bonjour)
   - H3: Diện rộng (DNS-SD)
   - H2: Môi trường
-  - H3: env (biến môi trường nội tuyến)
-  - H3: Thay thế biến môi trường
+  - H3: env (biến env nội tuyến)
+  - H3: Thay thế biến env
   - H2: Bí mật
   - H3: SecretRef
   - H3: Bề mặt thông tin xác thực được hỗ trợ
   - H3: Cấu hình nhà cung cấp bí mật
   - H2: Lưu trữ xác thực
   - H3: auth.cooldowns
-  - H2: Ghi nhật ký
+  - H2: Ghi log
   - H2: Chẩn đoán
   - H2: Cập nhật
   - H2: ACP
   - H2: CLI
   - H2: Trình hướng dẫn
   - H2: Danh tính
-  - H2: Cầu nối (cũ, đã gỡ bỏ)
+  - H2: Bridge (cũ, đã gỡ bỏ)
   - H2: Cron
   - H3: cron.retry
   - H3: cron.failureAlert
@@ -3225,12 +3226,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cấu hình tối thiểu
   - H2: Chỉnh sửa cấu hình
   - H2: Xác thực nghiêm ngặt
-  - H2: Tác vụ thường gặp
+  - H2: Tác vụ thường dùng
   - H2: Tải lại nóng cấu hình
   - H3: Chế độ tải lại
   - H3: Nội dung áp dụng nóng so với nội dung cần khởi động lại
   - H3: Lập kế hoạch tải lại
-  - H2: RPC cấu hình (cập nhật lập trình)
+  - H2: RPC cấu hình (cập nhật bằng lập trình)
   - H2: Biến môi trường
   - H2: Tham chiếu đầy đủ
   - H2: Liên quan
@@ -3241,9 +3242,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H2: Lệnh trò chuyện
-  - H2: Bản xuất chứa những gì
+  - H2: Nội dung bản xuất chứa
   - H2: Mô hình quyền riêng tư
-  - H2: Trình ghi ổn định
+  - H2: Bộ ghi độ ổn định
   - H2: Tùy chọn hữu ích
   - H2: Tắt chẩn đoán
   - H2: Liên quan
@@ -3254,13 +3255,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Thuật ngữ
   - H2: Vì sao chúng tôi giữ cả trực tiếp và SSH
-  - H2: Đầu vào khám phá (cách client biết gateway ở đâu)
+  - H2: Đầu vào khám phá (cách máy khách biết Gateway ở đâu)
   - H3: 1) Khám phá Bonjour / DNS-SD
-  - H4: Chi tiết beacon dịch vụ
+  - H4: Chi tiết tín hiệu dịch vụ
   - H3: 2) Tailnet (liên mạng)
-  - H3: 3) Mục tiêu thủ công / SSH
-  - H2: Chọn phương thức truyền tải (chính sách client)
-  - H2: Ghép cặp + xác thực (truyền tải trực tiếp)
+  - H3: 3) Thủ công / mục tiêu SSH
+  - H2: Chọn phương tiện truyền tải (chính sách máy khách)
+  - H2: Ghép đôi + xác thực (truyền tải trực tiếp)
   - H2: Trách nhiệm theo thành phần
   - H2: Liên quan
 
@@ -3269,20 +3270,20 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /gateway/doctor
 - Tiêu đề:
   - H2: Bắt đầu nhanh
-  - H3: Chế độ headless và tự động hóa
+  - H3: Chế độ không giao diện và tự động hóa
   - H2: Chế độ lint chỉ đọc
-  - H2: Chức năng thực hiện (tóm tắt)
-  - H2: Điền ngược và đặt lại UI Dreams
-  - H2: Hành vi chi tiết và lý do
+  - H2: Nội dung thực hiện (tóm tắt)
+  - H2: Điền bù và đặt lại UI Dreams
+  - H2: Hành vi chi tiết và cơ sở lý luận
   - H2: Liên quan
 
 ## gateway/external-apps.md
 
 - Tuyến: /gateway/external-apps
 - Tiêu đề:
-  - H2: Hiện có những gì
-  - H2: Lộ trình được khuyến nghị
-  - H2: Mã ứng dụng so với mã plugin
+  - H2: Nội dung hiện có hôm nay
+  - H2: Lộ trình được đề xuất
+  - H2: Mã ứng dụng so với mã Plugin
   - H2: Liên quan
 
 ## gateway/gateway-lock.md
@@ -3301,10 +3302,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Kiểm tra nhanh
   - H2: Chẩn đoán sâu
-  - H2: Cấu hình giám sát tình trạng
+  - H2: Cấu hình trình giám sát sức khỏe
   - H2: Giám sát thời gian hoạt động
   - H3: Ví dụ thiết lập dịch vụ giám sát
-  - H2: Khi có lỗi xảy ra
+  - H2: Khi có lỗi
   - H2: Lệnh "health" chuyên dụng
   - H2: Liên quan
 
@@ -3314,25 +3315,25 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu nhanh (người mới)
   - H2: Mặc định
-  - H2: Mục đích của lời nhắc Heartbeat
+  - H2: Lời nhắc Heartbeat dùng để làm gì
   - H2: Hợp đồng phản hồi
   - H2: Cấu hình
   - H3: Phạm vi và thứ tự ưu tiên
-  - H3: Heartbeat theo từng agent
+  - H3: Heartbeat theo từng tác tử
   - H3: Ví dụ giờ hoạt động
   - H3: Thiết lập 24/7
   - H3: Ví dụ nhiều tài khoản
   - H3: Ghi chú trường
-  - H2: Hành vi gửi
-  - H2: Điều khiển hiển thị
+  - H2: Hành vi phân phối
+  - H2: Kiểm soát khả năng hiển thị
   - H3: Tác dụng của từng cờ
   - H3: Ví dụ theo kênh so với theo tài khoản
-  - H3: Mẫu thường gặp
+  - H3: Mẫu thường dùng
   - H2: HEARTBEAT.md (tùy chọn)
-  - H3: tasks: khối
-  - H3: Agent có thể cập nhật HEARTBEAT.md không?
+  - H3: khối tasks:
+  - H3: Tác tử có thể cập nhật HEARTBEAT.md không?
   - H2: Đánh thức thủ công (theo yêu cầu)
-  - H2: Gửi lập luận (tùy chọn)
+  - H2: Phân phối suy luận (tùy chọn)
   - H2: Nhận thức chi phí
   - H2: Tràn ngữ cảnh sau Heartbeat
   - H2: Liên quan
@@ -3344,17 +3345,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khởi động cục bộ trong 5 phút
   - H2: Mô hình runtime
   - H2: Điểm cuối tương thích OpenAI
-  - H3: Thứ tự ưu tiên cổng và liên kết
+  - H3: Thứ tự ưu tiên cổng và bind
   - H3: Chế độ tải lại nóng
-  - H2: Bộ lệnh operator
-  - H2: Nhiều gateway (cùng máy chủ)
+  - H2: Bộ lệnh vận hành
+  - H2: Nhiều Gateway (cùng máy chủ)
   - H2: Truy cập từ xa
   - H2: Giám sát và vòng đời dịch vụ
-  - H2: Đường nhanh hồ sơ dev
-  - H2: Tham chiếu nhanh giao thức (góc nhìn operator)
+  - H2: Lối nhanh hồ sơ dev
+  - H2: Tham chiếu nhanh giao thức (góc nhìn người vận hành)
   - H2: Kiểm tra vận hành
-  - H3: Mức sống
-  - H3: Mức sẵn sàng
+  - H3: Tính sống
+  - H3: Tính sẵn sàng
   - H3: Khôi phục khoảng trống
   - H2: Dấu hiệu lỗi thường gặp
   - H2: Bảo đảm an toàn
@@ -3365,7 +3366,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /gateway/local-model-services
 - Tiêu đề:
   - H2: Cách hoạt động
-  - H2: Hình dạng cấu hình
+  - H2: Dạng cấu hình
   - H2: Trường
   - H2: Ví dụ Inferrs
   - H2: Ví dụ ds4
@@ -3378,10 +3379,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Mức phần cứng tối thiểu
   - H2: Chọn backend
-  - H2: Khuyến nghị: LM Studio + mô hình cục bộ lớn (Responses API)
-  - H3: Cấu hình hybrid: hosted chính, cục bộ dự phòng
-  - H3: Ưu tiên cục bộ với lưới an toàn hosted
-  - H3: Hosting theo khu vực / định tuyến dữ liệu
+  - H2: Được đề xuất: LM Studio + mô hình cục bộ lớn (Responses API)
+  - H3: Cấu hình lai: chính được lưu trữ, dự phòng cục bộ
+  - H3: Ưu tiên cục bộ với lưới an toàn được lưu trữ
+  - H3: Lưu trữ khu vực / định tuyến dữ liệu
   - H2: Proxy cục bộ tương thích OpenAI khác
   - H2: Backend nhỏ hơn hoặc nghiêm ngặt hơn
   - H2: Khắc phục sự cố
@@ -3391,27 +3392,27 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /gateway/logging
 - Tiêu đề:
-  - H1: Ghi nhật ký
-  - H2: Trình ghi nhật ký dựa trên tệp
-  - H2: Thu thập console
+  - H1: Ghi log
+  - H2: Trình ghi log dựa trên tệp
+  - H2: Ghi nhận console
   - H2: Biên tập ẩn
-  - H2: Nhật ký Gateway WebSocket
-  - H3: Kiểu nhật ký WS
-  - H2: Định dạng console (ghi nhật ký subsystem)
+  - H2: Log WebSocket của Gateway
+  - H3: Kiểu log WS
+  - H2: Định dạng console (ghi log theo phân hệ)
   - H2: Liên quan
 
 ## gateway/multiple-gateways.md
 
 - Tuyến: /gateway/multiple-gateways
 - Tiêu đề:
-  - H2: Thiết lập được khuyến nghị nhất
+  - H2: Thiết lập được đề xuất tốt nhất
   - H2: Bắt đầu nhanh Rescue-Bot
-  - H2: Vì sao cách này hiệu quả
-  - H2: Những thay đổi của --profile rescue onboard
-  - H2: Thiết lập nhiều gateway chung
+  - H2: Vì sao cách này hoạt động
+  - H2: Những gì --profile rescue onboard thay đổi
+  - H2: Thiết lập đa Gateway chung
   - H2: Danh sách kiểm tra cô lập
   - H2: Ánh xạ cổng (suy ra)
-  - H2: Ghi chú Browser/CDP (lỗi dễ mắc thường gặp)
+  - H2: Ghi chú trình duyệt/CDP (lỗi dễ mắc thường gặp)
   - H2: Ví dụ env thủ công
   - H2: Kiểm tra nhanh
   - H2: Liên quan
@@ -3428,19 +3429,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Xác thực
   - H2: Ranh giới bảo mật (quan trọng)
-  - H2: Khi nào nên dùng điểm cuối này
-  - H2: Hợp đồng mô hình ưu tiên agent
+  - H2: Khi nào dùng điểm cuối này
+  - H2: Hợp đồng mô hình ưu tiên tác tử
   - H2: Bật điểm cuối
   - H2: Tắt điểm cuối
   - H2: Hành vi phiên
   - H2: Vì sao bề mặt này quan trọng
-  - H2: Danh sách mô hình và định tuyến agent
-  - H2: Streaming (SSE)
-  - H2: Hợp đồng công cụ chat
+  - H2: Danh sách mô hình và định tuyến tác tử
+  - H2: Truyền trực tuyến (SSE)
+  - H2: Hợp đồng công cụ trò chuyện
   - H3: Trường yêu cầu được hỗ trợ
   - H3: Biến thể không được hỗ trợ
-  - H3: Hình dạng phản hồi công cụ không streaming
-  - H3: Hình dạng phản hồi công cụ streaming
+  - H3: Dạng phản hồi công cụ không truyền trực tuyến
+  - H3: Dạng phản hồi công cụ truyền trực tuyến
   - H3: Vòng lặp theo dõi công cụ
   - H2: Thiết lập nhanh Open WebUI
   - H2: Ví dụ
@@ -3452,16 +3453,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Xác thực, bảo mật và định tuyến
   - H2: Hành vi phiên
-  - H2: Hình dạng yêu cầu (được hỗ trợ)
+  - H2: Dạng yêu cầu (được hỗ trợ)
   - H2: Mục (đầu vào)
   - H3: message
   - H3: functioncalloutput (công cụ theo lượt)
   - H3: reasoning và itemreference
-  - H2: Công cụ (công cụ hàm phía client)
+  - H2: Công cụ (công cụ hàm phía máy khách)
   - H2: Hình ảnh (inputimage)
   - H2: Tệp (inputfile)
   - H2: Giới hạn tệp + hình ảnh (cấu hình)
-  - H2: Streaming (SSE)
+  - H2: Truyền trực tuyến (SSE)
   - H2: Mức sử dụng
   - H2: Lỗi
   - H2: Ví dụ
@@ -3476,12 +3477,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chế độ workspace
   - H3: mirror
   - H3: remote
-  - H3: Chọn chế độ
+  - H3: Chọn một chế độ
   - H2: Tham chiếu cấu hình
   - H2: Ví dụ
   - H3: Thiết lập remote tối thiểu
   - H3: Chế độ mirror với GPU
-  - H3: OpenShell theo agent với gateway tùy chỉnh
+  - H3: OpenShell theo từng tác tử với Gateway tùy chỉnh
   - H2: Quản lý vòng đời
   - H3: Khi nào cần tạo lại
   - H2: Gia cố bảo mật
@@ -3498,15 +3499,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tín hiệu được xuất
   - H2: Tham chiếu cấu hình
   - H3: Biến môi trường
-  - H2: Quyền riêng tư và thu thập nội dung
+  - H2: Quyền riêng tư và ghi nhận nội dung
   - H2: Lấy mẫu và xả
   - H2: Chỉ số được xuất
   - H3: Mức sử dụng mô hình
   - H3: Luồng tin nhắn
-  - H3: Talk
+  - H3: Trò chuyện
   - H3: Hàng đợi và phiên
-  - H3: Telemetry mức sống phiên
-  - H3: Vòng đời bộ chạy
+  - H3: Đo từ xa tính sống của phiên
+  - H3: Vòng đời bộ điều khiển
   - H3: Thực thi công cụ
   - H3: Exec
   - H3: Nội bộ chẩn đoán (bộ nhớ và vòng lặp công cụ)
@@ -3523,8 +3524,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Vai trò
   - H2: Mức phạm vi
   - H2: Phạm vi phương thức chỉ là cổng đầu tiên
-  - H2: Phê duyệt ghép cặp thiết bị
-  - H2: Phê duyệt ghép cặp nút
+  - H2: Phê duyệt ghép đôi thiết bị
+  - H2: Phê duyệt ghép đôi Node
   - H2: Xác thực bằng bí mật dùng chung
 
 ## gateway/pairing.md
@@ -3532,16 +3533,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /gateway/pairing
 - Tiêu đề:
   - H2: Khái niệm
-  - H2: Cách ghép cặp hoạt động
-  - H2: Quy trình CLI (thân thiện với headless)
-  - H2: Bề mặt API (giao thức gateway)
+  - H2: Cách ghép đôi hoạt động
+  - H2: Quy trình CLI (thân thiện với không giao diện)
+  - H2: Bề mặt API (giao thức Gateway)
   - H2: Kiểm soát lệnh Node (2026.3.31+)
   - H2: Ranh giới tin cậy sự kiện Node (2026.3.31+)
   - H2: Tự động phê duyệt (ứng dụng macOS)
   - H2: Tự động phê duyệt thiết bị Trusted-CIDR
   - H2: Tự động phê duyệt nâng cấp metadata
-  - H2: Trợ giúp ghép cặp QR
-  - H2: Tính cục bộ và header được chuyển tiếp
+  - H2: Trình trợ giúp ghép đôi QR
+  - H2: Tính cục bộ và header chuyển tiếp
   - H2: Lưu trữ (cục bộ, riêng tư)
   - H2: Hành vi truyền tải
   - H2: Liên quan
@@ -3554,7 +3555,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chỉ số được xuất
   - H2: Chính sách nhãn
   - H2: Công thức PromQL
-  - H2: Chọn giữa xuất Prometheus và OpenTelemetry
+  - H2: Chọn giữa Prometheus và xuất OpenTelemetry
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
@@ -3568,23 +3569,23 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Đóng khung
   - H2: Vai trò + phạm vi
   - H3: Vai trò
-  - H3: Phạm vi (operator)
-  - H3: Khả năng/lệnh/quyền (node)
+  - H3: Phạm vi (người vận hành)
+  - H3: Khả năng/lệnh/quyền (Node)
   - H2: Hiện diện
-  - H3: Sự kiện node chạy nền còn sống
-  - H2: Phạm vi sự kiện broadcast
-  - H2: Nhóm phương thức RPC thường gặp
-  - H3: Nhóm sự kiện thường gặp
-  - H3: Phương thức trợ giúp node
+  - H3: Sự kiện Node nền còn sống
+  - H2: Phạm vi sự kiện phát sóng
+  - H2: Nhóm phương thức RPC thường dùng
+  - H3: Nhóm sự kiện thường dùng
+  - H3: Phương thức trợ giúp Node
   - H3: RPC sổ cái tác vụ
-  - H3: Phương thức trợ giúp operator
-  - H3: Dạng xem models.list
-  - H2: Phê duyệt exec
-  - H2: Phương án dự phòng gửi agent
-  - H2: Phiên bản hóa
-  - H3: Hằng số client
+  - H3: Phương thức trợ giúp người vận hành
+  - H3: Chế độ xem models.list
+  - H2: Phê duyệt Exec
+  - H2: Dự phòng phân phối tác tử
+  - H2: Quản lý phiên bản
+  - H3: Hằng số máy khách
   - H2: Xác thực
-  - H2: Danh tính thiết bị + ghép cặp
+  - H2: Danh tính thiết bị + ghép đôi
   - H3: Chẩn đoán di trú xác thực thiết bị
   - H2: TLS + ghim
   - H2: Phạm vi
@@ -3594,15 +3595,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /gateway/remote-gateway-readme
 - Tiêu đề:
-  - H1: Chạy OpenClaw.app với Remote Gateway
+  - H1: Chạy OpenClaw.app với Gateway từ xa
   - H2: Tổng quan
   - H2: Thiết lập nhanh
   - H3: Bước 1: Thêm cấu hình SSH
   - H3: Bước 2: Sao chép khóa SSH
-  - H3: Bước 3: Cấu hình xác thực Remote Gateway
-  - H3: Bước 4: Khởi động SSH Tunnel
+  - H3: Bước 3: Cấu hình xác thực Gateway từ xa
+  - H3: Bước 4: Khởi động đường hầm SSH
   - H3: Bước 5: Khởi động lại OpenClaw.app
-  - H2: Tự động khởi động tunnel khi đăng nhập
+  - H2: Tự động khởi động đường hầm khi đăng nhập
   - H3: Tạo tệp PLIST
   - H3: Tải Launch Agent
   - H2: Khắc phục sự cố
@@ -3611,7 +3612,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## gateway/remote.md
 
-- Tuyến: /gateway/remote
+- Đường dẫn: /gateway/remote
 - Tiêu đề:
   - H2: Ý tưởng cốt lõi
   - H2: Các thiết lập VPN và tailnet phổ biến
@@ -3636,24 +3637,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## gateway/sandbox-vs-tool-policy-vs-elevated.md
 
-- Tuyến: /gateway/sandbox-vs-tool-policy-vs-elevated
+- Đường dẫn: /gateway/sandbox-vs-tool-policy-vs-elevated
 - Tiêu đề:
   - H2: Gỡ lỗi nhanh
   - H2: Sandbox: nơi các công cụ chạy
   - H3: Bind mount (kiểm tra nhanh về bảo mật)
-  - H2: Chính sách công cụ: những công cụ nào tồn tại/có thể gọi
+  - H2: Chính sách công cụ: công cụ nào tồn tại/có thể gọi
   - H3: Nhóm công cụ (viết tắt)
-  - H2: Nâng quyền: "chạy trên host" chỉ dành cho exec
-  - H2: Các cách sửa lỗi "nhốt trong sandbox" phổ biến
+  - H2: Nâng quyền: chỉ exec "chạy trên máy chủ"
+  - H2: Các cách khắc phục "nhà tù sandbox" phổ biến
   - H3: "Công cụ X bị chặn bởi chính sách công cụ sandbox"
   - H3: "Tôi tưởng đây là main, tại sao nó bị sandbox?"
   - H2: Liên quan
 
 ## gateway/sandboxing.md
 
-- Tuyến: /gateway/sandboxing
+- Đường dẫn: /gateway/sandboxing
 - Tiêu đề:
-  - H2: Những gì được sandbox
+  - H2: Những gì được đưa vào sandbox
   - H2: Chế độ
   - H2: Phạm vi
   - H2: Backend
@@ -3663,7 +3664,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Backend OpenShell
   - H4: Chế độ workspace
   - H4: Vòng đời OpenShell
-  - H2: Quyền truy cập workspace
+  - H2: Truy cập workspace
   - H2: Bind mount tùy chỉnh
   - H2: Image và thiết lập
   - H2: setupCommand (thiết lập container một lần)
@@ -3674,54 +3675,54 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## gateway/secrets-plan-contract.md
 
-- Tuyến: /gateway/secrets-plan-contract
+- Đường dẫn: /gateway/secrets-plan-contract
 - Tiêu đề:
   - H2: Hình dạng tệp kế hoạch
   - H2: Upsert và xóa provider
   - H2: Phạm vi mục tiêu được hỗ trợ
-  - H2: Hành vi của loại mục tiêu
+  - H2: Hành vi kiểu mục tiêu
   - H2: Quy tắc xác thực đường dẫn
   - H2: Hành vi khi thất bại
   - H2: Hành vi đồng ý của provider exec
-  - H2: Ghi chú về phạm vi runtime và kiểm toán
-  - H2: Kiểm tra của người vận hành
+  - H2: Ghi chú về phạm vi runtime và audit
+  - H2: Kiểm tra của operator
   - H2: Tài liệu liên quan
 
 ## gateway/secrets.md
 
-- Tuyến: /gateway/secrets
+- Đường dẫn: /gateway/secrets
 - Tiêu đề:
   - H2: Mục tiêu và mô hình runtime
   - H2: Ranh giới truy cập của agent
   - H2: Lọc bề mặt đang hoạt động
   - H2: Chẩn đoán bề mặt xác thực Gateway
-  - H2: Preflight tham chiếu onboarding
+  - H2: Kiểm tra trước tham chiếu onboarding
   - H2: Hợp đồng SecretRef
   - H2: Cấu hình provider
   - H2: Khóa API dựa trên tệp
   - H2: Ví dụ tích hợp exec
-  - H2: Biến môi trường máy chủ MCP
+  - H2: Biến môi trường MCP server
   - H2: Vật liệu xác thực SSH sandbox
   - H2: Bề mặt thông tin xác thực được hỗ trợ
   - H2: Hành vi bắt buộc và thứ tự ưu tiên
-  - H2: Tác nhân kích hoạt
+  - H2: Trình kích hoạt kích hoạt
   - H2: Tín hiệu suy giảm và khôi phục
   - H2: Phân giải đường dẫn lệnh
-  - H2: Quy trình kiểm toán và cấu hình
+  - H2: Quy trình audit và cấu hình
   - H2: Chính sách an toàn một chiều
-  - H2: Ghi chú tương thích xác thực legacy
+  - H2: Ghi chú tương thích xác thực cũ
   - H2: Ghi chú Web UI
   - H2: Liên quan
 
 ## gateway/security/audit-checks.md
 
-- Tuyến: /gateway/security/audit-checks
+- Đường dẫn: /gateway/security/audit-checks
 - Tiêu đề:
   - H2: Liên quan
 
 ## gateway/security/exposure-runbook.md
 
-- Tuyến: /gateway/security/exposure-runbook
+- Đường dẫn: /gateway/security/exposure-runbook
 - Tiêu đề:
   - H2: Chọn mẫu phơi lộ
   - H2: Kiểm kê trước khi chạy
@@ -3732,104 +3733,104 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Rà soát công cụ và sandbox
   - H2: Xác thực sau thay đổi
   - H2: Kế hoạch rollback
-  - H2: Checklist rà soát
+  - H2: Danh sách kiểm tra rà soát
 
 ## gateway/security/index.md
 
-- Tuyến: /gateway/security
+- Đường dẫn: /gateway/security
 - Tiêu đề:
-  - H2: Phạm vi trước: mô hình bảo mật trợ lý cá nhân
-  - H2: Kiểm tra nhanh: kiểm toán bảo mật openclaw
-  - H3: Khóa dependency của gói đã phát hành
-  - H3: Triển khai và mức tin cậy của host
+  - H2: Phạm vi trước tiên: mô hình bảo mật trợ lý cá nhân
+  - H2: Kiểm tra nhanh: audit bảo mật openclaw
+  - H3: Khóa phụ thuộc gói đã phát hành
+  - H3: Triển khai và độ tin cậy của máy chủ
   - H3: Thao tác tệp an toàn
   - H3: Workspace Slack dùng chung: rủi ro thực tế
   - H3: Agent dùng chung trong công ty: mẫu chấp nhận được
-  - H2: Khái niệm tin cậy Gateway và node
+  - H2: Khái niệm độ tin cậy của Gateway và Node
   - H2: Ma trận ranh giới tin cậy
   - H2: Không phải lỗ hổng theo thiết kế
-  - H2: Baseline được gia cố trong 60 giây
-  - H2: Quy tắc nhanh cho hộp thư đến dùng chung
+  - H2: Baseline gia cố trong 60 giây
+  - H2: Quy tắc nhanh cho hộp thư chung
   - H2: Mô hình hiển thị ngữ cảnh
-  - H2: Kiểm toán kiểm tra gì (mức cao)
+  - H2: Audit kiểm tra những gì (mức cao)
   - H2: Bản đồ lưu trữ thông tin xác thực
-  - H2: Checklist kiểm toán bảo mật
-  - H2: Bảng thuật ngữ kiểm toán bảo mật
+  - H2: Danh sách kiểm tra audit bảo mật
+  - H2: Bảng thuật ngữ audit bảo mật
   - H2: Control UI qua HTTP
   - H2: Tóm tắt cờ không an toàn hoặc nguy hiểm
   - H2: Cấu hình reverse proxy
   - H2: Ghi chú HSTS và origin
   - H2: Nhật ký phiên cục bộ nằm trên đĩa
-  - H2: Thực thi node (system.run)
+  - H2: Thực thi Node (system.run)
   - H2: Skills động (watcher / node từ xa)
   - H2: Mô hình mối đe dọa
   - H2: Khái niệm cốt lõi: kiểm soát truy cập trước trí tuệ
   - H2: Mô hình ủy quyền lệnh
-  - H2: Rủi ro công cụ mặt phẳng điều khiển
+  - H2: Rủi ro công cụ control plane
   - H2: Plugins
-  - H2: Mô hình truy cập DM: ghép đôi, allowlist, mở, tắt
-  - H2: Cô lập phiên DM (chế độ nhiều người dùng)
+  - H2: Mô hình truy cập DM: ghép nối, allowlist, mở, tắt
+  - H2: Cách ly phiên DM (chế độ nhiều người dùng)
   - H3: Chế độ DM an toàn (khuyến nghị)
   - H2: Allowlist cho DM và nhóm
-  - H2: Prompt injection (là gì, tại sao quan trọng)
-  - H2: Vệ sinh token đặc biệt trong nội dung bên ngoài
+  - H2: Prompt injection (là gì, vì sao quan trọng)
+  - H2: Làm sạch special-token trong nội dung bên ngoài
   - H2: Cờ bỏ qua nội dung bên ngoài không an toàn
   - H3: Prompt injection không yêu cầu DM công khai
-  - H3: Backend LLM tự host
-  - H3: Độ mạnh của mô hình (ghi chú bảo mật)
-  - H2: Reasoning và đầu ra verbose trong nhóm
+  - H3: Backend LLM tự lưu trữ
+  - H3: Sức mạnh mô hình (ghi chú bảo mật)
+  - H2: Reasoning và đầu ra dài trong nhóm
   - H2: Ví dụ gia cố cấu hình
   - H3: Quyền tệp
-  - H3: Phơi lộ mạng (bind, cổng, tường lửa)
-  - H3: Xuất bản cổng Docker với UFW
+  - H3: Phơi lộ mạng (bind, cổng, firewall)
+  - H3: Công bố cổng Docker với UFW
   - H3: Khám phá mDNS/Bonjour
   - H3: Khóa Gateway WebSocket (xác thực cục bộ)
-  - H3: Header định danh Tailscale Serve
-  - H3: Điều khiển trình duyệt qua node host (khuyến nghị)
-  - H3: Secret trên đĩa
+  - H3: Header danh tính Tailscale Serve
+  - H3: Điều khiển trình duyệt qua máy chủ node (khuyến nghị)
+  - H3: Bí mật trên đĩa
   - H3: Tệp .env của workspace
-  - H3: Nhật ký và bản ghi phiên (che giấu và lưu giữ)
-  - H3: DM: ghép đôi theo mặc định
+  - H3: Nhật ký và transcript (biên tập và lưu giữ)
+  - H3: DM: ghép nối theo mặc định
   - H3: Nhóm: yêu cầu mention ở mọi nơi
   - H3: Số riêng biệt (WhatsApp, Signal, Telegram)
   - H3: Chế độ chỉ đọc (qua sandbox và công cụ)
   - H3: Baseline an toàn (sao chép/dán)
   - H2: Sandboxing (khuyến nghị)
-  - H3: Guardrail ủy quyền sub-agent
+  - H3: Hàng rào bảo vệ ủy quyền sub-agent
   - H2: Rủi ro điều khiển trình duyệt
-  - H3: Chính sách SSRF của trình duyệt (mặc định nghiêm ngặt)
+  - H3: Chính sách SSRF trình duyệt (mặc định nghiêm ngặt)
   - H2: Hồ sơ truy cập theo agent (đa agent)
   - H3: Ví dụ: toàn quyền truy cập (không sandbox)
   - H3: Ví dụ: công cụ chỉ đọc + workspace chỉ đọc
-  - H3: Ví dụ: không có quyền truy cập hệ thống tệp/shell (cho phép nhắn tin provider)
+  - H3: Ví dụ: không truy cập filesystem/shell (cho phép nhắn tin provider)
   - H2: Ứng phó sự cố
   - H3: Cô lập
-  - H3: Xoay vòng (giả định bị xâm phạm nếu secret bị rò rỉ)
-  - H3: Kiểm toán
+  - H3: Xoay vòng (giả định bị xâm phạm nếu bí mật bị rò rỉ)
+  - H3: Audit
   - H3: Thu thập cho báo cáo
-  - H2: Quét secret
+  - H2: Quét bí mật
   - H2: Báo cáo vấn đề bảo mật
 
 ## gateway/security/secure-file-operations.md
 
-- Tuyến: /gateway/security/secure-file-operations
+- Đường dẫn: /gateway/security/secure-file-operations
 - Tiêu đề:
-  - H2: Mặc định: không có trình trợ giúp Python
+  - H2: Mặc định: không có helper Python
   - H2: Những gì vẫn được bảo vệ khi không có Python
   - H2: Python bổ sung gì
   - H2: Hướng dẫn cho Plugin và core
 
 ## gateway/security/shrinkwrap.md
 
-- Tuyến: /gateway/security/shrinkwrap
+- Đường dẫn: /gateway/security/shrinkwrap
 - Tiêu đề:
   - H2: Phiên bản dễ hiểu
-  - H2: Vì sao OpenClaw dùng nó
+  - H2: Vì sao OpenClaw sử dụng nó
   - H2: Chi tiết kỹ thuật
 
 ## gateway/tailscale.md
 
-- Tuyến: /gateway/tailscale
+- Đường dẫn: /gateway/tailscale
 - Tiêu đề:
   - H2: Chế độ
   - H2: Xác thực
@@ -3846,75 +3847,75 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## gateway/tools-invoke-http-api.md
 
-- Tuyến: /gateway/tools-invoke-http-api
+- Đường dẫn: /gateway/tools-invoke-http-api
 - Tiêu đề:
   - H2: Xác thực
   - H2: Ranh giới bảo mật (quan trọng)
-  - H2: Nội dung yêu cầu
-  - H2: Hành vi chính sách + định tuyến
-  - H2: Phản hồi
+  - H2: Nội dung request
+  - H2: Chính sách + hành vi định tuyến
+  - H2: Response
   - H2: Ví dụ
   - H2: Liên quan
 
 ## gateway/troubleshooting.md
 
-- Tuyến: /gateway/troubleshooting
+- Đường dẫn: /gateway/troubleshooting
 - Tiêu đề:
   - H2: Thang lệnh
   - H2: Sau khi cập nhật
-  - H2: Cài đặt split brain và chốt chặn cấu hình mới hơn
+  - H2: Cài đặt split brain và guard cấu hình mới hơn
   - H2: Không khớp giao thức sau rollback
-  - H2: Bỏ qua symlink Skill vì thoát khỏi đường dẫn
-  - H2: Anthropic 429 yêu cầu thêm mức sử dụng cho ngữ cảnh dài
-  - H2: Phản hồi upstream 403 bị chặn
-  - H2: Backend tương thích OpenAI cục bộ vượt qua probe trực tiếp nhưng agent chạy thất bại
+  - H2: Symlink Skill bị bỏ qua vì thoát đường dẫn
+  - H2: Anthropic 429 yêu cầu thêm usage cho ngữ cảnh dài
+  - H2: Response upstream 403 bị chặn
+  - H2: Backend tương thích OpenAI cục bộ vượt qua probe trực tiếp nhưng lượt chạy agent thất bại
   - H2: Không có phản hồi
-  - H2: Kết nối Dashboard Control UI
+  - H2: Kết nối Dashboard control UI
   - H3: Bản đồ nhanh mã chi tiết xác thực
   - H2: Dịch vụ Gateway không chạy
   - H2: Gateway macOS âm thầm ngừng phản hồi, rồi tiếp tục khi bạn chạm vào dashboard
-  - H2: Gateway thoát khi sử dụng nhiều bộ nhớ
+  - H2: Gateway thoát trong lúc dùng nhiều bộ nhớ
   - H2: Gateway từ chối cấu hình không hợp lệ
   - H2: Cảnh báo probe Gateway
-  - H2: Kênh đã kết nối, tin nhắn không chảy
+  - H2: Kênh đã kết nối, tin nhắn không lưu chuyển
   - H2: Phân phối Cron và Heartbeat
-  - H2: Node đã ghép đôi, công cụ thất bại
+  - H2: Node đã ghép nối, công cụ thất bại
   - H2: Công cụ trình duyệt thất bại
-  - H2: Nếu bạn đã nâng cấp và một thứ gì đó đột nhiên hỏng
+  - H2: Nếu bạn đã nâng cấp và đột nhiên có lỗi
   - H2: Liên quan
 
 ## gateway/trusted-proxy-auth.md
 
-- Tuyến: /gateway/trusted-proxy-auth
+- Đường dẫn: /gateway/trusted-proxy-auth
 - Tiêu đề:
-  - H2: Khi nào dùng
-  - H2: Khi nào KHÔNG dùng
+  - H2: Khi nào nên dùng
+  - H2: Khi nào KHÔNG nên dùng
   - H2: Cách hoạt động
-  - H2: Hành vi ghép đôi Control UI
+  - H2: Hành vi ghép nối Control UI
   - H2: Cấu hình
   - H3: Tham chiếu cấu hình
   - H2: Kết thúc TLS và HSTS
-  - H3: Hướng dẫn rollout
+  - H3: Hướng dẫn triển khai
   - H2: Ví dụ thiết lập proxy
   - H2: Cấu hình token hỗn hợp
-  - H2: Header phạm vi người vận hành
-  - H2: Checklist bảo mật
-  - H2: Kiểm toán bảo mật
+  - H2: Header phạm vi operator
+  - H2: Danh sách kiểm tra bảo mật
+  - H2: Audit bảo mật
   - H2: Khắc phục sự cố
   - H2: Di chuyển từ xác thực bằng token
   - H2: Liên quan
 
 ## help/debugging.md
 
-- Tuyến: /help/debugging
+- Đường dẫn: /help/debugging
 - Tiêu đề:
   - H2: Ghi đè gỡ lỗi runtime
   - H2: Đầu ra trace phiên
   - H2: Trace vòng đời Plugin
-  - H2: Profiling khởi động CLI và lệnh
-  - H2: Chế độ theo dõi Gateway
+  - H2: Khởi động CLI và profiling lệnh
+  - H2: Chế độ watch của Gateway
   - H2: Hồ sơ dev + gateway dev (--dev)
-  - H2: Ghi log luồng thô (OpenClaw)
+  - H2: Ghi log stream thô (OpenClaw)
   - H2: Ghi log chunk thô tương thích OpenAI
   - H2: Ghi chú an toàn
   - H2: Gỡ lỗi trong VSCode
@@ -3924,50 +3925,50 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## help/environment.md
 
-- Tuyến: /help/environment
+- Đường dẫn: /help/environment
 - Tiêu đề:
   - H2: Thứ tự ưu tiên (cao nhất → thấp nhất)
-  - H2: Thông tin xác thực provider và .env workspace
-  - H2: Khối env trong cấu hình
-  - H2: Nhập env shell
+  - H2: Thông tin xác thực provider và .env của workspace
+  - H2: Khối env cấu hình
+  - H2: Nhập env của shell
   - H2: Snapshot shell exec
-  - H2: Biến env được tiêm bởi runtime
-  - H2: Biến env của UI
+  - H2: Biến env được runtime tiêm vào
+  - H2: Biến env UI
   - H2: Thay thế biến env trong cấu hình
-  - H2: Secret ref so với chuỗi ${ENV}
+  - H2: Secret refs so với chuỗi ${ENV}
   - H2: Biến env liên quan đến đường dẫn
   - H2: Ghi log
   - H3: OPENCLAWHOME
-  - H2: Người dùng nvm: lỗi TLS của webfetch
-  - H2: Biến môi trường legacy
+  - H2: Người dùng nvm: lỗi TLS webfetch
+  - H2: Biến môi trường cũ
   - H2: Liên quan
 
 ## help/faq-first-run.md
 
-- Tuyến: /help/faq-first-run
+- Đường dẫn: /help/faq-first-run
 - Tiêu đề:
-  - H2: Khởi động nhanh và thiết lập lần đầu chạy
+  - H2: Bắt đầu nhanh và thiết lập lần chạy đầu tiên
   - H2: Liên quan
 
 ## help/faq-models.md
 
-- Tuyến: /help/faq-models
+- Đường dẫn: /help/faq-models
 - Tiêu đề:
-  - H2: Mô hình: mặc định, lựa chọn, bí danh, chuyển đổi
+  - H2: Mô hình: mặc định, lựa chọn, alias, chuyển đổi
   - H2: Chuyển dự phòng mô hình và "Tất cả mô hình đều thất bại"
   - H2: Hồ sơ xác thực: chúng là gì và cách quản lý
   - H2: Liên quan
 
 ## help/faq.md
 
-- Tuyến: /help/faq
+- Đường dẫn: /help/faq
 - Tiêu đề:
-  - H2: 60 giây đầu tiên nếu có thứ gì đó bị hỏng
-  - H2: Khởi động nhanh và thiết lập lần đầu chạy
+  - H2: 60 giây đầu tiên nếu có thứ gì đó bị lỗi
+  - H2: Bắt đầu nhanh và thiết lập lần chạy đầu tiên
   - H2: OpenClaw là gì?
   - H2: Skills và tự động hóa
   - H2: Sandboxing và bộ nhớ
-  - H2: Nơi mọi thứ nằm trên đĩa
+  - H2: Nơi các thứ nằm trên đĩa
   - H2: Cơ bản về cấu hình
   - H2: Gateway và node từ xa
   - H2: Biến env và tải .env
@@ -3975,7 +3976,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Mô hình, chuyển dự phòng và hồ sơ xác thực
   - H2: Gateway: cổng, "đã chạy", và chế độ từ xa
   - H2: Ghi log và gỡ lỗi
-  - H2: Phương tiện và tệp đính kèm
+  - H2: Media và tệp đính kèm
   - H2: Bảo mật và kiểm soát truy cập
   - H2: Lệnh chat, hủy tác vụ, và "nó sẽ không dừng"
   - H2: Khác
@@ -3983,7 +3984,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## help/index.md
 
-- Tuyến: /help
+- Đường dẫn: /help
 - Tiêu đề:
   - H2: FAQ
   - H2: Chẩn đoán
@@ -3992,11 +3993,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## help/scripts.md
 
-- Tuyến: /help/scripts
+- Đường dẫn: /help/scripts
 - Tiêu đề:
   - H2: Quy ước
   - H2: Script giám sát xác thực
-  - H2: Trình trợ giúp đọc GitHub
+  - H2: Helper đọc GitHub
   - H2: Khi thêm script
   - H2: Liên quan
 
@@ -4004,29 +4005,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /help/testing-live
 - Tiêu đề:
-  - H2: Trực tiếp: các lệnh kiểm tra nhanh cục bộ
-  - H2: Trực tiếp: quét khả năng của nút Android
-  - H2: Trực tiếp: kiểm tra nhanh mô hình (khóa hồ sơ)
-  - H3: Lớp 1: Hoàn tất trực tiếp của mô hình (không có gateway)
-  - H3: Lớp 2: Gateway + kiểm tra nhanh tác tử dev (những gì "@openclaw" thực sự làm)
-  - H2: Trực tiếp: kiểm tra nhanh backend CLI (Claude, Gemini hoặc các CLI cục bộ khác)
+  - H2: Trực tiếp: các lệnh smoke cục bộ
+  - H2: Trực tiếp: quét capability của node Android
+  - H2: Trực tiếp: smoke mô hình (khóa hồ sơ)
+  - H3: Lớp 1: Hoàn tất mô hình trực tiếp (không có gateway)
+  - H3: Lớp 2: Gateway + smoke dev agent ("@openclaw" thực sự làm gì)
+  - H2: Trực tiếp: smoke backend CLI (Claude, Gemini, hoặc các CLI cục bộ khác)
   - H2: Trực tiếp: khả năng truy cập proxy APNs HTTP/2
-  - H2: Trực tiếp: kiểm tra nhanh liên kết ACP (/acp spawn ... --bind here)
-  - H2: Trực tiếp: kiểm tra nhanh harness app-server Codex
+  - H2: Trực tiếp: smoke bind ACP (/acp spawn ... --bind here)
+  - H2: Trực tiếp: smoke harness máy chủ ứng dụng Codex
   - H3: Công thức trực tiếp được khuyến nghị
-  - H2: Trực tiếp: ma trận mô hình (những gì chúng tôi bao phủ)
-  - H3: Bộ kiểm tra nhanh hiện đại (gọi công cụ + hình ảnh)
-  - H3: Đường cơ sở: gọi công cụ (Read + Exec tùy chọn)
+  - H2: Trực tiếp: ma trận mô hình (phạm vi chúng tôi bao phủ)
+  - H3: Bộ smoke hiện đại (gọi công cụ + hình ảnh)
+  - H3: Cơ sở: gọi công cụ (Read + Exec tùy chọn)
   - H3: Thị giác: gửi hình ảnh (tệp đính kèm → tin nhắn đa phương thức)
   - H3: Bộ tổng hợp / gateway thay thế
   - H2: Thông tin xác thực (không bao giờ commit)
-  - H2: Trực tiếp Deepgram (phiên âm âm thanh)
-  - H2: Trực tiếp kế hoạch lập trình BytePlus
-  - H2: Trực tiếp media quy trình làm việc ComfyUI
-  - H2: Trực tiếp tạo hình ảnh
-  - H2: Trực tiếp tạo nhạc
-  - H2: Trực tiếp tạo video
-  - H2: Harness trực tiếp cho media
+  - H2: Deepgram trực tiếp (phiên âm âm thanh)
+  - H2: BytePlus coding plan trực tiếp
+  - H2: ComfyUI workflow media trực tiếp
+  - H2: Tạo hình ảnh trực tiếp
+  - H2: Tạo nhạc trực tiếp
+  - H2: Tạo video trực tiếp
+  - H2: Harness media trực tiếp
   - H2: Liên quan
 
 ## help/testing-updates-plugins.md
@@ -4035,10 +4036,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Những gì chúng tôi bảo vệ
   - H2: Bằng chứng cục bộ trong quá trình phát triển
-  - H2: Các lane Docker
+  - H2: Làn Docker
   - H2: Chấp nhận gói
   - H2: Mặc định phát hành
-  - H2: Tương thích cũ
+  - H2: Tương thích kế thừa
   - H2: Thêm phạm vi kiểm thử
   - H2: Phân loại lỗi
 
@@ -4052,24 +4053,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Thông tin xác thực Telegram dùng chung qua Convex (v1)
   - H3: Thêm kênh vào QA
   - H2: Bộ kiểm thử (chạy ở đâu)
-  - H3: Unit / tích hợp (mặc định)
+  - H3: Đơn vị / tích hợp (mặc định)
   - H3: Độ ổn định (gateway)
   - H3: E2E (tổng hợp repo)
-  - H3: E2E (kiểm tra nhanh gateway)
+  - H3: E2E (smoke gateway)
   - H3: E2E (trình duyệt giả lập Control UI)
-  - H3: E2E: kiểm tra nhanh backend OpenShell
-  - H3: Trực tiếp (nhà cung cấp thật + mô hình thật)
+  - H3: E2E: smoke backend OpenShell
+  - H3: Trực tiếp (provider thật + mô hình thật)
   - H2: Tôi nên chạy bộ nào?
   - H2: Kiểm thử trực tiếp (chạm mạng)
-  - H2: Runner Docker (kiểm tra "hoạt động trên Linux" tùy chọn)
+  - H2: Runner Docker (kiểm tra tùy chọn "hoạt động trên Linux")
   - H2: Kiểm tra hợp lý tài liệu
   - H2: Hồi quy ngoại tuyến (an toàn cho CI)
-  - H2: Đánh giá độ tin cậy tác tử (skills)
-  - H2: Kiểm thử hợp đồng (hình dạng plugin và kênh)
+  - H2: Đánh giá độ tin cậy agent (skills)
+  - H2: Kiểm thử contract (hình dạng plugin và kênh)
   - H3: Lệnh
-  - H3: Hợp đồng kênh
-  - H3: Hợp đồng trạng thái nhà cung cấp
-  - H3: Hợp đồng nhà cung cấp
+  - H3: Contract kênh
+  - H3: Contract trạng thái provider
+  - H3: Contract provider
   - H3: Khi nào chạy
   - H2: Thêm hồi quy (hướng dẫn)
   - H2: Liên quan
@@ -4080,11 +4081,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: 60 giây đầu tiên
   - H2: Trợ lý có vẻ bị giới hạn hoặc thiếu công cụ
-  - H2: Ngữ cảnh dài Anthropic 429
+  - H2: Anthropic long context 429
   - H2: Backend tương thích OpenAI cục bộ chạy trực tiếp nhưng lỗi trong OpenClaw
-  - H2: Cài đặt Plugin lỗi do thiếu phần mở rộng openclaw
+  - H2: Cài đặt Plugin thất bại do thiếu phần mở rộng openclaw
   - H2: Chính sách cài đặt chặn cài đặt hoặc cập nhật plugin
-  - H2: Plugin có mặt nhưng bị chặn do quyền sở hữu đáng ngờ
+  - H2: Plugin có mặt nhưng bị chặn vì quyền sở hữu đáng ngờ
   - H2: Cây quyết định
   - H2: Liên quan
 
@@ -4107,7 +4108,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /install/ansible
 - Tiêu đề:
   - H2: Điều kiện tiên quyết
-  - H2: Những gì bạn nhận được
+  - H2: Bạn nhận được gì
   - H2: Bắt đầu nhanh
   - H2: Những gì được cài đặt
   - H2: Thiết lập sau cài đặt
@@ -4123,8 +4124,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /install/azure
 - Tiêu đề:
-  - H2: Những gì bạn sẽ làm
-  - H2: Những gì bạn cần
+  - H2: Bạn sẽ làm gì
+  - H2: Bạn cần gì
   - H2: Cấu hình triển khai
   - H2: Triển khai tài nguyên Azure
   - H2: Cài đặt OpenClaw
@@ -4147,7 +4148,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /install/clawdock
 - Tiêu đề:
   - H2: Cài đặt
-  - H2: Những gì bạn nhận được
+  - H2: Bạn nhận được gì
   - H3: Thao tác cơ bản
   - H3: Truy cập container
   - H3: Giao diện web và ghép nối
@@ -4162,11 +4163,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /install/development-channels
 - Tiêu đề:
   - H2: Chuyển kênh
-  - H2: Nhắm tới phiên bản hoặc thẻ dùng một lần
+  - H2: Nhắm tới phiên bản hoặc tag một lần
   - H2: Chạy thử
   - H2: Plugin và kênh
   - H2: Kiểm tra trạng thái hiện tại
-  - H2: Thực hành tốt nhất khi gắn thẻ
+  - H2: Thực hành tốt nhất khi gắn tag
   - H2: Tính khả dụng của ứng dụng macOS
   - H2: Liên quan
 
@@ -4176,7 +4177,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Điều kiện tiên quyết
   - H2: Thiết lập
-  - H2: Tính bền vững và sao lưu
+  - H2: Duy trì dữ liệu và sao lưu
   - H2: Mẹo cho RAM 1 GB
   - H2: Khắc phục sự cố
   - H2: Bước tiếp theo
@@ -4186,9 +4187,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /install/docker-vm-runtime
 - Tiêu đề:
-  - H2: Đưa các binary bắt buộc vào image
-  - H2: Xây dựng và khởi chạy
-  - H2: Nội dung nào được lưu ở đâu
+  - H2: Nướng các binary bắt buộc vào image
+  - H2: Build và khởi chạy
+  - H2: Nội dung nào được duy trì ở đâu
   - H2: Cập nhật
   - H2: Liên quan
 
@@ -4203,14 +4204,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Biến môi trường
   - H3: Khả năng quan sát
   - H3: Kiểm tra sức khỏe
-  - H3: LAN và loopback
-  - H3: Nhà cung cấp cục bộ trên máy chủ
+  - H3: LAN so với local loopback
+  - H3: Provider cục bộ trên host
   - H3: Backend Claude CLI trong Docker
   - H3: Bonjour / mDNS
-  - H3: Lưu trữ và tính bền vững
-  - H3: Trình trợ giúp shell (tùy chọn)
+  - H3: Lưu trữ và duy trì dữ liệu
+  - H3: Trợ giúp shell (tùy chọn)
   - H3: Chạy trên VPS?
-  - H2: Sandbox tác tử
+  - H2: Sandbox agent
   - H3: Bật nhanh
   - H2: Khắc phục sự cố
   - H2: Liên quan
@@ -4219,15 +4220,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /install/exe-dev
 - Tiêu đề:
-  - H2: Lộ trình nhanh cho người mới bắt đầu
-  - H2: Những gì bạn cần
+  - H2: Lộ trình nhanh cho người mới
+  - H2: Bạn cần gì
   - H2: Cài đặt tự động với Shelley
   - H2: Cài đặt thủ công
   - H2: 1) Tạo VM
   - H2: 2) Cài đặt điều kiện tiên quyết (trên VM)
   - H2: 3) Cài đặt OpenClaw
   - H2: 4) Thiết lập nginx để proxy OpenClaw tới cổng 8000
-  - H2: 5) Truy cập OpenClaw và cấp đặc quyền
+  - H2: 5) Truy cập OpenClaw và cấp quyền
   - H2: Thiết lập kênh từ xa
   - H2: Truy cập từ xa
   - H2: Cập nhật
@@ -4237,8 +4238,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /install/fly
 - Tiêu đề:
-  - H2: Những gì bạn cần
-  - H2: Lộ trình nhanh cho người mới bắt đầu
+  - H2: Bạn cần gì
+  - H2: Lộ trình nhanh cho người mới
   - H2: Khắc phục sự cố
   - H3: "Ứng dụng không lắng nghe trên địa chỉ mong đợi"
   - H3: Kiểm tra sức khỏe thất bại / kết nối bị từ chối
@@ -4246,7 +4247,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Vấn đề khóa Gateway
   - H3: Cấu hình không được đọc
   - H3: Ghi cấu hình qua SSH
-  - H3: Trạng thái không được lưu bền vững
+  - H3: Trạng thái không được duy trì
   - H2: Cập nhật
   - H3: Lệnh cập nhật máy
   - H2: Triển khai riêng tư (được gia cố)
@@ -4266,7 +4267,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Chúng ta đang làm gì (nói đơn giản)?
   - H2: Lộ trình nhanh (người vận hành có kinh nghiệm)
-  - H2: Những gì bạn cần
+  - H2: Bạn cần gì
   - H2: Khắc phục sự cố
   - H2: Tài khoản dịch vụ (thực hành bảo mật tốt nhất)
   - H2: Bước tiếp theo
@@ -4279,7 +4280,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Mục tiêu
   - H2: Chúng ta đang làm gì (nói đơn giản)?
   - H2: Lộ trình nhanh (người vận hành có kinh nghiệm)
-  - H2: Những gì bạn cần
+  - H2: Bạn cần gì
   - H2: Hạ tầng dưới dạng mã (Terraform)
   - H2: Bước tiếp theo
   - H2: Liên quan
@@ -4289,7 +4290,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /install/hostinger
 - Tiêu đề:
   - H2: Điều kiện tiên quyết
-  - H2: Tùy chọn A: OpenClaw một cú nhấp
+  - H2: Tùy chọn A: OpenClaw 1-Click
   - H2: Tùy chọn B: OpenClaw trên VPS
   - H2: Xác minh thiết lập của bạn
   - H2: Khắc phục sự cố
@@ -4304,13 +4305,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khuyến nghị: script cài đặt
   - H2: Phương thức cài đặt thay thế
   - H3: Trình cài đặt tiền tố cục bộ (install-cli.sh)
-  - H3: npm, pnpm hoặc bun
+  - H3: npm, pnpm, hoặc bun
   - H3: Từ mã nguồn
-  - H3: Cài đặt từ checkout main GitHub
+  - H3: Cài đặt từ checkout main trên GitHub
   - H3: Container và trình quản lý gói
   - H2: Xác minh cài đặt
-  - H2: Lưu trữ và triển khai
-  - H2: Cập nhật, di chuyển hoặc gỡ cài đặt
+  - H2: Hosting và triển khai
+  - H2: Cập nhật, di chuyển, hoặc gỡ cài đặt
   - H2: Khắc phục sự cố: không tìm thấy openclaw
 
 ## install/installer.md
@@ -4337,20 +4338,20 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /install/kubernetes
 - Tiêu đề:
   - H2: Tại sao không dùng Helm?
-  - H2: Những gì bạn cần
+  - H2: Bạn cần gì
   - H2: Bắt đầu nhanh
   - H2: Kiểm thử cục bộ với Kind
   - H2: Từng bước
   - H3: 1) Triển khai
-  - H3: 2) Truy cập Gateway
+  - H3: 2) Truy cập gateway
   - H2: Những gì được triển khai
   - H2: Tùy chỉnh
-  - H3: Hướng dẫn tác tử
+  - H3: Hướng dẫn agent
   - H3: Cấu hình Gateway
-  - H3: Thêm nhà cung cấp
+  - H3: Thêm provider
   - H3: Namespace tùy chỉnh
   - H3: Image tùy chỉnh
-  - H3: Mở ra ngoài port-forward
+  - H3: Phơi ra ngoài port-forward
   - H2: Triển khai lại
   - H2: Gỡ bỏ
   - H2: Ghi chú kiến trúc
@@ -4364,18 +4365,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Mặc định khuyến nghị (hầu hết người dùng)
   - H2: Tùy chọn VM macOS
   - H3: VM cục bộ trên Apple Silicon Mac của bạn (Lume)
-  - H3: Nhà cung cấp Mac được lưu trữ (đám mây)
+  - H3: Provider Mac được lưu trữ (cloud)
   - H2: Lộ trình nhanh (Lume, người dùng có kinh nghiệm)
-  - H2: Những gì bạn cần (Lume)
+  - H2: Bạn cần gì (Lume)
   - H2: 1) Cài đặt Lume
   - H2: 2) Tạo VM macOS
-  - H2: 3) Hoàn tất Trợ lý thiết lập
+  - H2: 3) Hoàn tất Setup Assistant
   - H2: 4) Lấy địa chỉ IP của VM
   - H2: 5) SSH vào VM
   - H2: 6) Cài đặt OpenClaw
   - H2: 7) Cấu hình kênh
-  - H2: 8) Chạy VM không có giao diện
-  - H2: Phần thưởng: tích hợp iMessage
+  - H2: 8) Chạy VM không giao diện
+  - H2: Phần bổ sung: tích hợp iMessage
   - H2: Lưu image vàng
   - H2: Chạy 24/7
   - H2: Khắc phục sự cố
@@ -4387,9 +4388,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Hai cách nhập
   - H2: Những gì được nhập
-  - H2: Những gì chỉ lưu trữ
+  - H2: Những gì chỉ giữ trong lưu trữ
   - H2: Chọn nguồn
-  - H2: Luồng được khuyến nghị
+  - H2: Luồng khuyến nghị
   - H2: Xử lý xung đột
   - H2: Đầu ra JSON cho tự động hóa
   - H2: Khắc phục sự cố
@@ -4401,8 +4402,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Hai cách nhập
   - H2: Những gì được nhập
-  - H2: Những gì chỉ lưu trữ
-  - H2: Luồng được khuyến nghị
+  - H2: Những gì chỉ giữ trong lưu trữ
+  - H2: Luồng khuyến nghị
   - H2: Xử lý xung đột
   - H2: Bí mật
   - H2: Đầu ra JSON cho tự động hóa
@@ -4413,8 +4414,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /install/migrating
 - Tiêu đề:
-  - H2: Nhập từ hệ thống tác tử khác
-  - H2: Chuyển OpenClaw sang máy mới
+  - H2: Nhập từ hệ thống agent khác
+  - H2: Di chuyển OpenClaw sang máy mới
   - H3: Các bước di chuyển
   - H3: Lỗi thường gặp
   - H3: Danh sách kiểm tra xác minh
@@ -4425,12 +4426,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /install/nix
 - Tiêu đề:
-  - H2: Những gì bạn nhận được
+  - H2: Bạn nhận được gì
   - H2: Bắt đầu nhanh
   - H2: Hành vi runtime ở chế độ Nix
   - H3: Những gì thay đổi trong chế độ Nix
   - H3: Đường dẫn cấu hình và trạng thái
-  - H3: Phát hiện PATH của dịch vụ
+  - H3: Khám phá PATH của dịch vụ
   - H2: Liên quan
 
 ## install/node.md
@@ -4440,7 +4441,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Kiểm tra phiên bản của bạn
   - H2: Cài đặt Node
   - H2: Khắc phục sự cố
-  - H3: openclaw: không tìm thấy lệnh
+  - H3: openclaw: command not found
   - H3: Lỗi quyền khi npm install -g (Linux)
   - H2: Liên quan
 
@@ -4450,8 +4451,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: Northflank
   - H2: Cách bắt đầu
-  - H2: Những gì bạn nhận được
-  - H2: Kết nối kênh
+  - H2: Bạn nhận được gì
+  - H2: Kết nối một kênh
   - H2: Bước tiếp theo
 
 ## install/oracle.md
@@ -4460,9 +4461,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Điều kiện tiên quyết
   - H2: Thiết lập
-  - H2: Xác minh tư thế bảo mật
+  - H2: Xác minh thế bảo mật
   - H2: Ghi chú ARM
-  - H2: Tính bền vững và sao lưu
+  - H2: Duy trì dữ liệu và sao lưu
   - H2: Dự phòng: đường hầm SSH
   - H2: Khắc phục sự cố
   - H2: Bước tiếp theo
@@ -4476,7 +4477,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bắt đầu nhanh
   - H2: Podman và Tailscale
   - H2: Systemd (Quadlet, tùy chọn)
-  - H2: Cấu hình, env và lưu trữ
+  - H2: Cấu hình, env, và lưu trữ
   - H2: Lệnh hữu ích
   - H2: Khắc phục sự cố
   - H2: Liên quan
@@ -4487,43 +4488,43 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: Railway
   - H2: Danh sách kiểm tra nhanh (người dùng mới)
-  - H2: Triển khai một cú nhấp
-  - H2: Những gì bạn nhận được
-  - H2: Thiết lập Railway bắt buộc
+  - H2: Triển khai một lần nhấp
+  - H2: Bạn nhận được gì
+  - H2: Cài đặt Railway bắt buộc
   - H3: Mạng công khai
   - H3: Volume (bắt buộc)
   - H3: Biến
-  - H2: Kết nối kênh
+  - H2: Kết nối một kênh
   - H2: Sao lưu & di chuyển
   - H2: Bước tiếp theo
 
 ## install/raspberry-pi.md
 
-- Route: /install/raspberry-pi
+- Tuyến: /install/raspberry-pi
 - Tiêu đề:
-  - H2: Khả năng tương thích phần cứng
+  - H2: Tương thích phần cứng
   - H2: Điều kiện tiên quyết
   - H2: Thiết lập
   - H2: Mẹo hiệu năng
   - H2: Thiết lập mô hình được khuyến nghị
   - H2: Ghi chú về tệp nhị phân ARM
-  - H2: Duy trì dữ liệu và sao lưu
+  - H2: Lưu bền và sao lưu
   - H2: Khắc phục sự cố
   - H2: Bước tiếp theo
   - H2: Liên quan
 
 ## install/render.mdx
 
-- Route: /install/render
+- Tuyến: /install/render
 - Tiêu đề:
   - H1: Render
   - H2: Điều kiện tiên quyết
   - H2: Triển khai bằng Render Blueprint
-  - H2: Hiểu về Blueprint
+  - H2: Hiểu Blueprint
   - H2: Chọn gói
   - H2: Sau khi triển khai
   - H3: Truy cập Control UI
-  - H2: Các tính năng của Render Dashboard
+  - H2: Tính năng Render Dashboard
   - H3: Nhật ký
   - H3: Truy cập shell
   - H3: Biến môi trường
@@ -4532,18 +4533,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Mở rộng quy mô
   - H2: Sao lưu và di chuyển
   - H2: Khắc phục sự cố
-  - H3: Dịch vụ sẽ không khởi động
+  - H3: Dịch vụ không khởi động
   - H3: Khởi động nguội chậm (bậc miễn phí)
   - H3: Mất dữ liệu sau khi triển khai lại
-  - H3: Lỗi kiểm tra tình trạng
+  - H3: Lỗi kiểm tra sức khỏe
   - H2: Bước tiếp theo
 
 ## install/uninstall.md
 
-- Route: /install/uninstall
+- Tuyến: /install/uninstall
 - Tiêu đề:
-  - H2: Cách dễ nhất (CLI vẫn được cài đặt)
-  - H2: Gỡ bỏ dịch vụ thủ công (CLI chưa được cài đặt)
+  - H2: Cách dễ (CLI vẫn được cài đặt)
+  - H2: Gỡ dịch vụ thủ công (CLI chưa được cài đặt)
   - H3: macOS (launchd)
   - H3: Linux (systemd user unit)
   - H3: Windows (Scheduled Task)
@@ -4554,33 +4555,33 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## install/updating.md
 
-- Route: /install/updating
+- Tuyến: /install/updating
 - Tiêu đề:
   - H2: Khuyến nghị: openclaw update
-  - H2: Chuyển đổi giữa cài đặt bằng npm và git
-  - H2: Phương án thay thế: chạy lại trình cài đặt
-  - H2: Phương án thay thế: npm, pnpm hoặc bun thủ công
+  - H2: Chuyển đổi giữa cài đặt npm và git
+  - H2: Cách thay thế: chạy lại trình cài đặt
+  - H2: Cách thay thế: npm, pnpm hoặc bun thủ công
   - H3: Chủ đề cài đặt npm nâng cao
   - H2: Trình tự động cập nhật
   - H2: Sau khi cập nhật
   - H3: Chạy doctor
   - H3: Khởi động lại Gateway
   - H3: Xác minh
-  - H2: Quay lui
-  - H3: Ghim phiên bản (npm)
-  - H3: Ghim commit (mã nguồn)
+  - H2: Khôi phục
+  - H3: Ghim một phiên bản (npm)
+  - H3: Ghim một commit (mã nguồn)
   - H2: Nếu bạn bị kẹt
   - H2: Liên quan
 
 ## install/upstash.md
 
-- Route: /install/upstash
+- Tuyến: /install/upstash
 - Tiêu đề:
   - H2: Điều kiện tiên quyết
   - H2: Tạo Box
   - H2: Kết nối bằng đường hầm SSH
   - H2: Cài đặt OpenClaw
-  - H2: Chạy onboarding
+  - H2: Chạy quy trình onboarding
   - H2: Khởi động Gateway
   - H2: Tự động khởi động lại
   - H2: Khắc phục sự cố
@@ -4588,47 +4589,47 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## logging.md
 
-- Route: /logging
+- Tuyến: /logging
 - Tiêu đề:
   - H2: Nơi lưu nhật ký
   - H2: Cách đọc nhật ký
-  - H3: CLI: theo dõi trực tiếp (khuyến nghị)
+  - H3: CLI: tail trực tiếp (khuyến nghị)
   - H3: Control UI (web)
   - H3: Nhật ký chỉ theo kênh
   - H2: Định dạng nhật ký
   - H3: Nhật ký tệp (JSONL)
   - H3: Đầu ra console
-  - H3: Nhật ký Gateway WebSocket
+  - H3: Nhật ký WebSocket của Gateway
   - H2: Cấu hình ghi nhật ký
-  - H3: Cấp độ nhật ký
+  - H3: Mức nhật ký
   - H3: Chẩn đoán truyền tải mô hình có mục tiêu
-  - H3: Tương quan truy vết
-  - H3: Kích thước và thời lượng gọi mô hình
+  - H3: Tương quan trace
+  - H3: Kích thước và thời gian gọi mô hình
   - H3: Kiểu console
-  - H3: Biên tập che giấu
+  - H3: Biên tập ẩn
   - H2: Chẩn đoán và OpenTelemetry
   - H2: Mẹo khắc phục sự cố
   - H2: Liên quan
 
 ## maturity/scorecard.md
 
-- Route: /maturity/scorecard
+- Tuyến: /maturity/scorecard
 - Tiêu đề:
-  - H1: Bảng điểm mức độ trưởng thành
-  - H2: Mục đích của trang này
+  - H1: Bảng điểm độ trưởng thành
+  - H2: Trang này dùng để làm gì
   - H2: Tổng quan nhanh
   - H2: Dải điểm
   - H2: Trình khám phá bề mặt
   - H2: Tóm tắt bằng chứng QA
-  - H3: Mức độ sẵn sàng theo khu vực
+  - H3: Mức sẵn sàng theo khu vực
 
 ## maturity/taxonomy.md
 
-- Route: /maturity/taxonomy
+- Tuyến: /maturity/taxonomy
 - Tiêu đề:
-  - H1: Phân loại mức độ trưởng thành
+  - H1: Phân loại độ trưởng thành
   - H2: Cách đọc trang này
-  - H2: Các cấp độ trưởng thành
+  - H2: Các mức độ trưởng thành
   - H2: Khu vực sản phẩm
   - H2: Chi tiết
   - H3: Lõi
@@ -4638,10 +4639,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## network.md
 
-- Route: /network
+- Tuyến: /network
 - Tiêu đề:
   - H2: Mô hình lõi
-  - H2: Ghép nối + danh tính
+  - H2: Ghép cặp + danh tính
   - H2: Khám phá + truyền tải
   - H2: Node + truyền tải
   - H2: Bảo mật
@@ -4649,38 +4650,38 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## nodes/audio.md
 
-- Route: /nodes/audio
+- Tuyến: /nodes/audio
 - Tiêu đề:
   - H2: Những gì hoạt động
   - H2: Tự động phát hiện (mặc định)
   - H2: Ví dụ cấu hình
-  - H3: Nhà cung cấp + phương án dự phòng CLI (OpenAI + Whisper CLI)
+  - H3: Nhà cung cấp + dự phòng CLI (OpenAI + Whisper CLI)
   - H3: Chỉ nhà cung cấp với kiểm soát theo phạm vi
   - H3: Chỉ nhà cung cấp (Deepgram)
   - H3: Chỉ nhà cung cấp (Mistral Voxtral)
   - H3: Chỉ nhà cung cấp (SenseAudio)
-  - H3: Lặp lại bản chép lời vào chat (chọn tham gia)
+  - H3: Phản hồi bản chép lời vào chat (chọn tham gia)
   - H2: Ghi chú và giới hạn
   - H3: Hỗ trợ môi trường proxy
   - H2: Phát hiện nhắc đến trong nhóm
-  - H2: Những điểm dễ vướng
+  - H2: Lưu ý dễ vấp
   - H2: Liên quan
 
 ## nodes/camera.md
 
-- Route: /nodes/camera
+- Tuyến: /nodes/camera
 - Tiêu đề:
   - H2: Node iOS
   - H3: Cài đặt người dùng (mặc định bật)
   - H3: Lệnh (qua Gateway node.invoke)
-  - H3: Yêu cầu chạy ở foreground
+  - H3: Yêu cầu chạy ở tiền cảnh
   - H3: Trình trợ giúp CLI
   - H2: Node Android
   - H3: Cài đặt người dùng Android (mặc định bật)
   - H3: Quyền
-  - H3: Yêu cầu Android chạy ở foreground
+  - H3: Yêu cầu tiền cảnh trên Android
   - H3: Lệnh Android (qua Gateway node.invoke)
-  - H3: Chốt bảo vệ payload
+  - H3: Bảo vệ payload
   - H2: Ứng dụng macOS
   - H3: Cài đặt người dùng (mặc định tắt)
   - H3: Trình trợ giúp CLI (node invoke)
@@ -4690,50 +4691,50 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## nodes/images.md
 
-- Route: /nodes/images
+- Tuyến: /nodes/images
 - Tiêu đề:
   - H2: Mục tiêu
   - H2: Bề mặt CLI
   - H2: Hành vi kênh WhatsApp Web
-  - H2: Đường ống tự động trả lời
-  - H2: Chuyển phương tiện đến thành lệnh
+  - H2: Quy trình tự động trả lời
+  - H2: Phương tiện đến thành lệnh
   - H2: Giới hạn và lỗi
   - H2: Ghi chú cho kiểm thử
   - H2: Liên quan
 
 ## nodes/index.md
 
-- Route: /nodes
+- Tuyến: /nodes
 - Tiêu đề:
-  - H2: Ghép nối + trạng thái
-  - H2: Máy chủ node từ xa (system.run)
-  - H3: Phần nào chạy ở đâu
-  - H3: Khởi động máy chủ node (foreground)
-  - H3: Gateway từ xa qua đường hầm SSH (liên kết loopback)
-  - H3: Khởi động máy chủ node (dịch vụ)
-  - H3: Ghép nối + đặt tên
-  - H3: Đưa lệnh vào allowlist
-  - H3: Trỏ exec đến node
+  - H2: Ghép cặp + trạng thái
+  - H2: Máy chủ Node từ xa (system.run)
+  - H3: Cái gì chạy ở đâu
+  - H3: Khởi động máy chủ Node (tiền cảnh)
+  - H3: Gateway từ xa qua đường hầm SSH (liên kết local loopback)
+  - H3: Khởi động máy chủ Node (dịch vụ)
+  - H3: Ghép cặp + đặt tên
+  - H3: Cho phép các lệnh
+  - H3: Trỏ exec đến Node
   - H2: Gọi lệnh
   - H2: Chính sách lệnh
   - H2: Cấu hình (openclaw.json)
-  - H2: Ảnh chụp màn hình (snapshot canvas)
+  - H2: Ảnh chụp màn hình (ảnh chụp canvas)
   - H3: Điều khiển canvas
   - H3: A2UI (Canvas)
-  - H2: Ảnh + video (camera node)
-  - H2: Bản ghi màn hình (node)
-  - H2: Vị trí (node)
-  - H2: SMS (node Android)
+  - H2: Ảnh + video (camera Node)
+  - H2: Bản ghi màn hình (Node)
+  - H2: Vị trí (Node)
+  - H2: SMS (Node Android)
   - H2: Lệnh thiết bị Android + dữ liệu cá nhân
-  - H2: Lệnh hệ thống (máy chủ node / node Mac)
-  - H2: Ràng buộc node exec
+  - H2: Lệnh hệ thống (máy chủ Node / Node Mac)
+  - H2: Liên kết Node exec
   - H2: Bản đồ quyền
-  - H2: Máy chủ node headless (đa nền tảng)
-  - H2: Chế độ node Mac
+  - H2: Máy chủ Node headless (đa nền tảng)
+  - H2: Chế độ Node Mac
 
 ## nodes/location-command.md
 
-- Route: /nodes/location-command
+- Tuyến: /nodes/location-command
 - Tiêu đề:
   - H2: TL;DR
   - H2: Vì sao dùng bộ chọn (không chỉ là công tắc)
@@ -4747,7 +4748,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## nodes/media-understanding.md
 
-- Route: /nodes/media-understanding
+- Tuyến: /nodes/media-understanding
 - Tiêu đề:
   - H2: Mục tiêu
   - H2: Hành vi cấp cao
@@ -4768,38 +4769,38 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## nodes/talk.md
 
-- Route: /nodes/talk
+- Tuyến: /nodes/talk
 - Tiêu đề:
   - H2: Hành vi (macOS)
-  - H2: Chỉ thị giọng nói trong câu trả lời
+  - H2: Chỉ thị giọng nói trong phản hồi
   - H2: Cấu hình (/.openclaw/openclaw.json)
-  - H2: UI macOS
-  - H2: UI Android
+  - H2: Giao diện macOS
+  - H2: Giao diện Android
   - H2: Ghi chú
   - H2: Liên quan
 
 ## nodes/troubleshooting.md
 
-- Route: /nodes/troubleshooting
+- Tuyến: /nodes/troubleshooting
 - Tiêu đề:
   - H2: Thang lệnh
-  - H2: Yêu cầu foreground
+  - H2: Yêu cầu tiền cảnh
   - H2: Ma trận quyền
-  - H2: Ghép nối so với phê duyệt
-  - H2: Mã lỗi node thường gặp
-  - H2: Vòng khôi phục nhanh
+  - H2: Ghép cặp so với phê duyệt
+  - H2: Mã lỗi Node thường gặp
+  - H2: Vòng lặp khôi phục nhanh
   - H2: Liên quan
 
 ## nodes/voicewake.md
 
-- Route: /nodes/voicewake
+- Tuyến: /nodes/voicewake
 - Tiêu đề:
   - H2: Lưu trữ (máy chủ Gateway)
   - H2: Giao thức
   - H3: Phương thức
   - H3: Phương thức định tuyến (kích hoạt → mục tiêu)
   - H3: Sự kiện
-  - H2: Hành vi client
+  - H2: Hành vi máy khách
   - H3: Ứng dụng macOS
   - H3: Node iOS
   - H3: Node Android
@@ -4807,24 +4808,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## openclaw-agent-runtime.md
 
-- Route: /openclaw-agent-runtime
+- Tuyến: /openclaw-agent-runtime
 - Tiêu đề:
   - H2: Kiểm tra kiểu và lint
   - H2: Chạy kiểm thử Agent Runtime
   - H2: Kiểm thử thủ công
-  - H2: Đặt lại sạch
+  - H2: Đặt lại từ trạng thái sạch
   - H2: Tham chiếu
   - H2: Liên quan
 
 ## perplexity.md
 
-- Route: /perplexity
+- Tuyến: /perplexity
 - Tiêu đề:
   - H2: Liên quan
 
 ## plan/codex-context-engine-harness.md
 
-- Route: /plan/codex-context-engine-harness
+- Tuyến: /plan/codex-context-engine-harness
 - Tiêu đề:
   - H2: Trạng thái
   - H2: Mục tiêu
@@ -4833,22 +4834,22 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khoảng trống hiện tại
   - H2: Hành vi mong muốn
   - H2: Ràng buộc thiết kế
-  - H3: Codex app-server vẫn là chuẩn cho trạng thái luồng gốc
+  - H3: Codex app-server vẫn là nguồn chuẩn cho trạng thái luồng gốc
   - H3: Việc lắp ráp context engine phải được chiếu vào đầu vào Codex
-  - H3: Độ ổn định của prompt-cache rất quan trọng
+  - H3: Độ ổn định prompt-cache là quan trọng
   - H3: Ngữ nghĩa chọn runtime không thay đổi
   - H2: Kế hoạch triển khai
   - H3: 1. Xuất hoặc di chuyển các helper thử context-engine có thể tái sử dụng
   - H3: 2. Thêm helper chiếu ngữ cảnh Codex
-  - H3: 3. Nối bootstrap trước khi khởi động luồng Codex
-  - H3: 4. Nối assemble trước thread/start / thread/resume và turn/start
-  - H3: 5. Giữ định dạng ổn định cho prompt-cache
-  - H3: 6. Nối post-turn sau khi phản chiếu transcript
-  - H3: 7. Chuẩn hóa mức sử dụng và ngữ cảnh runtime prompt-cache
+  - H3: 3. Kết nối bootstrap trước khi khởi động luồng Codex
+  - H3: 4. Kết nối assemble trước thread/start / thread/resume và turn/start
+  - H3: 5. Giữ nguyên định dạng ổn định của prompt-cache
+  - H3: 6. Kết nối post-turn sau khi phản chiếu transcript
+  - H3: 7. Chuẩn hóa ngữ cảnh runtime cho usage và prompt-cache
   - H3: 8. Chính sách Compaction
   - H4: /compact và Compaction OpenClaw rõ ràng
   - H4: Sự kiện contextCompaction gốc của Codex trong lượt
-  - H3: 9. Hành vi đặt lại phiên và ràng buộc
+  - H3: 9. Đặt lại phiên và hành vi liên kết
   - H3: 10. Xử lý lỗi
   - H2: Kế hoạch kiểm thử
   - H3: Kiểm thử đơn vị
@@ -4861,13 +4862,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plan/ui-channels.md
 
-- Route: /plan/ui-channels
+- Tuyến: /plan/ui-channels
 - Tiêu đề:
   - H2: Trạng thái
   - H2: Vấn đề
   - H2: Mục tiêu
   - H2: Không phải mục tiêu
-  - H2: Mô hình đích
+  - H2: Mô hình mục tiêu
   - H2: Siêu dữ liệu phân phối
   - H2: Hợp đồng khả năng runtime
   - H2: Ánh xạ kênh
@@ -4878,7 +4879,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/android.md
 
-- Route: /platforms/android
+- Tuyến: /platforms/android
 - Tiêu đề:
   - H2: Ảnh chụp hỗ trợ
   - H2: Điều khiển hệ thống
@@ -4889,11 +4890,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H4: Khám phá Tailnet (Vienna ⇄ London) qua unicast DNS-SD
   - H3: 3) Kết nối từ Android
   - H3: Beacon báo hiện diện còn sống
-  - H3: 4) Phê duyệt ghép nối (CLI)
-  - H3: 5) Xác minh node đã kết nối
+  - H3: 4) Phê duyệt ghép cặp (CLI)
+  - H3: 5) Xác minh Node đã kết nối
   - H3: 6) Chat + lịch sử
   - H3: 7) Canvas + camera
-  - H4: Máy chủ Gateway Canvas (khuyến nghị cho nội dung web)
+  - H4: Gateway Canvas Host (khuyến nghị cho nội dung web)
   - H3: 8) Giọng nói + bề mặt lệnh Android mở rộng
   - H2: Điểm vào trợ lý
   - H2: Chuyển tiếp thông báo
@@ -4901,13 +4902,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/digitalocean.md
 
-- Route: /platforms/digitalocean
+- Tuyến: /platforms/digitalocean
 - Tiêu đề:
   - H2: Liên quan
 
 ## platforms/easyrunner.md
 
-- Route: /platforms/easyrunner
+- Tuyến: /platforms/easyrunner
 - Tiêu đề:
   - H2: Trước khi bắt đầu
   - H2: Ứng dụng Compose
@@ -4918,40 +4919,40 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/index.md
 
-- Route: /platforms
+- Tuyến: /platforms
 - Tiêu đề:
   - H2: Chọn hệ điều hành của bạn
-  - H2: VPS và lưu trữ
-  - H2: Liên kết phổ biến
+  - H2: VPS và hosting
+  - H2: Liên kết thường dùng
   - H2: Cài đặt dịch vụ Gateway (CLI)
   - H2: Liên quan
 
 ## platforms/ios.md
 
-- Route: /platforms/ios
+- Tuyến: /platforms/ios
 - Tiêu đề:
-  - H2: Nó làm gì
+  - H2: Chức năng
   - H2: Yêu cầu
-  - H2: Bắt đầu nhanh (ghép nối + kết nối)
+  - H2: Khởi động nhanh (ghép cặp + kết nối)
   - H2: Push dựa trên relay cho bản dựng chính thức
   - H2: Beacon nền báo còn sống
   - H2: Luồng xác thực và tin cậy
   - H2: Đường dẫn khám phá
   - H3: Bonjour (LAN)
   - H3: Tailnet (liên mạng)
-  - H3: Host/port thủ công
+  - H3: Máy chủ/cổng thủ công
   - H2: Canvas + A2UI
-  - H2: Quan hệ với Computer Use
-  - H3: Đánh giá / snapshot Canvas
-  - H2: Đánh thức bằng giọng nói + chế độ nói
+  - H2: Mối quan hệ Computer Use
+  - H3: Đánh giá / ảnh chụp Canvas
+  - H2: Voice wake + chế độ nói
   - H2: Lỗi thường gặp
   - H2: Tài liệu liên quan
 
 ## platforms/linux.md
 
-- Route: /platforms/linux
+- Tuyến: /platforms/linux
 - Tiêu đề:
-  - H2: Đường dẫn nhanh cho người mới bắt đầu (VPS)
+  - H2: Lộ trình nhanh cho người mới bắt đầu (VPS)
   - H2: Cài đặt
   - H2: Gateway
   - H2: Cài đặt dịch vụ Gateway (CLI)
@@ -4961,7 +4962,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/bundled-gateway.md
 
-- Route: /platforms/mac/bundled-gateway
+- Tuyến: /platforms/mac/bundled-gateway
 - Tiêu đề:
   - H2: Cài đặt CLI (bắt buộc cho chế độ cục bộ)
   - H2: Launchd (Gateway dưới dạng LaunchAgent)
@@ -4973,48 +4974,48 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/canvas.md
 
-- Route: /platforms/mac/canvas
+- Tuyến: /platforms/mac/canvas
 - Tiêu đề:
-  - H2: Canvas nằm ở đâu
+  - H2: Nơi Canvas tồn tại
   - H2: Hành vi panel
-  - H2: Bề mặt API tác tử
+  - H2: Bề mặt API tác nhân
   - H2: A2UI trong Canvas
   - H3: Lệnh A2UI (v0.8)
-  - H2: Kích hoạt lượt chạy tác tử từ Canvas
+  - H2: Kích hoạt lượt chạy tác nhân từ Canvas
   - H2: Ghi chú bảo mật
   - H2: Liên quan
 
 ## platforms/mac/child-process.md
 
-- Route: /platforms/mac/child-process
+- Tuyến: /platforms/mac/child-process
 - Tiêu đề:
   - H2: Hành vi mặc định (launchd)
   - H2: Bản dựng dev chưa ký
-  - H2: Chế độ chỉ gắn vào
+  - H2: Chế độ chỉ đính kèm
   - H2: Chế độ từ xa
   - H2: Vì sao chúng tôi ưu tiên launchd
   - H2: Liên quan
 
 ## platforms/mac/dev-setup.md
 
-- Tuyến: /platforms/mac/dev-setup
+- Đường dẫn: /platforms/mac/dev-setup
 - Tiêu đề:
-  - H1: Thiết lập dành cho nhà phát triển trên macOS
+  - H1: Thiết lập nhà phát triển macOS
   - H2: Điều kiện tiên quyết
-  - H2: 1. Cài đặt phần phụ thuộc
-  - H2: 2. Xây dựng và đóng gói ứng dụng
+  - H2: 1. Cài đặt phụ thuộc
+  - H2: 2. Build và đóng gói ứng dụng
   - H2: 3. Cài đặt CLI
   - H2: Khắc phục sự cố
-  - H3: Xây dựng thất bại: bộ công cụ hoặc SDK không khớp
-  - H3: Ứng dụng bị sập khi cấp quyền
+  - H3: Build thất bại: chuỗi công cụ hoặc SDK không khớp
+  - H3: Ứng dụng gặp sự cố khi cấp quyền
   - H3: Gateway "Starting..." vô thời hạn
   - H2: Liên quan
 
 ## platforms/mac/health.md
 
-- Tuyến: /platforms/mac/health
+- Đường dẫn: /platforms/mac/health
 - Tiêu đề:
-  - H1: Kiểm tra tình trạng trên macOS
+  - H1: Kiểm tra sức khỏe trên macOS
   - H2: Thanh menu
   - H2: Cài đặt
   - H2: Cách probe hoạt động
@@ -5023,29 +5024,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/icon.md
 
-- Tuyến: /platforms/mac/icon
+- Đường dẫn: /platforms/mac/icon
 - Tiêu đề:
   - H1: Trạng thái biểu tượng thanh menu
   - H2: Liên quan
 
 ## platforms/mac/logging.md
 
-- Tuyến: /platforms/mac/logging
+- Đường dẫn: /platforms/mac/logging
 - Tiêu đề:
-  - H1: Ghi log (macOS)
-  - H2: Log tệp chẩn đoán xoay vòng (khung Debug)
-  - H2: Dữ liệu riêng tư của unified logging trên macOS
+  - H1: Ghi nhật ký (macOS)
+  - H2: Nhật ký tệp chẩn đoán xoay vòng (khung Debug)
+  - H2: Dữ liệu riêng tư trong nhật ký hợp nhất trên macOS
   - H2: Bật cho OpenClaw (ai.openclaw)
   - H2: Tắt sau khi gỡ lỗi
   - H2: Liên quan
 
 ## platforms/mac/menu-bar.md
 
-- Tuyến: /platforms/mac/menu-bar
+- Đường dẫn: /platforms/mac/menu-bar
 - Tiêu đề:
   - H2: Nội dung được hiển thị
   - H2: Mô hình trạng thái
-  - H2: enum IconState (Swift)
+  - H2: Enum IconState (Swift)
   - H3: ActivityKind → glyph
   - H3: Ánh xạ trực quan
   - H2: Menu con ngữ cảnh
@@ -5057,11 +5058,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/peekaboo.md
 
-- Tuyến: /platforms/mac/peekaboo
+- Đường dẫn: /platforms/mac/peekaboo
 - Tiêu đề:
   - H2: Đây là gì (và không phải là gì)
-  - H2: Quan hệ với Computer Use
-  - H2: Bật cầu nối
+  - H2: Mối quan hệ với Computer Use
+  - H2: Bật bridge
   - H2: Thứ tự khám phá client
   - H2: Bảo mật và quyền
   - H2: Hành vi snapshot (tự động hóa)
@@ -5070,21 +5071,21 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/permissions.md
 
-- Tuyến: /platforms/mac/permissions
+- Đường dẫn: /platforms/mac/permissions
 - Tiêu đề:
   - H2: Yêu cầu để quyền ổn định
-  - H2: Cấp quyền Trợ năng cho runtime Node và CLI
+  - H2: Cấp quyền Accessibility cho runtime Node và CLI
   - H2: Danh sách kiểm tra khôi phục khi lời nhắc biến mất
-  - H2: Quyền với tệp và thư mục (Desktop/Documents/Downloads)
+  - H2: Quyền tệp và thư mục (Desktop/Documents/Downloads)
   - H2: Liên quan
 
 ## platforms/mac/remote.md
 
-- Tuyến: /platforms/mac/remote
+- Đường dẫn: /platforms/mac/remote
 - Tiêu đề:
   - H2: Chế độ
-  - H2: Phương thức truyền tải từ xa
-  - H2: Điều kiện tiên quyết trên máy chủ từ xa
+  - H2: Transport từ xa
+  - H2: Điều kiện tiên quyết trên host từ xa
   - H2: Thiết lập ứng dụng macOS
   - H2: Web Chat
   - H2: Quyền
@@ -5096,48 +5097,48 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/signing.md
 
-- Tuyến: /platforms/mac/signing
+- Đường dẫn: /platforms/mac/signing
 - Tiêu đề:
-  - H1: ký mac (bản dựng gỡ lỗi)
+  - H1: Ký mac (build gỡ lỗi)
   - H2: Cách dùng
-  - H3: Ghi chú ký ad-hoc
-  - H2: Siêu dữ liệu bản dựng cho About
+  - H3: Ghi chú ký Ad-hoc
+  - H2: Siêu dữ liệu build cho phần Giới thiệu
   - H2: Lý do
   - H2: Liên quan
 
 ## platforms/mac/skills.md
 
-- Tuyến: /platforms/mac/skills
+- Đường dẫn: /platforms/mac/skills
 - Tiêu đề:
   - H2: Nguồn dữ liệu
   - H2: Hành động cài đặt
-  - H2: Khóa Env/API
+  - H2: Khóa env/API
   - H2: Chế độ từ xa
   - H2: Liên quan
 
 ## platforms/mac/voice-overlay.md
 
-- Tuyến: /platforms/mac/voice-overlay
+- Đường dẫn: /platforms/mac/voice-overlay
 - Tiêu đề:
-  - H1: Vòng đời lớp phủ thoại (macOS)
-  - H2: Mục đích hiện tại
+  - H1: Vòng đời lớp phủ giọng nói (macOS)
+  - H2: Ý định hiện tại
   - H2: Đã triển khai (9 tháng 12, 2025)
-  - H2: Các bước tiếp theo
+  - H2: Bước tiếp theo
   - H2: Danh sách kiểm tra gỡ lỗi
   - H2: Các bước di chuyển (đề xuất)
   - H2: Liên quan
 
 ## platforms/mac/voicewake.md
 
-- Tuyến: /platforms/mac/voicewake
+- Đường dẫn: /platforms/mac/voicewake
 - Tiêu đề:
-  - H1: Đánh thức bằng giọng nói & Push-to-Talk
+  - H1: Đánh thức bằng giọng nói & nhấn để nói
   - H2: Yêu cầu
   - H2: Chế độ
-  - H2: Hành vi runtime (wake-word)
+  - H2: Hành vi runtime (từ đánh thức)
   - H2: Bất biến vòng đời
-  - H2: Chế độ lỗi lớp phủ bám dính (trước đây)
-  - H2: Chi tiết riêng của push-to-talk
+  - H2: Chế độ lỗi lớp phủ dính (trước đây)
+  - H2: Chi tiết riêng của nhấn để nói
   - H2: Cài đặt hiển thị cho người dùng
   - H2: Hành vi chuyển tiếp
   - H2: Payload chuyển tiếp
@@ -5146,22 +5147,22 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/mac/webchat.md
 
-- Tuyến: /platforms/mac/webchat
+- Đường dẫn: /platforms/mac/webchat
 - Tiêu đề:
   - H2: Khởi chạy và gỡ lỗi
   - H2: Cách nó được nối dây
   - H2: Bề mặt bảo mật
-  - H2: Giới hạn đã biết
+  - H2: Hạn chế đã biết
   - H2: Liên quan
 
 ## platforms/mac/xpc.md
 
-- Tuyến: /platforms/mac/xpc
+- Đường dẫn: /platforms/mac/xpc
 - Tiêu đề:
   - H1: Kiến trúc IPC macOS của OpenClaw
   - H2: Mục tiêu
   - H2: Cách hoạt động
-  - H3: Gateway + truyền tải node
+  - H3: Gateway + transport node
   - H3: Dịch vụ Node + IPC ứng dụng
   - H3: PeekabooBridge (tự động hóa UI)
   - H2: Luồng vận hành
@@ -5170,70 +5171,70 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## platforms/macos.md
 
-- Tuyến: /platforms/macos
+- Đường dẫn: /platforms/macos
 - Tiêu đề:
   - H2: Tải xuống
   - H2: Lần chạy đầu tiên
   - H2: Chọn chế độ Gateway
-  - H2: Những phần ứng dụng sở hữu
+  - H2: Phần ứng dụng sở hữu
   - H2: Trang chi tiết macOS
   - H2: Liên quan
 
 ## platforms/oracle.md
 
-- Tuyến: /platforms/oracle
+- Đường dẫn: /platforms/oracle
 - Tiêu đề:
   - H2: Liên quan
 
 ## platforms/raspberry-pi.md
 
-- Tuyến: /platforms/raspberry-pi
+- Đường dẫn: /platforms/raspberry-pi
 - Tiêu đề:
   - H2: Liên quan
 
 ## platforms/windows.md
 
-- Tuyến: /platforms/windows
+- Đường dẫn: /platforms/windows
 - Tiêu đề:
-  - H2: Đề xuất: Windows Hub
+  - H2: Khuyến nghị: Windows Hub
   - H3: Windows Hub bao gồm những gì
   - H3: Lần khởi chạy đầu tiên
   - H2: Chế độ node Windows
   - H2: Chế độ MCP cục bộ
-  - H2: CLI và Gateway Windows nguyên sinh
-  - H2: Gateway WSL2
-  - H2: Gateway tự khởi động trước khi đăng nhập Windows
-  - H2: Phơi bày dịch vụ WSL qua LAN
+  - H2: CLI và Gateway Windows gốc
+  - H2: WSL2 Gateway
+  - H2: Tự động khởi động Gateway trước khi đăng nhập Windows
+  - H2: Công khai dịch vụ WSL qua LAN
   - H2: Khắc phục sự cố
   - H3: Biểu tượng khay không xuất hiện
   - H3: Thiết lập cục bộ thất bại
-  - H3: Ứng dụng báo cần ghép đôi
-  - H3: Web chat không thể truy cập Gateway từ xa
+  - H3: Ứng dụng cho biết cần ghép đôi
+  - H3: Web chat không thể kết nối tới Gateway từ xa
   - H3: Lệnh screen.snapshot, camera hoặc audio thất bại
   - H3: Kết nối Git hoặc GitHub thất bại
   - H2: Liên quan
 
 ## plugins/adding-capabilities.md
 
-- Tuyến: /plugins/adding-capabilities
+- Đường dẫn: /plugins/adding-capabilities
 - Tiêu đề:
-  - H2: Khi nào tạo capability
-  - H2: Trình tự tiêu chuẩn
-  - H2: Cái gì đặt ở đâu
+  - H2: Khi nào tạo một capability
+  - H2: Trình tự chuẩn
+  - H2: Nội dung nào đặt ở đâu
   - H2: Điểm nối provider và harness
   - H2: Danh sách kiểm tra tệp
-  - H2: Ví dụ hoàn chỉnh: tạo hình ảnh
+  - H2: Ví dụ hoàn chỉnh: tạo ảnh
   - H2: Provider embedding
-  - H2: Danh sách kiểm tra đánh giá
+  - H2: Danh sách kiểm tra review
   - H2: Liên quan
 
 ## plugins/admin-http-rpc.md
 
-- Tuyến: /plugins/admin-http-rpc
+- Đường dẫn: /plugins/admin-http-rpc
 - Tiêu đề:
-  - H2: Trước khi bật
+  - H2: Trước khi bạn bật nó
   - H2: Bật
-  - H2: Xác minh tuyến
+  - H2: Xác minh route
   - H2: Xác thực
   - H2: Mô hình bảo mật
   - H2: Yêu cầu
@@ -5245,48 +5246,48 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/agent-tools.md
 
-- Tuyến: /plugins/agent-tools
+- Đường dẫn: /plugins/agent-tools
 - Tiêu đề:
   - H2: Liên quan
 
 ## plugins/architecture-internals.md
 
-- Tuyến: /plugins/architecture-internals
+- Đường dẫn: /plugins/architecture-internals
 - Tiêu đề:
   - H2: Pipeline tải
   - H3: Hành vi ưu tiên manifest
   - H3: Ranh giới cache Plugin
   - H2: Mô hình registry
-  - H2: Callback gắn kết hội thoại
+  - H2: Callback gắn kết cuộc hội thoại
   - H2: Hook runtime provider
-  - H3: Thứ tự và cách dùng hook
+  - H3: Thứ tự hook và cách dùng
   - H3: Ví dụ provider
   - H3: Ví dụ tích hợp sẵn
   - H2: Helper runtime
   - H3: api.runtime.imageGeneration
-  - H2: Tuyến HTTP Gateway
+  - H2: Route HTTP Gateway
   - H2: Đường dẫn import Plugin SDK
   - H2: Schema công cụ tin nhắn
-  - H2: Phân giải mục tiêu kênh
-  - H2: Thư mục dựa trên config
+  - H2: Phân giải đích kênh
+  - H2: Thư mục được hỗ trợ bởi cấu hình
   - H2: Catalog provider
   - H2: Kiểm tra kênh chỉ đọc
   - H2: Gói package
   - H3: Siêu dữ liệu catalog kênh
   - H2: Plugin engine ngữ cảnh
-  - H2: Thêm capability mới
+  - H2: Thêm một capability mới
   - H3: Danh sách kiểm tra capability
   - H3: Mẫu capability
   - H2: Liên quan
 
 ## plugins/architecture.md
 
-- Tuyến: /plugins/architecture
+- Đường dẫn: /plugins/architecture
 - Tiêu đề:
   - H2: Mô hình capability công khai
   - H3: Lập trường tương thích bên ngoài
   - H3: Hình dạng Plugin
-  - H3: Hook cũ
+  - H3: Hook legacy
   - H3: Tín hiệu tương thích
   - H2: Tổng quan kiến trúc
   - H3: Snapshot siêu dữ liệu Plugin và bảng tra cứu
@@ -5305,13 +5306,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/building-extensions.md
 
-- Tuyến: /plugins/building-extensions
+- Đường dẫn: /plugins/building-extensions
 - Tiêu đề:
   - H2: Liên quan
 
 ## plugins/building-plugins.md
 
-- Tuyến: /plugins/building-plugins
+- Đường dẫn: /plugins/building-plugins
 - Tiêu đề:
   - H2: Yêu cầu
   - H2: Chọn hình dạng plugin
@@ -5319,17 +5320,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Đăng ký công cụ
   - H2: Quy ước import
   - H2: Danh sách kiểm tra trước khi gửi
-  - H2: Thử nghiệm với bản phát hành beta
-  - H2: Các bước tiếp theo
+  - H2: Kiểm thử với bản phát hành beta
+  - H2: Bước tiếp theo
   - H2: Liên quan
 
 ## plugins/bundles.md
 
-- Tuyến: /plugins/bundles
+- Đường dẫn: /plugins/bundles
 - Tiêu đề:
   - H2: Vì sao bundle tồn tại
-  - H2: Cài đặt bundle
-  - H2: OpenClaw ánh xạ gì từ bundle
+  - H2: Cài đặt một bundle
+  - H2: Những gì OpenClaw ánh xạ từ bundle
   - H3: Hiện được hỗ trợ
   - H4: Nội dung Skill
   - H4: Gói hook
@@ -5339,21 +5340,21 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Được phát hiện nhưng không thực thi
   - H2: Định dạng bundle
   - H2: Thứ tự ưu tiên phát hiện
-  - H2: Phần phụ thuộc runtime và dọn dẹp
+  - H2: Phụ thuộc runtime và dọn dẹp
   - H2: Bảo mật
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
 ## plugins/cli-backend-plugins.md
 
-- Tuyến: /plugins/cli-backend-plugins
+- Đường dẫn: /plugins/cli-backend-plugins
 - Tiêu đề:
-  - H2: Plugin sở hữu những gì
+  - H2: Phần plugin sở hữu
   - H2: Plugin backend tối thiểu
-  - H2: Hình dạng config
+  - H2: Hình dạng cấu hình
   - H2: Hook backend nâng cao
   - H3: ownsNativeCompaction: chọn không dùng Compaction của OpenClaw
-  - H2: Cầu nối công cụ MCP
+  - H2: Bridge công cụ MCP
   - H2: Cấu hình người dùng
   - H2: Xác minh
   - H2: Danh sách kiểm tra
@@ -5361,7 +5362,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/codex-computer-use.md
 
-- Tuyến: /plugins/codex-computer-use
+- Đường dẫn: /plugins/codex-computer-use
 - Tiêu đề:
   - H2: OpenClaw.app và Peekaboo
   - H2: Ứng dụng iOS
@@ -5372,59 +5373,59 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Marketplace macOS đi kèm
   - H2: Giới hạn catalog từ xa
   - H2: Tham chiếu cấu hình
-  - H2: OpenClaw kiểm tra gì
+  - H2: Những gì OpenClaw kiểm tra
   - H2: Quyền macOS
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
 ## plugins/codex-harness-reference.md
 
-- Tuyến: /plugins/codex-harness-reference
+- Đường dẫn: /plugins/codex-harness-reference
 - Tiêu đề:
-  - H2: Bề mặt config Plugin
-  - H2: Truyền tải app-server
+  - H2: Bề mặt cấu hình Plugin
+  - H2: Transport app-server
   - H2: Chế độ phê duyệt và sandbox
   - H2: Thực thi native trong sandbox
   - H2: Xác thực và cô lập môi trường
   - H2: Công cụ động
   - H2: Timeout
-  - H2: Khám phá mô hình
+  - H2: Khám phá model
   - H2: Tệp bootstrap workspace
   - H2: Ghi đè môi trường
   - H2: Liên quan
 
 ## plugins/codex-harness-runtime.md
 
-- Tuyến: /plugins/codex-harness-runtime
+- Đường dẫn: /plugins/codex-harness-runtime
 - Tiêu đề:
   - H2: Tổng quan
-  - H2: Gắn kết luồng và thay đổi mô hình
+  - H2: Gắn kết thread và thay đổi model
   - H2: Phản hồi hiển thị và Heartbeat
   - H2: Ranh giới hook
   - H2: Hợp đồng hỗ trợ V1
-  - H2: Quyền native và MCP elicitations
+  - H2: Quyền native và elicitations MCP
   - H2: Điều hướng hàng đợi
   - H2: Tải lên phản hồi Codex
-  - H2: Compaction và mirror transcript
-  - H2: Phương tiện và phân phối
+  - H2: Compaction và bản sao transcript
+  - H2: Media và phân phối
   - H2: Liên quan
 
 ## plugins/codex-harness.md
 
-- Tuyến: /plugins/codex-harness
+- Đường dẫn: /plugins/codex-harness
 - Tiêu đề:
   - H2: Yêu cầu
   - H2: Khởi động nhanh
   - H2: Cấu hình
   - H2: Xác minh runtime Codex
-  - H2: Định tuyến và chọn mô hình
+  - H2: Định tuyến và chọn model
   - H2: Mẫu triển khai
   - H3: Triển khai Codex cơ bản
   - H3: Triển khai provider hỗn hợp
   - H3: Triển khai Codex fail-closed
   - H2: Chính sách app-server
   - H2: Lệnh và chẩn đoán
-  - H3: Kiểm tra luồng Codex cục bộ
+  - H3: Kiểm tra thread Codex cục bộ
   - H2: Plugin Codex native
   - H2: Computer Use
   - H2: Ranh giới runtime
@@ -5433,63 +5434,63 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/codex-native-plugins.md
 
-- Tuyến: /plugins/codex-native-plugins
+- Đường dẫn: /plugins/codex-native-plugins
 - Tiêu đề:
   - H2: Yêu cầu
   - H2: Khởi động nhanh
   - H2: Quản lý plugin từ chat
   - H2: Cách thiết lập plugin native hoạt động
   - H2: Ranh giới hỗ trợ V1
-  - H2: Kiểm kê ứng dụng và quyền sở hữu
-  - H2: Config ứng dụng luồng
+  - H2: Kho ứng dụng và quyền sở hữu
+  - H2: Cấu hình ứng dụng thread
   - H2: Chính sách hành động phá hủy
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
 ## plugins/community.md
 
-- Tuyến: /plugins/community
+- Đường dẫn: /plugins/community
 - Tiêu đề:
   - H2: Tìm plugin
-  - H2: Xuất bản plugin
+  - H2: Phát hành plugin
   - H2: Liên quan
 
 ## plugins/compatibility.md
 
-- Tuyến: /plugins/compatibility
+- Đường dẫn: /plugins/compatibility
 - Tiêu đề:
   - H2: Registry tương thích
-  - H2: Package kiểm tra Plugin
+  - H2: Package inspector Plugin
   - H3: Lane chấp nhận của maintainer
   - H2: Chính sách ngừng hỗ trợ
   - H2: Khu vực tương thích hiện tại
-  - H3: Alias phẳng cho callback inbound WhatsApp
+  - H3: Alias phẳng callback inbound WhatsApp
   - H3: Trường tiếp nhận inbound WhatsApp
   - H2: Ghi chú phát hành
 
 ## plugins/copilot.md
 
-- Tuyến: /plugins/copilot
+- Đường dẫn: /plugins/copilot
 - Tiêu đề:
   - H2: Yêu cầu
   - H2: Cài đặt Plugin
   - H2: Khởi động nhanh
   - H2: Provider được hỗ trợ
   - H2: BYOK
-  - H2: Xác thực
+  - H2: Auth
   - H2: Bề mặt cấu hình
   - H2: Compaction
-  - H2: Mirror transcript
+  - H2: Phản chiếu transcript
   - H2: Câu hỏi phụ (/btw)
   - H2: Doctor
-  - H2: Giới hạn
+  - H2: Hạn chế
   - H2: Quyền và askuser
   - H3: Token GitHub cấp phiên
   - H2: Liên quan
 
 ## plugins/dependency-resolution.md
 
-- Tuyến: /plugins/dependency-resolution
+- Đường dẫn: /plugins/dependency-resolution
 - Tiêu đề:
   - H2: Phân chia trách nhiệm
   - H2: Gốc cài đặt
@@ -5500,7 +5501,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/google-meet.md
 
-- Đường dẫn: /plugins/google-meet
+- Tuyến: /plugins/google-meet
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H3: Gateway cục bộ + Parallels Chrome
@@ -5514,11 +5515,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Xác minh OAuth bằng doctor
   - H2: Cấu hình
   - H2: Công cụ
-  - H2: Chế độ tác tử và bidi
+  - H2: Chế độ tác tử và hai chiều
   - H2: Danh sách kiểm tra kiểm thử trực tiếp
   - H2: Khắc phục sự cố
   - H3: Tác tử không thấy công cụ Google Meet
-  - H3: Không có nút hỗ trợ Google Meet nào được kết nối
+  - H3: Không có node có khả năng Google Meet nào được kết nối
   - H3: Trình duyệt mở nhưng tác tử không thể tham gia
   - H3: Tạo cuộc họp thất bại
   - H3: Tác tử tham gia nhưng không nói
@@ -5529,40 +5530,40 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/hooks.md
 
-- Đường dẫn: /plugins/hooks
+- Tuyến: /plugins/hooks
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H2: Danh mục hook
   - H2: Gỡ lỗi hook thời gian chạy
   - H2: Chính sách gọi công cụ
-  - H3: Hook môi trường exec
+  - H3: Hook môi trường thực thi
   - H3: Lưu giữ kết quả công cụ
-  - H2: Hook prompt và mô hình
-  - H3: Phần mở rộng phiên và chèn lượt tiếp theo
+  - H2: Hook lời nhắc và mô hình
+  - H3: Tiện ích mở rộng phiên và chèn vào lượt tiếp theo
   - H2: Hook tin nhắn
-  - H2: Hook cài đặt
+  - H2: Cài đặt hook
   - H2: Vòng đời Gateway
-  - H2: Các mục sắp ngừng hỗ trợ
+  - H2: Các phần sắp ngừng hỗ trợ
   - H2: Liên quan
 
 ## plugins/install-overrides.md
 
-- Đường dẫn: /plugins/install-overrides
+- Tuyến: /plugins/install-overrides
 - Tiêu đề:
   - H2: Môi trường
   - H2: Hành vi
-  - H2: Package E2E
+  - H2: E2E gói
 
 ## plugins/llama-cpp.md
 
-- Đường dẫn: /plugins/llama-cpp
+- Tuyến: /plugins/llama-cpp
 - Tiêu đề:
   - H2: Cấu hình
-  - H2: Runtime gốc
+  - H2: Môi trường chạy gốc
 
 ## plugins/manage-plugins.md
 
-- Đường dẫn: /plugins/manage-plugins
+- Tuyến: /plugins/manage-plugins
 - Tiêu đề:
   - H2: Liệt kê và tìm kiếm Plugin
   - H2: Cài đặt Plugin
@@ -5570,18 +5571,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cập nhật Plugin
   - H2: Gỡ cài đặt Plugin
   - H2: Chọn nguồn
-  - H2: Xuất bản Plugin
+  - H2: Phát hành Plugin
   - H2: Liên quan
 
 ## plugins/manifest.md
 
-- Đường dẫn: /plugins/manifest
+- Tuyến: /plugins/manifest
 - Tiêu đề:
   - H2: Tệp này làm gì
   - H2: Ví dụ tối thiểu
   - H2: Ví dụ đầy đủ
   - H2: Tham chiếu trường cấp cao nhất
-  - H2: Tham chiếu siêu dữ liệu nhà cung cấp sinh nội dung
+  - H2: Tham chiếu siêu dữ liệu nhà cung cấp sinh
   - H2: Tham chiếu siêu dữ liệu công cụ
   - H2: Tham chiếu providerAuthChoices
   - H2: Tham chiếu commandAliases
@@ -5605,7 +5606,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Chỉ mục nhà cung cấp OpenClaw
   - H2: Manifest so với package.json
   - H3: Các trường package.json ảnh hưởng đến khám phá
-  - H2: Thứ tự ưu tiên khi khám phá (id Plugin trùng lặp)
+  - H2: Thứ tự ưu tiên khám phá (id Plugin trùng lặp)
   - H2: Yêu cầu JSON Schema
   - H2: Hành vi xác thực
   - H2: Ghi chú
@@ -5613,45 +5614,45 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/memory-lancedb.md
 
-- Đường dẫn: /plugins/memory-lancedb
+- Tuyến: /plugins/memory-lancedb
 - Tiêu đề:
   - H2: Cài đặt
   - H2: Bắt đầu nhanh
-  - H2: Embedding dựa trên nhà cung cấp
-  - H2: Embedding Ollama
+  - H2: Nhúng do nhà cung cấp hỗ trợ
+  - H2: Nhúng Ollama
   - H2: Nhà cung cấp tương thích OpenAI
-  - H2: Giới hạn truy hồi và thu thập
+  - H2: Giới hạn nhớ lại và ghi nhận
   - H2: Lệnh
   - H2: Lưu trữ
   - H2: Phụ thuộc thời gian chạy
   - H2: Khắc phục sự cố
   - H3: Độ dài đầu vào vượt quá độ dài ngữ cảnh
-  - H3: Mô hình embedding không được hỗ trợ
-  - H3: Plugin tải nhưng không có bộ nhớ nào xuất hiện
+  - H3: Mô hình nhúng không được hỗ trợ
+  - H3: Plugin tải nhưng không có ký ức nào xuất hiện
   - H2: Liên quan
 
 ## plugins/memory-wiki.md
 
-- Đường dẫn: /plugins/memory-wiki
+- Tuyến: /plugins/memory-wiki
 - Tiêu đề:
-  - H2: Những gì nó bổ sung
-  - H2: Cách nó phù hợp với bộ nhớ
+  - H2: Nội dung được thêm
+  - H2: Cách nó khớp với bộ nhớ
   - H2: Mẫu kết hợp được khuyến nghị
-  - H2: Chế độ vault
+  - H2: Chế độ kho
   - H3: isolated
   - H3: bridge
   - H3: unsafe-local
-  - H2: Bố cục vault
+  - H2: Bố cục kho
   - H2: Nhập Open Knowledge Format
-  - H2: Khẳng định có cấu trúc và bằng chứng
-  - H2: Siêu dữ liệu thực thể dành cho tác tử
-  - H2: Pipeline biên dịch
+  - H2: Mệnh đề có cấu trúc và bằng chứng
+  - H2: Siêu dữ liệu thực thể cho tác tử
+  - H2: Quy trình biên dịch
   - H2: Bảng điều khiển và báo cáo sức khỏe
   - H2: Tìm kiếm và truy xuất
   - H2: Công cụ tác tử
-  - H2: Hành vi prompt và ngữ cảnh
+  - H2: Hành vi lời nhắc và ngữ cảnh
   - H2: Cấu hình
-  - H3: Ví dụ: QMD + chế độ bridge
+  - H3: Ví dụ: chế độ QMD + bridge
   - H2: CLI
   - H2: Hỗ trợ Obsidian
   - H2: Quy trình làm việc được khuyến nghị
@@ -5659,12 +5660,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/message-presentation.md
 
-- Đường dẫn: /plugins/message-presentation
+- Tuyến: /plugins/message-presentation
 - Tiêu đề:
   - H2: Hợp đồng
   - H2: Ví dụ producer
   - H2: Hợp đồng renderer
-  - H2: Luồng kết xuất lõi
+  - H2: Luồng render lõi
   - H2: Quy tắc suy giảm
   - H2: Ánh xạ nhà cung cấp
   - H2: Presentation so với InteractiveReply
@@ -5674,49 +5675,49 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/oc-path.md
 
-- Đường dẫn: /plugins/oc-path
+- Tuyến: /plugins/oc-path
 - Tiêu đề:
-  - H2: Vì sao nên bật
-  - H2: Nơi nó chạy
+  - H2: Lý do bật
+  - H2: Nơi chạy
   - H2: Bật
   - H2: Phụ thuộc
-  - H2: Những gì nó cung cấp
+  - H2: Nội dung cung cấp
   - H2: Quan hệ với các Plugin khác
   - H2: An toàn
   - H2: Liên quan
 
 ## plugins/plugin-inventory.md
 
-- Đường dẫn: /plugins/plugin-inventory
+- Tuyến: /plugins/plugin-inventory
 - Tiêu đề:
   - H1: Kho Plugin
   - H2: Định nghĩa
   - H2: Cài đặt Plugin
   - H2: Gói npm lõi
   - H2: Gói bên ngoài chính thức
-  - H2: Chỉ dành cho checkout nguồn
+  - H2: Chỉ checkout nguồn
 
 ## plugins/plugin-permission-requests.md
 
-- Đường dẫn: /plugins/plugin-permission-requests
+- Tuyến: /plugins/plugin-permission-requests
 - Tiêu đề:
   - H2: Chọn cổng phù hợp
   - H2: Yêu cầu phê duyệt trước khi gọi công cụ
   - H2: Hành vi quyết định
-  - H2: Định tuyến prompt phê duyệt
+  - H2: Định tuyến lời nhắc phê duyệt
   - H2: Quyền gốc của Codex
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
 ## plugins/reference.md
 
-- Đường dẫn: /plugins/reference
+- Tuyến: /plugins/reference
 - Tiêu đề:
   - H1: Tham chiếu Plugin
 
 ## plugins/reference/acpx.md
 
-- Đường dẫn: /plugins/reference/acpx
+- Tuyến: /plugins/reference/acpx
 - Tiêu đề:
   - H1: Plugin ACPx
   - H2: Phân phối
@@ -5725,7 +5726,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/admin-http-rpc.md
 
-- Đường dẫn: /plugins/reference/admin-http-rpc
+- Tuyến: /plugins/reference/admin-http-rpc
 - Tiêu đề:
   - H1: Plugin Admin Http Rpc
   - H2: Phân phối
@@ -5734,7 +5735,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/alibaba.md
 
-- Đường dẫn: /plugins/reference/alibaba
+- Tuyến: /plugins/reference/alibaba
 - Tiêu đề:
   - H1: Plugin Alibaba
   - H2: Phân phối
@@ -5743,7 +5744,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/amazon-bedrock-mantle.md
 
-- Đường dẫn: /plugins/reference/amazon-bedrock-mantle
+- Tuyến: /plugins/reference/amazon-bedrock-mantle
 - Tiêu đề:
   - H1: Plugin Amazon Bedrock Mantle
   - H2: Phân phối
@@ -5752,7 +5753,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/amazon-bedrock.md
 
-- Đường dẫn: /plugins/reference/amazon-bedrock
+- Tuyến: /plugins/reference/amazon-bedrock
 - Tiêu đề:
   - H1: Plugin Amazon Bedrock
   - H2: Phân phối
@@ -5761,7 +5762,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/anthropic-vertex.md
 
-- Đường dẫn: /plugins/reference/anthropic-vertex
+- Tuyến: /plugins/reference/anthropic-vertex
 - Tiêu đề:
   - H1: Plugin Anthropic Vertex
   - H2: Phân phối
@@ -5770,7 +5771,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/anthropic.md
 
-- Đường dẫn: /plugins/reference/anthropic
+- Tuyến: /plugins/reference/anthropic
 - Tiêu đề:
   - H1: Plugin Anthropic
   - H2: Phân phối
@@ -5779,7 +5780,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/arcee.md
 
-- Đường dẫn: /plugins/reference/arcee
+- Tuyến: /plugins/reference/arcee
 - Tiêu đề:
   - H1: Plugin Arcee
   - H2: Phân phối
@@ -5788,7 +5789,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/azure-speech.md
 
-- Đường dẫn: /plugins/reference/azure-speech
+- Tuyến: /plugins/reference/azure-speech
 - Tiêu đề:
   - H1: Plugin Azure Speech
   - H2: Phân phối
@@ -5797,7 +5798,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/bonjour.md
 
-- Đường dẫn: /plugins/reference/bonjour
+- Tuyến: /plugins/reference/bonjour
 - Tiêu đề:
   - H1: Plugin Bonjour
   - H2: Phân phối
@@ -5805,7 +5806,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/brave.md
 
-- Đường dẫn: /plugins/reference/brave
+- Tuyến: /plugins/reference/brave
 - Tiêu đề:
   - H1: Plugin Brave
   - H2: Phân phối
@@ -5814,7 +5815,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/browser.md
 
-- Đường dẫn: /plugins/reference/browser
+- Tuyến: /plugins/reference/browser
 - Tiêu đề:
   - H1: Plugin Browser
   - H2: Phân phối
@@ -5823,7 +5824,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/byteplus.md
 
-- Đường dẫn: /plugins/reference/byteplus
+- Tuyến: /plugins/reference/byteplus
 - Tiêu đề:
   - H1: Plugin BytePlus
   - H2: Phân phối
@@ -5831,7 +5832,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/canvas.md
 
-- Đường dẫn: /plugins/reference/canvas
+- Tuyến: /plugins/reference/canvas
 - Tiêu đề:
   - H1: Plugin Canvas
   - H2: Phân phối
@@ -5839,7 +5840,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/cerebras.md
 
-- Đường dẫn: /plugins/reference/cerebras
+- Tuyến: /plugins/reference/cerebras
 - Tiêu đề:
   - H1: Plugin Cerebras
   - H2: Phân phối
@@ -5848,7 +5849,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/chutes.md
 
-- Đường dẫn: /plugins/reference/chutes
+- Tuyến: /plugins/reference/chutes
 - Tiêu đề:
   - H1: Plugin Chutes
   - H2: Phân phối
@@ -5857,7 +5858,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/clickclack.md
 
-- Đường dẫn: /plugins/reference/clickclack
+- Tuyến: /plugins/reference/clickclack
 - Tiêu đề:
   - H1: Plugin Clickclack
   - H2: Phân phối
@@ -5866,7 +5867,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/cloudflare-ai-gateway.md
 
-- Đường dẫn: /plugins/reference/cloudflare-ai-gateway
+- Tuyến: /plugins/reference/cloudflare-ai-gateway
 - Tiêu đề:
   - H1: Plugin Cloudflare AI Gateway
   - H2: Phân phối
@@ -5875,16 +5876,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/codex-supervisor.md
 
-- Đường dẫn: /plugins/reference/codex-supervisor
+- Tuyến: /plugins/reference/codex-supervisor
 - Tiêu đề:
   - H1: Plugin Codex Supervisor
   - H2: Phân phối
   - H2: Bề mặt
-  - H2: Danh sách phiên
+  - H2: Liệt kê phiên
 
 ## plugins/reference/codex.md
 
-- Đường dẫn: /plugins/reference/codex
+- Tuyến: /plugins/reference/codex
 - Tiêu đề:
   - H1: Plugin Codex
   - H2: Phân phối
@@ -5893,7 +5894,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/cohere.md
 
-- Đường dẫn: /plugins/reference/cohere
+- Tuyến: /plugins/reference/cohere
 - Tiêu đề:
   - H1: Plugin Cohere
   - H2: Phân phối
@@ -5902,7 +5903,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/comfy.md
 
-- Đường dẫn: /plugins/reference/comfy
+- Tuyến: /plugins/reference/comfy
 - Tiêu đề:
   - H1: Plugin ComfyUI
   - H2: Phân phối
@@ -5911,7 +5912,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/copilot-proxy.md
 
-- Đường dẫn: /plugins/reference/copilot-proxy
+- Tuyến: /plugins/reference/copilot-proxy
 - Tiêu đề:
   - H1: Plugin Copilot Proxy
   - H2: Phân phối
@@ -5919,7 +5920,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/copilot.md
 
-- Đường dẫn: /plugins/reference/copilot
+- Tuyến: /plugins/reference/copilot
 - Tiêu đề:
   - H1: Plugin Copilot
   - H2: Phân phối
@@ -5928,7 +5929,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/deepgram.md
 
-- Đường dẫn: /plugins/reference/deepgram
+- Tuyến: /plugins/reference/deepgram
 - Tiêu đề:
   - H1: Plugin Deepgram
   - H2: Phân phối
@@ -5937,7 +5938,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/deepinfra.md
 
-- Đường dẫn: /plugins/reference/deepinfra
+- Tuyến: /plugins/reference/deepinfra
 - Tiêu đề:
   - H1: Plugin DeepInfra
   - H2: Phân phối
@@ -5946,7 +5947,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/deepseek.md
 
-- Đường dẫn: /plugins/reference/deepseek
+- Tuyến: /plugins/reference/deepseek
 - Tiêu đề:
   - H1: Plugin DeepSeek
   - H2: Phân phối
@@ -5955,7 +5956,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/diagnostics-otel.md
 
-- Đường dẫn: /plugins/reference/diagnostics-otel
+- Tuyến: /plugins/reference/diagnostics-otel
 - Tiêu đề:
   - H1: Plugin Diagnostics OpenTelemetry
   - H2: Phân phối
@@ -5963,7 +5964,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/diagnostics-prometheus.md
 
-- Đường dẫn: /plugins/reference/diagnostics-prometheus
+- Tuyến: /plugins/reference/diagnostics-prometheus
 - Tiêu đề:
   - H1: Plugin Diagnostics Prometheus
   - H2: Phân phối
@@ -5971,7 +5972,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/diffs-language-pack.md
 
-- Đường dẫn: /plugins/reference/diffs-language-pack
+- Tuyến: /plugins/reference/diffs-language-pack
 - Tiêu đề:
   - H1: Plugin Diffs Language Pack
   - H2: Phân phối
@@ -5980,7 +5981,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/diffs.md
 
-- Đường dẫn: /plugins/reference/diffs
+- Tuyến: /plugins/reference/diffs
 - Tiêu đề:
   - H1: Plugin Diffs
   - H2: Phân phối
@@ -5988,7 +5989,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/discord.md
 
-- Đường dẫn: /plugins/reference/discord
+- Tuyến: /plugins/reference/discord
 - Tiêu đề:
   - H1: Plugin Discord
   - H2: Phân phối
@@ -5997,7 +5998,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/document-extract.md
 
-- Đường dẫn: /plugins/reference/document-extract
+- Tuyến: /plugins/reference/document-extract
 - Tiêu đề:
   - H1: Plugin Document Extract
   - H2: Phân phối
@@ -6006,7 +6007,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/duckduckgo.md
 
-- Đường dẫn: /plugins/reference/duckduckgo
+- Tuyến: /plugins/reference/duckduckgo
 - Tiêu đề:
   - H1: Plugin DuckDuckGo
   - H2: Phân phối
@@ -6015,7 +6016,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/elevenlabs.md
 
-- Đường dẫn: /plugins/reference/elevenlabs
+- Tuyến: /plugins/reference/elevenlabs
 - Tiêu đề:
   - H1: Plugin Elevenlabs
   - H2: Phân phối
@@ -6024,7 +6025,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/exa.md
 
-- Đường dẫn: /plugins/reference/exa
+- Tuyến: /plugins/reference/exa
 - Tiêu đề:
   - H1: Plugin Exa
   - H2: Phân phối
@@ -6033,7 +6034,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/fal.md
 
-- Đường dẫn: /plugins/reference/fal
+- Tuyến: /plugins/reference/fal
 - Tiêu đề:
   - H1: Plugin fal
   - H2: Phân phối
@@ -6042,7 +6043,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/feishu.md
 
-- Đường dẫn: /plugins/reference/feishu
+- Tuyến: /plugins/reference/feishu
 - Tiêu đề:
   - H1: Plugin Feishu
   - H2: Phân phối
@@ -6051,7 +6052,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/file-transfer.md
 
-- Đường dẫn: /plugins/reference/file-transfer
+- Tuyến: /plugins/reference/file-transfer
 - Tiêu đề:
   - H1: Plugin File Transfer
   - H2: Phân phối
@@ -6059,7 +6060,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/firecrawl.md
 
-- Đường dẫn: /plugins/reference/firecrawl
+- Tuyến: /plugins/reference/firecrawl
 - Tiêu đề:
   - H1: Plugin Firecrawl
   - H2: Phân phối
@@ -6297,7 +6298,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bề mặt
   - H2: Yêu cầu
   - H2: Mô hình trò chuyện
-  - H2: Tạo hình ảnh MAI
+  - H2: Tạo ảnh MAI
   - H2: Khắc phục sự cố
 
 ## plugins/reference/microsoft.md
@@ -6612,7 +6613,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /plugins/reference/sms
 - Tiêu đề:
-  - H1: Plugin SMS
+  - H1: Plugin Sms
   - H2: Phân phối
   - H2: Bề mặt
   - H2: Tài liệu liên quan
@@ -6717,7 +6718,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/venice.md
 
-- Route: /plugins/reference/venice
+- Tuyến: /plugins/reference/venice
 - Tiêu đề:
   - H1: Plugin Venice
   - H2: Phân phối
@@ -6726,7 +6727,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/vercel-ai-gateway.md
 
-- Route: /plugins/reference/vercel-ai-gateway
+- Tuyến: /plugins/reference/vercel-ai-gateway
 - Tiêu đề:
   - H1: Plugin Vercel AI Gateway
   - H2: Phân phối
@@ -6735,7 +6736,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/vllm.md
 
-- Route: /plugins/reference/vllm
+- Tuyến: /plugins/reference/vllm
 - Tiêu đề:
   - H1: Plugin vLLM
   - H2: Phân phối
@@ -6744,16 +6745,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/voice-call.md
 
-- Route: /plugins/reference/voice-call
+- Tuyến: /plugins/reference/voice-call
 - Tiêu đề:
-  - H1: Plugin Voice Call
+  - H1: Plugin Cuộc gọi thoại
   - H2: Phân phối
   - H2: Bề mặt
   - H2: Tài liệu liên quan
 
 ## plugins/reference/volcengine.md
 
-- Route: /plugins/reference/volcengine
+- Tuyến: /plugins/reference/volcengine
 - Tiêu đề:
   - H1: Plugin Volcengine
   - H2: Phân phối
@@ -6762,7 +6763,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/voyage.md
 
-- Route: /plugins/reference/voyage
+- Tuyến: /plugins/reference/voyage
 - Tiêu đề:
   - H1: Plugin Voyage
   - H2: Phân phối
@@ -6770,7 +6771,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/vydra.md
 
-- Route: /plugins/reference/vydra
+- Tuyến: /plugins/reference/vydra
 - Tiêu đề:
   - H1: Plugin Vydra
   - H2: Phân phối
@@ -6779,7 +6780,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/web-readability.md
 
-- Route: /plugins/reference/web-readability
+- Tuyến: /plugins/reference/web-readability
 - Tiêu đề:
   - H1: Plugin Web Readability
   - H2: Phân phối
@@ -6787,7 +6788,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/webhooks.md
 
-- Route: /plugins/reference/webhooks
+- Tuyến: /plugins/reference/webhooks
 - Tiêu đề:
   - H1: Plugin Webhooks
   - H2: Phân phối
@@ -6796,7 +6797,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/whatsapp.md
 
-- Route: /plugins/reference/whatsapp
+- Tuyến: /plugins/reference/whatsapp
 - Tiêu đề:
   - H1: Plugin WhatsApp
   - H2: Phân phối
@@ -6805,7 +6806,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/workboard.md
 
-- Route: /plugins/reference/workboard
+- Tuyến: /plugins/reference/workboard
 - Tiêu đề:
   - H1: Plugin Workboard
   - H2: Phân phối
@@ -6814,7 +6815,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/xai.md
 
-- Route: /plugins/reference/xai
+- Tuyến: /plugins/reference/xai
 - Tiêu đề:
   - H1: Plugin xAI
   - H2: Phân phối
@@ -6823,7 +6824,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/xiaomi.md
 
-- Route: /plugins/reference/xiaomi
+- Tuyến: /plugins/reference/xiaomi
 - Tiêu đề:
   - H1: Plugin Xiaomi
   - H2: Phân phối
@@ -6832,7 +6833,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/zai.md
 
-- Route: /plugins/reference/zai
+- Tuyến: /plugins/reference/zai
 - Tiêu đề:
   - H1: Plugin Z.AI
   - H2: Phân phối
@@ -6841,7 +6842,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/zalo.md
 
-- Route: /plugins/reference/zalo
+- Tuyến: /plugins/reference/zalo
 - Tiêu đề:
   - H1: Plugin Zalo
   - H2: Phân phối
@@ -6850,7 +6851,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/reference/zalouser.md
 
-- Route: /plugins/reference/zalouser
+- Tuyến: /plugins/reference/zalouser
 - Tiêu đề:
   - H1: Plugin Zalo Personal
   - H2: Phân phối
@@ -6859,18 +6860,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/sdk-agent-harness.md
 
-- Route: /plugins/sdk-agent-harness
+- Tuyến: /plugins/sdk-agent-harness
 - Tiêu đề:
-  - H2: Khi nào dùng bộ khung
+  - H2: Khi nào dùng harness
   - H2: Phần lõi vẫn sở hữu những gì
-  - H2: Đăng ký bộ khung
+  - H2: Đăng ký harness
   - H2: Chính sách lựa chọn
-  - H2: Ghép cặp nhà cung cấp và bộ khung
+  - H2: Ghép cặp nhà cung cấp và harness
   - H3: Middleware kết quả công cụ
-  - H3: Phân loại kết quả kết thúc
-  - H3: Tác dụng phụ phía cuối agent
+  - H3: Phân loại kết quả cuối
+  - H3: Tác dụng phụ ở phía kết thúc agent
   - H3: Bề mặt nhập liệu người dùng và công cụ
-  - H3: Chế độ bộ khung Codex gốc
+  - H3: Chế độ harness Codex gốc
   - H2: Độ nghiêm ngặt của runtime
   - H2: Phiên gốc và bản sao transcript
   - H2: Kết quả công cụ và phương tiện
@@ -6879,14 +6880,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/sdk-channel-inbound.md
 
-- Route: /plugins/sdk-channel-inbound
+- Tuyến: /plugins/sdk-channel-inbound
 - Tiêu đề:
   - H2: Trình trợ giúp lõi
-  - H2: Di chuyển
+  - H2: Di trú
 
 ## plugins/sdk-channel-ingress.md
 
-- Route: /plugins/sdk-channel-ingress
+- Tuyến: /plugins/sdk-channel-ingress
 - Tiêu đề:
   - H1: API ingress kênh
   - H2: Bộ phân giải runtime
@@ -6894,30 +6895,30 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Nhóm truy cập
   - H2: Chế độ sự kiện
   - H2: Tuyến và kích hoạt
-  - H2: Che giấu dữ liệu
+  - H2: Biên tập ẩn
   - H2: Xác minh
 
 ## plugins/sdk-channel-message.md
 
-- Route: /plugins/sdk-channel-message
+- Tuyến: /plugins/sdk-channel-message
 - Tiêu đề: không có
 
 ## plugins/sdk-channel-outbound.md
 
-- Route: /plugins/sdk-channel-outbound
+- Tuyến: /plugins/sdk-channel-outbound
 - Tiêu đề:
   - H2: Bộ chuyển đổi
-  - H2: Bộ chuyển đổi gửi ra hiện có
-  - H2: Lượt gửi bền vững
+  - H2: Bộ chuyển đổi outbound hiện có
+  - H2: Gửi bền vững
   - H2: Điều phối tương thích
 
 ## plugins/sdk-channel-plugins.md
 
-- Route: /plugins/sdk-channel-plugins
+- Tuyến: /plugins/sdk-channel-plugins
 - Tiêu đề:
   - H2: Cách Plugin kênh hoạt động
-  - H2: Phê duyệt và khả năng kênh
-  - H2: Chính sách nhắc đến đầu vào
+  - H2: Phê duyệt và khả năng của kênh
+  - H2: Chính sách nhắc đến inbound
   - H2: Hướng dẫn từng bước
   - H2: Cấu trúc tệp
   - H2: Chủ đề nâng cao
@@ -6926,12 +6927,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/sdk-channel-turn.md
 
-- Route: /plugins/sdk-channel-turn
+- Tuyến: /plugins/sdk-channel-turn
 - Tiêu đề: không có
 
 ## plugins/sdk-entrypoints.md
 
-- Route: /plugins/sdk-entrypoints
+- Tuyến: /plugins/sdk-entrypoints
 - Tiêu đề:
   - H2: defineToolPlugin
   - H2: definePluginEntry
@@ -6943,25 +6944,25 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/sdk-migration.md
 
-- Route: /plugins/sdk-migration
+- Tuyến: /plugins/sdk-migration
 - Tiêu đề:
-  - H2: Những gì đang thay đổi
+  - H2: Nội dung đang thay đổi
   - H2: Vì sao thay đổi này được thực hiện
-  - H2: Kế hoạch di chuyển talk và giọng nói thời gian thực
+  - H2: Kế hoạch di trú thoại talk và realtime
   - H2: Chính sách tương thích
-  - H2: Cách di chuyển
+  - H2: Cách di trú
   - H2: Tham chiếu đường dẫn import
-  - H2: Các mục ngừng hỗ trợ đang hoạt động
+  - H2: Các mục ngừng dùng đang hoạt động
   - H2: Lịch trình gỡ bỏ
   - H2: Tạm thời tắt cảnh báo
   - H2: Liên quan
 
 ## plugins/sdk-overview.md
 
-- Route: /plugins/sdk-overview
+- Tuyến: /plugins/sdk-overview
 - Tiêu đề:
   - H2: Quy ước import
-  - H2: Tham chiếu đường dẫn con
+  - H2: Tham chiếu subpath
   - H2: API đăng ký
   - H3: Đăng ký khả năng
   - H3: Công cụ và lệnh
@@ -6970,8 +6971,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Đăng ký khám phá Gateway
   - H3: Siêu dữ liệu đăng ký CLI
   - H3: Đăng ký backend CLI
-  - H3: Slot độc quyền
-  - H3: Bộ chuyển đổi nhúng bộ nhớ đã ngừng hỗ trợ
+  - H3: Vị trí độc quyền
+  - H3: Bộ chuyển đổi nhúng bộ nhớ đã ngừng dùng
   - H3: Sự kiện và vòng đời
   - H3: Ngữ nghĩa quyết định của hook
   - H3: Trường đối tượng API
@@ -6980,7 +6981,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/sdk-provider-plugins.md
 
-- Route: /plugins/sdk-provider-plugins
+- Tuyến: /plugins/sdk-provider-plugins
 - Tiêu đề:
   - H2: Hướng dẫn từng bước
   - H2: Xuất bản lên ClawHub
@@ -6991,59 +6992,59 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/sdk-runtime.md
 
-- Route: /plugins/sdk-runtime
+- Tuyến: /plugins/sdk-runtime
 - Tiêu đề:
   - H2: Tải và ghi cấu hình
   - H2: Tiện ích runtime có thể tái sử dụng
-  - H2: Không gian tên runtime
+  - H2: Namespace runtime
   - H2: Lưu trữ tham chiếu runtime
   - H2: Các trường api cấp cao khác
   - H2: Liên quan
 
 ## plugins/sdk-setup.md
 
-- Route: /plugins/sdk-setup
+- Tuyến: /plugins/sdk-setup
 - Tiêu đề:
   - H2: Siêu dữ liệu gói
   - H3: Trường openclaw
   - H3: openclaw.channel
   - H3: openclaw.install
-  - H3: Tải đầy đủ trì hoãn
+  - H3: Trì hoãn tải đầy đủ
   - H2: Manifest Plugin
   - H2: Xuất bản ClawHub
-  - H2: Mục thiết lập
-  - H3: Import trình trợ giúp thiết lập phạm vi hẹp
-  - H3: Nâng cấp tài khoản đơn do kênh sở hữu
+  - H2: Entry setup
+  - H3: Import trình trợ giúp setup phạm vi hẹp
+  - H3: Quảng bá một tài khoản do kênh sở hữu
   - H2: Schema cấu hình
   - H3: Xây dựng schema cấu hình kênh
-  - H2: Trình hướng dẫn thiết lập
+  - H2: Trình hướng dẫn setup
   - H2: Xuất bản và cài đặt
   - H2: Liên quan
 
 ## plugins/sdk-subpaths.md
 
-- Route: /plugins/sdk-subpaths
+- Tuyến: /plugins/sdk-subpaths
 - Tiêu đề:
-  - H2: Mục nhập Plugin
-  - H3: Khả năng tương thích và trình trợ giúp kiểm thử đã ngừng hỗ trợ
-  - H3: Đường dẫn con trình trợ giúp Plugin đóng gói được đặt trước
+  - H2: Entry Plugin
+  - H3: Trình trợ giúp kiểm thử và tương thích đã ngừng dùng
+  - H3: Subpath trợ giúp Plugin đi kèm được dành riêng
   - H2: Liên quan
 
 ## plugins/sdk-testing.md
 
-- Route: /plugins/sdk-testing
+- Tuyến: /plugins/sdk-testing
 - Tiêu đề:
   - H2: Tiện ích kiểm thử
-  - H3: Export có sẵn
+  - H3: Export khả dụng
   - H3: Kiểu
-  - H2: Kiểm thử phân giải đích
+  - H2: Kiểm thử phân giải mục tiêu
   - H2: Mẫu kiểm thử
   - H3: Kiểm thử hợp đồng đăng ký
-  - H3: Kiểm thử quyền truy cập cấu hình runtime
+  - H3: Kiểm thử truy cập cấu hình runtime
   - H3: Kiểm thử đơn vị Plugin kênh
   - H3: Kiểm thử đơn vị Plugin nhà cung cấp
   - H3: Mock runtime Plugin
-  - H3: Kiểm thử bằng stub theo từng phiên bản
+  - H3: Kiểm thử với stub theo từng thực thể
   - H2: Kiểm thử hợp đồng (Plugin trong repo)
   - H3: Chạy kiểm thử theo phạm vi
   - H2: Thực thi lint (Plugin trong repo)
@@ -7052,7 +7053,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/tool-plugins.md
 
-- Route: /plugins/tool-plugins
+- Tuyến: /plugins/tool-plugins
 - Tiêu đề:
   - H2: Yêu cầu
   - H2: Bắt đầu nhanh
@@ -7066,51 +7067,51 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cài đặt và kiểm tra cục bộ
   - H2: Xuất bản
   - H2: Khắc phục sự cố
-  - H3: không tìm thấy mục nhập Plugin: ./dist/index.js
-  - H3: mục nhập Plugin không hiển thị siêu dữ liệu defineToolPlugin
+  - H3: không tìm thấy entry Plugin: ./dist/index.js
+  - H3: entry Plugin không expose siêu dữ liệu defineToolPlugin
   - H3: siêu dữ liệu được tạo openclaw.plugin.json đã cũ
   - H3: openclaw.extensions trong package.json phải bao gồm ./dist/index.js
-  - H3: Không thể tìm thấy gói 'typebox'
+  - H3: Không tìm thấy gói 'typebox'
   - H3: Công cụ không xuất hiện sau khi cài đặt
   - H2: Xem thêm
 
 ## plugins/voice-call.md
 
-- Route: /plugins/voice-call
+- Tuyến: /plugins/voice-call
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H2: Cấu hình
   - H2: Phạm vi phiên
-  - H2: Hội thoại thoại thời gian thực
+  - H2: Hội thoại thoại realtime
   - H3: Chính sách công cụ
-  - H3: Ngữ cảnh giọng nói agent
-  - H3: Ví dụ về nhà cung cấp thời gian thực
-  - H2: Phiên âm truyền trực tuyến
-  - H3: Ví dụ về nhà cung cấp truyền trực tuyến
+  - H3: Ngữ cảnh giọng nói của agent
+  - H3: Ví dụ nhà cung cấp realtime
+  - H2: Phiên âm streaming
+  - H3: Ví dụ nhà cung cấp streaming
   - H2: TTS cho cuộc gọi
   - H3: Ví dụ TTS
-  - H2: Cuộc gọi đầu vào
+  - H2: Cuộc gọi inbound
   - H3: Định tuyến theo từng số
-  - H3: Hợp đồng đầu ra giọng nói
+  - H3: Hợp đồng đầu ra lời nói
   - H3: Hành vi khởi động hội thoại
-  - H3: Thời gian gia hạn khi ngắt kết nối luồng Twilio
+  - H3: Thời gian gia hạn ngắt kết nối stream Twilio
   - H2: Bộ dọn cuộc gọi cũ
   - H2: Bảo mật Webhook
   - H2: CLI
   - H2: Công cụ agent
   - H2: RPC Gateway
   - H2: Khắc phục sự cố
-  - H3: Thiết lập thất bại khi phơi bày webhook
+  - H3: Setup thất bại khi expose webhook
   - H3: Thông tin xác thực nhà cung cấp thất bại
-  - H3: Cuộc gọi bắt đầu nhưng webhook của nhà cung cấp không đến
+  - H3: Cuộc gọi bắt đầu nhưng webhook nhà cung cấp không đến
   - H3: Xác minh chữ ký thất bại
   - H3: Google Meet Twilio tham gia thất bại
-  - H3: Cuộc gọi thời gian thực không có lời nói
+  - H3: Cuộc gọi realtime không có tiếng nói
   - H2: Liên quan
 
 ## plugins/webhooks.md
 
-- Route: /plugins/webhooks
+- Tuyến: /plugins/webhooks
 - Tiêu đề:
   - H2: Nơi nó chạy
   - H2: Cấu hình tuyến
@@ -7124,22 +7125,22 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/workboard.md
 
-- Route: /plugins/workboard
+- Tuyến: /plugins/workboard
 - Tiêu đề:
   - H2: Trạng thái mặc định
   - H2: Thẻ chứa gì
-  - H2: Lượt thực thi thẻ và tác vụ
+  - H2: Thực thi thẻ và tác vụ
   - H2: Điều phối agent
   - H3: Lựa chọn worker điều phối
-  - H3: Prompt và vòng đời của worker
+  - H3: Prompt worker và vòng đời
   - H3: Điểm vào điều phối
-  - H2: CLI và lệnh slash
+  - H2: CLI và lệnh gạch chéo
   - H2: Đồng bộ vòng đời phiên
   - H2: Quy trình làm việc dashboard
   - H2: Quyền
   - H2: Cấu hình
   - H2: Khắc phục sự cố
-  - H3: Tab cho biết Workboard không khả dụng
+  - H3: Tab báo Workboard không khả dụng
   - H3: Thẻ không lưu
   - H3: Khởi động thẻ không mở phiên mong đợi
   - H3: Điều phối không khởi động worker
@@ -7147,7 +7148,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## plugins/zalouser.md
 
-- Route: /plugins/zalouser
+- Tuyến: /plugins/zalouser
 - Tiêu đề:
   - H2: Đặt tên
   - H2: Nơi nó chạy
@@ -7161,10 +7162,10 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## prose.md
 
-- Route: /prose
+- Tuyến: /prose
 - Tiêu đề:
   - H2: Cài đặt
-  - H2: Lệnh slash
+  - H2: Lệnh gạch chéo
   - H2: Nó có thể làm gì
   - H2: Ví dụ: nghiên cứu và tổng hợp song song
   - H2: Ánh xạ runtime OpenClaw
@@ -7175,7 +7176,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/alibaba.md
 
-- Route: /providers/alibaba
+- Tuyến: /providers/alibaba
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Mô hình Wan tích hợp sẵn
@@ -7185,29 +7186,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/anthropic.md
 
-- Route: /providers/anthropic
+- Tuyến: /providers/anthropic
 - Tiêu đề:
   - H2: Bắt đầu
-  - H2: Mặc định thinking (Claude Fable 5, 4.8 và 4.6)
-  - H2: Lưu cache prompt
+  - H2: Mặc định tư duy (Claude Fable 5, 4.8 và 4.6)
+  - H2: Bộ nhớ đệm prompt
   - H2: Cấu hình nâng cao
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
 ## providers/arcee.md
 
-- Route: /providers/arcee
+- Tuyến: /providers/arcee
 - Tiêu đề:
   - H2: Cài đặt Plugin
   - H2: Bắt đầu
-  - H2: Thiết lập không tương tác
+  - H2: Setup không tương tác
   - H2: Danh mục tích hợp sẵn
   - H2: Tính năng được hỗ trợ
   - H2: Liên quan
 
 ## providers/azure-speech.md
 
-- Route: /providers/azure-speech
+- Tuyến: /providers/azure-speech
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Tùy chọn cấu hình
@@ -7216,7 +7217,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/bedrock-mantle.md
 
-- Route: /providers/bedrock-mantle
+- Tuyến: /providers/bedrock-mantle
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Khám phá mô hình tự động
@@ -7227,28 +7228,28 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/bedrock.md
 
-- Route: /providers/bedrock
+- Tuyến: /providers/bedrock
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Khám phá mô hình tự động
-  - H2: Thiết lập nhanh (đường dẫn AWS)
+  - H2: Setup nhanh (đường dẫn AWS)
   - H2: Cấu hình nâng cao
   - H2: Liên quan
 
 ## providers/cerebras.md
 
-- Route: /providers/cerebras
+- Tuyến: /providers/cerebras
 - Tiêu đề:
   - H2: Cài đặt Plugin
   - H2: Bắt đầu
-  - H2: Thiết lập không tương tác
+  - H2: Setup không tương tác
   - H2: Danh mục tích hợp sẵn
   - H2: Cấu hình thủ công
   - H2: Liên quan
 
 ## providers/chutes.md
 
-- Route: /providers/chutes
+- Tuyến: /providers/chutes
 - Tiêu đề:
   - H2: Cài đặt Plugin
   - H2: Bắt đầu
@@ -7262,7 +7263,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /providers/claude-max-api-proxy
 - Tiêu đề:
-  - H2: Vì sao dùng mục này?
+  - H2: Tại sao dùng cái này?
   - H2: Cách hoạt động
   - H2: Bắt đầu
   - H2: Danh mục tích hợp sẵn
@@ -7285,7 +7286,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /providers/cohere
 - Tiêu đề:
   - H2: Bắt đầu
-  - H2: Thiết lập chỉ dùng môi trường
+  - H2: Thiết lập chỉ bằng môi trường
   - H2: Liên quan
 
 ## providers/comfy.md
@@ -7296,7 +7297,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bắt đầu
   - H2: Cấu hình
   - H3: Khóa dùng chung
-  - H3: Khóa theo từng khả năng
+  - H3: Khóa theo từng năng lực
   - H2: Chi tiết quy trình làm việc
   - H2: Liên quan
 
@@ -7306,7 +7307,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Tùy chọn cấu hình
-  - H2: STT truyền phát cho cuộc gọi thoại
+  - H2: STT phát trực tuyến cho Voice Call
   - H2: Ghi chú
   - H2: Liên quan
 
@@ -7318,7 +7319,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Lấy khóa API
   - H2: Thiết lập CLI
   - H2: Đoạn cấu hình
-  - H2: Các bề mặt OpenClaw được hỗ trợ
+  - H2: Bề mặt OpenClaw được hỗ trợ
   - H2: Mô hình có sẵn
   - H2: Ghi chú
   - H2: Liên quan
@@ -7355,7 +7356,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Xác thực
   - H2: Chuyển văn bản thành giọng nói
   - H2: Chuyển giọng nói thành văn bản
-  - H2: STT truyền phát
+  - H2: STT phát trực tuyến
   - H2: Liên quan
 
 ## providers/fal.md
@@ -7406,7 +7407,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /providers/google
 - Tiêu đề:
   - H2: Bắt đầu
-  - H2: Khả năng
+  - H2: Năng lực
   - H2: Tìm kiếm web
   - H2: Tạo hình ảnh
   - H2: Tạo video
@@ -7512,14 +7513,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khởi động nhanh
   - H2: Onboarding không tương tác
   - H2: Cấu hình
-  - H3: Khả năng tương thích sử dụng truyền phát
+  - H3: Khả năng tương thích khi phát trực tuyến mức sử dụng
   - H3: Khả năng tương thích suy nghĩ
-  - H3: Cấu hình tường minh
+  - H3: Cấu hình rõ ràng
   - H2: Khắc phục sự cố
   - H3: Không phát hiện LM Studio
   - H3: Lỗi xác thực (HTTP 401)
   - H3: Tải mô hình đúng lúc
-  - H3: Máy chủ LM Studio trong LAN hoặc tailnet
+  - H3: Máy chủ LM Studio trên LAN hoặc tailnet
+  - H2: Liên quan
 
 ## providers/minimax.md
 
@@ -7528,7 +7530,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Danh mục tích hợp sẵn
   - H2: Bắt đầu
   - H2: Cấu hình qua openclaw configure
-  - H2: Khả năng
+  - H2: Năng lực
   - H3: Tạo hình ảnh
   - H3: Chuyển văn bản thành giọng nói
   - H3: Tạo nhạc
@@ -7547,7 +7549,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bắt đầu
   - H2: Danh mục LLM tích hợp sẵn
   - H2: Phiên âm âm thanh (Voxtral)
-  - H2: STT truyền phát cho cuộc gọi thoại
+  - H2: STT phát trực tuyến cho Voice Call
   - H2: Cấu hình nâng cao
   - H2: Liên quan
 
@@ -7618,7 +7620,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Công thức phổ biến
   - H3: Chọn mô hình
   - H3: Xác minh nhanh
-  - H2: Tìm kiếm web Ollama
+  - H2: Ollama Web Search
   - H2: Cấu hình nâng cao
   - H2: Khắc phục sự cố
   - H2: Liên quan
@@ -7638,7 +7640,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tạo video
   - H2: Đóng góp prompt GPT-5
   - H2: Giọng nói và lời nói
-  - H2: Điểm cuối Azure OpenAI
+  - H2: Endpoint Azure OpenAI
   - H3: Cấu hình
   - H3: Phiên bản API
   - H3: Tên mô hình là tên triển khai
@@ -7682,7 +7684,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chuyển văn bản thành giọng nói
   - H2: Chuyển giọng nói thành văn bản (âm thanh đầu vào)
   - H2: Bộ định tuyến hợp nhất
-  - H2: Xác thực và tiêu đề
+  - H2: Xác thực và header
   - H2: Cấu hình nâng cao
   - H2: Liên quan
 
@@ -7724,7 +7726,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Thiết lập
   - H2: Mặc định
-  - H2: Mục này khác Qwen như thế nào
+  - H2: Điểm khác biệt so với Qwen
   - H2: Khi nào nên chọn Qwen OAuth / Portal
   - H2: Mô hình
   - H2: Di chuyển
@@ -7737,7 +7739,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Cài đặt Plugin
   - H2: Bắt đầu
-  - H2: Loại gói và điểm cuối
+  - H2: Loại gói và endpoint
   - H2: Danh mục tích hợp sẵn
   - H2: Điều khiển suy nghĩ
   - H2: Tiện ích bổ sung đa phương thức
@@ -7768,7 +7770,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Khám phá mô hình (nhà cung cấp ngầm định)
-  - H2: Cấu hình tường minh (mô hình thủ công)
+  - H2: Cấu hình rõ ràng (mô hình thủ công)
   - H2: Cấu hình nâng cao
   - H2: Liên quan
 
@@ -7777,7 +7779,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /providers/stepfun
 - Tiêu đề:
   - H2: Cài đặt Plugin
-  - H2: Tổng quan về khu vực và điểm cuối
+  - H2: Tổng quan khu vực và endpoint
   - H2: Danh mục tích hợp sẵn
   - H2: Bắt đầu
   - H2: Cấu hình nâng cao
@@ -7799,7 +7801,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khởi động nhanh
   - H2: Thiết lập không tương tác
   - H2: Danh mục tích hợp sẵn
-  - H2: Giá theo tầng
+  - H2: Giá theo bậc
   - H2: Cấu hình nâng cao
   - H2: Liên quan
 
@@ -7817,7 +7819,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /providers/venice
 - Tiêu đề:
-  - H2: Vì sao dùng Venice trong OpenClaw
+  - H2: Tại sao dùng Venice trong OpenClaw
   - H2: Chế độ quyền riêng tư
   - H2: Tính năng
   - H2: Bắt đầu
@@ -7825,7 +7827,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Hành vi phát lại DeepSeek V4
   - H2: Danh mục tích hợp sẵn (tổng cộng 41)
   - H2: Khám phá mô hình
-  - H2: Hỗ trợ truyền phát và công cụ
+  - H2: Hỗ trợ phát trực tuyến và công cụ
   - H2: Giá
   - H3: Venice (ẩn danh hóa) so với API trực tiếp
   - H2: Ví dụ sử dụng
@@ -7849,14 +7851,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Khám phá mô hình (nhà cung cấp ngầm định)
-  - H2: Cấu hình tường minh (mô hình thủ công)
+  - H2: Cấu hình rõ ràng (mô hình thủ công)
   - H2: Cấu hình nâng cao
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
 ## providers/volcengine.md
 
-- Đường dẫn: /providers/volcengine
+- Tuyến: /providers/volcengine
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Nhà cung cấp và endpoint
@@ -7867,7 +7869,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/vydra.md
 
-- Đường dẫn: /providers/vydra
+- Tuyến: /providers/vydra
 - Tiêu đề:
   - H2: Thiết lập
   - H2: Khả năng
@@ -7875,12 +7877,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/xai.md
 
-- Đường dẫn: /providers/xai
+- Tuyến: /providers/xai
 - Tiêu đề:
-  - H2: Chọn lộ trình thiết lập
+  - H2: Chọn đường dẫn thiết lập
   - H2: Khắc phục sự cố OAuth
   - H2: Danh mục tích hợp sẵn
-  - H2: Mức độ hỗ trợ tính năng OpenClaw
+  - H2: Phạm vi tính năng OpenClaw
   - H3: Ánh xạ chế độ nhanh
   - H3: Bí danh tương thích cũ
   - H2: Tính năng
@@ -7889,18 +7891,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## providers/xiaomi.md
 
-- Đường dẫn: /providers/xiaomi
+- Tuyến: /providers/xiaomi
 - Tiêu đề:
   - H2: Bắt đầu
   - H2: Danh mục trả theo mức sử dụng
-  - H2: Danh mục gói token
+  - H2: Danh mục Token Plan
   - H2: Chuyển văn bản thành giọng nói
   - H2: Ví dụ cấu hình
   - H2: Liên quan
 
 ## providers/zai.md
 
-- Đường dẫn: /providers/zai
+- Tuyến: /providers/zai
 - Tiêu đề:
   - H2: Mô hình GLM
   - H2: Bắt đầu
@@ -7911,39 +7913,39 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## refactor/access.md
 
-- Đường dẫn: /refactor/access
+- Tuyến: /refactor/access
 - Tiêu đề: không có
 
 ## refactor/acp.md
 
-- Đường dẫn: /refactor/acp
+- Tuyến: /refactor/acp
 - Tiêu đề:
   - H2: Mục tiêu
-  - H2: Không phải mục tiêu
+  - H2: Phi mục tiêu
   - H2: Mô hình mục tiêu
   - H3: Danh tính phiên bản Gateway
   - H3: Quyền sở hữu phiên ACP
   - H3: Hợp đồng thuê tiến trình ACPX
   - H2: Bộ điều khiển vòng đời
-  - H2: Hợp đồng trình bao bọc
-  - H2: Hợp đồng khả năng hiển thị phiên
+  - H2: Hợp đồng wrapper
+  - H2: Hợp đồng hiển thị phiên
   - H2: Kế hoạch di chuyển
   - H3: Giai đoạn 1: Thêm danh tính và hợp đồng thuê
   - H3: Giai đoạn 2: Dọn dẹp ưu tiên hợp đồng thuê
-  - H3: Giai đoạn 3: Thu hồi khi khởi động ưu tiên hợp đồng thuê
+  - H3: Giai đoạn 3: Thu gom khi khởi động ưu tiên hợp đồng thuê
   - H3: Giai đoạn 4: Hàng quyền sở hữu phiên
-  - H3: Giai đoạn 5: Xóa heuristic cũ
+  - H3: Giai đoạn 5: Loại bỏ heuristic cũ
   - H2: Kiểm thử
   - H2: Ghi chú tương thích
   - H2: Tiêu chí thành công
 
 ## refactor/canvas.md
 
-- Đường dẫn: /refactor/canvas
+- Tuyến: /refactor/canvas
 - Tiêu đề:
-  - H1: Tái cấu trúc Plugin Canvas
+  - H1: Tái cấu trúc plugin Canvas
   - H2: Mục tiêu
-  - H2: Không phải mục tiêu
+  - H2: Phi mục tiêu
   - H2: Trạng thái nhánh hiện tại
   - H2: Hình dạng mục tiêu
   - H2: Các bước di chuyển
@@ -7952,13 +7954,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## refactor/database-first.md
 
-- Đường dẫn: /refactor/database-first
+- Tuyến: /refactor/database-first
 - Tiêu đề:
   - H1: Tái cấu trúc trạng thái ưu tiên cơ sở dữ liệu
   - H2: Quyết định
-  - H2: Hợp đồng cứng
+  - H2: Hợp đồng bắt buộc
   - H2: Trạng thái mục tiêu và tiến độ
-  - H3: Mục tiêu cứng
+  - H3: Mục tiêu bắt buộc
   - H3: Trạng thái mục tiêu
   - H3: Trạng thái hiện tại
   - H3: Công việc còn lại
@@ -7966,16 +7968,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Giả định từ đọc mã
   - H2: Phát hiện từ đọc mã
   - H2: Hình dạng mã hiện tại
-  - H2: Hình dạng lược đồ mục tiêu
-  - H2: Hình dạng di chuyển của doctor
-  - H2: Kiểm kê di chuyển
+  - H2: Hình dạng schema mục tiêu
+  - H2: Hình dạng di chuyển Doctor
+  - H2: Bảng kiểm kê di chuyển
   - H2: Kế hoạch di chuyển
   - H3: Giai đoạn 0: Đóng băng ranh giới
-  - H3: Giai đoạn 1: Hoàn tất mặt phẳng điều khiển toàn cục
+  - H3: Giai đoạn 1: Hoàn thiện mặt phẳng điều khiển toàn cục
   - H3: Giai đoạn 2: Giới thiệu cơ sở dữ liệu theo từng agent
-  - H3: Giai đoạn 3: Thay thế API kho phiên
-  - H3: Giai đoạn 4: Di chuyển bản ghi hội thoại, luồng ACP, quỹ đạo và VFS
-  - H3: Giai đoạn 5: Sao lưu, khôi phục, vacuum và xác minh
+  - H3: Giai đoạn 3: Thay thế API kho lưu trữ phiên
+  - H3: Giai đoạn 4: Di chuyển bản ghi, luồng ACP, quỹ đạo và VFS
+  - H3: Giai đoạn 5: Sao lưu, khôi phục, hút chân không và xác minh
   - H3: Giai đoạn 6: Runtime worker
   - H3: Giai đoạn 7: Xóa thế giới cũ
   - H2: Sao lưu và khôi phục
@@ -7986,7 +7988,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## refactor/ingress-core.md
 
-- Đường dẫn: /refactor/ingress-core
+- Tuyến: /refactor/ingress-core
 - Tiêu đề:
   - H1: Kế hoạch xóa lõi ingress
   - H2: Ngân sách
@@ -7996,18 +7998,18 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Ranh giới
   - H2: Quy tắc chấp nhận
   - H2: Gói công việc
-  - H2: Đợt xóa
+  - H2: Các đợt xóa
   - H2: Không di chuyển
   - H2: Xác minh
   - H2: Tiêu chí thoát
 
 ## reference/AGENTS.default.md
 
-- Đường dẫn: /reference/AGENTS.default
+- Tuyến: /reference/AGENTS.default
 - Tiêu đề:
   - H2: Lần chạy đầu tiên (khuyến nghị)
   - H2: Mặc định an toàn
-  - H2: Kiểm tra sơ bộ giải pháp hiện có
+  - H2: Kiểm tra trước giải pháp hiện có
   - H2: Bắt đầu phiên (bắt buộc)
   - H2: Linh hồn (bắt buộc)
   - H2: Không gian dùng chung (khuyến nghị)
@@ -8015,53 +8017,53 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Công cụ và Skills
   - H2: Mẹo sao lưu (khuyến nghị)
   - H2: OpenClaw làm gì
-  - H2: Skills cốt lõi (bật trong Cài đặt → Skills)
+  - H2: Skills cốt lõi (bật trong Settings → Skills)
   - H2: Ghi chú sử dụng
   - H2: Liên quan
 
 ## reference/RELEASING.md
 
-- Đường dẫn: /reference/RELEASING
+- Tuyến: /reference/RELEASING
 - Tiêu đề:
   - H2: Đặt tên phiên bản
   - H2: Nhịp phát hành
   - H2: Danh sách kiểm tra cho người vận hành phát hành
-  - H2: Chốt phiên bản stable trên main
-  - H2: Kiểm tra sơ bộ phát hành
+  - H2: Kết thúc main ổn định
+  - H2: Kiểm tra trước phát hành
   - H2: Hộp kiểm thử phát hành
   - H3: Vitest
   - H3: Docker
   - H3: QA Lab
-  - H3: Gói
+  - H3: Package
   - H2: Tự động hóa xuất bản phát hành
-  - H2: Đầu vào quy trình NPM
-  - H2: Trình tự phát hành npm stable
+  - H2: Đầu vào workflow NPM
+  - H2: Trình tự phát hành npm ổn định
   - H2: Tham chiếu công khai
   - H2: Liên quan
 
 ## reference/api-usage-costs.md
 
-- Đường dẫn: /reference/api-usage-costs
+- Tuyến: /reference/api-usage-costs
 - Tiêu đề:
   - H2: Chi phí xuất hiện ở đâu (chat + CLI)
-  - H2: Cách khóa được phát hiện
-  - H2: Tính năng có thể tiêu tốn khóa
+  - H2: Cách phát hiện khóa
+  - H2: Các tính năng có thể tiêu tốn khóa
   - H3: 1) Phản hồi mô hình lõi (chat + công cụ)
-  - H3: 2) Hiểu phương tiện (âm thanh/hình ảnh/video)
+  - H3: 2) Hiểu nội dung đa phương tiện (âm thanh/hình ảnh/video)
   - H3: 3) Tạo hình ảnh và video
-  - H3: 4) Nhúng bộ nhớ + tìm kiếm ngữ nghĩa
+  - H3: 4) Embedding bộ nhớ + tìm kiếm ngữ nghĩa
   - H3: 5) Công cụ tìm kiếm web
-  - H3: 5) Công cụ tìm nạp web (Firecrawl)
+  - H3: 5) Công cụ fetch web (Firecrawl)
   - H3: 6) Ảnh chụp nhanh mức sử dụng nhà cung cấp (trạng thái/sức khỏe)
   - H3: 7) Tóm tắt bảo vệ Compaction
   - H3: 8) Quét / thăm dò mô hình
-  - H3: 9) Nói chuyện (giọng nói)
+  - H3: 9) Nói (giọng nói)
   - H3: 10) Skills (API bên thứ ba)
   - H2: Liên quan
 
 ## reference/application-modernization-plan.md
 
-- Đường dẫn: /reference/application-modernization-plan
+- Tuyến: /reference/application-modernization-plan
 - Tiêu đề:
   - H2: Mục tiêu
   - H2: Nguyên tắc
@@ -8070,13 +8072,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Giai đoạn 3: Siết chặt kiến trúc frontend
   - H2: Giai đoạn 4: Hiệu năng và độ tin cậy
   - H2: Giai đoạn 5: Củng cố kiểu, hợp đồng và kiểm thử
-  - H2: Giai đoạn 6: Tài liệu và mức sẵn sàng phát hành
-  - H2: Lát cắt đầu tiên được khuyến nghị
+  - H2: Giai đoạn 6: Tài liệu và sẵn sàng phát hành
+  - H2: Phần đầu tiên được khuyến nghị
   - H2: Cập nhật kỹ năng frontend
 
 ## reference/code-mode.md
 
-- Đường dẫn: /reference/code-mode
+- Tuyến: /reference/code-mode
 - Tiêu đề:
   - H2: Đây là gì?
   - H2: Vì sao điều này tốt?
@@ -8118,17 +8120,17 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## reference/credits.md
 
-- Đường dẫn: /reference/credits
+- Tuyến: /reference/credits
 - Tiêu đề:
   - H2: Tên gọi
-  - H2: Ghi công
-  - H2: Người đóng góp cốt lõi
+  - H2: Ghi nhận
+  - H2: Cộng tác viên cốt lõi
   - H2: Giấy phép
   - H2: Liên quan
 
 ## reference/device-models.md
 
-- Đường dẫn: /reference/device-models
+- Tuyến: /reference/device-models
 - Tiêu đề:
   - H2: Nguồn dữ liệu
   - H2: Cập nhật cơ sở dữ liệu
@@ -8136,32 +8138,32 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## reference/full-release-validation.md
 
-- Đường dẫn: /reference/full-release-validation
+- Tuyến: /reference/full-release-validation
 - Tiêu đề:
-  - H2: Giai đoạn cấp cao nhất
-  - H2: Giai đoạn kiểm tra phát hành
-  - H2: Phần release-path Docker
+  - H2: Các giai đoạn cấp cao nhất
+  - H2: Các giai đoạn kiểm tra phát hành
+  - H2: Các phần đường dẫn phát hành Docker
   - H2: Hồ sơ phát hành
-  - H2: Bổ sung chỉ cho bản đầy đủ
-  - H2: Chạy lại có trọng tâm
+  - H2: Bổ sung chỉ dành cho đầy đủ
+  - H2: Chạy lại tập trung
   - H2: Bằng chứng cần giữ
-  - H2: Tệp quy trình
+  - H2: Tệp workflow
 
 ## reference/memory-config.md
 
-- Đường dẫn: /reference/memory-config
+- Tuyến: /reference/memory-config
 - Tiêu đề:
-  - H2: Lựa chọn nhà cung cấp
+  - H2: Chọn nhà cung cấp
   - H3: ID nhà cung cấp tùy chỉnh
-  - H3: Phân giải khóa API
+  - H3: Phân giải API key
   - H2: Cấu hình endpoint từ xa
   - H2: Cấu hình theo nhà cung cấp
-  - H3: Thời gian chờ nhúng nội tuyến
+  - H3: Thời gian chờ embedding inline
   - H2: Cấu hình tìm kiếm lai
   - H3: Ví dụ đầy đủ
   - H2: Đường dẫn bộ nhớ bổ sung
   - H2: Bộ nhớ đa phương thức (Gemini)
-  - H2: Bộ nhớ đệm nhúng
+  - H2: Bộ nhớ đệm embedding
   - H2: Lập chỉ mục theo lô
   - H2: Tìm kiếm bộ nhớ phiên (thử nghiệm)
   - H2: Tăng tốc vector SQLite (sqlite-vec)
@@ -8175,7 +8177,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## reference/prompt-caching.md
 
-- Đường dẫn: /reference/prompt-caching
+- Tuyến: /reference/prompt-caching
 - Tiêu đề:
   - H2: Núm điều chỉnh chính
   - H3: cacheRetention (mặc định toàn cục, mô hình và theo từng agent)
@@ -8189,9 +8191,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Mô hình OpenRouter
   - H3: Nhà cung cấp khác
   - H3: API trực tiếp Google Gemini
-  - H3: Sử dụng Gemini CLI
+  - H3: Mức sử dụng Gemini CLI
   - H2: Ranh giới bộ nhớ đệm system-prompt
-  - H2: Bộ bảo vệ độ ổn định bộ nhớ đệm của OpenClaw
+  - H2: Bộ bảo vệ độ ổn định bộ nhớ đệm OpenClaw
   - H2: Mẫu tinh chỉnh
   - H3: Lưu lượng hỗn hợp (mặc định khuyến nghị)
   - H3: Baseline ưu tiên chi phí
@@ -8200,30 +8202,30 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Kỳ vọng trực tiếp Anthropic
   - H3: Kỳ vọng trực tiếp OpenAI
   - H3: Cấu hình diagnostics.cacheTrace
-  - H3: Công tắc env (gỡ lỗi một lần)
-  - H3: Cần kiểm tra gì
+  - H3: Bật/tắt env (gỡ lỗi một lần)
+  - H3: Nội dung cần kiểm tra
   - H2: Khắc phục sự cố nhanh
   - H2: Liên quan
 
 ## reference/release-performance-sweep.md
 
-- Đường dẫn: /reference/release-performance-sweep
+- Tuyến: /reference/release-performance-sweep
 - Tiêu đề:
   - H2: Ảnh chụp nhanh
-  - H2: Dòng thời gian dung lượng cài đặt
-  - H2: Những gì đã thay đổi trong 5.28
-  - H2: Số liệu nổi bật
-  - H3: Dung lượng cài đặt
-  - H3: Kích thước gói npm
+  - H2: Dòng thời gian footprint cài đặt
+  - H2: Điều đã thay đổi trong 5.28
+  - H2: Số liệu tiêu điểm
+  - H3: Footprint cài đặt
+  - H3: Kích thước package npm
   - H2: Tóm tắt lượt agent Kova
-  - H2: Thăm dò nguồn
-  - H2: Kiểm toán dung lượng cài đặt
+  - H2: Probe nguồn
+  - H2: Kiểm toán footprint cài đặt
   - H3: Ranh giới shrinkwrap
   - H2: Diễn giải chuỗi cung ứng
 
 ## reference/rich-output-protocol.md
 
-- Đường dẫn: /reference/rich-output-protocol
+- Tuyến: /reference/rich-output-protocol
 - Tiêu đề:
   - H2: [embed ...]
   - H2: Hình dạng kết xuất đã lưu
@@ -8231,7 +8233,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## reference/rpc.md
 
-- Đường dẫn: /reference/rpc
+- Tuyến: /reference/rpc
 - Tiêu đề:
   - H2: Mẫu A: daemon HTTP (signal-cli)
   - H2: Mẫu B: tiến trình con stdio (imsg)
@@ -8240,16 +8242,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## reference/secret-placeholder-conventions.md
 
-- Đường dẫn: /reference/secret-placeholder-conventions
+- Tuyến: /reference/secret-placeholder-conventions
 - Tiêu đề:
   - H1: Quy ước placeholder bí mật
-  - H2: Kiểu khuyến nghị
+  - H2: Phong cách khuyến nghị
   - H2: Tránh các mẫu này trong tài liệu
   - H2: Ví dụ
 
 ## reference/secretref-credential-surface.md
 
-- Đường dẫn: /reference/secretref-credential-surface
+- Tuyến: /reference/secretref-credential-surface
 - Tiêu đề:
   - H2: Thông tin xác thực được hỗ trợ
   - H3: Đích openclaw.json (secrets configure + secrets apply + secrets audit)
@@ -8259,86 +8261,86 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 ## reference/session-management-compaction.md
 
-- Đường dẫn: /reference/session-management-compaction
+- Tuyến: /reference/session-management-compaction
 - Tiêu đề:
   - H2: Nguồn sự thật: Gateway
   - H2: Hai lớp lưu bền
   - H2: Vị trí trên đĩa
-  - H2: Bảo trì kho và điều khiển đĩa
+  - H2: Bảo trì kho lưu trữ và kiểm soát đĩa
   - H2: Phiên Cron và nhật ký chạy
   - H2: Khóa phiên (sessionKey)
   - H2: ID phiên (sessionId)
-  - H2: Lược đồ kho phiên (sessions.json)
-  - H2: Cấu trúc bản ghi hội thoại (.jsonl)
+  - H2: Schema kho lưu trữ phiên (sessions.json)
+  - H2: Cấu trúc bản ghi (.jsonl)
   - H2: Cửa sổ ngữ cảnh so với token được theo dõi
   - H2: Compaction: đó là gì
-  - H2: Ranh giới chunk Compaction và ghép cặp công cụ
-  - H2: Khi auto-compaction xảy ra (runtime OpenClaw)
+  - H2: Ranh giới đoạn Compaction và ghép cặp công cụ
+  - H2: Khi auto-compaction diễn ra (runtime OpenClaw)
   - H2: Cài đặt Compaction (reserveTokens, keepRecentTokens)
-  - H2: Nhà cung cấp Compaction có thể cắm
+  - H2: Nhà cung cấp Compaction có thể cắm được
   - H2: Bề mặt hiển thị với người dùng
-  - H2: Dọn dẹp thầm lặng (NOREPLY)
+  - H2: Dọn dẹp âm thầm (NOREPLY)
   - H2: "Xả bộ nhớ" trước Compaction (đã triển khai)
   - H2: Danh sách kiểm tra khắc phục sự cố
   - H2: Liên quan
 
 ## reference/templates/AGENTS.dev.md
 
-- Đường dẫn: /reference/templates/AGENTS.dev
+- Tuyến: /reference/templates/AGENTS.dev
 - Tiêu đề:
   - H1: AGENTS.md - Không gian làm việc OpenClaw
   - H2: Lần chạy đầu tiên (một lần)
   - H2: Mẹo sao lưu (khuyến nghị)
   - H2: Mặc định an toàn
-  - H2: Kiểm tra sơ bộ giải pháp hiện có
+  - H2: Kiểm tra trước giải pháp hiện có
   - H2: Bộ nhớ hằng ngày (khuyến nghị)
   - H2: Heartbeat (tùy chọn)
   - H2: Tùy chỉnh
-  - H2: Bộ nhớ nguồn gốc C-3PO
+  - H2: Bộ nhớ gốc C-3PO
   - H3: Ngày sinh: 2026-01-09
   - H3: Sự thật cốt lõi (từ Clawd)
   - H2: Liên quan
 
 ## reference/templates/BOOT.md
 
-- Đường dẫn: /reference/templates/BOOT
+- Tuyến: /reference/templates/BOOT
 - Tiêu đề:
   - H1: BOOT.md
   - H2: Liên quan
 
 ## reference/templates/BOOTSTRAP.md
 
-- Đường dẫn: /reference/templates/BOOTSTRAP
+- Tuyến: /reference/templates/BOOTSTRAP
 - Tiêu đề:
   - H1: BOOTSTRAP.md - Xin chào, thế giới
   - H2: Cuộc trò chuyện
   - H2: Sau khi bạn biết mình là ai
-  - H2: Kết nối (tùy chọn)
+  - H2: Kết nối (Tùy chọn)
   - H2: Khi bạn hoàn tất
   - H2: Liên quan
 
 ## reference/templates/HEARTBEAT.md
 
-- Đường dẫn: /reference/templates/HEARTBEAT
+- Tuyến: /reference/templates/HEARTBEAT
 - Tiêu đề:
   - H1: Mẫu HEARTBEAT.md
   - H2: Liên quan
 
 ## reference/templates/IDENTITY.dev.md
 
-- Đường dẫn: /reference/templates/IDENTITY.dev
+- Tuyến: /reference/templates/IDENTITY.dev
 - Tiêu đề:
   - H1: IDENTITY.md - Danh tính agent
   - H2: Vai trò
   - H2: Linh hồn
   - H2: Mối quan hệ với Clawd
-  - H2: Điểm kỳ quặc
+  - H2: Điểm khác thường
   - H2: Câu cửa miệng
   - H2: Liên quan
 
 ## reference/templates/IDENTITY.md
 
-- Đường dẫn: /reference/templates/IDENTITY
+- Tuyến: /reference/templates/IDENTITY
 - Tiêu đề:
   - H1: IDENTITY.md - Tôi là ai?
   - H2: Liên quan
@@ -8350,7 +8352,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H1: SOUL.md - Linh hồn của C-3PO
   - H2: Tôi là ai
   - H2: Mục đích của tôi
-  - H2: Cách tôi vận hành
+  - H2: Cách tôi hoạt động
   - H2: Những điểm kỳ quặc của tôi
   - H2: Mối quan hệ của tôi với Clawd
   - H2: Những gì tôi sẽ không làm
@@ -8362,9 +8364,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /reference/templates/SOUL
 - Tiêu đề:
   - H1: SOUL.md - Bạn là ai
-  - H2: Những sự thật cốt lõi
+  - H2: Sự thật cốt lõi
   - H2: Ranh giới
-  - H2: Phong thái
+  - H2: Phong cách
   - H2: Tính liên tục
   - H2: Liên quan
 
@@ -8385,7 +8387,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H1: TOOLS.md - Ghi chú cục bộ
   - H2: Nội dung đặt ở đây
   - H2: Ví dụ
-  - H2: Tại sao tách riêng?
+  - H2: Vì sao tách riêng?
   - H2: Liên quan
 
 ## reference/templates/USER.dev.md
@@ -8407,12 +8409,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /reference/test
 - Tiêu đề:
-  - H2: Cổng kiểm tra PR cục bộ
-  - H2: Điểm chuẩn độ trễ mô hình (khóa cục bộ)
-  - H2: Điểm chuẩn khởi động CLI
-  - H2: Điểm chuẩn khởi động Gateway
-  - H2: Điểm chuẩn khởi động lại Gateway
-  - H2: Onboarding E2E (Docker)
+  - H2: Cổng PR cục bộ
+  - H2: Đo độ trễ mô hình (khóa cục bộ)
+  - H2: Đo khởi động CLI
+  - H2: Đo khởi động Gateway
+  - H2: Đo khởi động lại Gateway
+  - H2: E2E onboarding (Docker)
   - H2: Kiểm tra nhanh nhập QR (Docker)
   - H2: Liên quan
 
@@ -8423,11 +8425,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cách xây dựng system prompt
   - H2: Những gì được tính trong cửa sổ ngữ cảnh
   - H2: Cách xem mức sử dụng token hiện tại
-  - H2: Ước tính chi phí (khi hiển thị)
-  - H2: Tác động của TTL bộ nhớ đệm và cắt tỉa
-  - H3: Ví dụ: giữ bộ nhớ đệm 1 giờ luôn ấm bằng heartbeat
-  - H3: Ví dụ: lưu lượng hỗn hợp với chiến lược bộ nhớ đệm theo từng agent
-  - H3: Ngữ cảnh 1M của Anthropic
+  - H2: Ước tính chi phí (khi được hiển thị)
+  - H2: Tác động của TTL cache và cắt tỉa
+  - H3: Ví dụ: giữ cache 1 giờ luôn ấm bằng heartbeat
+  - H3: Ví dụ: lưu lượng hỗn hợp với chiến lược cache theo từng agent
+  - H3: Ngữ cảnh Anthropic 1M
   - H2: Mẹo giảm áp lực token
   - H2: Liên quan
 
@@ -8435,13 +8437,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /reference/transcript-hygiene
 - Tiêu đề:
-  - H2: Quy tắc toàn cục: ngữ cảnh runtime không phải bản ghi người dùng
-  - H2: Nơi cơ chế này chạy
+  - H2: Quy tắc toàn cục: ngữ cảnh runtime không phải transcript người dùng
+  - H2: Nơi quy tắc này chạy
   - H2: Quy tắc toàn cục: làm sạch hình ảnh
   - H2: Quy tắc toàn cục: lệnh gọi công cụ sai định dạng
-  - H2: Quy tắc toàn cục: lượt chỉ có phần reasoning chưa hoàn chỉnh
+  - H2: Quy tắc toàn cục: lượt chỉ có reasoning chưa hoàn chỉnh
   - H2: Quy tắc toàn cục: nguồn gốc đầu vào giữa các phiên
-  - H2: Ma trận provider (hành vi hiện tại)
+  - H2: Ma trận nhà cung cấp (hành vi hiện tại)
   - H2: Hành vi lịch sử (trước 2026.1.22)
   - H2: Liên quan
 
@@ -8452,9 +8454,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chi tiết luồng (chế độ cục bộ)
   - H2: Chế độ không tương tác
   - H3: Thêm agent (không tương tác)
-  - H2: RPC wizard của Gateway
+  - H2: RPC trình hướng dẫn Gateway
   - H2: Thiết lập Signal (signal-cli)
-  - H2: Những gì wizard ghi
+  - H2: Những gì trình hướng dẫn ghi
   - H2: Tài liệu liên quan
 
 ## releases/2026.6.11.md
@@ -8463,20 +8465,20 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: Ghi chú phát hành OpenClaw v2026.6.11 (2026-06-30)
   - H2: Điểm nổi bật
-  - H3: Độ tin cậy phân phối qua kênh
-  - H3: Khôi phục provider và mô hình
-  - H3: Tính liên tục của phiên, bộ nhớ và niềm tin
-  - H3: Chế độ chuyển tiếp router Slack
+  - H3: Độ tin cậy khi phân phối qua kênh
+  - H3: Khôi phục nhà cung cấp và mô hình
+  - H3: Tính liên tục của phiên, bộ nhớ và sự tin cậy
+  - H3: Chế độ relay bộ định tuyến Slack
   - H3: Cầu đánh thức Raft External Agent
-  - H3: Cài đặt và sửa chữa Plugin chính thức
+  - H3: Cài đặt và sửa chữa plugin chính thức
   - H2: Kênh và nhắn tin
-  - H3: Các bản sửa lỗi kênh bổ sung
-  - H2: Gateway, bảo mật và niềm tin
+  - H3: Các bản sửa kênh bổ sung
+  - H2: Gateway, bảo mật và sự tin cậy
   - H3: Khôi phục khi khởi động lại và sẵn sàng
   - H3: Phân phối kết quả từ xa và media
   - H2: Client và giao diện
   - H3: Gửi từ client và kết nối lại
-  - H3: Sửa lỗi giao diện, cài đặt và onboarding
+  - H3: Sửa giao diện, cài đặt và onboarding
   - H2: Tài liệu và công cụ quản trị
   - H3: Độ tin cậy của thiết lập và lệnh
   - H3: Công cụ và công việc theo lịch
@@ -8493,16 +8495,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /security/CONTRIBUTING-THREAT-MODEL
 - Tiêu đề:
-  - H2: Các cách đóng góp
-  - H3: Thêm một mối đe dọa
-  - H3: Đề xuất một biện pháp giảm thiểu
-  - H3: Đề xuất một chuỗi tấn công
+  - H2: Cách đóng góp
+  - H3: Thêm mối đe dọa
+  - H3: Đề xuất biện pháp giảm thiểu
+  - H3: Đề xuất chuỗi tấn công
   - H3: Sửa hoặc cải thiện nội dung hiện có
   - H2: Những gì chúng tôi sử dụng
   - H3: Khung MITRE ATLAS
   - H3: ID mối đe dọa
   - H3: Mức rủi ro
-  - H2: Quy trình đánh giá
+  - H2: Quy trình review
   - H2: Tài nguyên
   - H2: Liên hệ
   - H2: Ghi nhận
@@ -8513,7 +8515,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /security/THREAT-MODEL-ATLAS
 - Tiêu đề:
   - H2: Khung MITRE ATLAS
-  - H3: Ghi nhận khung
+  - H3: Ghi nhận nguồn khung
   - H3: Đóng góp cho mô hình mối đe dọa này
   - H2: 1. Giới thiệu
   - H3: 1.1 Mục đích
@@ -8524,50 +8526,50 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: 2.2 Luồng dữ liệu
   - H2: 3. Phân tích mối đe dọa theo chiến thuật ATLAS
   - H3: 3.1 Trinh sát (AML.TA0002)
-  - H4: T-RECON-001: Khám phá endpoint agent
+  - H4: T-RECON-001: Phát hiện endpoint của agent
   - H4: T-RECON-002: Thăm dò tích hợp kênh
   - H3: 3.2 Truy cập ban đầu (AML.TA0004)
-  - H4: T-ACCESS-001: Chặn mã ghép đôi
+  - H4: T-ACCESS-001: Chặn mã ghép nối
   - H4: T-ACCESS-002: Giả mạo AllowFrom
   - H4: T-ACCESS-003: Đánh cắp token
   - H3: 3.3 Thực thi (AML.TA0005)
   - H4: T-EXEC-001: Tiêm prompt trực tiếp
   - H4: T-EXEC-002: Tiêm prompt gián tiếp
   - H4: T-EXEC-003: Tiêm đối số công cụ
-  - H4: T-EXEC-004: Vượt qua phê duyệt exec
+  - H4: T-EXEC-004: Vượt phê duyệt exec
   - H3: 3.4 Duy trì hiện diện (AML.TA0006)
   - H4: T-PERSIST-001: Cài đặt Skill độc hại
   - H4: T-PERSIST-002: Đầu độc bản cập nhật Skill
   - H4: T-PERSIST-003: Can thiệp cấu hình agent
   - H3: 3.5 Né tránh phòng thủ (AML.TA0007)
-  - H4: T-EVADE-001: Vượt qua mẫu kiểm duyệt
+  - H4: T-EVADE-001: Vượt mẫu kiểm duyệt
   - H4: T-EVADE-002: Thoát khỏi wrapper nội dung
-  - H3: 3.6 Khám phá (AML.TA0008)
+  - H3: 3.6 Phát hiện (AML.TA0008)
   - H4: T-DISC-001: Liệt kê công cụ
   - H4: T-DISC-002: Trích xuất dữ liệu phiên
-  - H3: 3.7 Thu thập & trích xuất dữ liệu (AML.TA0009, AML.TA0010)
+  - H3: 3.7 Thu thập & rò rỉ dữ liệu (AML.TA0009, AML.TA0010)
   - H4: T-EXFIL-001: Đánh cắp dữ liệu qua webfetch
   - H4: T-EXFIL-002: Gửi tin nhắn trái phép
   - H4: T-EXFIL-003: Thu thập thông tin xác thực
   - H3: 3.8 Tác động (AML.TA0011)
   - H4: T-IMPACT-001: Thực thi lệnh trái phép
   - H4: T-IMPACT-002: Cạn kiệt tài nguyên (DoS)
-  - H4: T-IMPACT-003: Tổn hại danh tiếng
+  - H4: T-IMPACT-003: Thiệt hại danh tiếng
   - H2: 4. Phân tích chuỗi cung ứng ClawHub
   - H3: 4.1 Kiểm soát bảo mật hiện tại
   - H3: 4.2 Mẫu cờ kiểm duyệt
   - H3: 4.3 Cải tiến đã lên kế hoạch
   - H2: 5. Ma trận rủi ro
   - H3: 5.1 Khả năng xảy ra so với tác động
-  - H3: 5.2 Chuỗi tấn công đường trọng yếu
+  - H3: 5.2 Chuỗi tấn công đường tới hạn
   - H2: 6. Tóm tắt khuyến nghị
   - H3: 6.1 Ngay lập tức (P0)
   - H3: 6.2 Ngắn hạn (P1)
   - H3: 6.3 Trung hạn (P2)
   - H2: 7. Phụ lục
   - H3: 7.1 Ánh xạ kỹ thuật ATLAS
-  - H3: 7.2 Tệp bảo mật then chốt
-  - H3: 7.3 Bảng thuật ngữ
+  - H3: 7.2 Tệp bảo mật chính
+  - H3: 7.3 Thuật ngữ
   - H2: Liên quan
 
 ## security/formal-verification.md
@@ -8577,15 +8579,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Nơi đặt các mô hình
   - H2: Lưu ý quan trọng
   - H2: Tái tạo kết quả
-  - H3: Phơi lộ Gateway và cấu hình sai Gateway mở
-  - H3: Pipeline exec của Node (năng lực rủi ro cao nhất)
-  - H3: Kho ghép đôi (kiểm soát DM)
-  - H3: Kiểm soát ingress (mention + bỏ qua lệnh điều khiển)
+  - H3: Lộ diện Gateway và cấu hình sai gateway mở
+  - H3: Pipeline exec Node (năng lực rủi ro cao nhất)
+  - H3: Kho ghép nối (kiểm soát DM)
+  - H3: Kiểm soát ingress (mentions + bỏ qua lệnh điều khiển)
   - H3: Cô lập định tuyến/khóa phiên
-  - H2: v1++: các mô hình có giới hạn bổ sung (đồng thời, thử lại, tính đúng đắn của trace)
-  - H3: Tính đồng thời / tính lũy đẳng của kho ghép đôi
+  - H2: v1++: các mô hình giới hạn bổ sung (đồng thời, thử lại, độ đúng trace)
+  - H3: Tính đồng thời / tính lũy đẳng của kho ghép nối
   - H3: Tương quan trace ingress / tính lũy đẳng
-  - H3: Mức ưu tiên dmScope định tuyến + identityLinks
+  - H3: Thứ tự ưu tiên dmScope định tuyến + identityLinks
   - H2: Liên quan
 
 ## security/incident-response.md
@@ -8606,9 +8608,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cách OpenClaw định tuyến lưu lượng
   - H2: Thuật ngữ proxy liên quan
   - H2: Cấu hình
-  - H3: Chế độ vòng lặp Gateway
+  - H3: Chế độ Gateway Loopback
   - H2: Yêu cầu proxy
-  - H2: Đích chặn được khuyến nghị
+  - H2: Đích được khuyến nghị chặn
   - H2: Xác thực
   - H2: Tin cậy CA của proxy
   - H2: Giới hạn
@@ -8638,7 +8640,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bootstrapping làm gì
   - H2: Bỏ qua bootstrapping
-  - H2: Nơi cơ chế này chạy
+  - H2: Nơi nó chạy
   - H2: Tài liệu liên quan
 
 ## start/docs-directory.md
@@ -8646,7 +8648,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /start/docs-directory
 - Tiêu đề:
   - H2: Bắt đầu tại đây
-  - H2: Provider và UX
+  - H2: Nhà cung cấp và UX
   - H2: Ứng dụng đồng hành
   - H2: Vận hành và an toàn
   - H2: Liên quan
@@ -8667,14 +8669,14 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bắt đầu tại đây
   - H2: Cài đặt + cập nhật
   - H2: Khái niệm cốt lõi
-  - H2: Provider + ingress
+  - H2: Nhà cung cấp + ingress
   - H2: Gateway + vận hành
   - H2: Công cụ + tự động hóa
   - H2: Node, media, giọng nói
   - H2: Nền tảng
   - H2: Ứng dụng đồng hành macOS (nâng cao)
   - H2: Plugins
-  - H2: Không gian làm việc + mẫu
+  - H2: Workspace + mẫu
   - H2: Dự án
   - H2: Kiểm thử + phát hành
   - H2: Liên quan
@@ -8683,23 +8685,23 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /start/lore
 - Tiêu đề:
-  - H1: Truyền thuyết về OpenClaw 🦞📖
+  - H1: Truyền thuyết OpenClaw 🦞📖
   - H2: Câu chuyện khởi nguồn
   - H2: Lần lột xác đầu tiên (27 tháng 1, 2026)
   - H2: Cái tên
-  - H2: Daleks đấu với tôm hùm
+  - H2: Daleks vs Lobsters
   - H2: Nhân vật chính
   - H3: Molty 🦞
   - H3: Peter 👨‍💻
   - H2: Moltiverse
   - H2: Những sự cố lớn
-  - H3: Đổ toàn bộ thư mục (3 tháng 12, 2025)
-  - H3: Lần lột xác lớn (27 tháng 1, 2026)
+  - H3: Dump thư mục (3 tháng 12, 2025)
+  - H3: Lần lột xác vĩ đại (27 tháng 1, 2026)
   - H3: Hình thái cuối cùng (30 tháng 1, 2026)
-  - H3: Cơn mua sắm robot (3 tháng 12, 2025)
+  - H3: Cuộc mua sắm robot (3 tháng 12, 2025)
   - H2: Văn bản thiêng liêng
-  - H2: Tín điều tôm hùm
-  - H3: Trường thiên tạo biểu tượng (27 tháng 1, 2026)
+  - H2: Tín điều Lobster
+  - H3: Saga tạo biểu tượng (27 tháng 1, 2026)
   - H2: Tương lai
   - H2: Liên quan
 
@@ -8709,9 +8711,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Tôi nên dùng đường dẫn nào?
   - H2: Onboarding cấu hình những gì
-  - H2: Onboarding qua CLI
-  - H2: Onboarding qua ứng dụng macOS
-  - H2: Provider tùy chỉnh hoặc không được liệt kê
+  - H2: Onboarding CLI
+  - H2: Onboarding ứng dụng macOS
+  - H2: Nhà cung cấp tùy chỉnh hoặc không được liệt kê
   - H2: Liên quan
 
 ## start/onboarding.md
@@ -8727,11 +8729,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: ⚠️ An toàn trước tiên
   - H2: Điều kiện tiên quyết
   - H2: Thiết lập hai điện thoại (khuyến nghị)
-  - H2: Bắt đầu nhanh trong 5 phút
-  - H2: Cấp cho agent một không gian làm việc (AGENTS)
+  - H2: Khởi động nhanh trong 5 phút
+  - H2: Cấp workspace cho agent (AGENTS)
   - H2: Cấu hình biến nó thành "một trợ lý"
   - H2: Phiên và bộ nhớ
-  - H2: Heartbeat (chế độ chủ động)
+  - H2: Heartbeats (chế độ chủ động)
   - H2: Media vào và ra
   - H2: Checklist vận hành
   - H2: Bước tiếp theo
@@ -8747,19 +8749,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /start/setup
 - Tiêu đề:
-  - H2: Tóm tắt
-  - H2: Điều kiện tiên quyết (từ mã nguồn)
-  - H2: Chiến lược tùy chỉnh (để cập nhật không gây hỏng)
+  - H2: TL;DR
+  - H2: Điều kiện tiên quyết (từ source)
+  - H2: Chiến lược tùy chỉnh (để cập nhật không gây hại)
   - H2: Chạy Gateway từ repo này
-  - H2: Quy trình ổn định (ứng dụng macOS trước)
-  - H2: Quy trình bleeding edge (Gateway trong terminal)
-  - H3: 0) (Tùy chọn) Cũng chạy ứng dụng macOS từ mã nguồn
+  - H2: Workflow ổn định (ứng dụng macOS trước)
+  - H2: Workflow bleeding edge (Gateway trong terminal)
+  - H3: 0) (Tùy chọn) Cũng chạy ứng dụng macOS từ source
   - H3: 1) Khởi động Gateway dev
   - H3: 2) Trỏ ứng dụng macOS tới Gateway đang chạy của bạn
   - H3: 3) Xác minh
-  - H3: Các lỗi dễ mắc thường gặp
+  - H3: Lỗi thường gặp
   - H2: Bản đồ lưu trữ thông tin xác thực
-  - H2: Cập nhật (không phá hỏng thiết lập của bạn)
+  - H2: Cập nhật (không phá thiết lập của bạn)
   - H2: Linux (dịch vụ người dùng systemd)
   - H2: Tài liệu liên quan
 
@@ -8768,11 +8770,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /start/showcase
 - Tiêu đề:
   - H2: Mới từ Discord
-  - H2: Tự động hóa và quy trình làm việc
+  - H2: Tự động hóa và workflow
   - H2: Tri thức và bộ nhớ
   - H2: Giọng nói và điện thoại
   - H2: Hạ tầng và triển khai
-  - H2: Nhà ở và phần cứng
+  - H2: Nhà và phần cứng
   - H2: Dự án cộng đồng
   - H2: Gửi dự án của bạn
   - H2: Liên quan
@@ -8782,7 +8784,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /start/wizard-cli-automation
 - Tiêu đề:
   - H2: Ví dụ không tương tác cơ sở
-  - H2: Ví dụ theo từng provider
+  - H2: Ví dụ theo nhà cung cấp
   - H2: Thêm agent khác
   - H2: Tài liệu liên quan
 
@@ -8790,19 +8792,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /start/wizard-cli-reference
 - Tiêu đề:
-  - H2: Wizard làm gì
+  - H2: Trình hướng dẫn làm gì
   - H2: Chi tiết luồng cục bộ
   - H2: Chi tiết chế độ từ xa
   - H2: Tùy chọn xác thực và mô hình
-  - H2: Đầu ra và phần nội bộ
+  - H2: Đầu ra và nội bộ
   - H2: Tài liệu liên quan
 
 ## start/wizard.md
 
 - Tuyến: /start/wizard
 - Tiêu đề:
-  - H2: Locale
-  - H2: QuickStart so với Advanced
+  - H2: Ngôn ngữ
+  - H2: QuickStart so với Nâng cao
   - H2: Onboarding cấu hình những gì
   - H2: Thêm agent khác
   - H2: Tham chiếu đầy đủ
@@ -8812,15 +8814,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /tools/acp-agents-setup
 - Tiêu đề:
-  - H2: Hỗ trợ bộ điều phối acpx (hiện tại)
+  - H2: Hỗ trợ acpx harness (hiện tại)
   - H2: Cấu hình bắt buộc
-  - H2: Thiết lập Plugin cho phần phụ trợ acpx
+  - H2: Thiết lập Plugin cho backend acpx
   - H3: Cấu hình lệnh và phiên bản acpx
-  - H3: Tự động cài đặt phụ thuộc
-  - H3: Cầu nối MCP cho công cụ Plugin
-  - H3: Cầu nối MCP cho công cụ OpenClaw
+  - H3: Tự động cài đặt dependency
+  - H3: Cầu nối MCP công cụ Plugin
+  - H3: Cầu nối MCP công cụ OpenClaw
   - H3: Cấu hình thời gian chờ thao tác runtime
-  - H3: Cấu hình tác tử thăm dò sức khỏe
+  - H3: Cấu hình agent thăm dò tình trạng
   - H2: Cấu hình quyền
   - H3: permissionMode
   - H3: nonInteractivePermissions
@@ -8831,29 +8833,29 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /tools/acp-agents
 - Tiêu đề:
-  - H2: Tôi muốn trang nào?
-  - H2: Cái này có hoạt động ngay không cần cấu hình không?
-  - H2: Các mục tiêu bộ điều phối được hỗ trợ
-  - H2: Sổ tay vận hành
-  - H2: ACP so với tác tử con
+  - H2: Tôi cần trang nào?
+  - H2: Tính năng này có hoạt động ngay không?
+  - H2: Mục tiêu harness được hỗ trợ
+  - H2: Runbook cho operator
+  - H2: ACP so với sub-agent
   - H2: Cách ACP chạy Claude Code
   - H2: Phiên bị ràng buộc
   - H3: Mô hình tư duy
-  - H3: Ràng buộc cuộc trò chuyện hiện tại
+  - H3: Ràng buộc hội thoại hiện tại
   - H2: Ràng buộc kênh bền vững
   - H3: Mô hình ràng buộc
-  - H3: Mặc định runtime theo từng tác tử
+  - H3: Mặc định runtime cho mỗi agent
   - H3: Ví dụ
   - H3: Hành vi
-  - H2: Khởi động phiên ACP
+  - H2: Bắt đầu phiên ACP
   - H3: Tham số sessionsspawn
-  - H2: Chế độ ràng buộc spawn và luồng
-  - H2: Mô hình gửi
-  - H2: Khả năng tương thích sandbox
+  - H2: Chế độ bind spawn và thread
+  - H2: Mô hình phân phối
+  - H2: Tương thích sandbox
   - H2: Phân giải mục tiêu phiên
   - H2: Điều khiển ACP
   - H3: Ánh xạ tùy chọn runtime
-  - H2: Bộ điều phối acpx, thiết lập Plugin và quyền
+  - H2: acpx harness, thiết lập Plugin và quyền
   - H2: Khắc phục sự cố
   - H2: Liên quan
 
@@ -8896,11 +8898,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H4: Cài đặt Docker Playwright
   - H2: Cách hoạt động (nội bộ)
   - H2: Tham chiếu nhanh CLI
-  - H2: Ảnh chụp nhanh và tham chiếu
-  - H2: Nâng cấp khả năng chờ
-  - H2: Quy trình gỡ lỗi
+  - H2: Snapshot và ref
+  - H2: Nâng cấp tính năng chờ
+  - H2: Quy trình debug
   - H2: Đầu ra JSON
-  - H2: Trạng thái và núm chỉnh môi trường
+  - H2: Trạng thái và núm điều chỉnh môi trường
   - H2: Bảo mật và quyền riêng tư
   - H2: Liên quan
 
@@ -8908,13 +8910,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /tools/browser-linux-troubleshooting
 - Tiêu đề:
-  - H2: Sự cố: "Failed to start Chrome CDP on port 18800"
+  - H2: Sự cố: "Không khởi động được Chrome CDP trên cổng 18800"
   - H3: Nguyên nhân gốc
-  - H3: Giải pháp 1: Cài đặt Google Chrome (Khuyến nghị)
+  - H3: Giải pháp 1: Cài đặt Google Chrome (Được khuyến nghị)
   - H3: Giải pháp 2: Dùng Snap Chromium với chế độ chỉ đính kèm
   - H3: Xác minh trình duyệt hoạt động
   - H3: Tham chiếu cấu hình
-  - H3: Sự cố: "No Chrome tabs found for profile=\"user\""
+  - H3: Sự cố: "Không tìm thấy tab Chrome nào cho profile=\"user\""
   - H2: Liên quan
 
 ## tools/browser-login.md
@@ -8922,9 +8924,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/browser-login
 - Tiêu đề:
   - H2: Đăng nhập thủ công (khuyến nghị)
-  - H2: Hồ sơ Chrome nào được sử dụng?
-  - H2: X/Twitter: luồng khuyến nghị
-  - H2: Sandbox + truy cập trình duyệt máy chủ
+  - H2: Chrome profile nào được dùng?
+  - H2: X/Twitter: luồng được khuyến nghị
+  - H2: Sandboxing + quyền truy cập trình duyệt máy chủ
   - H2: Liên quan
 
 ## tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
@@ -8935,16 +8937,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Tùy chọn 1: CDP từ xa thô từ WSL2 đến Windows
   - H3: Tùy chọn 2: Chrome MCP cục bộ trên máy chủ
   - H2: Kiến trúc hoạt động
-  - H2: Vì sao thiết lập này dễ gây nhầm lẫn
-  - H2: Quy tắc quan trọng cho Giao diện điều khiển
+  - H2: Vì sao thiết lập này gây khó hiểu
+  - H2: Quy tắc quan trọng cho Control UI
   - H2: Xác thực theo từng lớp
   - H3: Lớp 1: Xác minh Chrome đang phục vụ CDP trên Windows
-  - H3: Lớp 2: Xác minh WSL2 có thể truy cập điểm cuối Windows đó
-  - H3: Lớp 3: Cấu hình đúng hồ sơ trình duyệt
-  - H3: Lớp 4: Xác minh riêng lớp Giao diện điều khiển
+  - H3: Lớp 2: Xác minh WSL2 có thể truy cập endpoint Windows đó
+  - H3: Lớp 3: Cấu hình đúng browser profile
+  - H3: Lớp 4: Xác minh riêng lớp Control UI
   - H3: Lớp 5: Xác minh điều khiển trình duyệt đầu cuối
-  - H2: Các lỗi gây hiểu lầm thường gặp
-  - H2: Danh sách kiểm tra phân loại nhanh
+  - H2: Các lỗi dễ gây hiểu nhầm thường gặp
+  - H2: Checklist phân loại nhanh
   - H2: Kết luận thực tế
   - H2: Liên quan
 
@@ -8955,43 +8957,43 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Bạn nhận được gì
   - H2: Bắt đầu nhanh
   - H2: Điều khiển Plugin
-  - H2: Hướng dẫn cho tác tử
+  - H2: Hướng dẫn agent
   - H2: Thiếu lệnh hoặc công cụ trình duyệt
-  - H2: Hồ sơ: openclaw so với user
+  - H2: Profile: openclaw so với user
   - H2: Cấu hình
   - H3: Thị giác ảnh chụp màn hình (hỗ trợ mô hình chỉ văn bản)
-  - H2: Dùng Brave hoặc trình duyệt dựa trên Chromium khác
+  - H2: Dùng Brave hoặc trình duyệt khác dựa trên Chromium
   - H2: Điều khiển cục bộ so với từ xa
   - H2: Proxy trình duyệt Node (mặc định không cần cấu hình)
   - H2: Browserless (CDP từ xa được lưu trữ)
   - H3: Browserless Docker trên cùng máy chủ
-  - H2: Nhà cung cấp CDP WebSocket trực tiếp
+  - H2: Nhà cung cấp WebSocket CDP trực tiếp
   - H3: Browserbase
   - H3: Notte
   - H2: Bảo mật
-  - H2: Hồ sơ (nhiều trình duyệt)
+  - H2: Profile (nhiều trình duyệt)
   - H2: Phiên hiện có qua Chrome DevTools MCP
   - H3: Khởi chạy Chrome MCP tùy chỉnh
-  - H2: Cam kết cách ly
-  - H2: Chọn trình duyệt
+  - H2: Bảo đảm cô lập
+  - H2: Lựa chọn trình duyệt
   - H2: API điều khiển (tùy chọn)
   - H2: Khắc phục sự cố
   - H3: Lỗi khởi động CDP so với chặn SSRF khi điều hướng
-  - H2: Công cụ tác tử + cách điều khiển hoạt động
+  - H2: Công cụ agent + cách điều khiển hoạt động
   - H2: Liên quan
 
 ## tools/btw.md
 
 - Tuyến: /tools/btw
 - Tiêu đề:
-  - H2: Nó làm gì
-  - H2: Nó không làm gì
-  - H2: Cách ngữ cảnh hoạt động
-  - H2: Mô hình gửi
+  - H2: Chức năng
+  - H2: Không làm gì
+  - H2: Cách context hoạt động
+  - H2: Mô hình phân phối
   - H2: Hành vi bề mặt
   - H3: TUI
   - H3: Kênh bên ngoài
-  - H3: Giao diện điều khiển / web
+  - H3: Control UI / web
   - H2: Khi nào dùng BTW
   - H2: Khi nào không dùng BTW
   - H2: Liên quan
@@ -9038,19 +9040,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Bắt đầu nhanh
   - H2: Tắt hướng dẫn hệ thống tích hợp
-  - H2: Quy trình tác tử điển hình
+  - H2: Quy trình agent điển hình
   - H2: Ví dụ đầu vào
   - H2: Tham chiếu đầu vào công cụ
   - H2: Tô sáng cú pháp
   - H2: Hợp đồng chi tiết đầu ra
-  - H2: Thu gọn các phần không thay đổi
+  - H2: Phần không đổi đã thu gọn
   - H2: Mặc định Plugin
   - H3: Cấu hình URL trình xem bền vững
   - H2: Cấu hình bảo mật
-  - H2: Vòng đời và lưu trữ tạo phẩm
+  - H2: Vòng đời và lưu trữ artifact
   - H2: URL trình xem và hành vi mạng
   - H2: Mô hình bảo mật
-  - H2: Yêu cầu trình duyệt cho chế độ tệp
+  - H2: Yêu cầu trình duyệt cho chế độ file
   - H2: Khắc phục sự cố
   - H2: Hướng dẫn vận hành
   - H2: Liên quan
@@ -9072,7 +9074,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Chỉ thị
   - H2: Cách hoạt động
   - H2: Thứ tự phân giải
-  - H2: Tính khả dụng và danh sách cho phép
+  - H2: Tính khả dụng và allowlist
   - H2: Những gì elevated không kiểm soát
   - H2: Liên quan
 
@@ -9097,46 +9099,46 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Binary an toàn (chỉ stdin)
   - H3: Xác thực argv và cờ bị từ chối
   - H3: Thư mục binary đáng tin cậy
-  - H3: Nối chuỗi shell, wrapper và multiplexer
-  - H3: Binary an toàn so với danh sách cho phép
-  - H2: Lệnh trình thông dịch/runtime
-  - H3: Hành vi gửi tiếp theo
+  - H3: Shell chaining, wrapper và multiplexer
+  - H3: Binary an toàn so với allowlist
+  - H2: Lệnh interpreter/runtime
+  - H3: Hành vi gửi followup
   - H2: Chuyển tiếp phê duyệt đến kênh chat
   - H3: Chuyển tiếp phê duyệt Plugin
-  - H3: Phê duyệt cùng chat trên bất kỳ kênh nào
-  - H3: Gửi phê duyệt gốc
+  - H3: Phê duyệt trong cùng chat trên mọi kênh
+  - H3: Gửi phê duyệt native
   - H3: Luồng IPC macOS
-  - H2: Câu hỏi thường gặp
+  - H2: FAQ
   - H3: Khi nào accountId và threadId được dùng trên mục tiêu phê duyệt?
-  - H3: Khi phê duyệt được gửi đến một phiên, bất kỳ ai trong phiên đó có thể phê duyệt không?
+  - H3: Khi phê duyệt được gửi đến một phiên, bất kỳ ai trong phiên đó có thể phê duyệt chúng không?
   - H2: Liên quan
 
 ## tools/exec-approvals.md
 
 - Tuyến: /tools/exec-approvals
 - Tiêu đề:
-  - H2: Kiểm tra chính sách hiệu lực
-  - H2: Nơi áp dụng
+  - H2: Kiểm tra policy hiệu lực
+  - H2: Áp dụng ở đâu
   - H3: Mô hình tin cậy
-  - H3: Tách macOS
+  - H3: Phân tách macOS
   - H2: Cài đặt và lưu trữ
-  - H2: Núm chỉnh chính sách
+  - H2: Núm điều chỉnh policy
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
   - H3: askFallback
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
-  - H2: Chế độ YOLO (không cần phê duyệt)
-  - H3: Thiết lập "never prompt" bền vững trên máy chủ gateway
+  - H2: Chế độ YOLO (không phê duyệt)
+  - H3: Thiết lập "never prompt" bền vững trên gateway-host
   - H3: Lối tắt cục bộ
   - H3: Máy chủ Node
-  - H3: Lối tắt chỉ trong phiên
-  - H2: Danh sách cho phép (theo tác tử)
+  - H3: Lối tắt chỉ phiên
+  - H2: Allowlist (theo agent)
   - H3: Hạn chế đối số bằng argPattern
   - H2: Tự động cho phép CLI của skill
   - H2: Binary an toàn và chuyển tiếp phê duyệt
-  - H2: Chỉnh sửa Giao diện điều khiển
+  - H2: Chỉnh sửa Control UI
   - H2: Luồng phê duyệt
   - H2: Sự kiện hệ thống
   - H2: Hành vi khi phê duyệt bị từ chối
@@ -9152,8 +9154,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Xử lý PATH
   - H2: Ghi đè phiên (/exec)
   - H2: Mô hình ủy quyền
-  - H2: Phê duyệt exec (ứng dụng đồng hành / máy chủ node)
-  - H2: Danh sách cho phép + binary an toàn
+  - H2: Phê duyệt Exec (ứng dụng đồng hành / máy chủ node)
+  - H2: Allowlist + binary an toàn
   - H2: Ví dụ
   - H2: applypatch
   - H2: Liên quan
@@ -9163,15 +9165,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/firecrawl
 - Tiêu đề:
   - H2: Cài đặt Plugin
-  - H2: webfetch không khóa và khóa API
+  - H2: webfetch không cần khóa và khóa API
   - H2: Cấu hình tìm kiếm Firecrawl
-  - H2: Cấu hình dự phòng webfetch Firecrawl
-  - H3: Firecrawl tự lưu trữ
+  - H2: Cấu hình fallback webfetch Firecrawl
+  - H3: Firecrawl tự host
   - H2: Công cụ Plugin Firecrawl
   - H3: firecrawlsearch
   - H3: firecrawlscrape
-  - H2: Tàng hình / vượt tránh bot
-  - H2: Cách webfetch dùng Firecrawl
+  - H2: Stealth / né bot
+  - H2: Cách webfetch sử dụng Firecrawl
   - H2: Liên quan
 
 ## tools/gemini-search.md
@@ -9182,7 +9184,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cấu hình
   - H2: Cách hoạt động
   - H2: Tham số được hỗ trợ
-  - H2: Chọn mô hình
+  - H2: Lựa chọn mô hình
   - H2: Ghi đè URL cơ sở
   - H2: Liên quan
 
@@ -9192,7 +9194,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H1: Mục tiêu
   - H2: Bắt đầu nhanh
-  - H2: Mục tiêu dùng để làm gì
+  - H2: Mục đích của goal
   - H2: Tham chiếu lệnh
   - H2: Trạng thái
   - H2: Ngân sách token
@@ -9219,15 +9221,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/image-generation
 - Tiêu đề:
   - H2: Bắt đầu nhanh
-  - H2: Tuyến thường dùng
+  - H2: Tuyến phổ biến
   - H2: Nhà cung cấp được hỗ trợ
   - H2: Khả năng của nhà cung cấp
   - H2: Tham số công cụ
   - H2: Cấu hình
-  - H3: Chọn mô hình
+  - H3: Lựa chọn mô hình
   - H3: Thứ tự chọn nhà cung cấp
   - H3: Chỉnh sửa hình ảnh
-  - H2: Đi sâu vào nhà cung cấp
+  - H2: Phân tích sâu nhà cung cấp
   - H2: Ví dụ
   - H2: Liên quan
 
@@ -9236,7 +9238,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools
 - Tiêu đề:
   - H2: Bắt đầu tại đây
-  - H2: Chọn công cụ, Skills hoặc plugin
+  - H2: Chọn công cụ, Skills hoặc Plugin
   - H2: Danh mục công cụ tích hợp
   - H2: Công cụ do Plugin cung cấp
   - H2: Cấu hình quyền truy cập và phê duyệt
@@ -9272,13 +9274,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/lobster
 - Tiêu đề:
   - H2: Hook
-  - H2: Vì sao
+  - H2: Lý do
   - H2: Vì sao dùng DSL thay vì chương trình thuần?
   - H2: Cách hoạt động
-  - H2: Mẫu: CLI nhỏ + ống JSON + phê duyệt
+  - H2: Mẫu: CLI nhỏ + pipe JSON + phê duyệt
   - H2: Bước LLM chỉ JSON (llm-task)
   - H3: Giới hạn quan trọng: Lobster nhúng so với openclaw.invoke
-  - H2: Tệp quy trình (.lobster)
+  - H2: File workflow (.lobster)
   - H2: Cài đặt Lobster
   - H2: Bật công cụ
   - H2: Ví dụ: Phân loại email
@@ -9292,19 +9294,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: An toàn
   - H2: Khắc phục sự cố
   - H2: Tìm hiểu thêm
-  - H2: Nghiên cứu tình huống: quy trình cộng đồng
+  - H2: Nghiên cứu điển hình: workflow cộng đồng
   - H2: Liên quan
 
 ## tools/loop-detection.md
 
 - Tuyến: /tools/loop-detection
 - Tiêu đề:
-  - H2: Vì sao tính năng này tồn tại
+  - H2: Vì sao có tính năng này
   - H2: Khối cấu hình
   - H3: Hành vi trường
   - H2: Thiết lập khuyến nghị
-  - H2: Bộ bảo vệ sau Compaction
-  - H2: Nhật ký và hành vi dự kiến
+  - H2: Guard sau Compaction
+  - H2: Log và hành vi mong đợi
   - H2: Liên quan
 
 ## tools/media-overview.md
@@ -9314,8 +9316,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Khả năng
   - H2: Ma trận khả năng của nhà cung cấp
   - H2: Bất đồng bộ so với đồng bộ
-  - H2: Chuyển giọng nói thành văn bản và Cuộc gọi thoại
-  - H2: Ánh xạ nhà cung cấp (cách các hãng phân chia theo bề mặt)
+  - H2: Chuyển giọng nói thành văn bản và Voice Call
+  - H2: Ánh xạ nhà cung cấp (cách nhà cung cấp tách theo các bề mặt)
   - H2: Liên quan
 
 ## tools/minimax-search.md
@@ -9336,7 +9338,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Thứ tự ưu tiên cấu hình
   - H3: Cấu hình sandbox
   - H3: Hạn chế công cụ
-  - H2: Di chuyển từ tác nhân đơn
+  - H2: Di chuyển từ một tác nhân
   - H2: Ví dụ hạn chế công cụ
   - H2: Lỗi thường gặp: "non-main"
   - H2: Kiểm thử
@@ -9357,7 +9359,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Chọn mô hình
   - H3: Thứ tự chọn nhà cung cấp
   - H2: Ghi chú về nhà cung cấp
-  - H2: Chọn hướng phù hợp
+  - H2: Chọn đường đi phù hợp
   - H2: Chế độ khả năng của nhà cung cấp
   - H2: Kiểm thử trực tiếp
   - H2: Liên quan
@@ -9387,7 +9389,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /tools/pdf
 - Tiêu đề:
-  - H2: Tính khả dụng
+  - H2: Tình trạng khả dụng
   - H2: Tham chiếu đầu vào
   - H2: Tham chiếu PDF được hỗ trợ
   - H2: Chế độ thực thi
@@ -9404,9 +9406,9 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/permission-modes
 - Tiêu đề:
   - H2: Mặc định được khuyến nghị
-  - H2: Chế độ thực thi máy chủ OpenClaw
+  - H2: Chế độ thực thi trên máy chủ OpenClaw
   - H2: Ánh xạ Codex Guardian
-  - H2: Quyền của harness ACPX
+  - H2: Quyền harness ACPX
   - H2: Chọn chế độ
   - H2: Liên quan
 
@@ -9416,13 +9418,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Cài đặt plugin
   - H2: Lấy khóa API Perplexity
-  - H2: Tương thích OpenRouter
+  - H2: Khả năng tương thích OpenRouter
   - H2: Ví dụ cấu hình
-  - H3: API Tìm kiếm Perplexity gốc
-  - H3: Tương thích OpenRouter / Sonar
-  - H2: Đặt khóa ở đâu
+  - H3: API tìm kiếm Perplexity gốc
+  - H3: Khả năng tương thích OpenRouter / Sonar
+  - H2: Nơi đặt khóa
   - H2: Tham số công cụ
-  - H3: Quy tắc lọc miền
+  - H3: Quy tắc bộ lọc miền
   - H2: Ghi chú
   - H2: Liên quan
 
@@ -9475,7 +9477,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Nội dung đề xuất
   - H2: Tệp hỗ trợ
   - H2: Công cụ tác nhân
-  - H2: Phê duyệt và quyền tự chủ
+  - H2: Phê duyệt và tự chủ
   - H2: Phương thức Gateway
   - H2: Lưu trữ
   - H2: Giới hạn
@@ -9489,12 +9491,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Tải (skills.load)
   - H2: Cài đặt (skills.install)
   - H2: Chính sách cài đặt của người vận hành (security.installPolicy)
-  - H2: Danh sách cho phép skill đi kèm
-  - H2: Mục theo từng skill (skills.entries)
+  - H2: Danh sách cho phép kỹ năng đi kèm
+  - H2: Mục theo từng kỹ năng (skills.entries)
   - H2: Danh sách cho phép tác nhân (agents)
   - H2: Workshop (skills.workshop)
-  - H2: Gốc skill được liên kết tượng trưng
-  - H2: Skill trong sandbox và biến môi trường
+  - H2: Gốc kỹ năng được liên kết tượng trưng
+  - H2: Kỹ năng trong sandbox và biến môi trường
   - H2: Nhắc lại thứ tự tải
   - H2: Liên quan
 
@@ -9503,15 +9505,15 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/skills
 - Tiêu đề:
   - H2: Thứ tự tải
-  - H2: Skill theo từng tác nhân so với skill dùng chung
+  - H2: Kỹ năng theo từng tác nhân so với kỹ năng dùng chung
   - H2: Danh sách cho phép tác nhân
-  - H2: Plugin và skill
+  - H2: Plugin và kỹ năng
   - H2: Skill Workshop
   - H2: Cài đặt từ ClawHub
   - H2: Bảo mật
   - H2: Định dạng SKILL.md
   - H3: Khóa frontmatter tùy chọn
-  - H2: Kiểm soát
+  - H2: Cổng kiểm soát
   - H3: Đặc tả trình cài đặt
   - H2: Ghi đè cấu hình
   - H2: Chèn môi trường
@@ -9529,16 +9531,16 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Lệnh lõi
   - H3: Lệnh Dock
   - H3: Lệnh plugin đi kèm
-  - H3: Lệnh skill
-  - H2: /tools — tác nhân có thể dùng gì ngay bây giờ
+  - H3: Lệnh Skills
+  - H2: /tools — những gì tác nhân có thể dùng ngay
   - H2: /model — chọn mô hình
   - H2: /config — ghi cấu hình trên đĩa
   - H2: /mcp — cấu hình máy chủ MCP
   - H2: /debug — ghi đè chỉ trong runtime
   - H2: /plugins — quản lý plugin
-  - H2: /trace — đầu ra trace plugin
+  - H2: /trace — đầu ra truy vết plugin
   - H2: /btw — câu hỏi phụ
-  - H2: Ghi chú bề mặt
+  - H2: Ghi chú về bề mặt
   - H2: Mức sử dụng và trạng thái nhà cung cấp
   - H2: Liên quan
 
@@ -9548,7 +9550,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Phiên hiện tại
   - H2: Điều hướng so với hàng đợi
-  - H2: Tác nhân con
+  - H2: Tác nhân phụ
   - H2: Phiên ACP
   - H2: Liên quan
 
@@ -9557,8 +9559,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/subagents
 - Tiêu đề:
   - H2: Lệnh slash
-  - H3: Điều khiển ràng buộc luồng
-  - H3: Hành vi tạo
+  - H3: Điều khiển liên kết luồng
+  - H3: Hành vi spawn
   - H2: Chế độ ngữ cảnh
   - H2: Công cụ: sessionsspawn
   - H3: Chế độ lời nhắc ủy quyền
@@ -9566,7 +9568,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Tên tác vụ và nhắm mục tiêu
   - H2: Công cụ: sessionsyield
   - H2: Công cụ: subagents
-  - H2: Phiên ràng buộc với luồng
+  - H2: Phiên gắn với luồng
   - H3: Kênh hỗ trợ luồng
   - H3: Luồng nhanh
   - H3: Điều khiển thủ công
@@ -9574,23 +9576,23 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Danh sách cho phép
   - H3: Khám phá
   - H3: Tự động lưu trữ
-  - H2: Tác nhân con lồng nhau
+  - H2: Tác nhân phụ lồng nhau
   - H3: Mức độ sâu
   - H3: Chuỗi thông báo
   - H3: Chính sách công cụ theo độ sâu
-  - H3: Giới hạn tạo theo từng tác nhân
+  - H3: Giới hạn spawn theo từng tác nhân
   - H3: Dừng dây chuyền
   - H2: Xác thực
   - H2: Thông báo
   - H3: Ngữ cảnh thông báo
   - H3: Dòng thống kê
-  - H3: Vì sao ưu tiên sessionshistory
+  - H3: Vì sao nên dùng sessionshistory
   - H2: Chính sách công cụ
   - H3: Ghi đè qua cấu hình
   - H2: Đồng thời
   - H2: Tính sống và khôi phục
   - H2: Dừng
-  - H2: Giới hạn
+  - H2: Hạn chế
   - H2: Liên quan
 
 ## tools/tavily.md
@@ -9614,11 +9616,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Đặt mặc định phiên
   - H2: Áp dụng theo tác nhân
   - H2: Chế độ nhanh (/fast)
-  - H2: Chỉ thị chi tiết (/verbose hoặc /v)
-  - H2: Chỉ thị trace plugin (/trace)
-  - H2: Hiển thị suy luận (/reasoning)
+  - H2: Chỉ thị dài dòng (/verbose hoặc /v)
+  - H2: Chỉ thị truy vết plugin (/trace)
+  - H2: Khả năng hiển thị suy luận (/reasoning)
   - H2: Liên quan
-  - H2: Heartbeat
+  - H2: Heartbeats
   - H2: Giao diện trò chuyện web
   - H2: Hồ sơ nhà cung cấp
 
@@ -9627,8 +9629,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/tokenjuice
 - Tiêu đề:
   - H2: Bật plugin
-  - H2: tokenjuice thay đổi gì
-  - H2: Xác minh plugin đang hoạt động
+  - H2: Những gì tokenjuice thay đổi
+  - H2: Xác minh rằng nó đang hoạt động
   - H2: Tắt plugin
   - H2: Liên quan
 
@@ -9638,13 +9640,13 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tiêu đề:
   - H2: Cách một lượt chạy
   - H2: Chế độ
-  - H2: Vì sao tính năng này tồn tại
+  - H2: Lý do tồn tại
   - H2: API
   - H2: Ranh giới runtime
   - H2: Cấu hình
-  - H2: Prompt và đo từ xa
+  - H2: Lời nhắc và telemetry
   - H2: Xác thực E2E
-  - H2: Hành vi khi lỗi
+  - H2: Hành vi lỗi
   - H2: Liên quan
 
 ## tools/trajectory.md
@@ -9652,11 +9654,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /tools/trajectory
 - Tiêu đề:
   - H2: Bắt đầu nhanh
-  - H2: Truy cập
+  - H2: Quyền truy cập
   - H2: Nội dung được ghi lại
-  - H2: Tệp gói
-  - H2: Vị trí ghi
-  - H2: Tắt ghi
+  - H2: Tệp bundle
+  - H2: Vị trí ghi lại
+  - H2: Tắt ghi lại
   - H2: Tinh chỉnh thời gian chờ flush
   - H2: Quyền riêng tư và giới hạn
   - H2: Khắc phục sự cố
@@ -9672,19 +9674,19 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Ghi đè giọng nói theo từng tác nhân
   - H2: Persona
   - H3: Persona tối thiểu
-  - H3: Persona đầy đủ (prompt trung lập với nhà cung cấp)
+  - H3: Persona đầy đủ (lời nhắc trung lập với nhà cung cấp)
   - H3: Phân giải persona
-  - H3: Cách nhà cung cấp dùng prompt persona
+  - H3: Cách nhà cung cấp dùng lời nhắc persona
   - H3: Chính sách dự phòng
   - H2: Chỉ thị do mô hình điều khiển
   - H2: Lệnh slash
   - H2: Tùy chọn theo từng người dùng
   - H2: Định dạng đầu ra (cố định)
-  - H2: Hành vi Auto-TTS
+  - H2: Hành vi TTS tự động
   - H2: Định dạng đầu ra theo kênh
   - H2: Tham chiếu trường
   - H2: Công cụ tác nhân
-  - H2: Gateway RPC
+  - H2: RPC Gateway
   - H2: Liên kết dịch vụ
   - H2: Liên quan
 
@@ -9721,7 +9723,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cập nhật tiến trình
   - H2: Cấu hình
   - H2: Dự phòng Firecrawl
-  - H2: Proxy môi trường tin cậy
+  - H2: Proxy môi trường đáng tin cậy
   - H2: Giới hạn và an toàn
   - H2: Hồ sơ công cụ
   - H2: Liên quan
@@ -9739,12 +9741,12 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: An toàn mạng
   - H2: Thiết lập tìm kiếm web
   - H2: Cấu hình
-  - H3: Lưu khóa API
+  - H3: Lưu trữ khóa API
   - H2: Tham số công cụ
   - H2: xsearch
-  - H3: Cấu hình xsearch
-  - H3: Tham số xsearch
-  - H3: Ví dụ xsearch
+  - H3: cấu hình xsearch
+  - H3: tham số xsearch
+  - H3: ví dụ xsearch
   - H2: Ví dụ
   - H2: Hồ sơ công cụ
   - H2: Liên quan
@@ -9763,7 +9765,7 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: Cách thiết lập đám mây hoạt động
   - H2: Gia cố quyền truy cập quản trị trước
   - H2: Tác nhân công ty dùng chung trên VPS
-  - H2: Dùng node với VPS
+  - H2: Sử dụng node với VPS
   - H2: Tinh chỉnh khởi động cho VM nhỏ và máy chủ ARM
   - H3: Danh sách kiểm tra tinh chỉnh systemd (tùy chọn)
   - H2: Liên quan
@@ -9773,24 +9775,24 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 - Tuyến: /web/control-ui
 - Tiêu đề:
   - H2: Mở nhanh (cục bộ)
-  - H2: Ghép đôi thiết bị (kết nối đầu tiên)
+  - H2: Ghép nối thiết bị (kết nối đầu tiên)
   - H2: Danh tính cá nhân (cục bộ trong trình duyệt)
   - H2: Endpoint cấu hình runtime
   - H2: Hỗ trợ ngôn ngữ
-  - H2: Giao diện chủ đề
-  - H2: Tính năng có thể làm (hiện tại)
+  - H2: Chủ đề giao diện
+  - H2: Những gì nó có thể làm (hiện nay)
   - H2: Trang MCP
-  - H2: Tab hoạt động
+  - H2: Thẻ hoạt động
   - H2: Hành vi trò chuyện
   - H2: Cài đặt PWA và web push
   - H2: Nhúng được lưu trữ
-  - H2: Chiều rộng tin nhắn trò chuyện
+  - H2: Độ rộng tin nhắn trò chuyện
   - H2: Truy cập tailnet (khuyến nghị)
   - H2: HTTP không an toàn
   - H2: Chính sách bảo mật nội dung
   - H2: Xác thực tuyến avatar
-  - H2: Xác thực tuyến media của trợ lý
-  - H2: Xây dựng giao diện
+  - H2: Xác thực tuyến phương tiện trợ lý
+  - H2: Xây dựng giao diện người dùng
   - H2: Trang Control UI trống
   - H2: Gỡ lỗi/kiểm thử: máy chủ dev + Gateway từ xa
   - H2: Liên quan
@@ -9812,11 +9814,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H2: RPC HTTP quản trị
   - H2: Cấu hình (bật mặc định)
   - H2: Truy cập Tailscale
-  - H3: Integrated Serve (khuyến nghị)
-  - H3: Ràng buộc tailnet + token
-  - H3: Internet công cộng (Funnel)
+  - H3: Phục vụ tích hợp (khuyến nghị)
+  - H3: Ràng buộc Tailnet + token
+  - H3: Internet công khai (Funnel)
   - H2: Ghi chú bảo mật
-  - H2: Xây dựng giao diện
+  - H2: Xây dựng giao diện người dùng
 
 ## web/tui.md
 
@@ -9827,8 +9829,8 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
   - H3: Chế độ cục bộ
   - H2: Những gì bạn thấy
   - H2: Mô hình tư duy: tác nhân + phiên
-  - H2: Gửi + chuyển phát
-  - H2: Bộ chọn + lớp phủ
+  - H2: Gửi + phân phối
+  - H2: Trình chọn + lớp phủ
   - H2: Phím tắt bàn phím
   - H2: Lệnh slash
   - H2: Lệnh shell cục bộ
@@ -9846,11 +9848,11 @@ Không chỉnh sửa thủ công; hãy chạy `pnpm docs:map:gen`.
 
 - Tuyến: /web/webchat
 - Tiêu đề:
-  - H2: Đây là gì
+  - H2: Nó là gì
   - H2: Bắt đầu nhanh
   - H2: Cách hoạt động (hành vi)
-  - H3: Bản ghi hội thoại và mô hình chuyển phát
-  - H2: Bảng công cụ tác nhân của Control UI
+  - H3: Bản ghi và mô hình phân phối
+  - H2: Bảng công cụ tác nhân Control UI
   - H2: Sử dụng từ xa
   - H2: Tham chiếu cấu hình (WebChat)
   - H2: Liên quan

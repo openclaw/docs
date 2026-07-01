@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Menyetel default agen (model, penalaran, ruang kerja, Heartbeat, media, Skills)
-    - Mengonfigurasi perutean dan pengikatan multi-agen
+    - Menyetel nilai default agen (model, penalaran, ruang kerja, Heartbeat, media, Skills)
+    - Mengonfigurasi perutean dan binding multi-agent
     - Menyesuaikan sesi, pengiriman pesan, dan perilaku mode bicara
-summary: Default agen, routing multi-agen, sesi, pesan, dan konfigurasi percakapan
+summary: Default agen, perutean multi-agen, sesi, pesan, dan konfigurasi percakapan
 title: Konfigurasi — agen
 x-i18n:
-    generated_at: "2026-06-27T17:28:30Z"
+    generated_at: "2026-07-01T13:22:52Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3e5e5e1301e331b1a5dbf42e2396ee92d36297159015181f6263dcd59c8cd33c
+    source_hash: e73e82e78ea597919a304e5bb4966221c805d2ddd48e1d37b2bf06eb60aaf5c8
     source_path: gateway/config-agents.md
     workflow: 16
 ---
 
-Kunci konfigurasi bercakupan agen di bawah `agents.*`, `multiAgent.*`, `session.*`,
-`messages.*`, dan `talk.*`. Untuk saluran, alat, runtime gateway, dan kunci
+Kunci konfigurasi tercakup agen di bawah `agents.*`, `multiAgent.*`, `session.*`,
+`messages.*`, dan `talk.*`. Untuk saluran, alat, runtime Gateway, dan kunci
 tingkat atas lainnya, lihat [Referensi konfigurasi](/id/gateway/configuration-reference).
 
-## Default agen
+## Bawaan agen
 
 ### `agents.defaults.workspace`
 
-Default: `OPENCLAW_WORKSPACE_DIR` saat diatur, jika tidak `~/.openclaw/workspace`.
+Bawaan: `OPENCLAW_WORKSPACE_DIR` saat disetel, jika tidak `~/.openclaw/workspace`.
 
 ```json5
 {
@@ -31,13 +31,14 @@ Default: `OPENCLAW_WORKSPACE_DIR` saat diatur, jika tidak `~/.openclaw/workspace
 }
 ```
 
-Nilai `agents.defaults.workspace` eksplisit lebih diprioritaskan daripada
-`OPENCLAW_WORKSPACE_DIR`. Gunakan variabel lingkungan untuk mengarahkan agen default
-ke workspace yang ter-mount saat Anda tidak ingin menulis path tersebut ke konfigurasi.
+Nilai eksplisit `agents.defaults.workspace` lebih diprioritaskan daripada
+`OPENCLAW_WORKSPACE_DIR`. Gunakan variabel lingkungan untuk mengarahkan agen
+bawaan ke ruang kerja terpasang saat Anda tidak ingin menulis jalur tersebut ke
+konfigurasi.
 
 ### `agents.defaults.repoRoot`
 
-Root repositori opsional yang ditampilkan di baris Runtime pada prompt sistem. Jika tidak diatur, OpenClaw mendeteksi otomatis dengan menelusuri ke atas dari workspace.
+Root repositori opsional yang ditampilkan di baris Runtime prompt sistem. Jika tidak disetel, OpenClaw mendeteksi otomatis dengan menelusuri ke atas dari ruang kerja.
 
 ```json5
 {
@@ -47,7 +48,7 @@ Root repositori opsional yang ditampilkan di baris Runtime pada prompt sistem. J
 
 ### `agents.defaults.skills`
 
-Allowlist skill default opsional untuk agen yang tidak mengatur
+Allowlist skill bawaan opsional untuk agen yang tidak menyetel
 `agents.list[].skills`.
 
 ```json5
@@ -55,23 +56,23 @@ Allowlist skill default opsional untuk agen yang tidak mengatur
   agents: {
     defaults: { skills: ["github", "weather"] },
     list: [
-      { id: "writer" }, // mewarisi github, weather
-      { id: "docs", skills: ["docs-search"] }, // menggantikan default
-      { id: "locked-down", skills: [] }, // tanpa skills
+      { id: "writer" }, // inherits github, weather
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "locked-down", skills: [] }, // no skills
     ],
   },
 }
 ```
 
-- Hilangkan `agents.defaults.skills` untuk skills yang tidak dibatasi secara default.
-- Hilangkan `agents.list[].skills` untuk mewarisi default.
-- Atur `agents.list[].skills: []` agar tanpa skills.
-- Daftar `agents.list[].skills` yang tidak kosong adalah set final untuk agen tersebut; daftar itu
-  tidak digabungkan dengan default.
+- Hilangkan `agents.defaults.skills` untuk skill tidak terbatas secara bawaan.
+- Hilangkan `agents.list[].skills` untuk mewarisi bawaan.
+- Setel `agents.list[].skills: []` agar tidak ada skill.
+- Daftar `agents.list[].skills` yang tidak kosong adalah set final untuk agen tersebut; daftar ini
+  tidak digabungkan dengan bawaan.
 
 ### `agents.defaults.skipBootstrap`
 
-Menonaktifkan pembuatan otomatis file bootstrap workspace (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`).
+Menonaktifkan pembuatan otomatis file bootstrap ruang kerja (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`).
 
 ```json5
 {
@@ -81,7 +82,7 @@ Menonaktifkan pembuatan otomatis file bootstrap workspace (`AGENTS.md`, `SOUL.md
 
 ### `agents.defaults.skipOptionalBootstrapFiles`
 
-Melewati pembuatan file workspace opsional yang dipilih sambil tetap menulis file bootstrap yang wajib. Nilai valid: `SOUL.md`, `USER.md`, `HEARTBEAT.md`, dan `IDENTITY.md`.
+Melewati pembuatan file ruang kerja opsional yang dipilih sambil tetap menulis file bootstrap wajib. Nilai yang valid: `SOUL.md`, `USER.md`, `HEARTBEAT.md`, dan `IDENTITY.md`.
 
 ```json5
 {
@@ -95,10 +96,10 @@ Melewati pembuatan file workspace opsional yang dipilih sambil tetap menulis fil
 
 ### `agents.defaults.contextInjection`
 
-Mengontrol kapan file bootstrap workspace disisipkan ke dalam prompt sistem. Default: `"always"`.
+Mengontrol kapan file bootstrap ruang kerja disuntikkan ke prompt sistem. Bawaan: `"always"`.
 
-- `"continuation-skip"`: giliran lanjutan yang aman (setelah respons asisten selesai) melewati penyisipan ulang bootstrap workspace, sehingga mengurangi ukuran prompt. Eksekusi Heartbeat dan percobaan ulang pasca-Compaction tetap membangun ulang konteks.
-- `"never"`: nonaktifkan bootstrap workspace dan penyisipan file konteks pada setiap giliran. Gunakan ini hanya untuk agen yang sepenuhnya memiliki siklus hidup prompt mereka sendiri (mesin konteks khusus, runtime native yang membangun konteksnya sendiri, atau workflow khusus tanpa bootstrap). Giliran Heartbeat dan pemulihan Compaction juga melewati penyisipan.
+- `"continuation-skip"`: giliran kelanjutan yang aman (setelah respons asisten selesai) melewati penyuntikan ulang bootstrap ruang kerja, sehingga mengurangi ukuran prompt. Proses Heartbeat dan percobaan ulang pasca-Compaction tetap membangun ulang konteks.
+- `"never"`: nonaktifkan penyuntikan bootstrap ruang kerja dan file konteks di setiap giliran. Gunakan ini hanya untuk agen yang sepenuhnya memiliki siklus hidup prompt-nya sendiri (mesin konteks kustom, runtime native yang membangun konteksnya sendiri, atau alur kerja khusus tanpa bootstrap). Giliran Heartbeat dan pemulihan Compaction juga melewati penyuntikan.
 
 ```json5
 {
@@ -111,7 +112,7 @@ Override per agen: `agents.list[].contextInjection`. Nilai yang dihilangkan mewa
 
 ### `agents.defaults.bootstrapMaxChars`
 
-Jumlah karakter maksimum per file bootstrap workspace sebelum dipotong. Default: `20000`.
+Karakter maksimum per file bootstrap ruang kerja sebelum pemotongan. Bawaan: `20000`.
 
 ```json5
 {
@@ -124,7 +125,7 @@ Override per agen: `agents.list[].bootstrapMaxChars`. Nilai yang dihilangkan mew
 
 ### `agents.defaults.bootstrapTotalMaxChars`
 
-Jumlah total karakter maksimum yang disisipkan di semua file bootstrap workspace. Default: `60000`.
+Total karakter maksimum yang disuntikkan di seluruh file bootstrap ruang kerja. Bawaan: `60000`.
 
 ```json5
 {
@@ -137,8 +138,8 @@ mewarisi `agents.defaults.bootstrapTotalMaxChars`.
 
 ### Override profil bootstrap per agen
 
-Gunakan override profil bootstrap per agen saat satu agen memerlukan perilaku
-penyisipan prompt yang berbeda dari default bersama. Field yang dihilangkan mewarisi dari
+Gunakan override profil bootstrap per agen saat satu agen membutuhkan perilaku
+penyuntikan prompt yang berbeda dari bawaan bersama. Kolom yang dihilangkan mewarisi dari
 `agents.defaults`.
 
 ```json5
@@ -163,15 +164,15 @@ penyisipan prompt yang berbeda dari default bersama. Field yang dihilangkan mewa
 
 ### `agents.defaults.bootstrapPromptTruncationWarning`
 
-Mengontrol pemberitahuan prompt sistem yang terlihat oleh agen saat konteks bootstrap dipotong.
-Default: `"always"`.
+Mengontrol pemberitahuan prompt sistem yang terlihat agen saat konteks bootstrap dipotong.
+Bawaan: `"always"`.
 
-- `"off"`: jangan pernah menyisipkan teks pemberitahuan pemotongan ke dalam prompt sistem.
-- `"once"`: sisipkan pemberitahuan ringkas satu kali per tanda tangan pemotongan unik.
-- `"always"`: sisipkan pemberitahuan ringkas pada setiap eksekusi saat ada pemotongan (direkomendasikan).
+- `"off"`: jangan pernah menyuntikkan teks pemberitahuan pemotongan ke prompt sistem.
+- `"once"`: suntikkan pemberitahuan ringkas satu kali per tanda tangan pemotongan unik.
+- `"always"`: suntikkan pemberitahuan ringkas pada setiap proses saat ada pemotongan (direkomendasikan).
 
-Hitungan mentah/tersisip yang terperinci dan field penyesuaian konfigurasi tetap berada dalam diagnostik seperti
-laporan konteks/status dan log; konteks pengguna/runtime WebChat rutin hanya
+Hitungan mentah/tersuntik yang mendetail dan kolom penyetelan konfigurasi tetap berada dalam diagnostik seperti
+laporan dan log konteks/status; konteks pengguna/runtime WebChat rutin hanya
 mendapat pemberitahuan pemulihan ringkas.
 
 ```json5
@@ -182,25 +183,25 @@ mendapat pemberitahuan pemulihan ringkas.
 
 ### Peta kepemilikan anggaran konteks
 
-OpenClaw memiliki beberapa anggaran prompt/konteks bervolume tinggi, dan anggaran tersebut
-sengaja dipisahkan menurut subsistem, alih-alih semuanya mengalir melalui satu kenop
-generik.
+OpenClaw memiliki beberapa anggaran prompt/konteks bervolume tinggi, dan semuanya
+sengaja dipisahkan berdasarkan subsistem, bukan semuanya mengalir melalui satu
+kenop generik.
 
 - `agents.defaults.bootstrapMaxChars` /
   `agents.defaults.bootstrapTotalMaxChars`:
-  injeksi bootstrap ruang kerja normal.
+  penyuntikan bootstrap ruang kerja normal.
 - `agents.defaults.startupContext.*`:
-  pendahuluan sekali pakai untuk eksekusi model reset/startup, termasuk file
+  prelude proses model sekali jalan untuk reset/startup, termasuk file
   `memory/*.md` harian terbaru. Perintah chat polos `/new` dan `/reset`
   diakui tanpa memanggil model.
 - `skills.limits.*`:
-  daftar Skills ringkas yang disuntikkan ke prompt sistem.
+  daftar skill ringkas yang disuntikkan ke prompt sistem.
 - `agents.defaults.contextLimits.*`:
   kutipan runtime berbatas dan blok milik runtime yang disuntikkan.
 - `memory.qmd.limits.*`:
-  ukuran cuplikan pencarian memori terindeks dan injeksi.
+  ukuran snippet pencarian memori terindeks dan penyuntikan.
 
-Gunakan override per agen yang sesuai hanya ketika satu agen membutuhkan
+Gunakan override per agen yang sesuai hanya saat satu agen membutuhkan
 anggaran berbeda:
 
 - `agents.list[].skillsLimits.maxSkillsPromptChars`
@@ -211,9 +212,9 @@ anggaran berbeda:
 
 #### `agents.defaults.startupContext`
 
-Mengontrol pendahuluan startup giliran pertama yang disuntikkan pada eksekusi model reset/startup.
+Mengontrol prelude startup giliran pertama yang disuntikkan pada proses model reset/startup.
 Perintah chat polos `/new` dan `/reset` mengakui reset tanpa memanggil
-model, sehingga tidak memuat pendahuluan ini.
+model, sehingga tidak memuat prelude ini.
 
 ```json5
 {
@@ -252,21 +253,21 @@ Bawaan bersama untuk permukaan konteks runtime berbatas.
 
 - `memoryGetMaxChars`: batas kutipan `memory_get` bawaan sebelum metadata
   pemotongan dan pemberitahuan kelanjutan ditambahkan.
-- `memoryGetDefaultLines`: jendela baris `memory_get` bawaan ketika `lines`
+- `memoryGetDefaultLines`: jendela baris `memory_get` bawaan saat `lines`
   dihilangkan.
-- `toolResultMaxChars`: plafon hasil alat live lanjutan yang digunakan untuk hasil
-  tersimpan dan pemulihan luapan. Biarkan tidak diatur untuk batas otomatis konteks model:
-  `16000` karakter di bawah 100 ribu token, `32000` karakter pada 100 ribu+ token, dan `64000`
-  karakter pada 200 ribu+ token. Nilai eksplisit hingga `1000000` diterima untuk
-  model konteks panjang, tetapi batas efektif tetap dibatasi hingga sekitar 30% dari
+- `toolResultMaxChars`: batas atas hasil alat live lanjutan yang digunakan untuk hasil
+  tersimpan dan pemulihan overflow. Biarkan tidak disetel untuk batas otomatis konteks model:
+  `16000` karakter di bawah 100K token, `32000` karakter pada 100K+ token, dan `64000`
+  karakter pada 200K+ token. Nilai eksplisit hingga `1000000` diterima untuk
+  model konteks panjang, tetapi batas efektif tetap dibatasi sekitar 30% dari
   jendela konteks model. `openclaw doctor --deep` mencetak batas efektif,
-  dan doctor hanya memperingatkan ketika override eksplisit sudah usang atau tidak berdampak.
-- `postCompactionMaxChars`: batas kutipan AGENTS.md yang digunakan selama injeksi
+  dan doctor hanya memperingatkan saat override eksplisit sudah usang atau tidak berpengaruh.
+- `postCompactionMaxChars`: batas kutipan AGENTS.md yang digunakan selama penyuntikan
   penyegaran pasca-Compaction.
 
 #### `agents.list[].contextLimits`
 
-Override per agen untuk kenop `contextLimits` bersama. Field yang dihilangkan mewarisi
+Override per agen untuk kenop `contextLimits` bersama. Kolom yang dihilangkan mewarisi
 dari `agents.defaults.contextLimits`.
 
 ```json5
@@ -292,7 +293,7 @@ dari `agents.defaults.contextLimits`.
 
 #### `skills.limits.maxSkillsPromptChars`
 
-Batas global untuk daftar Skills ringkas yang disuntikkan ke prompt sistem. Ini
+Batas global untuk daftar skill ringkas yang disuntikkan ke prompt sistem. Ini
 tidak memengaruhi pembacaan file `SKILL.md` sesuai permintaan.
 
 ```json5
@@ -307,7 +308,7 @@ tidak memengaruhi pembacaan file `SKILL.md` sesuai permintaan.
 
 #### `agents.list[].skillsLimits.maxSkillsPromptChars`
 
-Override per agen untuk anggaran prompt Skills.
+Override per agen untuk anggaran prompt skill.
 
 ```json5
 {
@@ -326,11 +327,11 @@ Override per agen untuk anggaran prompt Skills.
 
 ### `agents.defaults.imageMaxDimensionPx`
 
-Ukuran piksel maksimum untuk sisi gambar terpanjang dalam blok gambar transkrip/alat sebelum pemanggilan penyedia.
+Ukuran piksel maksimum untuk sisi gambar terpanjang dalam blok gambar transkrip/alat sebelum panggilan penyedia.
 Bawaan: `1200`.
 
-Nilai lebih rendah biasanya mengurangi penggunaan token visi dan ukuran payload permintaan untuk eksekusi yang banyak memakai tangkapan layar.
-Nilai lebih tinggi mempertahankan lebih banyak detail visual.
+Nilai yang lebih rendah biasanya mengurangi penggunaan token visi dan ukuran payload permintaan untuk proses yang banyak screenshot.
+Nilai yang lebih tinggi mempertahankan lebih banyak detail visual.
 
 ```json5
 {
@@ -340,17 +341,17 @@ Nilai lebih tinggi mempertahankan lebih banyak detail visual.
 
 ### `agents.defaults.imageQuality`
 
-Preferensi kompresi/detail alat gambar untuk gambar yang dimuat dari path file, URL, dan referensi media.
+Preferensi kompresi/detail alat gambar untuk gambar yang dimuat dari jalur file, URL, dan referensi media.
 Bawaan: `auto`.
 
-OpenClaw menyesuaikan tangga pengubahan ukuran dengan model gambar yang dipilih. Misalnya, Claude Opus 4.8, OpenAI GPT-5.5, Qwen VL, dan model visi Llama 4 terhosting dapat menggunakan gambar yang lebih besar daripada jalur visi detail tinggi lama/bawaan, sementara giliran multi-gambar dikompresi lebih agresif dalam mode `auto` untuk mengendalikan biaya token dan latensi.
+OpenClaw menyesuaikan tangga pengubahan ukuran dengan model gambar yang dipilih. Misalnya, Claude Opus 4.8, OpenAI GPT-5.5, Qwen VL, dan model visi Llama 4 ter-hosting dapat menggunakan gambar yang lebih besar daripada jalur visi detail tinggi lama/bawaan, sementara giliran multi-gambar dikompresi lebih agresif dalam mode `auto` untuk mengontrol biaya token dan latensi.
 
 Nilai:
 
-- `auto`: beradaptasi dengan batas model dan jumlah gambar.
+- `auto`: sesuaikan dengan batas model dan jumlah gambar.
 - `efficient`: utamakan gambar yang lebih kecil untuk penggunaan token dan byte yang lebih rendah.
 - `balanced`: gunakan tangga standar jalan tengah.
-- `high`: pertahankan lebih banyak detail untuk tangkapan layar, diagram, dan gambar dokumen.
+- `high`: pertahankan lebih banyak detail untuk screenshot, diagram, dan gambar dokumen.
 
 ```json5
 {
@@ -360,7 +361,7 @@ Nilai:
 
 ### `agents.defaults.userTimezone`
 
-Zona waktu untuk konteks prompt sistem (bukan stempel waktu pesan). Fallback ke zona waktu host.
+Zona waktu untuk konteks prompt sistem (bukan stempel waktu pesan). Mundur ke zona waktu host.
 
 ```json5
 {
@@ -427,55 +428,55 @@ Format waktu dalam prompt sistem. Bawaan: `auto` (preferensi OS).
 
 - `model`: menerima string (`"provider/model"`) atau objek (`{ primary, fallbacks }`).
   - Bentuk string hanya menetapkan model utama.
-  - Bentuk objek menetapkan model utama plus model failover berurutan.
+  - Bentuk objek menetapkan model utama ditambah model failover berurutan.
 - `imageModel`: menerima string (`"provider/model"`) atau objek (`{ primary, fallbacks }`).
   - Digunakan oleh jalur alat `image` sebagai konfigurasi model visinya.
-  - Juga digunakan sebagai perutean fallback saat model yang dipilih/default tidak dapat menerima input gambar.
-  - Utamakan ref `provider/model` eksplisit. ID polos diterima untuk kompatibilitas; jika ID polos cocok secara unik dengan entri berkemampuan gambar yang dikonfigurasi di `models.providers.*.models`, OpenClaw melengkapinya ke penyedia tersebut. Kecocokan terkonfigurasi yang ambigu memerlukan prefiks penyedia eksplisit.
+  - Juga digunakan sebagai perutean cadangan saat model yang dipilih/default tidak dapat menerima input gambar.
+  - Utamakan referensi `provider/model` eksplisit. ID polos diterima untuk kompatibilitas; jika ID polos secara unik cocok dengan entri berkemampuan gambar yang dikonfigurasi di `models.providers.*.models`, OpenClaw melengkapinya ke penyedia tersebut. Kecocokan terkonfigurasi yang ambigu memerlukan prefiks penyedia eksplisit.
 - `imageGenerationModel`: menerima string (`"provider/model"`) atau objek (`{ primary, fallbacks }`).
   - Digunakan oleh kapabilitas pembuatan gambar bersama dan setiap permukaan alat/Plugin mendatang yang menghasilkan gambar.
-  - Nilai umum: `google/gemini-3.1-flash-image-preview` untuk pembuatan gambar Gemini native, `fal/fal-ai/flux/dev` untuk fal, `openai/gpt-image-2` untuk OpenAI Images, atau `openai/gpt-image-1.5` untuk output PNG/WebP OpenAI dengan latar belakang transparan.
+  - Nilai umum: `google/gemini-3.1-flash-image-preview` untuk pembuatan gambar Gemini native, `fal/fal-ai/flux/dev` untuk fal, `openai/gpt-image-2` untuk OpenAI Images, atau `openai/gpt-image-1.5` untuk output PNG/WebP OpenAI berlatar transparan.
   - Jika Anda memilih penyedia/model secara langsung, konfigurasikan juga autentikasi penyedia yang cocok (misalnya `GEMINI_API_KEY` atau `GOOGLE_API_KEY` untuk `google/*`, `OPENAI_API_KEY` atau OpenAI Codex OAuth untuk `openai/gpt-image-2` / `openai/gpt-image-1.5`, `FAL_KEY` untuk `fal/*`).
-  - Jika dihilangkan, `image_generate` masih dapat menyimpulkan default penyedia yang didukung autentikasi. Ini mencoba penyedia default saat ini terlebih dahulu, lalu penyedia pembuatan gambar terdaftar yang tersisa dalam urutan id penyedia.
+  - Jika dihilangkan, `image_generate` masih dapat menyimpulkan default penyedia yang didukung autentikasi. Ini mencoba penyedia default saat ini terlebih dahulu, lalu penyedia pembuatan gambar terdaftar yang tersisa dalam urutan ID penyedia.
 - `musicGenerationModel`: menerima string (`"provider/model"`) atau objek (`{ primary, fallbacks }`).
   - Digunakan oleh kapabilitas pembuatan musik bersama dan alat bawaan `music_generate`.
   - Nilai umum: `google/lyria-3-clip-preview`, `google/lyria-3-pro-preview`, atau `minimax/music-2.6`.
-  - Jika dihilangkan, `music_generate` masih dapat menyimpulkan default penyedia yang didukung autentikasi. Ini mencoba penyedia default saat ini terlebih dahulu, lalu penyedia pembuatan musik terdaftar yang tersisa dalam urutan id penyedia.
+  - Jika dihilangkan, `music_generate` masih dapat menyimpulkan default penyedia yang didukung autentikasi. Ini mencoba penyedia default saat ini terlebih dahulu, lalu penyedia pembuatan musik terdaftar yang tersisa dalam urutan ID penyedia.
   - Jika Anda memilih penyedia/model secara langsung, konfigurasikan juga autentikasi/kunci API penyedia yang cocok.
 - `videoGenerationModel`: menerima string (`"provider/model"`) atau objek (`{ primary, fallbacks }`).
   - Digunakan oleh kapabilitas pembuatan video bersama dan alat bawaan `video_generate`.
   - Nilai umum: `qwen/wan2.6-t2v`, `qwen/wan2.6-i2v`, `qwen/wan2.6-r2v`, `qwen/wan2.6-r2v-flash`, atau `qwen/wan2.7-r2v`.
-  - Jika dihilangkan, `video_generate` masih dapat menyimpulkan default penyedia yang didukung autentikasi. Ini mencoba penyedia default saat ini terlebih dahulu, lalu penyedia pembuatan video terdaftar yang tersisa dalam urutan id penyedia.
+  - Jika dihilangkan, `video_generate` masih dapat menyimpulkan default penyedia yang didukung autentikasi. Ini mencoba penyedia default saat ini terlebih dahulu, lalu penyedia pembuatan video terdaftar yang tersisa dalam urutan ID penyedia.
   - Jika Anda memilih penyedia/model secara langsung, konfigurasikan juga autentikasi/kunci API penyedia yang cocok.
-  - Plugin pembuatan video Qwen resmi mendukung hingga 1 video output, 1 gambar input, 4 video input, durasi 10 detik, dan opsi tingkat penyedia `size`, `aspectRatio`, `resolution`, `audio`, dan `watermark`.
+  - Plugin pembuatan video Qwen resmi mendukung hingga 1 video output, 1 gambar input, 4 video input, durasi 10 detik, dan opsi tingkat penyedia `size`, `aspectRatio`, `resolution`, `audio`, serta `watermark`.
 - `pdfModel`: menerima string (`"provider/model"`) atau objek (`{ primary, fallbacks }`).
   - Digunakan oleh alat `pdf` untuk perutean model.
-  - Jika dihilangkan, alat PDF kembali ke `imageModel`, lalu ke model sesi/default yang terselesaikan.
-- `pdfMaxBytesMb`: batas ukuran PDF default untuk alat `pdf` saat `maxBytesMb` tidak diteruskan pada waktu pemanggilan.
+  - Jika dihilangkan, alat PDF kembali ke `imageModel`, lalu ke model sesi/default yang diselesaikan.
+- `pdfMaxBytesMb`: batas ukuran PDF default untuk alat `pdf` ketika `maxBytesMb` tidak diteruskan pada waktu pemanggilan.
 - `pdfMaxPages`: jumlah halaman maksimum default yang dipertimbangkan oleh mode fallback ekstraksi di alat `pdf`.
-- `verboseDefault`: level verbose default untuk agen. Nilai: `"off"`, `"on"`, `"full"`. Default: `"off"`.
-- `toolProgressDetail`: mode detail untuk ringkasan alat `/verbose` dan baris alat draf progres. Nilai: `"explain"` (default, label manusia ringkas) atau `"raw"` (tambahkan perintah/detail mentah jika tersedia). `agents.list[].toolProgressDetail` per agen menimpa default ini.
-- `reasoningDefault`: visibilitas reasoning default untuk agen. Nilai: `"off"`, `"on"`, `"stream"`. `agents.list[].reasoningDefault` per agen menimpa default ini. Default reasoning yang dikonfigurasi hanya diterapkan untuk pemilik, pengirim berizin, atau konteks Gateway operator-admin saat tidak ada penggantian reasoning per pesan atau sesi yang ditetapkan.
-- `elevatedDefault`: level elevated-output default untuk agen. Nilai: `"off"`, `"on"`, `"ask"`, `"full"`. Default: `"on"`.
-- `model.primary`: format `provider/model` (misalnya `openai/gpt-5.5` untuk kunci API OpenAI atau akses Codex OAuth). Jika Anda menghilangkan penyedia, OpenClaw mencoba alias terlebih dahulu, lalu kecocokan penyedia terkonfigurasi yang unik untuk id model persis tersebut, dan baru kemudian fallback ke penyedia default yang dikonfigurasi (perilaku kompatibilitas yang tidak disarankan, jadi utamakan `provider/model` eksplisit). Jika penyedia tersebut tidak lagi mengekspos model default yang dikonfigurasi, OpenClaw fallback ke penyedia/model terkonfigurasi pertama alih-alih menampilkan default penyedia terhapus yang basi.
-- `models`: katalog model terkonfigurasi dan daftar izin untuk `/model`. Setiap entri dapat menyertakan `alias` (pintasan) dan `params` (khusus penyedia, misalnya `temperature`, `maxTokens`, `cacheRetention`, `context1m`, `responsesServerCompaction`, `responsesCompactThreshold`, perutean `provider` OpenRouter, `chat_template_kwargs`, `extra_body`/`extraBody`).
-  - Gunakan entri `provider/*` seperti `"openai/*": {}` atau `"vllm/*": {}` untuk menampilkan semua model yang ditemukan untuk penyedia terpilih tanpa mencantumkan setiap id model secara manual.
-  - Tambahkan `agentRuntime` ke entri `provider/*` saat setiap model yang ditemukan secara dinamis untuk penyedia tersebut harus menggunakan runtime yang sama. Kebijakan runtime `provider/model` persis tetap mengalahkan wildcard.
-  - Edit aman: gunakan `openclaw config set agents.defaults.models '<json>' --strict-json --merge` untuk menambahkan entri. `config set` menolak penggantian yang akan menghapus entri daftar izin yang ada kecuali Anda meneruskan `--replace`.
-  - Alur konfigurasi/onboarding bercakupan penyedia menggabungkan model penyedia terpilih ke peta ini dan mempertahankan penyedia lain yang sudah dikonfigurasi.
-  - Untuk model OpenAI Responses langsung, Compaction sisi server diaktifkan secara otomatis. Gunakan `params.responsesServerCompaction: false` untuk berhenti menyuntikkan `context_management`, atau `params.responsesCompactThreshold` untuk menimpa ambang batas. Lihat [Compaction sisi server OpenAI](/id/providers/openai#server-side-compaction-responses-api).
-- `params`: parameter penyedia default global yang diterapkan ke semua model. Ditetapkan di `agents.defaults.params` (misalnya `{ cacheRetention: "long" }`).
-- Presedensi penggabungan `params` (konfigurasi): `agents.defaults.params` (basis global) ditimpa oleh `agents.defaults.models["provider/model"].params` (per model), lalu `agents.list[].params` (id agen yang cocok) menimpa berdasarkan kunci. Lihat [Penyimpanan Cache Prompt](/id/reference/prompt-caching) untuk detail.
-- `models.providers.openrouter.params.provider`: kebijakan perutean penyedia default seluruh OpenRouter. OpenClaw meneruskan ini ke objek `provider` permintaan OpenRouter; `agents.defaults.models["openrouter/<model>"].params.provider` per model dan parameter agen menimpa berdasarkan kunci. Lihat [perutean penyedia OpenRouter](/id/providers/openrouter#advanced-configuration).
-- `params.extra_body`/`params.extraBody`: JSON pass-through lanjutan yang digabungkan ke badan permintaan `api: "openai-completions"` untuk proksi yang kompatibel dengan OpenAI. Jika bertabrakan dengan kunci permintaan yang dihasilkan, badan ekstra menang; rute completions non-native tetap menghapus `store` khusus OpenAI setelahnya.
-- `params.chat_template_kwargs`: argumen chat-template yang kompatibel dengan vLLM/OpenAI yang digabungkan ke badan permintaan `api: "openai-completions"` tingkat atas. Untuk `vllm/nemotron-3-*` dengan thinking mati, Plugin vLLM bawaan secara otomatis mengirim `enable_thinking: false` dan `force_nonempty_content: true`; `chat_template_kwargs` eksplisit menimpa default yang dihasilkan, dan `extra_body.chat_template_kwargs` tetap memiliki presedensi akhir. Model thinking vLLM Qwen dan Nemotron yang dikonfigurasi mengekspos pilihan `/think` biner (`off`, `on`) alih-alih tangga effort multi-level.
-- `compat.thinkingFormat`: gaya payload thinking yang kompatibel dengan OpenAI. Gunakan `"together"` untuk `reasoning.enabled` gaya Together, `"qwen"` untuk `enable_thinking` tingkat atas gaya Qwen, atau `"qwen-chat-template"` untuk `chat_template_kwargs.enable_thinking` pada backend keluarga Qwen yang mendukung kwargs chat-template tingkat permintaan, seperti vLLM. OpenClaw memetakan thinking yang dinonaktifkan ke `false` dan thinking yang diaktifkan ke `true`, dan model vLLM Qwen yang dikonfigurasi mengekspos pilihan `/think` biner untuk format ini.
-- `compat.supportedReasoningEfforts`: daftar effort reasoning yang kompatibel dengan OpenAI per model. Sertakan `"xhigh"` untuk endpoint kustom yang benar-benar menerimanya; OpenClaw lalu mengekspos `/think xhigh` di menu perintah, baris sesi Gateway, validasi patch sesi, validasi CLI agen, dan validasi `llm-task` untuk penyedia/model terkonfigurasi tersebut. Gunakan `compat.reasoningEffortMap` saat backend menginginkan nilai khusus penyedia untuk level kanonis.
+- `verboseDefault`: tingkat verbose default untuk agen. Nilai: `"off"`, `"on"`, `"full"`. Default: `"off"`.
+- `toolProgressDetail`: mode detail untuk ringkasan alat `/verbose` dan baris alat draf progres. Nilai: `"explain"` (default, label manusia ringkas) atau `"raw"` (tambahkan perintah/detail mentah saat tersedia). `agents.list[].toolProgressDetail` per agen menimpa default ini.
+- `reasoningDefault`: visibilitas reasoning default untuk agen. Nilai: `"off"`, `"on"`, `"stream"`. `agents.list[].reasoningDefault` per agen menimpa default ini. Default reasoning yang dikonfigurasi hanya diterapkan untuk pemilik, pengirim terotorisasi, atau konteks Gateway operator-admin ketika tidak ada penimpaan reasoning per pesan atau sesi yang ditetapkan.
+- `elevatedDefault`: tingkat output elevated default untuk agen. Nilai: `"off"`, `"on"`, `"ask"`, `"full"`. Default: `"on"`.
+- `model.primary`: format `provider/model` (mis. `openai/gpt-5.5` untuk akses kunci API OpenAI atau Codex OAuth). Jika Anda menghilangkan penyedia, OpenClaw mencoba alias terlebih dahulu, lalu kecocokan penyedia terkonfigurasi yang unik untuk ID model persis tersebut, dan baru kemudian kembali ke penyedia default yang dikonfigurasi (perilaku kompatibilitas yang sudah usang, jadi utamakan `provider/model` eksplisit). Jika penyedia tersebut tidak lagi mengekspos model default yang dikonfigurasi, OpenClaw kembali ke penyedia/model terkonfigurasi pertama alih-alih menampilkan default penyedia yang telah dihapus dan usang.
+- `models`: katalog model terkonfigurasi dan allowlist untuk `/model`. Setiap entri dapat menyertakan `alias` (pintasan) dan `params` (spesifik penyedia, misalnya `temperature`, `maxTokens`, `cacheRetention`, `context1m`, `responsesServerCompaction`, `responsesCompactThreshold`, perutean `provider` OpenRouter, `chat_template_kwargs`, `extra_body`/`extraBody`).
+  - Gunakan entri `provider/*` seperti `"openai/*": {}` atau `"vllm/*": {}` untuk menampilkan semua model yang ditemukan bagi penyedia terpilih tanpa mencantumkan setiap ID model secara manual.
+  - Tambahkan `agentRuntime` ke entri `provider/*` ketika setiap model yang ditemukan secara dinamis untuk penyedia tersebut harus menggunakan runtime yang sama. Kebijakan runtime `provider/model` persis tetap mengalahkan wildcard.
+  - Edit aman: gunakan `openclaw config set agents.defaults.models '<json>' --strict-json --merge` untuk menambahkan entri. `config set` menolak penggantian yang akan menghapus entri allowlist yang ada kecuali Anda meneruskan `--replace`.
+  - Alur configure/onboarding dengan cakupan penyedia menggabungkan model penyedia terpilih ke dalam map ini dan mempertahankan penyedia tidak terkait yang sudah dikonfigurasi.
+  - Untuk model OpenAI Responses langsung, Compaction sisi server diaktifkan otomatis. Gunakan `params.responsesServerCompaction: false` untuk berhenti menyuntikkan `context_management`, atau `params.responsesCompactThreshold` untuk menimpa ambang batas. Lihat [Compaction sisi server OpenAI](/id/providers/openai#server-side-compaction-responses-api).
+- `params`: parameter penyedia default global yang diterapkan ke semua model. Ditetapkan di `agents.defaults.params` (mis. `{ cacheRetention: "long" }`).
+- Presedensi penggabungan `params` (konfigurasi): `agents.defaults.params` (basis global) ditimpa oleh `agents.defaults.models["provider/model"].params` (per model), lalu `agents.list[].params` (ID agen yang cocok) menimpa berdasarkan kunci. Lihat [Prompt Caching](/id/reference/prompt-caching) untuk detail.
+- `models.providers.openrouter.params.provider`: kebijakan perutean penyedia default seluruh OpenRouter. OpenClaw meneruskan ini ke objek `provider` permintaan OpenRouter; `agents.defaults.models["openrouter/<model>"].params.provider` per model dan params agen menimpa berdasarkan kunci. Lihat [perutean penyedia OpenRouter](/id/providers/openrouter#advanced-configuration).
+- `params.extra_body`/`params.extraBody`: JSON pass-through lanjutan yang digabungkan ke body permintaan `api: "openai-completions"` untuk proxy yang kompatibel dengan OpenAI. Jika bertabrakan dengan kunci permintaan yang dihasilkan, body ekstra menang; rute completions non-native tetap menghapus `store` khusus OpenAI setelahnya.
+- `params.chat_template_kwargs`: argumen chat-template yang kompatibel dengan vLLM/OpenAI yang digabungkan ke body permintaan tingkat atas `api: "openai-completions"`. Untuk `vllm/nemotron-3-*` dengan thinking nonaktif, Plugin vLLM bawaan otomatis mengirim `enable_thinking: false` dan `force_nonempty_content: true`; `chat_template_kwargs` eksplisit menimpa default yang dihasilkan, dan `extra_body.chat_template_kwargs` tetap memiliki presedensi akhir. Model thinking Qwen dan Nemotron vLLM yang dikonfigurasi mengekspos pilihan biner `/think` (`off`, `on`) alih-alih tangga effort bertingkat.
+- `compat.thinkingFormat`: gaya payload thinking yang kompatibel dengan OpenAI. Gunakan `"together"` untuk `reasoning.enabled` bergaya Together, `"qwen"` untuk `enable_thinking` tingkat atas bergaya Qwen, atau `"qwen-chat-template"` untuk `chat_template_kwargs.enable_thinking` pada backend keluarga Qwen yang mendukung kwargs chat-template tingkat permintaan, seperti vLLM. OpenClaw memetakan thinking yang dinonaktifkan ke `false` dan thinking yang diaktifkan ke `true`, dan model Qwen vLLM yang dikonfigurasi mengekspos pilihan biner `/think` untuk format ini.
+- `compat.supportedReasoningEfforts`: daftar effort reasoning yang kompatibel dengan OpenAI per model. Sertakan `"xhigh"` untuk endpoint khusus yang benar-benar menerimanya; OpenClaw kemudian mengekspos `/think xhigh` di menu perintah, baris sesi Gateway, validasi patch sesi, validasi CLI agen, dan validasi `llm-task` untuk penyedia/model terkonfigurasi tersebut. Gunakan `compat.reasoningEffortMap` ketika backend menginginkan nilai spesifik penyedia untuk level kanonis.
 - `params.preserveThinking`: opt-in khusus Z.AI untuk thinking yang dipertahankan. Saat diaktifkan dan thinking menyala, OpenClaw mengirim `thinking.clear_thinking: false` dan memutar ulang `reasoning_content` sebelumnya; lihat [thinking Z.AI dan thinking yang dipertahankan](/id/providers/zai#thinking-and-preserved-thinking).
-- `localService`: manajer proses tingkat penyedia opsional untuk server model lokal/self-hosted. Saat model yang dipilih milik penyedia tersebut, OpenClaw memeriksa `healthUrl` (atau `baseUrl + "/models"`), menjalankan `command` dengan `args` jika endpoint tidak aktif, menunggu hingga `readyTimeoutMs`, lalu mengirim permintaan model. `command` harus berupa path absolut. `idleStopMs: 0` menjaga proses tetap hidup sampai OpenClaw keluar; nilai positif menghentikan proses yang dijalankan OpenClaw setelah sekian milidetik idle. Lihat [layanan model lokal](/id/gateway/local-model-services).
-- Kebijakan runtime berada pada penyedia atau model, bukan pada `agents.defaults`. Gunakan `models.providers.<provider>.agentRuntime` untuk aturan seluruh penyedia atau `agents.defaults.models["provider/model"].agentRuntime` / `agents.list[].models["provider/model"].agentRuntime` untuk aturan khusus model. Model agen OpenAI pada penyedia OpenAI resmi memilih Codex secara default.
+- `localService`: manajer proses tingkat penyedia opsional untuk server model lokal/self-hosted. Ketika model yang dipilih milik penyedia tersebut, OpenClaw memeriksa `healthUrl` (atau `baseUrl + "/models"`), menjalankan `command` dengan `args` jika endpoint mati, menunggu hingga `readyTimeoutMs`, lalu mengirim permintaan model. `command` harus berupa path absolut. `idleStopMs: 0` menjaga proses tetap hidup hingga OpenClaw keluar; nilai positif menghentikan proses yang dijalankan OpenClaw setelah idle selama jumlah milidetik tersebut. Lihat [Layanan model lokal](/id/gateway/local-model-services).
+- Kebijakan runtime berada pada penyedia atau model, bukan pada `agents.defaults`. Gunakan `models.providers.<provider>.agentRuntime` untuk aturan seluruh penyedia atau `agents.defaults.models["provider/model"].agentRuntime` / `agents.list[].models["provider/model"].agentRuntime` untuk aturan spesifik model. Model agen OpenAI pada penyedia OpenAI resmi memilih Codex secara default.
 - Penulis konfigurasi yang memutasi bidang ini (misalnya `/models set`, `/models set-image`, dan perintah tambah/hapus fallback) menyimpan bentuk objek kanonis dan mempertahankan daftar fallback yang ada saat memungkinkan.
-- `maxConcurrent`: jumlah maksimum run agen paralel lintas sesi (setiap sesi tetap diserialkan). Default: 4.
+- `maxConcurrent`: jumlah maksimum run agen paralel di seluruh sesi (setiap sesi tetap diserialkan). Default: 4.
 
 ### Kebijakan runtime
 
@@ -504,37 +505,37 @@ Format waktu dalam prompt sistem. Bawaan: `auto` (preferensi OS).
 }
 ```
 
-- `id`: `"auto"`, `"openclaw"`, id harness plugin terdaftar, atau alias backend CLI yang didukung. Plugin Codex bawaan mendaftarkan `codex`; Plugin Anthropic bawaan menyediakan backend CLI `claude-cli`.
-- `id: "auto"` memungkinkan harness plugin terdaftar mengklaim giliran yang didukung dan menggunakan OpenClaw ketika tidak ada harness yang cocok. Runtime Plugin eksplisit seperti `id: "codex"` mewajibkan harness tersebut dan gagal tertutup jika tidak tersedia atau gagal.
-- `id: "pi"` diterima hanya sebagai alias usang untuk `openclaw` demi mempertahankan konfigurasi yang sudah dikirim dari v2026.5.22 dan sebelumnya. Konfigurasi baru sebaiknya menggunakan `openclaw`.
-- Prioritas runtime adalah kebijakan model persis terlebih dahulu (`agents.list[].models["provider/model"]`, `agents.defaults.models["provider/model"]`, atau `models.providers.<provider>.models[]`), lalu `agents.list[]` / `agents.defaults.models["provider/*"]`, lalu kebijakan seluruh provider di `models.providers.<provider>.agentRuntime`.
-- Kunci runtime seluruh agen bersifat legacy. `agents.defaults.agentRuntime`, `agents.list[].agentRuntime`, pin runtime sesi, dan `OPENCLAW_AGENT_RUNTIME` diabaikan oleh pemilihan runtime. Jalankan `openclaw doctor --fix` untuk menghapus nilai usang.
-- Model agen OpenAI menggunakan harness Codex secara default; provider/model `agentRuntime.id: "codex"` tetap valid ketika Anda ingin membuatnya eksplisit.
-- Untuk deployment Claude CLI, utamakan `model: "anthropic/claude-opus-4-8"` plus `agentRuntime.id: "claude-cli"` yang dicakup model. Referensi model legacy `claude-cli/claude-opus-4-7` masih berfungsi untuk kompatibilitas, tetapi konfigurasi baru sebaiknya menjaga pemilihan provider/model tetap kanonis dan menaruh backend eksekusi di kebijakan runtime provider/model.
-- Ini hanya mengontrol eksekusi giliran agen teks. Pembuatan media, vision, PDF, musik, video, dan TTS tetap menggunakan pengaturan provider/model masing-masing.
+- `id`: `"auto"`, `"openclaw"`, id harness Plugin terdaftar, atau alias backend CLI yang didukung. Plugin Codex bawaan mendaftarkan `codex`; Plugin Anthropic bawaan menyediakan backend CLI `claude-cli`.
+- `id: "auto"` memungkinkan harness Plugin terdaftar mengklaim giliran yang didukung dan menggunakan OpenClaw saat tidak ada harness yang cocok. Runtime Plugin eksplisit seperti `id: "codex"` memerlukan harness tersebut dan gagal tertutup jika tidak tersedia atau gagal.
+- `id: "pi"` hanya diterima sebagai alias usang untuk `openclaw` demi mempertahankan konfigurasi yang sudah dirilis dari v2026.5.22 dan sebelumnya. Konfigurasi baru harus menggunakan `openclaw`.
+- Prioritas runtime dimulai dari kebijakan model eksak (`agents.list[].models["provider/model"]`, `agents.defaults.models["provider/model"]`, atau `models.providers.<provider>.models[]`), lalu `agents.list[]` / `agents.defaults.models["provider/*"]`, lalu kebijakan tingkat penyedia di `models.providers.<provider>.agentRuntime`.
+- Kunci runtime seluruh agen adalah warisan lama. `agents.defaults.agentRuntime`, `agents.list[].agentRuntime`, pin runtime sesi, dan `OPENCLAW_AGENT_RUNTIME` diabaikan oleh pemilihan runtime. Jalankan `openclaw doctor --fix` untuk menghapus nilai usang.
+- Model agen OpenAI menggunakan harness Codex secara bawaan; `agentRuntime.id: "codex"` penyedia/model tetap valid saat Anda ingin membuatnya eksplisit.
+- Untuk deployment Claude CLI, lebih baik gunakan `model: "anthropic/claude-opus-4-8"` ditambah `agentRuntime.id: "claude-cli"` bercakupan model. Ref model warisan lama `claude-cli/claude-opus-4-7` tetap berfungsi untuk kompatibilitas, tetapi konfigurasi baru harus mempertahankan pemilihan penyedia/model yang kanonis dan menempatkan backend eksekusi dalam kebijakan runtime penyedia/model.
+- Ini hanya mengontrol eksekusi giliran agen teks. Pembuatan media, vision, PDF, musik, video, dan TTS tetap menggunakan pengaturan penyedia/model masing-masing.
 
-**Singkatan alias bawaan** (hanya berlaku ketika model berada di `agents.defaults.models`):
+**Singkatan alias bawaan** (hanya berlaku saat model berada di `agents.defaults.models`):
 
 | Alias               | Model                           |
 | ------------------- | ------------------------------- |
-| `opus`              | `anthropic/claude-opus-4-6`     |
+| `opus`              | `anthropic/claude-opus-4-8`     |
 | `sonnet`            | `anthropic/claude-sonnet-4-6`   |
-| `gpt`               | `openai/gpt-5.5`                |
+| `gpt`               | `openai/gpt-5.4`                |
 | `gpt-mini`          | `openai/gpt-5.4-mini`           |
 | `gpt-nano`          | `openai/gpt-5.4-nano`           |
 | `gemini`            | `google/gemini-3.1-pro-preview` |
 | `gemini-flash`      | `google/gemini-3-flash-preview` |
 | `gemini-flash-lite` | `google/gemini-3.1-flash-lite`  |
 
-Alias yang Anda konfigurasi selalu mengalahkan default.
+Alias yang Anda konfigurasi selalu mengungguli nilai bawaan.
 
 Model Z.AI GLM-4.x otomatis mengaktifkan mode berpikir kecuali Anda mengatur `--thinking off` atau mendefinisikan `agents.defaults.models["zai/<model>"].params.thinking` sendiri.
-Model Z.AI mengaktifkan `tool_stream` secara default untuk streaming panggilan tool. Atur `agents.defaults.models["zai/<model>"].params.tool_stream` ke `false` untuk menonaktifkannya.
-Anthropic Claude Opus 4.8 menjaga berpikir nonaktif secara default di OpenClaw; ketika berpikir adaptif diaktifkan secara eksplisit, default upaya milik provider Anthropic adalah `high`. Model Claude 4.6 default ke `adaptive` ketika tidak ada tingkat berpikir eksplisit yang ditetapkan.
+Model Z.AI mengaktifkan `tool_stream` secara bawaan untuk streaming panggilan alat. Atur `agents.defaults.models["zai/<model>"].params.tool_stream` ke `false` untuk menonaktifkannya.
+Anthropic Claude Opus 4.8 menjaga berpikir tetap nonaktif secara bawaan di OpenClaw; saat berpikir adaptif diaktifkan secara eksplisit, nilai bawaan upaya milik penyedia Anthropic adalah `high`. Model Claude 4.6 secara bawaan menggunakan `adaptive` saat tidak ada level berpikir eksplisit yang diatur.
 
 ### `agents.defaults.cliBackends`
 
-Backend CLI opsional untuk run fallback khusus teks (tanpa panggilan tool). Berguna sebagai cadangan ketika provider API gagal.
+Backend CLI opsional untuk eksekusi fallback khusus teks (tanpa panggilan alat). Berguna sebagai cadangan saat penyedia API gagal.
 
 ```json5
 {
@@ -563,17 +564,17 @@ Backend CLI opsional untuk run fallback khusus teks (tanpa panggilan tool). Berg
 }
 ```
 
-- Backend CLI mengutamakan teks; tool selalu dinonaktifkan.
-- Sesi didukung ketika `sessionArg` diatur.
-- Penerusan gambar didukung ketika `imageArg` menerima path file.
-- `reseedFromRawTranscriptWhenUncompacted: true` memungkinkan backend memulihkan sesi
-  yang dibatalkan dengan aman dari ekor transkrip mentah OpenClaw yang dibatasi sebelum
-  ringkasan Compaction pertama ada. Perubahan profil auth atau epoch kredensial
-  tetap tidak pernah melakukan raw-reseed.
+- Backend CLI mengutamakan teks; alat selalu dinonaktifkan.
+- Sesi didukung saat `sessionArg` diatur.
+- Penerusan gambar didukung saat `imageArg` menerima path file.
+- `reseedFromRawTranscriptWhenUncompacted: true` memungkinkan backend memulihkan sesi aman
+  yang dibatalkan dari ekor transkrip mentah OpenClaw yang dibatasi sebelum
+  ringkasan Compaction pertama ada. Perubahan profil autentikasi atau epoch kredensial
+  tetap tidak pernah melakukan reseed mentah.
 
 ### `agents.defaults.promptOverlays`
 
-Overlay prompt independen provider yang diterapkan berdasarkan keluarga model pada permukaan prompt yang dirakit OpenClaw. Id model keluarga GPT-5 menerima kontrak perilaku bersama di seluruh rute OpenClaw/provider; `personality` hanya mengontrol lapisan gaya interaksi yang ramah. Rute app-server Codex native mempertahankan instruksi dasar/model milik Codex alih-alih overlay GPT-5 OpenClaw ini, dan OpenClaw menonaktifkan personality bawaan Codex untuk thread native.
+Overlay prompt yang independen dari penyedia, diterapkan berdasarkan keluarga model pada permukaan prompt yang dirakit OpenClaw. Id model keluarga GPT-5 menerima kontrak perilaku bersama di seluruh rute OpenClaw/penyedia; `personality` hanya mengontrol lapisan gaya interaksi ramah. Rute app-server native Codex mempertahankan instruksi dasar/model milik Codex, bukan overlay GPT-5 OpenClaw ini, dan OpenClaw menonaktifkan personality bawaan Codex untuk thread native.
 
 ```json5
 {
@@ -589,13 +590,13 @@ Overlay prompt independen provider yang diterapkan berdasarkan keluarga model pa
 }
 ```
 
-- `"friendly"` (default) dan `"on"` mengaktifkan lapisan gaya interaksi yang ramah.
+- `"friendly"` (bawaan) dan `"on"` mengaktifkan lapisan gaya interaksi ramah.
 - `"off"` hanya menonaktifkan lapisan ramah; kontrak perilaku GPT-5 bertag tetap aktif.
-- Legacy `plugins.entries.openai.config.personality` masih dibaca ketika pengaturan bersama ini belum diatur.
+- `plugins.entries.openai.config.personality` warisan lama tetap dibaca saat pengaturan bersama ini belum diatur.
 
 ### `agents.defaults.heartbeat`
 
-Run Heartbeat berkala.
+Eksekusi Heartbeat berkala.
 
 ```json5
 {
@@ -623,15 +624,15 @@ Run Heartbeat berkala.
 }
 ```
 
-- `every`: string durasi (ms/s/m/h). Default: `30m` (auth kunci API) atau `1h` (auth OAuth). Atur ke `0m` untuk menonaktifkan.
-- `includeSystemPromptSection`: ketika false, menghilangkan bagian Heartbeat dari prompt sistem dan melewati injeksi `HEARTBEAT.md` ke konteks bootstrap. Default: `true`.
-- `suppressToolErrorWarnings`: ketika true, menekan payload peringatan kesalahan tool selama run Heartbeat.
-- `timeoutSeconds`: waktu maksimum dalam detik yang diizinkan untuk giliran agen Heartbeat sebelum dibatalkan. Biarkan tidak diatur untuk menggunakan `agents.defaults.timeoutSeconds` ketika diatur, jika tidak cadence Heartbeat dibatasi pada 600 detik.
-- `directPolicy`: kebijakan pengiriman langsung/DM. `allow` (default) mengizinkan pengiriman ke target langsung. `block` menekan pengiriman ke target langsung dan memancarkan `reason=dm-blocked`.
-- `lightContext`: ketika true, run Heartbeat menggunakan konteks bootstrap ringan dan hanya mempertahankan `HEARTBEAT.md` dari file bootstrap workspace.
-- `isolatedSession`: ketika true, setiap Heartbeat berjalan dalam sesi baru tanpa riwayat percakapan sebelumnya. Pola isolasi yang sama seperti Cron `sessionTarget: "isolated"`. Mengurangi biaya token per Heartbeat dari ~100K menjadi ~2-5K token.
-- `skipWhenBusy`: ketika true, run Heartbeat ditunda pada lane sibuk tambahan agen tersebut: subagen berkunci sesi miliknya sendiri atau pekerjaan perintah bertingkat. Lane Cron selalu menunda Heartbeat, bahkan tanpa flag ini.
-- Per agen: atur `agents.list[].heartbeat`. Ketika agen mana pun mendefinisikan `heartbeat`, **hanya agen tersebut** yang menjalankan Heartbeat.
+- `every`: string durasi (ms/s/m/h). Bawaan: `30m` (autentikasi kunci API) atau `1h` (autentikasi OAuth). Atur ke `0m` untuk menonaktifkan.
+- `includeSystemPromptSection`: saat false, menghilangkan bagian Heartbeat dari prompt sistem dan melewati injeksi `HEARTBEAT.md` ke konteks bootstrap. Bawaan: `true`.
+- `suppressToolErrorWarnings`: saat true, menekan payload peringatan kesalahan alat selama eksekusi Heartbeat.
+- `timeoutSeconds`: waktu maksimum dalam detik yang diizinkan untuk giliran agen Heartbeat sebelum dibatalkan. Biarkan tidak diatur untuk menggunakan `agents.defaults.timeoutSeconds` saat diatur, jika tidak cadence Heartbeat dibatasi pada 600 detik.
+- `directPolicy`: kebijakan pengiriman langsung/DM. `allow` (bawaan) mengizinkan pengiriman ke target langsung. `block` menekan pengiriman ke target langsung dan memancarkan `reason=dm-blocked`.
+- `lightContext`: saat true, eksekusi Heartbeat menggunakan konteks bootstrap ringan dan hanya mempertahankan `HEARTBEAT.md` dari file bootstrap workspace.
+- `isolatedSession`: saat true, setiap Heartbeat berjalan dalam sesi baru tanpa riwayat percakapan sebelumnya. Pola isolasi yang sama seperti Cron `sessionTarget: "isolated"`. Mengurangi biaya token per Heartbeat dari ~100K menjadi ~2-5K token.
+- `skipWhenBusy`: saat true, eksekusi Heartbeat ditunda pada lane sibuk tambahan agen tersebut: pekerjaan subagen berkunci sesi miliknya sendiri atau perintah bertingkat. Lane Cron selalu menunda Heartbeat, bahkan tanpa flag ini.
+- Per agen: atur `agents.list[].heartbeat`. Saat agen mana pun mendefinisikan `heartbeat`, **hanya agen tersebut** yang menjalankan Heartbeat.
 - Heartbeat menjalankan giliran agen penuh — interval yang lebih pendek membakar lebih banyak token.
 
 ### `agents.defaults.compaction`
@@ -668,23 +669,23 @@ Run Heartbeat berkala.
 }
 ```
 
-- `mode`: `default` atau `safeguard` (peringkasan berbongkah untuk riwayat panjang). Lihat [Compaction](/id/concepts/compaction).
-- `provider`: id Plugin penyedia Compaction terdaftar. Saat diatur, `summarize()` milik penyedia dipanggil alih-alih peringkasan LLM bawaan. Kembali ke bawaan saat gagal. Mengatur penyedia memaksa `mode: "safeguard"`. Lihat [Compaction](/id/concepts/compaction).
+- `mode`: `default` atau `safeguard` (peringkasan berpotongan untuk riwayat panjang). Lihat [Compaction](/id/concepts/compaction).
+- `provider`: id dari plugin penyedia Compaction yang terdaftar. Jika diatur, `summarize()` milik penyedia dipanggil alih-alih peringkasan LLM bawaan. Kembali ke bawaan jika gagal. Mengatur penyedia memaksa `mode: "safeguard"`. Lihat [Compaction](/id/concepts/compaction).
 - `timeoutSeconds`: jumlah detik maksimum yang diizinkan untuk satu operasi Compaction sebelum OpenClaw membatalkannya. Default: `180`.
-- `keepRecentTokens`: anggaran titik potong agen untuk mempertahankan ekor transkrip terbaru secara verbatim. `/compact` manual menghormati ini saat diatur secara eksplisit; jika tidak, Compaction manual adalah checkpoint keras.
-- `identifierPolicy`: `strict` (default), `off`, atau `custom`. `strict` menambahkan panduan retensi pengenal buram bawaan di awal selama peringkasan Compaction.
-- `identifierInstructions`: teks pelestarian pengenal kustom opsional yang digunakan saat `identifierPolicy=custom`.
-- `qualityGuard`: pemeriksaan coba-ulang-saat-output-tidak-valid untuk ringkasan safeguard. Diaktifkan secara default dalam mode safeguard; atur `enabled: false` untuk melewati audit.
-- `midTurnPrecheck`: pemeriksaan tekanan loop alat opsional. Saat `enabled: true`, OpenClaw memeriksa tekanan konteks setelah hasil alat ditambahkan dan sebelum panggilan model berikutnya. Jika konteks tidak lagi muat, OpenClaw membatalkan percobaan saat ini sebelum mengirim prompt dan menggunakan kembali jalur pemulihan precheck yang ada untuk memotong hasil alat atau melakukan Compaction dan mencoba lagi. Berfungsi dengan mode Compaction `default` maupun `safeguard`. Default: dinonaktifkan.
-- `postCompactionSections`: nama bagian H2/H3 AGENTS.md opsional untuk disisipkan ulang setelah Compaction. Penyisipan ulang dinonaktifkan saat tidak diatur atau diatur ke `[]`. Mengatur `["Session Startup", "Red Lines"]` secara eksplisit mengaktifkan pasangan tersebut dan mempertahankan fallback lama `Every Session`/`Safety`. Aktifkan ini hanya ketika konteks tambahan sepadan dengan risiko menduplikasi panduan proyek yang sudah tertangkap dalam ringkasan Compaction.
-- `model`: `provider/model-id` opsional atau alias polos dari `agents.defaults.models` hanya untuk peringkasan Compaction. Alias polos diselesaikan sebelum pengiriman; ID model literal yang dikonfigurasi tetap memiliki prioritas saat terjadi tabrakan. Gunakan ini saat sesi utama harus tetap memakai satu model tetapi ringkasan Compaction harus berjalan pada model lain; saat tidak diatur, Compaction menggunakan model utama sesi.
-- `maxActiveTranscriptBytes`: ambang byte opsional (`number` atau string seperti `"20mb"`) yang memicu Compaction lokal normal sebelum run ketika JSONL aktif tumbuh melewati ambang. Membutuhkan `truncateAfterCompaction` agar Compaction yang berhasil dapat berotasi ke transkrip penerus yang lebih kecil. Dinonaktifkan saat tidak diatur atau `0`.
-- `notifyUser`: saat `true`, mengirim pemberitahuan singkat kepada pengguna saat Compaction dimulai dan saat selesai (misalnya, "Memadatkan konteks..." dan "Compaction selesai"). Dinonaktifkan secara default agar Compaction tetap senyap.
-- `memoryFlush`: giliran agentik senyap sebelum auto-Compaction untuk menyimpan memori tahan lama. Atur `model` ke penyedia/model persis seperti `ollama/qwen3:8b` ketika giliran housekeeping ini harus tetap pada model lokal; override tidak mewarisi rantai fallback sesi aktif. Dilewati saat workspace bersifat hanya-baca.
+- `keepRecentTokens`: anggaran titik potong agen untuk menyimpan ekor transkrip terbaru secara verbatim. `/compact` manual menghormati ini saat diatur secara eksplisit; jika tidak, Compaction manual adalah checkpoint keras.
+- `identifierPolicy`: `strict` (default), `off`, atau `custom`. `strict` menambahkan panduan retensi pengidentifikasi buram bawaan di awal selama peringkasan Compaction.
+- `identifierInstructions`: teks pelestarian pengidentifikasi kustom opsional yang digunakan saat `identifierPolicy=custom`.
+- `qualityGuard`: pemeriksaan coba ulang saat keluaran salah bentuk untuk ringkasan safeguard. Diaktifkan secara default dalam mode safeguard; atur `enabled: false` untuk melewati audit.
+- `midTurnPrecheck`: pemeriksaan tekanan tool-loop opsional. Saat `enabled: true`, OpenClaw memeriksa tekanan konteks setelah hasil alat ditambahkan dan sebelum panggilan model berikutnya. Jika konteks tidak lagi muat, OpenClaw membatalkan upaya saat ini sebelum mengirim prompt dan menggunakan ulang jalur pemulihan precheck yang ada untuk memangkas hasil alat atau melakukan Compaction dan mencoba lagi. Berfungsi dengan mode Compaction `default` maupun `safeguard`. Default: dinonaktifkan.
+- `postCompactionSections`: nama bagian H2/H3 AGENTS.md opsional untuk disisipkan kembali setelah Compaction. Penyisipan kembali dinonaktifkan saat tidak diatur atau diatur ke `[]`. Mengatur `["Session Startup", "Red Lines"]` secara eksplisit mengaktifkan pasangan tersebut dan mempertahankan fallback lama `Every Session`/`Safety`. Aktifkan ini hanya jika konteks tambahan sepadan dengan risiko menduplikasi panduan proyek yang sudah tertangkap dalam ringkasan Compaction.
+- `model`: `provider/model-id` opsional atau alias polos dari `agents.defaults.models` hanya untuk peringkasan Compaction. Alias polos diselesaikan sebelum dispatch; ID model literal yang dikonfigurasi tetap memiliki prioritas saat ada tabrakan. Gunakan ini saat sesi utama harus mempertahankan satu model, tetapi ringkasan Compaction harus berjalan pada model lain; jika tidak diatur, Compaction menggunakan model utama sesi.
+- `maxActiveTranscriptBytes`: ambang byte opsional (`number` atau string seperti `"20mb"`) yang memicu Compaction lokal normal sebelum run saat JSONL aktif tumbuh melewati ambang. Memerlukan `truncateAfterCompaction` agar Compaction yang berhasil dapat merotasi ke transkrip penerus yang lebih kecil. Dinonaktifkan saat tidak diatur atau `0`.
+- `notifyUser`: saat `true`, mengirim pemberitahuan singkat kepada pengguna saat Compaction dimulai dan saat selesai (misalnya, "Compacting context..." dan "Compaction complete"). Dinonaktifkan secara default agar Compaction tetap senyap.
+- `memoryFlush`: giliran agentic senyap sebelum auto-compaction untuk menyimpan memori tahan lama. Atur `model` ke penyedia/model persis seperti `ollama/qwen3:8b` saat giliran housekeeping ini harus tetap pada model lokal; override tidak mewarisi rantai fallback sesi aktif. Dilewati saat workspace bersifat hanya-baca.
 
 ### `agents.defaults.runRetries`
 
-Batas iterasi coba ulang loop run luar untuk runtime agen tertanam guna mencegah loop eksekusi tak terbatas selama pemulihan kegagalan. Perhatikan bahwa pengaturan ini saat ini hanya berlaku untuk runtime agen tertanam, bukan runtime ACP atau CLI.
+Batas iterasi percobaan ulang loop run luar untuk runtime agen tertanam guna mencegah loop eksekusi tanpa akhir selama pemulihan kegagalan. Perhatikan bahwa pengaturan ini saat ini hanya berlaku untuk runtime agen tertanam, bukan runtime ACP atau CLI.
 
 ```json5
 {
@@ -707,14 +708,14 @@ Batas iterasi coba ulang loop run luar untuk runtime agen tertanam guna mencegah
 }
 ```
 
-- `base`: jumlah dasar iterasi coba ulang run untuk loop run luar. Default: `24`.
-- `perProfile`: iterasi coba ulang run tambahan yang diberikan per kandidat profil fallback. Default: `8`.
-- `min`: batas absolut minimum untuk iterasi coba ulang run. Default: `32`.
-- `max`: batas absolut maksimum untuk iterasi coba ulang run guna mencegah eksekusi lepas kendali. Default: `160`.
+- `base`: jumlah dasar iterasi percobaan ulang run untuk loop run luar. Default: `24`.
+- `perProfile`: iterasi percobaan ulang run tambahan yang diberikan per kandidat profil fallback. Default: `8`.
+- `min`: batas absolut minimum untuk iterasi percobaan ulang run. Default: `32`.
+- `max`: batas absolut maksimum untuk iterasi percobaan ulang run guna mencegah eksekusi tak terkendali. Default: `160`.
 
 ### `agents.defaults.contextPruning`
 
-Memangkas **hasil alat lama** dari konteks dalam memori sebelum dikirim ke LLM. **Tidak** mengubah riwayat sesi di disk.
+Memangkas **hasil alat lama** dari konteks dalam memori sebelum mengirim ke LLM. **Tidak** mengubah riwayat sesi di disk.
 
 ```json5
 {
@@ -740,8 +741,8 @@ Memangkas **hasil alat lama** dari konteks dalam memori sebelum dikirim ke LLM. 
 
 - `mode: "cache-ttl"` mengaktifkan lintasan pemangkasan.
 - `ttl` mengontrol seberapa sering pemangkasan dapat berjalan lagi (setelah sentuhan cache terakhir).
-- Pemangkasan pertama-tama melakukan soft-trim pada hasil alat yang terlalu besar, lalu melakukan hard-clear pada hasil alat yang lebih lama jika perlu.
-- `softTrimRatio` dan `hardClearRatio` menerima nilai dari `0.0` hingga `1.0`; validasi konfigurasi menolak nilai di luar rentang tersebut.
+- Pemangkasan terlebih dahulu melakukan soft-trim pada hasil alat yang terlalu besar, lalu hard-clear pada hasil alat yang lebih lama jika diperlukan.
+- `softTrimRatio` dan `hardClearRatio` menerima nilai dari `0.0` sampai `1.0`; validasi konfigurasi menolak nilai di luar rentang tersebut.
 
 **Soft-trim** mempertahankan awal + akhir dan menyisipkan `...` di tengah.
 
@@ -751,11 +752,11 @@ Catatan:
 
 - Blok gambar tidak pernah dipangkas/dibersihkan.
 - Rasio berbasis karakter (perkiraan), bukan jumlah token persis.
-- Jika ada lebih sedikit dari `keepLastAssistants` pesan asisten, pemangkasan dilewati.
+- Jika pesan asisten lebih sedikit dari `keepLastAssistants`, pemangkasan dilewati.
 
 </Accordion>
 
-Lihat [Pemangkasan Sesi](/id/concepts/session-pruning) untuk detail perilaku.
+Lihat [Session Pruning](/id/concepts/session-pruning) untuk detail perilaku.
 
 ### Streaming blok
 
@@ -775,11 +776,11 @@ Lihat [Pemangkasan Sesi](/id/concepts/session-pruning) untuk detail perilaku.
 
 - Kanal non-Telegram memerlukan `*.blockStreaming: true` eksplisit untuk mengaktifkan balasan blok.
 - Override kanal: `channels.<channel>.blockStreamingCoalesce` (dan varian per akun). Signal/Slack/Discord/Google Chat default `minChars: 1500`.
-- `humanDelay`: jeda acak di antara balasan blok. `natural` = 800-2500ms. Override per agen: `agents.list[].humanDelay`.
+- `humanDelay`: jeda acak antar balasan blok. `natural` = 800–2500ms. Override per agen: `agents.list[].humanDelay`.
 
-Lihat [Streaming](/id/concepts/streaming) untuk detail perilaku + pemotongan bongkah.
+Lihat [Streaming](/id/concepts/streaming) untuk detail perilaku + pemotongan.
 
-### Indikator pengetikan
+### Indikator mengetik
 
 ```json5
 {
@@ -795,7 +796,7 @@ Lihat [Streaming](/id/concepts/streaming) untuk detail perilaku + pemotongan bon
 - Default: `instant` untuk chat langsung/mention, `message` untuk chat grup tanpa mention.
 - Override per sesi: `session.typingMode`, `session.typingIntervalSeconds`.
 
-Lihat [Indikator Pengetikan](/id/concepts/typing-indicators).
+Lihat [Typing Indicators](/id/concepts/typing-indicators).
 
 <a id="agentsdefaultssandbox"></a>
 
@@ -911,9 +912,9 @@ Saat `backend: "openshell"` dipilih, pengaturan khusus runtime berpindah ke
 
 - `target`: target SSH dalam bentuk `user@host[:port]`
 - `command`: perintah klien SSH (default: `ssh`)
-- `workspaceRoot`: root jarak jauh absolut yang digunakan untuk workspace per cakupan
+- `workspaceRoot`: root jarak jauh absolut yang digunakan untuk workspace per scope
 - `identityFile` / `certificateFile` / `knownHostsFile`: file lokal yang ada yang diteruskan ke OpenSSH
-- `identityData` / `certificateData` / `knownHostsData`: konten inline atau SecretRef yang diwujudkan OpenClaw menjadi file temp saat runtime
+- `identityData` / `certificateData` / `knownHostsData`: konten inline atau SecretRefs yang dimaterialisasi OpenClaw menjadi file sementara saat runtime
 - `strictHostKeyChecking` / `updateHostKeys`: knob kebijakan host-key OpenSSH
 
 **Prioritas auth SSH:**
@@ -925,25 +926,25 @@ Saat `backend: "openshell"` dipilih, pengaturan khusus runtime berpindah ke
 
 **Perilaku backend SSH:**
 
-- men-seed workspace jarak jauh satu kali setelah dibuat atau dibuat ulang
-- lalu mempertahankan workspace SSH jarak jauh sebagai kanonis
+- mengisi workspace jarak jauh sekali setelah create atau recreate
+- lalu menjaga workspace SSH jarak jauh sebagai kanonis
 - merutekan `exec`, alat file, dan jalur media melalui SSH
 - tidak menyinkronkan perubahan jarak jauh kembali ke host secara otomatis
-- tidak mendukung container browser sandbox
+- tidak mendukung kontainer browser sandbox
 
 **Akses workspace:**
 
-- `none`: workspace sandbox per cakupan di bawah `~/.openclaw/sandboxes`
+- `none`: workspace sandbox per scope di bawah `~/.openclaw/sandboxes`
 - `ro`: workspace sandbox di `/workspace`, workspace agen dipasang hanya-baca di `/agent`
 - `rw`: workspace agen dipasang baca/tulis di `/workspace`
 
-**Cakupan:**
+**Scope:**
 
-- `session`: container + workspace per sesi
-- `agent`: satu container + workspace per agen (default)
-- `shared`: container dan workspace bersama (tanpa isolasi lintas sesi)
+- `session`: kontainer + workspace per sesi
+- `agent`: satu kontainer + workspace per agen (default)
+- `shared`: kontainer dan workspace bersama (tanpa isolasi lintas sesi)
 
-**Konfigurasi Plugin OpenShell:**
+**Konfigurasi plugin OpenShell:**
 
 ```json5
 {
@@ -972,30 +973,30 @@ Saat `backend: "openshell"` dipilih, pengaturan khusus runtime berpindah ke
 **Mode OpenShell:**
 
 - `mirror`: seed remote dari lokal sebelum exec, sinkronkan kembali setelah exec; workspace lokal tetap kanonis
-- `remote`: seed remote sekali saat sandbox dibuat, lalu pertahankan workspace remote sebagai yang kanonis
+- `remote`: seed remote satu kali saat sandbox dibuat, lalu pertahankan workspace remote sebagai kanonis
 
-Dalam mode `remote`, edit host-lokal yang dibuat di luar OpenClaw tidak disinkronkan ke sandbox secara otomatis setelah langkah seed.
-Transport adalah SSH ke sandbox OpenShell, tetapi plugin memiliki siklus hidup sandbox dan sinkronisasi mirror opsional.
+Dalam mode `remote`, edit lokal host yang dibuat di luar OpenClaw tidak otomatis disinkronkan ke sandbox setelah langkah seed.
+Transport adalah SSH ke sandbox OpenShell, tetapi plugin memiliki daur hidup sandbox dan sinkronisasi mirror opsional.
 
-**`setupCommand`** berjalan sekali setelah pembuatan container (melalui `sh -lc`). Memerlukan egress jaringan, root yang dapat ditulis, pengguna root.
+**`setupCommand`** berjalan satu kali setelah pembuatan kontainer (melalui `sh -lc`). Membutuhkan egress jaringan, root yang dapat ditulis, pengguna root.
 
-**Container default ke `network: "none"`** — atur ke `"bridge"` (atau jaringan bridge kustom) jika agent memerlukan akses keluar.
+**Kontainer default ke `network: "none"`** — atur ke `"bridge"` (atau jaringan bridge kustom) jika agent membutuhkan akses keluar.
 `"host"` diblokir. `"container:<id>"` diblokir secara default kecuali Anda secara eksplisit mengatur
 `sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true` (break-glass).
-Turn app-server Codex dalam sandbox OpenClaw aktif menggunakan pengaturan egress yang sama ini untuk akses jaringan native code-mode mereka.
+Giliran app-server Codex dalam sandbox OpenClaw aktif menggunakan pengaturan egress yang sama ini untuk akses jaringan mode kode native mereka.
 
 **Lampiran masuk** ditempatkan ke `media/inbound/*` di workspace aktif.
 
-**`docker.binds`** memasang direktori host tambahan; bind global dan per-agent digabungkan.
+**`docker.binds`** me-mount direktori host tambahan; bind global dan per-agent digabungkan.
 
-**Browser tersandbox** (`sandbox.browser.enabled`): Chromium + CDP dalam container. URL noVNC disuntikkan ke system prompt. Tidak memerlukan `browser.enabled` di `openclaw.json`.
-Akses observer noVNC menggunakan auth VNC secara default dan OpenClaw memancarkan URL token berumur pendek (alih-alih mengekspos kata sandi dalam URL bersama).
+**Browser tersandbox** (`sandbox.browser.enabled`): Chromium + CDP dalam kontainer. URL noVNC disisipkan ke prompt sistem. Tidak memerlukan `browser.enabled` di `openclaw.json`.
+Akses pengamat noVNC menggunakan autentikasi VNC secara default dan OpenClaw menerbitkan URL token berumur pendek (alih-alih mengekspos kata sandi di URL bersama).
 
-- `allowHostControl: false` (default) memblokir sesi tersandbox agar tidak menargetkan browser host.
-- `network` default ke `openclaw-sandbox-browser` (jaringan bridge khusus). Atur ke `bridge` hanya saat Anda secara eksplisit menginginkan konektivitas bridge global.
-- `cdpSourceRange` secara opsional membatasi ingress CDP di tepi container ke rentang CIDR (misalnya `172.21.0.1/32`).
-- `sandbox.browser.binds` memasang direktori host tambahan hanya ke container browser sandbox. Saat diatur (termasuk `[]`), ini menggantikan `docker.binds` untuk container browser.
-- Default peluncuran didefinisikan di `scripts/sandbox-browser-entrypoint.sh` dan disetel untuk host container:
+- `allowHostControl: false` (default) memblokir sesi tersandbox dari menargetkan browser host.
+- `network` default ke `openclaw-sandbox-browser` (jaringan bridge khusus). Atur ke `bridge` hanya ketika Anda secara eksplisit menginginkan konektivitas bridge global.
+- `cdpSourceRange` secara opsional membatasi ingress CDP di tepi kontainer ke rentang CIDR (misalnya `172.21.0.1/32`).
+- `sandbox.browser.binds` me-mount direktori host tambahan hanya ke kontainer browser sandbox. Ketika diatur (termasuk `[]`), ini menggantikan `docker.binds` untuk kontainer browser.
+- Default peluncuran didefinisikan di `scripts/sandbox-browser-entrypoint.sh` dan disetel untuk host kontainer:
   - `--remote-debugging-address=127.0.0.1`
   - `--remote-debugging-port=<derived from OPENCLAW_BROWSER_CDP_PORT>`
   - `--user-data-dir=${HOME}/.chrome`
@@ -1016,20 +1017,20 @@ Akses observer noVNC menggunakan auth VNC secara default dan OpenClaw memancarka
   - `--disable-3d-apis`, `--disable-software-rasterizer`, dan `--disable-gpu`
     diaktifkan secara default dan dapat dinonaktifkan dengan
     `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` jika penggunaan WebGL/3D memerlukannya.
-  - `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` mengaktifkan kembali ekstensi jika workflow Anda
+  - `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` mengaktifkan kembali ekstensi jika alur kerja Anda
     bergantung padanya.
   - `--renderer-process-limit=2` dapat diubah dengan
     `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>`; atur `0` untuk menggunakan batas proses
     default Chromium.
-  - ditambah `--no-sandbox` saat `noSandbox` diaktifkan.
-  - Default adalah baseline image container; gunakan image browser kustom dengan entrypoint kustom
-    untuk mengubah default container.
+  - ditambah `--no-sandbox` ketika `noSandbox` diaktifkan.
+  - Default adalah baseline image kontainer; gunakan image browser kustom dengan
+    entrypoint kustom untuk mengubah default kontainer.
 
 </Accordion>
 
 Sandboxing browser dan `sandbox.docker.binds` hanya untuk Docker.
 
-Bangun image (dari checkout sumber):
+Build image (dari checkout sumber):
 
 ```bash
 scripts/sandbox-setup.sh           # image sandbox utama
@@ -1040,13 +1041,13 @@ Untuk instalasi npm tanpa checkout sumber, lihat [Sandboxing § Image dan penyia
 
 ### `agents.list` (override per-agent)
 
-Gunakan `agents.list[].tts` untuk memberi agent penyedia TTS, suara, model,
-gaya, atau mode TTS otomatisnya sendiri. Blok agent melakukan deep-merge di atas
-`messages.tts`, sehingga kredensial bersama dapat tetap berada di satu tempat sementara agent
-individual hanya meng-override bidang suara atau penyedia yang mereka perlukan. Override agent aktif
+Gunakan `agents.list[].tts` untuk memberi agent penyedia TTS, voice, model,
+style, atau mode auto-TTS sendiri. Blok agent deep-merge di atas
+`messages.tts` global, sehingga kredensial bersama dapat tetap di satu tempat sementara masing-masing
+agent hanya meng-override bidang voice atau penyedia yang mereka butuhkan. Override agent aktif
 berlaku untuk balasan lisan otomatis, `/tts audio`, `/tts status`, dan
 tool agent `tts`. Lihat [Text-to-speech](/id/tools/tts#per-agent-voice-overrides)
-untuk contoh penyedia dan prioritas.
+untuk contoh penyedia dan presedensi.
 
 ```json5
 {
@@ -1100,28 +1101,28 @@ untuk contoh penyedia dan prioritas.
 ```
 
 - `id`: id agent stabil (wajib).
-- `default`: saat beberapa diatur, yang pertama menang (peringatan dicatat). Jika tidak ada yang diatur, entri daftar pertama menjadi default.
-- `model`: bentuk string menetapkan primary per-agent yang ketat tanpa fallback model; bentuk objek `{ primary }` juga ketat kecuali Anda menambahkan `fallbacks`. Gunakan `{ primary, fallbacks: [...] }` untuk mengikutsertakan agent itu ke fallback, atau `{ primary, fallbacks: [] }` untuk membuat perilaku ketat eksplisit. Pekerjaan Cron yang hanya meng-override `primary` tetap mewarisi fallback default kecuali Anda mengatur `fallbacks: []`.
-- `params`: param stream per-agent yang digabungkan di atas entri model terpilih di `agents.defaults.models`. Gunakan ini untuk override khusus agent seperti `cacheRetention`, `temperature`, atau `maxTokens` tanpa menduplikasi seluruh katalog model.
-- `tts`: override text-to-speech per-agent opsional. Blok ini melakukan deep-merge di atas `messages.tts`, jadi simpan kredensial penyedia bersama dan kebijakan fallback di `messages.tts` dan atur hanya nilai khusus persona seperti penyedia, suara, model, gaya, atau mode otomatis di sini.
-- `skills`: allowlist skill per-agent opsional. Jika dihilangkan, agent mewarisi `agents.defaults.skills` saat diatur; daftar eksplisit menggantikan default alih-alih menggabungkan, dan `[]` berarti tanpa Skills.
-- `thinkingDefault`: level thinking default per-agent opsional (`off | minimal | low | medium | high | xhigh | adaptive | max`). Meng-override `agents.defaults.thinkingDefault` untuk agent ini saat tidak ada override per-pesan atau sesi yang diatur. Profil penyedia/model terpilih mengontrol nilai mana yang valid; untuk Google Gemini, `adaptive` mempertahankan thinking dinamis milik penyedia (`thinkingLevel` dihilangkan pada Gemini 3/3.1, `thinkingBudget: -1` pada Gemini 2.5).
-- `reasoningDefault`: visibilitas reasoning default per-agent opsional (`on | off | stream`). Meng-override `agents.defaults.reasoningDefault` untuk agent ini saat tidak ada override reasoning per-pesan atau sesi yang diatur.
-- `fastModeDefault`: default per-agent opsional untuk fast mode (`"auto" | true | false`). Berlaku saat tidak ada override fast-mode per-pesan atau sesi yang diatur.
-- `models`: override katalog/runtime model per-agent opsional yang dikunci oleh id `provider/model` lengkap. Gunakan `models["provider/model"].agentRuntime` untuk pengecualian runtime per-agent.
-- `runtime`: deskriptor runtime per-agent opsional. Gunakan `type: "acp"` dengan default `runtime.acp` (`agent`, `backend`, `mode`, `cwd`) saat agent harus default ke sesi harness ACP.
+- `default`: ketika beberapa diatur, yang pertama menang (peringatan dicatat). Jika tidak ada yang diatur, entri daftar pertama menjadi default.
+- `model`: bentuk string menetapkan primary per-agent yang ketat tanpa fallback model; bentuk objek `{ primary }` juga ketat kecuali Anda menambahkan `fallbacks`. Gunakan `{ primary, fallbacks: [...] }` untuk mengikutsertakan agent tersebut ke fallback, atau `{ primary, fallbacks: [] }` untuk membuat perilaku ketat eksplisit. Job Cron yang hanya meng-override `primary` tetap mewarisi fallback default kecuali Anda mengatur `fallbacks: []`.
+- `params`: parameter stream per-agent yang digabungkan di atas entri model terpilih di `agents.defaults.models`. Gunakan ini untuk override khusus agent seperti `cacheRetention`, `temperature`, atau `maxTokens` tanpa menduplikasi seluruh katalog model.
+- `tts`: override text-to-speech per-agent opsional. Blok ini deep-merge di atas `messages.tts`, jadi simpan kredensial penyedia bersama dan kebijakan fallback di `messages.tts` dan atur hanya nilai khusus persona seperti penyedia, voice, model, style, atau mode otomatis di sini.
+- `skills`: allowlist skill per-agent opsional. Jika dihilangkan, agent mewarisi `agents.defaults.skills` ketika diatur; daftar eksplisit menggantikan default alih-alih menggabungkan, dan `[]` berarti tanpa skills.
+- `thinkingDefault`: level thinking default per-agent opsional (`off | minimal | low | medium | high | xhigh | adaptive | max`). Meng-override `agents.defaults.thinkingDefault` untuk agent ini ketika tidak ada override per-pesan atau sesi yang diatur. Profil penyedia/model yang dipilih mengontrol nilai mana yang valid; untuk Google Gemini, `adaptive` mempertahankan thinking dinamis milik penyedia (`thinkingLevel` dihilangkan pada Gemini 3/3.1, `thinkingBudget: -1` pada Gemini 2.5).
+- `reasoningDefault`: visibilitas reasoning default per-agent opsional (`on | off | stream`). Meng-override `agents.defaults.reasoningDefault` untuk agent ini ketika tidak ada override reasoning per-pesan atau sesi yang diatur.
+- `fastModeDefault`: default per-agent opsional untuk mode cepat (`"auto" | true | false`). Berlaku ketika tidak ada override mode cepat per-pesan atau sesi yang diatur.
+- `models`: katalog model per-agent/override runtime opsional yang diindeks oleh id `provider/model` lengkap. Gunakan `models["provider/model"].agentRuntime` untuk pengecualian runtime per-agent.
+- `runtime`: deskriptor runtime per-agent opsional. Gunakan `type: "acp"` dengan default `runtime.acp` (`agent`, `backend`, `mode`, `cwd`) ketika agent harus default ke sesi harness ACP.
 - `identity.avatar`: path relatif workspace, URL `http(s)`, atau URI `data:`.
 - File gambar `identity.avatar` lokal relatif workspace dibatasi hingga 2 MB. URL `http(s)` dan URI `data:` tidak diperiksa dengan batas ukuran file lokal.
 - `identity` menurunkan default: `ackReaction` dari `emoji`, `mentionPatterns` dari `name`/`emoji`.
-- `subagents.allowAgents`: allowlist id agent terkonfigurasi untuk target `sessions_spawn.agentId` eksplisit (`["*"]` = target terkonfigurasi apa pun; default: hanya agent yang sama). Sertakan id peminta saat panggilan `agentId` yang menargetkan diri sendiri harus diizinkan. Entri usang yang konfigurasi agent-nya dihapus ditolak oleh `sessions_spawn` dan dihilangkan dari `agents_list`; jalankan `openclaw doctor --fix` untuk membersihkannya, atau tambahkan entri `agents.list[]` minimal jika target itu harus tetap dapat di-spawn sambil mewarisi default.
+- `subagents.allowAgents`: allowlist id agent terkonfigurasi untuk target `sessions_spawn.agentId` eksplisit (`["*"]` = target terkonfigurasi mana pun; default: agent yang sama saja). Sertakan id peminta ketika panggilan `agentId` yang menargetkan diri sendiri harus diizinkan. Entri basi yang konfigurasi agent-nya telah dihapus ditolak oleh `sessions_spawn` dan dihilangkan dari `agents_list`; jalankan `openclaw doctor --fix` untuk membersihkannya, atau tambahkan entri minimal `agents.list[]` jika target tersebut harus tetap dapat di-spawn sambil mewarisi default.
 - Guard pewarisan sandbox: jika sesi peminta tersandbox, `sessions_spawn` menolak target yang akan berjalan tanpa sandbox.
-- `subagents.requireAgentId`: saat true, blokir panggilan `sessions_spawn` yang menghilangkan `agentId` (memaksa pemilihan profil eksplisit; default: false).
+- `subagents.requireAgentId`: ketika true, blokir panggilan `sessions_spawn` yang menghilangkan `agentId` (memaksa pemilihan profil eksplisit; default: false).
 
 ---
 
 ## Routing multi-agent
 
-Jalankan beberapa agent terisolasi di dalam satu Gateway. Lihat [Multi-Agent](/id/concepts/multi-agent).
+Jalankan beberapa agent terisolasi dalam satu Gateway. Lihat [Multi-Agent](/id/concepts/multi-agent).
 
 ```json5
 {
@@ -1138,27 +1139,27 @@ Jalankan beberapa agent terisolasi di dalam satu Gateway. Lihat [Multi-Agent](/i
 }
 ```
 
-### Bidang pencocokan binding
+### Bidang kecocokan binding
 
-- `type` (opsional): `route` untuk routing normal (tipe yang hilang default ke route), `acp` untuk binding percakapan ACP persisten.
+- `type` (opsional): `route` untuk routing normal (type yang tidak ada default ke route), `acp` untuk binding percakapan ACP persisten.
 - `match.channel` (wajib)
 - `match.accountId` (opsional; `*` = akun apa pun; dihilangkan = akun default)
 - `match.peer` (opsional; `{ kind: direct|group|channel, id }`)
 - `match.guildId` / `match.teamId` (opsional; khusus channel)
 - `acp` (opsional; hanya untuk `type: "acp"`): `{ mode, label, cwd, backend }`
 
-**Urutan pencocokan deterministik:**
+**Urutan kecocokan deterministik:**
 
 1. `match.peer`
 2. `match.guildId`
 3. `match.teamId`
-4. `match.accountId` (tepat, tanpa peer/guild/team)
+4. `match.accountId` (persis, tanpa peer/guild/team)
 5. `match.accountId: "*"` (seluruh channel)
 6. Agent default
 
-Dalam setiap tingkat, entri `bindings` pertama yang cocok menang.
+Dalam tiap tingkat, entri `bindings` pertama yang cocok menang.
 
-Untuk entri `type: "acp"`, OpenClaw menyelesaikan berdasarkan identitas percakapan tepat (`match.channel` + akun + `match.peer.id`) dan tidak menggunakan urutan tingkat binding route di atas.
+Untuk entri `type: "acp"`, OpenClaw menyelesaikan berdasarkan identitas percakapan persis (`match.channel` + akun + `match.peer.id`) dan tidak menggunakan urutan tingkat binding route di atas.
 
 ### Profil akses per-agent
 
@@ -1180,7 +1181,7 @@ Untuk entri `type: "acp"`, OpenClaw menyelesaikan berdasarkan identitas percakap
 
 </Accordion>
 
-<Accordion title="Tool read-only + workspace">
+<Accordion title="Tool hanya-baca + workspace">
 
 ```json5
 {
@@ -1255,7 +1256,7 @@ Untuk entri `type: "acp"`, OpenClaw menyelesaikan berdasarkan identitas percakap
 
 </Accordion>
 
-Lihat [Sandbox & Alat Multi-Agen](/id/tools/multi-agent-sandbox-tools) untuk detail prioritas.
+Lihat [Sandbox & Alat Multi-Agent](/id/tools/multi-agent-sandbox-tools) untuk detail prioritas.
 
 ---
 
@@ -1304,9 +1305,9 @@ Lihat [Sandbox & Alat Multi-Agen](/id/tools/multi-agent-sandbox-tools) untuk det
 }
 ```
 
-<Accordion title="Detail bidang sesi">
+<Accordion title="Detail kolom sesi">
 
-- **`scope`**: strategi dasar pengelompokan sesi untuk konteks obrolan grup.
+- **`scope`**: strategi pengelompokan sesi dasar untuk konteks obrolan grup.
   - `per-sender` (bawaan): setiap pengirim mendapatkan sesi terisolasi dalam konteks kanal.
   - `global`: semua peserta dalam konteks kanal berbagi satu sesi (gunakan hanya saat konteks bersama memang dimaksudkan).
 - **`dmScope`**: cara DM dikelompokkan.
@@ -1314,26 +1315,26 @@ Lihat [Sandbox & Alat Multi-Agen](/id/tools/multi-agent-sandbox-tools) untuk det
   - `per-peer`: isolasi berdasarkan id pengirim lintas kanal.
   - `per-channel-peer`: isolasi per kanal + pengirim (direkomendasikan untuk kotak masuk multi-pengguna).
   - `per-account-channel-peer`: isolasi per akun + kanal + pengirim (direkomendasikan untuk multi-akun).
-- **`identityLinks`**: memetakan id kanonis ke peer berprefiks penyedia untuk berbagi sesi lintas kanal. Perintah dock seperti `/dock_discord` menggunakan peta yang sama untuk mengalihkan rute balasan sesi aktif ke peer kanal tertaut lain; lihat [Docking kanal](/id/concepts/channel-docking).
-- **`reset`**: kebijakan reset utama. `daily` mereset pada waktu lokal `atHour`; `idle` mereset setelah `idleMinutes`. Saat keduanya dikonfigurasi, yang kedaluwarsa lebih dulu berlaku. Kesegaran reset harian menggunakan `sessionStartedAt` pada baris sesi; kesegaran reset idle menggunakan `lastInteractionAt`. Penulisan latar belakang/peristiwa sistem seperti Heartbeat, bangun Cron, notifikasi exec, dan pembukuan Gateway dapat memperbarui `updatedAt`, tetapi tidak membuat sesi harian/idle tetap segar.
+- **`identityLinks`**: memetakan id kanonis ke peer berprefiks penyedia untuk berbagi sesi lintas kanal. Perintah Dock seperti `/dock_discord` menggunakan peta yang sama untuk mengalihkan rute balasan sesi aktif ke peer kanal tertaut lainnya; lihat [Docking kanal](/id/concepts/channel-docking).
+- **`reset`**: kebijakan reset utama. `daily` mereset pada waktu lokal `atHour`; `idle` mereset setelah `idleMinutes`. Jika keduanya dikonfigurasi, yang kedaluwarsa lebih dulu menang. Kesegaran reset harian menggunakan `sessionStartedAt` pada baris sesi; kesegaran reset idle menggunakan `lastInteractionAt`. Penulisan latar belakang/peristiwa sistem seperti Heartbeat, bangun Cron, notifikasi exec, dan pembukuan Gateway dapat memperbarui `updatedAt`, tetapi tidak membuat sesi harian/idle tetap segar.
 - **`resetByType`**: override per jenis (`direct`, `group`, `thread`). `dm` lama diterima sebagai alias untuk `direct`.
-- **`mainKey`**: bidang lama. Runtime selalu menggunakan `"main"` untuk bucket obrolan langsung utama.
+- **`mainKey`**: kolom lama. Runtime selalu menggunakan `"main"` untuk bucket obrolan langsung utama.
 - **`agentToAgent.maxPingPongTurns`**: jumlah maksimum giliran balas-balik antar agen selama pertukaran agen-ke-agen (bilangan bulat, rentang: `0`-`20`, bawaan: `5`). `0` menonaktifkan rantai ping-pong.
 - **`sendPolicy`**: cocokkan berdasarkan `channel`, `chatType` (`direct|group|channel`, dengan alias lama `dm`), `keyPrefix`, atau `rawKeyPrefix`. Penolakan pertama menang.
 - **`maintenance`**: kontrol pembersihan + retensi penyimpanan sesi.
-  - `mode`: `enforce` menerapkan pembersihan dan merupakan bawaan; `warn` hanya mengeluarkan peringatan.
-  - `pruneAfter`: batas usia untuk entri usang (bawaan `30d`).
-  - `maxEntries`: jumlah maksimum entri dalam `sessions.json` (bawaan `500`). Runtime menulis pembersihan batch dengan buffer high-water kecil untuk batas berukuran produksi; `openclaw sessions cleanup --enforce` menerapkan batas secara langsung.
-  - Sesi probe model-run Gateway berumur pendek menggunakan retensi tetap `24h`, tetapi pembersihan dibatasi tekanan: ia hanya menghapus baris probe model-run ketat yang usang saat tekanan pemeliharaan/batas entri sesi tercapai. Hanya kunci probe eksplisit ketat yang cocok dengan `agent:*:explicit:model-run-<uuid>` yang memenuhi syarat; sesi langsung, grup, thread, Cron, hook, Heartbeat, ACP, dan sub-agen normal tidak mewarisi retensi 24 jam ini. Saat pembersihan model-run berjalan, ia berjalan sebelum pembersihan entri usang `pruneAfter` yang lebih luas dan batas `maxEntries`.
+  - `mode`: `enforce` menerapkan pembersihan dan menjadi bawaan; `warn` hanya mengeluarkan peringatan.
+  - `pruneAfter`: batas umur untuk entri basi (bawaan `30d`).
+  - `maxEntries`: jumlah maksimum entri di `sessions.json` (bawaan `500`). Runtime menulis pembersihan batch dengan buffer high-water kecil untuk batas berukuran produksi; `openclaw sessions cleanup --enforce` menerapkan batas tersebut segera.
+  - Sesi probe model-run Gateway yang berumur pendek menggunakan retensi tetap `24h`, tetapi pembersihannya dibatasi oleh tekanan: pembersihan hanya menghapus baris probe model-run ketat yang basi saat tekanan pemeliharaan/batas entri sesi tercapai. Hanya kunci probe eksplisit ketat yang cocok dengan `agent:*:explicit:model-run-<uuid>` yang memenuhi syarat; sesi langsung, grup, thread, Cron, hook, Heartbeat, ACP, dan sub-agen normal tidak mewarisi retensi 24 jam ini. Saat pembersihan model-run berjalan, pembersihan itu berjalan sebelum pembersihan entri basi `pruneAfter` yang lebih luas dan batas `maxEntries`.
   - `rotateBytes`: tidak digunakan lagi dan diabaikan; `openclaw doctor --fix` menghapusnya dari konfigurasi lama.
-  - `resetArchiveRetention`: retensi untuk arsip transkrip `*.reset.<timestamp>`. Bawaan ke `pruneAfter`; atur `false` untuk menonaktifkan.
-  - `maxDiskBytes`: anggaran disk direktori sesi opsional. Dalam mode `warn` ia mencatat peringatan; dalam mode `enforce` ia menghapus artefak/sesi tertua terlebih dahulu.
+  - `resetArchiveRetention`: retensi untuk arsip transkrip `*.reset.<timestamp>`. Bawaan ke `pruneAfter`; tetapkan `false` untuk menonaktifkan.
+  - `maxDiskBytes`: anggaran disk direktori sesi opsional. Dalam mode `warn`, ini mencatat peringatan; dalam mode `enforce`, ini menghapus artefak/sesi tertua terlebih dahulu.
   - `highWaterBytes`: target opsional setelah pembersihan anggaran. Bawaan ke `80%` dari `maxDiskBytes`.
 - **`threadBindings`**: bawaan global untuk fitur sesi terikat thread.
-  - `enabled`: sakelar bawaan utama (penyedia dapat melakukan override; Discord menggunakan `channels.discord.threadBindings.enabled`)
-  - `idleHours`: auto-unfocus bawaan karena inaktivitas dalam jam (`0` menonaktifkan; penyedia dapat melakukan override)
-  - `maxAgeHours`: usia maksimum keras bawaan dalam jam (`0` menonaktifkan; penyedia dapat melakukan override)
-  - `spawnSessions`: gate bawaan untuk membuat sesi kerja terikat thread dari `sessions_spawn` dan spawn thread ACP. Bawaan ke `true` saat binding thread diaktifkan; penyedia/akun dapat melakukan override.
+  - `enabled`: sakelar bawaan utama (penyedia dapat meng-override; Discord menggunakan `channels.discord.threadBindings.enabled`)
+  - `idleHours`: auto-unfocus bawaan karena tidak aktif dalam jam (`0` menonaktifkan; penyedia dapat meng-override)
+  - `maxAgeHours`: umur maksimum keras bawaan dalam jam (`0` menonaktifkan; penyedia dapat meng-override)
+  - `spawnSessions`: gate bawaan untuk membuat sesi kerja terikat thread dari `sessions_spawn` dan spawn thread ACP. Bawaan ke `true` saat binding thread diaktifkan; penyedia/akun dapat meng-override.
   - `defaultSpawnContext`: konteks subagen native bawaan untuk spawn terikat thread (`"fork"` atau `"isolated"`). Bawaan ke `"fork"`.
 
 </Accordion>
@@ -1378,37 +1379,37 @@ Resolusi (yang paling spesifik menang): akun → kanal → global. `""` menonakt
 
 **Variabel templat:**
 
-| Variabel          | Deskripsi                    | Contoh                      |
-| ----------------- | ---------------------------- | --------------------------- |
-| `{model}`         | Nama model pendek            | `claude-opus-4-6`           |
-| `{modelFull}`     | Pengidentifikasi model penuh | `anthropic/claude-opus-4-6` |
-| `{provider}`      | Nama penyedia                | `anthropic`                 |
-| `{thinkingLevel}` | Level berpikir saat ini      | `high`, `low`, `off`        |
-| `{identity.name}` | Nama identitas agen          | (sama seperti `"auto"`)     |
+| Variabel          | Deskripsi             | Contoh                      |
+| ----------------- | --------------------- | --------------------------- |
+| `{model}`         | Nama model pendek     | `claude-opus-4-6`           |
+| `{modelFull}`     | Pengidentifikasi model lengkap | `anthropic/claude-opus-4-6` |
+| `{provider}`      | Nama penyedia         | `anthropic`                 |
+| `{thinkingLevel}` | Tingkat berpikir saat ini | `high`, `low`, `off`        |
+| `{identity.name}` | Nama identitas agen   | (sama seperti `"auto"`)     |
 
 Variabel tidak peka huruf besar/kecil. `{think}` adalah alias untuk `{thinkingLevel}`.
 
 ### Reaksi ack
 
-- Bawaan ke `identity.emoji` milik agen aktif, jika tidak ada `"👀"`. Atur `""` untuk menonaktifkan.
+- Bawaan ke `identity.emoji` agen aktif, jika tidak ada `"👀"`. Tetapkan `""` untuk menonaktifkan.
 - Override per kanal: `channels.<channel>.ackReaction`, `channels.<channel>.accounts.<id>.ackReaction`.
 - Urutan resolusi: akun → kanal → `messages.ackReaction` → fallback identitas.
 - Cakupan: `group-mentions` (bawaan), `group-all`, `direct`, `all`.
 - `removeAckAfterReply`: menghapus ack setelah balasan pada kanal yang mendukung reaksi seperti Slack, Discord, Telegram, WhatsApp, dan iMessage.
 - `messages.statusReactions.enabled`: mengaktifkan reaksi status siklus hidup di Slack, Discord, Telegram, dan WhatsApp.
-  Di Slack dan Discord, tidak diatur mempertahankan reaksi status tetap aktif saat reaksi ack aktif.
-  Di Telegram dan WhatsApp, atur secara eksplisit ke `true` untuk mengaktifkan reaksi status siklus hidup.
-- `messages.statusReactions.emojis`: melakukan override kunci emoji siklus hidup:
+  Di Slack dan Discord, nilai yang tidak diatur mempertahankan reaksi status tetap aktif saat reaksi ack aktif.
+  Di Telegram dan WhatsApp, tetapkan secara eksplisit ke `true` untuk mengaktifkan reaksi status siklus hidup.
+- `messages.statusReactions.emojis`: meng-override kunci emoji siklus hidup:
   `queued`, `thinking`, `compacting`, `tool`, `coding`, `web`, `deploy`, `build`,
   `concierge`, `done`, `error`, `stallSoft`, dan `stallHard`.
-  Telegram hanya mengizinkan set reaksi tetap, sehingga emoji terkonfigurasi yang tidak didukung akan fallback
+  Telegram hanya mengizinkan set reaksi tetap, jadi emoji terkonfigurasi yang tidak didukung akan fallback
   ke varian status terdekat yang didukung untuk obrolan tersebut.
 
-### Debounce masuk
+### Debounce inbound
 
-Mengelompokkan pesan hanya teks yang cepat dari pengirim yang sama menjadi satu giliran agen. Media/lampiran langsung melakukan flush. Perintah kontrol melewati debouncing.
+Mengelompokkan pesan cepat yang hanya berisi teks dari pengirim yang sama menjadi satu giliran agen. Media/lampiran langsung memicu flush. Perintah kontrol melewati debouncing.
 
-### TTS (teks-ke-ucapan)
+### TTS (text-to-speech)
 
 ```json5
 {
@@ -1456,13 +1457,13 @@ Mengelompokkan pesan hanya teks yang cepat dari pengirim yang sama menjadi satu 
 }
 ```
 
-- `auto` mengontrol mode auto-TTS default: `off`, `always`, `inbound`, atau `tagged`. `/tts on|off` dapat menimpa preferensi lokal, dan `/tts status` menampilkan status efektif.
-- `summaryModel` menimpa `agents.defaults.model.primary` untuk ringkasan otomatis.
-- `modelOverrides` diaktifkan secara default; `modelOverrides.allowProvider` default ke `false` (ikut serta).
-- Kunci API beralih ke `ELEVENLABS_API_KEY`/`XI_API_KEY` dan `OPENAI_API_KEY` sebagai fallback.
-- Penyedia ucapan bawaan dimiliki oleh plugin. Jika `plugins.allow` ditetapkan, sertakan setiap plugin penyedia TTS yang ingin Anda gunakan, misalnya `microsoft` untuk Edge TTS. ID penyedia lama `edge` diterima sebagai alias untuk `microsoft`.
-- `providers.openai.baseUrl` menimpa endpoint TTS OpenAI. Urutan resolusi adalah konfigurasi, lalu `OPENAI_TTS_BASE_URL`, lalu `https://api.openai.com/v1`.
-- Ketika `providers.openai.baseUrl` mengarah ke endpoint non-OpenAI, OpenClaw memperlakukannya sebagai server TTS yang kompatibel dengan OpenAI dan melonggarkan validasi model/suara.
+- `auto` mengontrol mode auto-TTS default: `off`, `always`, `inbound`, atau `tagged`. `/tts on|off` dapat mengganti preferensi lokal, dan `/tts status` menampilkan status efektif.
+- `summaryModel` mengganti `agents.defaults.model.primary` untuk ringkasan otomatis.
+- `modelOverrides` diaktifkan secara default; `modelOverrides.allowProvider` default-nya `false` (ikut serta secara eksplisit).
+- Kunci API menggunakan fallback ke `ELEVENLABS_API_KEY`/`XI_API_KEY` dan `OPENAI_API_KEY`.
+- Penyedia ucapan bawaan dimiliki oleh plugin. Jika `plugins.allow` diatur, sertakan setiap plugin penyedia TTS yang ingin Anda gunakan, misalnya `microsoft` untuk Edge TTS. ID penyedia lama `edge` diterima sebagai alias untuk `microsoft`.
+- `providers.openai.baseUrl` mengganti endpoint TTS OpenAI. Urutan resolusinya adalah konfigurasi, lalu `OPENAI_TTS_BASE_URL`, lalu `https://api.openai.com/v1`.
+- Ketika `providers.openai.baseUrl` menunjuk ke endpoint non-OpenAI, OpenClaw memperlakukannya sebagai server TTS yang kompatibel dengan OpenAI dan melonggarkan validasi model/suara.
 
 ---
 
@@ -1512,20 +1513,20 @@ Default untuk mode Bicara (macOS/iOS/Android).
 }
 ```
 
-- `talk.provider` harus cocok dengan sebuah kunci di `talk.providers` ketika beberapa penyedia Bicara dikonfigurasi.
-- Kunci Bicara datar lama (`talk.voiceId`, `talk.voiceAliases`, `talk.modelId`, `talk.outputFormat`, `talk.apiKey`) hanya untuk kompatibilitas. Jalankan `openclaw doctor --fix` untuk menulis ulang konfigurasi tersimpan menjadi `talk.providers.<provider>`.
-- ID suara beralih ke `ELEVENLABS_VOICE_ID` atau `SAG_VOICE_ID` sebagai fallback.
-- `providers.*.apiKey` menerima string teks biasa atau objek SecretRef.
-- Fallback `ELEVENLABS_API_KEY` hanya berlaku ketika tidak ada kunci API Bicara yang dikonfigurasi.
-- `providers.*.voiceAliases` memungkinkan arahan Bicara menggunakan nama yang ramah.
+- `talk.provider` harus cocok dengan salah satu kunci di `talk.providers` ketika beberapa penyedia Talk dikonfigurasi.
+- Kunci Talk datar lama (`talk.voiceId`, `talk.voiceAliases`, `talk.modelId`, `talk.outputFormat`, `talk.apiKey`) hanya untuk kompatibilitas. Jalankan `openclaw doctor --fix` untuk menulis ulang konfigurasi tersimpan ke `talk.providers.<provider>`.
+- ID suara menggunakan fallback ke `ELEVENLABS_VOICE_ID` atau `SAG_VOICE_ID`.
+- `providers.*.apiKey` menerima string plaintext atau objek SecretRef.
+- Fallback `ELEVENLABS_API_KEY` hanya berlaku ketika tidak ada kunci API Talk yang dikonfigurasi.
+- `providers.*.voiceAliases` memungkinkan direktif Talk menggunakan nama ramah.
 - `providers.mlx.modelId` memilih repo Hugging Face yang digunakan oleh pembantu MLX lokal macOS. Jika dihilangkan, macOS menggunakan `mlx-community/Soprano-80M-bf16`.
-- Pemutaran MLX macOS berjalan melalui pembantu `openclaw-mlx-tts` bawaan jika ada, atau executable di `PATH`; `OPENCLAW_MLX_TTS_BIN` menimpa jalur pembantu untuk pengembangan.
-- `consultThinkingLevel` mengontrol level berpikir untuk eksekusi agen OpenClaw penuh di balik panggilan Control UI Talk realtime `openclaw_agent_consult`. Biarkan tidak ditetapkan untuk mempertahankan perilaku sesi/model normal.
-- `consultFastMode` menetapkan penimpaan mode cepat satu kali untuk konsultasi realtime Control UI Talk tanpa mengubah pengaturan mode cepat normal sesi.
-- `speechLocale` menetapkan ID lokal BCP 47 yang digunakan oleh pengenalan ucapan Talk iOS/macOS. Biarkan tidak ditetapkan untuk menggunakan default perangkat.
-- `silenceTimeoutMs` mengontrol berapa lama mode Talk menunggu setelah pengguna diam sebelum mengirim transkrip. Tidak ditetapkan mempertahankan jendela jeda default platform (`700 ms di macOS dan Android, 900 ms di iOS`).
-- `realtime.instructions` menambahkan instruksi sistem yang ditujukan ke penyedia ke prompt realtime bawaan OpenClaw, sehingga gaya suara dapat dikonfigurasi tanpa kehilangan panduan default `openclaw_agent_consult`.
-- `realtime.consultRouting` mengontrol fallback relay Gateway ketika penyedia realtime menghasilkan transkrip pengguna final tanpa `openclaw_agent_consult`: `provider-direct` mempertahankan balasan penyedia langsung, sementara `force-agent-consult` merutekan permintaan final melalui OpenClaw.
+- Pemutaran MLX macOS berjalan melalui pembantu `openclaw-mlx-tts` bawaan ketika tersedia, atau executable pada `PATH`; `OPENCLAW_MLX_TTS_BIN` mengganti jalur pembantu untuk pengembangan.
+- `consultThinkingLevel` mengontrol tingkat berpikir untuk proses agen OpenClaw penuh di balik panggilan Control UI Talk realtime `openclaw_agent_consult`. Biarkan tidak diatur untuk mempertahankan perilaku sesi/model normal.
+- `consultFastMode` menetapkan penggantian fast-mode sekali pakai untuk konsultasi Control UI Talk realtime tanpa mengubah pengaturan fast-mode normal sesi.
+- `speechLocale` menetapkan ID lokal BCP 47 yang digunakan oleh pengenalan ucapan Talk iOS/macOS. Biarkan tidak diatur untuk menggunakan default perangkat.
+- `silenceTimeoutMs` mengontrol berapa lama mode Talk menunggu setelah pengguna diam sebelum mengirim transkrip. Tidak diatur akan mempertahankan jendela jeda default platform (`700 ms on macOS and Android, 900 ms on iOS`).
+- `realtime.instructions` menambahkan instruksi sistem yang menghadap penyedia ke prompt realtime bawaan OpenClaw, sehingga gaya suara dapat dikonfigurasi tanpa kehilangan panduan default `openclaw_agent_consult`.
+- `realtime.consultRouting` mengontrol fallback relay Gateway ketika penyedia realtime menghasilkan transkrip pengguna final tanpa `openclaw_agent_consult`: `provider-direct` mempertahankan balasan penyedia langsung, sementara `force-agent-consult` merutekan permintaan yang sudah difinalisasi melalui OpenClaw.
 
 ---
 

@@ -1,47 +1,47 @@
 ---
 read_when:
-    - تشغيل مضيف Node بلا واجهة رسومية
-    - إقران عقدة غير macOS من أجل `system.run`
-summary: مرجع CLI لـ `openclaw node` (مضيف Node بلا واجهة)
+    - تشغيل مضيف Node بلا واجهة
+    - إقران عقدة غير macOS لـ system.run
+summary: مرجع CLI لـ `openclaw node` (مضيف Node دون واجهة رسومية)
 title: Node
 x-i18n:
-    generated_at: "2026-06-27T17:22:59Z"
+    generated_at: "2026-07-01T13:01:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03a1b02e90f8f5f7edcfb2e7fd75ef0cbbdeae79dc0ce91339f31a80daeaaa92
+    source_hash: b7e68602cb655a6852544f055b9b6c26f2e9cfe1b4d7933e7c27e67011c7cd55
     source_path: cli/node.md
     workflow: 16
 ---
 
 # `openclaw node`
 
-شغّل **مضيف Node بلا واجهة** يتصل بـ Gateway WebSocket ويكشف
+شغّل **مضيف Node بدون واجهة** يتصل بـ Gateway WebSocket ويعرض
 `system.run` / `system.which` على هذا الجهاز.
 
 ## لماذا تستخدم مضيف Node؟
 
 استخدم مضيف Node عندما تريد من الوكلاء **تشغيل أوامر على أجهزة أخرى** في
-شبكتك من دون تثبيت تطبيق macOS مرافق كامل هناك.
+شبكتك دون تثبيت تطبيق macOS companion كامل هناك.
 
 حالات الاستخدام الشائعة:
 
 - تشغيل الأوامر على أجهزة Linux/Windows بعيدة (خوادم البناء، أجهزة المختبر، NAS).
-- إبقاء exec **داخل sandbox** على Gateway، مع تفويض التشغيلات المعتمدة إلى مضيفين آخرين.
-- توفير هدف تنفيذ خفيف وبلا واجهة للأتمتة أو عقد CI.
+- إبقاء exec **معزولاً في sandbox** على Gateway، مع تفويض عمليات التشغيل المعتمدة إلى مضيفين آخرين.
+- توفير هدف تنفيذ خفيف وبدون واجهة للأتمتة أو عُقد CI.
 
-لا يزال التنفيذ محميًا بواسطة **موافقات exec** وقوائم السماح لكل وكيل على
-مضيف Node، بحيث يمكنك إبقاء الوصول إلى الأوامر محدد النطاق وصريحًا.
+يبقى التنفيذ محمياً بواسطة **موافقات exec** وقوائم السماح لكل وكيل على
+مضيف Node، حتى تتمكن من إبقاء الوصول إلى الأوامر محدوداً وصريحاً.
 
-## وكيل المتصفح (بلا إعدادات)
+## وكيل المتصفح (بدون إعداد)
 
-تعلن مضيفات Node تلقائيًا عن وكيل متصفح إذا لم يكن `browser.enabled`
-معطّلًا على العقدة. يتيح ذلك للوكيل استخدام أتمتة المتصفح على تلك العقدة
-من دون إعدادات إضافية.
+تعلن مضيفات Node تلقائياً عن وكيل متصفح إذا لم يكن `browser.enabled`
+معطلاً على العقدة. يتيح هذا للوكيل استخدام أتمتة المتصفح على تلك العقدة
+دون إعداد إضافي.
 
-افتراضيًا، يكشف الوكيل سطح ملف تعريف المتصفح العادي الخاص بالعقدة. إذا
-ضبطت `nodeHost.browserProxy.allowProfiles`، يصبح الوكيل تقييديًا:
-يُرفض استهداف ملفات التعريف غير الموجودة في قائمة السماح، وتُحظر مسارات
+افتراضياً، يعرّض الوكيل سطح ملف تعريف المتصفح العادي للعقدة. إذا ضبطت
+`nodeHost.browserProxy.allowProfiles`، يصبح الوكيل مقيّداً:
+يُرفض استهداف ملفات التعريف غير المدرجة في قائمة السماح، وتُحظر مسارات
 إنشاء/حذف ملفات التعريف الدائمة عبر الوكيل.
 
 عطّله على العقدة عند الحاجة:
@@ -66,7 +66,8 @@ openclaw node run --host <gateway-host> --port 18789
 
 - `--host <host>`: مضيف Gateway WebSocket (الافتراضي: `127.0.0.1`)
 - `--port <port>`: منفذ Gateway WebSocket (الافتراضي: `18789`)
-- `--tls`: استخدام TLS لاتصال Gateway
+- `--context-path <path>`: مسار سياق Gateway WebSocket (مثل `/openclaw-gw`). يُضاف إلى WebSocket URL.
+- `--tls`: استخدم TLS لاتصال Gateway
 - `--tls-fingerprint <sha256>`: بصمة شهادة TLS المتوقعة (sha256)
 - `--node-id <id>`: تجاوز معرّف العقدة (يمسح رمز الاقتران)
 - `--display-name <name>`: تجاوز اسم عرض العقدة
@@ -75,25 +76,25 @@ openclaw node run --host <gateway-host> --port 18789
 
 يحل `openclaw node run` و`openclaw node install` مصادقة Gateway من config/env (لا توجد أعلام `--token`/`--password` على أوامر العقدة):
 
-- يتم فحص `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` أولًا.
-- ثم الرجوع إلى الإعداد المحلي: `gateway.auth.token` / `gateway.auth.password`.
-- في الوضع المحلي، لا يرث مضيف Node عمدًا `gateway.remote.token` / `gateway.remote.password`.
-- إذا تم إعداد `gateway.auth.token` / `gateway.auth.password` صراحةً عبر SecretRef ولم يُحلّا، يفشل حل مصادقة العقدة بشكل مغلق (من دون إخفاء عبر رجوع بعيد).
-- في `gateway.mode=remote`، تكون حقول العميل البعيد (`gateway.remote.token` / `gateway.remote.password`) مؤهلة أيضًا وفق قواعد أولوية البعيد.
-- لا يراعي حل مصادقة مضيف Node إلا متغيرات env باسم `OPENCLAW_GATEWAY_*`.
+- يتم فحص `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` أولاً.
+- ثم خيار الرجوع إلى الإعداد المحلي: `gateway.auth.token` / `gateway.auth.password`.
+- في الوضع المحلي، لا يرث مضيف Node عمداً `gateway.remote.token` / `gateway.remote.password`.
+- إذا تم تكوين `gateway.auth.token` / `gateway.auth.password` صراحةً عبر SecretRef ولم يُحل، يفشل حل مصادقة العقدة بشكل مغلق (دون إخفاء عبر رجوع بعيد).
+- في `gateway.mode=remote`، تكون حقول العميل البعيد (`gateway.remote.token` / `gateway.remote.password`) مؤهلة أيضاً وفق قواعد أسبقية الوضع البعيد.
+- لا يراعي حل مصادقة مضيف Node إلا متغيرات env من نمط `OPENCLAW_GATEWAY_*`.
 
-بالنسبة إلى عقدة تتصل بـ Gateway نصي عادي `ws://`، يتم قبول loopback،
-وقيم IP الخاصة الحرفية، و`.local`، ومضيفات Tailnet `*.ts.net`. بالنسبة إلى
-أسماء DNS الخاصة الموثوقة الأخرى، اضبط `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`؛
-من دونه، يفشل بدء تشغيل العقدة بشكل مغلق ويطلب منك استخدام `wss://`، أو نفق SSH، أو
-Tailscale. هذا تفعيل اختياري عبر بيئة العملية، وليس مفتاح إعداد
+بالنسبة إلى عقدة تتصل بـ Gateway نصي صريح `ws://`، تُقبل عناوين حلقة الإرجاع، وعناوين IP
+الخاصة الحرفية، و`.local`، ومضيفات Tailnet `*.ts.net`. بالنسبة إلى أسماء
+private-DNS الموثوقة الأخرى، اضبط `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`؛ ومن دونه
+يفشل بدء العقدة بشكل مغلق ويطلب منك استخدام `wss://`، أو نفق SSH، أو
+Tailscale. هذا اشتراك على مستوى بيئة العملية، وليس مفتاح config في
 `openclaw.json`.
-يقوم `openclaw node install` بحفظه داخل خدمة العقدة الخاضعة للإشراف عندما
-يكون موجودًا في بيئة أمر التثبيت.
+يثبّته `openclaw node install` داخل خدمة العقدة المُدارة عندما يكون
+موجوداً في بيئة أمر التثبيت.
 
 ## الخدمة (في الخلفية)
 
-ثبّت مضيف Node بلا واجهة كخدمة مستخدم.
+ثبّت مضيف Node بدون واجهة كخدمة مستخدم.
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789
@@ -103,12 +104,13 @@ openclaw node install --host <gateway-host> --port 18789
 
 - `--host <host>`: مضيف Gateway WebSocket (الافتراضي: `127.0.0.1`)
 - `--port <port>`: منفذ Gateway WebSocket (الافتراضي: `18789`)
-- `--tls`: استخدام TLS لاتصال Gateway
+- `--context-path <path>`: مسار سياق Gateway WebSocket (مثل `/openclaw-gw`). يُضاف إلى WebSocket URL.
+- `--tls`: استخدم TLS لاتصال Gateway
 - `--tls-fingerprint <sha256>`: بصمة شهادة TLS المتوقعة (sha256)
 - `--node-id <id>`: تجاوز معرّف العقدة (يمسح رمز الاقتران)
 - `--display-name <name>`: تجاوز اسم عرض العقدة
-- `--runtime <runtime>`: Runtime الخدمة (`node` أو `bun`)
-- `--force`: إعادة التثبيت/الكتابة فوق الموجود إذا كان مثبتًا بالفعل
+- `--runtime <runtime>`: وقت تشغيل الخدمة (`node` أو `bun`)
+- `--force`: أعد التثبيت/اكتب فوق الموجود إذا كان مثبتاً بالفعل
 
 إدارة الخدمة:
 
@@ -120,28 +122,28 @@ openclaw node restart
 openclaw node uninstall
 ```
 
-استخدم `openclaw node run` لمضيف Node يعمل في المقدمة (من دون خدمة).
+استخدم `openclaw node run` لمضيف Node في المقدمة (بدون خدمة).
 
-تقبل أوامر الخدمة `--json` لإخراج قابل للقراءة آليًا.
+تقبل أوامر الخدمة `--json` لمخرجات قابلة للقراءة آلياً.
 
-يعيد مضيف Node محاولة إعادة تشغيل Gateway وإغلاقات الشبكة داخل العملية. إذا
-أبلغ Gateway عن إيقاف مصادقة نهائي بسبب token/password/bootstrap، يسجل مضيف Node
-تفاصيل الإغلاق ويخرج برمز غير صفري حتى يتمكن launchd/systemd من إعادة تشغيله
-بإعدادات وبيانات اعتماد جديدة. تبقى إيقافات طلب الاقتران في تدفق المقدمة
-حتى يمكن الموافقة على الطلب المعلّق.
+يعيد مضيف Node محاولة تشغيل Gateway وإغلاق الشبكة داخل العملية. إذا أبلغ
+Gateway عن إيقاف مصادقة نهائي للرمز/كلمة المرور/bootstrap، يسجّل مضيف Node
+تفاصيل الإغلاق ويخرج بقيمة غير صفرية حتى يتمكن launchd/systemd من إعادة تشغيله
+بإعدادات وبيانات اعتماد جديدة. تبقى إيقافات الاقتران المطلوبة في مسار
+المقدمة حتى يمكن اعتماد الطلب المعلّق.
 
 ## الاقتران
 
-ينشئ الاتصال الأول طلب اقتران جهاز معلّقًا (`role: node`) على Gateway.
-وافق عليه عبر:
+ينشئ الاتصال الأول طلب اقتران جهاز معلّقاً (`role: node`) على Gateway.
+اعتمده عبر:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-في شبكات العقد الخاضعة لرقابة مشددة، يمكن لمشغّل Gateway تفعيل الموافقة
-التلقائية صراحةً على اقتران العقدة لأول مرة من CIDR موثوقة:
+في شبكات العقد الخاضعة لرقابة صارمة، يمكن لمشغّل Gateway الاشتراك صراحةً
+في اعتماد اقتران العقدة لأول مرة تلقائياً من نطاقات CIDR موثوقة:
 
 ```json5
 {
@@ -155,32 +157,32 @@ openclaw devices approve <requestId>
 }
 ```
 
-هذا معطّل افتراضيًا. ينطبق فقط على اقتران `role: node` جديد
-من دون نطاقات مطلوبة. لا يزال العملاء من نوع المشغّل/المتصفح، وControl UI، وWebChat، وترقيات الدور،
-والنطاق، والبيانات الوصفية، أو المفتاح العام تتطلب موافقة يدوية.
+هذا معطّل افتراضياً. ولا ينطبق إلا على اقتران `role: node` جديد
+دون نطاقات مطلوبة. ما تزال عملاء المشغّل/المتصفح، وControl UI، وWebChat، وترقيات الدور،
+والنطاق، والبيانات الوصفية، أو المفتاح العام تتطلب اعتماداً يدوياً.
 
 إذا أعادت العقدة محاولة الاقتران مع تفاصيل مصادقة متغيرة (الدور/النطاقات/المفتاح العام)،
-يتم استبدال الطلب المعلّق السابق وإنشاء `requestId` جديد.
-شغّل `openclaw devices list` مرة أخرى قبل الموافقة.
+يتم تجاوز الطلب المعلّق السابق ويُنشأ `requestId` جديد.
+شغّل `openclaw devices list` مرة أخرى قبل الاعتماد.
 
-يخزّن مضيف Node معرّف العقدة، والرمز، واسم العرض، ومعلومات اتصال Gateway في
+يخزن مضيف Node معرّف العقدة، والرمز، واسم العرض، ومعلومات اتصال Gateway في
 `~/.openclaw/node.json`.
 
 ## موافقات exec
 
-يخضع `system.run` لموافقات exec المحلية:
+`system.run` محمي بموافقات exec المحلية:
 
 - `$OPENCLAW_STATE_DIR/exec-approvals.json`، أو
-  `~/.openclaw/exec-approvals.json` عندما لا يكون المتغير مضبوطًا
+  `~/.openclaw/exec-approvals.json` عندما لا يكون المتغير مضبوطاً
 - [موافقات exec](/ar/tools/exec-approvals)
-- `openclaw approvals --node <id|name|ip>` (التحرير من Gateway)
+- `openclaw approvals --node <id|name|ip>` (تحرير من Gateway)
 
-بالنسبة إلى exec غير المتزامن المعتمد على العقدة، يحضّر OpenClaw خطة `systemRunPlan`
-قياسية قبل طلب الموافقة. يعيد تمرير `system.run` المعتمد لاحقًا استخدام تلك
-الخطة المخزنة، لذلك تُرفض التعديلات على حقول الأمر/cwd/session بعد إنشاء
-طلب الموافقة بدلًا من تغيير ما تنفذه العقدة.
+بالنسبة إلى exec عقدة غير متزامن معتمد، يحضّر OpenClaw `systemRunPlan` قانونية
+قبل المطالبة. يستخدم توجيه `system.run` المعتمد لاحقاً تلك الخطة المخزنة
+نفسها، لذلك تُرفض التعديلات على حقول command/cwd/session بعد إنشاء طلب
+الموافقة بدلاً من تغيير ما تنفذه العقدة.
 
-## ذات صلة
+## ذو صلة
 
 - [مرجع CLI](/ar/cli)
 - [العقد](/ar/nodes)
