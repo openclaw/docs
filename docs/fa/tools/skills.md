@@ -1,36 +1,36 @@
 ---
 read_when:
     - افزودن یا تغییر Skills
-    - تغییر در گزینش Skills، فهرست‌های مجاز، یا قواعد بارگذاری
-    - درک اولویت Skills و رفتار snapshot
+    - تغییر در مهار Skills، فهرست‌های مجاز، یا قواعد بارگذاری
+    - درک اولویت مهارت و رفتار Snapshot
 sidebarTitle: Skills
-summary: Skills به عامل شما می‌آموزد چگونه از ابزارها استفاده کند. بیاموزید چگونه بارگذاری می‌شوند، تقدم چگونه کار می‌کند، و چگونه دروازه‌گذاری، فهرست‌های مجاز و تزریق محیط را پیکربندی کنید.
+summary: Skills به عامل شما می‌آموزد چگونه از ابزارها استفاده کند. یاد بگیرید چگونه بارگذاری می‌شوند، تقدم چگونه کار می‌کند، و چگونه کنترل دسترسی، فهرست‌های مجاز، و تزریق محیط را پیکربندی کنید.
 title: Skills
 x-i18n:
-    generated_at: "2026-06-27T19:04:09Z"
+    generated_at: "2026-07-01T08:34:45Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e42d89d47125a4d92f68a20d754de571d5582858a9c44618b999a27335e78ab2
+    source_hash: d278a83bcd92e8c24ad0e01ec8fbf462450556493453ca1152e317727be34400
     source_path: tools/skills.md
     workflow: 16
 ---
 
-Skills فایل‌های دستورالعمل Markdown هستند که به عامل یاد می‌دهند چگونه و چه زمانی از
+Skills فایل‌های دستورالعمل markdown هستند که به agent یاد می‌دهند چگونه و چه زمانی از
 ابزارها استفاده کند. هر مهارت در یک دایرکتوری قرار دارد که شامل فایل `SKILL.md` با
-frontmatter از نوع YAML و بدنه Markdown است. OpenClaw مهارت‌های همراه بسته و هر
-بازنویسی محلی را بارگذاری می‌کند و آن‌ها را هنگام بارگذاری بر اساس محیط، پیکربندی و
-وجود باینری فیلتر می‌کند.
+frontmatter از نوع YAML و بدنه markdown است. OpenClaw مهارت‌های همراه و هر
+بازنویسی محلی را بارگذاری می‌کند، و آن‌ها را هنگام بارگذاری بر اساس محیط، پیکربندی، و
+وجود binary فیلتر می‌کند.
 
 <CardGroup cols={2}>
   <Card title="Creating skills" href="/fa/tools/creating-skills" icon="hammer">
     یک مهارت سفارشی را از ابتدا بسازید و آزمایش کنید.
   </Card>
   <Card title="Skill Workshop" href="/fa/tools/skill-workshop" icon="flask">
-    پیشنهادهای مهارتِ پیش‌نویس‌شده توسط عامل را بازبینی و تأیید کنید.
+    پیشنهادهای مهارت تهیه‌شده توسط agent را بازبینی و تأیید کنید.
   </Card>
   <Card title="Skills config" href="/fa/tools/skills-config" icon="gear">
-    طرح‌واره کامل پیکربندی `skills.*` و فهرست‌های مجاز عامل.
+    طرح‌واره کامل پیکربندی `skills.*` و allowlistهای agent.
   </Card>
   <Card title="ClawHub" href="/fa/clawhub" icon="cloud">
     مهارت‌های جامعه را مرور و نصب کنید.
@@ -39,19 +39,19 @@ frontmatter از نوع YAML و بدنه Markdown است. OpenClaw مهارت‌
 
 ## ترتیب بارگذاری
 
-OpenClaw از این منابع بارگذاری می‌کند، **ابتدا با بالاترین اولویت**. وقتی نام یکسان
-مهارت در چند جای مختلف ظاهر شود، منبع با بالاترین اولویت برنده می‌شود.
+OpenClaw از این منابع بارگذاری می‌کند، **ابتدا با بالاترین اولویت**. وقتی نام یکسانی برای
+مهارت در چند جا ظاهر شود، منبع با اولویت بالاتر برنده است.
 
-| اولویت          | منبع                         | مسیر                                    |
-| --------------- | ---------------------------- | --------------------------------------- |
-| ۱ — بالاترین    | مهارت‌های فضای کاری          | `<workspace>/skills`                    |
-| ۲               | مهارت‌های عامل پروژه         | `<workspace>/.agents/skills`            |
-| ۳               | مهارت‌های عامل شخصی          | `~/.agents/skills`                      |
-| ۴               | مهارت‌های مدیریت‌شده / محلی  | `~/.openclaw/skills`                    |
-| ۵               | مهارت‌های همراه بسته         | همراه نصب ارائه می‌شود                 |
-| ۶ — پایین‌ترین  | دایرکتوری‌های اضافی          | `skills.load.extraDirs` + مهارت‌های Plugin |
+| اولویت | منبع | مسیر |
+| ----------- | ---------------------- | --------------------------------------- |
+| 1 — بالاترین | مهارت‌های workspace | `<workspace>/skills` |
+| 2 | مهارت‌های project agent | `<workspace>/.agents/skills` |
+| 3 | مهارت‌های personal agent | `~/.agents/skills` |
+| 4 | مهارت‌های مدیریت‌شده / محلی | `~/.openclaw/skills` |
+| 5 | مهارت‌های همراه | همراه نصب ارائه می‌شود |
+| 6 — پایین‌ترین | دایرکتوری‌های اضافی | `skills.load.extraDirs` + مهارت‌های Plugin |
 
-ریشه‌های مهارت از چیدمان‌های گروه‌بندی‌شده پشتیبانی می‌کنند. OpenClaw هرگاه
+ریشه‌های مهارت از چیدمان‌های گروه‌بندی‌شده پشتیبانی می‌کنند. OpenClaw هر زمان که
 `SKILL.md` در هر جایی زیر یک ریشه پیکربندی‌شده ظاهر شود، یک مهارت را کشف می‌کند:
 
 ```text
@@ -59,34 +59,33 @@ OpenClaw از این منابع بارگذاری می‌کند، **ابتدا ب
 <workspace>/skills/personal/research/SKILL.md ✓ also found as "research"
 ```
 
-مسیر پوشه فقط برای سازمان‌دهی است. نام مهارت، دستور slash، و کلید فهرست مجاز همگی
-از فیلد frontmatter با نام `name` می‌آیند (یا وقتی `name` وجود نداشته باشد، از نام
-دایرکتوری).
+مسیر پوشه فقط برای سازمان‌دهی است. نام مهارت، slash command، و کلید allowlist همگی
+از فیلد frontmatter به نام `name` می‌آیند (یا وقتی `name` وجود ندارد، از نام دایرکتوری).
 
 <Note>
-  دایرکتوری بومی `$CODEX_HOME/skills` در Codex CLI، ریشه مهارت OpenClaw
+  دایرکتوری بومی `$CODEX_HOME/skills` در Codex CLI ریشه مهارت OpenClaw
   **نیست**. از `openclaw migrate plan codex` برای فهرست‌برداری از آن مهارت‌ها استفاده کنید، سپس
-  `openclaw migrate codex` را اجرا کنید تا آن‌ها را به فضای کاری OpenClaw خود کپی کنید.
+  برای کپی کردن آن‌ها به workspace OpenClaw خود، `openclaw migrate codex` را اجرا کنید.
 </Note>
 
-## مهارت‌های مختص عامل در برابر مهارت‌های مشترک
+## مهارت‌های مختص هر agent در برابر مهارت‌های مشترک
 
-در راه‌اندازی‌های چندعاملی، هر عامل فضای کاری خودش را دارد. از مسیری استفاده کنید که
-با میزان نمایانی مورد نظر شما سازگار است:
+در راه‌اندازی‌های چند-agent، هر agent workspace خودش را دارد. از مسیری استفاده کنید که
+با میزان دیدپذیری موردنظرتان هم‌خوان است:
 
-| دامنه           | مسیر                         | قابل مشاهده برای              |
-| --------------- | ---------------------------- | ----------------------------- |
-| مختص عامل        | `<workspace>/skills`         | فقط همان عامل                 |
-| عامل پروژه      | `<workspace>/.agents/skills` | فقط عامل همان فضای کاری       |
-| عامل شخصی       | `~/.agents/skills`           | همه عامل‌ها روی این دستگاه    |
-| مدیریت‌شده مشترک | `~/.openclaw/skills`         | همه عامل‌ها روی این دستگاه    |
-| دایرکتوری‌های اضافی | `skills.load.extraDirs`      | همه عامل‌ها روی این دستگاه    |
+| دامنه | مسیر | قابل مشاهده برای |
+| -------------- | ---------------------------- | --------------------------- |
+| مختص هر agent | `<workspace>/skills` | فقط همان agent |
+| Project-agent | `<workspace>/.agents/skills` | فقط agent همان workspace |
+| Personal-agent | `~/.agents/skills` | همه agentها روی این ماشین |
+| مدیریت‌شده مشترک | `~/.openclaw/skills` | همه agentها روی این ماشین |
+| دایرکتوری‌های اضافی | `skills.load.extraDirs` | همه agentها روی این ماشین |
 
-## فهرست‌های مجاز عامل
+## Allowlistهای agent
 
-**مکان** مهارت (اولویت) و **نمایانی** مهارت (اینکه کدام عامل می‌تواند از آن استفاده
-کند) کنترل‌های جداگانه‌ای هستند. از فهرست‌های مجاز برای محدود کردن مهارت‌هایی که یک عامل می‌بیند استفاده کنید،
-صرف‌نظر از اینکه از کجا بارگذاری شده‌اند.
+**مکان** مهارت (اولویت) و **دیدپذیری** مهارت (اینکه کدام agent می‌تواند از آن استفاده کند)
+کنترل‌های جداگانه هستند. برای محدود کردن اینکه یک agent کدام مهارت‌ها را می‌بیند، فارغ از اینکه
+از کجا بارگذاری شده‌اند، از allowlistها استفاده کنید.
 
 ```json5
 {
@@ -105,35 +104,38 @@ OpenClaw از این منابع بارگذاری می‌کند، **ابتدا ب
 
 <AccordionGroup>
   <Accordion title="Allowlist rules">
-    - برای اینکه همه مهارت‌ها به‌طور پیش‌فرض نامحدود بمانند، `agents.defaults.skills` را حذف کنید.
-    - برای به ارث بردن `agents.defaults.skills`، مقدار `agents.list[].skills` را حذف کنید.
-    - برای اینکه هیچ مهارتی برای آن عامل نمایان نشود، `agents.list[].skills: []` را تنظیم کنید.
+    - برای اینکه همه مهارت‌ها به‌صورت پیش‌فرض نامحدود بمانند، `agents.defaults.skills` را حذف کنید.
+    - برای به ارث بردن `agents.defaults.skills`، `agents.list[].skills` را حذف کنید.
+    - برای اینکه هیچ مهارتی برای آن agent ارائه نشود، `agents.list[].skills: []` را تنظیم کنید.
     - یک فهرست غیرخالی `agents.list[].skills` مجموعه **نهایی** است — با پیش‌فرض‌ها
       ادغام نمی‌شود.
-    - فهرست مجاز مؤثر در ساخت prompt، کشف دستورهای slash،
-      همگام‌سازی sandbox، و snapshotهای مهارت اعمال می‌شود.
+    - allowlist مؤثر در ساخت prompt، کشف slash-command، همگام‌سازی sandbox، و
+      snapshotهای مهارت اعمال می‌شود.
+    - این یک مرز مجوزدهی shell میزبان نیست. اگر همان agent می‌تواند از `exec`
+      استفاده کند، آن shell را جداگانه با sandboxing، جداسازی OS-user،
+      deny/allowlistهای exec، و اعتبارنامه‌های مختص هر منبع محدود کنید.
   </Accordion>
 </AccordionGroup>
 
 ## Pluginها و مهارت‌ها
 
 Pluginها می‌توانند با فهرست کردن دایرکتوری‌های `skills` در
-`openclaw.plugin.json` (مسیرها نسبت به ریشه Plugin) مهارت‌های خودشان را ارائه کنند. مهارت‌های Plugin
-وقتی Plugin فعال باشد بارگذاری می‌شوند — برای مثال، Plugin مرورگر یک مهارت
+`openclaw.plugin.json` مهارت‌های خودشان را ارائه کنند (مسیرها نسبت به ریشه Plugin هستند). مهارت‌های Plugin
+وقتی Plugin فعال باشد بارگذاری می‌شوند — برای نمونه، Plugin مرورگر یک مهارت
 `browser-automation` برای کنترل چندمرحله‌ای مرورگر ارائه می‌کند.
 
-دایرکتوری‌های مهارت Plugin در همان سطح کم‌اولویت
-`skills.load.extraDirs` ادغام می‌شوند، بنابراین یک مهارت همراه بسته، مدیریت‌شده، عامل، یا فضای کاری
-با همان نام آن‌ها را بازنویسی می‌کند. آن‌ها را از طریق `metadata.openclaw.requires.config` روی ورودی
-پیکربندی Plugin محدود کنید.
+دایرکتوری‌های مهارت Plugin در همان سطح کم‌اولویت `skills.load.extraDirs` ادغام می‌شوند،
+بنابراین یک مهارت همراه، مدیریت‌شده، agent، یا workspace با نام یکسان
+آن‌ها را بازنویسی می‌کند. آن‌ها را از طریق `metadata.openclaw.requires.config` روی ورودی
+پیکربندی Plugin gate کنید.
 
-برای سامانه کامل Plugin، [Pluginها](/fa/tools/plugin) و [ابزارها](/fa/tools) را ببینید.
+برای سامانه کامل Plugin، [Plugins](/fa/tools/plugin) و [Tools](/fa/tools) را ببینید.
 
 ## کارگاه مهارت
 
-[کارگاه مهارت](/fa/tools/skill-workshop) یک صف پیشنهاد میان عامل
-و فایل‌های مهارت فعال شماست. وقتی عامل کار قابل استفاده مجددی تشخیص دهد، به‌جای نوشتن مستقیم در
-`SKILL.md` یک پیشنهاد پیش‌نویس می‌کند. پیش از هر تغییری، شما بازبینی و تأیید می‌کنید.
+[Skill Workshop](/fa/tools/skill-workshop) یک صف پیشنهاد بین agent
+و فایل‌های مهارت فعال شما است. وقتی agent کار قابل استفاده مجددی را تشخیص دهد، به‌جای نوشتن مستقیم در
+`SKILL.md` یک پیشنهاد تهیه می‌کند. شما پیش از هر تغییری آن را بازبینی و تأیید می‌کنید.
 
 ```bash
 openclaw skills workshop list
@@ -141,103 +143,101 @@ openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop apply <proposal-id>
 ```
 
-برای چرخه عمر کامل، مرجع CLI
-و پیکربندی، [کارگاه مهارت](/fa/tools/skill-workshop) را ببینید.
+برای چرخه عمر کامل، مرجع CLI، و پیکربندی، [Skill Workshop](/fa/tools/skill-workshop) را ببینید.
 
 ## نصب از ClawHub
 
-[ClawHub](https://clawhub.ai) رجیستری عمومی مهارت‌هاست. از دستورهای
-`openclaw skills` برای نصب و به‌روزرسانی، یا از CLI `clawhub` برای
-انتشار و همگام‌سازی استفاده کنید.
+[ClawHub](https://clawhub.ai) رجیستری عمومی مهارت‌ها است. برای نصب و به‌روزرسانی از
+دستورهای `openclaw skills` استفاده کنید، یا برای انتشار و همگام‌سازی از CLI
+`clawhub` استفاده کنید.
 
-| اقدام                              | دستور                                                  |
+| اقدام | دستور |
 | ---------------------------------- | ------------------------------------------------------ |
-| نصب یک مهارت در فضای کاری          | `openclaw skills install @owner/<slug>`                |
-| نصب از یک مخزن Git                 | `openclaw skills install git:owner/repo@ref`           |
-| نصب یک دایرکتوری مهارت محلی        | `openclaw skills install ./path/to/skill --as my-tool` |
-| نصب برای همه عامل‌های محلی         | `openclaw skills install @owner/<slug> --global`       |
-| به‌روزرسانی همه مهارت‌های فضای کاری | `openclaw skills update --all`                         |
-| به‌روزرسانی یک مهارت مدیریت‌شده مشترک | `openclaw skills update @owner/<slug> --global`        |
-| به‌روزرسانی همه مهارت‌های مدیریت‌شده مشترک | `openclaw skills update --all --global`                |
-| راستی‌آزمایی trust envelope یک مهارت | `openclaw skills verify @owner/<slug>`                 |
-| چاپ Skill Card تولیدشده            | `openclaw skills verify @owner/<slug> --card`          |
-| انتشار / همگام‌سازی از طریق ClawHub CLI | `clawhub sync --all`                                   |
+| نصب یک مهارت در workspace | `openclaw skills install @owner/<slug>` |
+| نصب از یک مخزن Git | `openclaw skills install git:owner/repo@ref` |
+| نصب یک دایرکتوری مهارت محلی | `openclaw skills install ./path/to/skill --as my-tool` |
+| نصب برای همه agentهای محلی | `openclaw skills install @owner/<slug> --global` |
+| به‌روزرسانی همه مهارت‌های workspace | `openclaw skills update --all` |
+| به‌روزرسانی یک مهارت مدیریت‌شده مشترک | `openclaw skills update @owner/<slug> --global` |
+| به‌روزرسانی همه مهارت‌های مدیریت‌شده مشترک | `openclaw skills update --all --global` |
+| راستی‌آزمایی trust envelope یک مهارت | `openclaw skills verify @owner/<slug>` |
+| چاپ Skill Card تولیدشده | `openclaw skills verify @owner/<slug> --card` |
+| انتشار / همگام‌سازی از طریق ClawHub CLI | `clawhub sync --all` |
 
 <AccordionGroup>
   <Accordion title="Install details">
-    `openclaw skills install` به‌طور پیش‌فرض در دایرکتوری `skills/`
-    فضای کاری فعال نصب می‌کند. برای نصب در دایرکتوری مشترک
-    `~/.openclaw/skills`، که برای همه عامل‌های محلی قابل مشاهده است مگر اینکه فهرست‌های مجاز عامل
-    آن را محدود کنند، `--global` را اضافه کنید.
+    `openclaw skills install` به‌صورت پیش‌فرض در دایرکتوری `skills/`
+    workspace فعال نصب می‌کند. برای نصب در دایرکتوری مشترک
+    `~/.openclaw/skills` که برای همه agentهای محلی قابل مشاهده است، `--global` را اضافه کنید، مگر اینکه
+    allowlistهای agent آن را محدود کنند.
 
-    نصب‌های Git و محلی انتظار دارند `SKILL.md` در ریشه منبع باشد. slug از
-    frontmatter `SKILL.md` و فیلد `name` می‌آید، اگر معتبر باشد، سپس به نام
+    نصب‌های Git و محلی انتظار دارند `SKILL.md` در ریشه منبع باشد. slug وقتی معتبر باشد
+    از frontmatter `name` در `SKILL.md` می‌آید، سپس به نام
     دایرکتوری یا مخزن برمی‌گردد. برای بازنویسی از `--as <slug>` استفاده کنید.
-    `openclaw skills update` فقط نصب‌های ClawHub را ردیابی می‌کند — برای تازه‌سازی منابع Git یا
+    `openclaw skills update` فقط نصب‌های ClawHub را رهگیری می‌کند — برای تازه‌سازی منابع Git یا
     محلی، آن‌ها را دوباره نصب کنید.
 
   </Accordion>
   <Accordion title="Verification and security scanning">
-    `openclaw skills verify @owner/<slug>` از ClawHub،
-    trust envelope مهارت با نام `clawhub.skill.verify.v1` را می‌خواهد. مهارت‌های نصب‌شده از ClawHub
+    `openclaw skills verify @owner/<slug>` از ClawHub برای trust envelope
+    `clawhub.skill.verify.v1` مهارت درخواست می‌کند. مهارت‌های ClawHub نصب‌شده
     در برابر نسخه و رجیستری ثبت‌شده در `.clawhub/origin.json` راستی‌آزمایی می‌شوند.
     slugهای بدون owner همچنان برای مهارت‌های نصب‌شده موجود یا بدون ابهام پذیرفته می‌شوند، اما
     refهای دارای owner از ابهام ناشر جلوگیری می‌کنند.
 
-    صفحه‌های مهارت در ClawHub پیش از نصب، آخرین وضعیت اسکن امنیتی را نشان می‌دهند،
-    با صفحه‌های جزئیات برای VirusTotal، ClawScan و تحلیل ایستا. وقتی
-    ClawHub راستی‌آزمایی را ناموفق علامت بزند، دستور با وضعیت غیرصفر خارج می‌شود. ناشران
+    صفحه‌های مهارت ClawHub آخرین وضعیت اسکن امنیتی را پیش از نصب نمایش می‌دهند،
+    همراه با صفحه‌های جزئیات برای VirusTotal، ClawScan، و تحلیل ایستا. وقتی
+    ClawHub راستی‌آزمایی را ناموفق علامت‌گذاری کند، دستور با مقدار غیرصفر خارج می‌شود. ناشران
     false positiveها را از طریق داشبورد ClawHub یا
     `clawhub skill rescan @owner/<slug>` برطرف می‌کنند.
 
   </Accordion>
   <Accordion title="Private archive installs">
     کلاینت‌های Gateway که به تحویل غیر ClawHub نیاز دارند می‌توانند یک آرشیو zip مهارت را
-    با `skills.upload.begin`، `skills.upload.chunk` و `skills.upload.commit` آماده کنند،
-    سپس با `skills.install({ source: "upload", ... })` نصب کنند. این مسیر به‌طور
+    با `skills.upload.begin`، `skills.upload.chunk`، و `skills.upload.commit` آماده کنند،
+    سپس با `skills.install({ source: "upload", ... })` نصب کنند. این مسیر به‌صورت
     پیش‌فرض غیرفعال است و به `skills.install.allowUploadedArchives: true` در
-    `openclaw.json` نیاز دارد. نصب‌های عادی ClawHub هرگز به آن تنظیم نیاز ندارند.
+    `openclaw.json` نیاز دارد. نصب‌های معمول ClawHub هرگز به آن تنظیم نیاز ندارند.
   </Accordion>
 </AccordionGroup>
 
 ## امنیت
 
 <Warning>
-  با مهارت‌های شخص ثالث مانند **کد غیرقابل اعتماد** رفتار کنید. پیش از فعال‌سازی آن‌ها را بخوانید.
-  برای ورودی‌های غیرقابل اعتماد و ابزارهای پرخطر، اجرای sandboxشده را ترجیح دهید. برای کنترل‌های سمت عامل،
+  با مهارت‌های شخص ثالث به‌عنوان **کد غیرقابل اعتماد** برخورد کنید. پیش از فعال‌سازی آن‌ها را بخوانید.
+  برای ورودی‌های غیرقابل اعتماد و ابزارهای پرریسک، اجراهای sandbox شده را ترجیح دهید. برای کنترل‌های سمت agent
   [Sandboxing](/fa/gateway/sandboxing) را ببینید.
 </Warning>
 
 <AccordionGroup>
   <Accordion title="Path containment">
-    کشف مهارت‌های فضای کاری، عامل پروژه و دایرکتوری اضافی فقط ریشه‌های مهارتی را می‌پذیرد
-    که realpath حل‌شده آن‌ها داخل ریشه پیکربندی‌شده باقی بماند، مگر اینکه
-    `skills.load.allowSymlinkTargets` به‌طور صریح به یک ریشه هدف اعتماد کند.
-    کارگاه مهارت فقط زمانی از طریق آن هدف‌های مورد اعتماد می‌نویسد که
+    کشف مهارت در workspace، project-agent، و extra-dir فقط ریشه‌های مهارتی را می‌پذیرد
+    که realpath resolved آن‌ها داخل ریشه پیکربندی‌شده باقی بماند، مگر اینکه
+    `skills.load.allowSymlinkTargets` به‌صراحت به یک ریشه هدف اعتماد کند.
+    Skill Workshop فقط وقتی از طریق آن هدف‌های مورد اعتماد می‌نویسد که
     `skills.workshop.allowSymlinkTargetWrites` فعال باشد.
-    `~/.openclaw/skills` مدیریت‌شده و `~/.agents/skills` شخصی ممکن است شامل
-    پوشه‌های مهارت symlinkشده باشند، اما realpath هر `SKILL.md` همچنان باید
-    داخل دایرکتوری مهارت حل‌شده خودش باقی بماند.
+    مسیرهای مدیریت‌شده `~/.openclaw/skills` و شخصی `~/.agents/skills` ممکن است شامل
+    پوشه‌های مهارت symlink شده باشند، اما realpath هر `SKILL.md` همچنان باید
+    داخل دایرکتوری مهارت resolved خودش باقی بماند.
   </Accordion>
   <Accordion title="Operator install policy">
-    `security.installPolicy` را پیکربندی کنید تا پیش از ادامه نصب مهارت‌ها، یک دستور سیاست محلی مورد اعتماد
-    اجرا شود. این سیاست metadata و مسیر منبع آماده‌شده را دریافت می‌کند، برای مسیرهای
-    ClawHub، آپلودشده، Git، محلی، به‌روزرسانی و نصب‌کننده وابستگی اعمال می‌شود، و وقتی دستور نتواند
-    یک تصمیم معتبر برگرداند، fail closed می‌شود.
+    `security.installPolicy` را پیکربندی کنید تا پیش از ادامه نصب مهارت‌ها یک دستور policy محلی مورد اعتماد
+    اجرا شود. policy متادیتا و مسیر منبع stage شده را دریافت می‌کند، روی مسیرهای
+    ClawHub، uploaded، Git، local، update، و dependency-installer اعمال می‌شود،
+    و وقتی دستور نتواند یک تصمیم معتبر برگرداند، fail closed می‌شود.
   </Accordion>
   <Accordion title="Secret injection scope">
-    `skills.entries.*.env` و `skills.entries.*.apiKey` رازها را فقط برای همان نوبت عامل
-    به فرایند **میزبان** تزریق می‌کنند — نه به sandbox. رازها را از promptها و گزارش‌ها
-    دور نگه دارید.
+    `skills.entries.*.env` و `skills.entries.*.apiKey` رازها را فقط برای همان نوبت agent
+    به فرایند **میزبان** تزریق می‌کنند — نه به sandbox. رازها را
+    بیرون از promptها و logها نگه دارید.
   </Accordion>
 </AccordionGroup>
 
-برای مدل تهدید گسترده‌تر و فهرست‌های بررسی امنیتی،
-[امنیت](/fa/gateway/security) را ببینید.
+برای مدل تهدید گسترده‌تر و checklistهای امنیتی، [Security](/fa/gateway/security) را ببینید.
 
 ## قالب SKILL.md
 
-هر مهارت دست‌کم به یک `name` و `description` در frontmatter نیاز دارد:
+هر مهارت حداقل به یک `name` و `description` در frontmatter نیاز دارد:
 
 ```markdown
 ---
@@ -251,30 +251,29 @@ When the user asks to generate an image, use the `image_generate` tool...
 <Note>
   OpenClaw از مشخصات [AgentSkills](https://agentskills.io) پیروی می‌کند. parser
   frontmatter فقط از **کلیدهای تک‌خطی** پشتیبانی می‌کند — `metadata` باید یک
-  شیء JSON تک‌خطی باشد. از `{baseDir}` در بدنه برای ارجاع به مسیر پوشه مهارت
-  استفاده کنید.
+  شیء JSON تک‌خطی باشد. برای ارجاع به مسیر پوشه مهارت در بدنه، از `{baseDir}` استفاده کنید.
 </Note>
 
 ### کلیدهای اختیاری frontmatter
 
 <ParamField path="homepage" type="string">
-  URL که در UI مهارت‌های macOS به‌عنوان "Website" نشان داده می‌شود. از طریق
-  `metadata.openclaw.homepage` نیز پشتیبانی می‌شود.
+  URL که در UI مربوط به macOS Skills به‌صورت "Website" نشان داده می‌شود. همچنین از طریق
+  `metadata.openclaw.homepage` پشتیبانی می‌شود.
 </ParamField>
 
 <ParamField path="user-invocable" type="boolean" default="true">
-  وقتی `true` باشد، مهارت به‌عنوان یک دستور slash قابل فراخوانی توسط کاربر نمایان می‌شود.
+  وقتی `true` باشد، مهارت به‌عنوان یک slash command قابل فراخوانی توسط کاربر ارائه می‌شود.
 </ParamField>
 
 <ParamField path="disable-model-invocation" type="boolean" default="false">
-  وقتی `true` باشد، OpenClaw دستورالعمل‌های مهارت را از prompt عادی عامل
-  بیرون نگه می‌دارد. وقتی `user-invocable` نیز `true` باشد،
-  مهارت همچنان به‌عنوان دستور slash در دسترس است.
+  وقتی `true` باشد، OpenClaw دستورالعمل‌های مهارت را از prompt معمول agent
+  بیرون نگه می‌دارد. وقتی `user-invocable` نیز `true` باشد، مهارت همچنان به‌عنوان slash command
+  در دسترس است.
 </ParamField>
 
 <ParamField path="command-dispatch" type='"tool"'>
-  وقتی روی `tool` تنظیم شود، دستور slash مدل را دور می‌زند و
-  مستقیم به یک ابزار ثبت‌شده dispatch می‌شود.
+  وقتی روی `tool` تنظیم شود، slash command مدل را دور می‌زند و
+  مستقیماً به یک ابزار ثبت‌شده dispatch می‌شود.
 </ParamField>
 
 <ParamField path="command-tool" type="string">
@@ -282,15 +281,15 @@ When the user asks to generate an image, use the `image_generate` tool...
 </ParamField>
 
 <ParamField path="command-arg-mode" type='"raw"' default="raw">
-  برای dispatch ابزار، رشته خام args را بدون parsing هسته
-  به ابزار می‌فرستد. ابزار
-  `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }` را دریافت می‌کند.
+  برای ارسال ابزار، رشته خام آرگومان‌ها را بدون هیچ
+  پردازش هسته‌ای به ابزار ارسال می‌کند. ابزار این را دریافت می‌کند:
+  `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }`.
 </ParamField>
 
-## محدودسازی
+## کنترل دسترسی
 
-OpenClaw مهارت‌ها را هنگام بارگذاری با استفاده از `metadata.openclaw` (JSON تک‌خطی
-در frontmatter) فیلتر می‌کند. مهارتی که بلوک `metadata.openclaw` ندارد همیشه
+OpenClaw هنگام بارگذاری، Skills را با استفاده از `metadata.openclaw` (JSON تک‌خطی
+در frontmatter) فیلتر می‌کند. Skill بدون بلوک `metadata.openclaw` همیشه
 واجد شرایط است، مگر اینکه صراحتاً غیرفعال شده باشد.
 
 ```markdown
@@ -309,31 +308,31 @@ metadata:
 ```
 
 <ParamField path="always" type="boolean">
-  وقتی `true` باشد، مهارت همیشه اضافه می‌شود و همه دروازه‌های دیگر نادیده گرفته می‌شوند.
+  وقتی `true` باشد، همیشه Skill را شامل می‌کند و از همه دروازه‌های دیگر عبور می‌کند.
 </ParamField>
 
 <ParamField path="emoji" type="string">
-  ایموجی اختیاری که در رابط کاربری Skills در macOS نمایش داده می‌شود.
+  ایموجی اختیاری که در رابط کاربری macOS Skills نشان داده می‌شود.
 </ParamField>
 
 <ParamField path="homepage" type="string">
-  نشانی اختیاری که به‌عنوان «وب‌سایت» در رابط کاربری Skills در macOS نمایش داده می‌شود.
+  URL اختیاری که در رابط کاربری macOS Skills با عنوان «وب‌سایت» نشان داده می‌شود.
 </ParamField>
 
 <ParamField path="os" type='"darwin" | "linux" | "win32"'>
-  فیلتر پلتفرم. وقتی تنظیم شود، مهارت فقط روی سیستم‌عامل‌های فهرست‌شده واجد شرایط است.
+  فیلتر پلتفرم. وقتی تنظیم شود، Skill فقط روی OSهای فهرست‌شده واجد شرایط است.
 </ParamField>
 
 <ParamField path="requires.bins" type="string[]">
-  هر باینری باید روی `PATH` وجود داشته باشد.
+  هر باینری باید در `PATH` وجود داشته باشد.
 </ParamField>
 
 <ParamField path="requires.anyBins" type="string[]">
-  حداقل یک باینری باید روی `PATH` وجود داشته باشد.
+  حداقل یک باینری باید در `PATH` وجود داشته باشد.
 </ParamField>
 
 <ParamField path="requires.env" type="string[]">
-  هر متغیر محیطی باید در فرایند وجود داشته باشد یا از طریق پیکربندی ارائه شود.
+  هر متغیر env باید در فرایند وجود داشته باشد یا از طریق پیکربندی ارائه شود.
 </ParamField>
 
 <ParamField path="requires.config" type="string[]">
@@ -341,23 +340,23 @@ metadata:
 </ParamField>
 
 <ParamField path="primaryEnv" type="string">
-  نام متغیر محیطی مرتبط با `skills.entries.<name>.apiKey`.
+  نام متغیر env مرتبط با `skills.entries.<name>.apiKey`.
 </ParamField>
 
 <ParamField path="install" type="object[]">
-  مشخصات نصب‌کننده اختیاری که رابط کاربری Skills در macOS از آن استفاده می‌کند (brew / node / go / uv / download).
+  مشخصات نصب‌کننده اختیاری که توسط رابط کاربری macOS Skills استفاده می‌شود (brew / node / go / uv / download).
 </ParamField>
 
 <Note>
-  بلوک‌های قدیمی `metadata.clawdbot` همچنان وقتی
-  `metadata.openclaw` وجود نداشته باشد پذیرفته می‌شوند، بنابراین مهارت‌های نصب‌شده قدیمی
-  دروازه‌های وابستگی و راهنمای نصب‌کننده خود را حفظ می‌کنند. مهارت‌های جدید باید از
+  بلوک‌های قدیمی `metadata.clawdbot` همچنان زمانی پذیرفته می‌شوند که
+  `metadata.openclaw` وجود نداشته باشد، بنابراین Skills نصب‌شده قدیمی دروازه‌های
+  وابستگی و راهنمایی‌های نصب‌کننده خود را حفظ می‌کنند. Skills جدید باید از
   `metadata.openclaw` استفاده کنند.
 </Note>
 
 ### مشخصات نصب‌کننده
 
-مشخصات نصب‌کننده به رابط کاربری Skills در macOS می‌گوید چگونه یک وابستگی را نصب کند:
+مشخصات نصب‌کننده به رابط کاربری macOS Skills می‌گوید چگونه یک وابستگی را نصب کند:
 
 ```markdown
 ---
@@ -385,42 +384,42 @@ metadata:
 ```
 
 <AccordionGroup>
-  <Accordion title="قواعد انتخاب نصب‌کننده">
+  <Accordion title="Installer selection rules">
     - وقتی چند نصب‌کننده فهرست شده باشند، gateway یک گزینه ترجیحی را انتخاب می‌کند
-      (brew در صورت وجود، در غیر این صورت node).
+      (brew وقتی در دسترس باشد، در غیر این صورت node).
     - اگر همه نصب‌کننده‌ها `download` باشند، OpenClaw هر ورودی را فهرست می‌کند تا بتوانید
       همه آرتیفکت‌های موجود را ببینید.
-    - مشخصات می‌تواند شامل `os: ["darwin"|"linux"|"win32"]` باشد تا بر اساس پلتفرم فیلتر شود.
-    - نصب‌های Node به `skills.install.nodeManager` در `openclaw.json`
-      احترام می‌گذارند (پیش‌فرض: npm؛ گزینه‌ها: npm / pnpm / yarn / bun). این فقط بر نصب
-      مهارت‌ها اثر می‌گذارد؛ زمان اجرای Gateway همچنان باید Node باشد.
+    - مشخصات می‌تواند شامل `os: ["darwin"|"linux"|"win32"]` برای فیلتر بر اساس پلتفرم باشد.
+    - نصب‌های Node از `skills.install.nodeManager` در `openclaw.json` پیروی می‌کنند
+      (پیش‌فرض: npm؛ گزینه‌ها: npm / pnpm / yarn / bun). این فقط روی نصب
+      Skill اثر می‌گذارد؛ runtime Gateway همچنان باید Node باشد.
     - ترجیح نصب‌کننده Gateway: Homebrew → uv → مدیر node پیکربندی‌شده →
       go → download.
   </Accordion>
-  <Accordion title="جزئیات هر نصب‌کننده">
-    - **Homebrew:** OpenClaw به‌طور خودکار Homebrew را نصب نمی‌کند یا فرمول‌های brew را
-      به فرمان‌های بسته سیستم تبدیل نمی‌کند. در کانتینرهای Linux بدون
-      `brew`، نصب‌کننده‌های فقط brew پنهان می‌شوند؛ از یک تصویر سفارشی استفاده کنید یا
+  <Accordion title="Per-installer details">
+    - **Homebrew:** OpenClaw به‌صورت خودکار Homebrew را نصب نمی‌کند یا فرمول‌های brew
+      را به فرمان‌های بسته سیستم ترجمه نمی‌کند. در کانتینرهای Linux بدون
+      `brew`، نصب‌کننده‌های فقط brew پنهان می‌شوند؛ از یک ایمیج سفارشی استفاده کنید یا
       وابستگی را دستی نصب کنید.
     - **Go:** اگر `go` وجود نداشته باشد و `brew` در دسترس باشد، gateway ابتدا
       Go را از طریق Homebrew نصب می‌کند و `GOBIN` را روی `bin` مربوط به Homebrew تنظیم می‌کند.
     - **Download:** `url` (الزامی)، `archive` (`tar.gz` | `tar.bz2` | `zip`)،
-      `extract` (پیش‌فرض: خودکار وقتی آرشیو شناسایی شود)، `stripComponents`،
+      `extract` (پیش‌فرض: تشخیص خودکار هنگام شناسایی آرشیو)، `stripComponents`،
       `targetDir` (پیش‌فرض: `~/.openclaw/tools/<skillKey>`).
   </Accordion>
-  <Accordion title="نکات sandbox">
-    `requires.bins` هنگام بارگذاری مهارت روی **میزبان** بررسی می‌شود. اگر یک agent
-    در sandbox اجرا شود، باینری باید **داخل کانتینر** نیز وجود داشته باشد.
-    آن را از طریق `agents.defaults.sandbox.docker.setupCommand` یا یک تصویر سفارشی
-    نصب کنید. `setupCommand` یک‌بار پس از ساخت کانتینر اجرا می‌شود و به
+  <Accordion title="Sandboxing notes">
+    `requires.bins` هنگام بارگذاری Skill روی **host** بررسی می‌شود. اگر یک agent
+    در sandbox اجرا شود، باینری باید **داخل container** هم وجود داشته باشد.
+    آن را از طریق `agents.defaults.sandbox.docker.setupCommand` یا یک ایمیج سفارشی
+    نصب کنید. `setupCommand` یک‌بار پس از ایجاد container اجرا می‌شود و به
     خروجی شبکه، root FS قابل نوشتن، و کاربر root در sandbox نیاز دارد.
   </Accordion>
 </AccordionGroup>
 
 ## بازنویسی‌های پیکربندی
 
-مهارت‌های همراه یا مدیریت‌شده را زیر `skills.entries` در
-`~/.openclaw/openclaw.json` فعال، غیرفعال و پیکربندی کنید:
+Skills همراه یا مدیریت‌شده را زیر `skills.entries` در
+`~/.openclaw/openclaw.json` فعال/غیرفعال و پیکربندی کنید:
 
 ```json5
 {
@@ -443,88 +442,89 @@ metadata:
 ```
 
 <ParamField path="enabled" type="boolean">
-  `false` مهارت را حتی وقتی همراه یا نصب‌شده باشد غیرفعال می‌کند. مهارت همراه `coding-agent`
-  اختیاری است — `skills.entries.coding-agent.enabled: true` را تنظیم کنید
-  و مطمئن شوید یکی از `claude`، `codex`، `opencode` یا CLI پشتیبانی‌شده دیگری
+  `false` حتی وقتی Skill همراه یا نصب‌شده باشد آن را غیرفعال می‌کند. Skill همراه `coding-agent`
+  opt-in است — `skills.entries.coding-agent.enabled: true` را تنظیم کنید
+  و مطمئن شوید یکی از `claude`، `codex`، `opencode`، یا CLI پشتیبانی‌شده دیگری
   نصب و احراز هویت شده است.
 </ParamField>
 
 <ParamField path="apiKey" type='string | { source, provider, id }'>
-  فیلد کمکی برای مهارت‌هایی که `metadata.openclaw.primaryEnv` را اعلام می‌کنند.
-  از یک رشته متنی ساده یا یک شیء SecretRef پشتیبانی می‌کند.
+  فیلد کمکی برای Skillsی که `metadata.openclaw.primaryEnv` را اعلام می‌کنند.
+  از یک رشته متن ساده یا یک شیء SecretRef پشتیبانی می‌کند.
 </ParamField>
 
 <ParamField path="env" type="Record<string, string>">
-  متغیرهای محیطی تزریق‌شده برای اجرای agent. فقط وقتی تزریق می‌شوند که
+  متغیرهای محیطی تزریق‌شده برای اجرای agent. فقط زمانی تزریق می‌شوند که
   متغیر از قبل در فرایند تنظیم نشده باشد.
 </ParamField>
 
 <ParamField path="config" type="object">
-  محفظه اختیاری برای فیلدهای پیکربندی سفارشی ویژه هر مهارت.
+  بسته اختیاری برای فیلدهای پیکربندی سفارشیِ مخصوص هر Skill.
 </ParamField>
 
 <ParamField path="allowBundled" type="string[]">
-  فهرست مجاز اختیاری فقط برای مهارت‌های **همراه**. وقتی تنظیم شود، فقط مهارت‌های همراه
-  داخل فهرست واجد شرایط هستند. مهارت‌های مدیریت‌شده و workspace تحت تأثیر قرار نمی‌گیرند.
+  allowlist اختیاری فقط برای Skills **همراه**. وقتی تنظیم شود، فقط Skills همراه
+  موجود در فهرست واجد شرایط هستند. Skills مدیریت‌شده و workspace تحت تأثیر قرار نمی‌گیرند.
 </ParamField>
 
 <Note>
-  کلیدهای پیکربندی به‌طور پیش‌فرض با **نام مهارت** مطابقت دارند. اگر مهارتی
+  کلیدهای پیکربندی به‌طور پیش‌فرض با **نام Skill** مطابقت دارند. اگر یک Skill
   `metadata.openclaw.skillKey` را تعریف کند، از همان کلید زیر `skills.entries` استفاده کنید. نام‌های
-  دارای خط تیره را داخل کوتیشن بگذارید: JSON5 کلیدهای کوتیشن‌دار را مجاز می‌داند.
+  دارای خط تیره را نقل‌قول کنید: JSON5 کلیدهای نقل‌قول‌شده را مجاز می‌داند.
 </Note>
 
 ## تزریق محیط
 
-وقتی اجرای agent شروع می‌شود، OpenClaw:
+وقتی اجرای یک agent شروع می‌شود، OpenClaw:
 
 <Steps>
-  <Step title="فراداده مهارت را می‌خواند">
-    OpenClaw فهرست مؤثر مهارت‌ها را برای agent resolve می‌کند و قواعد gating،
+  <Step title="Reads skill metadata">
+    OpenClaw فهرست مؤثر Skills را برای agent resolve می‌کند و قواعد کنترل دسترسی،
     allowlistها و بازنویسی‌های پیکربندی را اعمال می‌کند.
   </Step>
-  <Step title="env و کلیدهای API را تزریق می‌کند">
-    `skills.entries.<key>.env` و `skills.entries.<key>.apiKey` برای مدت اجرای run روی
-    `process.env` اعمال می‌شوند.
+  <Step title="Injects env and API keys">
+    `skills.entries.<key>.env` و `skills.entries.<key>.apiKey` برای مدت اجرای
+    run روی `process.env` اعمال می‌شوند.
   </Step>
-  <Step title="system prompt را می‌سازد">
-    مهارت‌های واجد شرایط در یک بلوک XML فشرده گردآوری و به
+  <Step title="Builds the system prompt">
+    Skills واجد شرایط در یک بلوک XML فشرده کامپایل و داخل
     system prompt تزریق می‌شوند.
   </Step>
-  <Step title="محیط را بازیابی می‌کند">
+  <Step title="Restores the environment">
     پس از پایان run، محیط اصلی بازیابی می‌شود.
   </Step>
 </Steps>
 
 <Warning>
-  تزریق env محدود به اجرای agent روی **میزبان** است، نه sandbox. داخل
+  تزریق env به اجرای agent روی **host** محدود است، نه sandbox. داخل یک
   sandbox، `env` و `apiKey` اثری ندارند. برای نحوه
-  ارسال secrets به اجراهای sandboxed، [پیکربندی Skills](/fa/tools/skills-config#sandboxed-skills-and-env-vars) را ببینید.
+  عبور دادن secrets به اجراهای sandboxed، به
+  [پیکربندی Skills](/fa/tools/skills-config#sandboxed-skills-and-env-vars) مراجعه کنید.
 </Warning>
 
-برای backend همراه `claude-cli`، OpenClaw همان snapshot مهارت‌های
-واجد شرایط را نیز به‌صورت یک Plugin موقت Claude Code materialize می‌کند و آن را از طریق
-`--plugin-dir` پاس می‌دهد. backendهای CLI دیگر فقط از catalog مربوط به prompt استفاده می‌کنند.
+برای backend همراه `claude-cli`، OpenClaw همان snapshot
+Skills واجد شرایط را نیز به‌عنوان یک Plugin موقت Claude Code ایجاد می‌کند و آن را از طریق
+`--plugin-dir` ارسال می‌کند. backendهای CLI دیگر فقط از کاتالوگ prompt استفاده می‌کنند.
 
-## Snapshotها و refresh
+## Snapshotها و تازه‌سازی
 
-OpenClaw مهارت‌های واجد شرایط را **وقتی یک session شروع می‌شود** snapshot می‌گیرد و همان
-فهرست را برای همه turnهای بعدی در session دوباره استفاده می‌کند. تغییرات در مهارت‌ها یا پیکربندی
-در session جدید بعدی اعمال می‌شود.
+OpenClaw Skills واجد شرایط را **هنگام شروع یک session** snapshot می‌کند و همان
+فهرست را برای همه turnهای بعدی در session دوباره استفاده می‌کند. تغییرات Skills یا پیکربندی
+در session جدید بعدی اعمال می‌شوند.
 
-Skills در دو حالت وسط session refresh می‌شوند:
+Skills در دو حالت در میانه session تازه‌سازی می‌شوند:
 
-- watcher مهارت‌ها تغییر در `SKILL.md` را تشخیص دهد.
-- یک node راه‌دور واجد شرایط جدید متصل شود.
+- watcher مربوط به Skills تغییر `SKILL.md` را تشخیص دهد.
+- یک node ریموت واجد شرایط جدید وصل شود.
 
-فهرست refresh‌شده در turn بعدی agent استفاده می‌شود. اگر allowlist مؤثر agent
-تغییر کند، OpenClaw snapshot را refresh می‌کند تا مهارت‌های قابل مشاهده
+فهرست تازه‌شده در turn بعدی agent استفاده می‌شود. اگر allowlist مؤثر agent
+تغییر کند، OpenClaw snapshot را تازه‌سازی می‌کند تا Skills قابل مشاهده
 هم‌راستا بمانند.
 
 <AccordionGroup>
-  <Accordion title="Watcher مربوط به Skills">
-    به‌طور پیش‌فرض، OpenClaw پوشه‌های مهارت را watch می‌کند و وقتی
-    فایل‌های `SKILL.md` تغییر کنند snapshot را bump می‌کند. زیر `skills.load` پیکربندی کنید:
+  <Accordion title="Skills watcher">
+    به‌طور پیش‌فرض، OpenClaw پوشه‌های Skill را watch می‌کند و وقتی
+    فایل‌های `SKILL.md` تغییر کنند snapshot را افزایش می‌دهد. زیر `skills.load` پیکربندی کنید:
 
     ```json5
     {
@@ -539,60 +539,60 @@ Skills در دو حالت وسط session refresh می‌شوند:
     }
     ```
 
-    از `allowSymlinkTargets` برای layoutهای symlinkشده عمدی استفاده کنید که در آن root یک مهارت
-    symlink به بیرون از root پیکربندی‌شده اشاره می‌کند، برای مثال
+    برای چیدمان‌های symlinkشده عمدی که در آن یک symlink ریشه Skill
+    به بیرون از ریشه پیکربندی‌شده اشاره می‌کند، از `allowSymlinkTargets` استفاده کنید، برای مثال
     `<workspace>/skills/manager -> ~/Projects/manager/skills`.
-    `skills.workshop.allowSymlinkTargetWrites` را فقط وقتی فعال کنید که Skill Workshop
+    فقط زمانی `skills.workshop.allowSymlinkTargetWrites` را فعال کنید که Skill Workshop
     باید proposalها را از طریق همان مسیرهای symlinkشده مورد اعتماد نیز اعمال کند.
 
   </Accordion>
-  <Accordion title="Nodeهای راه‌دور macOS (gateway در Linux)">
-    اگر Gateway روی Linux اجرا شود اما یک **node macOS** با اجازه
-    `system.run` متصل باشد، OpenClaw می‌تواند مهارت‌های فقط macOS را وقتی
-    باینری‌های لازم روی آن node موجود باشند واجد شرایط بداند. agent باید آن
-    مهارت‌ها را از طریق ابزار `exec` با `host=node` اجرا کند.
+  <Accordion title="Remote macOS nodes (Linux gateway)">
+    اگر Gateway روی Linux اجرا شود اما یک **node macOS** با
+    مجوز `system.run` وصل باشد، OpenClaw می‌تواند Skills فقط مخصوص macOS را زمانی واجد شرایط بداند
+    که باینری‌های لازم روی آن node وجود داشته باشند. agent باید آن
+    Skills را از طریق ابزار `exec` با `host=node` اجرا کند.
 
-    nodeهای offline مهارت‌های فقط راه‌دور را قابل مشاهده **نمی‌کنند**. اگر یک node پاسخ‌دادن
+    nodeهای آفلاین Skills فقط ریموت را قابل مشاهده نمی‌کنند. اگر یک node پاسخ دادن
     به probeهای bin را متوقف کند، OpenClaw تطابق‌های bin کش‌شده آن را پاک می‌کند.
 
   </Accordion>
 </AccordionGroup>
 
-## اثر توکن
+## اثر توکنی
 
-وقتی مهارت‌ها واجد شرایط باشند، OpenClaw یک بلوک XML فشرده را به system
-prompt تزریق می‌کند. هزینه deterministic است:
+وقتی Skills واجد شرایط باشند، OpenClaw یک بلوک XML فشرده را داخل system
+prompt تزریق می‌کند. هزینه قطعی است:
 
 ```text
 total = 195 + Σ (97 + len(name) + len(description) + len(filepath))
 ```
 
-- **سربار پایه** (فقط وقتی ≥ 1 مهارت وجود دارد): حدود 195 نویسه
-- **برای هر مهارت:** حدود 97 نویسه + طول فیلدهای `name`، `description` و `location`
-- XML escaping، `& < > " '` را به entityها گسترش می‌دهد و برای هر رخداد چند نویسه اضافه می‌کند
-- با حدود 4 نویسه/توکن، 97 نویسه ≈ 24 توکن برای هر مهارت پیش از طول فیلدها
+- **سربار پایه** (فقط وقتی ≥ 1 Skill): حدود 195 کاراکتر
+- **به‌ازای هر Skill:** حدود 97 کاراکتر + طول فیلدهای `name`، `description` و `location`
+- XML escaping، `& < > " '` را به entityها گسترش می‌دهد و به‌ازای هر رخداد چند کاراکتر اضافه می‌کند
+- با حدود 4 کاراکتر/توکن، 97 کاراکتر پیش از طول فیلدها ≈ 24 توکن برای هر Skill است
 
-توضیح‌ها را کوتاه و گویا نگه دارید تا سربار prompt به حداقل برسد.
+برای کمینه کردن سربار prompt، توضیحات را کوتاه و توصیفی نگه دارید.
 
 ## مرتبط
 
 <CardGroup cols={2}>
-  <Card title="ایجاد مهارت‌ها" href="/fa/tools/creating-skills" icon="hammer">
-    راهنمای گام‌به‌گام برای نوشتن یک مهارت سفارشی.
+  <Card title="Creating skills" href="/fa/tools/creating-skills" icon="hammer">
+    راهنمای گام‌به‌گام برای نویسندگی یک Skill سفارشی.
   </Card>
   <Card title="Skill Workshop" href="/fa/tools/skill-workshop" icon="flask">
-    صف proposal برای مهارت‌های draftشده توسط agent.
+    صف proposal برای Skills پیش‌نویس‌شده توسط agent.
   </Card>
-  <Card title="پیکربندی Skills" href="/fa/tools/skills-config" icon="gear">
+  <Card title="Skills config" href="/fa/tools/skills-config" icon="gear">
     schema کامل پیکربندی `skills.*` و allowlistهای agent.
   </Card>
-  <Card title="فرمان‌های اسلش" href="/fa/tools/slash-commands" icon="terminal">
-    نحوه ثبت و route شدن فرمان‌های اسلش مهارت.
+  <Card title="Slash commands" href="/fa/tools/slash-commands" icon="terminal">
+    اینکه slash commandهای Skill چگونه ثبت و route می‌شوند.
   </Card>
   <Card title="ClawHub" href="/fa/clawhub" icon="cloud">
-    مهارت‌ها را در registry عمومی مرور و منتشر کنید.
+    Skills را در registry عمومی مرور و منتشر کنید.
   </Card>
   <Card title="Plugins" href="/fa/tools/plugin" icon="plug">
-    Plugins می‌توانند Skills را همراه ابزارهایی که مستند می‌کنند ارسال کنند.
+    Plugins می‌توانند Skills را در کنار ابزارهایی که مستند می‌کنند عرضه کنند.
   </Card>
 </CardGroup>

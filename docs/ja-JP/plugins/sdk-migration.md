@@ -3,77 +3,107 @@ read_when:
     - OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED 警告が表示される
     - OPENCLAW_EXTENSION_API_DEPRECATED 警告が表示される
     - OpenClaw 2026.4.25 より前に api.registerEmbeddedExtensionFactory を使用していました
-    - Pluginを最新のPluginアーキテクチャに更新している
-    - 外部 OpenClaw Plugin をメンテナンスしている
+    - Plugin を最新の Plugin アーキテクチャに更新している
+    - 外部 OpenClaw Plugin を保守している
 sidebarTitle: Migrate to SDK
-summary: 従来の後方互換性レイヤーから最新の Plugin SDK へ移行する
-title: Plugin SDK の移行
+summary: レガシーの後方互換性レイヤーから最新の plugin SDK に移行する
+title: Plugin SDK 移行
 x-i18n:
-    generated_at: "2026-06-27T12:32:10Z"
+    generated_at: "2026-07-01T07:51:46Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9061b31567cbd24196458ecb9af1cb1b0351f789a136ea26951c8fb7e576cf08
+    source_hash: 8f05bd42cc0a6fc53f6670377b4330bb452b2a06f4d0542a494875970ee81e08
     source_path: plugins/sdk-migration.md
     workflow: 16
 ---
 
-OpenClaw は、広範な後方互換レイヤーから、対象を絞った文書化済み import を備えるモダンな Plugin アーキテクチャへ移行しました。新しいアーキテクチャ以前に Plugin を構築していた場合、このガイドが移行に役立ちます。
+OpenClaw は、広範な後方互換性レイヤーから、焦点を絞ったドキュメント化済みインポートを備えたモダンな Plugin
+アーキテクチャへ移行しました。新しいアーキテクチャ以前に Plugin を構築していた場合、このガイドが移行に役立ちます。
 
-## 何が変わるか
+## 変更点
 
-古い Plugin システムは、Plugin が必要なものを単一のエントリポイントから何でも import できる、2つの広く開かれたサーフェスを提供していました。
+古い Plugin システムは、Plugin が必要なものを単一のエントリーポイントから何でもインポートできる、広く開かれた 2 つのサーフェスを提供していました。
 
-- **`openclaw/plugin-sdk/compat`** - 数十個のヘルパーを再エクスポートする単一の import です。新しい Plugin アーキテクチャの構築中に、古いフックベースの Plugin を動作させ続けるために導入されました。
-- **`openclaw/plugin-sdk/infra-runtime`** - システムイベント、Heartbeat 状態、配信キュー、fetch/proxy ヘルパー、ファイルヘルパー、承認型、無関係なユーティリティを混在させた、広範なランタイムヘルパーバレルです。
-- **`openclaw/plugin-sdk/config-runtime`** - 移行期間中に非推奨の直接 load/write ヘルパーをまだ保持している、広範な設定互換バレルです。
-- **`openclaw/extension-api`** - 組み込みエージェントランナーのようなホスト側ヘルパーへ Plugin が直接アクセスできるようにするブリッジです。
-- **`api.registerEmbeddedExtensionFactory(...)`** - 削除済みの、組み込みランナー専用のバンドル extension フックです。`tool_result` などの組み込みランナーイベントを監視できました。
+- **`openclaw/plugin-sdk/compat`** - 数十個のヘルパーを再エクスポートする単一のインポートです。新しい Plugin
+  アーキテクチャの構築中に、古いフックベースの Plugin を動作させ続けるために導入されました。
+- **`openclaw/plugin-sdk/infra-runtime`** - システムイベント、Heartbeat 状態、配信キュー、フェッチ/プロキシヘルパー、
+  ファイルヘルパー、承認型、無関係なユーティリティを混在させていた広範なランタイムヘルパーバレルです。
+- **`openclaw/plugin-sdk/config-runtime`** - 移行期間中に非推奨の直接読み込み/書き込みヘルパーをまだ保持している、
+  広範な設定互換性バレルです。
+- **`openclaw/extension-api`** - 埋め込みエージェントランナーのようなホスト側ヘルパーへ Plugin が直接アクセスできるようにする
+  ブリッジです。
+- **`api.registerEmbeddedExtensionFactory(...)`** - 削除済みの埋め込みランナー専用バンドル済み
+  拡張フックで、`tool_result` などの埋め込みランナーイベントを監視できました。
 
-広範な import サーフェスは現在 **非推奨** です。ランタイムでは引き続き動作しますが、新しい Plugin は使用してはならず、既存の Plugin は次のメジャーリリースで削除される前に移行する必要があります。組み込みランナー専用の extension factory 登録 API は削除されました。代わりに tool-result ミドルウェアを使用してください。
+広範なインポートサーフェスは現在 **非推奨** です。ランタイムではまだ動作しますが、
+新しい Plugin はこれらを使用してはならず、既存の Plugin は次のメジャーリリースで削除される前に移行する必要があります。埋め込みランナー専用の拡張ファクトリー登録 API は削除されました。代わりにツール結果ミドルウェアを使用してください。
 
-OpenClaw は、代替手段を導入する同じ変更で、文書化済みの Plugin 動作を削除したり再解釈したりしません。破壊的な契約変更は、まず互換アダプター、診断、ドキュメント、非推奨期間を経る必要があります。これは SDK import、manifest フィールド、setup API、フック、ランタイム登録動作に適用されます。
+OpenClaw は、代替を導入する同じ変更で、ドキュメント化済みの Plugin の振る舞いを削除したり再解釈したりしません。
+契約を破る変更は、まず互換性アダプター、診断、ドキュメント、非推奨期間を経る必要があります。
+これは SDK インポート、マニフェストフィールド、セットアップ API、フック、ランタイム登録の振る舞いに適用されます。
 
 <Warning>
-  後方互換レイヤーは将来のメジャーリリースで削除されます。
-  これらのサーフェスからまだ import している Plugin は、その時点で壊れます。
-  レガシーの組み込み extension factory 登録は、すでに読み込まれなくなっています。
+  後方互換性レイヤーは将来のメジャーリリースで削除されます。
+  これらのサーフェスからまだインポートしている Plugin は、その時点で壊れます。
+  レガシーの埋め込み拡張ファクトリー登録は、すでに読み込まれなくなっています。
 </Warning>
 
 ## 変更理由
 
 古いアプローチには問題がありました。
 
-- **起動が遅い** - 1つのヘルパーを import すると、数十個の無関係なモジュールが読み込まれる
-- **循環依存** - 広範な再エクスポートにより、import サイクルを作りやすい
-- **不明確な API サーフェス** - どの export が安定版で、どれが内部用かを見分ける方法がない
+- **起動が遅い** - 1 つのヘルパーをインポートすると、無関係な数十個のモジュールが読み込まれる
+- **循環依存** - 広範な再エクスポートにより、インポートサイクルを作りやすかった
+- **不明確な API サーフェス** - どのエクスポートが安定版で、どれが内部向けかを判別する方法がなかった
 
-モダンな Plugin SDK はこれを修正します。各 import パス（`openclaw/plugin-sdk/\<subpath\>`）は、明確な目的と文書化済みの契約を持つ、小さく自己完結したモジュールです。
+モダンな Plugin SDK はこれを修正します。各インポートパス（`openclaw/plugin-sdk/\<subpath\>`）は、
+明確な目的とドキュメント化済みの契約を持つ、小さく自己完結したモジュールです。
 
-バンドル済みチャネル向けのレガシー provider 便利シームも廃止されました。
-チャネル名付きのヘルパーシームは、安定した Plugin 契約ではなく、プライベートなモノレポショートカットでした。代わりに、範囲を絞った汎用 SDK サブパスを使用してください。バンドル済み Plugin ワークスペース内では、provider 所有のヘルパーをその Plugin 自身の `api.ts` または `runtime-api.ts` に置いてください。
+バンドル済みチャンネル向けのレガシープロバイダー便利シームも削除されています。
+チャンネルブランドのヘルパーシームは、安定した Plugin 契約ではなく、プライベートなモノレポ内ショートカットでした。
+代わりに狭い汎用 SDK サブパスを使用してください。バンドル済み
+Plugin ワークスペース内では、プロバイダー所有のヘルパーをその Plugin 自身の `api.ts` または
+`runtime-api.ts` に保持してください。
 
-現在のバンドル済み provider の例:
+現在のバンドル済みプロバイダーの例:
 
-- Anthropic は Claude 固有のストリームヘルパーを自分の `api.ts` / `contract-api.ts` シームに保持します
-- OpenAI は provider ビルダー、デフォルトモデルヘルパー、realtime provider ビルダーを自分の `api.ts` に保持します
-- OpenRouter は provider ビルダーとオンボーディング/設定ヘルパーを自分の `api.ts` に保持します
+- Anthropic は Claude 固有のストリームヘルパーを自身の `api.ts` /
+  `contract-api.ts` シームに保持します
+- OpenAI はプロバイダービルダー、デフォルトモデルヘルパー、リアルタイムプロバイダー
+  ビルダーを自身の `api.ts` に保持します
+- OpenRouter はプロバイダービルダーとオンボーディング/設定ヘルパーを自身の
+  `api.ts` に保持します
 
-## Talk と realtime voice の移行計画
+## Talk とリアルタイム音声の移行計画
 
-Realtime voice、telephony、meeting、browser Talk コードは、サーフェスローカルの turn 簿記から、`openclaw/plugin-sdk/realtime-voice` が export する共有 Talk セッションコントローラーへ移行しています。新しいコントローラーは、共通の Talk イベントエンベロープ、アクティブな turn 状態、capture 状態、output-audio 状態、最近のイベント履歴、古い turn の拒否を所有します。Provider Plugin はベンダー固有の realtime セッションを引き続き所有し、surface Plugin は capture、playback、telephony、meeting の癖を引き続き所有する必要があります。
+リアルタイム音声、テレフォニー、ミーティング、ブラウザーの Talk コードは、
+サーフェスローカルなターン管理から、`openclaw/plugin-sdk/realtime-voice` がエクスポートする共有 Talk セッションコントローラーへ移行しています。新しいコントローラーは、共通の Talk
+イベントエンベロープ、アクティブターン状態、キャプチャ状態、出力音声状態、直近の
+イベント履歴、古いターンの拒否を所有します。プロバイダー Plugin はベンダー固有のリアルタイムセッションを引き続き所有し、サーフェス Plugin はキャプチャ、
+再生、テレフォニー、ミーティング固有の癖を引き続き所有する必要があります。
 
 この Talk 移行は、意図的に破壊的かつクリーンなものです。
 
-1. 共有 controller/runtime プリミティブを `plugin-sdk/realtime-voice` に保持します。
-2. バンドル済みサーフェスを共有コントローラーへ移行します: browser relay、managed-room handoff、voice-call realtime、voice-call streaming STT、Google Meet realtime、native push-to-talk。
-3. 古い Talk RPC ファミリーを最終版の `talk.session.*` と `talk.client.*` API に置き換えます。
-4. Gateway `hello-ok.features.events` で、1つのライブ Talk イベントチャネル `talk.event` を通知します。
-5. 古い realtime HTTP エンドポイントと、リクエスト時の instruction override パスを削除します。
+1. 共有コントローラー/ランタイムプリミティブを
+   `plugin-sdk/realtime-voice` に保持します。
+2. バンドル済みサーフェスを共有コントローラーへ移行します: ブラウザーリレー、
+   管理ルームのハンドオフ、音声通話リアルタイム、音声通話ストリーミング STT、Google
+   Meet リアルタイム、ネイティブのプッシュトゥトーク。
+3. 古い Talk RPC ファミリーを最終版の `talk.session.*` と
+   `talk.client.*` API に置き換えます。
+4. Gateway
+   `hello-ok.features.events` で 1 つのライブ Talk イベントチャンネル `talk.event` を告知します。
+5. 古いリアルタイム HTTP エンドポイントと、リクエスト時の命令
+   オーバーライドパスを削除します。
 
-低レベルアダプターまたはテストフィクスチャを実装している場合を除き、新しいコードは `createTalkEventSequencer(...)` を直接呼び出すべきではありません。共有コントローラーを優先してください。これにより、turn id なしで turn スコープイベントを emit できなくなり、古い `turnEnd` / `turnCancel` 呼び出しが新しいアクティブ turn をクリアできなくなり、output-audio ライフサイクルイベントが telephony、meetings、browser relay、managed-room handoff、native Talk clients 全体で一貫します。
+新しいコードは、低レベルアダプターまたはテストフィクスチャを実装している場合を除き、`createTalkEventSequencer(...)` を直接呼び出すべきではありません。共有コントローラーを優先することで、
+ターン ID なしでターンスコープのイベントを送出できず、古い `turnEnd` /
+`turnCancel` 呼び出しが新しいアクティブターンをクリアできず、出力音声ライフサイクル
+イベントがテレフォニー、ミーティング、ブラウザーリレー、管理ルーム
+ハンドオフ、ネイティブ Talk クライアント間で一貫します。
 
-対象となる公開 API 形状は次のとおりです。
+対象の公開 API 形状は次のとおりです。
 
 ```typescript
 // Gateway-owned Talk session API.
@@ -111,18 +141,24 @@ await gateway.request("talk.client.toolCall", { sessionKey, callId, name, args }
 await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 ```
 
-ブラウザー所有の WebRTC/provider-websocket セッションは `talk.client.create` を使用します。これは、ブラウザーが provider negotiation と media transport を所有し、Gateway が credentials、instructions、tool policy を所有するためです。`talk.session.*` は、gateway-relay realtime、gateway-relay transcription、managed-room native STT/TTS セッション向けの、共通の Gateway 管理サーフェスです。
+ブラウザー所有の WebRTC/プロバイダー WebSocket セッションは `talk.client.create` を使用します。
+これは、ブラウザーがプロバイダー交渉とメディア転送を所有し、一方で
+Gateway が認証情報、命令、ツールポリシーを所有するためです。`talk.session.*` は、
+gateway-relay リアルタイム、gateway-relay
+文字起こし、管理ルームのネイティブ STT/TTS セッションに共通する Gateway 管理サーフェスです。
 
-`talk.provider` / `talk.providers` の横に realtime selector を配置していたレガシー設定は、`openclaw doctor --fix` で修復する必要があります。ランタイム Talk は、speech/TTS provider 設定を realtime provider 設定として再解釈しません。
+`talk.provider` /
+`talk.providers` の横にリアルタイムセレクターを配置していたレガシー設定は、`openclaw doctor --fix` で修復してください。ランタイム Talk
+は、音声/TTS プロバイダー設定をリアルタイムプロバイダー設定として再解釈しません。
 
-サポートされる `talk.session.create` の組み合わせは、意図的に小さくしています。
+サポートされる `talk.session.create` の組み合わせは、意図的に小さく保たれています。
 
-| モード            | トランスポート       | Brain           | 所有者              | 注記                                                                                                              |
+| モード            | 転送            | Brain           | 所有者             | 注記                                                                                                               |
 | --------------- | --------------- | --------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `realtime`      | `gateway-relay` | `agent-consult` | Gateway            | Gateway 経由でブリッジされる全二重 provider audio。tool call は agent-consult tool を通じてルーティングされます。      |
-| `transcription` | `gateway-relay` | `none`          | Gateway            | Streaming STT のみ。呼び出し元は input audio を送信し、transcript event を受信します。                                        |
-| `stt-tts`       | `managed-room`  | `agent-consult` | Native/client room | クライアントが capture/playback を所有し、Gateway が turn 状態を所有する、push-to-talk および walkie-talkie スタイルの room。 |
-| `stt-tts`       | `managed-room`  | `direct-tools`  | Native/client room | Gateway tool action を直接実行する、信頼済みファーストパーティサーフェス向けの管理者専用 room モード。                  |
+| `realtime`      | `gateway-relay` | `agent-consult` | Gateway            | 全二重のプロバイダー音声を Gateway 経由でブリッジします。ツール呼び出しは agent-consult ツールを通じてルーティングされます。      |
+| `transcription` | `gateway-relay` | `none`          | Gateway            | ストリーミング STT のみ。呼び出し元は入力音声を送信し、文字起こしイベントを受信します。                                        |
+| `stt-tts`       | `managed-room`  | `agent-consult` | ネイティブ/クライアントルーム | クライアントがキャプチャ/再生を所有し、Gateway がターン状態を所有するプッシュトゥトークおよびウォーキートーキー形式のルームです。 |
+| `stt-tts`       | `managed-room`  | `direct-tools`  | ネイティブ/クライアントルーム | Gateway ツールアクションを直接実行する、信頼済みファーストパーティサーフェス向けの管理者専用ルームモードです。                  |
 
 削除されたメソッドの対応表:
 
@@ -131,7 +167,7 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 | `talk.realtime.session`          | `talk.client.create`                                     |
 | `talk.realtime.toolCall`         | `talk.client.toolCall`                                   |
 | `talk.realtime.relayAudio`       | `talk.session.appendAudio`                               |
-| `talk.realtime.relayCancel`      | `talk.session.cancelOutput` or `talk.session.cancelTurn` |
+| `talk.realtime.relayCancel`      | `talk.session.cancelOutput` または `talk.session.cancelTurn` |
 | `talk.realtime.relayToolResult`  | `talk.session.submitToolResult`                          |
 | `talk.realtime.relayStop`        | `talk.session.close`                                     |
 | `talk.transcription.session`     | `talk.session.create({ mode: "transcription" })`         |
@@ -142,65 +178,52 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 | `talk.handoff.join`              | `talk.session.join`                                      |
 | `talk.handoff.revoke`            | `talk.session.close`                                     |
 
-統一された control vocabulary も、意図的に狭くしています。
+統一された制御語彙も、意図的に狭く保たれています。
 
-  | メソッド                          | 適用先                                              | コントラクト                                                                                                                                                                                 |
+  | 方法                            | 適用対象                                                | コントラクト                                                                                                                                                                             |
   | ------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | `talk.session.appendAudio`      | `realtime/gateway-relay`, `transcription/gateway-relay` | 同じ Gateway 接続が所有するプロバイダーセッションに base64 PCM 音声チャンクを追加します。                                                                                            |
-  | `talk.session.startTurn`        | `stt-tts/managed-room`                                  | managed-room のユーザーターンを開始します。                                                                                                                                                          |
-  | `talk.session.endTurn`          | `stt-tts/managed-room`                                  | stale-turn 検証後にアクティブなターンを終了します。                                                                                                                                         |
-  | `talk.session.cancelTurn`       | すべての Gateway 所有セッション                              | ターンに対するアクティブなキャプチャ/プロバイダー/エージェント/TTS 作業をキャンセルします。                                                                                                                                |
-  | `talk.session.cancelOutput`     | `realtime/gateway-relay`                                | ユーザーターンを必ずしも終了せずに、アシスタントの音声出力を停止します。                                                                                                                    |
-  | `talk.session.submitToolResult` | `realtime/gateway-relay`                                | リレーが発行したプロバイダーツール呼び出しを完了します。中間出力には `options.willContinue` を渡し、別のアシスタント応答なしで呼び出しを満たすには `options.suppressResponse` を渡します。 |
-  | `talk.session.steer`            | エージェントを基盤とする Talk セッション                              | Talk セッションから解決されたアクティブな埋め込み実行に、音声の `status`、`steer`、`cancel`、または `followup` 制御を送信します。                                                                |
-  | `talk.session.close`            | すべての統合セッション                                    | リレーセッションを停止するか managed-room 状態を取り消し、その後、統合セッション ID を忘れます。                                                                                                    |
+  | `talk.session.appendAudio`      | `realtime/gateway-relay`, `transcription/gateway-relay` | 同じ Gateway 接続が所有するプロバイダーセッションに、base64 PCM 音声チャンクを追加します。                                                                                              |
+  | `talk.session.startTurn`        | `stt-tts/managed-room`                                  | managed-room のユーザーターンを開始します。                                                                                                                                              |
+  | `talk.session.endTurn`          | `stt-tts/managed-room`                                  | 古いターンの検証後、アクティブなターンを終了します。                                                                                                                                     |
+  | `talk.session.cancelTurn`       | すべての Gateway 所有セッション                         | ターンのアクティブなキャプチャ/プロバイダー/エージェント/TTS 作業をキャンセルします。                                                                                                   |
+  | `talk.session.cancelOutput`     | `realtime/gateway-relay`                                | ユーザーターンを必ずしも終了せずに、アシスタントの音声出力を停止します。                                                                                                                 |
+  | `talk.session.submitToolResult` | `realtime/gateway-relay`                                | リレーが発行したプロバイダーのツール呼び出しを完了します。途中出力には `options.willContinue` を渡し、追加のアシスタント応答なしで呼び出しを満たすには `options.suppressResponse` を渡します。 |
+  | `talk.session.steer`            | エージェントに支えられた Talk セッション                | Talk セッションから解決されたアクティブな埋め込み実行に、音声の `status`、`steer`、`cancel`、または `followup` 制御を送信します。                                                        |
+  | `talk.session.close`            | すべての統合セッション                                  | リレーセッションを停止するか managed-room 状態を取り消し、その後、統合セッション ID を忘れます。                                                                                        |
 
-  これを動作させるために、プロバイダーやプラットフォーム固有の特例を core に導入しないでください。
-  core は Talk セッションのセマンティクスを所有します。プロバイダー Plugin はベンダーセッションのセットアップを所有します。
+  これを動作させるために、コアへプロバイダーやプラットフォーム固有の特例を導入しないでください。
+  コアは Talk セッションのセマンティクスを所有します。プロバイダー Plugin はベンダーセッションのセットアップを所有します。
   音声通話と Google Meet は電話/会議アダプターを所有します。ブラウザーとネイティブ
   アプリはデバイスのキャプチャ/再生 UX を所有します。
 
   ## 互換性ポリシー
 
-  外部 Plugin では、互換性作業は次の順序に従います。
+  外部 Plugin の場合、互換性対応は次の順序に従います。
 
   1. 新しいコントラクトを追加する
-  2. 互換性アダプターを通じて古い動作を維持する
-  3. 古いパスと置き換え先を示す診断または警告を出力する
+  2. 古い動作を互換性アダプター経由で配線したままにする
+  3. 古いパスと置き換え先の名前を示す診断または警告を出す
   4. 両方のパスをテストでカバーする
   5. 非推奨化と移行パスを文書化する
-  6. 告知した移行期間の後にのみ削除する。通常はメジャーリリースで行う
+  6. 通知済みの移行期間後、通常はメジャーリリースでのみ削除する
 
   メンテナーは現在の移行キューを
-  `pnpm plugins:boundary-report` で監査できます。コンパクトな件数には
-  `pnpm plugins:boundary-report:summary`、1 つの Plugin または互換性オーナーには
-  `--owner <id>`、期限を迎えた互換性レコード、オーナーをまたぐ予約済み SDK import、または未使用の予約済み SDK サブパスで CI ゲートを失敗させる必要がある場合は
-  `pnpm plugins:boundary-report:ci` を使用します。このレポートは、非推奨の
-  互換性レコードを削除日ごとにグループ化し、ローカルのコード/ドキュメント参照を数え、
-  オーナーをまたぐ予約済み SDK import を表面化し、private
-  memory-host SDK ブリッジを要約します。これにより、互換性クリーンアップはアドホックな検索に頼らず明示的なままになります。予約済み SDK サブパスには、追跡されたオーナー使用が必要です。
-  未使用の予約済みヘルパー export は public SDK から削除するべきです。
+  `pnpm plugins:boundary-report` で監査できます。コンパクトな件数には `pnpm plugins:boundary-report:summary` を使い、1 つの Plugin または互換性オーナーには `--owner <id>` を使い、期限到来の互換性レコード、オーナーをまたぐ予約済み SDK インポート、または未使用の予約済み SDK サブパスで CI ゲートを失敗させる必要がある場合は
+  `pnpm plugins:boundary-report:ci` を使います。このレポートは、非推奨の互換性レコードを削除日ごとにグループ化し、ローカルのコード/ドキュメント参照を数え、オーナーをまたぐ予約済み SDK インポートを表面化し、プライベートな
+  memory-host SDK ブリッジを要約するため、互換性のクリーンアップはアドホック検索に頼らず明示的なまま保たれます。予約済み SDK サブパスには追跡されたオーナー使用が必要です。
+  未使用の予約済みヘルパーエクスポートは公開 SDK から削除する必要があります。
 
-  manifest フィールドがまだ受け付けられている場合、Plugin 作者は
-  ドキュメントと診断が別のことを示すまで使い続けられます。新しいコードは文書化された
-  置き換え先を優先するべきですが、既存 Plugin は通常のマイナー
-  リリース中に壊れるべきではありません。
+  manifest フィールドがまだ受け入れられている場合、Plugin 作者はドキュメントと診断が別の指示を出すまでそれを使い続けられます。新しいコードでは文書化された置き換え先を優先するべきですが、既存の Plugin が通常のマイナーリリース中に壊れてはなりません。
 
   ## 移行方法
 
   <Steps>
-  <Step title="ランタイム config の load/write ヘルパーを移行する">
-    バンドル Plugin は
+  <Step title="Migrate runtime config load/write helpers">
+    バンドル済み Plugin は
     `api.runtime.config.loadConfig()` と
-    `api.runtime.config.writeConfigFile(...)` を直接呼び出すのをやめるべきです。アクティブな呼び出しパスに
-    すでに渡されている config を優先してください。現在のプロセススナップショットが必要な長寿命ハンドラーは
-    `api.runtime.config.current()` を使用できます。長寿命の
-    エージェントツールは `execute` 内でツールコンテキストの `ctx.getRuntimeConfig()` を使用するべきです。
-    これにより、config 書き込み前に作成されたツールでも、更新された
-    runtime config を参照できます。
+    `api.runtime.config.writeConfigFile(...)` を直接呼び出すのをやめるべきです。アクティブな呼び出しパスへすでに渡されている config を優先してください。現在のプロセススナップショットが必要な長寿命ハンドラーは `api.runtime.config.current()` を使用できます。長寿命のエージェントツールは、config 書き込み前に作成されたツールでも更新後の runtime config を見られるように、`execute` 内でツールコンテキストの `ctx.getRuntimeConfig()` を使用するべきです。
 
-    config の書き込みはトランザクションヘルパーを経由し、
-    after-write ポリシーを選択する必要があります。
+    Config 書き込みはトランザクションヘルパーを経由し、書き込み後ポリシーを選択する必要があります。
 
     ```typescript
     await api.runtime.config.mutateConfigFile({
@@ -211,49 +234,40 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     });
     ```
 
-    呼び出し元が変更にはクリーンな gateway 再起動が必要だと分かっている場合は
-    `afterWrite: { mode: "restart", reason: "..." }` を使用し、呼び出し元が後続処理を所有し、
-    reload planner を意図的に抑制したい場合にのみ
+    呼び出し元がその変更にはクリーンな Gateway 再起動が必要だと分かっている場合は `afterWrite: { mode: "restart", reason: "..." }` を使用し、呼び出し元がフォローアップを所有し、リロードプランナーを意図的に抑制したい場合にのみ
     `afterWrite: { mode: "none", reason: "..." }` を使用します。
-    mutation 結果には、テストとロギング用の型付き `followUp` 要約が含まれます。
-    gateway は引き続き、再起動の適用またはスケジュールを担当します。
-    `loadConfig` と `writeConfigFile` は、移行期間中の外部 Plugin 向けに非推奨の互換性
-    ヘルパーとして残り、`runtime-config-load-write` 互換性コードで一度だけ警告します。
-    バンドル Plugin とリポジトリのランタイムコードは、
+    ミューテーション結果には、テストとロギング用の型付き `followUp` サマリーが含まれます。
+    Gateway は再起動の適用またはスケジュールを引き続き担当します。
+    `loadConfig` と `writeConfigFile` は、移行期間中は外部 Plugin 向けの非推奨互換性ヘルパーとして残り、
+    `runtime-config-load-write` 互換性コードで一度だけ警告します。バンドル済み Plugin とリポジトリの runtime コードは、
     `pnpm check:deprecated-api-usage` と
-    `pnpm check:no-runtime-action-load-config` の scanner ガードレールで保護されています。新しい production Plugin の使用は
-    即時に失敗し、直接 config 書き込みも失敗します。gateway server メソッドは
-    request runtime snapshot を使用する必要があり、runtime channel send/action/client ヘルパーは
-    境界から config を受け取る必要があり、長寿命 runtime モジュールでは
-    ambient な `loadConfig()` 呼び出しの許可数はゼロです。
+    `pnpm check:no-runtime-action-load-config` のスキャナーガードレールで保護されています。新しい本番 Plugin 使用は即座に失敗し、直接 config 書き込みは失敗し、Gateway サーバーメソッドはリクエスト runtime スナップショットを使用する必要があり、runtime チャネル送信/action/client ヘルパーは境界から config を受け取る必要があり、長寿命 runtime モジュールでは ambient な `loadConfig()` 呼び出しは 1 つも許可されません。
 
-    新しい Plugin コードでは、広い
-    `openclaw/plugin-sdk/config-runtime` 互換性 barrel の import も避けるべきです。用途に合う狭い
+    新しい Plugin コードでは、広範な
+    `openclaw/plugin-sdk/config-runtime` 互換性 barrel のインポートも避けるべきです。作業に合う狭い
     SDK サブパスを使用してください。
 
-    | 必要なもの | Import |
+    | 必要なもの | インポート |
     | --- | --- |
     | `OpenClawConfig` などの config 型 | `openclaw/plugin-sdk/config-contracts` |
-    | ロード済み config アサーションと plugin-entry config ルックアップ | `openclaw/plugin-sdk/plugin-config-runtime` |
-    | 現在の runtime snapshot の読み取り | `openclaw/plugin-sdk/runtime-config-snapshot` |
-    | config 書き込み | `openclaw/plugin-sdk/config-mutation` |
+    | すでにロード済みの config アサーションと Plugin エントリ config 検索 | `openclaw/plugin-sdk/plugin-config-runtime` |
+    | 現在の runtime スナップショット読み取り | `openclaw/plugin-sdk/runtime-config-snapshot` |
+    | Config 書き込み | `openclaw/plugin-sdk/config-mutation` |
     | セッションストアヘルパー | `openclaw/plugin-sdk/session-store-runtime` |
-    | Markdown table config | `openclaw/plugin-sdk/markdown-table-runtime` |
+    | Markdown テーブル config | `openclaw/plugin-sdk/markdown-table-runtime` |
     | グループポリシー runtime ヘルパー | `openclaw/plugin-sdk/runtime-group-policy` |
-    | シークレット入力解決 | `openclaw/plugin-sdk/secret-input-runtime` |
-    | モデル/セッション override | `openclaw/plugin-sdk/model-session-runtime` |
+    | Secret 入力解決 | `openclaw/plugin-sdk/secret-input-runtime` |
+    | モデル/セッションのオーバーライド | `openclaw/plugin-sdk/model-session-runtime` |
 
-    バンドル Plugin とそのテストは、広い
-    barrel に対して scanner で保護されているため、import と mock は必要な動作に対してローカルに保たれます。広い
-    barrel は外部互換性のためにまだ存在しますが、新しいコードはそれに
-    依存するべきではありません。
+    バンドル済み Plugin とそのテストは、広範な
+    barrel に対してスキャナーでガードされているため、インポートとモックは必要な動作に対してローカルなままになります。広範な
+    barrel は外部互換性のためにまだ存在しますが、新しいコードはそれに依存するべきではありません。
 
   </Step>
 
-  <Step title="埋め込み tool-result extension を middleware に移行する">
-    バンドル Plugin は、embedded-runner 専用の
-    `api.registerEmbeddedExtensionFactory(...)` tool-result ハンドラーを
-    runtime-neutral な middleware に置き換える必要があります。
+  <Step title="Migrate embedded tool-result extensions to middleware">
+    バンドル済み Plugin は、埋め込みランナー専用の
+    `api.registerEmbeddedExtensionFactory(...)` ツール結果ハンドラーを、runtime 中立のミドルウェアに置き換える必要があります。
 
     ```typescript
     // OpenClaw and Codex runtime dynamic tools
@@ -274,42 +288,36 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     }
     ```
 
-    インストール済み Plugin も、明示的に有効化され、
-    `contracts.agentToolResultMiddleware` ですべての対象 runtime を宣言している場合に
-    tool-result middleware を登録できます。宣言されていないインストール済み middleware
-    登録は拒否されます。
+    インストール済み Plugin も、明示的に有効化され、対象 runtime をすべて
+    `contracts.agentToolResultMiddleware` で宣言している場合は、ツール結果ミドルウェアを登録できます。未宣言のインストール済みミドルウェア登録は拒否されます。
 
   </Step>
 
-  <Step title="approval-native ハンドラーを capability facts に移行する">
-    承認対応 channel Plugin は、`approvalCapability.nativeRuntime` と共有 runtime-context registry を通じて
-    ネイティブ承認動作を公開するようになりました。
+  <Step title="Migrate approval-native handlers to capability facts">
+    承認対応チャネル Plugin は、`approvalCapability.nativeRuntime` と共有 runtime-context レジストリを通じて、ネイティブ承認動作を公開するようになりました。
 
-    主な変更:
+    主な変更点:
 
     - `approvalCapability.handler.loadRuntime(...)` を
       `approvalCapability.nativeRuntime` に置き換える
-    - 承認固有の auth/delivery を legacy `plugin.auth` /
+    - 承認固有の auth/delivery をレガシーの `plugin.auth` /
       `plugin.approvals` 配線から `approvalCapability` へ移す
-    - `ChannelPlugin.approvals` は public channel-plugin
-      コントラクトから削除されました。delivery/native/render フィールドを `approvalCapability` に移してください
-    - `plugin.auth` は channel の login/logout フロー専用として残ります。そこにある approval auth
-      hook は core ではもう読み取られません
+    - `ChannelPlugin.approvals` は公開チャネル Plugin コントラクトから削除されています。delivery/native/render フィールドを `approvalCapability` へ移してください
+    - `plugin.auth` はチャネルのログイン/ログアウトフロー専用として残ります。そこにある承認 auth
+      フックはコアによって読まれなくなりました
     - client、token、Bolt
-      app などの channel 所有 runtime オブジェクトを `openclaw/plugin-sdk/channel-runtime-context` を通じて登録する
-    - ネイティブ approval ハンドラーから Plugin 所有の reroute 通知を送信しないでください。
-      core は実際の delivery 結果から routed-elsewhere 通知を所有するようになりました
-    - `channelRuntime` を `createChannelManager(...)` に渡す場合は、
-      実際の `createPluginRuntime().channel` surface を提供してください。部分的な stub は拒否されます。
+      app などのチャネル所有 runtime オブジェクトは `openclaw/plugin-sdk/channel-runtime-context` を通じて登録する
+    - ネイティブ承認ハンドラーから Plugin 所有の再ルート通知を送信しないでください。
+      コアは実際の配信結果から routed-elsewhere 通知を所有するようになりました
+    - `channelRuntime` を `createChannelManager(...)` に渡すときは、実際の `createPluginRuntime().channel` サーフェスを提供してください。部分的なスタブは拒否されます。
 
-    現在の approval capability
-    レイアウトについては `/plugins/sdk-channel-plugins` を参照してください。
+    現在の承認 capability レイアウトについては `/plugins/sdk-channel-plugins` を参照してください。
 
   </Step>
 
-  <Step title="Windows wrapper fallback 動作を監査する">
+  <Step title="Audit Windows wrapper fallback behavior">
     Plugin が `openclaw/plugin-sdk/windows-spawn` を使用している場合、未解決の Windows
-    `.cmd`/`.bat` wrapper は、明示的に
+    `.cmd`/`.bat` ラッパーは、明示的に
     `allowShellFallback: true` を渡さない限り fail closed するようになりました。
 
     ```typescript
@@ -326,12 +334,12 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     ```
 
     呼び出し元が shell fallback に意図的に依存していない場合は、
-    `allowShellFallback` を設定せず、代わりにスローされたエラーを処理してください。
+    `allowShellFallback` を設定せず、代わりに投げられたエラーを処理してください。
 
   </Step>
 
-  <Step title="非推奨 import を見つける">
-    Plugin で、いずれかの非推奨 surface からの import を検索します。
+  <Step title="Find deprecated imports">
+    Plugin 内で、次のいずれかの非推奨サーフェスからのインポートを検索します。
 
     ```bash
     grep -r "plugin-sdk/compat" my-plugin/
@@ -342,8 +350,8 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 
   </Step>
 
-  <Step title="focused import に置き換える">
-    古い surface の各 export は、特定のモダンな import path に対応します。
+  <Step title="Replace with focused imports">
+    古いサーフェスからの各エクスポートは、特定のモダンなインポートパスに対応します。
 
     ```typescript
     // Before (deprecated backwards-compatibility layer)
@@ -359,7 +367,7 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     import { resolveControlCommandGate } from "openclaw/plugin-sdk/command-auth";
     ```
 
-    host-side ヘルパーには、直接 import する代わりに注入された Plugin runtime を使用します:
+    ホスト側ヘルパーについては、直接インポートする代わりに注入された Plugin runtime を使用してください:
 
     ```typescript
     // Before (deprecated extension-api bridge)
@@ -372,7 +380,7 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 
     同じパターンは、他のレガシーブリッジヘルパーにも適用されます。
 
-    | 旧インポート | 最新の同等機能 |
+    | 古いインポート | 最新の同等機能 |
     | --- | --- |
     | `resolveAgentDir` | `api.runtime.agent.resolveAgentDir` |
     | `resolveAgentWorkspaceDir` | `api.runtime.agent.resolveAgentWorkspaceDir` |
@@ -385,38 +393,38 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
   </Step>
 
   <Step title="広範な infra-runtime インポートを置き換える">
-    `openclaw/plugin-sdk/infra-runtime` は外部互換性のためにまだ存在しますが、新しいコードでは実際に必要な対象を絞ったヘルパーサーフェスをインポートする必要があります。
+    `openclaw/plugin-sdk/infra-runtime` は外部互換性のためにまだ存在しますが、新しいコードでは実際に必要な絞り込まれたヘルパーサーフェスをインポートする必要があります。
 
     | 必要なもの | インポート |
     | --- | --- |
     | システムイベントキューヘルパー | `openclaw/plugin-sdk/system-event-runtime` |
-    | Heartbeat のウェイク、イベント、可視性ヘルパー | `openclaw/plugin-sdk/heartbeat-runtime` |
+    | Heartbeat の wake、イベント、可視性ヘルパー | `openclaw/plugin-sdk/heartbeat-runtime` |
     | 保留中の配信キューのドレイン | `openclaw/plugin-sdk/delivery-queue-runtime` |
-    | チャネルアクティビティテレメトリ | `openclaw/plugin-sdk/channel-activity-runtime` |
+    | チャンネルアクティビティテレメトリ | `openclaw/plugin-sdk/channel-activity-runtime` |
     | インメモリ重複排除キャッシュ | `openclaw/plugin-sdk/dedupe-runtime` |
     | 安全なローカルファイル/メディアパスヘルパー | `openclaw/plugin-sdk/file-access-runtime` |
     | ディスパッチャー対応 fetch | `openclaw/plugin-sdk/runtime-fetch` |
-    | プロキシおよびガード付き fetch ヘルパー | `openclaw/plugin-sdk/fetch-runtime` |
+    | プロキシとガード付き fetch ヘルパー | `openclaw/plugin-sdk/fetch-runtime` |
     | SSRF ディスパッチャーポリシー型 | `openclaw/plugin-sdk/ssrf-dispatcher` |
     | 承認リクエスト/解決型 | `openclaw/plugin-sdk/approval-runtime` |
-    | 承認返信ペイロードおよびコマンドヘルパー | `openclaw/plugin-sdk/approval-reply-runtime` |
+    | 承認返信ペイロードとコマンドヘルパー | `openclaw/plugin-sdk/approval-reply-runtime` |
     | エラーフォーマットヘルパー | `openclaw/plugin-sdk/error-runtime` |
     | トランスポート準備完了待機 | `openclaw/plugin-sdk/transport-ready-runtime` |
     | セキュアトークンヘルパー | `openclaw/plugin-sdk/secure-random-runtime` |
     | 境界付き非同期タスク並行処理 | `openclaw/plugin-sdk/concurrency-runtime` |
-    | 数値強制変換 | `openclaw/plugin-sdk/number-runtime` |
+    | 数値の型強制 | `openclaw/plugin-sdk/number-runtime` |
     | プロセスローカル非同期ロック | `openclaw/plugin-sdk/async-lock-runtime` |
     | ファイルロック | `openclaw/plugin-sdk/file-lock` |
 
-    バンドル済み Plugin は `infra-runtime` に対してスキャナーでガードされているため、リポジトリコードが広範なバレルへ戻ることはできません。
+    バンドルされたPluginは `infra-runtime` に対してスキャナーでガードされているため、リポジトリコードが広範な barrel に戻ることはありません。
 
   </Step>
 
-  <Step title="チャネルルートヘルパーを移行する">
-    新しいチャネルルートコードでは `openclaw/plugin-sdk/channel-route` を使用する必要があります。
-    古い route-key 名と comparable-target 名は、移行期間中は互換性エイリアスとして残りますが、新しい Plugin では動作を直接説明するルート名を使用する必要があります。
+  <Step title="チャンネルルートヘルパーを移行する">
+    新しいチャンネルルートコードでは `openclaw/plugin-sdk/channel-route` を使用する必要があります。
+    古い route-key 名と comparable-target 名は、移行期間中は互換性エイリアスとして残りますが、新しいPluginでは挙動を直接説明するルート名を使用する必要があります。
 
-    | 旧ヘルパー | 最新ヘルパー |
+    | 古いヘルパー | 最新のヘルパー |
     | --- | --- |
     | `channelRouteIdentityKey(...)` | `channelRouteDedupeKey(...)` |
     | `channelRouteKey(...)` | `channelRouteCompactKey(...)` |
@@ -424,10 +432,10 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     | `comparableChannelTargetsMatch(...)` | `channelRouteTargetsMatchExact(...)` |
     | `comparableChannelTargetsShareRoute(...)` | `channelRouteTargetsShareConversation(...)` |
 
-    最新のルートヘルパーは、ネイティブ承認、返信抑制、インバウンド重複排除、cron 配信、セッションルーティング全体で `{ channel, to, accountId, threadId }` を一貫して正規化します。
+    最新のルートヘルパーは、ネイティブ承認、返信抑制、受信重複排除、Cron 配信、セッションルーティング全体で `{ channel, to, accountId, threadId }` を一貫して正規化します。
 
-    `ChannelMessagingAdapter.parseExplicitTarget`、パーサーに基づくロード済みルートヘルパー（`parseExplicitTargetForLoadedChannel` または `resolveRouteTargetForLoadedChannel`）、または `plugin-sdk/channel-route` の `resolveChannelRouteTargetWithParser(...)` の新規使用を追加しないでください。
-    これらのフックは非推奨であり、移行期間中に古い Plugin のためだけに残されています。新しいチャネル Plugin では、ターゲット ID の正規化とディレクトリ未検出時のフォールバックに `messaging.targetResolver.resolveTarget(...)`、コアが早期にピア種別を必要とする場合に `messaging.inferTargetChatType(...)`、プロバイダー固有のセッションおよびスレッド ID に `messaging.resolveOutboundSessionRoute(...)` を使用する必要があります。
+    `ChannelMessagingAdapter.parseExplicitTarget`、パーサーに基づく loaded-route ヘルパー（`parseExplicitTargetForLoadedChannel` または `resolveRouteTargetForLoadedChannel`）、または `plugin-sdk/channel-route` の `resolveChannelRouteTargetWithParser(...)` の新しい使用を追加しないでください。
+    これらのフックは非推奨であり、移行期間中に古いPluginのためだけに残されています。新しいチャンネルPluginでは、ターゲット ID の正規化とディレクトリ未検出時のフォールバックには `messaging.targetResolver.resolveTarget(...)` を、コアが早期にピア種別を必要とする場合には `messaging.inferTargetChatType(...)` を、プロバイダーのネイティブセッションとスレッド識別には `messaging.resolveOutboundSessionRoute(...)` を使用する必要があります。
 
   </Step>
 
@@ -441,76 +449,76 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 
 ## インポートパスリファレンス
 
-  <Accordion title="Common import path table">
+  <Accordion title="一般的なインポートパス表">
   | インポートパス | 目的 | 主なエクスポート |
   | --- | --- | --- |
   | `plugin-sdk/plugin-entry` | 正規のPluginエントリヘルパー | `definePluginEntry` |
-  | `plugin-sdk/core` | チャンネルエントリ定義/ビルダー向けのレガシー包括再エクスポート | `defineChannelPluginEntry`, `createChatChannelPlugin` |
+  | `plugin-sdk/core` | チャネルエントリ定義/ビルダー向けのレガシー包括再エクスポート | `defineChannelPluginEntry`, `createChatChannelPlugin` |
   | `plugin-sdk/config-schema` | ルート設定スキーマのエクスポート | `OpenClawSchema` |
-  | `plugin-sdk/provider-entry` | 単一プロバイダーエントリヘルパー | `defineSingleProviderPluginEntry` |
-  | `plugin-sdk/channel-core` | チャンネルエントリ定義とビルダーに特化 | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-  | `plugin-sdk/setup` | 共有セットアップウィザードヘルパー | セットアップトランスレーター、許可リストプロンプト、セットアップステータスビルダー |
+  | `plugin-sdk/provider-entry` | 単一プロバイダーのエントリヘルパー | `defineSingleProviderPluginEntry` |
+  | `plugin-sdk/channel-core` | チャネルエントリ定義とビルダーに特化 | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
+  | `plugin-sdk/setup` | 共有セットアップウィザードヘルパー | セットアップ翻訳器、許可リストプロンプト、セットアップステータスビルダー |
   | `plugin-sdk/setup-runtime` | セットアップ時ランタイムヘルパー | `createSetupTranslator`、インポート安全なセットアップパッチアダプター、検索メモヘルパー、`promptResolvedAllowFrom`、`splitSetupEntries`、委譲セットアッププロキシ |
-  | `plugin-sdk/setup-adapter-runtime` | 非推奨のセットアップアダプターエイリアス | `plugin-sdk/setup-runtime` を使用 |
+  | `plugin-sdk/setup-adapter-runtime` | 非推奨のセットアップアダプターエイリアス | `plugin-sdk/setup-runtime`を使用 |
   | `plugin-sdk/setup-tools` | セットアップツール用ヘルパー | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-  | `plugin-sdk/account-core` | 複数アカウントヘルパー | アカウント一覧/設定/アクションゲートヘルパー |
+  | `plugin-sdk/account-core` | マルチアカウントヘルパー | アカウント一覧/設定/アクションゲートヘルパー |
   | `plugin-sdk/account-id` | アカウントIDヘルパー | `DEFAULT_ACCOUNT_ID`、アカウントID正規化 |
   | `plugin-sdk/account-resolution` | アカウント検索ヘルパー | アカウント検索 + デフォルトフォールバックヘルパー |
-  | `plugin-sdk/account-helpers` | 狭いアカウントヘルパー | アカウント一覧/アカウントアクションヘルパー |
+  | `plugin-sdk/account-helpers` | 狭い範囲のアカウントヘルパー | アカウント一覧/アカウントアクションヘルパー |
   | `plugin-sdk/channel-setup` | セットアップウィザードアダプター | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`、さらに `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
   | `plugin-sdk/channel-pairing` | DMペアリングプリミティブ | `createChannelPairingController` |
   | `plugin-sdk/channel-reply-pipeline` | 返信プレフィックス、入力中表示、ソース配信の配線 | `createChannelReplyPipeline`, `resolveChannelSourceReplyDeliveryMode` |
-  | `plugin-sdk/channel-config-helpers` | 設定アダプターファクトリーとDMアクセスヘルパー | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
-  | `plugin-sdk/channel-config-schema` | 設定スキーマビルダー | 共有チャンネル設定スキーマプリミティブと汎用ビルダーのみ |
-  | `plugin-sdk/bundled-channel-config-schema` | バンドル設定スキーマ | OpenClawが保守するバンドルPluginのみ。新規PluginはPluginローカルのスキーマを定義する必要がある |
-  | `plugin-sdk/channel-config-schema-legacy` | 非推奨のバンドル設定スキーマ | 互換エイリアスのみ。保守対象のバンドルPluginには `plugin-sdk/bundled-channel-config-schema` を使用 |
-  | `plugin-sdk/telegram-command-config` | Telegramコマンド設定ヘルパー | コマンド名の正規化、説明のトリミング、重複/競合の検証 |
+  | `plugin-sdk/channel-config-helpers` | 設定アダプターファクトリとDMアクセスヘルパー | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
+  | `plugin-sdk/channel-config-schema` | 設定スキーマビルダー | 共有チャネル設定スキーマプリミティブと汎用ビルダーのみ |
+  | `plugin-sdk/bundled-channel-config-schema` | バンドル設定スキーマ | OpenClawが保守するバンドルPluginのみ。新しいPluginはPluginローカルスキーマを定義する必要があります |
+  | `plugin-sdk/channel-config-schema-legacy` | 非推奨のバンドル設定スキーマ | 互換性エイリアスのみ。保守対象のバンドルPluginには`plugin-sdk/bundled-channel-config-schema`を使用 |
+  | `plugin-sdk/telegram-command-config` | Telegramコマンド設定ヘルパー | コマンド名の正規化、説明のトリミング、重複/競合検証 |
   | `plugin-sdk/channel-policy` | グループ/DMポリシー解決 | `resolveChannelGroupRequireMention` |
-  | `plugin-sdk/channel-lifecycle` | 非推奨の互換ファサード | `plugin-sdk/channel-outbound` を使用 |
-  | `plugin-sdk/inbound-envelope` | 受信エンベロープヘルパー | 共有ルート + エンベロープビルダーヘルパー |
-  | `plugin-sdk/channel-inbound` | 受信ヘルパー | コンテキスト構築、整形、ルート、ランナー、準備済み返信ディスパッチ、ディスパッチ述語 |
-  | `plugin-sdk/messaging-targets` | 非推奨のターゲット解析インポートパス | 汎用ターゲット解析ヘルパーには `plugin-sdk/channel-targets`、ルート比較には `plugin-sdk/channel-route`、プロバイダー固有のターゲット解決にはPlugin所有の `messaging.targetResolver` / `messaging.resolveOutboundSessionRoute` を使用 |
-  | `plugin-sdk/outbound-media` | 送信メディアヘルパー | 共有送信メディア読み込み |
-  | `plugin-sdk/outbound-send-deps` | 非推奨の互換ファサード | `plugin-sdk/channel-outbound` を使用 |
-  | `plugin-sdk/channel-outbound` | 送信メッセージライフサイクルヘルパー | メッセージアダプター、受領情報、耐久送信ヘルパー、ライブプレビュー/ストリーミングヘルパー、返信オプション、ライフサイクルヘルパー、送信ID、ペイロード計画 |
-  | `plugin-sdk/channel-streaming` | 非推奨の互換ファサード | `plugin-sdk/channel-outbound` を使用 |
-  | `plugin-sdk/outbound-runtime` | 非推奨の互換ファサード | `plugin-sdk/channel-outbound` を使用 |
-  | `plugin-sdk/thread-bindings-runtime` | スレッドバインディングヘルパー | スレッドバインディングのライフサイクルとアダプターヘルパー |
-  | `plugin-sdk/agent-media-payload` | レガシーメディアペイロードヘルパー | レガシーフィールドレイアウト向けのエージェントメディアペイロードビルダー |
-  | `plugin-sdk/channel-runtime` | 非推奨の互換シム | レガシーチャンネルランタイムユーティリティのみ |
+  | `plugin-sdk/channel-lifecycle` | 非推奨の互換性ファサード | `plugin-sdk/channel-outbound`を使用 |
+  | `plugin-sdk/inbound-envelope` | インバウンドエンベロープヘルパー | 共有ルート + エンベロープビルダーヘルパー |
+  | `plugin-sdk/channel-inbound` | インバウンド受信ヘルパー | コンテキスト構築、整形、ルート、ランナー、準備済み返信ディスパッチ、ディスパッチ述語 |
+  | `plugin-sdk/messaging-targets` | 非推奨のターゲット解析インポートパス | 汎用ターゲット解析ヘルパーには`plugin-sdk/channel-targets`、ルート比較には`plugin-sdk/channel-route`、プロバイダー固有のターゲット解決にはPlugin所有の`messaging.targetResolver` / `messaging.resolveOutboundSessionRoute`を使用 |
+  | `plugin-sdk/outbound-media` | アウトバウンドメディアヘルパー | 共有アウトバウンドメディア読み込み |
+  | `plugin-sdk/outbound-send-deps` | 非推奨の互換性ファサード | `plugin-sdk/channel-outbound`を使用 |
+  | `plugin-sdk/channel-outbound` | アウトバウンドメッセージライフサイクルヘルパー | メッセージアダプター、受領、永続送信ヘルパー、ライブプレビュー/ストリーミングヘルパー、返信オプション、ライフサイクルヘルパー、アウトバウンドID、ペイロード計画 |
+  | `plugin-sdk/channel-streaming` | 非推奨の互換性ファサード | `plugin-sdk/channel-outbound`を使用 |
+  | `plugin-sdk/outbound-runtime` | 非推奨の互換性ファサード | `plugin-sdk/channel-outbound`を使用 |
+  | `plugin-sdk/thread-bindings-runtime` | スレッドバインディングヘルパー | スレッドバインディングライフサイクルとアダプターヘルパー |
+  | `plugin-sdk/agent-media-payload` | レガシーメディアペイロードヘルパー | レガシーフィールドレイアウト向けエージェントメディアペイロードビルダー |
+  | `plugin-sdk/channel-runtime` | 非推奨の互換性シム | レガシーチャネルランタイムユーティリティのみ |
   | `plugin-sdk/channel-send-result` | 送信結果型 | 返信結果型 |
   | `plugin-sdk/runtime-store` | 永続Pluginストレージ | `createPluginRuntimeStore` |
-  | `plugin-sdk/runtime` | 広範なランタイムヘルパー | ランタイム/ログ/バックアップ/Pluginインストールヘルパー |
-  | `plugin-sdk/runtime-env` | 狭いランタイム環境ヘルパー | ロガー/ランタイム環境、タイムアウト、リトライ、バックオフヘルパー |
-  | `plugin-sdk/plugin-runtime` | 共有Pluginランタイムヘルパー | Pluginコマンド/フック/http/対話ヘルパー |
+  | `plugin-sdk/runtime` | 広範なランタイムヘルパー | ランタイム/ロギング/バックアップ/Pluginインストールヘルパー |
+  | `plugin-sdk/runtime-env` | 狭い範囲のランタイム環境ヘルパー | ロガー/ランタイム環境、タイムアウト、リトライ、バックオフヘルパー |
+  | `plugin-sdk/plugin-runtime` | 共有Pluginランタイムヘルパー | Pluginコマンド/フック/http/インタラクティブヘルパー |
   | `plugin-sdk/hook-runtime` | フックパイプラインヘルパー | 共有Webhook/内部フックパイプラインヘルパー |
   | `plugin-sdk/lazy-runtime` | 遅延ランタイムヘルパー | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
   | `plugin-sdk/process-runtime` | プロセスヘルパー | 共有execヘルパー |
   | `plugin-sdk/cli-runtime` | CLIランタイムヘルパー | コマンド整形、待機、バージョンヘルパー |
-  | `plugin-sdk/gateway-runtime` | Gatewayヘルパー | Gatewayクライアント、イベントループ準備済み開始ヘルパー、チャンネルステータスパッチヘルパー |
-  | `plugin-sdk/config-runtime` | 非推奨の設定互換シム | `config-contracts`、`plugin-config-runtime`、`runtime-config-snapshot`、`config-mutation` を優先 |
+  | `plugin-sdk/gateway-runtime` | Gatewayヘルパー | Gatewayクライアント、イベントループ準備済み開始ヘルパー、チャネルステータスパッチヘルパー |
+  | `plugin-sdk/config-runtime` | 非推奨の設定互換性シム | `config-contracts`、`plugin-config-runtime`、`runtime-config-snapshot`、`config-mutation`を優先 |
   | `plugin-sdk/telegram-command-config` | Telegramコマンドヘルパー | バンドルTelegram契約サーフェスが利用できない場合のフォールバック安定なTelegramコマンド検証ヘルパー |
-  | `plugin-sdk/approval-runtime` | 承認プロンプトヘルパー | exec/Plugin承認ペイロード、承認ケイパビリティ/プロファイルヘルパー、ネイティブ承認ルーティング/ランタイムヘルパー、構造化承認表示パス整形 |
+  | `plugin-sdk/approval-runtime` | 承認プロンプトヘルパー | Exec/Plugin承認ペイロード、承認ケイパビリティ/プロファイルヘルパー、ネイティブ承認ルーティング/ランタイムヘルパー、構造化された承認表示パス整形 |
   | `plugin-sdk/approval-auth-runtime` | 承認認証ヘルパー | 承認者解決、同一チャットアクション認証 |
   | `plugin-sdk/approval-client-runtime` | 承認クライアントヘルパー | ネイティブexec承認プロファイル/フィルターヘルパー |
   | `plugin-sdk/approval-delivery-runtime` | 承認配信ヘルパー | ネイティブ承認ケイパビリティ/配信アダプター |
   | `plugin-sdk/approval-gateway-runtime` | 承認Gatewayヘルパー | 共有承認Gateway解決ヘルパー |
-  | `plugin-sdk/approval-handler-adapter-runtime` | 承認アダプターヘルパー | ホットなチャンネルエントリポイント向けの軽量ネイティブ承認アダプター読み込みヘルパー |
-  | `plugin-sdk/approval-handler-runtime` | 承認ハンドラーヘルパー | より広範な承認ハンドラーランタイムヘルパー。より狭いアダプター/Gatewayの継ぎ目で十分な場合はそれを優先 |
+  | `plugin-sdk/approval-handler-adapter-runtime` | 承認アダプターヘルパー | ホットチャネルエントリポイント向けの軽量ネイティブ承認アダプター読み込みヘルパー |
+  | `plugin-sdk/approval-handler-runtime` | 承認ハンドラーヘルパー | より広範な承認ハンドラーランタイムヘルパー。十分な場合は、より狭いアダプター/Gatewayの継ぎ目を優先 |
   | `plugin-sdk/approval-native-runtime` | 承認ターゲットヘルパー | ネイティブ承認ターゲット/アカウントバインディングヘルパー |
-  | `plugin-sdk/approval-reply-runtime` | 承認返信ヘルパー | exec/Plugin承認返信ペイロードヘルパー |
-  | `plugin-sdk/channel-runtime-context` | チャンネルランタイムコンテキストヘルパー | 汎用チャンネルランタイムコンテキストの登録/取得/監視ヘルパー |
+  | `plugin-sdk/approval-reply-runtime` | 承認返信ヘルパー | Exec/Plugin承認返信ペイロードヘルパー |
+  | `plugin-sdk/channel-runtime-context` | チャネルランタイムコンテキストヘルパー | 汎用チャネルランタイムコンテキストの登録/取得/監視ヘルパー |
   | `plugin-sdk/security-runtime` | セキュリティヘルパー | 共有信頼、DMゲート、ルート境界付きファイル/パスヘルパー、外部コンテンツ、シークレット収集ヘルパー |
   | `plugin-sdk/ssrf-policy` | SSRFポリシーヘルパー | ホスト許可リストとプライベートネットワークポリシーヘルパー |
   | `plugin-sdk/ssrf-runtime` | SSRFランタイムヘルパー | 固定ディスパッチャー、保護付きfetch、SSRFポリシーヘルパー |
   | `plugin-sdk/system-event-runtime` | システムイベントヘルパー | `enqueueSystemEvent`, `peekSystemEventEntries` |
-  | `plugin-sdk/heartbeat-runtime` | Heartbeatヘルパー | Heartbeatのウェイク、イベント、可視性ヘルパー |
+  | `plugin-sdk/heartbeat-runtime` | Heartbeatヘルパー | Heartbeatウェイク、イベント、可視性ヘルパー |
   | `plugin-sdk/delivery-queue-runtime` | 配信キューヘルパー | `drainPendingDeliveries` |
-  | `plugin-sdk/channel-activity-runtime` | チャンネルアクティビティヘルパー | `recordChannelActivity` |
-  | `plugin-sdk/dedupe-runtime` | 重複排除ヘルパー | メモリ内重複排除キャッシュ |
+  | `plugin-sdk/channel-activity-runtime` | チャネルアクティビティヘルパー | `recordChannelActivity` |
+  | `plugin-sdk/dedupe-runtime` | 重複排除ヘルパー | インメモリ重複排除キャッシュ |
   | `plugin-sdk/file-access-runtime` | ファイルアクセスヘルパー | 安全なローカルファイル/メディアパスヘルパー |
-  | `plugin-sdk/transport-ready-runtime` | トランスポート準備状態ヘルパー | `waitForTransportReady` |
-  | `plugin-sdk/exec-approvals-runtime` | exec承認ポリシーヘルパー | `loadExecApprovals`, `resolveExecApprovalsFromFile`, `ExecApprovalsFile` |
+  | `plugin-sdk/transport-ready-runtime` | トランスポート準備完了ヘルパー | `waitForTransportReady` |
+  | `plugin-sdk/exec-approvals-runtime` | Exec承認ポリシーヘルパー | `loadExecApprovals`, `resolveExecApprovalsFromFile`, `ExecApprovalsFile` |
   | `plugin-sdk/collection-runtime` | 境界付きキャッシュヘルパー | `pruneMapToMaxSize` |
   | `plugin-sdk/diagnostic-runtime` | 診断ゲートヘルパー | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
   | `plugin-sdk/error-runtime` | エラー整形ヘルパー | `formatUncaughtError`, `isApprovalNotFoundError`、エラーグラフヘルパー |
@@ -518,122 +526,124 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
   | `plugin-sdk/host-runtime` | ホスト正規化ヘルパー | `normalizeHostname`, `normalizeScpRemoteHost` |
   | `plugin-sdk/retry-runtime` | リトライヘルパー | `RetryConfig`, `retryAsync`、ポリシーランナー |
   | `plugin-sdk/allow-from` | 許可リスト整形と入力マッピング | `formatAllowFromLowercase`, `mapAllowlistResolutionInputs` |
-  | `plugin-sdk/command-auth` | コマンドゲートとコマンドサーフェスヘルパー | `resolveControlCommandGate`、送信者認可ヘルパー、動的引数メニュー整形を含むコマンドレジストリヘルパー |
+  | `plugin-sdk/command-auth` | コマンドゲートとコマンドサーフェスヘルパー | `resolveControlCommandGate`、送信者承認ヘルパー、動的引数メニュー整形を含むコマンドレジストリヘルパー |
   | `plugin-sdk/command-status` | コマンドステータス/ヘルプレンダラー | `buildCommandsMessage`, `buildCommandsMessagePaginated`, `buildHelpMessage` |
   | `plugin-sdk/secret-input` | シークレット入力解析 | シークレット入力ヘルパー |
   | `plugin-sdk/webhook-ingress` | Webhookリクエストヘルパー | Webhookターゲットユーティリティ |
   | `plugin-sdk/webhook-request-guards` | Webhook本文ガードヘルパー | リクエスト本文読み取り/制限ヘルパー |
-  | `plugin-sdk/reply-runtime` | 共有返信ランタイム | 受信ディスパッチ、Heartbeat、返信プランナー、チャンク化 |
-  | `plugin-sdk/reply-dispatch-runtime` | 狭い返信ディスパッチヘルパー | 完了処理、プロバイダーディスパッチ、会話ラベルヘルパー |
-  | `plugin-sdk/reply-history` | 返信履歴ヘルパー | `createChannelHistoryWindow`。`buildPendingHistoryContextFromMap`、`recordPendingHistoryEntry`、`clearHistoryEntriesIfEnabled` などの非推奨マップヘルパー互換エクスポート |
+  | `plugin-sdk/reply-runtime` | 共有返信ランタイム | インバウンドディスパッチ、Heartbeat、返信プランナー、チャンク化 |
+  | `plugin-sdk/reply-dispatch-runtime` | 狭い範囲の返信ディスパッチヘルパー | 確定、プロバイダーディスパッチ、会話ラベルヘルパー |
+  | `plugin-sdk/reply-history` | 返信履歴ヘルパー | `createChannelHistoryWindow`。`buildPendingHistoryContextFromMap`、`recordPendingHistoryEntry`、`clearHistoryEntriesIfEnabled`などの非推奨マップヘルパー互換性エクスポート |
   | `plugin-sdk/reply-reference` | 返信参照計画 | `createReplyReferencePlanner` |
   | `plugin-sdk/reply-chunking` | 返信チャンクヘルパー | テキスト/Markdownチャンク化ヘルパー |
   | `plugin-sdk/session-store-runtime` | セッションストアヘルパー | ストアパス + updated-atヘルパー |
   | `plugin-sdk/state-paths` | 状態パスヘルパー | 状態とOAuthディレクトリヘルパー |
   | `plugin-sdk/routing` | ルーティング/セッションキーのヘルパー | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, セッションキー正規化ヘルパー |
-  | `plugin-sdk/status-helpers` | チャンネルステータスのヘルパー | チャンネル/アカウントステータスの概要ビルダー、ランタイム状態のデフォルト、Issueメタデータヘルパー |
-  | `plugin-sdk/target-resolver-runtime` | ターゲットリゾルバーのヘルパー | 共有ターゲットリゾルバーヘルパー |
+  | `plugin-sdk/status-helpers` | チャンネルステータスのヘルパー | チャンネル/アカウントのステータスサマリービルダー、ランタイム状態のデフォルト、課題メタデータヘルパー |
+  | `plugin-sdk/target-resolver-runtime` | ターゲット解決ヘルパー | 共有ターゲット解決ヘルパー |
   | `plugin-sdk/string-normalization-runtime` | 文字列正規化ヘルパー | スラッグ/文字列正規化ヘルパー |
-  | `plugin-sdk/request-url` | リクエストURLヘルパー | リクエスト風入力から文字列URLを抽出 |
-  | `plugin-sdk/run-command` | タイムアウト付きコマンドヘルパー | 正規化されたstdout/stderrを持つタイムアウト付きコマンドランナー |
+  | `plugin-sdk/request-url` | リクエストURLヘルパー | リクエスト風の入力から文字列URLを抽出 |
+  | `plugin-sdk/run-command` | 時間制限付きコマンドヘルパー | 正規化された標準出力/標準エラー出力を備えた時間制限付きコマンドランナー |
   | `plugin-sdk/param-readers` | パラメーターリーダー | 共通ツール/CLIパラメーターリーダー |
-  | `plugin-sdk/tool-payload` | ツールペイロード抽出 | ツール結果オブジェクトから正規化済みペイロードを抽出 |
-  | `plugin-sdk/tool-send` | ツール送信抽出 | ツール引数から標準の送信先フィールドを抽出 |
-  | `plugin-sdk/temp-path` | 一時パスヘルパー | 共有一時ダウンロードパスヘルパー |
-  | `plugin-sdk/logging-core` | ロギングヘルパー | サブシステムロガーとリダクションヘルパー |
+  | `plugin-sdk/tool-payload` | ツールペイロード抽出 | ツール結果オブジェクトから正規化されたペイロードを抽出 |
+  | `plugin-sdk/tool-send` | ツール送信抽出 | ツール引数から正規の送信先フィールドを抽出 |
+  | `plugin-sdk/temp-path` | 一時パスヘルパー | 共有の一時ダウンロードパスヘルパー |
+  | `plugin-sdk/logging-core` | ロギングヘルパー | サブシステムロガーと秘匿化ヘルパー |
   | `plugin-sdk/markdown-table-runtime` | Markdownテーブルヘルパー | Markdownテーブルモードヘルパー |
   | `plugin-sdk/reply-payload` | メッセージ返信型 | 返信ペイロード型 |
-  | `plugin-sdk/provider-setup` | 厳選されたローカル/セルフホストプロバイダー設定ヘルパー | セルフホストプロバイダー検出/設定ヘルパー |
-  | `plugin-sdk/self-hosted-provider-setup` | OpenAI互換セルフホストプロバイダー設定に特化したヘルパー | 同じセルフホストプロバイダー検出/設定ヘルパー |
+  | `plugin-sdk/provider-setup` | 厳選されたローカル/セルフホストプロバイダー設定ヘルパー | セルフホストプロバイダーの検出/設定ヘルパー |
+  | `plugin-sdk/self-hosted-provider-setup` | OpenAI互換セルフホストプロバイダー向けの特化設定ヘルパー | 同じセルフホストプロバイダーの検出/設定ヘルパー |
   | `plugin-sdk/provider-auth-runtime` | プロバイダーランタイム認証ヘルパー | ランタイムAPIキー解決ヘルパー |
-  | `plugin-sdk/provider-auth-api-key` | プロバイダーAPIキー設定ヘルパー | APIキーオンボーディング/プロファイル書き込みヘルパー |
+  | `plugin-sdk/provider-auth-api-key` | プロバイダーAPIキー設定ヘルパー | APIキーのオンボーディング/プロファイル書き込みヘルパー |
   | `plugin-sdk/provider-auth-result` | プロバイダー認証結果ヘルパー | 標準OAuth認証結果ビルダー |
   | `plugin-sdk/provider-selection-runtime` | プロバイダー選択ヘルパー | 設定済みまたは自動のプロバイダー選択と生プロバイダー設定のマージ |
-  | `plugin-sdk/provider-env-vars` | プロバイダー環境変数ヘルパー | プロバイダー認証環境変数検索ヘルパー |
+  | `plugin-sdk/provider-env-vars` | プロバイダー環境変数ヘルパー | プロバイダー認証環境変数ルックアップヘルパー |
   | `plugin-sdk/provider-model-shared` | 共有プロバイダーモデル/リプレイヘルパー | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, 共有リプレイポリシービルダー、プロバイダーエンドポイントヘルパー、モデルID正規化ヘルパー |
   | `plugin-sdk/provider-catalog-shared` | 共有プロバイダーカタログヘルパー | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
   | `plugin-sdk/provider-onboard` | プロバイダーオンボーディングパッチ | オンボーディング設定ヘルパー |
-  | `plugin-sdk/provider-http` | プロバイダーHTTPヘルパー | 音声文字起こしのmultipart formヘルパーを含む、汎用プロバイダーHTTP/エンドポイント機能ヘルパー |
-  | `plugin-sdk/provider-web-fetch` | プロバイダーWeb取得ヘルパー | Web取得プロバイダー登録/キャッシュヘルパー |
-  | `plugin-sdk/provider-web-search-config-contract` | プロバイダーWeb検索設定ヘルパー | Plugin有効化配線を必要としないプロバイダー向けの狭いWeb検索設定/認証情報ヘルパー |
-  | `plugin-sdk/provider-web-search-contract` | プロバイダーWeb検索コントラクトヘルパー | `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`、スコープ付き認証情報セッター/ゲッターなどの狭いWeb検索設定/認証情報コントラクトヘルパー |
+  | `plugin-sdk/provider-http` | プロバイダーHTTPヘルパー | 音声文字起こしのマルチパートフォームヘルパーを含む、汎用プロバイダーHTTP/エンドポイント機能ヘルパー |
+  | `plugin-sdk/provider-web-fetch` | プロバイダーWebフェッチヘルパー | Webフェッチプロバイダー登録/キャッシュヘルパー |
+  | `plugin-sdk/provider-web-search-config-contract` | プロバイダーWeb検索設定ヘルパー | Plugin有効化配線を必要としないプロバイダー向けの限定的なWeb検索設定/認証情報ヘルパー |
+  | `plugin-sdk/provider-web-search-contract` | プロバイダーWeb検索コントラクトヘルパー | `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`、スコープ付き認証情報セッター/ゲッターなどの限定的なWeb検索設定/認証情報コントラクトヘルパー |
   | `plugin-sdk/provider-web-search` | プロバイダーWeb検索ヘルパー | Web検索プロバイダー登録/キャッシュ/ランタイムヘルパー |
-  | `plugin-sdk/provider-tools` | プロバイダーツール/スキーマ互換ヘルパー | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`、DeepSeek/Gemini/OpenAIスキーマクリーンアップ + 診断 |
+  | `plugin-sdk/provider-tools` | プロバイダーツール/スキーマ互換ヘルパー | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`、DeepSeek/Gemini/OpenAIスキーマのクリーンアップと診断 |
   | `plugin-sdk/provider-usage` | プロバイダー使用量ヘルパー | `fetchClaudeUsage`, `fetchGeminiUsage`, `fetchGithubCopilotUsage`、その他のプロバイダー使用量ヘルパー |
-  | `plugin-sdk/provider-stream` | プロバイダーストリームラッパーヘルパー | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`、ストリームラッパー型、共有Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilotラッパーヘルパー |
-  | `plugin-sdk/provider-transport-runtime` | プロバイダートランスポートヘルパー | ガード付きfetch、トランスポートメッセージ変換、書き込み可能なトランスポートイベントストリームなどのネイティブプロバイダートランスポートヘルパー |
+  | `plugin-sdk/provider-stream` | プロバイダーストリームラッパーヘルパー | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`、ストリームラッパー型、共有のAnthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilotラッパーヘルパー |
+  | `plugin-sdk/provider-transport-runtime` | プロバイダートランスポートヘルパー | ガード付きフェッチ、ツール結果テキスト抽出、トランスポートメッセージ変換、書き込み可能なトランスポートイベントストリームなどのネイティブプロバイダートランスポートヘルパー |
   | `plugin-sdk/keyed-async-queue` | 順序付き非同期キュー | `KeyedAsyncQueue` |
-  | `plugin-sdk/media-runtime` | 共有メディアヘルパー | メディア取得/変換/保存ヘルパー、ffprobeベースの動画寸法プローブ、メディアペイロードビルダー |
-  | `plugin-sdk/media-generation-runtime` | 共有メディア生成ヘルパー | 画像/動画/音楽生成向けの共有フェイルオーバーヘルパー、候補選択、モデル欠落メッセージ |
-  | `plugin-sdk/media-understanding` | メディア理解ヘルパー | メディア理解プロバイダー型とプロバイダー向け画像/音声ヘルパーエクスポート |
-  | `plugin-sdk/text-runtime` | 非推奨の広範なテキスト互換エクスポート | `string-coerce-runtime`, `text-chunking`, `text-utility-runtime`, `logging-core`を使用 |
-  | `plugin-sdk/text-chunking` | テキスト分割ヘルパー | 送信用テキスト分割ヘルパー |
+  | `plugin-sdk/media-runtime` | 共有メディアヘルパー | メディアの取得/変換/保存ヘルパー、ffprobeベースの動画寸法調査、メディアペイロードビルダー |
+  | `plugin-sdk/media-generation-runtime` | 共有メディア生成ヘルパー | 画像/動画/音楽生成向けの共有フェイルオーバーヘルパー、候補選択、モデル未指定メッセージ |
+  | `plugin-sdk/media-understanding` | メディア理解ヘルパー | メディア理解プロバイダー型と、プロバイダー向けの画像/音声ヘルパーエクスポート |
+  | `plugin-sdk/text-runtime` | 非推奨の広範なテキスト互換エクスポート | `string-coerce-runtime`, `text-chunking`, `text-utility-runtime`, `logging-core` を使用 |
+  | `plugin-sdk/text-chunking` | テキストチャンク化ヘルパー | 送信用テキストチャンク化ヘルパー |
   | `plugin-sdk/speech` | 音声ヘルパー | 音声プロバイダー型と、プロバイダー向けディレクティブ、レジストリ、検証ヘルパー、OpenAI互換TTSビルダー |
   | `plugin-sdk/speech-core` | 共有音声コア | 音声プロバイダー型、レジストリ、ディレクティブ、正規化 |
   | `plugin-sdk/realtime-transcription` | リアルタイム文字起こしヘルパー | プロバイダー型、レジストリヘルパー、共有WebSocketセッションヘルパー |
-  | `plugin-sdk/realtime-voice` | リアルタイム音声ヘルパー | プロバイダー型、レジストリ/解決ヘルパー、ブリッジセッションヘルパー、共有エージェント折り返し発話キュー、アクティブ実行音声制御、トランスクリプト/イベント健全性、エコー抑制、相談質問マッチング、強制相談の調整、ターンコンテキスト追跡、出力アクティビティ追跡、高速コンテキスト相談ヘルパー |
-  | `plugin-sdk/image-generation` | 画像生成ヘルパー | 画像生成プロバイダー型と画像アセット/データURLヘルパー、OpenAI互換画像プロバイダービルダー |
+  | `plugin-sdk/realtime-voice` | リアルタイム音声ヘルパー | プロバイダー型、レジストリ/解決ヘルパー、ブリッジセッションヘルパー、共有エージェント折り返し発話キュー、アクティブ実行の音声制御、トランスクリプト/イベントの健全性、エコー抑制、相談質問マッチング、強制相談の調整、ターンコンテキスト追跡、出力アクティビティ追跡、高速コンテキスト相談ヘルパー |
+  | `plugin-sdk/image-generation` | 画像生成ヘルパー | 画像生成プロバイダー型と、画像アセット/データURLヘルパー、OpenAI互換画像プロバイダービルダー |
   | `plugin-sdk/image-generation-core` | 共有画像生成コア | 画像生成型、フェイルオーバー、認証、レジストリヘルパー |
   | `plugin-sdk/music-generation` | 音楽生成ヘルパー | 音楽生成プロバイダー/リクエスト/結果型 |
-  | `plugin-sdk/music-generation-core` | 共有音楽生成コア | 音楽生成型、フェイルオーバーヘルパー、プロバイダー検索、モデル参照解析 |
+  | `plugin-sdk/music-generation-core` | 共有音楽生成コア | 音楽生成型、フェイルオーバーヘルパー、プロバイダールックアップ、モデル参照解析 |
   | `plugin-sdk/video-generation` | 動画生成ヘルパー | 動画生成プロバイダー/リクエスト/結果型 |
-  | `plugin-sdk/video-generation-core` | 共有動画生成コア | 動画生成型、フェイルオーバーヘルパー、プロバイダー検索、モデル参照解析 |
-  | `plugin-sdk/interactive-runtime` | インタラクティブ返信ヘルパー | インタラクティブ返信ペイロードの正規化/削減 |
-  | `plugin-sdk/channel-config-primitives` | チャンネル設定プリミティブ | 狭いチャンネル設定スキーマプリミティブ |
+  | `plugin-sdk/video-generation-core` | 共有動画生成コア | 動画生成型、フェイルオーバーヘルパー、プロバイダールックアップ、モデル参照解析 |
+  | `plugin-sdk/interactive-runtime` | インタラクティブ返信ヘルパー | インタラクティブ返信ペイロードの正規化/縮約 |
+  | `plugin-sdk/channel-config-primitives` | チャンネル設定プリミティブ | 限定的なチャンネル設定スキーマプリミティブ |
   | `plugin-sdk/channel-config-writes` | チャンネル設定書き込みヘルパー | チャンネル設定書き込み認可ヘルパー |
-  | `plugin-sdk/channel-plugin-common` | 共有チャンネルプレリュード | 共有チャンネルPluginプレリュードエクスポート |
-  | `plugin-sdk/channel-status` | チャンネルステータスヘルパー | 共有チャンネルステータススナップショット/概要ヘルパー |
+  | `plugin-sdk/channel-plugin-common` | 共有チャンネル前置部 | 共有チャンネルPlugin前置部エクスポート |
+  | `plugin-sdk/channel-status` | チャンネルステータスヘルパー | 共有チャンネルステータススナップショット/サマリーヘルパー |
   | `plugin-sdk/allowlist-config-edit` | 許可リスト設定ヘルパー | 許可リスト設定の編集/読み取りヘルパー |
   | `plugin-sdk/group-access` | グループアクセスヘルパー | 共有グループアクセス判定ヘルパー |
-  | `plugin-sdk/direct-dm`, `plugin-sdk/direct-dm-access` | 非推奨の互換性ファサード | `plugin-sdk/channel-inbound`を使用 |
-  | `plugin-sdk/direct-dm-guard-policy` | Direct-DMガードヘルパー | 狭い暗号化前ガードポリシーヘルパー |
+  | `plugin-sdk/direct-dm`, `plugin-sdk/direct-dm-access` | 非推奨の互換ファサード | `plugin-sdk/channel-inbound` を使用 |
+  | `plugin-sdk/direct-dm-guard-policy` | ダイレクトDMガードヘルパー | 暗号化前の限定的なガードポリシーヘルパー |
   | `plugin-sdk/extension-shared` | 共有拡張ヘルパー | パッシブチャンネル/ステータスとアンビエントプロキシのヘルパープリミティブ |
   | `plugin-sdk/webhook-targets` | Webhookターゲットヘルパー | Webhookターゲットレジストリとルートインストールヘルパー |
-  | `plugin-sdk/webhook-path` | 非推奨のWebhookパスエイリアス | `plugin-sdk/webhook-ingress`を使用 |
+  | `plugin-sdk/webhook-path` | 非推奨のWebhookパスエイリアス | `plugin-sdk/webhook-ingress` を使用 |
   | `plugin-sdk/web-media` | 共有Webメディアヘルパー | リモート/ローカルメディア読み込みヘルパー |
-  | `plugin-sdk/zod` | 非推奨のZod互換再エクスポート | `zod`から`zod`を直接インポート |
-  | `plugin-sdk/memory-core` | バンドルされたmemory-coreヘルパー | メモリマネージャー/設定/ファイル/CLIヘルパーサーフェス |
+  | `plugin-sdk/zod` | 非推奨のZod互換再エクスポート | `zod` から `zod` を直接インポート |
+  | `plugin-sdk/memory-core` | バンドルされたメモリコアヘルパー | メモリマネージャー/設定/ファイル/CLIヘルパーサーフェス |
   | `plugin-sdk/memory-core-engine-runtime` | メモリエンジンランタイムファサード | メモリインデックス/検索ランタイムファサード |
-  | `plugin-sdk/memory-core-host-embedding-registry` | メモリ埋め込みレジストリ | 軽量なメモリ埋め込みプロバイダーレジストリヘルパー |
+  | `plugin-sdk/memory-core-host-embedding-registry` | メモリ埋め込みレジストリ | 軽量メモリ埋め込みプロバイダーレジストリヘルパー |
   | `plugin-sdk/memory-core-host-engine-foundation` | メモリホスト基盤エンジン | メモリホスト基盤エンジンエクスポート |
-  | `plugin-sdk/memory-core-host-engine-embeddings` | メモリホスト埋め込みエンジン | メモリ埋め込みコントラクト、レジストリアクセス、ローカルプロバイダー、汎用バッチ/リモートヘルパー。具体的なリモートプロバイダーは所有するPluginsに存在 |
+  | `plugin-sdk/memory-core-host-engine-embeddings` | メモリホスト埋め込みエンジン | メモリ埋め込みコントラクト、レジストリアクセス、ローカルプロバイダー、汎用バッチ/リモートヘルパー。具体的なリモートプロバイダーは所有元Pluginに存在 |
   | `plugin-sdk/memory-core-host-engine-qmd` | メモリホストQMDエンジン | メモリホストQMDエンジンエクスポート |
   | `plugin-sdk/memory-core-host-engine-storage` | メモリホストストレージエンジン | メモリホストストレージエンジンエクスポート |
   | `plugin-sdk/memory-core-host-multimodal` | メモリホストマルチモーダルヘルパー | メモリホストマルチモーダルヘルパー |
   | `plugin-sdk/memory-core-host-query` | メモリホストクエリヘルパー | メモリホストクエリヘルパー |
   | `plugin-sdk/memory-core-host-secret` | メモリホストシークレットヘルパー | メモリホストシークレットヘルパー |
-  | `plugin-sdk/memory-core-host-events` | 非推奨のメモリイベントエイリアス | `plugin-sdk/memory-host-events`を使用 |
+  | `plugin-sdk/memory-core-host-events` | 非推奨のメモリイベントエイリアス | `plugin-sdk/memory-host-events` を使用 |
   | `plugin-sdk/memory-core-host-status` | メモリホストステータスヘルパー | メモリホストステータスヘルパー |
   | `plugin-sdk/memory-core-host-runtime-cli` | メモリホストCLIランタイム | メモリホストCLIランタイムヘルパー |
   | `plugin-sdk/memory-core-host-runtime-core` | メモリホストコアランタイム | メモリホストコアランタイムヘルパー |
   | `plugin-sdk/memory-core-host-runtime-files` | メモリホストファイル/ランタイムヘルパー | メモリホストファイル/ランタイムヘルパー |
-  | `plugin-sdk/memory-host-core` | メモリホストコアランタイムエイリアス | メモリホストコアランタイムヘルパーのベンダー中立エイリアス |
-  | `plugin-sdk/memory-host-events` | メモリホストイベントジャーナルエイリアス | メモリホストイベントジャーナルヘルパーのベンダー中立エイリアス |
-  | `plugin-sdk/memory-host-files` | 非推奨のメモリファイル/ランタイムエイリアス | `plugin-sdk/memory-core-host-runtime-files`を使用 |
-  | `plugin-sdk/memory-host-markdown` | 管理対象Markdownヘルパー | メモリ隣接Plugins向けの共有管理対象Markdownヘルパー |
+  | `plugin-sdk/memory-host-core` | メモリホストコアランタイムエイリアス | ベンダー中立のメモリホストコアランタイムヘルパーエイリアス |
+  | `plugin-sdk/memory-host-events` | メモリホストイベントジャーナルエイリアス | ベンダー中立のメモリホストイベントジャーナルヘルパーエイリアス |
+  | `plugin-sdk/memory-host-files` | 非推奨のメモリファイル/ランタイムエイリアス | `plugin-sdk/memory-core-host-runtime-files` を使用 |
+  | `plugin-sdk/memory-host-markdown` | 管理対象Markdownヘルパー | メモリ隣接Plugin向けの共有管理対象Markdownヘルパー |
   | `plugin-sdk/memory-host-search` | Active Memory検索ファサード | 遅延Active Memory検索マネージャーランタイムファサード |
-  | `plugin-sdk/memory-host-status` | 非推奨のメモリホストステータスエイリアス | `plugin-sdk/memory-core-host-status`を使用 |
-  | `plugin-sdk/testing` | テストユーティリティ | リポジトリローカルの非推奨互換バレル。`plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/channel-target-testing`, `plugin-sdk/test-env`, `plugin-sdk/test-fixtures`などの特化したリポジトリローカルテストサブパスを使用 |
+  | `plugin-sdk/memory-host-status` | 非推奨のメモリホストステータスエイリアス | `plugin-sdk/memory-core-host-status` を使用 |
+  | `plugin-sdk/testing` | テストユーティリティ | リポジトリローカルの非推奨互換バレル。`plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/channel-target-testing`, `plugin-sdk/test-env`, `plugin-sdk/test-fixtures` などの特化したリポジトリローカルテストサブパスを使用 |
 </Accordion>
 
-この表は意図的に、完全な SDK サーフェスではなく共通の移行サブセットにしています。コンパイラーのエントリーポイントインベントリは
-`scripts/lib/plugin-sdk-entrypoints.json` にあり、パッケージのエクスポートは公開サブセットから生成されます。
+この表は意図的に、SDK サーフェス全体ではなく、共通の移行サブセットを示しています。コンパイラーエントリーポイントのインベントリは
+`scripts/lib/plugin-sdk-entrypoints.json` にあり、パッケージエクスポートは公開サブセットから生成されます。
 
-予約済みのバンドルプラグイン用ヘルパー境界は、公開 SDK エクスポートマップから廃止されました。ただし、公開済みの
-`@openclaw/discord@2026.3.13` パッケージ向けに保持されている非推奨の `plugin-sdk/discord` shim など、明示的に文書化された互換性ファサードは例外です。所有者固有のヘルパーは、所有元のプラグインパッケージ内に置かれます。共有ホスト動作は、`plugin-sdk/gateway-runtime`、`plugin-sdk/security-runtime`、`plugin-sdk/plugin-config-runtime` などの汎用 SDK コントラクトを通す必要があります。
+予約済みのバンドル Plugin ヘルパー境界は、公開 SDK エクスポートマップから廃止されています。ただし、公開済みの
+`@openclaw/discord@2026.3.13` パッケージ向けに保持されている非推奨の `plugin-sdk/discord` shim など、明示的にドキュメント化された互換性ファサードは除きます。所有者固有のヘルパーは、所有する Plugin パッケージ内にあります。共有ホストの動作は、`plugin-sdk/gateway-runtime`、`plugin-sdk/security-runtime`、`plugin-sdk/plugin-config-runtime` などの汎用 SDK コントラクトを通す必要があります。
 
-用途に合う最も狭い import を使用してください。エクスポートが見つからない場合は、`src/plugin-sdk/` のソースを確認するか、どの汎用コントラクトがそれを所有すべきかをメンテナーに確認してください。
+用途に合う最も狭いインポートを使用してください。エクスポートが見つからない場合は、`src/plugin-sdk/` のソースを確認するか、どの汎用コントラクトがそれを所有すべきかをメンテナーに尋ねてください。
 
-## アクティブな非推奨項目
+## 有効な非推奨項目
 
-プラグイン SDK、プロバイダーコントラクト、ランタイムサーフェス、マニフェスト全体に適用される、より狭い非推奨項目です。各項目は現在も動作しますが、将来のメジャーリリースで削除されます。各項目の下のエントリーは、古い API を標準の置き換え先に対応付けます。
+Plugin SDK、プロバイダーコントラクト、ランタイムサーフェス、マニフェスト全体に適用される、より狭い非推奨項目です。各項目は現在も動作しますが、将来のメジャーリリースで削除されます。各項目の下のエントリーは、古い API を正規の置き換え先に対応付けています。
 
 <AccordionGroup>
   <Accordion title="command-auth ヘルプビルダー → command-status">
     **旧 (`openclaw/plugin-sdk/command-auth`)**: `buildCommandsMessage`,
-    `buildCommandsMessagePaginated`, `buildHelpMessage`。
+    `buildCommandsMessagePaginated`, `buildHelpMessage`.
 
-    **新 (`openclaw/plugin-sdk/command-status`)**: 同じシグネチャ、同じエクスポートです。より狭いサブパスから import するだけです。`command-auth` は互換性スタブとしてそれらを再エクスポートします。
+    **新 (`openclaw/plugin-sdk/command-status`)**: 同じシグネチャ、同じ
+    エクスポートです。より狭いサブパスからインポートするだけです。`command-auth`
+    は互換性スタブとしてそれらを再エクスポートします。
 
     ```typescript
     // Before
@@ -647,46 +657,49 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 
   <Accordion title="メンションゲーティングヘルパー → resolveInboundMentionDecision">
     **旧**: `openclaw/plugin-sdk/channel-inbound` または
-    `openclaw/plugin-sdk/channel-mention-gating` の
+    `openclaw/plugin-sdk/channel-mention-gating` からの
     `resolveInboundMentionRequirement({ facts, policy })` と
     `shouldDropInboundForMention(...)`。
 
-    **新**: `resolveInboundMentionDecision({ facts, policy })`。2 つに分かれた呼び出しではなく、単一の判定オブジェクトを返します。
+    **新**: `resolveInboundMentionDecision({ facts, policy })` - 2 つの分割呼び出しではなく、単一の決定オブジェクトを返します。
 
-    下流のチャネルプラグイン (Slack、Discord、Matrix、MS Teams) はすでに切り替え済みです。
+    下流のチャンネル Plugin (Slack、Discord、Matrix、MS Teams) はすでに切り替え済みです。
 
   </Accordion>
 
-  <Accordion title="チャネルランタイム shim とチャネルアクションヘルパー">
-    `openclaw/plugin-sdk/channel-runtime` は、古いチャネルプラグイン向けの互換性 shim です。新しいコードから import しないでください。ランタイムオブジェクトの登録には
+  <Accordion title="チャンネルランタイム shim とチャンネルアクションヘルパー">
+    `openclaw/plugin-sdk/channel-runtime` は、古いチャンネル Plugin 向けの互換性 shim です。新しいコードからインポートしないでください。ランタイムオブジェクトの登録には
     `openclaw/plugin-sdk/channel-runtime-context` を使用してください。
 
-    `openclaw/plugin-sdk/channel-actions` の `channelActions*` ヘルパーは、生の「actions」チャネルエクスポートとあわせて非推奨です。代わりに意味的な `presentation` サーフェスを通じて機能を公開してください。チャネルプラグインは、受け付ける生のアクション名ではなく、何をレンダリングするか (カード、ボタン、セレクト) を宣言します。
+    `openclaw/plugin-sdk/channel-actions` の `channelActions*` ヘルパーは、生の「actions」チャンネルエクスポートとあわせて非推奨です。代わりに、セマンティックな `presentation` サーフェスを通じて機能を公開してください。チャンネル Plugin は、受け付ける生のアクション名ではなく、何をレンダリングするか (カード、ボタン、セレクト) を宣言します。
 
   </Accordion>
 
-  <Accordion title="Web 検索プロバイダーツールの tool() ヘルパー → プラグイン上の createTool()">
-    **旧**: `openclaw/plugin-sdk/provider-web-search` の `tool()` ファクトリ。
+  <Accordion title="Web 検索プロバイダーツール tool() ヘルパー → Plugin 上の createTool()">
+    **旧**: `openclaw/plugin-sdk/provider-web-search` からの `tool()` ファクトリー。
 
-    **新**: プロバイダープラグイン上で `createTool(...)` を直接実装します。OpenClaw はツールラッパーを登録するための SDK ヘルパーを必要としなくなりました。
+    **新**: プロバイダー Plugin に `createTool(...)` を直接実装します。
+    OpenClaw はツールラッパーを登録するために SDK ヘルパーを必要としなくなりました。
 
   </Accordion>
 
-  <Accordion title="プレーンテキストのチャネルエンベロープ → BodyForAgent">
-    **旧**: 受信チャネルメッセージから平坦なプレーンテキストのプロンプトエンベロープを構築する `formatInboundEnvelope(...)` (および
+  <Accordion title="プレーンテキストチャンネルエンベロープ → BodyForAgent">
+    **旧**: 受信チャンネルメッセージからフラットなプレーンテキストプロンプトエンベロープを構築する
+    `formatInboundEnvelope(...)` (および
     `ChannelMessageForAgent.channelEnvelope`)。
 
-    **新**: `BodyForAgent` と構造化されたユーザーコンテキストブロック。チャネルプラグインは、ルーティングメタデータ (スレッド、トピック、返信先、リアクション) をプロンプト文字列に連結するのではなく、型付きフィールドとして添付します。合成されたアシスタント向けエンベロープでは
-    `formatAgentEnvelope(...)` ヘルパーが引き続きサポートされますが、受信プレーンテキストエンベロープは廃止へ向かっています。
+    **新**: `BodyForAgent` と構造化されたユーザーコンテキストブロック。チャンネル
+    Plugin は、ルーティングメタデータ (スレッド、トピック、返信先、リアクション) をプロンプト文字列に連結するのではなく、型付きフィールドとして添付します。
+    `formatAgentEnvelope(...)` ヘルパーは、合成されたアシスタント向けエンベロープでは引き続きサポートされますが、受信プレーンテキストエンベロープは廃止に向かっています。
 
-    影響範囲: `inbound_claim`、`message_received`、および `channelEnvelope` テキストを後処理していたカスタムチャネルプラグイン。
+    影響範囲: `inbound_claim`、`message_received`、および `channelEnvelope` テキストを後処理していたカスタムチャンネル Plugin。
 
   </Accordion>
 
   <Accordion title="deactivate フック → gateway_stop">
     **旧**: `api.on("deactivate", handler)`。
 
-    **新**: `api.on("gateway_stop", handler)`。イベントとコンテキストは同じシャットダウンクリーンアップコントラクトです。変更されるのはフック名のみです。
+    **新**: `api.on("gateway_stop", handler)`。イベントとコンテキストは同じシャットダウンクリーンアップコントラクトです。変更されるのはフック名だけです。
 
     ```typescript
     // Before
@@ -700,7 +713,7 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     });
     ```
 
-    `deactivate` は、2026-08-16 以降まで非推奨の互換性エイリアスとして接続されたままです。
+    `deactivate` は 2026-08-16 以降まで、非推奨の互換性エイリアスとして引き続き配線されています。
 
   </Accordion>
 
@@ -708,7 +721,7 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     **旧**: `threadBindingReady` または `deliveryOrigin` を返す
     `api.on("subagent_spawning", handler)`。
 
-    **新**: コアがチャネルセッションバインディングアダプターを通じて `thread: true` のサブエージェントバインディングを準備するようにします。起動後の観察にのみ
+    **新**: コアに、チャンネルセッションバインディングアダプターを通じて `thread: true` サブエージェントバインディングを準備させます。起動後の観測にのみ
     `api.on("subagent_spawned", handler)` を使用してください。
 
     ```typescript
@@ -725,24 +738,23 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     });
     ```
 
-    外部プラグインが移行する間、`subagent_spawning`、
-    `PluginHookSubagentSpawningEvent`、
+    `subagent_spawning`、`PluginHookSubagentSpawningEvent`、
     `PluginHookSubagentSpawningResult`、および
-    `SubagentLifecycleHookRunner.runSubagentSpawning(...)` は非推奨の互換性サーフェスとしてのみ残ります。
+    `SubagentLifecycleHookRunner.runSubagentSpawning(...)` は、外部 Plugin が移行する間のみ、非推奨の互換性サーフェスとして残ります。
 
   </Accordion>
 
   <Accordion title="プロバイダー検出型 → プロバイダーカタログ型">
     4 つの検出型エイリアスは、現在ではカタログ時代の型の薄いラッパーです。
 
-    | 旧エイリアス                | 新しい型                  |
+    | 古いエイリアス            | 新しい型                  |
     | ------------------------- | ------------------------- |
     | `ProviderDiscoveryOrder`  | `ProviderCatalogOrder`    |
     | `ProviderDiscoveryContext`| `ProviderCatalogContext`  |
     | `ProviderDiscoveryResult` | `ProviderCatalogResult`   |
     | `ProviderPluginDiscovery` | `ProviderPluginCatalog`   |
 
-    さらに、レガシーな静的バッグ `ProviderCapabilities` も該当します。プロバイダープラグインは、静的オブジェクトではなく、`buildReplayPolicy`、`normalizeToolSchemas`、`wrapStreamFn` などの明示的なプロバイダーフックを使用する必要があります。
+    さらに、レガシーな `ProviderCapabilities` 静的バッグも対象です。プロバイダー Plugin は、静的オブジェクトではなく、`buildReplayPolicy`、`normalizeToolSchemas`、`wrapStreamFn` などの明示的なプロバイダーフックを使用する必要があります。
 
   </Accordion>
 
@@ -751,19 +763,20 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     `isBinaryThinking(ctx)`、`supportsXHighThinking(ctx)`、および
     `resolveDefaultThinkingLevel(ctx)`。
 
-    **新**: 標準の `id`、任意の `label`、ランク付けされたレベルリストを持つ
-    `ProviderThinkingProfile` を返す単一の `resolveThinkingProfile(ctx)`。OpenClaw は、古い保存済み値をプロファイルランクに基づいて自動的にダウングレードします。
+    **新**: 正規の `id`、任意の `label`、およびランク付けされたレベルリストを含む
+    `ProviderThinkingProfile` を返す単一の `resolveThinkingProfile(ctx)`。OpenClaw は、古い保存値をプロファイルランクに基づいて自動的にダウングレードします。
 
-    コンテキストには、`provider`、`modelId`、任意でマージ済みの `reasoning`、および任意でマージ済みのモデル `compat` ファクトが含まれます。プロバイダープラグインは、それらのカタログファクトを使用して、設定されたリクエストコントラクトがサポートする場合にのみモデル固有のプロファイルを公開できます。
+    コンテキストには、`provider`、`modelId`、任意でマージされた `reasoning`、および任意でマージされたモデル `compat` ファクトが含まれます。プロバイダー Plugin は、設定済みリクエストコントラクトがサポートする場合にのみ、それらのカタログファクトを使ってモデル固有のプロファイルを公開できます。
 
-    3 つではなく 1 つのフックを実装してください。レガシーフックは非推奨期間中も動作しますが、プロファイル結果とは合成されません。
+    3 つではなく 1 つのフックを実装してください。レガシーフックは非推奨期間中も動作し続けますが、プロファイル結果とは合成されません。
 
   </Accordion>
 
   <Accordion title="外部認証プロバイダー → contracts.externalAuthProviders">
-    **旧**: プラグインマニフェストでプロバイダーを宣言せずに外部認証フックを実装する。
+    **旧**: Plugin マニフェストでプロバイダーを宣言せずに外部認証フックを実装すること。
 
-    **新**: プラグインマニフェストで `contracts.externalAuthProviders` を宣言し、**かつ** `resolveExternalAuthProfiles(...)` を実装します。
+    **新**: Plugin マニフェストで `contracts.externalAuthProviders` を宣言し、
+    **かつ** `resolveExternalAuthProfiles(...)` を実装します。
 
     ```json
     {
@@ -775,26 +788,26 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 
   </Accordion>
 
-  <Accordion title="プロバイダー env-var 参照 → setup.providers[].envVars">
+  <Accordion title="プロバイダー環境変数ルックアップ → setup.providers[].envVars">
     **旧** マニフェストフィールド: `providerAuthEnvVars: { anthropic: ["ANTHROPIC_API_KEY"] }`。
 
-    **新**: 同じ env-var 参照をマニフェスト上の `setup.providers[].envVars` にミラーします。これにより、セットアップ/ステータス用の env メタデータが 1 か所に統合され、env-var 参照に答えるためだけにプラグインランタイムを起動する必要がなくなります。
+    **新**: 同じ環境変数ルックアップを、マニフェスト上の `setup.providers[].envVars` に反映します。これにより、セットアップ/ステータスの環境メタデータが 1 か所に統合され、環境変数ルックアップに答えるためだけに Plugin ランタイムを起動する必要がなくなります。
 
-    `providerAuthEnvVars` は、非推奨期間が終了するまで互換性アダプターを通じてサポートされ続けます。
+    `providerAuthEnvVars` は、非推奨期間が終了するまで互換性アダプターを通じて引き続きサポートされます。
 
   </Accordion>
 
-  <Accordion title="メモリプラグイン登録 → registerMemoryCapability">
+  <Accordion title="メモリ Plugin 登録 → registerMemoryCapability">
     **旧**: 3 つの個別呼び出し -
     `api.registerMemoryPromptSection(...)`、
     `api.registerMemoryFlushPlan(...)`、
     `api.registerMemoryRuntime(...)`。
 
-    **新**: メモリ状態 API 上の 1 回の呼び出し -
+    **新**: メモリ状態 API 上の 1 つの呼び出し -
     `registerMemoryCapability(pluginId, { promptBuilder, flushPlanResolver, runtime })`。
 
-    同じスロットを、単一の登録呼び出しで扱います。追加的なプロンプトおよびコーパスヘルパー
-    (`registerMemoryPromptSupplement`, `registerMemoryCorpusSupplement`) には影響しません。
+    同じスロットを、単一の登録呼び出しで扱います。追加型のプロンプトおよびコーパスヘルパー
+    (`registerMemoryPromptSupplement`, `registerMemoryCorpusSupplement`) は影響を受けません。
 
   </Accordion>
 
@@ -805,26 +818,28 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
     **新**: `api.registerEmbeddingProvider(...)` と
     `contracts.embeddingProviders`。
 
-    汎用の埋め込みプロバイダーコントラクトはメモリ以外でも再利用でき、新しいプロバイダー向けにサポートされる経路です。既存プロバイダーが移行する間、メモリ固有の登録 API は非推奨の互換性として接続されたままです。プラグイン検査では、非バンドルでの使用が互換性負債として報告されます。
+    汎用埋め込みプロバイダーコントラクトはメモリ外でも再利用でき、新しいプロバイダー向けにサポートされるパスです。メモリ固有の登録 API は、既存プロバイダーが移行する間、非推奨の互換性として引き続き配線されています。
+    Plugin 検査では、非バンドルの使用は互換性負債として報告されます。
 
   </Accordion>
 
-  <Accordion title="サブエージェントセッションメッセージ型の名前変更">
-    `src/plugins/runtime/types.ts` から引き続きエクスポートされている 2 つのレガシー型エイリアス:
+  <Accordion title="サブエージェントセッションメッセージ型の名称変更">
+    `src/plugins/runtime/types.ts` から引き続きエクスポートされる 2 つのレガシー型エイリアス:
 
     | 旧                            | 新                              |
     | ----------------------------- | ------------------------------- |
     | `SubagentReadSessionParams`   | `SubagentGetSessionMessagesParams` |
     | `SubagentReadSessionResult`   | `SubagentGetSessionMessagesResult` |
 
-    ランタイムメソッド `readSession` は非推奨で、`getSessionMessages` が推奨されます。同じシグネチャで、古いメソッドは新しいメソッドへ委譲します。
+    ランタイムメソッド `readSession` は非推奨となり、
+    `getSessionMessages` が推奨されます。同じシグネチャで、古いメソッドは新しいメソッドへ呼び出しを渡します。
 
   </Accordion>
 
   <Accordion title="runtime.tasks.flow → runtime.tasks.managedFlows">
-    **旧**: `runtime.tasks.flow` (単数形) は、ライブのタスクフローアクセサーを返していました。
+    **旧**: `runtime.tasks.flow` (単数形) はライブのタスクフローアクセサーを返していました。
 
-    **新**: `runtime.tasks.managedFlows` は、フローから子タスクを作成、更新、キャンセル、または実行するプラグイン向けに、管理対象 TaskFlow 変更ランタイムを保持します。プラグインが DTO ベースの読み取りだけを必要とする場合は `runtime.tasks.flows` を使用してください。
+    **新**: `runtime.tasks.managedFlows` は、フローから子タスクを作成、更新、キャンセル、または実行する Plugin 向けに、管理対象 TaskFlow ミューテーションランタイムを保持します。Plugin が DTO ベースの読み取りだけを必要とする場合は、`runtime.tasks.flows` を使用してください。
 
     ```typescript
     // Before
@@ -835,14 +850,16 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 
   </Accordion>
 
-  <Accordion title="埋め込み拡張ファクトリ → エージェントツール結果ミドルウェア">
-    上記の「移行方法 → 埋め込みツール結果拡張をミドルウェアに移行する」で扱っています。完全性のためにここにも含めます。削除された埋め込みランナー専用の
-    `api.registerEmbeddedExtensionFactory(...)` 経路は、`contracts.agentToolResultMiddleware` の明示的なランタイムリストを伴う
+  <Accordion title="埋め込み拡張ファクトリー → エージェントツール結果ミドルウェア">
+    上記の「移行方法 → 埋め込みツール結果拡張をミドルウェアへ移行する」で扱っています。完全性のためにここにも含めます。削除された埋め込みランナー専用の
+    `api.registerEmbeddedExtensionFactory(...)` パスは、
+    `contracts.agentToolResultMiddleware` の明示的なランタイムリストを伴う
     `api.registerAgentToolResultMiddleware(...)` に置き換えられます。
   </Accordion>
 
   <Accordion title="OpenClawSchemaType エイリアス → OpenClawConfig">
-    `openclaw/plugin-sdk` から再エクスポートされる `OpenClawSchemaType` は、現在では `OpenClawConfig` の 1 行エイリアスです。標準名を優先してください。
+    `openclaw/plugin-sdk` から再エクスポートされる `OpenClawSchemaType` は、現在では
+    `OpenClawConfig` の 1 行エイリアスです。正規の名前を優先してください。
 
     ```typescript
     // Before
@@ -855,18 +872,19 @@ await gateway.request("talk.client.steer", { sessionKey, text, mode: "steer" });
 </AccordionGroup>
 
 <Note>
-`extensions/` 配下のバンドル済みチャネル/プロバイダープラグイン内にある拡張レベルの非推奨項目は、それぞれの `api.ts` と `runtime-api.ts` バレル内で追跡されます。それらはサードパーティープラグインのコントラクトには影響せず、ここには記載していません。バンドル済みプラグインのローカルバレルを直接使用している場合は、アップグレード前にそのバレル内の非推奨コメントを読んでください。
+`extensions/` 配下のバンドルされたチャンネル/プロバイダー Plugin 内にある拡張レベルの非推奨項目は、それぞれの `api.ts` および `runtime-api.ts`
+バレル内で追跡されています。それらはサードパーティ Plugin コントラクトには影響せず、ここには記載されていません。バンドル Plugin のローカルバレルを直接利用している場合は、アップグレード前にそのバレル内の非推奨コメントを読んでください。
 </Note>
 
 ## 削除タイムライン
 
-| 時期                   | 起こること                                                            |
+| 時期                   | 何が起こるか                                                            |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **現在**                | 非推奨サーフェスはランタイム警告を出します                               |
-| **次のメジャーリリース** | 非推奨サーフェスは削除され、それらをまだ使用しているPluginは失敗します |
+| **現在**                | 非推奨のサーフェスは実行時警告を出力します                               |
+| **次のメジャーリリース** | 非推奨のサーフェスは削除されます。まだそれらを使用しているPluginは失敗します |
 
 すべてのコアPluginはすでに移行済みです。外部Pluginは
-次のメジャーリリースまでに移行する必要があります。
+次のメジャーリリース前に移行する必要があります。
 
 ## 警告を一時的に抑制する
 
@@ -877,13 +895,13 @@ OPENCLAW_SUPPRESS_PLUGIN_SDK_COMPAT_WARNING=1 openclaw gateway run
 OPENCLAW_SUPPRESS_EXTENSION_API_WARNING=1 openclaw gateway run
 ```
 
-これは一時的な退避策であり、恒久的な解決策ではありません。
+これは一時的な退避手段であり、恒久的な解決策ではありません。
 
 ## 関連
 
 - [はじめに](/ja-JP/plugins/building-plugins) - 最初のPluginを構築する
-- [SDK 概要](/ja-JP/plugins/sdk-overview) - 完全なサブパスインポートリファレンス
-- [チャネルPlugin](/ja-JP/plugins/sdk-channel-plugins) - チャネルPluginの構築
+- [SDK の概要](/ja-JP/plugins/sdk-overview) - 完全なサブパスインポートリファレンス
+- [チャンネルPlugin](/ja-JP/plugins/sdk-channel-plugins) - チャンネルPluginの構築
 - [プロバイダーPlugin](/ja-JP/plugins/sdk-provider-plugins) - プロバイダーPluginの構築
-- [Plugin 内部](/ja-JP/plugins/architecture) - アーキテクチャの詳細解説
+- [Plugin の内部構造](/ja-JP/plugins/architecture) - アーキテクチャの詳細解説
 - [Plugin マニフェスト](/ja-JP/plugins/manifest) - マニフェストスキーマリファレンス

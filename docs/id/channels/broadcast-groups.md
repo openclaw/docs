@@ -1,17 +1,17 @@
 ---
 read_when:
     - Mengonfigurasi grup siaran
-    - Men-debug balasan multi-agen di WhatsApp
+    - Men-debug balasan multiagen di WhatsApp
 sidebarTitle: Broadcast groups
 status: experimental
 summary: Siarkan pesan WhatsApp ke beberapa agen
 title: Grup siaran
 x-i18n:
-    generated_at: "2026-06-27T17:09:10Z"
+    generated_at: "2026-07-01T08:29:51Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a89b936322baf0fea7b487cb5354b9fad3fc021abb2970f7cd934b1880da2a0e
+    source_hash: 97e8c2ade5d12a437864e6aca0d475e586289f71155188afed216881ebf89f88
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
@@ -20,19 +20,21 @@ x-i18n:
 **Status:** Eksperimental. Ditambahkan pada 2026.1.9.
 </Note>
 
-## Ikhtisar
+## Gambaran umum
 
-Grup Siaran memungkinkan beberapa agen memproses dan merespons pesan yang sama secara bersamaan. Ini memungkinkan Anda membuat tim agen khusus yang bekerja bersama dalam satu grup WhatsApp atau DM — semuanya menggunakan satu nomor telepon.
+Broadcast Groups memungkinkan beberapa agen memproses dan merespons pesan yang sama secara bersamaan. Ini memungkinkan Anda membuat tim agen khusus yang bekerja bersama dalam satu grup WhatsApp atau DM — semuanya menggunakan satu nomor telepon.
 
 Cakupan saat ini: **hanya WhatsApp** (kanal web).
 
-Grup siaran dievaluasi setelah allowlist kanal dan aturan aktivasi grup. Dalam grup WhatsApp, ini berarti siaran terjadi saat OpenClaw biasanya akan membalas (misalnya: saat disebut, tergantung pengaturan grup Anda).
+Grup broadcast dievaluasi setelah allowlist kanal dan aturan aktivasi grup. Di grup WhatsApp, ini berarti broadcast terjadi ketika OpenClaw biasanya akan membalas (misalnya: saat disebut, bergantung pada pengaturan grup Anda).
+
+Lane QA WhatsApp langsung menyertakan `whatsapp-broadcast-group-fanout`, yang memverifikasi bahwa satu pesan grup yang menyebut OpenClaw dapat menghasilkan balasan terlihat yang berbeda dari dua agen yang dikonfigurasi.
 
 ## Kasus penggunaan
 
 <AccordionGroup>
   <Accordion title="1. Specialized agent teams">
-    Terapkan beberapa agen dengan tanggung jawab yang atomik dan terfokus:
+    Jalankan beberapa agen dengan tanggung jawab yang atomik dan terfokus:
 
     ```
     Group: "Development Team"
@@ -78,9 +80,9 @@ Grup siaran dievaluasi setelah allowlist kanal dan aturan aktivasi grup. Dalam g
 
 ### Penyiapan dasar
 
-Tambahkan bagian `broadcast` tingkat atas (di samping `bindings`). Kunci adalah ID peer WhatsApp:
+Tambahkan bagian `broadcast` tingkat atas (di samping `bindings`). Kuncinya adalah ID peer WhatsApp:
 
-- percakapan grup: JID grup (mis. `120363403215116621@g.us`)
+- chat grup: JID grup (mis. `120363403215116621@g.us`)
 - DM: nomor telepon E.164 (mis. `+15551234567`)
 
 ```json
@@ -91,11 +93,11 @@ Tambahkan bagian `broadcast` tingkat atas (di samping `bindings`). Kunci adalah 
 }
 ```
 
-**Hasil:** Saat OpenClaw akan membalas dalam percakapan ini, OpenClaw akan menjalankan ketiga agen.
+**Hasil:** Ketika OpenClaw akan membalas di chat ini, OpenClaw akan menjalankan ketiga agen.
 
 ### Strategi pemrosesan
 
-Kontrol cara agen memproses pesan:
+Kendalikan cara agen memproses pesan:
 
 <Tabs>
   <Tab title="parallel (default)">
@@ -173,7 +175,7 @@ Kontrol cara agen memproses pesan:
     OpenClaw menerapkan allowlist kanal, aturan aktivasi grup, dan kepemilikan binding ACP yang dikonfigurasi.
   </Step>
   <Step title="Broadcast check">
-    Jika tidak ada binding ACP terkonfigurasi yang memiliki rute tersebut, OpenClaw memeriksa apakah ID peer ada di `broadcast`.
+    Jika tidak ada binding ACP yang dikonfigurasi yang memiliki rute tersebut, OpenClaw memeriksa apakah ID peer ada di `broadcast`.
   </Step>
   <Step title="If broadcast applies">
     - Semua agen yang tercantum memproses pesan.
@@ -182,30 +184,30 @@ Kontrol cara agen memproses pesan:
 
   </Step>
   <Step title="If broadcast does not apply">
-    OpenClaw mengirim ke rute biasa atau rute sesi ACP terkonfigurasi yang dipilih selama perutean.
+    OpenClaw mengirim rute biasa atau rute sesi ACP yang dikonfigurasi yang dipilih selama perutean.
   </Step>
 </Steps>
 
 <Note>
-Grup siaran tidak melewati allowlist kanal atau aturan aktivasi grup (sebutan/perintah/dll.). Grup siaran hanya mengubah _agen mana yang berjalan_ saat pesan memenuhi syarat untuk diproses.
+Grup broadcast tidak melewati allowlist kanal atau aturan aktivasi grup (sebutan/perintah/dll). Grup ini hanya mengubah _agen mana yang berjalan_ ketika sebuah pesan memenuhi syarat untuk diproses.
 </Note>
 
 ### Isolasi sesi
 
-Setiap agen dalam grup siaran mempertahankan hal-hal yang sepenuhnya terpisah:
+Setiap agen dalam grup broadcast mempertahankan hal-hal yang sepenuhnya terpisah:
 
 - **Kunci sesi** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
 - **Riwayat percakapan** (agen tidak melihat pesan agen lain)
 - **Workspace** (sandbox terpisah jika dikonfigurasi)
-- **Akses alat** (daftar izinkan/tolak berbeda)
+- **Akses tool** (daftar izinkan/tolak yang berbeda)
 - **Memori/konteks** (IDENTITY.md, SOUL.md, dll. terpisah)
-- **Buffer konteks grup** (pesan grup terbaru yang digunakan untuk konteks) dibagikan per peer, sehingga semua agen siaran melihat konteks yang sama saat dipicu
+- **Buffer konteks grup** (pesan grup terbaru yang digunakan untuk konteks) dibagikan per peer, sehingga semua agen broadcast melihat konteks yang sama saat dipicu
 
 Ini memungkinkan setiap agen memiliki:
 
-- Kepribadian berbeda
-- Akses alat berbeda (mis. hanya baca vs. baca-tulis)
-- Model berbeda (mis. opus vs. sonnet)
+- Kepribadian yang berbeda
+- Akses tool yang berbeda (mis. hanya baca vs. baca-tulis)
+- Model yang berbeda (mis. opus vs. sonnet)
 - Skills berbeda yang terinstal
 
 ### Contoh: sesi terisolasi
@@ -245,11 +247,11 @@ Dalam grup `120363403215116621@g.us` dengan agen `["alfred", "baerbel"]`:
     }
     ```
 
-    ✅ **Baik:** Setiap agen memiliki satu tugas. ❌ **Buruk:** Satu agen "dev-helper" generik.
+    ✅ **Baik:** Setiap agen memiliki satu tugas. ❌ **Buruk:** Satu agen generik "dev-helper".
 
   </Accordion>
   <Accordion title="2. Use descriptive names">
-    Buat jelas apa yang dilakukan setiap agen:
+    Perjelas apa yang dilakukan setiap agen:
 
     ```json
     {
@@ -263,7 +265,7 @@ Dalam grup `120363403215116621@g.us` dengan agen `["alfred", "baerbel"]`:
 
   </Accordion>
   <Accordion title="3. Configure different tool access">
-    Berikan agen hanya alat yang mereka butuhkan:
+    Berikan agen hanya tool yang mereka perlukan:
 
     ```json
     {
@@ -278,19 +280,19 @@ Dalam grup `120363403215116621@g.us` dengan agen `["alfred", "baerbel"]`:
     }
     ```
 
-    `reviewer` bersifat hanya baca. `fixer` dapat membaca dan menulis.
+    `reviewer` hanya-baca. `fixer` dapat membaca dan menulis.
 
   </Accordion>
   <Accordion title="4. Monitor performance">
     Dengan banyak agen, pertimbangkan:
 
     - Menggunakan `"strategy": "parallel"` (default) untuk kecepatan
-    - Membatasi grup siaran menjadi 5-10 agen
+    - Membatasi grup broadcast hingga 5-10 agen
     - Menggunakan model yang lebih cepat untuk agen yang lebih sederhana
 
   </Accordion>
   <Accordion title="5. Handle failures gracefully">
-    Agen gagal secara independen. Kesalahan satu agen tidak memblokir yang lain:
+    Agen gagal secara independen. Error satu agen tidak memblokir agen lain:
 
     ```
     Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
@@ -304,7 +306,7 @@ Dalam grup `120363403215116621@g.us` dengan agen `["alfred", "baerbel"]`:
 
 ### Penyedia
 
-Grup siaran saat ini berfungsi dengan:
+Grup broadcast saat ini bekerja dengan:
 
 - ✅ WhatsApp (diimplementasikan)
 - 🚧 Telegram (direncanakan)
@@ -313,7 +315,7 @@ Grup siaran saat ini berfungsi dengan:
 
 ### Perutean
 
-Grup siaran bekerja bersama perutean yang ada:
+Grup broadcast bekerja berdampingan dengan perutean yang sudah ada:
 
 ```json
 {
@@ -330,10 +332,10 @@ Grup siaran bekerja bersama perutean yang ada:
 ```
 
 - `GROUP_A`: Hanya alfred yang merespons (perutean normal).
-- `GROUP_B`: agent1 DAN agent2 merespons (siaran).
+- `GROUP_B`: agent1 DAN agent2 merespons (broadcast).
 
 <Note>
-**Presedensi:** `broadcast` memiliki prioritas atas binding rute biasa. Binding ACP terkonfigurasi (`bindings[].type="acp"`) bersifat eksklusif: saat ada yang cocok, OpenClaw mengirim ke sesi ACP terkonfigurasi alih-alih siaran fan-out.
+**Prioritas:** `broadcast` diprioritaskan dibanding binding rute biasa. Binding ACP yang dikonfigurasi (`bindings[].type="acp"`) bersifat eksklusif: ketika salah satunya cocok, OpenClaw mengirim ke sesi ACP yang dikonfigurasi alih-alih broadcast fan-out.
 </Note>
 
 ## Pemecahan masalah
@@ -344,7 +346,7 @@ Grup siaran bekerja bersama perutean yang ada:
 
     1. ID agen ada di `agents.list`.
     2. Format ID peer benar (mis. `120363403215116621@g.us`).
-    3. Agen tidak berada dalam daftar tolak.
+    3. Agen tidak ada dalam daftar tolak.
 
     **Debug:**
 
@@ -354,9 +356,9 @@ Grup siaran bekerja bersama perutean yang ada:
 
   </Accordion>
   <Accordion title="Only one agent responding">
-    **Penyebab:** ID peer mungkin berada dalam binding rute biasa tetapi tidak di `broadcast`, atau mungkin cocok dengan binding ACP terkonfigurasi yang eksklusif.
+    **Penyebab:** ID peer mungkin ada di binding rute biasa tetapi tidak di `broadcast`, atau mungkin cocok dengan binding ACP eksklusif yang dikonfigurasi.
 
-    **Perbaikan:** Tambahkan peer yang terikat rute biasa ke konfigurasi siaran, atau hapus/ubah binding ACP terkonfigurasi jika siaran fan-out diinginkan.
+    **Perbaikan:** Tambahkan peer yang terikat rute biasa ke konfigurasi broadcast, atau hapus/ubah binding ACP yang dikonfigurasi jika broadcast fan-out diinginkan.
 
   </Accordion>
   <Accordion title="Performance issues">
@@ -364,7 +366,7 @@ Grup siaran bekerja bersama perutean yang ada:
 
     - Kurangi jumlah agen per grup.
     - Gunakan model yang lebih ringan (sonnet alih-alih opus).
-    - Periksa waktu startup sandbox.
+    - Periksa waktu mulai sandbox.
 
   </Accordion>
 </AccordionGroup>
@@ -411,10 +413,10 @@ Grup siaran bekerja bersama perutean yang ada:
 
     **Respons:**
 
-    - code-formatter: "Memperbaiki indentasi dan menambahkan petunjuk tipe"
-    - security-scanner: "⚠️ Kerentanan injeksi SQL pada baris 12"
-    - test-coverage: "Cakupan 45%, pengujian untuk kasus kesalahan belum ada"
-    - docs-checker: "Docstring untuk fungsi `process_data` belum ada"
+    - code-formatter: "Fixed indentation and added type hints"
+    - security-scanner: "⚠️ SQL injection vulnerability in line 12"
+    - test-coverage: "Coverage is 45%, missing tests for error cases"
+    - docs-checker: "Missing docstring for function `process_data`"
 
   </Accordion>
   <Accordion title="Example 2: Multi-language support">
@@ -460,18 +462,18 @@ interface OpenClawConfig {
 
 ## Batasan
 
-1. **Agen maksimal:** Tidak ada batas keras, tetapi 10+ agen mungkin lambat.
+1. **Agen maksimum:** Tidak ada batas keras, tetapi 10+ agen mungkin lambat.
 2. **Konteks bersama:** Agen tidak melihat respons satu sama lain (sesuai desain).
 3. **Urutan pesan:** Respons paralel dapat tiba dalam urutan apa pun.
 4. **Batas laju:** Semua agen dihitung terhadap batas laju WhatsApp.
 
-## Peningkatan mendatang
+## Penyempurnaan mendatang
 
 Fitur yang direncanakan:
 
 - [ ] Mode konteks bersama (agen melihat respons satu sama lain)
-- [ ] Koordinasi agen (agen dapat memberi sinyal satu sama lain)
-- [ ] Pemilihan agen dinamis (memilih agen berdasarkan konten pesan)
+- [ ] Koordinasi agen (agen dapat saling memberi sinyal)
+- [ ] Pemilihan agen dinamis (memilih agen berdasarkan isi pesan)
 - [ ] Prioritas agen (beberapa agen merespons sebelum yang lain)
 
 ## Terkait
@@ -479,5 +481,5 @@ Fitur yang direncanakan:
 - [Perutean channel](/id/channels/channel-routing)
 - [Grup](/id/channels/groups)
 - [Alat sandbox multi-agen](/id/tools/multi-agent-sandbox-tools)
-- [Pemasangan](/id/channels/pairing)
+- [Penyandingan](/id/channels/pairing)
 - [Manajemen sesi](/id/concepts/session)

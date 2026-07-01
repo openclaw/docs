@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Menggunakan ClawHub CLI
-    - Men-debug instalasi, pembaruan, atau penerbitan
+    - Menggunakan CLI ClawHub
+    - Men-debug pemasangan, pembaruan, atau publikasi
 summary: 'Referensi CLI: perintah, flag, konfigurasi, dan perilaku lockfile.'
 x-i18n:
-    generated_at: "2026-06-30T22:34:44Z"
+    generated_at: "2026-07-01T08:28:47Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 119900fddb8c80213eb12060c07026527a1ff851546c632bf1f7a909659b1945
+    source_hash: 4467e589a4892d513e4ca715b73a81147abb59cb7706b0068a11af6c95ea08f9
     source_path: clawhub/cli.md
     workflow: 16
 ---
@@ -35,10 +35,10 @@ clawhub whoami
 
 ## Flag global
 
-- `--workdir <dir>`: direktori kerja (default: cwd; fallback ke ruang kerja Clawdbot jika dikonfigurasi)
-- `--dir <dir>`: direktori instal di bawah workdir (default: `skills`)
-- `--site <url>`: URL dasar untuk login browser (default: `https://clawhub.ai`)
-- `--registry <url>`: URL dasar API (default: ditemukan otomatis, jika tidak `https://clawhub.ai`)
+- `--workdir <dir>`: direktori kerja (bawaan: cwd; beralih ke ruang kerja Clawdbot jika dikonfigurasi)
+- `--dir <dir>`: direktori instalasi di bawah workdir (bawaan: `skills`)
+- `--site <url>`: URL dasar untuk login browser (bawaan: `https://clawhub.ai`)
+- `--registry <url>`: URL dasar API (bawaan: ditemukan otomatis, jika tidak `https://clawhub.ai`)
 - `--no-input`: nonaktifkan prompt
 
 Padanan env:
@@ -47,22 +47,22 @@ Padanan env:
 - `CLAWHUB_REGISTRY` (legacy `CLAWDHUB_REGISTRY`)
 - `CLAWHUB_WORKDIR` (legacy `CLAWDHUB_WORKDIR`)
 
-### Proxy HTTP
+### Proksi HTTP
 
-CLI menghormati variabel lingkungan proxy HTTP standar untuk sistem di balik
-proxy korporat atau jaringan terbatas:
+CLI mematuhi variabel lingkungan proksi HTTP standar untuk sistem di balik
+proksi korporat atau jaringan terbatas:
 
 - `HTTPS_PROXY` / `https_proxy`
 - `HTTP_PROXY` / `http_proxy`
 - `NO_PROXY` / `no_proxy`
 
-Ketika salah satu variabel ini ditetapkan, CLI merutekan permintaan keluar melalui
-proxy yang ditentukan. `HTTPS_PROXY` digunakan untuk permintaan HTTPS, `HTTP_PROXY`
-untuk HTTP biasa. `NO_PROXY` / `no_proxy` dihormati untuk melewati proxy bagi
+Saat salah satu variabel ini disetel, CLI merutekan permintaan keluar melalui
+proksi yang ditentukan. `HTTPS_PROXY` digunakan untuk permintaan HTTPS, `HTTP_PROXY`
+untuk HTTP biasa. `NO_PROXY` / `no_proxy` dihormati untuk melewati proksi bagi
 host atau domain tertentu.
 
 Ini diperlukan pada sistem tempat koneksi keluar langsung diblokir
-(misalnya kontainer Docker, Hetzner VPS dengan internet hanya-proxy, firewall
+(misalnya kontainer Docker, VPS Hetzner dengan internet khusus proksi, firewall
 korporat).
 
 Contoh:
@@ -73,25 +73,25 @@ export NO_PROXY=localhost,127.0.0.1
 clawhub search "my query"
 ```
 
-Ketika tidak ada variabel proxy yang ditetapkan, perilaku tidak berubah (koneksi langsung).
+Saat tidak ada variabel proksi yang disetel, perilakunya tidak berubah (koneksi langsung).
 
-## File config
+## File konfigurasi
 
 Menyimpan token API Anda + URL registry yang di-cache.
 
 - macOS: `~/Library/Application Support/clawhub/config.json`
 - Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` atau `~/.config/clawhub/config.json`
 - Windows: `%APPDATA%\\clawhub\\config.json`
-- Fallback legacy: jika `clawhub/config.json` belum ada tetapi `clawdhub/config.json` ada, CLI menggunakan kembali path legacy
+- Fallback legacy: jika `clawhub/config.json` belum ada tetapi `clawdhub/config.json` ada, CLI menggunakan ulang path legacy
 - override: `CLAWHUB_CONFIG_PATH` (legacy `CLAWDHUB_CONFIG_PATH`)
 
 ## Perintah
 
 ### `login` / `auth login`
 
-- Default: membuka browser ke `<site>/cli/auth` dan menyelesaikan melalui callback loopback.
-- Headless: `clawhub login --token clh_...`
-- Interaktif remote/headless: `clawhub login --device` mencetak kode dan menunggu saat Anda mengotorisasinya di `<site>/cli/device`.
+- Bawaan: membuka browser ke `<site>/cli/auth` dan menyelesaikan melalui callback loopback.
+- Tanpa antarmuka: `clawhub login --token clh_...`
+- Interaktif jarak jauh/tanpa antarmuka: `clawhub login --device` mencetak kode dan menunggu sementara Anda mengotorisasinya di `<site>/cli/device`.
 
 ### `whoami`
 
@@ -104,41 +104,41 @@ Menyimpan token API Anda + URL registry yang di-cache.
 
 ### `star <skill>` / `unstar <skill>`
 
-- Menambah/menghapus skill dari sorotan Anda.
+- Menambahkan/menghapus skill dari sorotan Anda.
 - Memanggil `POST /api/v1/stars/<slug>` dan `DELETE /api/v1/stars/<slug>`.
 - `--yes` melewati konfirmasi.
 
 ### `search <query...>`
 
 - Memanggil `/api/v1/search?q=...`.
-- Output mencakup slug skill, handle owner, nama tampilan, dan skor relevansi.
-- Pencarian memprioritaskan kecocokan token slug/nama yang tepat sebelum popularitas unduhan. Token slug mandiri seperti `map` mencocokkan `personal-map` lebih kuat daripada substring di dalam `amap`.
-- Popularitas adalah prior peringkat kecil, bukan jaminan penempatan teratas.
-- Jika skill seharusnya muncul tetapi tidak, jalankan `clawhub inspect @owner/slug` saat sudah login untuk memeriksa diagnostik moderasi yang terlihat oleh owner sebelum mengganti nama metadata.
+- Output mencakup slug skill, handle pemilik, nama tampilan, dan skor relevansi.
+- Pencarian memprioritaskan kecocokan token slug/nama yang persis sebelum popularitas unduhan. Token slug mandiri seperti `map` lebih kuat mencocokkan `personal-map` daripada substring di dalam `amap`.
+- Popularitas adalah prior pemeringkatan kecil, bukan jaminan penempatan teratas.
+- Jika suatu skill seharusnya muncul tetapi tidak, jalankan `clawhub inspect @owner/slug` saat login untuk memeriksa diagnostik moderasi yang terlihat oleh pemilik sebelum mengganti nama metadata.
 
 ### `explore`
 
-- Mencantumkan skill terbaru melalui `/api/v1/skills?limit=...&sort=createdAt` (diurutkan berdasarkan `createdAt` menurun).
+- Mencantumkan skill terbaru melalui `/api/v1/skills?limit=...&sort=createdAt` (diurutkan menurut `createdAt` desc).
 - Flag:
-  - `--limit <n>` (1-200, default: 25)
-  - `--sort newest|updated|rating|downloads|trending` (default: terbaru). Alias sort instal legacy masih berfungsi untuk kompatibilitas.
+  - `--limit <n>` (1-200, bawaan: 25)
+  - `--sort newest|updated|rating|downloads|trending` (bawaan: newest). Alias pengurutan instalasi legacy masih berfungsi untuk kompatibilitas.
   - `--json` (output yang dapat dibaca mesin)
 - Output: `<slug>  v<version>  <age>  <summary>` (ringkasan dipotong menjadi 50 karakter).
 
 ### `inspect @owner/slug`
 
 - Mengambil metadata skill dan file versi tanpa menginstal.
-- `--version <version>`: inspeksi versi tertentu (default: terbaru).
+- `--version <version>`: inspeksi versi tertentu (bawaan: terbaru).
 - `--tag <tag>`: inspeksi versi bertag (misalnya `latest`).
 - `--versions`: cantumkan riwayat versi (halaman pertama).
-- `--limit <n>`: versi maksimum untuk dicantumkan (1-200).
+- `--limit <n>`: jumlah maksimum versi untuk dicantumkan (1-200).
 - `--files`: cantumkan file untuk versi yang dipilih.
 - `--file <path>`: ambil konten file mentah (hanya file teks; batas 200KB).
 - `--json`: output yang dapat dibaca mesin.
 
 ### `install @owner/slug`
 
-- Menyelesaikan versi terbaru untuk owner dan skill bernama.
+- Menyelesaikan versi terbaru untuk pemilik dan skill bernama.
 - Mengunduh zip melalui `/api/v1/download`.
 - Mengekstrak ke `<workdir>/<dir>/<slug>`.
 - Menolak menimpa skill yang dipin; jalankan `clawhub unpin <skill>` terlebih dahulu.
@@ -149,10 +149,10 @@ Menyimpan token API Anda + URL registry yang di-cache.
 ### `uninstall <skill>`
 
 - Menghapus `<workdir>/<dir>/<slug>` dan menghapus entri lockfile.
-- Mengirim telemetri best-effort saat sudah login agar jumlah instal saat ini dapat
+- Mengirim telemetri upaya terbaik saat login agar jumlah instalasi saat ini dapat
   dinonaktifkan.
 - Interaktif: meminta konfirmasi.
-- Non-interaktif (`--no-input`): memerlukan `--yes`.
+- Noninteraktif (`--no-input`): memerlukan `--yes`.
 
 ### `list`
 
@@ -164,18 +164,18 @@ Menyimpan token API Anda + URL registry yang di-cache.
 - Menandai skill terinstal sebagai dipin di lockfile.
 - `--reason <text>` mencatat mengapa skill dibekukan.
 - Skill yang dipin dilewati oleh `update --all` dan ditolak oleh `update <skill>` langsung.
-- Skill yang dipin juga menolak `install --force` sehingga byte lokal tidak dapat terganti secara tidak sengaja.
+- Skill yang dipin juga menolak `install --force` sehingga byte lokal tidak dapat diganti secara tidak sengaja.
 
 ### `unpin <skill>`
 
-- Menghapus pin lockfile dari skill terinstal agar pembaruan mendatang dapat mengubahnya.
+- Menghapus pin lockfile dari skill terinstal sehingga pembaruan mendatang dapat memodifikasinya.
 
 ### `update [@owner/slug]` / `update --all`
 
 - Menghitung fingerprint dari file lokal.
-- Jika fingerprint cocok dengan versi yang dikenal: tidak ada prompt.
+- Jika fingerprint cocok dengan versi yang diketahui: tidak ada prompt.
 - Jika fingerprint tidak cocok:
-  - menolak secara default
+  - menolak secara bawaan
   - menimpa dengan `--force` (atau prompt, jika interaktif)
 - Skill yang dipin tidak pernah diperbarui oleh `--force`.
 - `update <skill>` gagal cepat untuk skill yang dipin dan memberi tahu Anda untuk menjalankan `clawhub unpin <skill>` terlebih dahulu.
@@ -183,22 +183,22 @@ Menyimpan token API Anda + URL registry yang di-cache.
 
 ### `skill publish <path>`
 
-- Membandingkan fingerprint bundle lokal dengan ClawHub dan keluar berhasil ketika
+- Membandingkan fingerprint bundle lokal dengan ClawHub dan keluar berhasil saat
   konten sudah dipublikasikan.
-- Skill baru default ke `1.0.0`; skill yang berubah default ke versi patch
+- Skill baru bawaan ke `1.0.0`; skill yang berubah bawaan ke versi patch
   berikutnya.
-- `--version <version>` memilih versi secara eksplisit dan memublikasikan bahkan ketika
+- `--version <version>` memilih versi secara eksplisit dan memublikasikan bahkan saat
   konten cocok dengan versi yang sudah ada.
-- `--dry-run` menyelesaikan publikasi tanpa mengunggah; `--json` mencetak hasil yang
-  dapat dibaca mesin.
-- `--owner <handle>` memublikasikan di bawah handle penerbit org/pengguna ketika
+- `--dry-run` menyelesaikan publikasi tanpa mengunggah; `--json` mencetak hasil
+  yang dapat dibaca mesin.
+- `--owner <handle>` memublikasikan di bawah handle penerbit org/pengguna saat
   aktor memiliki akses penerbit.
 - `--migrate-owner` memindahkan skill yang sudah ada ke `--owner` sambil memublikasikan versi
-  baru. Memerlukan akses admin/owner pada kedua penerbit.
-- Perilaku owner dan peninjauan dijelaskan di `docs/publishing.md`.
+  baru. Memerlukan akses admin/pemilik pada kedua penerbit.
+- Perilaku pemilik dan peninjauan dijelaskan di `docs/publishing.md`.
 - Memublikasikan skill berarti skill tersebut dirilis di bawah `MIT-0` di ClawHub.
 - Skill yang dipublikasikan bebas digunakan, dimodifikasi, dan didistribusikan ulang tanpa atribusi.
-- ClawHub tidak mendukung skill berbayar atau penetapan harga per skill.
+- ClawHub tidak mendukung skill berbayar atau harga per skill.
 - Alias legacy: `publish <path>`.
 
 ```bash
@@ -209,33 +209,33 @@ clawhub skill publish ./my-skill --version 2.0.0
 
 #### GitHub Actions
 
-Workflow reusable ClawHub
+Workflow reusable
 [`skill-publish.yml`](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml)
-memanggil `skill publish` untuk satu `skill_path`, atau untuk setiap folder skill langsung
-di bawah `root` (default: `skills`). Ini melewati skill yang tidak berubah dan menggunakan
+milik ClawHub memanggil `skill publish` untuk satu `skill_path`, atau untuk setiap folder skill langsung
+di bawah `root` (bawaan: `skills`). Workflow ini melewati skill yang tidak berubah dan menggunakan
 perilaku versi patch otomatis yang sama.
 
-Tetapkan `dry_run: true` untuk pratinjau tanpa token. Publikasi nyata memerlukan secret
+Setel `dry_run: true` untuk pratinjau tanpa token. Publikasi nyata memerlukan secret
 `clawhub_token`.
 
 ### `sync`
 
-- Memindai workdir saat ini, direktori skills yang dikonfigurasi, dan folder
+- Memindai workdir saat ini, direktori Skills yang dikonfigurasi, dan folder
   `--root <dir>` apa pun untuk folder skill lokal yang berisi `SKILL.md` atau
   `skill.md`.
 - Membandingkan setiap fingerprint skill lokal dengan ClawHub dan hanya memublikasikan skill baru atau
   yang berubah.
 - Skill baru dipublikasikan sebagai `1.0.0`; skill yang berubah memublikasikan versi patch berikutnya
-  secara default. Gunakan `--bump minor|major` untuk batch pembaruan yang harus bergerak dengan
+  secara bawaan. Gunakan `--bump minor|major` untuk batch pembaruan yang harus bergerak dengan
   langkah semver yang lebih besar.
-- `--dry-run` menampilkan rencana publikasi tanpa mengunggah; `--json` mencetak rencana yang
-  dapat dibaca mesin.
+- `--dry-run` menampilkan rencana publikasi tanpa mengunggah; `--json` mencetak rencana
+  yang dapat dibaca mesin.
 - `--all` memublikasikan setiap skill baru atau yang berubah tanpa prompt. Tanpa
   `--all`, terminal interaktif memungkinkan Anda memilih skill untuk dipublikasikan.
-- `--owner <handle>` memublikasikan di bawah handle penerbit org/pengguna ketika
+- `--owner <handle>` memublikasikan di bawah handle penerbit org/pengguna saat
   aktor memiliki akses penerbit.
 - `sync` hanya publikasi satu arah. Ini tidak menginstal, memperbarui, mengunduh, atau
-  melaporkan telemetri instal/unduhan.
+  melaporkan telemetri instalasi/unduhan.
 
 ```bash
 clawhub sync --all --dry-run
@@ -246,12 +246,12 @@ clawhub sync --root ./skills --owner openclaw --bump minor
 ### `scan --slug <slug>`
 
 - Memerlukan `clawhub login`.
-- Menjalankan ClawHub ClawScan melalui `POST /api/v1/skills/-/scan`, lalu polling sampai pemindaian terminal.
-- Pemindaian bersifat asinkron dan mungkin memerlukan waktu untuk selesai. Saat mengantre, spinner terminal menampilkan posisi pemindaian prioritas saat ini dan berapa banyak pemindaian di depan.
-- Pemindaian yang dipublikasikan memerlukan kepemilikan atau akses pengelolaan penerbit. Moderator/admin dapat menggunakan backend yang sama melalui `clawhub-admin`.
+- Menjalankan ClawScan ClawHub melalui `POST /api/v1/skills/-/scan`, lalu melakukan polling hingga pemindaian terminal.
+- Pemindaian bersifat asinkron dan mungkin memerlukan waktu untuk selesai. Saat berada dalam antrean, spinner terminal menampilkan posisi pemindaian terprioritas saat ini dan berapa banyak pemindaian di depan.
+- Pemindaian yang dipublikasikan memerlukan kepemilikan atau akses manajemen penerbit. Moderator/admin dapat menggunakan backend yang sama melalui `clawhub-admin`.
 - `--update` hanya valid dengan `--slug`; ini menulis hasil pemindaian terpublikasi yang berhasil kembali ke versi yang dipilih.
 - `--output <file.zip>` mengunduh arsip laporan lengkap dengan `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, dan `README.md`.
-- `--json` mencetak respons polling lengkap untuk otomatisasi.
+- `--json` mencetak respons polling lengkap untuk otomasi.
 - Pemindaian path lokal tidak lagi didukung. Unggah versi baru, lalu gunakan `scan download` untuk mengambil hasil pemindaian tersimpan untuk versi yang dikirim tersebut.
 
 ```bash
@@ -263,10 +263,10 @@ clawhub scan --slug gifgrep --update --output report.zip
 ### `scan download <name>`
 
 - Memerlukan `clawhub login`.
-- Mengunduh ZIP laporan pemindaian tersimpan untuk versi skill atau plugin yang dikirim, termasuk versi yang diblokir atau disembunyikan oleh pemeriksaan keamanan ClawHub.
-- Unduhan skill menggunakan slug skill dan default ke `--kind skill`.
-- Unduhan plugin menggunakan nama paket dan memerlukan `--kind plugin`.
-- `--version` diperlukan agar penulis memeriksa versi terkirim persis yang diblokir ClawHub.
+- Mengunduh ZIP laporan pemindaian tersimpan untuk versi skill atau Plugin yang dikirim, termasuk versi yang diblokir atau disembunyikan oleh pemeriksaan keamanan ClawHub.
+- Unduhan skill menggunakan slug skill dan bawaan ke `--kind skill`.
+- Unduhan Plugin menggunakan nama paket dan memerlukan `--kind plugin`.
+- `--version` diperlukan agar penulis memeriksa versi kiriman persis yang diblokir ClawHub.
 - `--output <file.zip>` memilih path tujuan.
 
 ```bash
@@ -276,8 +276,8 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 
 #### GitHub Actions
 
-ClawHub menyertakan workflow reusable resmi di
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/d8096dfc039e86ab942ddf9ef117d04849fd84c1/.github/workflows/skill-publish.yml)
+ClawHub mengirimkan workflow reusable resmi di
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/80b06a911afb312a43d3f39ba62d92eb35d772a9/.github/workflows/skill-publish.yml)
 untuk repo skill dan repo katalog.
 
 Penyiapan katalog umum:
@@ -309,52 +309,52 @@ jobs:
 
 Catatan:
 
-- `root` default ke `skills` untuk repo katalog.
+- `root` bawaan ke `skills` untuk repo katalog.
 - Teruskan `skill_path: skills/review-helper` untuk memproses satu folder skill.
-- `owner` dipetakan ke flag CLI `--owner`; hilangkan untuk memublikasikan sebagai pengguna yang diautentikasi.
-- Publikasi skill V1 menggunakan `clawhub_token`; publikasi tepercaya GitHub OIDC hanya untuk paket untuk saat ini.
+- `owner` dipetakan ke flag CLI `--owner`; hilangkan untuk memublikasikan sebagai pengguna terautentikasi.
+- Publikasi skill V1 menggunakan `clawhub_token`; publikasi tepercaya GitHub OIDC saat ini hanya untuk paket.
 
 ### `delete <skill>`
 
-- Tanpa `--version`, hapus sementara sebuah keterampilan (pemilik, moderator, atau admin).
+- Tanpa `--version`, hapus lunak sebuah skill (pemilik, moderator, atau admin).
 - Memanggil `DELETE /api/v1/skills/{slug}`.
-- Penghapusan sementara yang dimulai pemilik mencadangkan slug selama 30 hari; perintah mencetak waktu kedaluwarsanya.
+- Penghapusan lunak yang dimulai oleh pemilik mencadangkan slug selama 30 hari; perintah mencetak waktu kedaluwarsanya.
 - `--version <version>` menghapus permanen satu versi non-terbaru yang dimiliki melalui rute khusus versi
-  yang gagal tertutup.
-  Versi yang dihapus tidak dapat dipulihkan atau dipublikasikan ulang. Publikasikan pengganti sebelum menghapus
+  yang menutup akses saat gagal.
+  Versi yang dihapus tidak dapat dipulihkan atau diterbitkan ulang. Terbitkan pengganti sebelum menghapus
   versi terbaru saat ini. Staf platform tidak melewati kepemilikan untuk alur khusus versi ini.
-- `--reason <text>` mencatat catatan moderasi pada penghapusan sementara seluruh keterampilan dan log audit.
+- `--reason <text>` mencatat catatan moderasi pada penghapusan lunak seluruh skill dan log audit.
 - `--note <text>` adalah alias untuk `--reason`.
 - `--yes` melewati konfirmasi.
 
 ### `undelete <skill>`
 
-- Pulihkan keterampilan tersembunyi (pemilik, moderator, atau admin).
-- Tidak ada pemulihan versi; versi yang dihapus permanen tidak dapat dipulihkan.
+- Pulihkan skill tersembunyi (pemilik, moderator, atau admin).
+- Tidak ada pembatalan penghapusan versi; versi yang dihapus permanen tidak dapat dipulihkan.
 - Memanggil `POST /api/v1/skills/{slug}/undelete`.
-- `--reason <text>` mencatat catatan moderasi pada keterampilan dan log audit.
+- `--reason <text>` mencatat catatan moderasi pada skill dan log audit.
 - `--note <text>` adalah alias untuk `--reason`.
 - `--yes` melewati konfirmasi.
 
 ### `hide <skill>`
 
-- Sembunyikan keterampilan (pemilik, moderator, atau admin).
+- Sembunyikan skill (pemilik, moderator, atau admin).
 - Alias untuk `delete`.
 
 ### `unhide <skill>`
 
-- Tampilkan kembali keterampilan (pemilik, moderator, atau admin).
+- Tampilkan kembali skill (pemilik, moderator, atau admin).
 - Alias untuk `undelete`.
 
 ### `skill rename <skill> <new-name>`
 
-- Ganti nama keterampilan yang dimiliki dan pertahankan slug sebelumnya sebagai alias pengalihan.
+- Ubah nama skill yang dimiliki dan pertahankan slug sebelumnya sebagai alias pengalihan.
 - Memanggil `POST /api/v1/skills/{slug}/rename`.
 - `--yes` melewati konfirmasi.
 
 ### `skill merge <source> <target>`
 
-- Gabungkan satu keterampilan yang dimiliki ke keterampilan lain yang dimiliki.
+- Gabungkan satu skill yang dimiliki ke skill lain yang dimiliki.
 - Slug sumber berhenti ditampilkan secara publik dan menjadi alias pengalihan ke target.
 - Memanggil `POST /api/v1/skills/{sourceSlug}/merge`.
 - `--yes` melewati konfirmasi.
@@ -381,8 +381,8 @@ Catatan:
 
 ### `package explore [query...]`
 
-- Menjelajahi atau mencari katalog paket terpadu melalui `GET /api/v1/packages` dan `GET /api/v1/packages/search`.
-- Gunakan ini untuk plugin dan entri keluarga paket lainnya; `search` tingkat atas tetap menjadi permukaan pencarian keterampilan.
+- Menelusuri atau mencari katalog paket terpadu melalui `GET /api/v1/packages` dan `GET /api/v1/packages/search`.
+- Gunakan ini untuk plugin dan entri keluarga paket lainnya; `search` tingkat atas tetap menjadi permukaan pencarian skill.
 - Flag:
   - `--family skill|code-plugin|bundle-plugin`
   - `--official`
@@ -408,12 +408,12 @@ clawhub package explore episodic-claw --family code-plugin
 
 ### `package inspect <name>`
 
-- Mengambil metadata paket tanpa memasang.
-- Gunakan ini untuk metadata plugin, kompatibilitas, verifikasi, sumber, dan inspeksi versi/berkas.
+- Mengambil metadata paket tanpa menginstal.
+- Gunakan ini untuk metadata plugin, kompatibilitas, verifikasi, sumber, dan pemeriksaan versi/berkas.
 - `--version <version>`: periksa versi tertentu (default: terbaru).
 - `--tag <tag>`: periksa versi bertag (mis. `latest`).
 - `--versions`: cantumkan riwayat versi (halaman pertama).
-- `--limit <n>`: versi maksimum untuk dicantumkan (1-100).
+- `--limit <n>`: jumlah maksimum versi yang dicantumkan (1-100).
 - `--files`: cantumkan berkas untuk versi yang dipilih.
 - `--file <path>`: ambil konten berkas mentah (hanya berkas teks; batas 200KB).
 - `--json`: keluaran yang dapat dibaca mesin.
@@ -422,9 +422,9 @@ clawhub package explore episodic-claw --family code-plugin
 
 - Menyelesaikan versi paket melalui
   `GET /api/v1/packages/{name}/versions/{version}/artifact`.
-- Mengunduh artefak dari `downloadUrl` milik penyelesai.
+- Mengunduh artefak dari `downloadUrl` milik resolver.
 - Memverifikasi SHA-256 ClawHub untuk semua artefak.
-- Untuk artefak npm-pack ClawPack, juga memverifikasi integritas `sha512` npm,
+- Untuk artefak ClawPack npm-pack, juga memverifikasi integritas npm `sha512`,
   shasum npm, dan nama/versi `package.json` tarball.
 - Versi ZIP lama diunduh melalui rute ZIP lama.
 - Flag:
@@ -443,11 +443,11 @@ clawhub package download @openclaw/example-plugin --version 1.2.3 -o artifacts/
 
 ### `package verify <file>`
 
-- Menghitung SHA-256 ClawHub, integritas `sha512` npm, dan shasum npm untuk artefak
-  lokal.
+- Menghitung SHA-256 ClawHub, integritas npm `sha512`, dan shasum npm untuk
+  artefak lokal.
 - Dengan `--package`, menyelesaikan metadata yang diharapkan dari ClawHub dan membandingkan
   berkas lokal dengan metadata artefak yang dipublikasikan.
-- Dengan flag digest langsung, memverifikasi tanpa pencarian jaringan.
+- Dengan flag digest langsung, memverifikasi tanpa lookup jaringan.
 - Flag:
   - `--package <name>`: nama paket untuk menyelesaikan metadata artefak yang diharapkan.
   - `--version <version>` atau `--tag <tag>`: versi paket yang diharapkan.
@@ -465,17 +465,18 @@ clawhub package verify ./example-plugin-1.2.3.tgz --sha256 <hex>
 
 ### `package validate <source>`
 
-- Menjalankan Plugin Inspector bawaan CLI ClawHub terhadap folder paket plugin lokal.
-- Default ke validasi offline/statis, tanpa menemukan atau mengimpor checkout OpenClaw
+- Menjalankan Plugin Inspector bawaan CLI ClawHub terhadap folder paket plugin
   lokal.
-- Kesalahan kompatibilitas keras keluar dengan status non-nol. Temuan yang hanya berupa peringatan dicetak tetapi
-  keluar dengan status nol.
+- Default ke validasi offline/statis, tanpa menemukan atau mengimpor checkout
+  OpenClaw lokal.
+- Kesalahan kompatibilitas keras keluar dengan non-zero. Temuan yang hanya berupa peringatan dicetak tetapi
+  keluar dengan zero.
 - Flag:
   - `--out <dir>`: tulis laporan Plugin Inspector ke direktori ini.
   - `--openclaw <path>`: periksa terhadap checkout OpenClaw lokal eksplisit.
-  - `--runtime`: aktifkan penangkapan runtime; mengimpor kode plugin.
-  - `--allow-execute`: izinkan penangkapan runtime di ruang kerja terisolasi.
-  - `--no-mock-sdk`: nonaktifkan SDK OpenClaw tiruan selama penangkapan runtime.
+  - `--runtime`: aktifkan capture runtime; mengimpor kode plugin.
+  - `--allow-execute`: izinkan capture runtime di workspace terisolasi.
+  - `--no-mock-sdk`: nonaktifkan SDK OpenClaw tiruan selama capture runtime.
   - `--json`: keluaran yang dapat dibaca mesin.
 
 Contoh:
@@ -485,19 +486,20 @@ clawhub package validate ./example-plugin
 ```
 
 Jika validasi melaporkan temuan paket, manifes, impor SDK, atau artefak, lihat
-[Perbaikan validasi plugin](/clawhub/plugin-validation-fixes), lalu jalankan ulang perintah.
+[Perbaikan validasi Plugin](/clawhub/plugin-validation-fixes), lalu jalankan ulang perintah.
 
 ### `package delete <name>`
 
-- Tanpa `--version`, hapus sementara sebuah paket dan semua rilis.
-- `--version <version>` menghapus permanen satu rilis non-terbaru yang dimiliki melalui rute khusus versi
-  yang gagal tertutup.
+- Tanpa `--version`, menghapus lunak sebuah paket dan semua rilis.
+- `--version <version>` menghapus permanen satu rilis milik sendiri yang bukan terbaru melalui rute fail-closed
+  yang spesifik versi.
   Versi yang dihapus tidak dapat dipulihkan atau dipublikasikan ulang. Publikasikan pengganti sebelum menghapus
-  versi terbaru saat ini. Alur khusus versi ini memerlukan pemilik paket atau admin penerbit organisasi; staf platform tidak melewati kepemilikan paket.
-- Penghapusan sementara seluruh paket memerlukan pemilik paket, pemilik/admin penerbit organisasi, moderator
-  platform, atau admin platform.
+  versi terbaru saat ini. Alur khusus versi ini memerlukan pemilik paket atau admin penerbit organisasi;
+  staf platform tidak melewati kepemilikan paket.
+- Penghapusan lunak seluruh paket memerlukan pemilik paket, pemilik/admin penerbit organisasi, moderator platform,
+  atau admin platform.
 - Flag:
-  - `--version <version>`: hapus permanen satu versi non-terbaru.
+  - `--version <version>`: hapus permanen satu versi yang bukan terbaru.
   - `--yes`: lewati konfirmasi.
   - `--json`: keluaran yang dapat dibaca mesin.
 
@@ -510,8 +512,8 @@ clawhub package delete @openclaw/example-plugin --version 1.2.3 --yes
 
 ### `package undelete <name>`
 
-- Memulihkan paket dan rilis yang dihapus sementara.
-- Tidak ada pemulihan versi; versi yang dihapus permanen tidak dapat dipulihkan.
+- Memulihkan paket dan rilis yang dihapus lunak.
+- Tidak ada pembatalan penghapusan versi; versi yang dihapus permanen tidak dapat dipulihkan.
 - Memerlukan pemilik paket, pemilik/admin penerbit organisasi, moderator platform,
   atau admin platform.
 - Memanggil `POST /api/v1/packages/{name}/undelete`.
@@ -530,7 +532,7 @@ clawhub package undelete @openclaw/example-plugin --yes
 - Mentransfer paket ke penerbit lain.
 - Memerlukan akses admin ke pemilik paket saat ini dan penerbit tujuan,
   kecuali dilakukan oleh admin platform.
-- Nama paket bercakupan harus ditransfer ke pemilik cakupan yang cocok.
+- Nama paket berscope harus ditransfer ke pemilik scope yang cocok.
 - Memanggil `POST /api/v1/packages/{name}/transfer`.
 - Flag:
   - `--to <owner>`: handle penerbit tujuan.
@@ -547,12 +549,12 @@ clawhub package transfer @openclaw/example-plugin --to openclaw
 
 - Perintah terautentikasi untuk melaporkan paket kepada moderator.
 - Memanggil `POST /api/v1/packages/{name}/report`.
-- Laporan berada di tingkat paket, dapat ditautkan secara opsional ke versi, dan menjadi terlihat
+- Laporan berada di tingkat paket, dapat dikaitkan secara opsional dengan versi, dan menjadi terlihat
   oleh moderator untuk ditinjau.
 - Laporan tidak otomatis menyembunyikan paket atau memblokir unduhan dengan sendirinya.
 - Flag:
   - `--version <version>`: versi paket opsional untuk dilampirkan ke laporan.
-  - `--reason <text>`: alasan laporan wajib.
+  - `--reason <text>`: alasan laporan yang wajib.
   - `--json`: keluaran yang dapat dibaca mesin.
 
 Contoh:
@@ -565,8 +567,8 @@ clawhub package report @openclaw/example-plugin --version 1.2.3 --reason "suspic
 
 - Perintah pemilik untuk memeriksa visibilitas moderasi paket.
 - Memanggil `GET /api/v1/packages/{name}/moderation`.
-- Menampilkan status pemindaian paket saat ini, jumlah laporan terbuka, status moderasi manual rilis
-  terbaru, status blokir unduhan, dan alasan moderasi.
+- Menampilkan status pemindaian paket saat ini, jumlah laporan terbuka, status moderasi manual rilis terbaru,
+  status blokir unduhan, dan alasan moderasi.
 - Flag:
   - `--json`: keluaran yang dapat dibaca mesin.
 
@@ -578,9 +580,9 @@ clawhub package moderation-status @openclaw/example-plugin
 
 ### `package readiness <name>`
 
-- Memeriksa apakah paket siap untuk konsumsi OpenClaw di masa mendatang.
+- Memeriksa apakah sebuah paket siap untuk konsumsi OpenClaw di masa mendatang.
 - Memanggil `GET /api/v1/packages/{name}/readiness`.
-- Melaporkan pemblokir untuk status resmi, ketersediaan ClawPack, digest artefak,
+- Melaporkan penghambat untuk status resmi, ketersediaan ClawPack, digest artefak,
   asal-usul sumber, kompatibilitas OpenClaw, target host, metadata lingkungan,
   dan status pemindaian.
 - Flag:
@@ -595,10 +597,10 @@ clawhub package readiness @openclaw/example-plugin
 ### `package migration-status <name>`
 
 - Menampilkan status migrasi berorientasi operator untuk paket yang mungkin menggantikan
-  plugin OpenClaw bawaan.
-- Memanggil endpoint kesiapan terhitung yang sama dengan `package readiness`, tetapi mencetak
-  status berfokus migrasi, versi terbaru, status paket resmi, pemeriksaan, dan
-  pemblokir.
+  Plugin OpenClaw bawaan.
+- Memanggil endpoint kesiapan terhitung yang sama seperti `package readiness`, tetapi mencetak
+  status yang berfokus pada migrasi, versi terbaru, status paket resmi, pemeriksaan, dan
+  penghambat.
 - Flag:
   - `--json`: keluaran yang dapat dibaca mesin.
 
@@ -611,9 +613,9 @@ clawhub package migration-status @openclaw/example-plugin
 ### `publisher create <handle>`
 
 - Membuat penerbit organisasi yang dimiliki oleh pengguna terautentikasi.
-- Handle dinormalisasi ke huruf kecil dan dapat diteruskan dengan atau tanpa `@`.
-- Penerbit organisasi yang baru dibuat tidak dipercaya/resmi secara default.
-- Gagal jika handle sudah digunakan oleh penerbit, pengguna, atau rute cadangan yang sudah ada.
+- Handle dinormalisasi menjadi huruf kecil dan dapat diberikan dengan atau tanpa `@`.
+- Penerbit organisasi yang baru dibuat tidak tepercaya/resmi secara default.
+- Gagal jika handle sudah digunakan oleh penerbit, pengguna, atau rute cadangan yang ada.
 
 ```bash
 clawhub publisher create opik --display-name "Opik"
@@ -621,7 +623,7 @@ clawhub publisher create opik --display-name "Opik"
 
 ### `package publish <source>`
 
-- Menerbitkan Plugin kode atau Plugin bundel melalui `POST /api/v1/packages`.
+- Menerbitkan plugin kode atau plugin bundel melalui `POST /api/v1/packages`.
 - `<source>` menerima:
   - Jalur folder lokal: `./my-plugin`
   - Tarball ClawPack npm-pack lokal: `./my-plugin-1.2.3.tgz`
@@ -631,20 +633,20 @@ clawhub publisher create opik --display-name "Opik"
   penanda bundel OpenClaw nyata seperti `.codex-plugin/plugin.json`,
   `.claude-plugin/plugin.json`, dan `.cursor-plugin/plugin.json`.
 - Sumber `.tgz` diperlakukan sebagai ClawPack. CLI mengunggah byte npm-pack
-  persisnya dan menggunakan isi `package/` yang diekstrak hanya untuk validasi dan
-  prapengisian metadata.
-- Folder Plugin kode dikemas menjadi tarball npm ClawPack sebelum diunggah agar
-  instalasi OpenClaw dapat memverifikasi artefak persisnya. Folder Plugin bundel tetap
-  menggunakan jalur publikasi file yang diekstrak.
+  persisnya dan menggunakan konten `package/` yang diekstrak hanya untuk validasi
+  dan praisi metadata.
+- Folder plugin kode dikemas ke dalam tarball npm ClawPack sebelum diunggah agar
+  instalasi OpenClaw dapat memverifikasi artefak persisnya. Folder plugin bundel tetap
+  menggunakan jalur penerbitan file yang diekstrak.
 - Untuk sumber GitHub, atribusi sumber diisi otomatis dari repo, commit yang di-resolve, ref, dan subpath.
-- Untuk folder lokal, atribusi sumber dideteksi otomatis dari git lokal ketika remote origin mengarah ke GitHub.
+- Untuk folder lokal, atribusi sumber dideteksi otomatis dari git lokal saat remote origin mengarah ke GitHub.
 - Plugin kode eksternal harus mendeklarasikan `openclaw.compat.pluginApi` dan
   `openclaw.build.openclawVersion` secara eksplisit.
-  `package.json.version` tingkat atas tidak digunakan sebagai fallback untuk validasi publikasi.
-- `--dry-run` meninjau payload publikasi yang di-resolve tanpa mengunggah.
-- `--json` menghasilkan output yang dapat dibaca mesin untuk CI.
-- `--owner <handle>` menerbitkan di bawah handle penerbit pengguna atau organisasi ketika aktor memiliki akses penerbit.
-- Nama paket berscope harus cocok dengan pemilik yang dipilih. Lihat `docs/publishing.md`.
+  `package.json.version` tingkat atas tidak digunakan sebagai fallback untuk validasi penerbitan.
+- `--dry-run` mempratinjau payload penerbitan yang di-resolve tanpa mengunggah.
+- `--json` menghasilkan keluaran yang dapat dibaca mesin untuk CI.
+- `--owner <handle>` menerbitkan di bawah handle penerbit pengguna atau org saat aktor memiliki akses penerbit.
+- Nama paket scoped harus cocok dengan owner yang dipilih. Lihat `docs/publishing.md`.
 - Flag yang sudah ada (`--family`, `--name`, `--version`, `--source-repo`, `--source-commit`, `--source-ref`, `--source-path`) tetap berfungsi sebagai override.
 - Repo GitHub privat memerlukan `GITHUB_TOKEN`.
 
@@ -665,7 +667,7 @@ clawhub package publish ./my-plugin-1.2.3.tgz --family code-plugin
 
 #### Alur folder lokal
 
-Untuk Plugin kode, publikasi folder membangun dan mengunggah artefak ClawPack dari
+Untuk plugin kode, penerbitan folder membangun dan mengunggah artefak ClawPack dari
 folder paket:
 
 ```bash
@@ -676,7 +678,7 @@ clawhub package publish ./my-plugin --family code-plugin
 #### `package.json` minimal untuk `--family code-plugin`
 
 Plugin kode eksternal memerlukan sedikit metadata OpenClaw di
-`package.json`. Manifest minimal ini cukup untuk publikasi yang berhasil:
+`package.json`. Manifest minimal ini cukup untuk penerbitan yang berhasil:
 
 ```json
 {
@@ -705,22 +707,22 @@ Catatan:
 - `package.json.version` adalah versi rilis paket Anda, tetapi tidak digunakan sebagai
   fallback untuk validasi kompatibilitas/build OpenClaw.
 - `openclaw.hostTargets` dan `openclaw.environment` adalah metadata opsional.
-  ClawHub dapat menampilkannya jika ada, tetapi tidak wajib untuk publikasi.
+  ClawHub dapat menampilkannya saat tersedia, tetapi keduanya tidak wajib untuk penerbitan.
 - `openclaw.compat.minGatewayVersion` dan
   `openclaw.build.pluginSdkVersion` adalah tambahan opsional jika Anda ingin menerbitkan
   metadata kompatibilitas yang lebih mendetail.
-- Jika Anda menggunakan rilis CLI `clawhub` yang lebih lama, lakukan upgrade sebelum menerbitkan agar
+- Jika Anda menggunakan rilis CLI `clawhub` yang lebih lama, tingkatkan sebelum menerbitkan agar
   pemeriksaan preflight lokal berjalan sebelum unggahan.
 - Jika validasi melaporkan kode remediasi, lihat
-  [perbaikan validasi Plugin](/clawhub/plugin-validation-fixes).
+  [Perbaikan validasi plugin](/clawhub/plugin-validation-fixes).
 
 #### GitHub Actions
 
-ClawHub juga menyertakan workflow resmi yang dapat digunakan kembali di
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/d8096dfc039e86ab942ddf9ef117d04849fd84c1/.github/workflows/package-publish.yml)
-untuk repo Plugin.
+ClawHub juga menyertakan workflow resmi yang dapat digunakan ulang di
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/80b06a911afb312a43d3f39ba62d92eb35d772a9/.github/workflows/package-publish.yml)
+untuk repo plugin.
 
-Penyiapan pemanggil yang umum:
+Penyiapan pemanggil umum:
 
 ```yaml
 name: Package Publish
@@ -753,23 +755,23 @@ jobs:
 
 Catatan:
 
-- Workflow yang dapat digunakan kembali secara default menetapkan `source` ke repo pemanggil.
-- Untuk monorepo, teruskan `source_path` agar workflow menerbitkan folder paket
-  Plugin, misalnya `source_path: extensions/codex`.
-- Pin workflow yang dapat digunakan kembali ke tag stabil atau SHA commit lengkap. Jangan jalankan publikasi rilis dari `@main`.
-- `pull_request` harus menggunakan `dry_run: true` agar CI tetap tidak mencemari.
-- Publikasi nyata harus dibatasi pada event tepercaya seperti `workflow_dispatch` atau push tag.
-- Publikasi tepercaya tanpa secret hanya berfungsi pada `workflow_dispatch`; push tag tetap memerlukan `clawhub_token`.
-- Biarkan `clawhub_token` tersedia untuk publikasi pertama, paket tidak tepercaya, atau publikasi break-glass.
+- Workflow yang dapat digunakan ulang menetapkan default `source` ke repo pemanggil.
+- Untuk monorepo, berikan `source_path` agar workflow menerbitkan folder paket
+  plugin, misalnya `source_path: extensions/codex`.
+- Pin workflow yang dapat digunakan ulang ke tag stabil atau SHA commit penuh. Jangan menjalankan penerbitan rilis dari `@main`.
+- `pull_request` sebaiknya menggunakan `dry_run: true` agar CI tetap tidak mencemari.
+- Penerbitan nyata sebaiknya dibatasi pada event tepercaya seperti `workflow_dispatch` atau push tag.
+- Penerbitan tepercaya tanpa secret hanya berfungsi pada `workflow_dispatch`; push tag tetap memerlukan `clawhub_token`.
+- Tetap sediakan `clawhub_token` untuk penerbitan pertama, paket tidak tepercaya, atau penerbitan darurat.
 - Workflow mengunggah hasil JSON sebagai artefak dan mengeksposnya sebagai output workflow.
 
 ### `package trusted-publisher get <name>`
 
 - Menampilkan konfigurasi penerbit tepercaya GitHub Actions untuk sebuah paket.
 - Gunakan ini setelah menetapkan konfigurasi untuk mengonfirmasi repositori, nama file workflow,
-  dan pin lingkungan opsional.
+  dan pin environment opsional.
 - Flag:
-  - `--json`: output yang dapat dibaca mesin.
+  - `--json`: keluaran yang dapat dibaca mesin.
 
 Contoh:
 
@@ -779,26 +781,25 @@ clawhub package trusted-publisher get @openclaw/example-plugin
 
 ### `package trusted-publisher set <name>`
 
-- Melampirkan atau mengganti konfigurasi penerbit tepercaya GitHub Actions untuk paket yang sudah ada.
-- Paket harus dibuat terlebih dahulu melalui publikasi `clawhub package publish`
-  manual normal atau terautentikasi token.
-- Setelah konfigurasi ditetapkan, publikasi GitHub Actions yang didukung di masa depan dapat menggunakan
-  OIDC/publikasi tepercaya tanpa token ClawHub berumur panjang.
+- Melampirkan atau mengganti konfigurasi penerbit tepercaya GitHub Actions untuk paket
+  yang sudah ada.
+- Paket harus dibuat terlebih dahulu melalui `clawhub package publish` normal yang manual atau diautentikasi token.
+- Setelah konfigurasi ditetapkan, penerbitan GitHub Actions yang didukung di masa mendatang dapat menggunakan
+  OIDC/penerbitan tepercaya tanpa token ClawHub berumur panjang.
 - `--repository <repo>` harus berupa `owner/repo`.
 - `--workflow-filename <file>` harus cocok dengan nama file workflow di
   `.github/workflows/`.
-- `--environment <name>` bersifat opsional. Ketika dikonfigurasi, lingkungan GitHub Actions
-  dalam klaim OIDC harus cocok persis.
-- ClawHub memverifikasi repositori GitHub yang dikonfigurasi ketika perintah ini berjalan.
+- `--environment <name>` bersifat opsional. Saat dikonfigurasi, environment GitHub Actions
+  dalam klaim OIDC harus sama persis.
+- ClawHub memverifikasi repositori GitHub yang dikonfigurasi saat perintah ini berjalan.
   Repositori publik dapat diverifikasi melalui metadata GitHub publik. Repositori privat
-  mengharuskan ClawHub memiliki akses GitHub ke repositori tersebut, misalnya
-  melalui instalasi GitHub App ClawHub di masa depan atau integrasi GitHub
-  terotorisasi lainnya.
+  mengharuskan ClawHub memiliki akses GitHub ke repositori tersebut, misalnya melalui
+  instalasi GitHub App ClawHub di masa mendatang atau integrasi GitHub resmi lainnya.
 - Flag:
   - `--repository <repo>`: repositori GitHub, misalnya `openclaw/example-plugin`.
   - `--workflow-filename <file>`: nama file workflow, misalnya `package-publish.yml`.
-  - `--environment <name>`: lingkungan GitHub Actions yang cocok persis dan opsional.
-  - `--json`: output yang dapat dibaca mesin.
+  - `--environment <name>`: environment GitHub Actions dengan pencocokan persis opsional.
+  - `--json`: keluaran yang dapat dibaca mesin.
 
 Contoh:
 
@@ -812,12 +813,12 @@ clawhub package trusted-publisher set @openclaw/example-plugin \
 ### `package trusted-publisher delete <name>`
 
 - Menghapus konfigurasi penerbit tepercaya dari sebuah paket.
-- Gunakan ini sebagai rollback jika workflow, repositori, atau pin lingkungan perlu
+- Gunakan ini sebagai rollback jika workflow, repositori, atau pin environment perlu
   dinonaktifkan atau dibuat ulang.
-- Publikasi nyata berikutnya harus menggunakan publikasi terautentikasi normal sampai konfigurasi
+- Penerbitan nyata berikutnya harus menggunakan penerbitan terautentikasi normal hingga konfigurasi
   ditetapkan lagi.
 - Flag:
-  - `--json`: output yang dapat dibaca mesin.
+  - `--json`: keluaran yang dapat dibaca mesin.
 
 Contoh:
 
@@ -827,8 +828,8 @@ clawhub package trusted-publisher delete @openclaw/example-plugin
 
 ### Telemetri instalasi
 
-- Dikirim setelah `clawhub install <slug>` ketika masuk, kecuali
+- Dikirim setelah `clawhub install <slug>` saat masuk, kecuali
   `CLAWHUB_DISABLE_TELEMETRY=1` ditetapkan.
-- Pelaporan bersifat upaya terbaik. Perintah instalasi tidak gagal jika telemetri
+- Pelaporan bersifat best-effort. Perintah instalasi tidak gagal jika telemetri
   tidak tersedia.
 - Detail: `docs/telemetry.md`.

@@ -1,38 +1,40 @@
 ---
 read_when:
     - Yayın gruplarını yapılandırma
-    - WhatsApp'ta çok aracılı yanıtların hata ayıklaması
+    - WhatsApp'ta çoklu ajan yanıtlarında hata ayıklama
 sidebarTitle: Broadcast groups
 status: experimental
-summary: Bir WhatsApp iletisini birden çok ajana yayınla
+summary: Bir WhatsApp mesajını birden fazla agente yayınlayın
 title: Yayın grupları
 x-i18n:
-    generated_at: "2026-06-28T00:11:12Z"
+    generated_at: "2026-07-01T08:26:11Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a89b936322baf0fea7b487cb5354b9fad3fc021abb2970f7cd934b1880da2a0e
+    source_hash: 97e8c2ade5d12a437864e6aca0d475e586289f71155188afed216881ebf89f88
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
 
 <Note>
-**Durum:** Deneysel. 2026.1.9 sürümünde eklendi.
+**Durum:** Deneysel. 2026.1.9'da eklendi.
 </Note>
 
-## Genel bakış
+## Genel Bakış
 
-Yayın Grupları, birden çok ajanın aynı iletiyi eş zamanlı olarak işlemesini ve yanıtlamasını sağlar. Bu, tek bir WhatsApp grubunda veya DM'de birlikte çalışan uzmanlaşmış ajan ekipleri oluşturmanıza olanak tanır — hepsi tek bir telefon numarası kullanarak.
+Yayın Grupları, birden fazla ajanın aynı iletiyi eş zamanlı olarak işlemesini ve yanıtlamasını sağlar. Bu, tek bir WhatsApp grubunda veya DM'de birlikte çalışan uzmanlaşmış ajan ekipleri oluşturmanıza olanak tanır — hepsi tek bir telefon numarasıyla.
 
-Geçerli kapsam: **Yalnızca WhatsApp** (web kanalı).
+Geçerli kapsam: **yalnızca WhatsApp** (web kanalı).
 
-Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından sonra değerlendirilir. WhatsApp gruplarında bu, yayınların OpenClaw normalde yanıt verecekken gerçekleştiği anlamına gelir (örneğin: grup ayarlarınıza bağlı olarak bahsedildiğinde).
+Yayın grupları, kanal izin listeleri ve grup etkinleştirme kurallarından sonra değerlendirilir. WhatsApp gruplarında bu, yayınların OpenClaw normalde yanıt vereceği durumda gerçekleştiği anlamına gelir (örneğin: grup ayarlarınıza bağlı olarak bahsedildiğinde).
 
-## Kullanım örnekleri
+Canlı WhatsApp QA hattı, bahsedilen tek bir grup iletisinin yapılandırılmış iki ajandan farklı görünür yanıtlar üretebildiğini doğrulayan `whatsapp-broadcast-group-fanout` içerir.
+
+## Kullanım alanları
 
 <AccordionGroup>
-  <Accordion title="1. Specialized agent teams">
-    Atomik, odaklanmış sorumluluklara sahip birden çok ajan dağıtın:
+  <Accordion title="1. Uzmanlaşmış ajan ekipleri">
+    Atomik, odaklı sorumluluklara sahip birden fazla ajan dağıtın:
 
     ```
     Group: "Development Team"
@@ -43,10 +45,10 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
       - TestGenerator (suggests test cases)
     ```
 
-    Her ajan aynı iletiyi işler ve kendi uzmanlaşmış bakış açısını sağlar.
+    Her ajan aynı iletiyi işler ve kendi uzman bakış açısını sunar.
 
   </Accordion>
-  <Accordion title="2. Multi-language support">
+  <Accordion title="2. Çok dilli destek">
     ```
     Group: "International Support"
     Agents:
@@ -55,7 +57,7 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
       - Agent_ES (responds in Spanish)
     ```
   </Accordion>
-  <Accordion title="3. Quality assurance workflows">
+  <Accordion title="3. Kalite güvencesi iş akışları">
     ```
     Group: "Customer Support"
     Agents:
@@ -63,7 +65,7 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
       - QAAgent (reviews quality, only responds if issues found)
     ```
   </Accordion>
-  <Accordion title="4. Task automation">
+  <Accordion title="4. Görev otomasyonu">
     ```
     Group: "Project Management"
     Agents:
@@ -78,7 +80,7 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
 
 ### Temel kurulum
 
-Üst düzey bir `broadcast` bölümü ekleyin (`bindings` ile aynı düzeyde). Anahtarlar WhatsApp eş kimlikleridir:
+Üst düzey bir `broadcast` bölümü ekleyin (`bindings` yanında). Anahtarlar WhatsApp eş id'leridir:
 
 - grup sohbetleri: grup JID'si (örn. `120363403215116621@g.us`)
 - DM'ler: E.164 telefon numarası (örn. `+15551234567`)
@@ -91,15 +93,15 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
 }
 ```
 
-**Sonuç:** OpenClaw bu sohbette yanıt vereceğinde, üç ajanın tamamını çalıştırır.
+**Sonuç:** OpenClaw bu sohbette yanıt vereceği zaman, üç ajanın tamamını çalıştırır.
 
 ### İşleme stratejisi
 
 Ajanların iletileri nasıl işleyeceğini denetleyin:
 
 <Tabs>
-  <Tab title="parallel (default)">
-    Tüm ajanlar eş zamanlı olarak işler:
+  <Tab title="parallel (varsayılan)">
+    Tüm ajanlar eş zamanlı işler:
 
     ```json
     {
@@ -112,7 +114,7 @@ Ajanların iletileri nasıl işleyeceğini denetleyin:
 
   </Tab>
   <Tab title="sequential">
-    Ajanlar sırayla işler (biri, öncekinin bitmesini bekler):
+    Ajanlar sırayla işler (biri öncekinin bitmesini bekler):
 
     ```json
     {
@@ -166,54 +168,54 @@ Ajanların iletileri nasıl işleyeceğini denetleyin:
 ### İleti akışı
 
 <Steps>
-  <Step title="Incoming message arrives">
-    Bir WhatsApp grup veya DM iletisi gelir.
+  <Step title="Gelen ileti ulaşır">
+    Bir WhatsApp grubu veya DM iletisi ulaşır.
   </Step>
-  <Step title="Route and admission">
+  <Step title="Yönlendirme ve kabul">
     OpenClaw kanal izin listelerini, grup etkinleştirme kurallarını ve yapılandırılmış ACP bağlama sahipliğini uygular.
   </Step>
-  <Step title="Broadcast check">
-    Yapılandırılmış hiçbir ACP bağlaması rotaya sahip değilse, OpenClaw eş kimliğinin `broadcast` içinde olup olmadığını denetler.
+  <Step title="Yayın denetimi">
+    Yapılandırılmış hiçbir ACP bağlaması rotanın sahibi değilse OpenClaw, eş ID'nin `broadcast` içinde olup olmadığını denetler.
   </Step>
-  <Step title="If broadcast applies">
+  <Step title="Yayın uygulanırsa">
     - Listelenen tüm ajanlar iletiyi işler.
     - Her ajanın kendi oturum anahtarı ve yalıtılmış bağlamı vardır.
     - Ajanlar paralel (varsayılan) veya sıralı olarak işler.
 
   </Step>
-  <Step title="If broadcast does not apply">
-    OpenClaw olağan rotayı veya yönlendirme sırasında seçilen yapılandırılmış ACP oturum rotasını gönderir.
+  <Step title="Yayın uygulanmazsa">
+    OpenClaw, yönlendirme sırasında seçilen olağan rotayı veya yapılandırılmış ACP oturum rotasını gönderir.
   </Step>
 </Steps>
 
 <Note>
-Yayın grupları kanal izin listelerini veya grup etkinleştirme kurallarını (bahsetmeler/komutlar/vb.) atlamaz. Yalnızca bir ileti işlenmeye uygun olduğunda _hangi ajanların çalışacağını_ değiştirir.
+Yayın grupları, kanal izin listelerini veya grup etkinleştirme kurallarını (bahsetmeler/komutlar/vb.) atlamaz. Yalnızca bir ileti işlenmeye uygun olduğunda _hangi ajanların çalışacağını_ değiştirir.
 </Note>
 
 ### Oturum yalıtımı
 
 Bir yayın grubundaki her ajan tamamen ayrı şunları korur:
 
-- **Oturum anahtarları** (`agent:alfred:whatsapp:group:120363...` ile `agent:baerbel:whatsapp:group:120363...`)
+- **Oturum anahtarları** (`agent:alfred:whatsapp:group:120363...` ile `agent:baerbel:whatsapp:group:120363...` karşılaştırması)
 - **Konuşma geçmişi** (ajan diğer ajanların iletilerini görmez)
 - **Çalışma alanı** (yapılandırılmışsa ayrı sandbox'lar)
 - **Araç erişimi** (farklı izin/verme listeleri)
 - **Bellek/bağlam** (ayrı IDENTITY.md, SOUL.md, vb.)
-- **Grup bağlam arabelleği** (bağlam için kullanılan son grup iletileri) eş başına paylaşılır, bu nedenle tüm yayın ajanları tetiklendiğinde aynı bağlamı görür
+- **Grup bağlam arabelleği** (bağlam için kullanılan son grup iletileri) eş başına paylaşılır; bu nedenle tüm yayın ajanları tetiklendiğinde aynı bağlamı görür
 
 Bu, her ajanın şunlara sahip olmasını sağlar:
 
 - Farklı kişilikler
 - Farklı araç erişimi (örn. salt okunur ile okuma-yazma)
 - Farklı modeller (örn. opus ile sonnet)
-- Farklı Skills kurulumları
+- Yüklü farklı Skills
 
 ### Örnek: yalıtılmış oturumlar
 
-`["alfred", "baerbel"]` ajanlarıyla `120363403215116621@g.us` grubunda:
+`120363403215116621@g.us` grubunda `["alfred", "baerbel"]` ajanlarıyla:
 
 <Tabs>
-  <Tab title="Alfred's context">
+  <Tab title="Alfred'in bağlamı">
     ```
     Session: agent:alfred:whatsapp:group:120363403215116621@g.us
     History: [user message, alfred's previous responses]
@@ -221,7 +223,7 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
     Tools: read, write, exec
     ```
   </Tab>
-  <Tab title="Bärbel's context">
+  <Tab title="Bärbel'in bağlamı">
     ```
     Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
     History: [user message, baerbel's previous responses]
@@ -234,7 +236,7 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
 ## En iyi uygulamalar
 
 <AccordionGroup>
-  <Accordion title="1. Keep agents focused">
+  <Accordion title="1. Ajanları odaklı tutun">
     Her ajanı tek ve net bir sorumlulukla tasarlayın:
 
     ```json
@@ -248,8 +250,8 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
     ✅ **İyi:** Her ajanın tek bir işi vardır. ❌ **Kötü:** Tek bir genel "dev-helper" ajanı.
 
   </Accordion>
-  <Accordion title="2. Use descriptive names">
-    Her ajanın ne yaptığını anlaşılır hale getirin:
+  <Accordion title="2. Açıklayıcı adlar kullanın">
+    Her ajanın ne yaptığını netleştirin:
 
     ```json
     {
@@ -262,7 +264,7 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
     ```
 
   </Accordion>
-  <Accordion title="3. Configure different tool access">
+  <Accordion title="3. Farklı araç erişimi yapılandırın">
     Ajanlara yalnızca ihtiyaç duydukları araçları verin:
 
     ```json
@@ -281,7 +283,7 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
     `reviewer` salt okunurdur. `fixer` okuyabilir ve yazabilir.
 
   </Accordion>
-  <Accordion title="4. Monitor performance">
+  <Accordion title="4. Performansı izleyin">
     Çok sayıda ajanla şunları değerlendirin:
 
     - Hız için `"strategy": "parallel"` (varsayılan) kullanma
@@ -289,7 +291,7 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
     - Daha basit ajanlar için daha hızlı modeller kullanma
 
   </Accordion>
-  <Accordion title="5. Handle failures gracefully">
+  <Accordion title="5. Hataları zarifçe yönetin">
     Ajanlar bağımsız olarak başarısız olur. Bir ajanın hatası diğerlerini engellemez:
 
     ```
@@ -339,11 +341,11 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
 ## Sorun giderme
 
 <AccordionGroup>
-  <Accordion title="Agents not responding">
+  <Accordion title="Ajanlar yanıt vermiyor">
     **Denetleyin:**
 
-    1. Ajan kimlikleri `agents.list` içinde mevcut.
-    2. Eş kimliği biçimi doğru (örn. `120363403215116621@g.us`).
+    1. Ajan ID'leri `agents.list` içinde var.
+    2. Eş ID biçimi doğru (örn. `120363403215116621@g.us`).
     3. Ajanlar engelleme listelerinde değil.
 
     **Hata ayıklama:**
@@ -353,13 +355,13 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
     ```
 
   </Accordion>
-  <Accordion title="Only one agent responding">
-    **Neden:** Eş kimliği olağan rota bağlamalarında olabilir ama `broadcast` içinde olmayabilir veya özel yapılandırılmış bir ACP bağlamasıyla eşleşiyor olabilir.
+  <Accordion title="Yalnızca bir ajan yanıt veriyor">
+    **Neden:** Eş ID olağan rota bağlamalarında olabilir ancak `broadcast` içinde olmayabilir veya özel yapılandırılmış bir ACP bağlamasıyla eşleşiyor olabilir.
 
     **Düzeltme:** Olağan rotaya bağlı eşleri yayın yapılandırmasına ekleyin veya fan-out yayın isteniyorsa yapılandırılmış ACP bağlamasını kaldırın/değiştirin.
 
   </Accordion>
-  <Accordion title="Performance issues">
+  <Accordion title="Performans sorunları">
     Çok sayıda ajanla yavaşsa:
 
     - Grup başına ajan sayısını azaltın.
@@ -372,7 +374,7 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
 ## Örnekler
 
 <AccordionGroup>
-  <Accordion title="Example 1: Code review team">
+  <Accordion title="Örnek 1: Kod inceleme ekibi">
     ```json
     {
       "broadcast": {
@@ -407,17 +409,17 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
     }
     ```
 
-    **Kullanıcı şunu gönderir:** Kod parçacığı.
+    **Kullanıcı gönderir:** Kod parçacığı.
 
     **Yanıtlar:**
 
-    - code-formatter: "Girintilemeyi düzeltti ve tür ipuçları ekledi"
+    - code-formatter: "Girinti düzeltildi ve tür ipuçları eklendi"
     - security-scanner: "⚠️ 12. satırda SQL enjeksiyonu güvenlik açığı"
-    - test-coverage: "Kapsam %45, hata durumları için testler eksik"
+    - test-coverage: "Kapsama %45, hata durumları için testler eksik"
     - docs-checker: "`process_data` işlevi için docstring eksik"
 
   </Accordion>
-  <Accordion title="Example 2: Multi-language support">
+  <Accordion title="Örnek 2: Çok dilli destek">
     ```json
     {
       "broadcast": {
@@ -452,32 +454,32 @@ interface OpenClawConfig {
 ### Alanlar
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Ajanların nasıl işleneceği. `parallel` tüm ajanları eş zamanlı çalıştırır; `sequential` onları dizi sırasına göre çalıştırır.
+  Agentlerin nasıl işleneceği. `parallel` tüm agentleri eşzamanlı çalıştırır; `sequential` bunları dizi sırasına göre çalıştırır.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp grup JID'si, E.164 numarası veya başka bir eş kimliği. Değer, iletileri işlemesi gereken ajan kimliklerinin dizisidir.
+  WhatsApp grup JID'si, E.164 numarası veya başka bir peer ID. Değer, mesajları işlemesi gereken agent ID'lerinin dizisidir.
 </ParamField>
 
 ## Sınırlamalar
 
-1. **Maksimum ajan sayısı:** Kesin bir sınır yoktur, ancak 10+ ajan yavaş olabilir.
-2. **Paylaşılan bağlam:** Ajanlar birbirlerinin yanıtlarını görmez (tasarım gereği).
-3. **Mesaj sıralaması:** Paralel yanıtlar herhangi bir sırayla gelebilir.
-4. **Hız sınırları:** Tüm ajanlar WhatsApp hız sınırlarına dahil edilir.
+1. **Maksimum agent sayısı:** Kesin bir sınır yoktur, ancak 10+ agent yavaş olabilir.
+2. **Paylaşılan bağlam:** Agentler birbirlerinin yanıtlarını görmez (tasarım gereği).
+3. **Mesaj sıralaması:** Paralel yanıtlar herhangi bir sırada gelebilir.
+4. **Hız sınırları:** Tüm agentler WhatsApp hız sınırlarına dahil edilir.
 
-## Gelecekteki geliştirmeler
+## Gelecekteki iyileştirmeler
 
 Planlanan özellikler:
 
-- [ ] Paylaşılan bağlam modu (ajanlar birbirlerinin yanıtlarını görür)
-- [ ] Ajan koordinasyonu (ajanlar birbirlerine sinyal gönderebilir)
-- [ ] Dinamik ajan seçimi (ajanları mesaj içeriğine göre seçme)
-- [ ] Ajan öncelikleri (bazı ajanlar diğerlerinden önce yanıt verir)
+- [ ] Paylaşılan bağlam modu (agentler birbirlerinin yanıtlarını görür)
+- [ ] Agent koordinasyonu (agentler birbirlerine sinyal gönderebilir)
+- [ ] Dinamik agent seçimi (mesaj içeriğine göre agentleri seçin)
+- [ ] Agent öncelikleri (bazı agentler diğerlerinden önce yanıt verir)
 
 ## İlgili
 
 - [Kanal yönlendirme](/tr/channels/channel-routing)
 - [Gruplar](/tr/channels/groups)
-- [Çok ajanlı korumalı alan araçları](/tr/tools/multi-agent-sandbox-tools)
+- [Çok agentli sandbox araçları](/tr/tools/multi-agent-sandbox-tools)
 - [Eşleştirme](/tr/channels/pairing)
 - [Oturum yönetimi](/tr/concepts/session)
