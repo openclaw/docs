@@ -29,6 +29,9 @@ const required = [
   "zh-CN/tools/reactions/index.html",
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
+  "reference/templates/AGENTS/index.html",
+  "images/groups-flow.svg",
+  "images/feishu-get-group-id.png",
   "assets/docs-site.css",
   "assets/docs-site.js",
   "assets/pixel-lobster.svg"
@@ -673,8 +676,52 @@ const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "
 if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
+assertInternalRoutes();
 assertEditSourceLinks();
 console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks passed (${artifactMode})`);
+
+function assertInternalRoutes() {
+  const files = walkFiles(site);
+  const present = new Set(files.map((file) => path.relative(site, file).replaceAll(path.sep, "/")));
+  const basePath = `/${(process.env.DOCS_SITE_BASE_PATH ?? "").replace(/^\/+|\/+$/g, "")}`.replace(/^\/$/, "");
+  const missing = new Map();
+
+  for (const file of files) {
+    if (!file.endsWith(".html")) continue;
+    const rel = path.relative(site, file).replaceAll(path.sep, "/");
+    const html = fs.readFileSync(file, "utf8");
+    for (const match of html.matchAll(/\b(?:href|src)="(\/[^"<>]*)"/gu)) {
+      let target = match[1].split(/[?#]/u, 1)[0];
+      if (basePath && (target === basePath || target.startsWith(`${basePath}/`))) {
+        target = target.slice(basePath.length) || "/";
+      }
+      if (!target
+        || target.startsWith("//")
+        || target.startsWith("/api/")
+        || target.startsWith("/ask-molty/")
+        || target === "/mcp"
+        || target === "/mcp.search_open_claw") continue;
+      try {
+        target = decodeURIComponent(target);
+      } catch {
+        // Leave malformed URLs intact so the missing-route report exposes them.
+      }
+      const route = target.replace(/^\/+|\/+$/gu, "");
+      const candidates = route ? [route, `${route}/index.html`, `${route}.html`] : ["index.html"];
+      if (candidates.some((candidate) => present.has(candidate))) continue;
+      if (!missing.has(target)) missing.set(target, []);
+      if (missing.get(target).length < 3) missing.get(target).push(rel);
+    }
+  }
+
+  if (missing.size) {
+    const details = [...missing]
+      .slice(0, 20)
+      .map(([target, sources]) => `${target} from ${sources.join(", ")}`)
+      .join("; ");
+    throw new Error(`internal route audit: ${missing.size} missing target(s): ${details}`);
+  }
+}
 
 function assertEditSourceLinks() {
   const htmlFiles = walkHtml(site);
@@ -774,5 +821,13 @@ function walkHtml(dir) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) return walkHtml(full);
     return entry.isFile() && entry.name.endsWith(".html") ? [full] : [];
+  });
+}
+
+function walkFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    return entry.isDirectory() ? walkFiles(full) : [full];
   });
 }
