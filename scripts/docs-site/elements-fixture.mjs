@@ -165,7 +165,7 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
   <Card title="Troubleshooting" href="/help/troubleshooting" icon="wrench">
     Diagnose startup, auth, channel, and provider issues.
   </Card>
-  <Card title="Plugin SDK" href="/plugins/sdk" icon="book">
+  <Card title="Plugin SDK" href="/plugins/sdk-overview" icon="book">
     Build plugin surfaces using the public SDK contracts.
   </Card>
   <Card title="Configuration" href="/gateway/configuration" icon="settings">
@@ -291,7 +291,7 @@ Channels,24
 Providers,18
 </Chart>
 
-<CTA title="Build the next plugin guide" eyebrow="Authoring flow" href="/plugins/sdk" label="Open SDK docs" secondaryHref="/tools/skills" secondaryLabel="Review skills">
+<CTA title="Build the next plugin guide" eyebrow="Authoring flow" href="/plugins/sdk-overview" label="Open SDK docs" secondaryHref="/tools/skills" secondaryLabel="Review skills">
 Use a CTA when a long-form article has one obvious next action. Keep it specific.
 </CTA>
 

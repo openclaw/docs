@@ -56,6 +56,7 @@ fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
+const localeCodes = new Set(locales.map((locale) => locale.code));
 const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
 let pages = allPages;
@@ -141,7 +142,7 @@ function collectPages(localeList) {
     const base = locale.root ? docsDir : path.join(docsDir, locale.code);
     for (const file of walkDocs(base)) {
       const rel = path.relative(base, file).replaceAll(path.sep, "/");
-      if (ignoredDocFiles.has(rel) || rel.endsWith("/AGENTS.md")) continue;
+      if (ignoredDocFiles.has(rel)) continue;
       const raw = fs.readFileSync(file, "utf8");
       const parsed = parseFrontmatter(raw);
       const slug = fileSlug(rel);
@@ -850,12 +851,24 @@ function writeStaticAssets() {
 }
 
 function copyPublicFiles() {
-  copyDir(path.join(docsDir, "assets"), path.join(outDir, "assets"));
-  for (const entry of fs.readdirSync(docsDir, { withFileTypes: true })) {
-    if (entry.isFile() && !ignoredDocFiles.has(entry.name) && !/\.(md|mdx|json)$/.test(entry.name)) {
-      fs.copyFileSync(path.join(docsDir, entry.name), path.join(outDir, entry.name));
-    }
+  for (const source of walkPublicFiles(docsDir)) {
+    const rel = path.relative(docsDir, source);
+    const dest = path.join(outDir, rel);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(source, dest);
   }
+}
+
+function walkPublicFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.name.startsWith(".")) return [];
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walkPublicFiles(full);
+    const rel = path.relative(docsDir, full).replaceAll(path.sep, "/");
+    if (ignoredDocFiles.has(rel) || /\.(md|mdx|json|jsonl)$/.test(entry.name)) return [];
+    return [full];
+  });
 }
 
 function copyDir(source, dest, options = {}) {
@@ -948,6 +961,10 @@ function rewriteInternalUrls(html, locale) {
     const localizedPage = allPageByKey.get(pageKey(maybeLocale, localizedSlug));
     if (localizedPage) {
       return `${attr}="${internalPageUrl(localizedPage)}${suffix}"`;
+    }
+    if (localeCodes.has(maybeLocale)) {
+      const englishPage = allPageByKey.get(pageKey("en", localizedSlug));
+      if (englishPage) return `${attr}="${internalPageUrl(englishPage)}${suffix}"`;
     }
     const slug = normalizeSlug(target.replace(/\/$/, ""));
     const page = allPageByKey.get(pageKey(locale, slug)) ?? allPageByKey.get(pageKey("en", slug));
