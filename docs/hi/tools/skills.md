@@ -98,6 +98,7 @@ Skill **location** (precedence) और skill **visibility** (कौन सा ag
     - non-empty `agents.list[].skills` list **final** set है — यह defaults के साथ merge नहीं होती।
     - effective allowlist prompt building, slash-command discovery, sandbox sync, और skill snapshots पर apply होती है।
     - यह host shell authorization boundary नहीं है। अगर वही agent `exec` use कर सकता है, तो उस shell को अलग से sandboxing, OS-user isolation, exec deny/allowlists, और per-resource credentials से constrain करें।
+
   </Accordion>
 </AccordionGroup>
 

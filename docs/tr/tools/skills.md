@@ -98,6 +98,7 @@ Skills **konumu** (öncelik) ve Skills **görünürlüğü** (hangi ajanın onu 
     - Boş olmayan bir `agents.list[].skills` listesi **nihai** kümedir; varsayılanlarla birleştirilmez.
     - Etkin izin listesi istem oluşturma, eğik çizgi komutu keşfi, korumalı alan eşitlemesi ve Skills anlık görüntüleri genelinde uygulanır.
     - Bu, bir ana makine kabuğu yetkilendirme sınırı değildir. Aynı ajan `exec` kullanabiliyorsa, o kabuğu korumalı alan, işletim sistemi kullanıcısı yalıtımı, exec reddetme/izin listeleri ve kaynak başına kimlik bilgileriyle ayrı olarak kısıtlayın.
+
   </Accordion>
 </AccordionGroup>
 
