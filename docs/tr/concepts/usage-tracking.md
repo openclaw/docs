@@ -1,50 +1,51 @@
 ---
 read_when:
     - Sağlayıcı kullanım/kota yüzeylerini bağlıyorsunuz
-    - Kullanım izleme davranışını veya kimlik doğrulama gereksinimlerini açıklamanız gerekir
+    - Kullanım izleme davranışını veya kimlik doğrulama gereksinimlerini açıklamanız gerekiyor
 summary: Kullanım izleme yüzeyleri ve kimlik bilgisi gereksinimleri
 title: Kullanım takibi
 x-i18n:
-    generated_at: "2026-06-28T00:32:03Z"
+    generated_at: "2026-07-01T18:19:01Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 953f9671093c26f874b19fc0e6f8aee0ebf3379d4a6698bc8548abf942e37a59
+    source_hash: fa9b2b0b19ca0b4beeea40bfd50b07a92155178d5ec0e1877013843e0caba4fb
     source_path: concepts/usage-tracking.md
     workflow: 16
 ---
 
-## Nedir
+## Nedir?
 
 - Sağlayıcı kullanımını/kotasını doğrudan kullanım uç noktalarından çeker.
-- Tahmini maliyet yoktur; yalnızca sağlayıcının bildirdiği kota pencereleri veya hesap durumu
+- Tahmini maliyet yoktur; yalnızca sağlayıcının bildirdiği kota aralıkları veya hesap durumu
   özetleri vardır.
-- İnsan tarafından okunabilir kota penceresi durum çıktısı, yukarı akış API'si tüketilen kota,
-  kalan kota veya yalnızca ham sayımlar bildirse bile `X% left` biçimine normalleştirilir.
-  Sıfırlanabilir kota pencereleri olmayan sağlayıcılar bunun yerine bakiye gibi sağlayıcı özeti
-  metni gösterebilir.
+- İnsan tarafından okunabilir kota aralığı durumu çıktısı, üst API tüketilen kota, kalan kota
+  veya yalnızca ham sayılar bildirse bile `X% left` biçimine normalize edilir. Sıfırlanabilir
+  kota aralıkları olmayan sağlayıcılar bunun yerine bakiye gibi sağlayıcı özeti metni
+  gösterebilir.
 - Oturum düzeyi `/status` ve `session_status`, canlı oturum anlık görüntüsü seyrek olduğunda
-  en son transcript kullanım girdisine geri dönebilir. Bu geri dönüş eksik token/önbellek
+  en son transcript kullanım girdisine geri dönebilir. Bu geri dönüş eksik token/cache
   sayaçlarını doldurur, etkin çalışma zamanı model etiketini kurtarabilir ve oturum
-  meta verileri eksik veya daha küçük olduğunda daha büyük istem odaklı toplamı tercih eder.
+  metaverisi eksik veya daha küçük olduğunda daha büyük prompt odaklı toplamı tercih eder.
   Mevcut sıfır olmayan canlı değerler yine önceliklidir.
 
-## Nerede görünür
+## Nerede görünür?
 
-- Sohbetlerde `/status`: oturum token'ları + tahmini maliyet içeren emoji bakımından zengin durum kartı (yalnızca API anahtarı). Sağlayıcı kullanımı, mevcut olduğunda **geçerli model sağlayıcısı** için normalleştirilmiş `X% left` penceresi veya sağlayıcı özeti metni olarak gösterilir.
-- Sohbetlerde `/usage off|tokens|full`: yanıt başına kullanım alt bilgisi (OAuth yalnızca token'ları gösterir).
+- Sohbetlerde `/status`: oturum token'ları + tahmini maliyet içeren emoji ağırlıklı durum kartı (yalnızca API anahtarı). Sağlayıcı kullanımı, mevcut olduğunda **geçerli model sağlayıcısı** için normalize edilmiş `X% left` aralığı veya sağlayıcı özeti metni olarak gösterilir.
+- Sohbetlerde `/usage off|tokens|full`: yanıt başına kullanım alt bilgisi.
 - Sohbetlerde `/usage cost`: OpenClaw oturum günlüklerinden toplanan yerel maliyet özeti.
-- CLI: `openclaw status --usage` sağlayıcı başına tam bir döküm yazdırır.
-- CLI: `openclaw channels list` aynı kullanım anlık görüntüsünü sağlayıcı yapılandırmasının yanında yazdırır (atlamak için `--no-usage` kullanın).
-- macOS menü çubuğu: Context altında "Kullanım" bölümü (yalnızca varsa).
+- CLI: `openclaw status --usage` sağlayıcı başına tam döküm yazdırır.
+- CLI: `openclaw channels list` aynı kullanım anlık görüntüsünü sağlayıcı yapılandırmasıyla birlikte yazdırır (atlamak için `--no-usage` kullanın).
+- macOS menü çubuğu: Context altında "Usage" bölümü (yalnızca mevcutsa).
 
 ## Varsayılan kullanım alt bilgisi modu
 
-`/usage off|tokens|full` bir oturum için alt bilgiyi ayarlar ve bu, o oturum için hatırlanır.
-`messages.responseUsage`, henüz seçim yapmamış oturumlar için bu modu başlangıç değeri yapar;
-böylece her seferinde `/usage` yazmadan alt bilgi varsayılan olarak açık olabilir.
+`/usage off|tokens|full`, bir oturum için alt bilgiyi ayarlar ve bu oturum için
+hatırlanır. `messages.responseUsage`, henüz seçim yapılmamış oturumlar için bu
+modu başlatır; böylece alt bilgi her seferinde `/usage` yazmadan varsayılan
+olarak açık olabilir.
 
-Her kanal için tek bir mod veya `default` geri dönüşlü kanal başına bir eşleme ayarlayın:
+Her kanal için tek bir mod veya `default` geri dönüşü olan kanal başına bir eşleme ayarlayın:
 
 ```jsonc
 {
@@ -57,55 +58,61 @@ Her kanal için tek bir mod veya `default` geri dönüşlü kanal başına bir e
 
 ### Üç ayrı oturum durumu
 
-Bir oturumun `responseUsage` alanının temsil edilebilir üç durumu vardır ve her birinin
-anlamı farklıdır:
+Bir oturumun `responseUsage` alanının temsil edilebilir üç durumu vardır ve her
+birinin anlamı farklıdır:
 
-| Durum                         | Saklanan değer                   | Etkili mod                                                                 |
-| ----------------------------- | -------------------------------- | -------------------------------------------------------------------------- |
-| **Ayarlanmamış / devral**     | `undefined` (yok)                | `messages.responseUsage` yapılandırma varsayılanına, sonra `off` değerine düşer. |
-| **Açıkça kapalı**             | `"off"` (saklanır)               | Her zaman kapalıdır — kapalı olmayan bir yapılandırma varsayılanı alt bilgiyi yeniden etkinleştiremez. |
-| **Açıkça açık**               | `"tokens"` veya `"full"` (saklanır) | Yapılandırma varsayılanından bağımsız olarak bu mod.                       |
+| Durum                     | Saklanan değer                  | Etkin mod                                                               |
+| ------------------------- | ------------------------------- | ----------------------------------------------------------------------- |
+| **Ayarlanmamış / devral** | `undefined` (yok)               | `messages.responseUsage` yapılandırma varsayılanına, sonra `off` değerine düşer. |
+| **Açıkça kapalı**         | `"off"` (saklanır)              | Her zaman kapalı — `off` olmayan yapılandırma varsayılanı alt bilgiyi yeniden etkinleştiremez. |
+| **Açıkça açık**           | `"tokens"` veya `"full"` (saklanır) | Yapılandırma varsayılanından bağımsız olarak o mod.                     |
 
 ### Öncelik
 
-Etkili mod = oturum geçersiz kılması → kanal yapılandırma girdisi → `default` → `off`.
+Etkin mod = oturum geçersiz kılması → kanal yapılandırma girdisi → `default` → `off`.
 
-Açık bir `/usage off`, oturumda gerçek değer `"off"` olarak **kalıcı hale getirilir**;
-"ayarlanmamış" ile aynı değildir. Bu, kapalı olmayan bir `messages.responseUsage`
-varsayılanının, kullanıcı açıkça devre dışı bıraktıktan sonra alt bilgiyi yeniden açamayacağı anlamına gelir.
+Açık bir `/usage off`, oturumda gerçek `"off"` değeri olarak **kalıcılaştırılır**;
+"ayarlanmamış" ile aynı değildir. Bu, `off` olmayan bir `messages.responseUsage`
+varsayılanının, kullanıcı açıkça devre dışı bıraktıktan sonra alt bilgiyi yeniden
+açamayacağı anlamına gelir.
 
 ### Sıfırlama ve kapatma
 
-- `/usage off` — alt bilgiyi zorla kapatır ve bu seçimi kalıcı hale getirir. Yapılandırılmış
-  kapalı olmayan bir varsayılan bunu geçersiz kılamaz.
+- `/usage off` — alt bilgiyi kapalı olmaya zorlar ve bu seçimi kalıcılaştırır.
+  Yapılandırılmış `off` olmayan bir varsayılan bunu geçersiz kılamaz.
 - `/usage reset` (takma adlar: `inherit`, `clear`, `default`) — oturum
-  geçersiz kılmasını temizler. Oturum daha sonra etkili yapılandırma varsayılanını
-  (`messages.responseUsage`) **devralır**. Varsayılan yapılandırılmamışsa alt bilgi kapalıdır
-  (öncekiyle değişmez). Bunu, alt bilgiyi açıkça açmadan "varsayılana geri dönmek" için kullanın.
-- Tam oturum sıfırlaması (`/reset` veya `/new`) ya da oturum devri, kullanıcının görüntüleme
-  seçiminin oturum devirlerinden sonra da kalması için açık kullanım modu tercihini **korur**.
-  Yalnızca `/usage reset` (ve takma adları) geçersiz kılmayı gerçekten temizler.
+  geçersiz kılmasını temizler. Oturum daha sonra etkin yapılandırma varsayılanını
+  (`messages.responseUsage`) **devralır**. Hiç varsayılan yapılandırılmamışsa
+  alt bilgi kapalıdır (önceki durumdan değişmez). Alt bilgiyi açıkça açmadan
+  "varsayılana geri dönmek" için bunu kullanın.
+- Tam oturum sıfırlaması (`/reset` veya `/new`) ya da oturum devri, kullanıcının
+  görüntüleme seçiminin oturum devirlerinden sağ çıkması için açık kullanım modu
+  tercihini **korur**. Yalnızca `/usage reset` (ve takma adları) geçersiz kılmayı
+  gerçekten temizler.
 
 ### Geçiş davranışı
 
-Argümansız `/usage` şu döngüde ilerler: off → tokens → full → off. Döngünün başlangıç noktası,
-**etkili** geçerli moddur (ayarlanmamışsa oturum geçersiz kılması yapılandırma varsayılanına düşer);
-bu nedenle döngü, kullanıcının alt bilgide gördüğüyle her zaman tutarlıdır.
+Argümansız `/usage` şu döngüyü izler: off → tokens → full → off. Döngünün
+başlangıç noktası **etkin** geçerli moddur (ayarlanmamışsa yapılandırma
+varsayılanına düşen oturum geçersiz kılması), bu nedenle döngü kullanıcının alt
+bilgide gördüğüyle her zaman tutarlıdır.
 
 ### Yapılandırma
 
-Yapılandırma yoksa önceki davranış korunur (alt bilgi `/usage` yazılana kadar kapalı).
-Bir oturum geçersiz kılmasını temizlemek ve yapılandırılmış varsayılanı yeniden devralmak için
-`/usage reset` kullanın.
+Yapılandırma yoksa önceki davranış korunur (alt bilgi `/usage` yazılana kadar
+kapalı). Bir oturum geçersiz kılmasını temizleyip yapılandırılmış varsayılanı
+yeniden devralmak için `/usage reset` kullanın.
 
 ## Özel `/usage full` alt bilgisi
 
-`/usage full`, bu alanlar mevcut olduğunda model, reasoning, hızlı/yavaş,
-bağlam penceresi, tur token'ları, önbellek ve maliyet içeren yerleşik kompakt bir alt bilgi gösterir.
-Şablon dosyası gerekmez.
+`/usage full`, model, reasoning, hızlı/yavaş, context aralığı ve bu alanlar
+mevcut olduğunda maliyet içeren yerleşik kompakt bir alt bilgi gösterir. Token
+ve cache alanları özel şablonlar için kullanılabilir kalır. Şablon dosyası
+gerekmez.
 
-`messages.usageTemplate` yalnızca gelişmiş özel düzenler içindir. Değer bir JSON dosya yoludur
-(`~` desteklenir) veya satır içi bir nesnedir ve geçerli olduğunda yerleşik alt bilginin yerini alır:
+`messages.usageTemplate` yalnızca gelişmiş özel düzenler içindir. Değer bir
+JSON dosya yolu (`~` desteklenir) veya satır içi bir nesnedir ve geçerli olduğunda
+yerleşik alt bilginin yerini alır:
 
 ```json
 {
@@ -117,9 +124,10 @@ bağlam penceresi, tur token'ları, önbellek ve maliyet içeren yerleşik kompa
 
 Eksik veya boş şablonlar sessizce yerleşik alt bilgiye geri döner. Okunamayan
 veya geçersiz yapılandırılmış şablonlar da yerleşik alt bilgiye geri döner ve bir
-operatör uyarısı yayar.
+operatör uyarısı üretir.
 
-Özel şablonlara yerleşik biçimden başlayın, ardından değiştirmek istediğiniz bölümleri düzenleyin:
+Özel şablonlara yerleşik şekilden başlayın, ardından değiştirmek istediğiniz
+parçaları düzenleyin:
 
 ```jsonc
 {
@@ -154,49 +162,37 @@ operatör uyarısı yayar.
   "output": {
     "sep": "",
     "default": [
-      { "text": "{model.provider}{identity.emoji|🤖} {model.display_name|alias:models}" },
-      { "map": "model.is_fallback", "cases": { "true": " 🔄" } },
-      { "map": "model.is_override", "cases": { "true": " 📌" } },
-      { "when": "model.reasoning", "text": " {model.reasoning|alias:reasoning}" },
-      { "map": "state.fast_mode", "cases": { "true": " ⚡", "false": " 🐌" } },
+      { "text": "{model.provider}{identity.emoji|🤖}{model.display_name|alias:models}" },
+      { "map": "model.is_fallback", "cases": { "true": "🔄" } },
+      { "map": "model.is_override", "cases": { "true": "📌" } },
+      { "when": "model.reasoning", "text": "{model.reasoning|alias:reasoning}" },
+      { "map": "state.fast_mode", "cases": { "true": "⚡️", "false": "🐌" } },
       {
         "when": "context.max_tokens",
-        "text": " | 📚 [{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
+        "text": "\u00A0| 📚[{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
       },
-      {
-        "when": "usage.has_split_tokens",
-        "text": " ↕️ {usage.input_tokens|num|?}/{usage.output_tokens|num|?}",
-      },
-      { "when": "usage.has_total_only_tokens", "text": " ↕️ {usage.total_tokens|num}" },
-      { "when": "usage.cache_hit_pct", "text": " 🗄 {usage.cache_hit_pct|pct}" },
-      { "when": "cost.turn_usd", "text": " 💰{cost.turn_usd|fixed:4}" },
+      { "when": "cost.turn_usd", "text": "\u00A0💰{cost.turn_usd|fixed:4}" },
     ],
     "surfaces": {
       "discord": [
         { "text": "-# -\n" },
-        { "text": "-# {model.provider}{identity.emoji|🤖} {model.display_name|alias:models}" },
+        { "text": "-# {model.provider}{identity.emoji|🤖}{model.display_name|alias:models}" },
         { "map": "model.is_fallback", "cases": { "true": "🔄" } },
         { "map": "model.is_override", "cases": { "true": "📌" } },
-        { "when": "model.reasoning", "text": " {model.reasoning|alias:reasoning}" },
-        { "map": "state.fast_mode", "cases": { "true": " ⚡️", "false": " 🐌" } },
+        { "when": "model.reasoning", "text": "{model.reasoning|alias:reasoning}" },
+        { "map": "state.fast_mode", "cases": { "true": "⚡️", "false": "🐌" } },
         {
           "when": "context.max_tokens",
-          "text": " | 📚 [{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
+          "text": "\u00A0| 📚[{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
         },
-        {
-          "when": "usage.has_split_tokens",
-          "text": " ↕️ {usage.input_tokens|num|?}/{usage.output_tokens|num|?}",
-        },
-        { "when": "usage.has_total_only_tokens", "text": " ↕️ {usage.total_tokens|num}" },
-        { "when": "usage.cache_hit_pct", "text": " 🗄 {usage.cache_hit_pct|pct}" },
-        { "when": "cost.turn_usd", "text": " 💰{cost.turn_usd|fixed:4}" },
+        { "when": "cost.turn_usd", "text": "\u00A0💰{cost.turn_usd|fixed:4}" },
       ],
     },
   },
 }
 ```
 
-### Biçim
+### Şekil
 
 ```jsonc
 {
@@ -220,13 +216,15 @@ operatör uyarısı yayar.
 }
 ```
 
-Her yüzey, sıralı bir **parçalar** listesidir; motor her birini işler, boşları atar
-ve kalanları `sep` ile birleştirir. Girdisi olmayan bir yüzey `output.default` kullanır.
+Her yüzey sıralı bir **parça** listesidir; motor her birini işler, boşları atar
+ve kalanları `sep` ile birleştirir. Girdisi olmayan bir yüzey `output.default`
+kullanır.
 
 ### Sözleşme Yolları
 
-Bir parça değerleri tur başına sözleşmeden nokta yolu ile okur. Eksik değerler
-boştur (böylece bir `when` koruması veya `|fallback` parçayı temiz tutar).
+Bir parça değerleri, dönüş başına sözleşmeden noktalı yol ile okur. Eksik
+değerler boştur (bu nedenle bir `when` koruması veya `|fallback` parçayı temiz
+tutar).
 
 | Yol                                                                                 | Anlam                                  |
 | ----------------------------------------------------------------------------------- | -------------------------------------- |
@@ -235,35 +233,35 @@ boştur (böylece bir `when` koruması veya `|fallback` parçayı temiz tutar).
 | `model.reasoning`                                                                   | efor (`off` ile `xhigh` arası)         |
 | `model.is_fallback` / `model.is_override`                                           | bool: geri dönüş kullanıldı / model sabitlendi |
 | `state.fast_mode`                                                                   | bool: hızlı ve yavaş                   |
-| `context.max_tokens` / `context.pct_used`                                           | pencere bütçesi / 0-100 kullanıldı     |
-| `usage.input_tokens` / `usage.output_tokens` / `usage.total_tokens`                 | tur toplamı                            |
-| `usage.has_split_tokens` / `usage.has_total_only_tokens` / `usage.cache_hit_pct`    | token görüntüleme korumaları ve önbellek yüzdesi |
+| `context.max_tokens` / `context.pct_used`                                           | aralık bütçesi / kullanılan 0-100      |
+| `usage.input_tokens` / `usage.output_tokens` / `usage.total_tokens`                 | dönüş toplamı                          |
+| `usage.has_split_tokens` / `usage.has_total_only_tokens` / `usage.cache_hit_pct`    | token görüntüleme korumaları ve cache yüzdesi |
 | `usage.last.input_tokens` / `usage.last.output_tokens` / `usage.last.cache_hit_pct` | yalnızca son model çağrısı             |
-| `cost.turn_usd`                                                                     | tahmini tur maliyeti                   |
-| `identity.name` / `identity.emoji`                                                  | ajan adı / seçilen emoji               |
+| `cost.turn_usd`                                                                     | tahmini dönüş maliyeti                 |
+| `identity.name` / `identity.emoji`                                                  | agent adı / seçilen emoji              |
 
-(Sağlayıcı hız sınırı pencereleri bu sözleşmede **yoktur**.)
+(Sağlayıcı hız sınırı aralıkları bu sözleşmede **yoktur**.)
 
 ### Fiiller
 
-Bir değeri fiillerden soldan sağa geçirin; fiil olmayan segment geri dönüş değeridir.
+Bir değeri soldan sağa fiillerden geçirin; fiil olmayan bölüm geri dönüştür.
 
 | Fiil            | Etki                                  | Örnek                             |
 | --------------- | ------------------------------------- | --------------------------------- |
 | `num`           | kompakt sayı                          | `272000 -> 272k`                  |
 | `fixed:N`       | N ondalık (varsayılan 2)              | `0.0377`                          |
-| `dur`           | saniyeyi süreye çevirir               | `14820 -> 4h07m`                  |
-| `pct`           | `%` ekler                             | `96 -> 96%`                       |
-| `inv`           | `100 - x`                             | kullanılandan kalana geçmek için  |
-| `alias:TABLE`   | `aliases` içinde arama, listelenmemişse aynen döndür | `medium -> 🌗`                    |
-| `meter:W:SCALE` | 0-100 değer üzerinde W hücreli glif çubuğu | `[⣿⣿⠐⠐⠐]` (`meter:1` = tek glif) |
+| `dur`           | saniyeden süreye                      | `14820 -> 4h07m`                  |
+| `pct`           | `%` ekle                              | `96 -> 96%`                       |
+| `inv`           | `100 - x`                             | kullanılandan kalana              |
+| `alias:TABLE`   | `aliases` içinde ara, listede yoksa aynen yazdır | `medium -> 🌗`                    |
+| `meter:W:SCALE` | 0-100 değeri üzerinde W hücreli glif çubuğu | `[⣿⣿⠐⠐⠐]` (`meter:1` = tek glif) |
 
 ### Parça biçimleri
 
-- `{ "text": "📚 {context.max_tokens|num}" }`: sabit metin + interpolasyon.
+- `{ "text": "📚 {context.max_tokens|num}" }`: literal + interpolasyon.
 - `{ "when": "<path>", "text": "..." }`: yalnızca yol truthy ise işle.
-- `{ "map": "<path>", "cases": { "true": "⚡", "false": "🐌" } }`: değerden glife.
-- `{ "each": "limits.windows", "item": "{label}" }`: bir dizi üzerinde yinele.
+- `{ "map": "<path>", "cases": { "true": "⚡", "false": "🐌" } }`: değeri glife eşle.
+- `{ "each": "limits.windows", "item": "{label}" }`: bir diziyi yinele.
 
 ### Örnek
 
@@ -292,38 +290,38 @@ Bir değeri fiillerden soldan sağa geçirin; fiil olmayan segment geri dönüş
 
 ## Sağlayıcılar + kimlik bilgileri
 
-- **Anthropic (Claude)**: Kimlik doğrulama profillerinde OAuth belirteçleri.
-- **GitHub Copilot**: Kimlik doğrulama profillerinde OAuth belirteçleri.
-- **Gemini CLI**: Kimlik doğrulama profillerinde OAuth belirteçleri.
+- **Anthropic (Claude)**: auth profillerinde OAuth belirteçleri.
+- **GitHub Copilot**: auth profillerinde OAuth belirteçleri.
+- **Gemini CLI**: auth profillerinde OAuth belirteçleri.
   - JSON kullanımı `stats` değerine geri döner; `stats.cached`,
     `cacheRead` olarak normalleştirilir.
-- **OpenAI Codex**: Kimlik doğrulama profillerinde OAuth belirteçleri (varsa accountId kullanılır).
-- **MiniMax**: API anahtarı veya MiniMax OAuth kimlik doğrulama profili. OpenClaw,
-  `minimax`, `minimax-cn` ve `minimax-portal` öğelerini aynı MiniMax kota
-  yüzeyi olarak ele alır, varsa depolanmış MiniMax OAuth'u tercih eder, aksi halde
-  `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` veya `MINIMAX_API_KEY`
-  değerine geri döner.
-  Kullanım yoklaması, yapılandırılmışsa Coding Plan ana makinesini `models.providers.minimax-portal.baseUrl`
-  veya `models.providers.minimax.baseUrl` değerinden türetir; aksi halde
-  MiniMax CN ana makinesini kullanır.
-  MiniMax'in ham `usage_percent` / `usagePercent` alanları **kalan**
-  kotayı ifade eder; bu nedenle OpenClaw bunları göstermeden önce tersine çevirir;
-  mevcut olduğunda sayım tabanlı alanlar önceliklidir.
-  - Kodlama planı pencere etiketleri, mevcut olduğunda sağlayıcının saat/dakika
-    alanlarından gelir, ardından `start_time` / `end_time` aralığına geri döner.
-  - Kodlama planı uç noktası `model_remains` döndürürse OpenClaw,
-    sohbet modeli girdisini tercih eder, açık `window_hours` / `window_minutes`
-    alanları yoksa pencere etiketini zaman damgalarından türetir ve plan
-    etiketine model adını dahil eder.
+- **OpenAI Codex**: auth profillerinde OAuth belirteçleri (varsa accountId kullanılır).
+- **MiniMax**: API anahtarı veya MiniMax OAuth auth profili. OpenClaw,
+  `minimax`, `minimax-cn` ve `minimax-portal` değerlerini aynı MiniMax kota
+  yüzeyi olarak ele alır, varsa depolanmış MiniMax OAuth'u tercih eder ve aksi
+  halde `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` veya `MINIMAX_API_KEY`
+  değerlerine geri döner.
+  Kullanım yoklaması, yapılandırıldığında Coding Plan ana bilgisayarını
+  `models.providers.minimax-portal.baseUrl` veya `models.providers.minimax.baseUrl`
+  değerinden türetir; aksi halde MiniMax CN ana bilgisayarını kullanır.
+  MiniMax'in ham `usage_percent` / `usagePercent` alanları **kalan** kotayı
+  ifade eder, bu yüzden OpenClaw bunları görüntülemeden önce tersine çevirir;
+  varsa sayım tabanlı alanlar önceliklidir.
+  - Coding-plan pencere etiketleri, varsa sağlayıcı saat/dakika alanlarından
+    gelir; ardından `start_time` / `end_time` aralığına geri döner.
+  - Coding-plan uç noktası `model_remains` döndürürse OpenClaw, chat-model
+    girdisini tercih eder, açık `window_hours` / `window_minutes` alanları yoksa
+    pencere etiketini zaman damgalarından türetir ve model adını plan etiketine
+    dahil eder.
 - **Xiaomi MiMo**: env/config/auth deposu üzerinden API anahtarı (`XIAOMI_API_KEY`).
 - **z.ai**: env/config/auth deposu üzerinden API anahtarı.
 - **DeepSeek**: env/config/auth deposu üzerinden API anahtarı (`DEEPSEEK_API_KEY`).
-  OpenClaw, DeepSeek'in bakiye uç noktasını çağırır ve yüzde cinsinden kalan
-  kota penceresi yerine sağlayıcının bildirdiği bakiyeyi metin olarak gösterir.
+  OpenClaw, DeepSeek'in bakiye uç noktasını çağırır ve sağlayıcının bildirdiği
+  bakiyeyi, yüzde-kalan kota penceresi yerine metin olarak gösterir.
 
-Kullanılabilir sağlayıcı kullanım kimlik doğrulaması çözümlenemediğinde kullanım gizlenir. Sağlayıcılar,
-Plugin'e özgü kullanım kimlik doğrulama mantığı sağlayabilir; aksi halde OpenClaw,
-kimlik doğrulama profillerinden, ortam değişkenlerinden veya yapılandırmadan
+Kullanılabilir sağlayıcı kullanım auth bilgisi çözümlenemediğinde kullanım
+gizlenir. Sağlayıcılar Plugin'e özgü kullanım auth mantığı sağlayabilir; aksi
+halde OpenClaw, auth profillerinden, ortam değişkenlerinden veya yapılandırmadan
 eşleşen OAuth/API anahtarı kimlik bilgilerine geri döner.
 
 ## İlgili

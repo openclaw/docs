@@ -1,183 +1,185 @@
 ---
 read_when:
-    - टोकन उपयोग, लागतों, या संदर्भ विंडो की व्याख्या
-    - Debugging संदर्भ वृद्धि या Compaction व्यवहार
+    - टोकन उपयोग, लागतों या संदर्भ विंडो की व्याख्या
+    - संदर्भ वृद्धि या Compaction व्यवहार की डीबगिंग
 summary: OpenClaw प्रॉम्प्ट संदर्भ कैसे बनाता है और टोकन उपयोग + लागतों की रिपोर्ट कैसे करता है
-title: टोकन उपयोग और लागत
+title: टोकन उपयोग और लागतें
 x-i18n:
-    generated_at: "2026-06-29T00:11:46Z"
+    generated_at: "2026-07-01T18:13:40Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0035ec9cf8d97aa6e78b9d95549cfb458af3bc2b5a4e2db83708281465c7e1af
+    source_hash: 99e3de70aeb447bb58ae414c2c5908945e8173b9b8f2bf7e4c2eb9781657c44c
     source_path: reference/token-use.md
     workflow: 16
 ---
 
-OpenClaw **टोकन** ट्रैक करता है, वर्ण नहीं। टोकन मॉडल-विशिष्ट होते हैं, लेकिन अधिकतर
-OpenAI-style मॉडल अंग्रेज़ी टेक्स्ट के लिए औसतन प्रति टोकन ~4 वर्ण लेते हैं।
+OpenClaw **टोकन** ट्रैक करता है, अक्षर नहीं। टोकन मॉडल-विशिष्ट होते हैं, लेकिन अधिकांश
+OpenAI-शैली मॉडल अंग्रेज़ी पाठ के लिए औसतन प्रति टोकन ~4 अक्षर रखते हैं।
 
 ## सिस्टम प्रॉम्प्ट कैसे बनाया जाता है
 
 OpenClaw हर रन पर अपना सिस्टम प्रॉम्प्ट असेंबल करता है। इसमें शामिल हैं:
 
 - टूल सूची + छोटे विवरण
-- Skills सूची (केवल मेटाडेटा; निर्देश जरूरत पड़ने पर `read` से लोड किए जाते हैं)।
-  Native Codex टर्न को टर्न-स्कोप्ड सहयोग डेवलपर निर्देशों के रूप में कॉम्पैक्ट Skills ब्लॉक मिलता है;
-  अन्य हार्नेस इसे सामान्य प्रॉम्प्ट सतह में प्राप्त करते हैं। यह
-  `skills.limits.maxSkillsPromptChars` से सीमित होता है, और वैकल्पिक प्रति-एजेंट ओवरराइड
-  `agents.list[].skillsLimits.maxSkillsPromptChars` पर होता है।
+- Skills सूची (केवल मेटाडेटा; निर्देश मांग पर `read` के साथ लोड होते हैं)।
+  नेटिव Codex टर्न्स को संक्षिप्त Skills ब्लॉक टर्न-स्कोप्ड
+  सहयोगी डेवलपर निर्देशों के रूप में मिलता है; अन्य हार्नेस इसे सामान्य
+  प्रॉम्प्ट सतह में प्राप्त करते हैं। यह `skills.limits.maxSkillsPromptChars` से सीमित है, और
+  वैकल्पिक प्रति-एजेंट ओवरराइड `agents.list[].skillsLimits.maxSkillsPromptChars` पर होता है।
 - सेल्फ-अपडेट निर्देश
-- वर्कस्पेस + बूटस्ट्रैप फ़ाइलें (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` जब नई हो, साथ ही `MEMORY.md` जब मौजूद हो)। Native Codex टर्न उस कॉन्फ़िगर किए गए एजेंट वर्कस्पेस से कच्चा `MEMORY.md` पेस्ट नहीं करते जब उस वर्कस्पेस के लिए मेमोरी टूल उपलब्ध होते हैं; वे टर्न-स्कोप्ड सहयोग डेवलपर निर्देशों में एक छोटा मेमोरी पॉइंटर शामिल करते हैं और जरूरत पड़ने पर मेमोरी टूल इस्तेमाल करते हैं। अगर टूल अक्षम हैं, मेमोरी खोज उपलब्ध नहीं है, या सक्रिय वर्कस्पेस एजेंट मेमोरी वर्कस्पेस से अलग है, तो `MEMORY.md` सामान्य सीमित टर्न-कॉन्टेक्स्ट पथ का उपयोग करता है। लोअरकेस रूट `memory.md` इंजेक्ट नहीं किया जाता; `MEMORY.md` के साथ जोड़े जाने पर यह `openclaw doctor --fix` के लिए लीगेसी रिपेयर इनपुट है। बड़ी इंजेक्टेड फ़ाइलें `agents.defaults.bootstrapMaxChars` (डिफ़ॉल्ट: 20000) से ट्रंकैट की जाती हैं, और कुल बूटस्ट्रैप इंजेक्शन `agents.defaults.bootstrapTotalMaxChars` (डिफ़ॉल्ट: 60000) से कैप होता है। `memory/*.md` दैनिक फ़ाइलें सामान्य बूटस्ट्रैप प्रॉम्प्ट का हिस्सा नहीं हैं; वे सामान्य टर्न पर मेमोरी टूल के जरिए ऑन-डिमांड रहती हैं, लेकिन रीसेट/स्टार्टअप मॉडल रन पहले टर्न के लिए हाल की दैनिक मेमोरी वाला वन-शॉट स्टार्टअप-कॉन्टेक्स्ट ब्लॉक प्रीपेंड कर सकते हैं। बेयर चैट `/new` और `/reset` कमांड मॉडल को invoke किए बिना स्वीकार किए जाते हैं। स्टार्टअप प्रील्यूड `agents.defaults.startupContext` से नियंत्रित होता है। पोस्ट-Compaction AGENTS.md अंश अलग होते हैं और स्पष्ट `agents.defaults.compaction.postCompactionSections` ऑप्ट-इन मांगते हैं।
+- वर्कस्पेस + बूटस्ट्रैप फ़ाइलें (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` जब नई हों, साथ में `MEMORY.md` जब मौजूद हो)। नेटिव Codex टर्न्स कॉन्फ़िगर किए गए एजेंट वर्कस्पेस से कच्ची `MEMORY.md` पेस्ट नहीं करते जब उस वर्कस्पेस के लिए मेमोरी टूल उपलब्ध हों; वे टर्न-स्कोप्ड सहयोगी डेवलपर निर्देशों में एक छोटा मेमोरी पॉइंटर शामिल करते हैं और मांग पर मेमोरी टूल का उपयोग करते हैं। अगर टूल अक्षम हैं, मेमोरी खोज अनुपलब्ध है, या सक्रिय वर्कस्पेस एजेंट मेमोरी वर्कस्पेस से अलग है, तो `MEMORY.md` सामान्य सीमित टर्न-कॉन्टेक्स्ट पथ का उपयोग करता है। लोअरकेस रूट `memory.md` इंजेक्ट नहीं किया जाता; यह `MEMORY.md` के साथ जोड़े जाने पर `openclaw doctor --fix` के लिए लीगेसी रिपेयर इनपुट है। बड़ी इंजेक्ट की गई फ़ाइलें `agents.defaults.bootstrapMaxChars` (डिफ़ॉल्ट: 20000) से ट्रंकेट होती हैं, और कुल बूटस्ट्रैप इंजेक्शन `agents.defaults.bootstrapTotalMaxChars` (डिफ़ॉल्ट: 60000) से कैप होता है। `memory/*.md` दैनिक फ़ाइलें सामान्य बूटस्ट्रैप प्रॉम्प्ट का हिस्सा नहीं हैं; वे साधारण टर्न्स पर मेमोरी टूल के ज़रिए मांग पर रहती हैं, लेकिन रीसेट/स्टार्टअप मॉडल रन उस पहले टर्न के लिए हाल की दैनिक मेमोरी वाला वन-शॉट स्टार्टअप-कॉन्टेक्स्ट ब्लॉक प्रीपेंड कर सकते हैं। बेयर चैट `/new` और `/reset` कमांड मॉडल को बुलाए बिना स्वीकार किए जाते हैं। स्टार्टअप प्रील्यूड `agents.defaults.startupContext` से नियंत्रित होता है। पोस्ट-Compaction AGENTS.md अंश अलग हैं और स्पष्ट `agents.defaults.compaction.postCompactionSections` ऑप्ट-इन मांगते हैं।
 - समय (UTC + उपयोगकर्ता टाइमज़ोन)
-- रिप्लाई टैग + Heartbeat व्यवहार
-- रनटाइम मेटाडेटा (होस्ट/OS/मॉडल/thinking)
+- उत्तर टैग + Heartbeat व्यवहार
+- रनटाइम मेटाडेटा (होस्ट/OS/मॉडल/थिंकिंग)
 
-पूरा ब्रेकडाउन [सिस्टम प्रॉम्प्ट](/hi/concepts/system-prompt) में देखें।
+पूरा विवरण [सिस्टम प्रॉम्प्ट](/hi/concepts/system-prompt) में देखें।
 
-क्रेडेंशियल या ऑथ स्निपेट का दस्तावेज़ बनाते समय, docs-only बदलावों में
-सीक्रेट-स्कैनर false positives से बचने के लिए
-[सीक्रेट प्लेसहोल्डर परंपराएं](/hi/reference/secret-placeholder-conventions) इस्तेमाल करें।
+क्रेडेंशियल या ऑथ स्निपेट दस्तावेज़ करते समय, docs-only बदलावों में
+सीक्रेट-स्कैनर फ़ॉल्स पॉज़िटिव से बचने के लिए
+[सीक्रेट प्लेसहोल्डर कन्वेंशन](/hi/reference/secret-placeholder-conventions) का उपयोग करें।
 
 ## कॉन्टेक्स्ट विंडो में क्या गिना जाता है
 
 मॉडल को मिलने वाली हर चीज़ कॉन्टेक्स्ट सीमा में गिनी जाती है:
 
 - सिस्टम प्रॉम्प्ट (ऊपर सूचीबद्ध सभी सेक्शन)
-- बातचीत का इतिहास (यूज़र + असिस्टेंट संदेश)
+- बातचीत का इतिहास (उपयोगकर्ता + असिस्टेंट संदेश)
 - टूल कॉल और टूल परिणाम
-- अटैचमेंट/ट्रांसक्रिप्ट (चित्र, ऑडियो, फ़ाइलें)
-- Compaction सारांश और pruning artifacts
-- प्रोवाइडर wrappers या safety headers (दिखते नहीं हैं, लेकिन फिर भी गिने जाते हैं)
+- अटैचमेंट/ट्रांसक्रिप्ट (इमेज, ऑडियो, फ़ाइलें)
+- Compaction सारांश और प्रूनिंग आर्टिफ़ैक्ट
+- प्रोवाइडर रैपर या सेफ़्टी हेडर (दिखते नहीं, लेकिन फिर भी गिने जाते हैं)
 
-कुछ runtime-heavy सतहों की अपनी स्पष्ट कैप होती हैं:
+कुछ रनटाइम-भारी सतहों की अपनी स्पष्ट कैप होती हैं:
 
 - `agents.defaults.contextLimits.memoryGetMaxChars`
 - `agents.defaults.contextLimits.memoryGetDefaultLines`
 - `agents.defaults.contextLimits.toolResultMaxChars`
 - `agents.defaults.contextLimits.postCompactionMaxChars`
 
-प्रति-एजेंट ओवरराइड `agents.list[].contextLimits` के अंतर्गत होते हैं। ये नॉब
-सीमित रनटाइम अंशों और इंजेक्ट किए गए runtime-owned ब्लॉकों के लिए हैं। ये
+प्रति-एजेंट ओवरराइड `agents.list[].contextLimits` के अंतर्गत रहते हैं। ये knobs
+सीमित रनटाइम अंशों और इंजेक्ट किए गए रनटाइम-स्वामित्व वाले ब्लॉकों के लिए हैं। ये
 बूटस्ट्रैप सीमाओं, स्टार्टअप-कॉन्टेक्स्ट सीमाओं, और Skills प्रॉम्प्ट
 सीमाओं से अलग हैं।
 
-`toolResultMaxChars` एक उन्नत सीलिंग है (`1000000` वर्णों तक)। जब यह अनसेट हो, OpenClaw
+`toolResultMaxChars` एक उन्नत सीलिंग है (`1000000` अक्षरों तक)। जब यह सेट नहीं होता, OpenClaw
 प्रभावी मॉडल कॉन्टेक्स्ट विंडो से लाइव टूल-रिज़ल्ट कैप चुनता है: 100K टोकन से
-नीचे `16000` chars, 100K+ टोकन पर `32000` chars, और 200K+ टोकन पर `64000` chars,
-फिर भी runtime context-share guard से सीमित।
+कम पर `16000` अक्षर, 100K+ टोकन पर `32000` अक्षर, और 200K+
+टोकन पर `64000` अक्षर, फिर भी रनटाइम कॉन्टेक्स्ट-शेयर गार्ड से सीमित।
 
-चित्रों के लिए, OpenClaw प्रोवाइडर कॉल से पहले transcript/tool image payloads को downscale करता है।
-इसे ट्यून करने के लिए `agents.defaults.imageMaxDimensionPx` (डिफ़ॉल्ट: `1200`) इस्तेमाल करें:
+इमेज के लिए, OpenClaw प्रोवाइडर कॉल से पहले ट्रांसक्रिप्ट/टूल इमेज पेलोड डाउनस्केल करता है।
+इसे ट्यून करने के लिए `agents.defaults.imageMaxDimensionPx` (डिफ़ॉल्ट: `1200`) का उपयोग करें:
 
-- कम मान आम तौर पर vision-token उपयोग और payload आकार कम करते हैं।
-- अधिक मान OCR/UI-heavy स्क्रीनशॉट के लिए अधिक visual detail बचाते हैं।
+- कम मान आम तौर पर विज़न-टोकन उपयोग और पेलोड आकार घटाते हैं।
+- अधिक मान OCR/UI-भारी स्क्रीनशॉट के लिए अधिक दृश्य विवरण सुरक्षित रखते हैं।
 
-व्यावहारिक ब्रेकडाउन (प्रति इंजेक्टेड फ़ाइल, टूल, Skills, और सिस्टम प्रॉम्प्ट आकार) के लिए `/context list` या `/context detail` इस्तेमाल करें। [कॉन्टेक्स्ट](/hi/concepts/context) देखें।
+व्यावहारिक विवरण (प्रति इंजेक्टेड फ़ाइल, टूल, Skills, और सिस्टम प्रॉम्प्ट आकार) के लिए `/context list` या `/context detail` का उपयोग करें। [कॉन्टेक्स्ट](/hi/concepts/context) देखें।
 
-## वर्तमान टोकन उपयोग कैसे देखें
+## मौजूदा टोकन उपयोग कैसे देखें
 
-चैट में इन्हें इस्तेमाल करें:
+चैट में इनका उपयोग करें:
 
-- `/status` → सत्र मॉडल, कॉन्टेक्स्ट उपयोग,
-  अंतिम response input/output टोकन, और सक्रिय मॉडल के लिए local pricing
+- `/status` → सेशन मॉडल, कॉन्टेक्स्ट उपयोग,
+  अंतिम प्रतिक्रिया इनपुट/आउटपुट टोकन, और सक्रिय मॉडल के लिए स्थानीय प्राइसिंग
   कॉन्फ़िगर होने पर **अनुमानित लागत** वाला **इमोजी-समृद्ध स्टेटस कार्ड**।
-- `/usage off|tokens|full` → हर रिप्लाई में **प्रति-response usage footer** जोड़ता है।
-  - प्रति सत्र persist होता है (`responseUsage` के रूप में संग्रहीत)।
-  - `/usage reset` (aliases: `inherit`, `clear`, `default`) — सत्र
-    ओवरराइड साफ करता है ताकि सत्र कॉन्फ़िगर किए गए डिफ़ॉल्ट को फिर से inherit करे।
-  - `/usage full` अनुमानित लागत केवल तब दिखाता है जब OpenClaw के पास usage metadata और
-    सक्रिय मॉडल के लिए local pricing हो। अन्यथा यह केवल टोकन दिखाता है।
-- `/usage cost` → OpenClaw सत्र लॉग से स्थानीय लागत सारांश दिखाता है।
+- `/usage off|tokens|full` → हर उत्तर में **प्रति-प्रतिक्रिया उपयोग फुटर** जोड़ता है।
+  - प्रति सेशन बना रहता है (`responseUsage` के रूप में संग्रहीत)।
+  - `/usage reset` (aliases: `inherit`, `clear`, `default`) — सेशन
+    ओवरराइड साफ़ करता है ताकि सेशन कॉन्फ़िगर किए गए डिफ़ॉल्ट को फिर से इनहेरिट करे।
+  - `/usage tokens` टर्न टोकन/कैश विवरण दिखाता है।
+  - `/usage full` संक्षिप्त मॉडल/कॉन्टेक्स्ट/लागत विवरण दिखाता है; अनुमानित लागत
+    केवल तब दिखती है जब OpenClaw के पास सक्रिय मॉडल के लिए उपयोग मेटाडेटा और स्थानीय प्राइसिंग हो।
+    कस्टम `messages.usageTemplate` लेआउट टोकन/कैश फ़ील्ड शामिल कर सकते हैं।
+- `/usage cost` → OpenClaw सेशन लॉग से स्थानीय लागत सारांश दिखाता है।
 
 अन्य सतहें:
 
 - **TUI/Web TUI:** `/status` + `/usage` समर्थित हैं।
 - **CLI:** `openclaw status --usage` और `openclaw channels list`
-  normalized provider quota windows (`X% left`, per-response costs नहीं) दिखाते हैं।
-  वर्तमान usage-window प्रोवाइडर: Anthropic, GitHub Copilot, Gemini CLI,
+  सामान्यीकृत प्रोवाइडर कोटा विंडो (`X% left`, प्रति-प्रतिक्रिया लागत नहीं) दिखाते हैं।
+  मौजूदा उपयोग-विंडो प्रोवाइडर: Anthropic, GitHub Copilot, Gemini CLI,
   OpenAI Codex, MiniMax, Xiaomi, और z.ai।
 
-Usage सतहें display से पहले common provider-native field aliases को normalize करती हैं।
-OpenAI-family Responses traffic के लिए, इसमें `input_tokens` /
-`output_tokens` और `prompt_tokens` / `completion_tokens` दोनों शामिल हैं, ताकि transport-specific
-field names `/status`, `/usage`, या session summaries न बदलें।
-Gemini CLI usage भी normalized है: डिफ़ॉल्ट `stream-json` parser assistant
-`message` events पढ़ता है, और `stats.cached` `cacheRead` पर map होता है, जिसमें
-CLI द्वारा explicit `stats.input` field छोड़ने पर `stats.input_tokens - stats.cached`
-इस्तेमाल किया जाता है। Legacy JSON overrides अभी भी reply text
-`response` से पढ़ते हैं।
-Native OpenAI-family Responses traffic के लिए, WebSocket/SSE usage aliases भी
-उसी तरह normalized होते हैं, और `total_tokens` missing या `0` होने पर totals
-normalized input + output पर fall back करते हैं।
-जब वर्तमान सत्र snapshot sparse हो, `/status` और `session_status`
-सबसे हाल के transcript usage log से token/cache counters और active runtime model label भी
-recover कर सकते हैं। मौजूदा nonzero live values अभी भी transcript fallback values पर
-precedence लेते हैं, और stored totals missing या छोटे होने पर बड़े prompt-oriented
-transcript totals जीत सकते हैं।
-Provider quota windows के लिए usage auth उपलब्ध होने पर provider-specific hooks से आता है;
-अन्यथा OpenClaw auth profiles, env, या config से matching OAuth/API-key credentials
-पर fall back करता है।
-Assistant transcript entries वही normalized usage shape persist करती हैं, जिसमें
-`usage.cost` शामिल है जब active model के लिए pricing configured हो और provider
-usage metadata लौटाए। यह live runtime state gone होने के बाद भी `/usage cost` और transcript-backed session
-status को stable source देता है।
+उपयोग सतहें डिस्प्ले से पहले सामान्य प्रोवाइडर-नेटिव फ़ील्ड alias सामान्यीकृत करती हैं।
+OpenAI-फ़ैमिली Responses ट्रैफ़िक के लिए, इसमें `input_tokens` /
+`output_tokens` और `prompt_tokens` / `completion_tokens` दोनों शामिल हैं, ताकि ट्रांसपोर्ट-विशिष्ट
+फ़ील्ड नाम `/status`, `/usage`, या सेशन सारांशों को न बदलें।
+Gemini CLI उपयोग भी सामान्यीकृत होता है: डिफ़ॉल्ट `stream-json` पार्सर
+assistant `message` इवेंट पढ़ता है, और `stats.cached` `cacheRead` पर मैप होता है, जहाँ
+CLI स्पष्ट `stats.input` फ़ील्ड छोड़ दे तो `stats.input_tokens - stats.cached` उपयोग किया जाता है।
+लीगेसी JSON ओवरराइड अभी भी `response` से उत्तर पाठ पढ़ते हैं।
+नेटिव OpenAI-फ़ैमिली Responses ट्रैफ़िक के लिए, WebSocket/SSE उपयोग alias उसी तरह
+सामान्यीकृत होते हैं, और `total_tokens` अनुपस्थित या `0` होने पर कुल सामान्यीकृत इनपुट + आउटपुट पर
+फ़ॉलबैक करते हैं।
+जब मौजूदा सेशन स्नैपशॉट sparse होता है, `/status` और `session_status`
+सबसे हाल के ट्रांसक्रिप्ट उपयोग लॉग से टोकन/कैश काउंटर और सक्रिय रनटाइम मॉडल लेबल भी
+रिकवर कर सकते हैं। मौजूदा nonzero लाइव मान अभी भी
+ट्रांसक्रिप्ट फ़ॉलबैक मानों पर प्राथमिकता लेते हैं, और बड़े प्रॉम्प्ट-उन्मुख
+ट्रांसक्रिप्ट कुल जीत सकते हैं जब संग्रहीत कुल अनुपस्थित या छोटे हों।
+प्रोवाइडर कोटा विंडो के लिए उपयोग ऑथ उपलब्ध होने पर प्रोवाइडर-विशिष्ट hooks से आता है;
+अन्यथा OpenClaw ऑथ प्रोफ़ाइल, env, या config से मेल खाते OAuth/API-key क्रेडेंशियल पर फ़ॉलबैक करता है।
+Assistant ट्रांसक्रिप्ट एंट्रियां वही सामान्यीकृत उपयोग shape बनाए रखती हैं, जिसमें
+`usage.cost` भी शामिल है जब सक्रिय मॉडल के लिए प्राइसिंग कॉन्फ़िगर हो और प्रोवाइडर
+उपयोग मेटाडेटा लौटाए। इससे `/usage cost` और ट्रांसक्रिप्ट-समर्थित सेशन
+स्टेटस को लाइव रनटाइम स्टेट समाप्त होने के बाद भी स्थिर स्रोत मिलता है।
 
-OpenClaw provider usage accounting को वर्तमान context
-snapshot से अलग रखता है। Provider `usage.total` में cached input, output, और कई
-tool-loop model calls शामिल हो सकते हैं, इसलिए यह cost और telemetry के लिए उपयोगी है लेकिन
-live context window को overstate कर सकता है। Context displays और diagnostics `context.used` के लिए latest prompt
-snapshot (`promptTokens`, या prompt snapshot उपलब्ध न होने पर last model call)
-इस्तेमाल करते हैं।
+OpenClaw प्रोवाइडर उपयोग लेखांकन को मौजूदा कॉन्टेक्स्ट
+स्नैपशॉट से अलग रखता है। प्रोवाइडर `usage.total` में कैश्ड इनपुट, आउटपुट, और कई
+टूल-लूप मॉडल कॉल शामिल हो सकते हैं, इसलिए यह लागत और टेलीमेट्री के लिए उपयोगी है लेकिन
+लाइव कॉन्टेक्स्ट विंडो को बढ़ा-चढ़ाकर दिखा सकता है। कॉन्टेक्स्ट डिस्प्ले और डायग्नोस्टिक्स
+`context.used` के लिए नवीनतम प्रॉम्प्ट स्नैपशॉट (`promptTokens`, या कोई प्रॉम्प्ट स्नैपशॉट
+उपलब्ध न होने पर अंतिम मॉडल कॉल) का उपयोग करते हैं।
 
 ## लागत अनुमान (जब दिखाया जाए)
 
-लागत आपके model pricing config से अनुमानित होती है:
+लागत आपके मॉडल प्राइसिंग config से अनुमानित होती है:
 
 ```
 models.providers.<provider>.models[].cost
 ```
 
 ये `input`, `output`, `cacheRead`, और
-`cacheWrite` के लिए **USD प्रति 1M tokens** हैं। अगर pricing missing है, OpenClaw केवल tokens दिखाता है। Cost display
-API-key auth तक सीमित नहीं है: `aws-sdk` जैसे non-API-key providers
-estimated cost दिखा सकते हैं जब उनकी configured model entry में local pricing शामिल हो और
-provider usage metadata लौटाए।
+`cacheWrite` के लिए **प्रति 1M टोकन USD** हैं। अगर प्राइसिंग अनुपस्थित है, `/usage full` लागत छोड़ देता है; जब आपको हर
+उत्तर में टोकन/कैश विवरण चाहिए तो `/usage tokens`
+या कस्टम `messages.usageTemplate` का उपयोग करें। लागत डिस्प्ले API-key ऑथ तक सीमित नहीं है: non-API-key प्रोवाइडर जैसे
+`aws-sdk` अनुमानित लागत दिखा सकते हैं जब उनकी कॉन्फ़िगर की गई मॉडल एंट्री में
+स्थानीय प्राइसिंग शामिल हो और प्रोवाइडर उपयोग मेटाडेटा लौटाए।
 
-Sidecars और channels के Gateway ready path तक पहुंचने के बाद, OpenClaw उन configured model refs के लिए
-optional background pricing bootstrap शुरू करता है जिनके पास पहले से
-local pricing नहीं है। वह bootstrap remote OpenRouter और LiteLLM
-pricing catalogs fetch करता है। Offline या restricted networks पर वे catalog
-fetches छोड़ने के लिए `models.pricing.enabled: false` सेट करें; explicit
-`models.providers.*.models[].cost` entries local cost
-estimates चलाती रहती हैं।
+sidecars और चैनल Gateway ready पथ तक पहुंचने के बाद, OpenClaw उन कॉन्फ़िगर किए गए मॉडल refs के लिए
+वैकल्पिक बैकग्राउंड प्राइसिंग बूटस्ट्रैप शुरू करता है जिनके पास पहले से
+स्थानीय प्राइसिंग नहीं है। वह बूटस्ट्रैप रिमोट OpenRouter और LiteLLM
+प्राइसिंग कैटलॉग फ़ेच करता है। ऑफ़लाइन या प्रतिबंधित नेटवर्क पर उन कैटलॉग
+फ़ेच को छोड़ने के लिए `models.pricing.enabled: false` सेट करें; स्पष्ट
+`models.providers.*.models[].cost` एंट्रियां स्थानीय लागत
+अनुमानों को चलाती रहती हैं।
 
-## Cache TTL और pruning प्रभाव
+## कैश TTL और प्रूनिंग प्रभाव
 
-Provider prompt caching केवल cache TTL window के भीतर लागू होती है। OpenClaw
-वैकल्पिक रूप से **cache-ttl pruning** चला सकता है: cache TTL expire हो जाने पर यह session prune करता है,
-फिर cache window reset करता है ताकि बाद के requests full history को re-cache करने के बजाय
-freshly cached context फिर से use कर सकें। यह TTL के बाद session idle होने पर cache
-write costs कम रखता है।
+प्रोवाइडर प्रॉम्प्ट कैशिंग केवल कैश TTL विंडो के भीतर लागू होती है। OpenClaw
+वैकल्पिक रूप से **cache-ttl pruning** चला सकता है: कैश TTL
+समाप्त होने के बाद यह सेशन को प्रून करता है, फिर कैश विंडो रीसेट करता है ताकि बाद के अनुरोध
+पूरे इतिहास को फिर से कैश करने के बजाय ताज़ा कैश किए गए कॉन्टेक्स्ट को फिर से उपयोग कर सकें।
+जब कोई सेशन TTL के बाद निष्क्रिय हो जाता है, यह कैश
+write लागत कम रखता है।
 
-इसे [Gateway configuration](/hi/gateway/configuration) में configure करें और
-behavior details [Session pruning](/hi/concepts/session-pruning) में देखें।
+इसे [Gateway कॉन्फ़िगरेशन](/hi/gateway/configuration) में कॉन्फ़िगर करें और
+व्यवहार विवरण [सेशन प्रूनिंग](/hi/concepts/session-pruning) में देखें।
 
-Heartbeat idle gaps में cache को **warm** रख सकता है। अगर आपके model cache TTL
-`1h` है, तो heartbeat interval उससे थोड़ा कम (जैसे, `55m`) सेट करने से
-full prompt को re-cache करने से बचा जा सकता है, जिससे cache write costs घटती हैं।
+Heartbeat निष्क्रिय अंतरालों के दौरान कैश को **warm** रख सकता है। अगर आपके मॉडल कैश TTL
+`1h` है, तो Heartbeat अंतराल को उससे थोड़ा कम (जैसे, `55m`) सेट करने से
+पूरे प्रॉम्प्ट को फिर से कैश करने से बचा जा सकता है, जिससे कैश write लागत घटती है।
 
-Multi-agent setups में, आप एक shared model config रख सकते हैं और cache behavior को
-`agents.list[].params.cacheRetention` के साथ प्रति agent tune कर सकते हैं।
+मल्टी-एजेंट सेटअप में, आप एक साझा मॉडल config रख सकते हैं और कैश व्यवहार
+प्रति एजेंट `agents.list[].params.cacheRetention` के साथ ट्यून कर सकते हैं।
 
-पूरी knob-by-knob guide के लिए, [Prompt Caching](/hi/reference/prompt-caching) देखें।
+पूरी knob-by-knob गाइड के लिए, [प्रॉम्प्ट कैशिंग](/hi/reference/prompt-caching) देखें।
 
-Anthropic API pricing के लिए, cache reads input
-tokens से काफी सस्ते होते हैं, जबकि cache writes अधिक multiplier पर bill होते हैं। Latest rates और TTL multipliers के लिए Anthropic की
-prompt caching pricing देखें:
+Anthropic API प्राइसिंग के लिए, कैश reads इनपुट
+टोकन से काफ़ी सस्ते होते हैं, जबकि कैश writes उच्च multiplier पर बिल होते हैं। नवीनतम दरों और TTL multipliers के लिए Anthropic की
+प्रॉम्प्ट कैशिंग प्राइसिंग देखें:
 [https://docs.anthropic.com/docs/build-with-claude/prompt-caching](https://docs.anthropic.com/docs/build-with-claude/prompt-caching)
 
-### उदाहरण: heartbeat के साथ 1h cache warm रखें
+### उदाहरण: Heartbeat के साथ 1h कैश warm रखें
 
 ```yaml
 agents:
@@ -192,7 +194,7 @@ agents:
       every: "55m"
 ```
 
-### उदाहरण: प्रति-agent cache strategy के साथ mixed traffic
+### उदाहरण: प्रति-एजेंट कैश रणनीति के साथ मिश्रित ट्रैफ़िक
 
 ```yaml
 agents:
@@ -213,14 +215,14 @@ agents:
         cacheRetention: "none" # avoid cache writes for bursty notifications
 ```
 
-`agents.list[].params` selected model के `params` के ऊपर merge होता है, ताकि आप
-केवल `cacheRetention` override कर सकें और अन्य model defaults unchanged inherit कर सकें।
+`agents.list[].params` चुने गए मॉडल के `params` के ऊपर merge होता है, इसलिए आप
+केवल `cacheRetention` को ओवरराइड कर सकते हैं और अन्य मॉडल डिफ़ॉल्ट अपरिवर्तित इनहेरिट कर सकते हैं।
 
-### Anthropic 1M context
+### Anthropic 1M कॉन्टेक्स्ट
 
 OpenClaw Opus 4.8, Opus 4.7, Opus 4.6, और
-Sonnet 4.6 जैसे GA-सक्षम Claude 4.x models को Anthropic की 1M context window के साथ size करता है। उन models के लिए आपको
-`params.context1m: true` की जरूरत नहीं है।
+Sonnet 4.6 जैसे GA-capable Claude 4.x मॉडल को Anthropic की 1M कॉन्टेक्स्ट विंडो के साथ आकार देता है। आपको उन मॉडलों के लिए
+`params.context1m: true` की आवश्यकता नहीं है।
 
 ```yaml
 agents:
@@ -230,29 +232,29 @@ agents:
         alias: opus
 ```
 
-पुराने configs `context1m: true` रख सकते हैं, लेकिन OpenClaw अब इस setting के लिए
+पुराने configs `context1m: true` रख सकते हैं, लेकिन OpenClaw अब इस सेटिंग के लिए
 Anthropic का retired `context-1m-2025-08-07` beta header नहीं भेजता और
-unsupported older Claude models को 1M तक expand नहीं करता।
+असमर्थित पुराने Claude मॉडलों को 1M तक expand नहीं करता।
 
-आवश्यकता: credential long-context usage के लिए eligible होना चाहिए। अगर नहीं,
-Anthropic उस request के लिए provider-side rate limit error से respond करता है।
+आवश्यकता: क्रेडेंशियल long-context उपयोग के लिए पात्र होना चाहिए। अगर नहीं,
+Anthropic उस अनुरोध के लिए provider-side rate limit error के साथ जवाब देता है।
 
 अगर आप Anthropic को OAuth/subscription tokens (`sk-ant-oat-*`) से authenticate करते हैं,
-तो OpenClaw OAuth-required Anthropic beta headers preserve करता है और
-retired `context-1m-*` beta अगर older config में रहता है तो उसे strip करता है।
+OpenClaw OAuth-required Anthropic beta headers को सुरक्षित रखता है और
+पुराने config में बचा होने पर retired `context-1m-*` beta को हटाता है।
 
-## टोकन दबाव कम करने के सुझाव
+## टोकन दबाव घटाने के सुझाव
 
-- लंबे sessions summarize करने के लिए `/compact` इस्तेमाल करें।
-- अपने workflows में बड़े tool outputs trim करें।
-- Screenshot-heavy sessions के लिए `agents.defaults.imageMaxDimensionPx` कम करें।
-- Skill descriptions छोटे रखें (skill list prompt में injected होती है)।
-- Verbose, exploratory work के लिए छोटे models को prefer करें।
+- लंबे सत्रों का सारांश बनाने के लिए `/compact` का उपयोग करें।
+- अपने workflows में बड़े tool outputs को छोटा करें।
+- screenshot-heavy सत्रों के लिए `agents.defaults.imageMaxDimensionPx` को कम करें।
+- Skills विवरण छोटे रखें (Skills सूची prompt में inject की जाती है)।
+- verbose, exploratory काम के लिए छोटे models को प्राथमिकता दें।
 
-Exact skill list overhead formula के लिए [Skills](/hi/tools/skills) देखें।
+सटीक Skills सूची overhead formula के लिए [Skills](/hi/tools/skills) देखें।
 
 ## संबंधित
 
-- [API उपयोग और लागत](/hi/reference/api-usage-costs)
-- [प्रॉम्प्ट कैशिंग](/hi/reference/prompt-caching)
-- [उपयोग ट्रैकिंग](/hi/concepts/usage-tracking)
+- [API उपयोग और लागतें](/hi/reference/api-usage-costs)
+- [Prompt caching](/hi/reference/prompt-caching)
+- [उपयोग tracking](/hi/concepts/usage-tracking)
