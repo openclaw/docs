@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 
-import { localeLabels } from "./config.mjs";
+import { ignoredDocDirs, localeFlags, localeLabels, mintlifyLocaleToDir } from "./config.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "./frontmatter.mjs";
 
@@ -57,6 +57,11 @@ const poison = [
   /\/home\/runner\/work\//u,
   /彩神马争霸/u
 ];
+
+for (const locale of activeLocaleCodes()) {
+  if (!localeLabels[locale]) throw new Error(`locale metadata: missing label for ${locale}`);
+  if (!localeFlags[locale]) throw new Error(`locale metadata: missing flag for ${locale}`);
+}
 
 for (const rel of required) {
   const file = path.join(site, rel);
@@ -175,6 +180,9 @@ if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*
 }
 if (!/Português \(BR\)/.test(index)) {
   throw new Error("index: language picker labels were not rendered");
+}
+if (!/🇮🇳/.test(index) || !/हिन्दी/.test(index) || !/🇷🇺/.test(index) || !/Русский/.test(index)) {
+  throw new Error("index: Hindi and Russian language picker metadata was not rendered");
 }
 if (
   !/data-docs-chat/.test(index) ||
@@ -830,4 +838,14 @@ function walkFiles(dir) {
     const full = path.join(dir, entry.name);
     return entry.isDirectory() ? walkFiles(full) : [full];
   });
+}
+
+function activeLocaleCodes() {
+  const docsConfig = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
+  const configured = (docsConfig.navigation?.languages ?? [])
+    .map((entry) => mintlifyLocaleToDir[entry.language] ?? entry.language);
+  const knownLocaleDirs = fs.readdirSync(docsDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory() && !ignoredDocDirs.has(dirent.name) && localeLabels[dirent.name])
+    .map((dirent) => dirent.name);
+  return new Set(["en", ...configured, ...knownLocaleDirs]);
 }
