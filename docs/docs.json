@@ -1916,7 +1916,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "releases/index",
+                      "releases/2026.6.11"
+                    ]
+                  },
                   "maturity/scorecard",
                   "maturity/taxonomy",
                   "reference/RELEASING",
@@ -3474,7 +3480,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "zh-TW/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "zh-TW/releases/index",
+                      "zh-TW/releases/2026.6.11"
+                    ]
+                  },
                   "zh-TW/maturity/scorecard",
                   "zh-TW/maturity/taxonomy",
                   "zh-TW/reference/RELEASING",
@@ -4409,7 +4421,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "ja-JP/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "ja-JP/releases/index",
+                      "ja-JP/releases/2026.6.11"
+                    ]
+                  },
                   "ja-JP/maturity/scorecard",
                   "ja-JP/maturity/taxonomy",
                   "ja-JP/reference/RELEASING",
@@ -5344,7 +5362,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "es/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "es/releases/index",
+                      "es/releases/2026.6.11"
+                    ]
+                  },
                   "es/maturity/scorecard",
                   "es/maturity/taxonomy",
                   "es/reference/RELEASING",
@@ -6279,7 +6303,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "pt-BR/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "pt-BR/releases/index",
+                      "pt-BR/releases/2026.6.11"
+                    ]
+                  },
                   "pt-BR/maturity/scorecard",
                   "pt-BR/maturity/taxonomy",
                   "pt-BR/reference/RELEASING",
@@ -7214,7 +7244,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "ko/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "ko/releases/index",
+                      "ko/releases/2026.6.11"
+                    ]
+                  },
                   "ko/maturity/scorecard",
                   "ko/maturity/taxonomy",
                   "ko/reference/RELEASING",
@@ -8149,7 +8185,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "de/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "de/releases/index",
+                      "de/releases/2026.6.11"
+                    ]
+                  },
                   "de/maturity/scorecard",
                   "de/maturity/taxonomy",
                   "de/reference/RELEASING",
@@ -9084,7 +9126,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "fr/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "fr/releases/index",
+                      "fr/releases/2026.6.11"
+                    ]
+                  },
                   "fr/maturity/scorecard",
                   "fr/maturity/taxonomy",
                   "fr/reference/RELEASING",
@@ -10019,7 +10067,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "hi/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "hi/releases/index",
+                      "hi/releases/2026.6.11"
+                    ]
+                  },
                   "hi/maturity/scorecard",
                   "hi/maturity/taxonomy",
                   "hi/reference/RELEASING",
@@ -10954,7 +11008,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "ar/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "ar/releases/index",
+                      "ar/releases/2026.6.11"
+                    ]
+                  },
                   "ar/maturity/scorecard",
                   "ar/maturity/taxonomy",
                   "ar/reference/RELEASING",
@@ -11889,7 +11949,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "it/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "it/releases/index",
+                      "it/releases/2026.6.11"
+                    ]
+                  },
                   "it/maturity/scorecard",
                   "it/maturity/taxonomy",
                   "it/reference/RELEASING",
@@ -12824,7 +12890,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "vi/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "vi/releases/index",
+                      "vi/releases/2026.6.11"
+                    ]
+                  },
                   "vi/maturity/scorecard",
                   "vi/maturity/taxonomy",
                   "vi/reference/RELEASING",
@@ -13759,7 +13831,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "nl/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "nl/releases/index",
+                      "nl/releases/2026.6.11"
+                    ]
+                  },
                   "nl/maturity/scorecard",
                   "nl/maturity/taxonomy",
                   "nl/reference/RELEASING",
@@ -14694,7 +14772,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "tr/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "tr/releases/index",
+                      "tr/releases/2026.6.11"
+                    ]
+                  },
                   "tr/maturity/scorecard",
                   "tr/maturity/taxonomy",
                   "tr/reference/RELEASING",
@@ -15629,7 +15713,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "uk/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "uk/releases/index",
+                      "uk/releases/2026.6.11"
+                    ]
+                  },
                   "uk/maturity/scorecard",
                   "uk/maturity/taxonomy",
                   "uk/reference/RELEASING",
@@ -16564,7 +16654,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "id/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "id/releases/index",
+                      "id/releases/2026.6.11"
+                    ]
+                  },
                   "id/maturity/scorecard",
                   "id/maturity/taxonomy",
                   "id/reference/RELEASING",
@@ -17499,7 +17595,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "pl/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "pl/releases/index",
+                      "pl/releases/2026.6.11"
+                    ]
+                  },
                   "pl/maturity/scorecard",
                   "pl/maturity/taxonomy",
                   "pl/reference/RELEASING",
@@ -18434,7 +18536,13 @@
               {
                 "group": "Release and CI",
                 "pages": [
-                  "ru/releases/index",
+                  {
+                    "group": "Release notes",
+                    "pages": [
+                      "ru/releases/index",
+                      "ru/releases/2026.6.11"
+                    ]
+                  },
                   "ru/maturity/scorecard",
                   "ru/maturity/taxonomy",
                   "ru/reference/RELEASING",
