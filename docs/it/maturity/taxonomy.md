@@ -1,12 +1,12 @@
 ---
-summary: Riferimento dettagliato per le aree di prodotto e i controlli alla base della scorecard di maturità di OpenClaw.
-title: Tassonomia di maturità
+summary: Riferimento dettagliato per le aree del prodotto e i controlli alla base della scheda di valutazione della maturità di OpenClaw.
+title: Tassonomia della maturità
 x-i18n:
-    generated_at: "2026-06-27T17:42:00Z"
+    generated_at: "2026-07-02T08:25:30Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2a51eb22fb31d1c7d94a183d3515c7ddc54a754f6f68e502d17b95593a648db5
+    source_hash: de1212d026348cc64719475d636c0af3ab330f12d246b63697126f5011965124
     source_path: maturity/taxonomy.md
     workflow: 16
 ---
@@ -14,7 +14,7 @@ x-i18n:
 # Tassonomia della maturità
 
 <div className="maturity-hero maturity-hero-compact">
-  <p className="maturity-kicker">il modello dietro la scorecard</p>
+  <p className="maturity-kicker">il modello dietro la scheda punteggi</p>
   <p className="maturity-hero-title">Superfici &gt; categorie &gt; capacità &gt; evidenze.</p>
   <p>50 superfici raggruppate in 4 famiglie, con ogni categoria collegata alla documentazione canonica e agli ID di copertura QA.</p>
   <p className="maturity-jump-links"><a href="#product-areas">Sfoglia le aree di prodotto</a> / <a href="#taxonomy-details">Apri la tassonomia dettagliata</a> / <a href="/it/maturity/scorecard">Visualizza i punteggi</a></p>
@@ -22,17 +22,17 @@ x-i18n:
 
 ## Come leggere questa pagina
 
-Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app macOS. Ogni superficie contiene categorie e ogni categoria contiene i controlli a livello di capacità coperti dagli scenari QA. Usa la scorecard per la valutazione a livello di rilascio; usa questa pagina per esaminare il modello sottostante.
+Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app macOS. Ogni superficie contiene categorie, e ogni categoria contiene i controlli a livello di capacità coperti dagli scenari QA. Usa la scheda punteggi per la valutazione a livello di rilascio; usa questa pagina per esaminare il modello sottostante.
 
 ## Livelli di maturità
 
 <div className="maturity-level-list">
   <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Pianificato</span></span></span><span>La direzione è nota, ma non esiste alcun percorso utente supportato.</span><span className="maturity-level-promotion">Promozione: esistono issue di progettazione, proprietario e superficie di destinazione.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span></span><span>Implementato con limitazioni, flag, build da sorgente o flussi riservati ai maintainer.</span><span className="maturity-level-promotion">Promozione: il maintainer può eseguire lo scenario dal main corrente.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span></span><span>Gli utenti reali possono provarlo, ma sono previste modifiche non compatibili e UX incompleta.</span><span className="maturity-level-promotion">Promozione: configurazione documentata, test di base, limitazioni note e almeno una prova in ambiente reale.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span></span><span>Esiste un percorso pubblico e il workflow principale è utilizzabile con limitazioni circoscritte.</span><span className="maturity-level-promotion">Promozione: documentazione di installazione/aggiornamento, test di regressione, runbook di supporto e prova dello scenario riuscita nell'ambiente previsto.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span></span><span>Percorso consigliato per gli utenti normali. Gli errori vengono trattati come regressioni.</span><span className="maturity-level-promotion">Promozione: gate di rilascio, percorso doctor/risoluzione dei problemi, documentazione ampia e prove ripetute nel mondo reale.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>Rifinito, piacevole, ben strumentato e competitivo con il miglior workflow comparabile.</span><span className="maturity-level-promotion">Promozione: Stabile più superamento della scorecard utente con utenti rappresentativi.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span></span><span>Implementato con avvertenze, flag, build da sorgente o flussi riservati ai maintainer.</span><span className="maturity-level-promotion">Promozione: un maintainer può eseguire lo scenario dal main corrente.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span></span><span>Gli utenti reali possono provarlo, ma sono previsti cambiamenti incompatibili e una UX incompleta.</span><span className="maturity-level-promotion">Promozione: configurazione documentata, test di base, avvertenze note e almeno una prova in ambiente reale.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span></span><span>Esiste un percorso pubblico e il flusso di lavoro principale è utilizzabile con avvertenze delimitate.</span><span className="maturity-level-promotion">Promozione: documentazione di installazione/aggiornamento, test di regressione, runbook di supporto e prova di scenario riuscita nell'ambiente previsto.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span></span><span>Percorso consigliato per gli utenti normali. I guasti sono trattati come regressioni.</span><span className="maturity-level-promotion">Promozione: gate di rilascio, percorso doctor/risoluzione dei problemi, documentazione ampia e prove ripetute nel mondo reale.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>Curato, gradevole, ben strumentato e competitivo con il miglior flusso di lavoro comparabile.</span><span className="maturity-level-promotion">Promozione: stabile più superamento della scheda punteggi utente su utenti rappresentativi.</span></div>
 </div>
 
 ## Aree di prodotto
@@ -53,12 +53,12 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
     </a>
 
     <a className="maturity-surface-link" href="#agent-runtime">
-      <span className="maturity-surface-title">Runtime agente</span>
+      <span className="maturity-surface-title">Runtime dell'agente</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 aree - 79% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#session-memory-and-context-engine">
-      <span className="maturity-surface-title">Sessione, memoria e motore di contesto</span>
+      <span className="maturity-surface-title">Motore di sessione, memoria e contesto</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 aree - 79% completo</span></span>
     </a>
 
@@ -74,120 +74,120 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
     <a className="maturity-surface-link" href="#gateway-web-app">
       <span className="maturity-surface-title">App Web Gateway</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#plugins">
       <span className="maturity-surface-title">Plugin</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 aree - 79% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#security-auth-pairing-and-secrets">
-      <span className="maturity-surface-title">Sicurezza, autenticazione, abbinamento e segreti</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completo</span></span>
+      <span className="maturity-surface-title">Sicurezza, autenticazione, associazione e segreti</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#automation-cron-hooks-tasks-polling">
       <span className="maturity-surface-title">Automazione: Cron, hook, attività, polling</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#media-understanding-and-media-generation">
-      <span className="maturity-surface-title">Comprensione e generazione dei media</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 68% completo</span></span>
+      <span className="maturity-surface-title">Comprensione dei media e generazione di media</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 68% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#voice-and-realtime-talk">
       <span className="maturity-surface-title">Voce e conversazione in tempo reale</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 68% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 68% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#tui">
       <span className="maturity-surface-title">TUI</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 66% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 66% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#clawhub">
       <span className="maturity-surface-title">ClawHub</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - 62% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - 62% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#openclaw-app-sdk">
       <span className="maturity-surface-title">OpenClaw App SDK</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 53% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 53% completato</span></span>
     </a>
 
   </Tab>
   <Tab title="Piattaforma">
 
     <a className="maturity-surface-link" href="#linux-gateway-host">
-      <span className="maturity-surface-title">host Gateway Linux</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>5 aree - 89% completo</span></span>
+      <span className="maturity-surface-title">Host Gateway Linux</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>5 aree - 89% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#macos-gateway-host">
-      <span className="maturity-surface-title">host Gateway macOS</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>7 aree - 88% completo</span></span>
+      <span className="maturity-surface-title">Host Gateway macOS</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>7 aree - 88% completato</span></span>
+    </a>
+    <a className="maturity-surface-link" href="#android-app">
+      <span className="maturity-surface-title">App Android</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>7 aree - 80% completato</span></span>
+    </a>
+    <a className="maturity-surface-link" href="#ios-app">
+      <span className="maturity-surface-title">App iOS</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>8 aree - 80% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#docker-and-podman-hosting">
-      <span className="maturity-surface-title">hosting Docker e Podman</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - 79% completo</span></span>
+      <span className="maturity-surface-title">Hosting Docker e Podman</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#windows-via-wsl2">
       <span className="maturity-surface-title">Windows tramite WSL2</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#raspberry-pi-and-small-linux-devices">
       <span className="maturity-surface-title">Raspberry Pi e piccoli dispositivi Linux</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - 79% completo</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - 79% completato</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#macos-companion-app">
-      <span className="maturity-surface-title">app complementare macOS</span>
+      <span className="maturity-surface-title">app companion macOS</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>8 aree - 78% completo</span></span>
     </a>
 
-    <a className="maturity-surface-link" href="#android-app">
-      <span className="maturity-surface-title">app Android</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>7 aree - 66% completo</span></span>
-    </a>
 
     <a className="maturity-surface-link" href="#native-windows">
       <span className="maturity-surface-title">Windows nativo</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - completato al 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - 66% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#kubernetes-hosting">
-      <span className="maturity-surface-title">Hosting Kubernetes</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - completato al 61%</span></span>
+      <span className="maturity-surface-title">hosting Kubernetes</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - 61% completo</span></span>
     </a>
 
-    <a className="maturity-surface-link" href="#ios-app">
-      <span className="maturity-surface-title">App iOS</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>8 aree - completato al 44%</span></span>
-    </a>
 
     <a className="maturity-surface-link" href="#nix-install-path">
-      <span className="maturity-surface-title">Percorso di installazione Nix</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>5 aree - completato al 44%</span></span>
+      <span className="maturity-surface-title">percorso di installazione Nix</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>5 aree - 44% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#watchos-companion-surfaces">
-      <span className="maturity-surface-title">Superfici companion watchOS</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>5 aree - completato al 44%</span></span>
+      <span className="maturity-surface-title">superfici companion watchOS</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>5 aree - 44% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#linux-companion-app">
-      <span className="maturity-surface-title">App companion Linux</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Pianificato</span></span><span>5 aree - completato al 21%</span></span>
+      <span className="maturity-surface-title">app companion Linux</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Pianificato</span></span><span>5 aree - 21% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#native-windows-companion-app">
-      <span className="maturity-surface-title">App companion Windows nativa</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Pianificato</span></span><span>5 aree - completato al 21%</span></span>
+      <span className="maturity-surface-title">app companion Windows nativa</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Pianificato</span></span><span>5 aree - 21% completo</span></span>
     </a>
 
   </Tab>
@@ -195,110 +195,110 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
     <a className="maturity-surface-link" href="#discord">
       <span className="maturity-surface-title">Discord</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>6 aree - completato all'87%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabile</span></span><span>6 aree - 87% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#telegram">
       <span className="maturity-surface-title">Telegram</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#slack">
       <span className="maturity-surface-title">Slack</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#imessage-and-bluebubbles">
       <span className="maturity-surface-title">iMessage e BlueBubbles</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#whatsapp">
       <span className="maturity-surface-title">WhatsApp</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#matrix">
       <span className="maturity-surface-title">Matrix</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - completato al 67%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 aree - 67% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#google-chat">
       <span className="maturity-surface-title">Google Chat</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - completato al 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 66% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#microsoft-teams">
       <span className="maturity-surface-title">Microsoft Teams</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - completato al 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 66% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#signal">
       <span className="maturity-surface-title">Signal</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - completato al 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 66% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels">
       <span className="maturity-surface-title">Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, canali regionali</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - completato al 58%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - 58% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat">
       <span className="maturity-surface-title">Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - completato al 54%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 aree - 54% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#voice-call-channel">
-      <span className="maturity-surface-title">Canale di chiamata vocale</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>5 aree - completato al 44%</span></span>
+      <span className="maturity-surface-title">canale di chiamata vocale</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Sperimentale</span></span><span>5 aree - 44% completo</span></span>
     </a>
 
   </Tab>
   <Tab title="Provider e strumento">
 
     <a className="maturity-surface-link" href="#browser-automation-exec-and-sandbox-tools">
-      <span className="maturity-surface-title">Automazione del browser, exec e strumenti sandbox</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>3 aree - completato al 79%</span></span>
+      <span className="maturity-surface-title">strumenti di automazione del browser, exec e sandbox</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>3 aree - 79% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#openai-and-codex-provider-path">
-      <span className="maturity-surface-title">Percorso provider OpenAI e Codex</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 79%</span></span>
+      <span className="maturity-surface-title">percorso provider OpenAI e Codex</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 79% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#web-search-tools">
-      <span className="maturity-surface-title">Strumenti di ricerca web</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - completato al 79%</span></span>
+      <span className="maturity-surface-title">strumenti di ricerca web</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - 79% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#anthropic-provider-path">
-      <span className="maturity-surface-title">Percorso provider Anthropic</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 78%</span></span>
+      <span className="maturity-surface-title">percorso provider Anthropic</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#google-provider-path">
-      <span className="maturity-surface-title">Percorso provider Google</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - completato al 78%</span></span>
+      <span className="maturity-surface-title">percorso provider Google</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#openrouter-provider-path">
-      <span className="maturity-surface-title">Percorso provider OpenRouter</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - completato al 78%</span></span>
+      <span className="maturity-surface-title">percorso provider OpenRouter</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 aree - 78% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#image-video-and-music-generation-tools">
-      <span className="maturity-surface-title">Strumenti di generazione di immagini, video e musica</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - completato al 68%</span></span>
+      <span className="maturity-surface-title">strumenti di generazione di immagini, video e musica</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 68% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#local-model-providers-ollama-vllm-sglang-lm-studio">
-      <span className="maturity-surface-title">Provider di modelli locali: Ollama, vLLM, SGLang, LM Studio</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - completato al 68%</span></span>
+      <span className="maturity-surface-title">provider di modelli locali: Ollama, vLLM, SGLang, LM Studio</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 aree - 68% completo</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#long-tail-hosted-providers">
-      <span className="maturity-surface-title">Provider ospitati a coda lunga</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>3 aree - completato al 68%</span></span>
+      <span className="maturity-surface-title">provider ospitati long-tail</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>3 aree - 68% completo</span></span>
     </a>
 
   </Tab>
@@ -314,7 +314,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="CLI - M4 Stabile - 7 aree">
     <a id="cli" />
 
-    I normali percorsi di configurazione e riparazione sono documentati nella documentazione di installazione, CLI e Gateway. I percorsi Windows specifici della piattaforma sono tracciati nelle righe Windows tramite WSL2 e Windows nativo.
+    I normali percorsi di configurazione e riparazione sono documentati nelle guide di installazione, CLI e Gateway. I percorsi Windows specifici della piattaforma sono tracciati nelle righe Windows tramite WSL2 e Windows nativo.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 4%</span><span>Qualità Stabile - 83%</span><span>Completezza Stabile - 90%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 6</span></span></div>
 
@@ -328,17 +328,17 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>17%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "17%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/install/index), [Programma di installazione](/it/install/installer), [Node](/it/install/node), [Aggiornamento](/it/install/updating)</div>
+        <div className="maturity-category-docs">[Indice](/it/install/index), [Installer](/it/install/installer), [Node](/it/install/node), [Aggiornamento](/it/install/updating)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Onboarding e configurazione dell'autenticazione</span>
+          <span className="maturity-category-title">Configurazione di onboarding e autenticazione</span>
           <span>5 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Onboard](/it/cli/onboard), [Configure](/it/cli/configure), [Panoramica sull'onboarding](/it/start/onboarding-overview)</div>
+        <div className="maturity-category-docs">[Onboard](/it/cli/onboard), [Configura](/it/cli/configure), [Panoramica dell'onboarding](/it/start/onboarding-overview)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -388,7 +388,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Aggiornamento](/it/install/updating), [Update](/it/cli/update), [Risoluzione dei problemi](/it/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">[Aggiornamento](/it/install/updating), [Aggiorna](/it/cli/update), [Risoluzione dei problemi](/it/gateway/troubleshooting)</div>
       </div>
     </div>
 
@@ -397,7 +397,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Runtime Gateway - M4 Stabile - 13 aree">
     <a id="gateway-runtime" />
 
-    L'architettura di base, l'autenticazione, l'abbinamento, la documentazione del protocollo, la documentazione del demone e i runbook CLI sono ampi e aggiornati.
+    Architettura core, autenticazione, associazione, documentazione del protocollo, documentazione del daemon e runbook CLI sono ampi e aggiornati.
 
     <div className="maturity-surface-rollup"><span>Copertura sperimentale - 6%</span><span>Qualità stabile - 81%</span><span>Completezza stabile - 89%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 12</span></span></div>
 
@@ -406,7 +406,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Approvazioni ed esecuzione remota</span>
-          <span>6 funzionalità / con supporto LTS</span>
+          <span>6 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -416,7 +416,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">API HTTP</span>
-          <span>4 funzionalità / con supporto LTS</span>
+          <span>4 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
@@ -426,7 +426,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Superficie web ospitata</span>
-          <span>4 funzionalità / con supporto LTS</span>
+          <span>4 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
@@ -436,7 +436,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">API RPC ed eventi del Gateway</span>
-          <span>20 funzionalità / con supporto LTS</span>
+          <span>20 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>9%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "9%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
@@ -445,28 +445,28 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Autenticazione e abbinamento dispositivo</span>
-          <span>10 funzionalità / con supporto LTS</span>
+          <span className="maturity-category-title">Autenticazione e associazione dei dispositivi</span>
+          <span>10 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protocollo](/it/gateway/protocol), [Abbinamento](/it/gateway/pairing), [Indice](/it/gateway/security/index)</div>
+        <div className="maturity-category-docs">[Protocollo](/it/gateway/protocol), [Associazione](/it/gateway/pairing), [Indice](/it/gateway/security/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Accesso e rilevamento di rete</span>
-          <span>6 funzionalità / con supporto LTS</span>
+          <span className="maturity-category-title">Accesso alla rete e individuazione</span>
+          <span>6 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/gateway/index), [Rilevamento](/it/gateway/discovery), [Protocollo](/it/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Indice](/it/gateway/index), [Individuazione](/it/gateway/discovery), [Protocollo](/it/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Nodi e funzionalità remote</span>
-          <span>8 funzionalità</span>
+          <span className="maturity-category-title">Node e capacità remote</span>
+          <span>8 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -476,7 +476,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Integrità, diagnostica e riparazione</span>
-          <span>7 funzionalità / con supporto LTS</span>
+          <span>7 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -521,7 +521,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/gateway/security/index), [Protocollo](/it/gateway/protocol), [Individuazione](/it/gateway/discovery)</div>
+        <div className="maturity-category-docs">[Indice](/it/gateway/security/index), [Protocollo](/it/gateway/protocol), [Rilevamento](/it/gateway/discovery)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -540,36 +540,36 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Runtime dell'agente - M3 Beta - 9 aree">
     <a id="agent-runtime" />
 
-    Il loop principale, i modelli, l'instradamento dei provider e lo streaming degli strumenti sono elementi di prima classe, ma il comportamento dei provider cambia settimanalmente e richiede prove di scenario per ogni rilascio.
+    Loop principale, modelli, routing dei provider e streaming degli strumenti sono di prima classe, ma il comportamento dei provider cambia settimanalmente e richiede prove di scenario per ogni release.
 
-    <div className="maturity-surface-rollup"><span>Copertura Experimental - 33%</span><span>Qualità Beta - 78%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 6</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 33%</span><span>Qualità Beta - 78%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 6</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Esecuzione dei turni dell'agente</span>
-          <span>3 funzionalità / supportate da LTS</span>
+          <span className="maturity-category-title">Esecuzione del turno dell'agente</span>
+          <span>3 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Loop dell'agente](/it/concepts/agent-loop), [Agente](/it/cli/agent), [Runtime degli agenti](/it/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">[Ciclo agente](/it/concepts/agent-loop), [Agente](/it/cli/agent), [Runtime agente](/it/concepts/agent-runtimes)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Runtime esterni e subagenti</span>
+          <span className="maturity-category-title">Runtime esterni e sottoagenti</span>
           <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Runtime degli agenti](/it/concepts/agent-runtimes), [Anthropic](/it/providers/anthropic), [Google](/it/providers/google), [Subagenti](/it/tools/subagents)</div>
+        <div className="maturity-category-docs">[Runtime agente](/it/concepts/agent-runtimes), [Anthropic](/it/providers/anthropic), [Google](/it/providers/google), [Sottoagenti](/it/tools/subagents)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Esecuzione con provider ospitati</span>
-          <span>5 funzionalità / supportate da LTS</span>
+          <span>5 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -588,23 +588,23 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Selezione del modello e del runtime</span>
-          <span>4 funzionalità / supportate da LTS</span>
+          <span className="maturity-category-title">Selezione di modello e runtime</span>
+          <span>4 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Modelli](/it/concepts/models), [Modelli](/it/cli/models), [Openai](/it/providers/openai), [Runtime degli agenti](/it/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">[Modelli](/it/concepts/models), [Modelli](/it/cli/models), [Openai](/it/providers/openai), [Runtime agente](/it/concepts/agent-runtimes)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Autenticazione dei provider</span>
-          <span>10 funzionalità / supportate da LTS</span>
+          <span className="maturity-category-title">Autenticazione provider</span>
+          <span>10 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>24%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "24%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Modelli](/it/concepts/models), [Agente](/it/cli/agent), [Modelli](/it/cli/models), [Openai](/it/providers/openai), [Anthropic](/it/providers/anthropic), [Google](/it/providers/google), [Subagenti](/it/tools/subagents)</div>
+        <div className="maturity-category-docs">[Modelli](/it/concepts/models), [Agente](/it/cli/agent), [Modelli](/it/cli/models), [Openai](/it/providers/openai), [Anthropic](/it/providers/anthropic), [Google](/it/providers/google), [Sottoagenti](/it/tools/subagents)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -614,27 +614,27 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>56%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "56%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Streaming](/it/concepts/streaming), [Loop dell'agente](/it/concepts/agent-loop)</div>
+        <div className="maturity-category-docs">[Streaming](/it/concepts/streaming), [Ciclo agente](/it/concepts/agent-loop)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Chiamate agli strumenti e gestione delle risposte</span>
-          <span>3 funzionalità / supportate da LTS</span>
+          <span>3 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>65%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "65%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Loop dell'agente](/it/concepts/agent-loop), [Ollama](/it/providers/ollama)</div>
+        <div className="maturity-category-docs">[Ciclo agente](/it/concepts/agent-loop), [Ollama](/it/providers/ollama)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Controlli di esecuzione degli strumenti</span>
-          <span>6 capacità / supportate da LTS</span>
+          <span>6 capacità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sandbox vs criterio degli strumenti vs privilegi elevati](/it/gateway/sandbox-vs-tool-policy-vs-elevated), [Loop dell'agente](/it/concepts/agent-loop), [Subagenti](/it/tools/subagents)</div>
+        <div className="maturity-category-docs">[Sandbox vs criteri degli strumenti vs privilegi elevati](/it/gateway/sandbox-vs-tool-policy-vs-elevated), [Ciclo dell'agente](/it/concepts/agent-loop), [Subagenti](/it/tools/subagents)</div>
       </div>
     </div>
 
@@ -651,11 +651,11 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Gestione delle sessioni CLI e delle trascrizioni</span>
+          <span className="maturity-category-title">Sessione CLI e gestione delle trascrizioni</span>
           <span>2 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Sessione](/it/concepts/session), [Compaction della gestione delle sessioni](/it/reference/session-management-compaction), [Sessioni](/it/cli/sessions)</div>
       </div>
@@ -671,23 +671,23 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Motore di contesto</span>
+          <span className="maturity-category-title">Motore del contesto</span>
           <span>2 funzionalità / con supporto LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Contesto](/it/concepts/context), [Motore di contesto](/it/concepts/context-engine), [Harness del motore di contesto Codex](/it/plan/codex-context-engine-harness)</div>
+        <div className="maturity-category-docs">[Contesto](/it/concepts/context), [Motore del contesto](/it/concepts/context-engine), [Harness del motore del contesto di Codex](/it/plan/codex-context-engine-harness)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Cronologia cross-client e parità delle sessioni</span>
+          <span className="maturity-category-title">Cronologia tra client e parità delle sessioni</span>
           <span>2 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Chat web](/it/web/webchat), [Android](/it/platforms/android), [Routing dei canali](/it/channels/channel-routing)</div>
+        <div className="maturity-category-docs">[Chat web](/it/web/webchat), [Android](/it/platforms/android), [Instradamento dei canali](/it/channels/channel-routing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -701,7 +701,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Prompt e contesto di base</span>
+          <span className="maturity-category-title">Prompt principali e contesto</span>
           <span>2 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
@@ -717,25 +717,25 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Configurazione della memoria](/it/reference/memory-config), [Qmd della memoria](/it/concepts/memory-qmd), [Memoria](/it/concepts/memory), [Discord](/it/channels/discord)</div>
+        <div className="maturity-category-docs">[Configurazione della memoria](/it/reference/memory-config), [Memoria Qmd](/it/concepts/memory-qmd), [Memoria](/it/concepts/memory), [Discord](/it/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing delle sessioni</span>
+          <span className="maturity-category-title">Instradamento delle sessioni</span>
           <span>2 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sessione](/it/concepts/session), [Routing dei canali](/it/channels/channel-routing), [Discord](/it/channels/discord)</div>
+        <div className="maturity-category-docs">[Sessione](/it/concepts/session), [Instradamento dei canali](/it/channels/channel-routing), [Discord](/it/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Persistenza delle trascrizioni</span>
-          <span>2 funzionalità / supportate da LTS</span>
+          <span>2 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Compaction della gestione delle sessioni](/it/reference/session-management-compaction), [Igiene delle trascrizioni](/it/reference/transcript-hygiene)</div>
       </div>
@@ -746,15 +746,15 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Framework dei canali - M3 Beta - 8 aree">
     <a id="channel-framework" />
 
-    Molti canali condividono i contratti di consegna e routing del Gateway, ma il comportamento dei canali varia in base all'API upstream e ai vincoli delle policy dell'account.
+    Molti canali condividono i contratti di consegna e routing del Gateway, ma il comportamento dei canali varia in base ai vincoli dell'API upstream e delle policy dell'account.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 13%</span><span>Qualità Beta - 76%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Experimental - 13%</span><span>Qualità Beta - 76%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Comandi e approvazioni delle azioni dei canali</span>
+          <span className="maturity-category-title">Comandi e approvazioni per le azioni dei canali</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -780,11 +780,11 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>36%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "36%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gruppi](/it/channels/groups), [Messaggi di gruppo](/it/channels/group-messages), [Eventi delle stanze ambientali](/it/channels/ambient-room-events), [Gruppi di trasmissione](/it/channels/broadcast-groups), [Discord](/it/channels/discord)</div>
+        <div className="maturity-category-docs">[Gruppi](/it/channels/groups), [Messaggi di gruppo](/it/channels/group-messages), [Eventi delle stanze ambientali](/it/channels/ambient-room-events), [Gruppi di broadcast](/it/channels/broadcast-groups), [Discord](/it/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Accesso in ingresso e gate di identità</span>
+          <span className="maturity-category-title">Accesso in ingresso e controlli dell'identità</span>
           <span>5 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -820,40 +820,40 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Instradamento dei canali](/it/channels/channel-routing), [Gruppi](/it/channels/groups), [Discord](/it/channels/discord), [Matrix](/it/channels/matrix), [Risoluzione dei problemi](/it/channels/troubleshooting), [Riferimento di configurazione](/it/gateway/configuration-reference)</div>
+        <div className="maturity-category-docs">[Instradamento dei canali](/it/channels/channel-routing), [Gruppi](/it/channels/groups), [Discord](/it/channels/discord), [Matrix](/it/channels/matrix), [Risoluzione dei problemi](/it/channels/troubleshooting), [Riferimento della configurazione](/it/gateway/configuration-reference)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Stato di salute e controlli operatore</span>
+          <span className="maturity-category-title">Stato, integrità e controlli dell'operatore</span>
           <span>4 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Stato di salute](/it/gateway/health), [Riferimento alla configurazione](/it/gateway/configuration-reference), [Risoluzione dei problemi](/it/channels/troubleshooting), [Discord](/it/channels/discord)</div>
+        <div className="maturity-category-docs">[Stato](/it/gateway/health), [Riferimento di configurazione](/it/gateway/configuration-reference), [Risoluzione dei problemi](/it/channels/troubleshooting), [Discord](/it/channels/discord)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Observability - M3 Beta - 5 areas">
+  <Accordion title="Osservabilità - M3 Beta - 5 aree">
     <a id="observability" />
 
-    Esiste documentazione su OTel, Prometheus, logging e diagnostica. Serve una revisione pubblica della maturità su "cosa gli operatori dovrebbero controllare per primo".
+    Esistono documenti su OTel, Prometheus, logging e diagnostica. Serve un passaggio pubblico di maturità su "cosa dovrebbero controllare per prima cosa gli operatori".
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 18%</span><span>Qualità Beta - 75%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 3</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 18%</span><span>Qualità Beta - 75%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 3</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Integrità e riparazione</span>
+          <span className="maturity-category-title">Salute e riparazione</span>
           <span>12 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>28%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "28%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Integrità](/it/gateway/health), [Telegram](/it/channels/telegram), [Doctor](/it/cli/doctor), [Doctor](/it/gateway/doctor), [Sottopercorsi SDK](/it/plugins/sdk-subpaths), [Integrità](/it/cli/health), [Protocollo](/it/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Salute](/it/gateway/health), [Telegram](/it/channels/telegram), [Doctor](/it/cli/doctor), [Doctor](/it/gateway/doctor), [Sottopercorsi SDK](/it/plugins/sdk-subpaths), [Salute](/it/cli/health), [Protocollo](/it/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -873,21 +873,21 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Diagnostica](/it/gateway/diagnostics), [Integrità](/it/gateway/health), [Harness Codex](/it/plugins/codex-harness), [Protocollo](/it/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Diagnostica](/it/gateway/diagnostics), [Salute](/it/gateway/health), [Harness Codex](/it/plugins/codex-harness), [Protocollo](/it/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Esportazione telemetria</span>
+          <span className="maturity-category-title">Esportazione della telemetria</span>
           <span>13 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Hook](/it/plugins/hooks), [Opentelemetry](/it/gateway/opentelemetry), [Registrazione](/it/logging), [Sottopercorsi SDK](/it/plugins/sdk-subpaths), [Diagnostica Otel](/it/plugins/reference/diagnostics-otel), [Prometheus](/it/gateway/prometheus), [Diagnostica Prometheus](/it/plugins/reference/diagnostics-prometheus)</div>
+        <div className="maturity-category-docs">[Hook](/it/plugins/hooks), [Opentelemetry](/it/gateway/opentelemetry), [Registrazione](/it/logging), [Sottopercorsi SDK](/it/plugins/sdk-subpaths), [Otel diagnostica](/it/plugins/reference/diagnostics-otel), [Prometheus](/it/gateway/prometheus), [Prometheus diagnostica](/it/plugins/reference/diagnostics-prometheus)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Diagnostica sessione</span>
+          <span className="maturity-category-title">Diagnostica di sessione</span>
           <span>4 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -899,74 +899,74 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="App web Gateway - M3 Beta - 6 aree">
+  <Accordion title="App Web Gateway - M3 Beta - 6 aree">
     <a id="gateway-web-app" />
 
-    L'interfaccia utente web è documentata con flussi di pairing, chat, PWA, Talk, push e Gateway remoto. Promuovere dopo le scorecard cross-browser e mobile-PWA.
+    L'interfaccia utente web è documentata con flussi di associazione, chat, PWA, Talk, push e Gateway remoto. Promuovere dopo le scorecard cross-browser e mobile PWA.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 4%</span><span>Qualità Beta - 74%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 4%</span><span>Qualità Beta - 74%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Conversazione in tempo reale nel browser</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfaccia di controllo](/it/web/control-ui), [Protocollo](/it/gateway/protocol), [Conversazione](/it/nodes/talk)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Protocollo](/it/gateway/protocol), [Conversazione](/it/nodes/talk)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Accesso e attendibilità del browser</span>
-          <span>5 capacità</span>
+          <span className="maturity-category-title">Accesso e fiducia nel browser</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfaccia di controllo](/it/web/control-ui), [Dashboard](/it/web/dashboard), [Tailscale](/it/gateway/tailscale), [Remoto](/it/gateway/remote)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Dashboard](/it/web/dashboard), [Tailscale](/it/gateway/tailscale), [Remoto](/it/gateway/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfaccia di controllo](/it/web/control-ui), [Configurazione](/it/gateway/configuration)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Configurazione](/it/gateway/configuration)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Interfaccia utente del browser</span>
-          <span>10 capacità</span>
+          <span className="maturity-category-title">UI del browser</span>
+          <span>10 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfaccia di controllo](/it/web/control-ui), [Indice](/it/web/index), [Dashboard](/it/web/dashboard), [Protocollo](/it/gateway/protocol)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Indice](/it/web/index), [Dashboard](/it/web/dashboard), [Protocollo](/it/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Conversazioni WebChat</span>
-          <span>15 capacità</span>
+          <span>15 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>10%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "10%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfaccia di controllo](/it/web/control-ui), [Webchat](/it/web/webchat), [Primi passi](/it/start/getting-started), [Instradamento dei canali](/it/channels/channel-routing), [Operazioni sicure sui file](/it/gateway/security/secure-file-operations)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Webchat](/it/web/webchat), [Guida introduttiva](/it/start/getting-started), [Routing dei canali](/it/channels/channel-routing), [Operazioni sicure sui file](/it/gateway/security/secure-file-operations)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Console dell'operatore</span>
-          <span>10 capacità</span>
+          <span>10 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfaccia di controllo](/it/web/control-ui), [Integrità](/it/gateway/health), [Protocollo](/it/gateway/protocol), [Dashboard](/it/web/dashboard)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Stato](/it/gateway/health), [Protocollo](/it/gateway/protocol), [Dashboard](/it/web/dashboard)</div>
       </div>
     </div>
 
@@ -975,16 +975,16 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Plugin - M3 Beta - 9 aree">
     <a id="plugins" />
 
-    Esistono documentazione ampia e solide prove di runtime interno per manifest, discovery, caricamento, architettura di provider/strumenti e confini di approvazione. Mantieni la riga in beta finché la prova dell'API SDK pubblica/dei sottopercorsi e della distribuzione esterna non sarà più solida.
+    Esistono documentazione ampia e solide prove interne del runtime per manifesti, individuazione, caricamento, architettura di provider/strumenti e confini di approvazione. Mantieni la riga in beta finché le prove relative all'API/ai sottopercorsi dell'SDK pubblico e alla distribuzione esterna non saranno più solide.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 12%</span><span>Qualità Beta - 72%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 7</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documenti</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Creazione e pacchettizzazione dei plugin</span>
-          <span>8 funzionalità / con supporto LTS</span>
+          <span>8 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -994,17 +994,17 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Plugin in bundle</span>
-          <span>5 funzionalità / con supporto LTS</span>
+          <span>5 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Inventario dei plugin](/it/plugins/plugin-inventory), [Plugin](/it/cli/plugins), [Architettura interna](/it/plugins/architecture-internals)</div>
+        <div className="maturity-category-docs">[Inventario dei plugin](/it/plugins/plugin-inventory), [Plugin](/it/cli/plugins), [Interni dell'architettura](/it/plugins/architecture-internals)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Plugin Canvas</span>
-          <span>6 funzionalità</span>
+          <span>6 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1014,37 +1014,37 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Installazione ed esecuzione dei plugin</span>
-          <span>6 funzionalità / con supporto LTS</span>
+          <span>6 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>35%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "35%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Architettura](/it/plugins/architecture), [Architettura interna](/it/plugins/architecture-internals), [Plugin](/it/cli/plugins)</div>
+        <div className="maturity-category-docs">[Architettura](/it/plugins/architecture), [Interni dell'architettura](/it/plugins/architecture-internals), [Plugin](/it/cli/plugins)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Plugin di canale</span>
-          <span>5 funzionalità / con supporto LTS</span>
+          <span>5 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin di canale SDK](/it/plugins/sdk-channel-plugins), [Ingresso canale SDK](/it/plugins/sdk-channel-inbound), [Uscita canale SDK](/it/plugins/sdk-channel-outbound)</div>
+        <div className="maturity-category-docs">[Plugin di canale SDK](/it/plugins/sdk-channel-plugins), [Canale SDK in ingresso](/it/plugins/sdk-channel-inbound), [Canale SDK in uscita](/it/plugins/sdk-channel-outbound)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Plugin provider e strumenti</span>
-          <span>6 funzionalità / con supporto LTS</span>
+          <span className="maturity-category-title">Plugin di provider e strumenti</span>
+          <span>6 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>43%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "43%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin provider SDK](/it/plugins/sdk-provider-plugins), [Plugin strumento](/it/plugins/tool-plugins), [Aggiunta di funzionalità](/it/plugins/adding-capabilities)</div>
+        <div className="maturity-category-docs">[Plugin di provider SDK](/it/plugins/sdk-provider-plugins), [Plugin di strumenti](/it/plugins/tool-plugins), [Aggiunta di capacità](/it/plugins/adding-capabilities)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Approvazioni dei plugin</span>
-          <span>6 funzionalità / con supporto LTS</span>
+          <span>6 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1054,7 +1054,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pubblicazione dei plugin</span>
-          <span>6 funzionalità / con supporto LTS</span>
+          <span>6 capacità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1063,22 +1063,22 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Test dei plugin</span>
+          <span className="maturity-category-title">Test dei Plugin</span>
           <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>27%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "27%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Test dell'Sdk](/it/plugins/sdk-testing), [Configurazione dell'Sdk](/it/plugins/sdk-setup), [Harness Codex](/it/plugins/codex-harness)</div>
+        <div className="maturity-category-docs">[Test SDK](/it/plugins/sdk-testing), [Configurazione SDK](/it/plugins/sdk-setup), [Harness Codex](/it/plugins/codex-harness)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Sicurezza, autenticazione, pairing e segreti - M3 Beta - 6 aree">
+  <Accordion title="Sicurezza, autenticazione, abbinamento e segreti - M3 Beta - 6 aree">
     <a id="security-auth-pairing-and-secrets" />
 
-    Esistono buone superfici di documentazione e hardening. Promuovere dopo che esecuzioni regolari di scenari di upgrade e sicurezza dimostrano l'assenza di regressioni nella configurazione.
+    Esistono buone superfici di documentazione e hardening. Promuovere dopo che esecuzioni regolari degli scenari di aggiornamento/sicurezza dimostrano l'assenza di regressioni di configurazione.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 16%</span><span>Qualità Beta - 72%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 5</span></span></div>
 
@@ -1086,58 +1086,58 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Policy di approvazione e protezioni degli strumenti</span>
-          <span>2 funzionalità / con supporto LTS</span>
+          <span className="maturity-category-title">Policy di approvazione e salvaguardie degli strumenti</span>
+          <span>2 capacità / supportate da LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Approvazioni Exec](/it/tools/exec-approvals), [Approvazioni](/it/cli/approvals), [Richieste di autorizzazione Plugin](/it/plugins/plugin-permission-requests), [Controlli di audit](/it/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[Approvazioni Exec](/it/tools/exec-approvals), [Approvazioni](/it/cli/approvals), [Richieste di autorizzazione dei Plugin](/it/plugins/plugin-permission-requests), [Controlli di audit](/it/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Autenticazione Gateway e accesso remoto</span>
-          <span>9 funzionalità / con supporto LTS</span>
+          <span>9 capacità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/gateway/security/index), [Runbook di esposizione](/it/gateway/security/exposure-runbook), [Autenticazione proxy attendibile](/it/gateway/trusted-proxy-auth), [Tailscale](/it/gateway/tailscale), [Remoto](/it/gateway/remote), [Riferimento di configurazione](/it/gateway/configuration-reference), [Gateway](/it/cli/gateway), [Doctor](/it/cli/doctor), [UI di controllo](/it/web/control-ui), [Controllo browser](/it/tools/browser-control), [Controlli di audit](/it/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[Indice](/it/gateway/security/index), [Runbook sull'esposizione](/it/gateway/security/exposure-runbook), [Autenticazione proxy attendibile](/it/gateway/trusted-proxy-auth), [Tailscale](/it/gateway/tailscale), [Remoto](/it/gateway/remote), [Riferimento di configurazione](/it/gateway/configuration-reference), [Gateway](/it/cli/gateway), [Doctor](/it/cli/doctor), [Interfaccia di controllo](/it/web/control-ui), [Controllo del browser](/it/tools/browser-control), [Controlli di audit](/it/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controllo dell'accesso ai canali</span>
-          <span>3 funzionalità / con supporto LTS</span>
+          <span className="maturity-category-title">Controllo di accesso ai canali</span>
+          <span>3 capacità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pairing](/it/channels/pairing), [Telegram](/it/channels/telegram), [Gruppi di accesso](/it/channels/access-groups), [Controlli di audit](/it/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[Abbinamento](/it/channels/pairing), [Telegram](/it/channels/telegram), [Gruppi di accesso](/it/channels/access-groups), [Controlli di audit](/it/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pairing di dispositivi e Node</span>
-          <span>11 funzionalità / con supporto LTS</span>
+          <span className="maturity-category-title">Abbinamento di dispositivi e Node</span>
+          <span>11 capacità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protocollo](/it/gateway/protocol), [Dispositivi](/it/cli/devices), [Pairing](/it/channels/pairing), [Pairing](/it/gateway/pairing), [Ambiti operatore](/it/gateway/operator-scopes), [UI di controllo](/it/web/control-ui), [Webchat](/it/web/webchat), [Approvazioni](/it/cli/approvals)</div>
+        <div className="maturity-category-docs">[Protocollo](/it/gateway/protocol), [Dispositivi](/it/cli/devices), [Abbinamento](/it/channels/pairing), [Abbinamento](/it/gateway/pairing), [Ambiti operatore](/it/gateway/operator-scopes), [Interfaccia di controllo](/it/web/control-ui), [Webchat](/it/web/webchat), [Approvazioni](/it/cli/approvals)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Fiducia nei Plugin</span>
-          <span>2 funzionalità</span>
+          <span className="maturity-category-title">Attendibilità dei Plugin</span>
+          <span>2 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Manifest](/it/plugins/manifest), [Richieste di autorizzazione Plugin](/it/plugins/plugin-permission-requests), [Gestire i Plugin](/it/plugins/manage-plugins), [Controlli di audit](/it/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[Manifest](/it/plugins/manifest), [Richieste di autorizzazione dei Plugin](/it/plugins/plugin-permission-requests), [Gestisci Plugin](/it/plugins/manage-plugins), [Controlli di audit](/it/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Igiene di credenziali e segreti</span>
-          <span>5 funzionalità / con supporto LTS</span>
+          <span>5 capacità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1151,7 +1151,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Automazione: cron, hook, attività, polling - M3 Beta - 6 aree">
     <a id="automation-cron-hooks-tasks-polling" />
 
-    Documentato e utilizzabile, ma la prova degli scenari dovrebbe coprire consegna non presidiata, nuovi tentativi e visibilità degli errori.
+    Documentata e utilizzabile, ma la prova degli scenari dovrebbe coprire consegna non presidiata, tentativi ripetuti e visibilità degli errori.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 2%</span><span>Qualità Beta - 72%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
@@ -1175,7 +1175,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Zalo](/it/channels/zalo), [Risoluzione dei problemi](/it/channels/troubleshooting), [iMessage da Bluebubbles](/it/channels/imessage-from-bluebubbles), [Integrazione Gmail Pubsub](/it/automation/cron-jobs#gmail-pubsub-integration), [Gmail Pubsub](/it/automation/cron-jobs), [Webhook](/it/cli/webhooks), [Webhook](/it/automation/cron-jobs#webhooks), [Webhook](/it/automation/cron-jobs)</div>
+        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Zalo](/it/channels/zalo), [Risoluzione dei problemi](/it/channels/troubleshooting), [iMessage da BlueBubbles](/it/channels/imessage-from-bluebubbles), [Integrazione Gmail Pubsub](/it/automation/cron-jobs#gmail-pubsub-integration), [Gmail Pubsub](/it/automation/cron-jobs), [Webhook](/it/cli/webhooks), [Webhook](/it/automation/cron-jobs#webhooks), [Webhook](/it/automation/cron-jobs)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1215,16 +1215,16 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Polling](/it/cli/message), [Messaggio](/it/cli/message), [Telegram](/it/channels/telegram), [Microsoft Teams](/it/channels/msteams), [Processo in background](/it/gateway/background-process)</div>
+        <div className="maturity-category-docs">[Poll](/it/cli/message), [Messaggio](/it/cli/message), [Telegram](/it/channels/telegram), [Microsoft Teams](/it/channels/msteams), [Processo in background](/it/gateway/background-process)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Comprensione e generazione dei contenuti multimediali - M2 Alpha - 6 aree">
+  <Accordion title="Comprensione e generazione multimediale - M2 Alpha - 6 aree">
     <a id="media-understanding-and-media-generation" />
 
-    Esiste un'ampia superficie di capacità, ma la variabilità dei provider, i limiti dei file e la parità tra Node e app la rendono non ancora stabile.
+    Esiste un'ampia superficie di capacità, ma la varianza tra provider, i limiti dei file e la parità tra Node e app la rendono non ancora stabile.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 2%</span><span>Qualità Alpha - 64%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
@@ -1236,19 +1236,19 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>8 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panoramica media](/it/tools/media-overview), [Comprensione dei media](/it/nodes/media-understanding), [Operazioni sicure sui file](/it/gateway/security/secure-file-operations), [Pdf](/it/tools/pdf), [Generazione immagini](/it/tools/image-generation), [Qr](/it/cli/qr), [Line](/it/channels/line), [Whatsapp](/it/channels/whatsapp)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Panoramica dei media](/it/tools/media-overview), [Comprensione dei media](/it/nodes/media-understanding), [Operazioni sicure sui file](/it/gateway/security/secure-file-operations), [PDF](/it/tools/pdf), [Generazione di immagini](/it/tools/image-generation), [QR](/it/cli/qr), [LINE](/it/channels/line), [WhatsApp](/it/channels/whatsapp)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Gestione dei media dei canali</span>
+          <span className="maturity-category-title">Gestione dei media nei canali</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Immagini](/it/nodes/images), [Panoramica media](/it/tools/media-overview), [Discord](/it/channels/discord)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Immagini](/it/nodes/images), [Panoramica dei media](/it/tools/media-overview), [Discord](/it/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1256,9 +1256,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>1 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panoramica media](/it/tools/media-overview), [Generazione immagini](/it/tools/image-generation), [Manifest](/it/plugins/manifest), [Harness Codex](/it/plugins/codex-harness)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Panoramica dei media](/it/tools/media-overview), [Generazione di immagini](/it/tools/image-generation), [Manifest](/it/plugins/manifest), [Harness Codex](/it/plugins/codex-harness)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1266,9 +1266,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>2 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tts](/it/tools/tts), [Panoramica media](/it/tools/media-overview), [Discord](/it/channels/discord)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[TTS](/it/tools/tts), [Panoramica dei media](/it/tools/media-overview), [Discord](/it/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1276,9 +1276,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>12 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>7%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "7%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Audio](/it/nodes/audio), [Comprensione dei media](/it/nodes/media-understanding), [Panoramica media](/it/tools/media-overview), [Whatsapp](/it/channels/whatsapp), [Immagini](/it/nodes/images), [Infer](/it/cli/infer), [Pdf](/it/tools/pdf)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Audio](/it/nodes/audio), [Comprensione dei media](/it/nodes/media-understanding), [Panoramica dei media](/it/tools/media-overview), [WhatsApp](/it/channels/whatsapp), [Immagini](/it/nodes/images), [Inferenza](/it/cli/infer), [PDF](/it/tools/pdf)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1286,67 +1286,67 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>17 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>5%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "5%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Generazione immagini](/it/tools/image-generation), [Panoramica media](/it/tools/media-overview), [Skills](/it/tools/skills), [Generazione musicale](/it/tools/music-generation), [Generazione video](/it/tools/video-generation)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Generazione di immagini](/it/tools/image-generation), [Panoramica dei media](/it/tools/media-overview), [Skills](/it/tools/skills), [Generazione di musica](/it/tools/music-generation), [Generazione di video](/it/tools/video-generation)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Voce e conversazione in tempo reale - M2 Alpha - 6 aree">
+  <Accordion title="Voce e conversazione in tempo reale - M2 Alfa - 6 aree">
     <a id="voice-and-realtime-talk" />
 
-    Esistono più implementazioni tra Control UI, app e provider. Sono necessarie scorecard su latenza, modalità di errore e configurazione prima della beta.
+    Esistono più implementazioni tra Control UI, app e provider. Richiede scorecard su latenza, modalità di errore e configurazione prima della beta.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 61%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità alfa - 61%</span><span>Completezza alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Provider Talk</span>
-          <span>7 capacità</span>
+          <span className="maturity-category-title">Provider di conversazione</span>
+          <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/it/providers/openai), [Google](/it/providers/google), [Plugin provider SDK](/it/plugins/sdk-provider-plugins), [Talk](/it/nodes/talk), [Control UI](/it/web/control-ui)</div>
+        <div className="maturity-category-docs">[Openai](/it/providers/openai), [Google](/it/providers/google), [Plugin provider SDK](/it/plugins/sdk-provider-plugins), [Conversazione](/it/nodes/talk), [UI di controllo](/it/web/control-ui)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sessioni Talk in tempo reale</span>
-          <span>11 capacità</span>
+          <span className="maturity-category-title">Sessioni di conversazione in tempo reale</span>
+          <span>11 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Talk](/it/nodes/talk), [Control UI](/it/web/control-ui)</div>
+        <div className="maturity-category-docs">[Conversazione](/it/nodes/talk), [UI di controllo](/it/web/control-ui)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Voce e trascrizione</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Talk](/it/nodes/talk), [Openai](/it/providers/openai), [Google](/it/providers/google)</div>
+        <div className="maturity-category-docs">[Conversazione](/it/nodes/talk), [Openai](/it/providers/openai), [Google](/it/providers/google)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Talk nell'app nativa</span>
-          <span>4 capacità</span>
+          <span className="maturity-category-title">Conversazione nell'app nativa</span>
+          <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Talk](/it/nodes/talk), [Voicewake](/it/platforms/mac/voicewake)</div>
+        <div className="maturity-category-docs">[Conversazione](/it/nodes/talk), [Voicewake](/it/platforms/mac/voicewake)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Attivazione vocale e instradamento</span>
-          <span>4 capacità</span>
+          <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1355,13 +1355,13 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Osservabilità di Talk</span>
-          <span>5 capacità</span>
+          <span className="maturity-category-title">Osservabilità della conversazione</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Control UI](/it/web/control-ui), [Overlay vocale](/it/platforms/mac/voice-overlay), [Talk](/it/nodes/talk)</div>
+        <div className="maturity-category-docs">[UI di controllo](/it/web/control-ui), [Overlay vocale](/it/platforms/mac/voice-overlay), [Conversazione](/it/nodes/talk)</div>
       </div>
     </div>
 
@@ -1370,21 +1370,21 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="TUI - M2 Alpha - 5 aree">
     <a id="tui" />
 
-    Presente nella documentazione e nel sorgente, ma meno visibile come workflow utente principale. Richiede una definizione esplicita degli scenari.
+    Presente nella documentazione e nel codice sorgente, ma meno visibile come flusso di lavoro principale per l'utente. Richiede una definizione esplicita dello scenario.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 59%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità Alpha - 59%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Modalità runtime</span>
+          <span className="maturity-category-title">Modalità di runtime</span>
           <span>14 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tui](/it/cli/tui), [Tui](/it/web/tui), [Indice](/it/cli/index)</div>
+        <div className="maturity-category-docs">[TUI](/it/cli/tui), [TUI](/it/web/tui), [Indice](/it/cli/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1394,7 +1394,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tui](/it/web/tui)</div>
+        <div className="maturity-category-docs">[TUI](/it/web/tui)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1404,7 +1404,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tui](/it/web/tui), [Sessioni](/it/cli/sessions)</div>
+        <div className="maturity-category-docs">[TUI](/it/web/tui), [Sessioni](/it/cli/sessions)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1414,7 +1414,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tui](/it/web/tui), [Tui](/it/cli/tui)</div>
+        <div className="maturity-category-docs">[TUI](/it/web/tui), [TUI](/it/cli/tui)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1424,7 +1424,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tui](/it/web/tui), [Qr](/it/cli/qr), [Log](/it/cli/logs), [Completamento](/it/cli/completion)</div>
+        <div className="maturity-category-docs">[TUI](/it/web/tui), [Qr](/it/cli/qr), [Log](/it/cli/logs), [Completamento](/it/cli/completion)</div>
       </div>
     </div>
 
@@ -1433,16 +1433,16 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="ClawHub - M2 Alpha - 4 aree">
     <a id="clawhub" />
 
-    Esistono documentazione pubblica e concetto di ecosistema. Servono scorecard per installazione, attendibilità, aggiornamento, rollback e compatibilità.
+    Esistono documentazione pubblica e concetto di ecosistema. Richiede scorecard per installazione, attendibilità, aggiornamento, rollback e compatibilità.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 58%</span><span>Completezza Alpha - 62%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 58%</span><span>Completezza Alpha - 62%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pubblicazione</span>
-          <span>7 capacità</span>
+          <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
@@ -1452,7 +1452,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Scoperta del catalogo</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1461,18 +1461,18 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Compatibilità e attendibilità</span>
-          <span>12 capacità</span>
+          <span className="maturity-category-title">Compatibilità e fiducia</span>
+          <span>12 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>56%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "56%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin](/it/tools/plugin), [Plugin](/it/cli/plugins), [Compatibilità](/it/plugins/compatibility), [Inventario dei Plugin](/it/plugins/plugin-inventory), [Pubblicazione](/it/clawhub/publishing), [Skills](/it/tools/skills), [Configurazione di Skills](/it/tools/skills-config)</div>
+        <div className="maturity-category-docs">[Plugin](/it/tools/plugin), [Plugin](/it/cli/plugins), [Compatibilità](/it/plugins/compatibility), [Inventario dei Plugin](/it/plugins/plugin-inventory), [Pubblicazione](/it/clawhub/publishing), [Skills](/it/tools/skills), [Configurazione Skills](/it/tools/skills-config)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Ciclo di vita e integrità dei Plugin</span>
-          <span>26 capacità</span>
+          <span>26 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1486,7 +1486,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="OpenClaw App SDK - M2 Alpha - 6 aree">
     <a id="openclaw-app-sdk" />
 
-    OpenClaw App SDK è un contratto distinto per app esterne, separato dal runtime Gateway e dal Plugin SDK. La valutazione attuale mostra un percorso `@openclaw/sdk` reale, con lacune relative a pacchettizzazione pubblica, scoperta automatica, approvazioni, helper e compatibilità.
+    OpenClaw App SDK è un contratto distinto per app esterne, separato dal runtime Gateway e dal Plugin SDK. Il punteggio attuale mostra un percorso `@openclaw/sdk` reale con lacune relative a pacchettizzazione pubblica, rilevamento automatico, approvazioni, helper e compatibilità.
 
     <div className="maturity-surface-rollup"><span>Copertura sperimentale - 3%</span><span>Qualità Alpha - 54%</span><span>Completezza Alpha - 53%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
@@ -1495,62 +1495,62 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">API client</span>
-          <span>4 capacità</span>
+          <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>51%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "51%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openclaw Sdk](/it/gateway/external-apps), [Progettazione API Openclaw Sdk](/it/gateway/external-apps)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>51%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "51%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
+        <div className="maturity-category-docs">[SDK OpenClaw](/it/gateway/external-apps), [Progettazione API dell'SDK OpenClaw](/it/gateway/external-apps)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso al Gateway</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openclaw Sdk](/it/gateway/external-apps), [Progettazione API Openclaw Sdk](/it/gateway/external-apps), [Protocollo](/it/gateway/protocol), [Indice](/it/gateway/security/index)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">[SDK OpenClaw](/it/gateway/external-apps), [Progettazione API dell'SDK OpenClaw](/it/gateway/external-apps), [Protocollo](/it/gateway/protocol), [Indice](/it/gateway/security/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Conversazioni dell'agente</span>
-          <span>6 capacità</span>
+          <span className="maturity-category-title">Conversazioni degli agenti</span>
+          <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openclaw Sdk](/it/gateway/external-apps), [Progettazione API Openclaw Sdk](/it/gateway/external-apps), [Protocollo](/it/gateway/protocol)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
+        <div className="maturity-category-docs">[SDK OpenClaw](/it/gateway/external-apps), [Progettazione API dell'SDK OpenClaw](/it/gateway/external-apps), [Protocollo](/it/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Eventi e approvazioni</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openclaw Sdk](/it/gateway/external-apps), [Progettazione API Openclaw Sdk](/it/gateway/external-apps), [Protocollo](/it/gateway/protocol)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
+        <div className="maturity-category-docs">[SDK OpenClaw](/it/gateway/external-apps), [Progettazione API dell'SDK OpenClaw](/it/gateway/external-apps), [Protocollo](/it/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Helper per le risorse</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>17%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "17%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>62%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "62%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openclaw Sdk](/it/gateway/external-apps), [Progettazione API Openclaw Sdk](/it/gateway/external-apps)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>62%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "62%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div className="maturity-category-docs">[SDK OpenClaw](/it/gateway/external-apps), [Progettazione API dell'SDK OpenClaw](/it/gateway/external-apps)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Compatibilità</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Progettazione API Openclaw Sdk](/it/gateway/external-apps), [Typebox](/it/concepts/typebox), [Protocollo](/it/gateway/protocol)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Progettazione API dell'SDK OpenClaw](/it/gateway/external-apps), [Typebox](/it/concepts/typebox), [Protocollo](/it/gateway/protocol)</div>
       </div>
     </div>
 
@@ -1561,12 +1561,12 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 ### Piattaforma
 
 <AccordionGroup>
-  <Accordion title="Host Gateway Linux - M4 stabile - 5 aree">
+  <Accordion title="Host Gateway Linux - M4 Stabile - 5 aree">
     <a id="linux-gateway-host" />
 
     Il runtime Node è consigliato, il servizio utente systemd è documentato e le indicazioni per VPS/container sono ampie.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità beta - 75%</span><span>Completezza stabile - 89%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 4</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Beta - 75%</span><span>Completezza Stabile - 89%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 4</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -1598,7 +1598,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Remoto](/it/gateway/remote), [Tailscale](/it/gateway/tailscale), [Runbook di esposizione](/it/gateway/security/exposure-runbook), [Autenticazione](/it/gateway/authentication), [Segreti](/it/gateway/secrets)</div>
+        <div className="maturity-category-docs">[Remoto](/it/gateway/remote), [Tailscale](/it/gateway/tailscale), [Runbook sull'esposizione](/it/gateway/security/exposure-runbook), [Autenticazione](/it/gateway/authentication), [Segreti](/it/gateway/secrets)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1612,7 +1612,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Target di distribuzione</span>
+          <span className="maturity-category-title">Destinazioni di distribuzione</span>
           <span>3 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -1624,12 +1624,12 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="host macOS Gateway - M4 stabile - 7 aree">
+  <Accordion title="Host Gateway macOS - M4 stabile - 7 aree">
     <a id="macos-gateway-host" />
 
-    Il percorso del servizio LaunchAgent, le modalità Gateway locale/remota, l'installazione della CLI e l'integrazione dell'app sono documentati.
+    Il percorso del servizio LaunchAgent, le modalità Gateway locale/remota, l'installazione della CLI e l'integrazione con l'app sono documentati.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità beta - 74%</span><span>Completezza stabile - 88%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità beta - 74%</span><span>Completezza stabile - 88%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -1641,7 +1641,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Gateway in bundle](/it/platforms/mac/bundled-gateway), [Programma di installazione](/it/install/installer), [Node](/it/install/node)</div>
+        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Bundled Gateway](/it/platforms/mac/bundled-gateway), [Installer](/it/install/installer), [Node](/it/install/node)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1651,7 +1651,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Gateway in bundle](/it/platforms/mac/bundled-gateway), [Remoto](/it/platforms/mac/remote), [Indice](/it/gateway/index), [Gateway](/it/cli/gateway), [Bonjour](/it/gateway/bonjour)</div>
+        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Bundled Gateway](/it/platforms/mac/bundled-gateway), [Remote](/it/platforms/mac/remote), [Index](/it/gateway/index), [Gateway](/it/cli/gateway), [Bonjour](/it/gateway/bonjour)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1661,7 +1661,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Remoto](/it/platforms/mac/remote), [Remoto](/it/gateway/remote), [Tailscale](/it/gateway/tailscale)</div>
+        <div className="maturity-category-docs">[Remote](/it/platforms/mac/remote), [Remote](/it/gateway/remote), [Tailscale](/it/gateway/tailscale)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1671,7 +1671,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Gateway in bundle](/it/platforms/mac/bundled-gateway), [Gateway](/it/cli/gateway), [Indice](/it/gateway/index), [Aggiornamento](/it/cli/update), [Aggiornamento](/it/install/updating), [Disinstallazione](/it/install/uninstall), [Risoluzione dei problemi](/it/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Bundled Gateway](/it/platforms/mac/bundled-gateway), [Gateway](/it/cli/gateway), [Index](/it/gateway/index), [Update](/it/cli/update), [Updating](/it/install/updating), [Uninstall](/it/install/uninstall), [Troubleshooting](/it/gateway/troubleshooting)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1681,7 +1681,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gateway in bundle](/it/platforms/mac/bundled-gateway), [Macos](/it/platforms/macos), [Gateway](/it/cli/gateway), [Doctor](/it/gateway/doctor), [Risoluzione dei problemi](/it/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">[Bundled Gateway](/it/platforms/mac/bundled-gateway), [Macos](/it/platforms/macos), [Gateway](/it/cli/gateway), [Doctor](/it/gateway/doctor), [Troubleshooting](/it/gateway/troubleshooting)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1691,7 +1691,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Remoto](/it/platforms/mac/remote)</div>
+        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Remote](/it/platforms/mac/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1701,7 +1701,181 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gateway multipli](/it/gateway/multiple-gateways), [Indice](/it/gateway/index), [Gateway](/it/cli/gateway)</div>
+        <div className="maturity-category-docs">[Multiple Gateways](/it/gateway/multiple-gateways), [Index](/it/gateway/index), [Gateway](/it/cli/gateway)</div>
+      </div>
+    </div>
+
+  </Accordion>
+  <Accordion title="App Android - M4 stabile - 7 aree">
+    <a id="android-app" />
+
+    Esiste una distribuzione ufficiale su Google Play, la documentazione per compilare ed eseguire dal sorgente è mantenuta e l'app Android è documentata come normale nodo complementare per gli utenti.
+
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità stabile - 80%</span><span>Completezza stabile - 80%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Acquisizione multimediale</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android), [Fotocamera](/it/nodes/camera)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Chat mobile</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Configurazione della connessione</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android), [Bonjour](/it/gateway/bonjour), [Abbinamento](/it/gateway/pairing)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Distribuzione</span>
+          <span>3 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Impostazioni</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Voce</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android), [Parla](/it/nodes/talk)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Runtime del dispositivo</span>
+          <span>2 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/it/platforms/android), [Risoluzione dei problemi](/it/nodes/troubleshooting), [Protocollo](/it/gateway/protocol)</div>
+      </div>
+    </div>
+
+  </Accordion>
+  <Accordion title="App iOS - M4 stabile - 8 aree">
+    <a id="ios-app" />
+
+    Esiste una distribuzione ufficiale su App Store, le notifiche push basate su relay sono documentate e l'app iOS è documentata come un normale nodo companion per gli utenti.
+
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità stabile - 80%</span><span>Completezza stabile - 80%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Media e condivisione</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Fotocamera](/it/nodes/camera)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Canvas e schermo</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Canvas](/it/plugins/reference/canvas)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Chat e sessioni</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Webchat](/it/web/webchat), [Protocollo](/it/gateway/protocol)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Configurazione e diagnostica del Gateway</span>
+          <span>7 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Abbinamento](/it/channels/pairing)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Distribuzione</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Comandi dispositivo</span>
+          <span>2 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Protocollo](/it/gateway/protocol)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Notifiche e background</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Configurazione](/it/gateway/configuration)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Voce</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Parla](/it/nodes/talk)</div>
       </div>
     </div>
 
@@ -1710,9 +1884,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Hosting Docker e Podman - M3 Beta - 4 aree">
     <a id="docker-and-podman-hosting" />
 
-    La documentazione di installazione esiste e questi sono percorsi di distribuzione comuni. Promuovi dopo che gli smoke test ricorrenti di rilascio avranno acquisito il comportamento di aggiornamento e dei volumi.
+    La documentazione di installazione esiste e copre percorsi di distribuzione comuni. Promuovere dopo che smoke test di rilascio ricorrenti avranno acquisito il comportamento di aggiornamento e dei volumi.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 7%</span><span>Qualità Beta - 71%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 7%</span><span>Qualità Beta - 71%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -1734,7 +1908,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Podman](/it/install/podman), [Runtime VM Docker](/it/install/docker-vm-runtime), [Docker](/it/install/docker), [Hetzner](/it/install/hetzner), [Hostinger](/it/install/hostinger)</div>
+        <div className="maturity-category-docs">[Podman](/it/install/podman), [Docker Vm Runtime](/it/install/docker-vm-runtime), [Docker](/it/install/docker), [Hetzner](/it/install/hetzner), [Hostinger](/it/install/hostinger)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1744,26 +1918,26 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/it/install/docker), [Runtime VM Docker](/it/install/docker-vm-runtime), [Convalida completa del rilascio](/it/reference/full-release-validation)</div>
+        <div className="maturity-category-docs">[Docker](/it/install/docker), [Docker Vm Runtime](/it/install/docker-vm-runtime), [Convalida completa del rilascio](/it/reference/full-release-validation)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sandbox e strumenti per agenti</span>
+          <span className="maturity-category-title">Sandbox e strumenti degli agenti</span>
           <span>3 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/it/install/docker), [Runtime VM Docker](/it/install/docker-vm-runtime)</div>
+        <div className="maturity-category-docs">[Docker](/it/install/docker), [Docker Vm Runtime](/it/install/docker-vm-runtime)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Windows via WSL2 - M3 Beta - 6 aree">
+  <Accordion title="Windows tramite WSL2 - M3 Beta - 6 aree">
     <a id="windows-via-wsl2" />
 
-    Percorso Windows consigliato con indicazioni su systemd/servizio utente e documentazione della catena di avvio. Promuovere dopo scorecard ripetute di installazione/aggiornamento.
+    Percorso consigliato per Windows con indicazioni su systemd/servizio utente e documentazione della catena di avvio. Promuovere dopo scorecard ripetute di installazione/aggiornamento.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 6%</span><span>Qualità Alpha - 69%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 5</span></span></div>
 
@@ -1772,47 +1946,47 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione WSL</span>
-          <span>6 funzionalità / supportate da LTS</span>
+          <span>6 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/it/platforms/windows), [Guida introduttiva](/it/start/getting-started)</div>
+        <div className="maturity-category-docs">[Windows](/it/platforms/windows), [Per iniziare](/it/start/getting-started)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI</span>
-          <span>8 funzionalità / supportate da LTS</span>
+          <span>8 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/it/platforms/windows), [Guida introduttiva](/it/start/getting-started), [Aggiornamento](/it/install/updating), [Onboarding](/it/cli/onboard), [Doctor](/it/cli/doctor), [Stato](/it/cli/status), [Log](/it/cli/logs)</div>
+        <div className="maturity-category-docs">[Windows](/it/platforms/windows), [Per iniziare](/it/start/getting-started), [Aggiornamento](/it/install/updating), [Onboard](/it/cli/onboard), [Doctor](/it/cli/doctor), [Stato](/it/cli/status), [Log](/it/cli/logs)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Ciclo di vita del servizio Gateway</span>
-          <span>10 funzionalità / supportate da LTS</span>
+          <span>10 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Windows](/it/platforms/windows), [Indice](/it/gateway/index), [Doctor](/it/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso ed esposizione del Gateway</span>
-          <span>11 funzionalità / supportate da LTS</span>
+          <span>11 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Autenticazione](/it/gateway/authentication), [Segreti](/it/gateway/secrets), [Remoto](/it/gateway/remote), [Runbook di esposizione](/it/gateway/security/exposure-runbook), [Windows](/it/platforms/windows)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Diagnostica e riparazione</span>
-          <span>6 funzionalità / supportate da LTS</span>
+          <span>6 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1821,13 +1995,13 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Browser e interfaccia utente di controllo</span>
+          <span className="maturity-category-title">Browser e interfaccia di controllo</span>
           <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Risoluzione dei problemi di CDP remoto del browser WSL2 Windows](/it/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Browser](/it/tools/browser), [Interfaccia utente di controllo](/it/web/control-ui)</div>
+        <div className="maturity-category-docs">[Risoluzione dei problemi di Browser Wsl2 Windows Remote Cdp](/it/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Browser](/it/tools/browser), [Interfaccia di controllo](/it/web/control-ui)</div>
       </div>
     </div>
 
@@ -1836,9 +2010,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Raspberry Pi e piccoli dispositivi Linux - M3 Beta - 4 aree">
     <a id="raspberry-pi-and-small-linux-devices" />
 
-    La documentazione della piattaforma esiste e il percorso Gateway è basato su Linux. Richiede una prova smoke di rilascio specifica per l'hardware per passare a un livello superiore.
+    Esiste la documentazione della piattaforma e il percorso Gateway è basato su Linux. È necessaria una prova smoke di rilascio specifica per l'hardware per salire di livello.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alfa - 67%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 67%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -1848,9 +2022,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>12 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/it/install/raspberry-pi), [Indice](/it/install/index), [FAQ primo avvio](/it/help/faq-first-run), [FAQ](/it/help/faq), [Linux](/it/platforms/linux), [Installer](/it/install/installer)</div>
+        <div className="maturity-category-docs">[Raspberry Pi](/it/install/raspberry-pi), [Indice](/it/install/index), [FAQ primo avvio](/it/help/faq-first-run), [FAQ](/it/help/faq), [Linux](/it/platforms/linux), [Programma di installazione](/it/install/installer)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1858,7 +2032,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>9 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Raspberry Pi](/it/install/raspberry-pi), [Autenticazione](/it/gateway/authentication), [Segreti](/it/gateway/secrets), [Associazione](/it/gateway/pairing), [Dispositivi](/it/cli/devices), [Remoto](/it/gateway/remote), [Tailscale](/it/gateway/tailscale)</div>
       </div>
@@ -1868,9 +2042,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>10 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/gateway/index), [Gateway](/it/cli/gateway), [Raspberry Pi](/it/install/raspberry-pi), [Linux](/it/platforms/linux), [VPS](/it/vps)</div>
+        <div className="maturity-category-docs">[Indice](/it/gateway/index), [Gateway](/it/cli/gateway), [Raspberry Pi](/it/install/raspberry-pi), [Linux](/it/platforms/linux), [Vps](/it/vps)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1878,7 +2052,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Raspberry Pi](/it/install/raspberry-pi), [Linux](/it/platforms/linux), [Integrità](/it/gateway/health), [Diagnostica](/it/gateway/diagnostics)</div>
       </div>
@@ -1886,12 +2060,12 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="App complementare macOS - M3 Beta - 8 aree">
+  <Accordion title="App companion per macOS - M3 Beta - 8 aree">
     <a id="macos-companion-app" />
 
-    Esistono un'app ricca per la barra dei menu, permessi, modalità Node, Canvas, attivazione vocale, WebChat e modalità remota. È ancora abbastanza in rapida evoluzione da evitare lo stato stabile.
+    Esistono un'app completa per la barra dei menu, autorizzazioni, modalità nodo, Canvas, attivazione vocale, WebChat e modalità remota. È ancora abbastanza in rapida evoluzione da evitare Stable.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alfa - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -1913,7 +2087,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gateway in bundle](/it/platforms/mac/bundled-gateway), [Macos](/it/platforms/macos), [Processo figlio](/it/platforms/mac/child-process), [Configurazione di sviluppo](/it/platforms/mac/dev-setup)</div>
+        <div className="maturity-category-docs">[Gateway incluso](/it/platforms/mac/bundled-gateway), [Macos](/it/platforms/macos), [Processo figlio](/it/platforms/mac/child-process), [Configurazione di sviluppo](/it/platforms/mac/dev-setup)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1923,7 +2097,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Barra dei menu](/it/platforms/mac/menu-bar), [Icona](/it/platforms/mac/icon), [Macos](/it/platforms/macos), [Integrità](/it/platforms/mac/health), [Logging](/it/platforms/mac/logging), [Remoto](/it/platforms/mac/remote)</div>
+        <div className="maturity-category-docs">[Barra dei menu](/it/platforms/mac/menu-bar), [Icona](/it/platforms/mac/icon), [Macos](/it/platforms/macos), [Integrità](/it/platforms/mac/health), [Registrazione](/it/platforms/mac/logging), [Remoto](/it/platforms/mac/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1933,7 +2107,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Xpc](/it/platforms/mac/xpc), [Autorizzazioni](/it/platforms/mac/permissions), [Firma](/it/platforms/mac/signing), [Peekaboo](/it/platforms/mac/peekaboo)</div>
+        <div className="maturity-category-docs">[Macos](/it/platforms/macos), [Xpc](/it/platforms/mac/xpc), [Permessi](/it/platforms/mac/permissions), [Firma](/it/platforms/mac/signing), [Peekaboo](/it/platforms/mac/peekaboo)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1953,7 +2127,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Voicewake](/it/platforms/mac/voicewake), [Sovrapposizione vocale](/it/platforms/mac/voice-overlay), [Talk](/it/nodes/talk), [Macos](/it/platforms/macos)</div>
+        <div className="maturity-category-docs">[Voicewake](/it/platforms/mac/voicewake), [Overlay vocale](/it/platforms/mac/voice-overlay), [Talk](/it/nodes/talk), [Macos](/it/platforms/macos)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1979,93 +2153,10 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="App Android - M2 Alpha - 7 aree">
-    <a id="android-app" />
-
-    Il percorso pubblico su Google Play esiste, ma la documentazione dell'app descrive ancora la ricostruzione come estremamente alpha e richiama il lavoro di irrobustimento della release.
-
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità alpha - 59%</span><span>Completezza alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Acquisizione multimediale</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android), [Fotocamera](/it/nodes/camera)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Chat mobile</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione connessione</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android), [Bonjour](/it/gateway/bonjour), [Abbinamento](/it/gateway/pairing)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Distribuzione</span>
-          <span>3 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Impostazioni</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Voce</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android), [Conversazione](/it/nodes/talk)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Runtime dispositivo</span>
-          <span>2 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/it/platforms/android), [Risoluzione dei problemi](/it/nodes/troubleshooting), [Protocollo](/it/gateway/protocol)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
   <Accordion title="Windows nativo - M2 Alpha - 4 aree">
     <a id="native-windows" />
 
-    I flussi principali di CLI/Gateway funzionano, ma la documentazione consiglia ancora WSL2 per l'esperienza completa ed elenca le avvertenze native.
+    I flussi principali CLI/Gateway funzionano, ma la documentazione consiglia ancora WSL2 per l'esperienza completa ed elenca le avvertenze native.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 58%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 1</span></span></div>
 
@@ -2074,12 +2165,12 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI</span>
-          <span>9 funzionalità / supportato da LTS</span>
+          <span>9 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>64%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "64%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/install/index), [Installer](/it/install/installer), [Windows](/it/platforms/windows), [Per iniziare](/it/start/getting-started), [Onboard](/it/cli/onboard)</div>
+        <div className="maturity-category-docs">[Indice](/it/install/index), [Installer](/it/install/installer), [Windows](/it/platforms/windows), [Guida introduttiva](/it/start/getting-started), [Onboard](/it/cli/onboard)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2118,16 +2209,16 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Hosting Kubernetes - M2 Alpha - 4 aree">
     <a id="kubernetes-hosting" />
 
-    L'hosting Kubernetes è un percorso distinto di distribuzione cluster basato su Kustomize. La valutazione attuale mostra un percorso reale di distribuzione minimale con lacune relative a CI specifica per Kubernetes, pacchettizzazione di ingress/TLS/NetworkPolicy, backup/ripristino e rafforzamento dell'esposizione in produzione.
+    L'hosting Kubernetes è un percorso distinto di distribuzione cluster basato su Kustomize. Il punteggio attuale mostra un vero percorso di distribuzione minimo, con lacune relative a CI specifica per Kubernetes, pacchettizzazione di ingress/TLS/NetworkPolicy, backup/ripristino e hardening dell'esposizione in produzione.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 55%</span><span>Completezza Alpha - 61%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 55%</span><span>Completezza Alpha - 61%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione della distribuzione</span>
-          <span>5 capacità</span>
+          <span className="maturity-category-title">Configurazione del deployment</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
@@ -2137,7 +2228,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione e segreti</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
@@ -2147,7 +2238,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso ed esposizione</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
@@ -2157,7 +2248,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Ciclo di vita del cluster</span>
-          <span>5 capacità</span>
+          <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
@@ -2168,111 +2259,18 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="App iOS - M1 Sperimentale - 8 aree">
-    <a id="ios-app" />
+  <Accordion title="Percorso di installazione Nix - M1 Sperimentale - 5 aree">
+    <a id="nix-install-path" />
 
-    Anteprima interna / super-alpha. Esistono flussi push supportati da TestFlight e relay, ma non ancora una distribuzione pubblica.
+    Flusso di installazione facoltativo. Richiede una promessa di supporto più chiara prima della promozione ad alpha/beta.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Sperimentale - 41%</span><span>Completezza Sperimentale - 44%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Sperimentale - 41%</span><span>Completezza Sperimentale - 44%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Media e condivisione</span>
-          <span>1 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Fotocamera](/it/nodes/camera)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Canvas e schermo</span>
-          <span>1 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Canvas](/it/plugins/reference/canvas)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Chat e sessioni</span>
-          <span>1 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Webchat](/it/web/webchat), [Protocollo](/it/gateway/protocol)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e diagnostica del Gateway</span>
-          <span>7 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Abbinamento](/it/channels/pairing)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Distribuzione</span>
-          <span>1 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Comandi del dispositivo</span>
-          <span>2 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Protocollo](/it/gateway/protocol)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Notifiche e background</span>
-          <span>1 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Configurazione](/it/gateway/configuration)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Voce</span>
-          <span>1 capacità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios), [Talk](/it/nodes/talk)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Nix install path - M1 Experimental - 5 areas">
-    <a id="nix-install-path" />
-
-    Flusso di installazione opzionale. Richiede un impegno di supporto più chiaro prima della promozione ad alpha/beta.
-
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità sperimentale - 41%</span><span>Completezza sperimentale - 44%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Docs</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Passaggio dell'installazione</span>
+          <span className="maturity-category-title">Passaggio di consegne dell'installazione</span>
           <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2282,7 +2280,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Ciclo di vita del Plugin</span>
+          <span className="maturity-category-title">Ciclo di vita dei Plugin</span>
           <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2324,10 +2322,10 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="Superfici companion watchOS - M1 Sperimentale - 5 aree">
+  <Accordion title="superfici companion watchOS - M1 Sperimentale - 5 aree">
     <a id="watchos-companion-surfaces" />
 
-    Il sorgente contiene superfici per app/estensione Watch; la documentazione pubblica non presenta ancora questa funzionalità per gli utenti.
+    Il codice sorgente contiene superfici dell'app/estensione Watch; la documentazione pubblica non la presenta ancora come funzionalità per gli utenti.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Sperimentale - 41%</span><span>Completezza Sperimentale - 44%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
@@ -2336,70 +2334,70 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Consegna e ripristino</span>
-          <span>7 funzionalità</span>
+          <span>7 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios)</div>
+        <div className="maturity-category-docs">[Ios](/it/platforms/ios)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Approvazioni Exec</span>
-          <span>3 funzionalità</span>
+          <span>3 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Approvazioni Exec](/it/tools/exec-approvals), [iOS](/it/platforms/ios)</div>
+        <div className="maturity-category-docs">[Approvazioni Exec](/it/tools/exec-approvals), [Ios](/it/platforms/ios)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Distribuzione e supporto</span>
-          <span>6 funzionalità</span>
+          <span>6 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios)</div>
+        <div className="maturity-category-docs">[Ios](/it/platforms/ios)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Notifiche e risposte</span>
-          <span>7 funzionalità</span>
+          <span>7 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios)</div>
+        <div className="maturity-category-docs">[Ios](/it/platforms/ios)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Interfaccia app Watch</span>
-          <span>3 funzionalità</span>
+          <span className="maturity-category-title">UI dell'app Watch</span>
+          <span>3 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/it/platforms/ios)</div>
+        <div className="maturity-category-docs">[Ios](/it/platforms/ios)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="App complementare Linux - M0 Pianificata - 5 aree">
+  <Accordion title="App companion Linux - M0 Pianificato - 5 aree">
     <a id="linux-companion-app" />
 
-    La documentazione indica che le app complementari native per Linux sono pianificate; Gateway è oggi il percorso Linux supportato.
+    La documentazione indica che le app companion native per Linux sono pianificate; Gateway è attualmente il percorso Linux supportato.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità sperimentale - 19%</span><span>Completezza sperimentale - 21%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità sperimentale - 19%</span><span>Completezza sperimentale - 21%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Distribuzione dell'app</span>
-          <span>3 funzionalità</span>
+          <span>3 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2409,17 +2407,17 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Connettività Gateway</span>
-          <span>4 funzionalità</span>
+          <span>4 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/it/platforms/linux), [Indice](/it/gateway/index), [Abbinamento](/it/gateway/pairing), [Remoto](/it/gateway/remote)</div>
+        <div className="maturity-category-docs">[Linux](/it/platforms/linux), [Indice](/it/gateway/index), [Associazione](/it/gateway/pairing), [Remoto](/it/gateway/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Chat e sessioni</span>
-          <span>3 funzionalità</span>
+          <span>3 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2429,17 +2427,17 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Funzionalità desktop</span>
-          <span>9 funzionalità</span>
+          <span>9 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/it/platforms/linux), [Approvazioni Exec](/it/tools/exec-approvals), [Segreti](/it/gateway/secrets), [Indice](/it/nodes/index), [Exec](/it/tools/exec), [Talk](/it/nodes/talk), [Fotocamera](/it/nodes/camera)</div>
+        <div className="maturity-category-docs">[Linux](/it/platforms/linux), [Approvazioni exec](/it/tools/exec-approvals), [Segreti](/it/gateway/secrets), [Indice](/it/nodes/index), [Exec](/it/tools/exec), [Parla](/it/nodes/talk), [Fotocamera](/it/nodes/camera)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Stato e diagnostica</span>
-          <span>7 funzionalità</span>
+          <span>7 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2450,19 +2448,19 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="App complementare nativa per Windows - M0 Pianificato - 5 aree">
+  <Accordion title="App complementare Windows nativa - M0 Pianificata - 5 aree">
     <a id="native-windows-companion-app" />
 
-    Solo pianificato.
+    Solo pianificata.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Sperimentale - 19%</span><span>Completezza Sperimentale - 21%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Sperimentale - 19%</span><span>Completezza Sperimentale - 21%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Installazione e aggiornamenti</span>
-          <span>4 funzionalità</span>
+          <span>4 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2472,7 +2470,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Connessione Gateway</span>
-          <span>3 funzionalità</span>
+          <span>3 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2482,7 +2480,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Sessioni di chat</span>
-          <span>2 funzionalità</span>
+          <span>2 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2492,7 +2490,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Stato e riparazione</span>
-          <span>5 funzionalità</span>
+          <span>5 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2502,7 +2500,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Strumenti desktop e autorizzazioni</span>
-          <span>10 funzionalità</span>
+          <span>10 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2521,26 +2519,26 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Discord - M4 Stabile - 6 aree">
     <a id="discord" />
 
-    Documentazione approfondita e ampia copertura delle funzionalità. I percorsi voce/delega dovrebbero restare valutati separatamente come beta/alpha.
+    Documentazione approfondita e ampia copertura delle funzionalità. I percorsi voce/delega dovrebbero rimanere valutati separatamente come beta/alpha.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Beta - 73%</span><span>Completezza Stabile - 87%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 4</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità beta - 73%</span><span>Completezza stabile - 87%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 4</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
-          <span>10 funzionalità / supportate LTS</span>
+          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
+          <span>10 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabile</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/it/channels/discord), [Discord](/it/plugins/reference/discord), [Fly](/it/install/fly), [Comandi slash](/it/tools/slash-commands), [Salute](/it/gateway/health), [Canali](/it/cli/channels), [Canali di configurazione](/it/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[Discord](/it/channels/discord), [Discord](/it/plugins/reference/discord), [Fly](/it/install/fly), [Comandi slash](/it/tools/slash-commands), [Integrità](/it/gateway/health), [Canali](/it/cli/channels), [Canali di configurazione](/it/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso e identità</span>
-          <span>6 funzionalità / supportate LTS</span>
+          <span>6 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
@@ -2549,8 +2547,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
-          <span>12 funzionalità / supportate LTS</span>
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
+          <span>12 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
@@ -2559,8 +2557,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Contenuti multimediali e avanzati</span>
-          <span>1 funzionalità / supportate LTS</span>
+          <span className="maturity-category-title">Media e contenuti ricchi</span>
+          <span>1 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
@@ -2569,7 +2567,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controlli nativi e approvazioni</span>
+          <span className="maturity-category-title">Controlli e approvazioni nativi</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2594,46 +2592,46 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Telegram - M3 Beta - 5 aree">
     <a id="telegram" />
 
-    Il canale core è abbastanza maturo per l'uso regolare, ma la UX ad alta variabilità e i casi limite dei contenuti multimediali richiedono prove di scenario ricorrenti.
+    Il canale core è abbastanza maturo per l'uso regolare, ma UX ad alta variabilità e casi limite dei media richiedono prove di scenario ricorrenti.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità Alpha - 68%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Completo - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità Alpha - 68%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Completa - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
-          <span>10 funzionalità / supportate LTS</span>
+          <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
+          <span>10 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Configurazione dei canali](/it/gateway/config-channels), [Canali](/it/cli/channels)</div>
+        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Canali di configurazione](/it/gateway/config-channels), [Canali](/it/cli/channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso e identità</span>
-          <span>10 funzionalità / supportate LTS</span>
+          <span>10 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Abbinamento](/it/channels/pairing), [Gruppi di accesso](/it/channels/access-groups), [Gruppi](/it/channels/groups), [Multi Agent](/it/concepts/multi-agent)</div>
+        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Abbinamento](/it/channels/pairing), [Gruppi di accesso](/it/channels/access-groups), [Gruppi](/it/channels/groups), [Multi agente](/it/concepts/multi-agent)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
-          <span>1 funzionalità / supportate LTS</span>
+          <span>1 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Gruppi](/it/channels/groups), [Multi Agent](/it/concepts/multi-agent)</div>
+        <div className="maturity-category-docs">[Telegram](/it/channels/telegram), [Gruppi](/it/channels/groups), [Multi agente](/it/concepts/multi-agent)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Contenuti multimediali e avanzati</span>
-          <span>1 funzionalità / supportate LTS</span>
+          <span className="maturity-category-title">Media e contenuti avanzati</span>
+          <span>1 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2642,8 +2640,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controlli e approvazioni nativi</span>
-          <span>9 funzionalità / supportate LTS</span>
+          <span className="maturity-category-title">Controlli nativi e approvazioni</span>
+          <span>9 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
@@ -2657,16 +2655,16 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Slack - M3 Beta - 5 aree">
     <a id="slack" />
 
-    Documentazione del canale di prima classe e superficie di instradamento. Richiede scorecard per scenari di installazione/amministrazione dello spazio di lavoro.
+    Documentazione dei canali e superficie di instradamento di prima classe. Richiede schede di valutazione degli scenari di installazione/amministrazione dell'area di lavoro.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Completa - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Completo - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione e operazioni del canale</span>
-          <span>10 funzionalità / supportate da LTS</span>
+          <span>10 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2676,7 +2674,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso e identità</span>
-          <span>1 funzionalità / supportate da LTS</span>
+          <span>1 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2685,8 +2683,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
-          <span>5 funzionalità / supportate da LTS</span>
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
+          <span>5 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2696,7 +2694,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media e contenuti avanzati</span>
-          <span>1 funzionalità / supportate da LTS</span>
+          <span>1 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2705,13 +2703,13 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controlli e approvazioni nativi</span>
-          <span>8 funzionalità / supportate da LTS</span>
+          <span className="maturity-category-title">Controlli nativi e approvazioni</span>
+          <span>8 funzionalità / supportato da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/it/channels/slack), [Comandi slash](/it/tools/slash-commands), [Approvazioni Exec](/it/tools/exec-approvals)</div>
+        <div className="maturity-category-docs">[Slack](/it/channels/slack), [Comandi slash](/it/tools/slash-commands), [Approvazioni exec](/it/tools/exec-approvals)</div>
       </div>
     </div>
 
@@ -2720,36 +2718,36 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="iMessage e BlueBubbles - M3 Beta - 5 aree">
     <a id="imessage-and-bluebubbles" />
 
-    iMessage supportato funziona tramite imsg su un host macOS Messages con accesso effettuato; le configurazioni BlueBubbles legacy richiedono una migrazione. Mantieni visibili le avvertenze su autorizzazioni macOS, wrapper SSH, SIP/API private e migrazione.
+    Le esecuzioni iMessage supportate passano tramite imsg su un host macOS Messages con accesso effettuato; le configurazioni BlueBubbles legacy richiedono la migrazione. Mantieni visibili le avvertenze su permessi macOS, wrapper SSH, SIP/API private e migrazione.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
-          <span>11 capacità</span>
+          <span className="maturity-category-title">Configurazione e operatività dei canali</span>
+          <span>11 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Bluebubbles Imessage](/it/announcements/bluebubbles-imessage), [Imessage da Bluebubbles](/it/channels/imessage-from-bluebubbles), [Configura canali](/it/gateway/config-channels), [Imessage](/it/channels/imessage)</div>
+        <div className="maturity-category-docs">[Bluebubbles Imessage](/it/announcements/bluebubbles-imessage), [Imessage From Bluebubbles](/it/channels/imessage-from-bluebubbles), [Config Channels](/it/gateway/config-channels), [Imessage](/it/channels/imessage)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso e identità</span>
-          <span>6 capacità</span>
+          <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Imessage](/it/channels/imessage), [Imessage da Bluebubbles](/it/channels/imessage-from-bluebubbles), [Configura canali](/it/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[Imessage](/it/channels/imessage), [Imessage From Bluebubbles](/it/channels/imessage-from-bluebubbles), [Config Channels](/it/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
-          <span>4 capacità</span>
+          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
+          <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2759,17 +2757,17 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media e contenuti avanzati</span>
-          <span>7 capacità</span>
+          <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Imessage](/it/channels/imessage), [Imessage da Bluebubbles](/it/channels/imessage-from-bluebubbles), [Configura canali](/it/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[Imessage](/it/channels/imessage), [Imessage From Bluebubbles](/it/channels/imessage-from-bluebubbles), [Config Channels](/it/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controlli e approvazioni nativi</span>
-          <span>3 capacità</span>
+          <span className="maturity-category-title">Controlli nativi e approvazioni</span>
+          <span>3 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2783,21 +2781,21 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="WhatsApp - M3 Beta - 5 aree">
     <a id="whatsapp" />
 
-    Il percorso principale è importante e documentato; la volatilità upstream di Baileys/sessione lo mantiene sotto Stable.
+    Il percorso principale è importante e documentato; la volatilità a monte di Baileys/sessione lo mantiene al di sotto di Stabile.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
+          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/it/channels/whatsapp), [Configurazione canali](/it/gateway/config-channels), [WhatsApp](/it/plugins/reference/whatsapp), [Automazione QA E2E](/it/concepts/qa-e2e-automation), [Diagnostica](/it/gateway/doctor)</div>
+        <div className="maturity-category-docs">[WhatsApp](/it/channels/whatsapp), [Canali di configurazione](/it/gateway/config-channels), [WhatsApp](/it/plugins/reference/whatsapp), [Automazione QA E2E](/it/concepts/qa-e2e-automation), [Doctor](/it/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2807,7 +2805,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/it/channels/whatsapp), [Configurazione canali](/it/gateway/config-channels), [Automazione QA E2E](/it/concepts/qa-e2e-automation), [Abbinamento](/it/channels/pairing)</div>
+        <div className="maturity-category-docs">[WhatsApp](/it/channels/whatsapp), [Canali di configurazione](/it/gateway/config-channels), [Automazione QA E2E](/it/concepts/qa-e2e-automation), [Associazione](/it/channels/pairing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2831,7 +2829,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controlli nativi e approvazioni</span>
+          <span className="maturity-category-title">Controlli e approvazioni nativi</span>
           <span>2 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2848,7 +2846,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
     Supportato tramite Plugin in bundle. Richiede scorecard per bridge, autenticazione e ciclo di vita delle stanze.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità alfa - 60%</span><span>Completezza alfa - 67%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità alfa - 60%</span><span>Completezza alfa - 67%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -2858,8 +2856,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/it/channels/matrix), [Migrazione Matrix](/it/channels/matrix-migration)</div>
       </div>
       <div className="maturity-category-row">
@@ -2868,18 +2866,18 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/it/channels/matrix), [Gruppi](/it/channels/groups), [Protezione dai loop dei bot](/it/channels/bot-loop-protection)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Matrix](/it/channels/matrix), [Gruppi](/it/channels/groups), [Protezione dai cicli dei bot](/it/channels/bot-loop-protection)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
+          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
           <span>1 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/it/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
@@ -2888,8 +2886,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>1 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/it/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
@@ -2898,8 +2896,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/it/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
@@ -2908,72 +2906,72 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>3 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/it/channels/matrix), [Migrazione Matrix](/it/channels/matrix-migration)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Google Chat - M2 Alpha - 5 aree">
+  <Accordion title="Google Chat - M2 Alpha - 5 areas">
     <a id="google-chat" />
 
     Canale documentato, ma la configurazione aziendale/amministrativa aumenta il rischio di maturità.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 59%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alfa - 59%</span><span>Completezza Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Docs</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
-          <span>16 funzionalità</span>
+          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
+          <span>16 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/it/channels/googlechat), [Google Chat](/it/plugins/reference/googlechat), [Configurazione dei canali](/it/gateway/config-channels), [Riferimento CLI della procedura guidata](/it/start/wizard-cli-reference), [Segreti](/it/gateway/secrets), [Superficie delle credenziali Secretref](/it/reference/secretref-credential-surface), [Stato](/it/gateway/health), [Inventario dei Plugin](/it/plugins/plugin-inventory), [Indice](/it/channels/index)</div>
+        <div className="maturity-category-docs">[Googlechat](/it/channels/googlechat), [Googlechat](/it/plugins/reference/googlechat), [Configurazione canali](/it/gateway/config-channels), [Riferimento CLI della procedura guidata](/it/start/wizard-cli-reference), [Segreti](/it/gateway/secrets), [Superficie delle credenziali Secretref](/it/reference/secretref-credential-surface), [Integrità](/it/gateway/health), [Inventario dei Plugin](/it/plugins/plugin-inventory), [Indice](/it/channels/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso e identità</span>
-          <span>11 funzionalità</span>
+          <span>11 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/it/channels/googlechat), [Associazione](/it/channels/pairing), [Gruppi di accesso](/it/channels/access-groups), [Configurazione dei canali](/it/gateway/config-channels), [Protezione dai loop dei bot](/it/channels/bot-loop-protection), [Instradamento dei canali](/it/channels/channel-routing)</div>
+        <div className="maturity-category-docs">[Googlechat](/it/channels/googlechat), [Associazione](/it/channels/pairing), [Gruppi di accesso](/it/channels/access-groups), [Configurazione canali](/it/gateway/config-channels), [Protezione dai loop dei bot](/it/channels/bot-loop-protection), [Instradamento dei canali](/it/channels/channel-routing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
-          <span>1 funzionalità</span>
+          <span>1 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/it/channels/googlechat), [Protezione dai loop dei bot](/it/channels/bot-loop-protection), [Gruppi di accesso](/it/channels/access-groups), [Instradamento dei canali](/it/channels/channel-routing)</div>
+        <div className="maturity-category-docs">[Googlechat](/it/channels/googlechat), [Protezione dai loop dei bot](/it/channels/bot-loop-protection), [Gruppi di accesso](/it/channels/access-groups), [Instradamento dei canali](/it/channels/channel-routing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Contenuti multimediali e avanzati</span>
-          <span>1 funzionalità</span>
+          <span>1 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/it/channels/googlechat), [Messaggio](/it/cli/message), [Comprensione dei contenuti multimediali](/it/nodes/media-understanding), [Superficie delle credenziali Secretref](/it/reference/secretref-credential-surface)</div>
+        <div className="maturity-category-docs">[Googlechat](/it/channels/googlechat), [Messaggio](/it/cli/message), [Comprensione dei contenuti multimediali](/it/nodes/media-understanding), [Superficie delle credenziali Secretref](/it/reference/secretref-credential-surface)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Controlli e approvazioni nativi</span>
-          <span>16 funzionalità</span>
+          <span className="maturity-category-title">Controlli nativi e approvazioni</span>
+          <span>16 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/it/channels/googlechat), [Messaggio](/it/cli/message), [Comprensione dei contenuti multimediali](/it/nodes/media-understanding), [Superficie delle credenziali Secretref](/it/reference/secretref-credential-surface), [Reazioni](/it/tools/reactions), [Comandi slash](/it/tools/slash-commands), [Configurazione degli agenti](/it/gateway/config-agents), [Refactoring del ciclo di vita dei messaggi](/it/concepts/message-lifecycle-refactor)</div>
+        <div className="maturity-category-docs">[Googlechat](/it/channels/googlechat), [Messaggio](/it/cli/message), [Comprensione dei contenuti multimediali](/it/nodes/media-understanding), [Superficie delle credenziali Secretref](/it/reference/secretref-credential-surface), [Reazioni](/it/tools/reactions), [Comandi slash](/it/tools/slash-commands), [Configurazione agenti](/it/gateway/config-agents), [Refactoring del ciclo di vita dei messaggi](/it/concepts/message-lifecycle-refactor)</div>
       </div>
     </div>
 
@@ -2982,7 +2980,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Microsoft Teams - M2 Alpha - 5 aree">
     <a id="microsoft-teams" />
 
-    I flussi di autenticazione/amministrazione aziendali richiedono prove di scenario esplicite.
+    I flussi di autenticazione/amministrazione aziendale richiedono una prova esplicita dello scenario.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 59%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
@@ -2996,7 +2994,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/it/channels/msteams), [Msteams](/it/plugins/reference/msteams), [Configurazione canali](/it/gateway/config-channels), [Stato](/it/gateway/health)</div>
+        <div className="maturity-category-docs">[Msteams](/it/channels/msteams), [Msteams](/it/plugins/reference/msteams), [Configurazione canali](/it/gateway/config-channels), [Salute](/it/gateway/health)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3010,7 +3008,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3020,7 +3018,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Contenuti multimediali e avanzati</span>
+          <span className="maturity-category-title">Media e contenuti avanzati</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3045,20 +3043,20 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Signal - M2 Alpha - 5 aree">
     <a id="signal" />
 
-    La documentazione dei canali supportati esiste; servono prove più solide di installazione e riconnessione.
+    La documentazione del canale supportato esiste; servono prove più solide per installazione e riconnessione.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità Alpha - 59%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 59%</span><span>Completezza Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
+          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
           <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Signal](/it/channels/signal), [Signal](/it/plugins/reference/signal)</div>
       </div>
       <div className="maturity-category-row">
@@ -3067,18 +3065,18 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Signal](/it/channels/signal)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
           <span>1 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Signal](/it/channels/signal)</div>
       </div>
       <div className="maturity-category-row">
@@ -3087,8 +3085,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Signal](/it/channels/signal)</div>
       </div>
       <div className="maturity-category-row">
@@ -3097,32 +3095,85 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>3 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Signal](/it/channels/signal)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, canali regionali - M2 Alpha - 4 aree">
+  <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, canali regionali - M2 Alfa - 4 aree">
     <a id="feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels" />
 
-    Copertura regionale importante, ma il livello di supporto pubblico dovrebbe essere calibrato in base al tipo di account, all'approvazione upstream e alla prova del maintainer.
+    Copertura regionale importante, ma il livello di supporto pubblico dovrebbe essere calibrato in base al tipo di account, all'approvazione upstream e alle prove dei maintainer.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 55%</span><span>Completezza Alpha - 58%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità Alfa - 55%</span><span>Completezza Alfa - 58%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
-          <span>6 capacità</span>
+          <span>6 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/channels/index), [Abbinamento](/it/channels/pairing), [Feishu](/it/plugins/reference/feishu), [Interni dell'architettura](/it/plugins/architecture-internals)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Indice](/it/channels/index), [Associazione](/it/channels/pairing), [Feishu](/it/plugins/reference/feishu), [Interni dell'architettura](/it/plugins/architecture-internals)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Accesso e identità</span>
+          <span>1 funzionalità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
+          <span>1 funzionalità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Media e contenuti ricchi</span>
+          <span>1 funzionalità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
+      </div>
+    </div>
+
+  </Accordion>
+
+  <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 Alfa - 4 aree">
+    <a id="mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat" />
+
+    Esistono superfici supportate, ma la maturità probabilmente varia in base alla copertura upstream e dei manutentori. Valutare singolarmente in seguito.
+
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alfa - 53%</span><span>Completezza Alfa - 54%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
+          <span>1 capacità</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3136,7 +3187,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
           <span>1 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3158,72 +3209,19 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
   </Accordion>
 
-  <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 Alpha - 4 areas">
-    <a id="mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat" />
-
-    Esistono superfici supportate, ma la maturità probabilmente varia in base alla copertura dell'upstream e dei manutentori. Valutarle singolarmente in seguito.
-
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 53%</span><span>Completezza Alpha - 54%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione e operazioni del canale</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Accesso e identità</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Instradamento e recapito delle conversazioni</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Contenuti multimediali e avanzati</span>
-          <span>1 funzionalità</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Nessuna documentazione collegata</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Canale per chiamate vocali - M1 Sperimentale - 5 aree">
+  <Accordion title="Canale di chiamata vocale - M1 Sperimentale - 5 aree">
     <a id="voice-call-channel" />
 
-    Percorso opzionale/Plugin con comportamento complesso in tempo reale. Richiede una scorecard degli scenari prima della beta pubblica.
+    Percorso opzionale/Plugin con comportamento realtime complesso. Richiede una scorecard degli scenari prima della beta pubblica.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 0%</span><span>Qualità sperimentale - 41%</span><span>Completezza sperimentale - 44%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Sperimentale - 41%</span><span>Completezza Sperimentale - 44%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione e operazioni dei canali</span>
-          <span>2 funzionalità</span>
+          <span>2 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -3233,7 +3231,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Accesso e identità</span>
-          <span>1 funzionalità</span>
+          <span>1 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -3242,8 +3240,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing e recapito delle conversazioni</span>
-          <span>1 funzionalità</span>
+          <span className="maturity-category-title">Instradamento e consegna delle conversazioni</span>
+          <span>1 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -3253,7 +3251,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media e contenuti avanzati</span>
-          <span>2 funzionalità</span>
+          <span>2 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -3263,7 +3261,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Voce e chiamate in tempo reale</span>
-          <span>2 funzionalità</span>
+          <span>2 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -3282,9 +3280,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Automazione del browser, exec e strumenti sandbox - M3 Beta - 3 aree">
     <a id="browser-automation-exec-and-sandbox-tools" />
 
-    Gli strumenti principali sono documentati, ma la sicurezza dell'host e l'esperienza utente dei permessi dovrebbero restare sotto revisione attiva nella scorecard.
+    Gli strumenti core sono documentati, ma la sicurezza dell'host e la UX delle autorizzazioni dovrebbero restare sotto revisione attiva nella scorecard.
 
-    <div className="maturity-surface-rollup"><span>Copertura sperimentale - 21%</span><span>Qualità Beta - 75%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 2</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 21%</span><span>Qualità Beta - 75%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 2</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -3296,12 +3294,12 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Controllo del browser](/it/tools/browser-control), [Test](/it/help/testing), [Browser](/it/tools/browser), [Indice](/it/gateway/security/index), [Controlli di audit](/it/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[Controllo browser](/it/tools/browser-control), [Testing](/it/help/testing), [Browser](/it/tools/browser), [Indice](/it/gateway/security/index), [Controlli di audit](/it/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Invocazione ed esecuzione degli strumenti</span>
-          <span>6 funzionalità / supportato da LTS</span>
+          <span>6 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -3311,21 +3309,21 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Sandbox e policy degli strumenti</span>
-          <span>6 funzionalità / supportato da LTS</span>
+          <span>6 funzionalità / supportate da LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sandboxing](/it/gateway/sandboxing), [Sandbox rispetto a policy degli strumenti rispetto a elevato](/it/gateway/sandbox-vs-tool-policy-vs-elevated), [Strumenti sandbox multi-agente](/it/tools/multi-agent-sandbox-tools), [Riferimento harness Codex](/it/plugins/codex-harness-reference), [Strumenti di configurazione](/it/gateway/config-tools)</div>
+        <div className="maturity-category-docs">[Sandboxing](/it/gateway/sandboxing), [Sandbox vs policy degli strumenti vs elevato](/it/gateway/sandbox-vs-tool-policy-vs-elevated), [Strumenti sandbox multi-agent](/it/tools/multi-agent-sandbox-tools), [Riferimento harness Codex](/it/plugins/codex-harness-reference), [Strumenti di configurazione](/it/gateway/config-tools)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Percorso del provider OpenAI e Codex - M3 Beta - 5 aree">
+  <Accordion title="Percorso provider OpenAI e Codex - M3 Beta - 5 aree">
     <a id="openai-and-codex-provider-path" />
 
-    Documentazione approfondita, percorso OAuth/abbonamento, voce in tempo reale, immagini e comportamento di compatibilità. La variabilità dei provider impedisce di passare a Stable senza prova nella scorecard di rilascio.
+    Documentazione approfondita, percorso OAuth/abbonamento, voce in tempo reale, immagini e comportamento di compatibilità. Il turnover dei provider impedisce il passaggio a Stabile senza prova della scheda di valutazione della release.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 26%</span><span>Qualità Beta - 74%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parziale - 3</span></span></div>
 
@@ -3333,13 +3331,13 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Modello e autenticazione</span>
+          <span className="maturity-category-title">Modello e Auth</span>
           <span>6 funzionalità / con supporto LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/it/providers/openai), [Codex Harness](/it/plugins/codex-harness), [Modelli](/it/concepts/models), [Oauth](/it/concepts/oauth), [Riferimento di Codex Harness](/it/plugins/codex-harness-reference), [Monitoraggio dell'autenticazione](/it/gateway/authentication)</div>
+        <div className="maturity-category-docs">[Openai](/it/providers/openai), [Harness Codex](/it/plugins/codex-harness), [Modelli](/it/concepts/models), [Oauth](/it/concepts/oauth), [Riferimento Harness Codex](/it/plugins/codex-harness-reference), [Monitoraggio Auth](/it/gateway/authentication)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3359,17 +3357,17 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Codex Harness](/it/plugins/codex-harness), [Runtime di Codex Harness](/it/plugins/codex-harness-runtime), [Riferimento di Codex Harness](/it/plugins/codex-harness-reference), [Plugin nativi Codex](/it/plugins/codex-native-plugins)</div>
+        <div className="maturity-category-docs">[Harness Codex](/it/plugins/codex-harness), [Runtime Harness Codex](/it/plugins/codex-harness-runtime), [Riferimento Harness Codex](/it/plugins/codex-harness-reference), [Plugin nativi Codex](/it/plugins/codex-native-plugins)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Immagini e input multimodale</span>
+          <span className="maturity-category-title">Input immagine e multimodale</span>
           <span>2 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/it/providers/openai), [Generazione di immagini](/it/tools/image-generation), [Immagini](/it/nodes/images)</div>
+        <div className="maturity-category-docs">[Openai](/it/providers/openai), [Generazione immagini](/it/tools/image-generation), [Immagini](/it/nodes/images)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3388,7 +3386,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Strumenti di ricerca web - M3 Beta - 4 aree">
     <a id="web-search-tools" />
 
-    Esistono più provider e documentazione. Serve prova di quote/errori/SSRF per famiglia di provider.
+    Esistono più provider e documentazione. Richiede prove di quota/errore/SSRF per famiglia di provider.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 9%</span><span>Qualità Beta - 74%</span><span>Completezza Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
@@ -3397,7 +3395,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Provider di ricerca</span>
-          <span>19 funzionalità</span>
+          <span>19 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>11%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "11%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -3407,43 +3405,43 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione e diagnostica</span>
-          <span>9 funzionalità</span>
+          <span>9 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/it/tools/web), [Recupero Web](/it/tools/web-fetch), [FAQ](/it/help/faq), [Costi di utilizzo API](/it/reference/api-usage-costs), [Brave Search](/it/tools/brave-search), [Perplexity Search](/it/tools/perplexity-search), [Tavily](/it/tools/tavily), [Firecrawl](/it/tools/firecrawl)</div>
+        <div className="maturity-category-docs">[Web](/it/tools/web), [Recupero web](/it/tools/web-fetch), [FAQ](/it/help/faq), [Costi di utilizzo API](/it/reference/api-usage-costs), [Brave Search](/it/tools/brave-search), [Perplexity Search](/it/tools/perplexity-search), [Tavily](/it/tools/tavily), [Firecrawl](/it/tools/firecrawl)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Sicurezza della rete</span>
-          <span>4 funzionalità</span>
+          <span>4 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/it/tools/web), [Recupero Web](/it/tools/web-fetch), [Firecrawl](/it/tools/firecrawl), [Searxng Search](/it/tools/searxng-search)</div>
+        <div className="maturity-category-docs">[Web](/it/tools/web), [Recupero web](/it/tools/web-fetch), [Firecrawl](/it/tools/firecrawl), [Searxng Search](/it/tools/searxng-search)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Disponibilità e recupero degli strumenti</span>
-          <span>11 funzionalità</span>
+          <span className="maturity-category-title">Disponibilità degli strumenti e recupero</span>
+          <span>11 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Strumenti di configurazione](/it/gateway/config-tools), [Recupero Web](/it/tools/web-fetch), [Web](/it/tools/web), [FAQ](/it/help/faq)</div>
+        <div className="maturity-category-docs">[Strumenti di configurazione](/it/gateway/config-tools), [Recupero web](/it/tools/web-fetch), [Web](/it/tools/web), [FAQ](/it/help/faq)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Percorso provider Anthropic - M3 Beta - 5 aree">
+  <Accordion title="Percorso del provider Anthropic - M3 Beta - 5 aree">
     <a id="anthropic-provider-path" />
 
-    Provider di modelli di prima classe. Richiede prove di scenario ricorrenti per auth/catalog/tool-call.
+    Provider di modelli di prima classe. Richiede prove ricorrenti di scenario per autenticazione, catalogo e chiamate agli strumenti.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Beta - 71%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Beta - 71%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -3453,9 +3451,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>9 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Doctor](/it/gateway/doctor), [Esempi di configurazione](/it/gateway/configuration-examples), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Prompt Caching](/it/reference/prompt-caching)</div>
+        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Doctor](/it/gateway/doctor), [Esempi di configurazione](/it/gateway/configuration-examples), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Caching dei prompt](/it/reference/prompt-caching)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3465,7 +3463,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Configura agenti](/it/gateway/config-agents), [Modelli](/it/concepts/models), [Backend CLI](/it/gateway/cli-backends)</div>
+        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Agenti di configurazione](/it/gateway/config-agents), [Modelli](/it/concepts/models), [Backend CLI](/it/gateway/cli-backends)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3475,7 +3473,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Prompt Caching](/it/reference/prompt-caching), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Backend CLI](/it/gateway/cli-backends), [Provider di modelli](/it/concepts/model-providers)</div>
+        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Caching dei prompt](/it/reference/prompt-caching), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Backend CLI](/it/gateway/cli-backends), [Provider di modelli](/it/concepts/model-providers)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3483,9 +3481,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>5 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Prompt Caching](/it/reference/prompt-caching), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Heartbeat](/it/gateway/heartbeat)</div>
+        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Caching dei prompt](/it/reference/prompt-caching), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Heartbeat](/it/gateway/heartbeat)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3493,9 +3491,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>4 capacità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Configura agenti](/it/gateway/config-agents)</div>
+        <div className="maturity-category-docs">[Anthropic](/it/providers/anthropic), [Agenti di configurazione](/it/gateway/config-agents)</div>
       </div>
     </div>
 
@@ -3504,15 +3502,15 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Percorso del provider Google - M3 Beta - 5 aree">
     <a id="google-provider-path" />
 
-    Provider di prima classe con superfici per modelli e tempo reale. Richiede una valutazione separata Live/Talk.
+    Provider di prima classe con superfici per modelli e tempo reale. Richiede una valutazione separata per Live/Talk.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alfa - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Configurazione del provider e credenziali</span>
+          <span className="maturity-category-title">Configurazione dei provider e credenziali</span>
           <span>10 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3538,7 +3536,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/it/providers/google), [Provider di modelli](/it/concepts/model-providers), [Domande frequenti sui modelli](/it/help/faq-models), [Test live](/it/help/testing-live)</div>
+        <div className="maturity-category-docs">[Google](/it/providers/google), [Provider di modelli](/it/concepts/model-providers), [FAQ sui modelli](/it/help/faq-models), [Test live](/it/help/testing-live)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3552,22 +3550,22 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Caching dei prompt</span>
+          <span className="maturity-category-title">Cache dei prompt</span>
           <span>5 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Caching dei prompt](/it/reference/prompt-caching), [Google](/it/providers/google), [Provider di modelli](/it/concepts/model-providers), [Uso dei token](/it/reference/token-use)</div>
+        <div className="maturity-category-docs">[Cache dei prompt](/it/reference/prompt-caching), [Google](/it/providers/google), [Provider di modelli](/it/concepts/model-providers), [Uso dei token](/it/reference/token-use)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Percorso del provider OpenRouter - M3 Beta - 4 aree">
+  <Accordion title="Percorso provider OpenRouter - M3 Beta - 4 aree">
     <a id="openrouter-provider-path" />
 
-    Il percorso unificato del provider è documentato e utile, ma il comportamento specifico dei modelli varia.
+    Il percorso provider unificato è documentato e utile, ma il comportamento specifico dei modelli varia.
 
     <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 66%</span><span>Completezza Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
@@ -3585,13 +3583,13 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Runtime chat e normalizzazione</span>
+          <span className="maturity-category-title">Runtime e normalizzazione della chat</span>
           <span>15 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openrouter](/it/providers/openrouter), [Provider di modelli](/it/concepts/model-providers), [Memorizzazione nella cache dei prompt](/it/reference/prompt-caching)</div>
+        <div className="maturity-category-docs">[Openrouter](/it/providers/openrouter), [Provider di modelli](/it/concepts/model-providers), [Caching dei prompt](/it/reference/prompt-caching)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3605,13 +3603,13 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Generazione di media e sintesi vocale</span>
+          <span className="maturity-category-title">Generazione multimediale e sintesi vocale</span>
           <span>7 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openrouter](/it/providers/openrouter), [Generazione di immagini](/it/tools/image-generation), [Generazione di musica](/it/tools/music-generation), [Panoramica dei media](/it/tools/media-overview), [Generazione di video](/it/tools/video-generation), [Tts](/it/tools/tts)</div>
+        <div className="maturity-category-docs">[Openrouter](/it/providers/openrouter), [Generazione di immagini](/it/tools/image-generation), [Generazione musicale](/it/tools/music-generation), [Panoramica dei media](/it/tools/media-overview), [Generazione video](/it/tools/video-generation), [Tts](/it/tools/tts)</div>
       </div>
     </div>
 
@@ -3620,21 +3618,21 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
   <Accordion title="Strumenti di generazione di immagini, video e musica - M2 Alpha - 5 aree">
     <a id="image-video-and-music-generation-tools" />
 
-    La funzionalità esiste tra i provider, ma qualità, latenza e compatibilità dei parametri variano troppo per la beta senza prove specifiche per provider.
+    La funzionalità esiste tra i provider, ma qualità, latenza e compatibilità dei parametri variano troppo per la beta senza prove per ciascun provider.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 61%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 61%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing e individuazione dei media</span>
+          <span className="maturity-category-title">Instradamento e rilevamento dei media</span>
           <span>4 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Config Agents](/it/gateway/config-agents), [Generazione di immagini](/it/tools/image-generation), [Generazione di video](/it/tools/video-generation), [Generazione di musica](/it/tools/music-generation)</div>
+        <div className="maturity-category-docs">[Agenti di configurazione](/it/gateway/config-agents), [Generazione di immagini](/it/tools/image-generation), [Generazione di video](/it/tools/video-generation), [Generazione di musica](/it/tools/music-generation)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3685,10 +3683,10 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
 
     Utile e documentato, ma la variabilità dell'ambiente è elevata.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 61%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 61%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Docs</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Configurazione, ciclo di vita e diagnostica dei provider</span>
@@ -3697,7 +3695,7 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Modelli locali](/it/gateway/local-models), [Lmstudio](/it/providers/lmstudio), [Ollama](/it/providers/ollama), [Vllm](/it/providers/vllm), [Servizi per modelli locali](/it/gateway/local-model-services), [Configurare gli agenti](/it/gateway/config-agents), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Doctor](/it/gateway/doctor)</div>
+        <div className="maturity-category-docs">[Modelli locali](/it/gateway/local-models), [Lmstudio](/it/providers/lmstudio), [Ollama](/it/providers/ollama), [Vllm](/it/providers/vllm), [Servizi di modelli locali](/it/gateway/local-model-services), [Configura agenti](/it/gateway/config-agents), [Risoluzione dei problemi](/it/gateway/troubleshooting), [Doctor](/it/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3731,24 +3729,24 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sicurezza della rete e controlli dei prompt</span>
+          <span className="maturity-category-title">Sicurezza di rete e controlli dei prompt</span>
           <span>2 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/gateway/security/index), [Configurare gli strumenti](/it/gateway/config-tools), [Modelli locali](/it/gateway/local-models)</div>
+        <div className="maturity-category-docs">[Indice](/it/gateway/security/index), [Configura strumenti](/it/gateway/config-tools), [Modelli locali](/it/gateway/local-models)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Provider ospitati long-tail - M2 Alpha - 3 aree">
+  <Accordion title="Provider ospitati di nicchia - M2 Alpha - 3 aree">
     <a id="long-tail-hosted-providers" />
 
     Esistono molte pagine di documentazione/riferimento; il punteggio dovrebbe essere generato dai metadati dei provider più la copertura smoke live.
 
-    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alpha - 61%</span><span>Completezza Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuna</span></span></div>
+    <div className="maturity-surface-rollup"><span>Copertura Sperimentale - 0%</span><span>Qualità Alfa - 61%</span><span>Completezza Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Nessuno</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Copertura</span><span>Qualità</span><span>Completezza</span><span>Documentazione</span></div>
@@ -3758,8 +3756,8 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>12 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div className="maturity-category-docs">[Indice](/it/providers/index), [Provider di modelli](/it/concepts/model-providers), [Test live](/it/help/testing-live), [Onboarding](/it/cli/onboard)</div>
       </div>
       <div className="maturity-category-row">
@@ -3768,9 +3766,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>8 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Manifest](/it/plugins/manifest), [Test live](/it/help/testing-live), [Indice](/it/providers/index)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Manifesto](/it/plugins/manifest), [Test live](/it/help/testing-live), [Indice](/it/providers/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3778,9 +3776,9 @@ Una superficie è un'area di prodotto come il runtime Gateway, Discord o l'app m
           <span>12 funzionalità</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Sperimentale</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indice](/it/providers/index), [Provider di modelli](/it/concepts/model-providers), [Manifest](/it/plugins/manifest), [Test live](/it/help/testing-live), [Modelli](/it/cli/models)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Indice](/it/providers/index), [Provider di modelli](/it/concepts/model-providers), [Manifesto](/it/plugins/manifest), [Test live](/it/help/testing-live), [Modelli](/it/cli/models)</div>
       </div>
     </div>
 

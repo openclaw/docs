@@ -1,43 +1,43 @@
 ---
 read_when:
     - आप समझना चाहते हैं कि Task Flow पृष्ठभूमि कार्यों से कैसे संबंधित है
-    - आपको रिलीज़ नोट्स या दस्तावेज़ों में Task Flow या openclaw tasks flow मिलता है
+    - आपको रिलीज़ नोट्स या दस्तावेज़ों में Task Flow या OpenClaw कार्य प्रवाह मिलता है
     - आप स्थायी फ़्लो स्थिति का निरीक्षण या प्रबंधन करना चाहते हैं
-summary: Task Flow ऑर्केस्ट्रेशन परत, पृष्ठभूमि कार्यों के ऊपर
+summary: पृष्ठभूमि कार्यों के ऊपर कार्य प्रवाह ऑर्केस्ट्रेशन परत
 title: कार्य प्रवाह
 x-i18n:
-    generated_at: "2026-07-02T00:55:04Z"
+    generated_at: "2026-07-02T08:17:10Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b74a773e34c02421d22ce11ae0aa29fed82664383f0680e7623787db7d79c8e
+    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Task Flow वह फ्लो ऑर्केस्ट्रेशन सब्सट्रेट है जो [बैकग्राउंड टास्क](/hi/automation/tasks) के ऊपर स्थित होता है। यह अपनी अलग स्थिति, रिविज़न ट्रैकिंग, और सिंक सिमेंटिक्स वाले टिकाऊ मल्टी-स्टेप फ्लो प्रबंधित करता है, जबकि अलग-अलग टास्क detached work की इकाई बने रहते हैं।
+Task Flow वह flow orchestration substrate है जो [पृष्ठभूमि कार्यों](/hi/automation/tasks) के ऊपर बैठता है। यह अपनी अलग state, revision tracking, और sync semantics वाले टिकाऊ multi-step flows को प्रबंधित करता है, जबकि अलग-अलग tasks detached work की unit बने रहते हैं।
 
-## Task Flow कब उपयोग करें
+## Task Flow का उपयोग कब करें
 
-Task Flow का उपयोग तब करें जब काम कई क्रमिक या शाखाबद्ध चरणों में फैला हो और आपको gateway रीस्टार्ट के पार टिकाऊ प्रगति ट्रैकिंग चाहिए। एकल बैकग्राउंड ऑपरेशन के लिए, एक साधारण [टास्क](/hi/automation/tasks) पर्याप्त है।
+Task Flow का उपयोग तब करें जब काम कई क्रमिक या branching steps में फैला हो और आपको gateway restarts के पार टिकाऊ progress tracking चाहिए। एकल background operations के लिए, एक साधारण [task](/hi/automation/tasks) पर्याप्त है।
 
-| परिदृश्य                              | उपयोग                  |
+| परिदृश्य                              | उपयोग                 |
 | ------------------------------------- | -------------------- |
-| एकल बैकग्राउंड जॉब                 | साधारण टास्क           |
-| मल्टी-स्टेप पाइपलाइन (A फिर B फिर C) | Task Flow (प्रबंधित)  |
-| बाहरी रूप से बनाए गए टास्क देखें      | Task Flow (मिरर्ड) |
-| वन-शॉट रिमाइंडर                     | Cron जॉब             |
+| एकल background job                    | साधारण task          |
+| Multi-step pipeline (A फिर B फिर C)   | Task Flow (managed)  |
+| बाहरी रूप से बनाए गए tasks देखें      | Task Flow (mirrored) |
+| One-shot reminder                     | Cron job             |
 
-## भरोसेमंद शेड्यूल्ड वर्कफ़्लो पैटर्न
+## भरोसेमंद scheduled workflow pattern
 
-मार्केट इंटेलिजेंस ब्रीफिंग जैसे आवर्ती वर्कफ़्लो के लिए, शेड्यूल, ऑर्केस्ट्रेशन, और भरोसेमंदता जांचों को अलग-अलग परतों की तरह मानें:
+Market intelligence briefings जैसे recurring workflows के लिए, schedule, orchestration, और reliability checks को अलग-अलग layers मानें:
 
-1. टाइमिंग के लिए [Scheduled Tasks](/hi/automation/cron-jobs) का उपयोग करें।
-2. पिछला संदर्भ वर्कफ़्लो की अपनी फ़ाइलों, डेटाबेस, या टूल स्थिति में स्टोर करें।
-3. निर्धारक चरणों, अनुमोदन गेट, और रिज़्यूम टोकन के लिए [Lobster](/hi/tools/lobster) का उपयोग करें।
-4. चाइल्ड टास्क, प्रतीक्षाओं, रीट्राई, और gateway रीस्टार्ट के पार मल्टी-स्टेप रन ट्रैक करने के लिए Task Flow का उपयोग करें।
+1. Timing के लिए [Scheduled Tasks](/hi/automation/cron-jobs) का उपयोग करें।
+2. जब workflow को पिछले context पर बनना चाहिए, तो persistent cron session का उपयोग करें।
+3. Deterministic steps, approval gates, और resume tokens के लिए [Lobster](/hi/tools/lobster) का उपयोग करें।
+4. Child tasks, waits, retries, और gateway restarts के पार multi-step run को track करने के लिए Task Flow का उपयोग करें।
 
-उदाहरण Cron आकार:
+Example cron shape:
 
 ```bash
 openclaw cron add \
@@ -51,9 +51,9 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-जब जॉब को डिलीवरी संदर्भ या सुरक्षित प्रेफरेंस सीडिंग के लिए किसी ज्ञात चैट/सेशन को लक्षित करना हो, तो `session:<id>` का उपयोग करें। Cron फिर भी हर रन को detached session में निष्पादित करता है, इसलिए पिछले रन के सारांश और स्थायी वर्कफ़्लो स्थिति को स्पष्ट स्टोरेज में रखें जिसे जॉब पढ़ सके।
+जब recurring workflow को deliberate history, previous run summaries, या standing context चाहिए, तो `isolated` के बजाय `session:<id>` का उपयोग करें। जब हर run fresh शुरू होना चाहिए और सभी required state workflow में explicit हो, तो `isolated` का उपयोग करें।
 
-वर्कफ़्लो के भीतर, LLM सारांश चरण से पहले भरोसेमंदता जांचें रखें:
+Workflow के अंदर, LLM summary step से पहले reliability checks रखें:
 
 ```yaml
 name: market-intel-brief
@@ -76,15 +76,15 @@ steps:
     condition: $approve.approved
 ```
 
-अनुशंसित प्रीफ़्लाइट जांचें:
+Recommended preflight checks:
 
-- Browser उपलब्धता और प्रोफ़ाइल चयन, उदाहरण के लिए प्रबंधित स्थिति के लिए `openclaw` या जब साइन-इन Chrome सेशन आवश्यक हो तो `user`। [Browser](/hi/tools/browser) देखें।
-- प्रत्येक स्रोत के लिए API क्रेडेंशियल और कोटा।
-- आवश्यक endpoints के लिए नेटवर्क पहुंच।
-- एजेंट के लिए सक्षम आवश्यक टूल, जैसे `lobster`, `browser`, और `llm-task`।
-- Cron के लिए कॉन्फ़िगर किया गया विफलता गंतव्य ताकि प्रीफ़्लाइट विफलताएं दिखाई दें। [Scheduled Tasks](/hi/automation/cron-jobs#delivery-and-output) देखें।
+- Browser availability और profile choice, उदाहरण के लिए managed state के लिए `openclaw` या जब signed-in Chrome session required हो तो `user`। [Browser](/hi/tools/browser) देखें।
+- हर source के लिए API credentials और quota।
+- Required endpoints के लिए network reachability।
+- Agent के लिए enabled required tools, जैसे `lobster`, `browser`, और `llm-task`।
+- Cron के लिए failure destination configured हो ताकि preflight failures visible रहें। [Scheduled Tasks](/hi/automation/cron-jobs#delivery-and-output) देखें।
 
-हर एकत्रित आइटम के लिए अनुशंसित डेटा प्रोवेनेंस फ़ील्ड:
+हर collected item के लिए recommended data provenance fields:
 
 ```json
 {
@@ -96,17 +96,17 @@ steps:
 }
 ```
 
-सारांशीकरण से पहले वर्कफ़्लो से पुराने आइटम अस्वीकार या stale के रूप में चिह्नित करवाएं। LLM चरण को केवल संरचित JSON मिलना चाहिए और उससे अपने आउटपुट में `sourceUrl`, `retrievedAt`, और `asOf` बनाए रखने के लिए कहा जाना चाहिए। जब आपको वर्कफ़्लो के अंदर schema-validated मॉडल चरण चाहिए, तो [LLM Task](/hi/tools/llm-task) का उपयोग करें।
+Workflow को summarization से पहले stale items reject या mark करने दें। LLM step को केवल structured JSON मिलना चाहिए और उससे अपने output में `sourceUrl`, `retrievedAt`, और `asOf` preserve करने के लिए कहा जाना चाहिए। जब workflow के अंदर schema-validated model step चाहिए, तो [LLM Task](/hi/tools/llm-task) का उपयोग करें।
 
-पुन: उपयोग योग्य टीम या समुदाय वर्कफ़्लो के लिए, CLI, `.lobster` फ़ाइलें, और कोई भी सेटअप नोट्स skill या plugin के रूप में पैकेज करें और उसे [ClawHub](/clawhub) के माध्यम से प्रकाशित करें। वर्कफ़्लो-विशिष्ट guardrails को उसी पैकेज में रखें, जब तक कि plugin API में कोई आवश्यक generic capability न हो।
+Reusable team या community workflows के लिए, CLI, `.lobster` files, और कोई भी setup notes को skill या plugin के रूप में package करें और उसे [ClawHub](/clawhub) के माध्यम से publish करें। Workflow-specific guardrails उसी package में रखें, जब तक कि plugin API में कोई required generic capability missing न हो।
 
-## सिंक मोड
+## Sync modes
 
-### प्रबंधित मोड
+### Managed mode
 
-Task Flow पूरे जीवनचक्र का स्वामी होता है। यह फ्लो चरणों के रूप में टास्क बनाता है, उन्हें पूर्णता तक चलाता है, और फ्लो स्थिति को अपने-आप आगे बढ़ाता है।
+Task Flow lifecycle को end-to-end own करता है। यह flow steps के रूप में tasks बनाता है, उन्हें completion तक drive करता है, और flow state को automatically आगे बढ़ाता है।
 
-उदाहरण: एक साप्ताहिक रिपोर्ट फ्लो जो (1) डेटा एकत्र करता है, (2) रिपोर्ट जनरेट करता है, और (3) उसे डिलीवर करता है। Task Flow हर चरण को बैकग्राउंड टास्क के रूप में बनाता है, पूर्णता की प्रतीक्षा करता है, फिर अगले चरण पर जाता है।
+Example: एक weekly report flow जो (1) data gather करता है, (2) report generate करता है, और (3) उसे deliver करता है। Task Flow हर step को background task के रूप में बनाता है, completion की प्रतीक्षा करता है, फिर अगले step पर जाता है।
 
 ```
 Flow: weekly-report
@@ -115,24 +115,24 @@ Flow: weekly-report
   Step 3: deliver         → task created → running
 ```
 
-### मिरर्ड मोड
+### Mirrored mode
 
-Task Flow बाहरी रूप से बनाए गए टास्क देखता है और टास्क निर्माण का स्वामित्व लिए बिना फ्लो स्थिति को सिंक में रखता है। यह तब उपयोगी है जब टास्क Cron जॉब, CLI कमांड, या अन्य स्रोतों से उत्पन्न होते हैं और आप उनकी प्रगति का एकीकृत दृश्य फ्लो के रूप में चाहते हैं।
+Task Flow बाहरी रूप से बनाए गए tasks को observe करता है और task creation की ownership लिए बिना flow state को sync में रखता है। यह तब उपयोगी है जब tasks cron jobs, CLI commands, या अन्य sources से originate होते हैं और आप उनकी progress को flow के रूप में unified view में देखना चाहते हैं।
 
-उदाहरण: तीन स्वतंत्र Cron जॉब जो मिलकर "morning ops" रूटीन बनाते हैं। एक मिरर्ड फ्लो उनकी सामूहिक प्रगति ट्रैक करता है, यह नियंत्रित किए बिना कि वे कब या कैसे चलते हैं।
+Example: तीन independent cron jobs जो मिलकर एक "morning ops" routine बनाते हैं। एक mirrored flow उनकी collective progress को track करता है, बिना यह control किए कि वे कब या कैसे run करते हैं।
 
-## टिकाऊ स्थिति और रिविज़न ट्रैकिंग
+## Durable state और revision tracking
 
-हर फ्लो अपनी स्थिति persist करता है और रिविज़न ट्रैक करता है ताकि gateway रीस्टार्ट के बाद भी प्रगति बची रहे। रिविज़न ट्रैकिंग तब conflict detection सक्षम करती है जब कई स्रोत एक ही फ्लो को साथ-साथ आगे बढ़ाने का प्रयास करते हैं।
-फ्लो registry सीमित write-ahead-log रखरखाव के साथ SQLite का उपयोग करती है, जिसमें
-periodic और shutdown checkpoints शामिल हैं, ताकि लंबे समय तक चलने वाले gateways
-असीमित `registry.sqlite-wal` sidecar फ़ाइलें बनाए न रखें।
+हर flow अपनी state persist करता है और revisions track करता है ताकि progress gateway restarts के बाद भी बनी रहे। जब कई sources same flow को concurrently advance करने का प्रयास करते हैं, तो revision tracking conflict detection सक्षम करती है।
+Flow registry bounded write-ahead-log maintenance के साथ SQLite का उपयोग करती है, जिसमें
+periodic और shutdown checkpoints शामिल हैं, ताकि long-running gateways
+unbounded `registry.sqlite-wal` sidecar files retain न करें।
 
-## कैंसल व्यवहार
+## Cancel behavior
 
-`openclaw tasks flow cancel` फ्लो पर sticky cancel intent सेट करता है। फ्लो के भीतर सक्रिय टास्क कैंसल किए जाते हैं, और कोई नए चरण शुरू नहीं किए जाते। cancel intent रीस्टार्ट के पार persist रहता है, इसलिए कैंसल किया गया फ्लो कैंसल ही रहता है, भले ही सभी चाइल्ड टास्क समाप्त होने से पहले gateway रीस्टार्ट हो जाए।
+`openclaw tasks flow cancel` flow पर sticky cancel intent set करता है। Flow के भीतर active tasks cancel किए जाते हैं, और कोई new steps start नहीं किए जाते। Cancel intent restarts के पार persist रहता है, इसलिए cancelled flow cancelled ही रहता है, भले ही सभी child tasks terminate होने से पहले gateway restart हो जाए।
 
-## CLI कमांड
+## CLI commands
 
 ```bash
 # List active and recent flows
@@ -145,19 +145,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| कमांड                           | विवरण                                   |
+| Command                           | Description                                   |
 | --------------------------------- | --------------------------------------------- |
-| `openclaw tasks flow list`        | स्थिति और सिंक मोड के साथ ट्रैक किए गए फ्लो दिखाता है |
-| `openclaw tasks flow show <id>`   | फ्लो id या lookup key से एक फ्लो की जांच करें     |
-| `openclaw tasks flow cancel <id>` | चल रहे फ्लो और उसके सक्रिय टास्क कैंसल करें    |
+| `openclaw tasks flow list`        | Status और sync mode के साथ tracked flows दिखाता है |
+| `openclaw tasks flow show <id>`   | Flow id या lookup key से एक flow inspect करें |
+| `openclaw tasks flow cancel <id>` | Running flow और उसके active tasks cancel करें |
 
-## फ्लो टास्क से कैसे संबंधित हैं
+## Flows tasks से कैसे संबंधित हैं
 
-फ्लो टास्क को समन्वित करते हैं, उन्हें प्रतिस्थापित नहीं करते। एक ही फ्लो अपने जीवनकाल में कई बैकग्राउंड टास्क चला सकता है। अलग-अलग टास्क रिकॉर्ड की जांच के लिए `openclaw tasks` और ऑर्केस्ट्रेटिंग फ्लो की जांच के लिए `openclaw tasks flow` का उपयोग करें।
+Flows tasks को coordinate करते हैं, उन्हें replace नहीं करते। एक single flow अपनी lifetime में multiple background tasks drive कर सकता है। Individual task records inspect करने के लिए `openclaw tasks` और orchestrating flow inspect करने के लिए `openclaw tasks flow` का उपयोग करें।
 
-## संबंधित
+## Related
 
-- [Background Tasks](/hi/automation/tasks) — detached work ledger जिसे फ्लो समन्वित करते हैं
-- [CLI: tasks](/hi/cli/tasks) — `openclaw tasks flow` के लिए CLI कमांड संदर्भ
-- [Automation Overview](/hi/automation) — सभी ऑटोमेशन मैकेनिज़्म एक नजर में
-- [Cron Jobs](/hi/automation/cron-jobs) — शेड्यूल्ड जॉब जो फ्लो में फ़ीड हो सकते हैं
+- [Background Tasks](/hi/automation/tasks) — detached work ledger जिसे flows coordinate करते हैं
+- [CLI: tasks](/hi/cli/tasks) — `openclaw tasks flow` के लिए CLI command reference
+- [Automation Overview](/hi/automation) — सभी automation mechanisms एक नजर में
+- [Cron Jobs](/hi/automation/cron-jobs) — scheduled jobs जो flows में feed कर सकते हैं

@@ -1,16 +1,16 @@
 ---
 read_when:
     - De iOS-node koppelen of opnieuw verbinden
-    - De iOS-app uitvoeren vanuit de broncode
-    - Debuggen van Gateway-detectie of canvas-opdrachten
-summary: 'iOS-node-app: verbinding maken met de Gateway, koppelen, canvas en probleemoplossing'
+    - De iOS-app vanuit broncode uitvoeren
+    - Debuggen van Gateway-detectie of canvasopdrachten
+summary: 'iOS-node-app: verbinden met de Gateway, koppelen, canvas en probleemoplossing'
 title: iOS-app
 x-i18n:
-    generated_at: "2026-06-27T17:47:40Z"
+    generated_at: "2026-07-02T08:30:00Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a93381fd2b95316e05a555bee45b9aed5572679b4b1f10f7f9e40c1a69faf17
+    source_hash: 26f58f5a3a4c6f918ddca493367554c2df5a34292deeb112296103dce2203743
     source_path: platforms/ios.md
     workflow: 16
 ---
@@ -19,9 +19,9 @@ Beschikbaarheid: iPhone-appbuilds worden via Apple-kanalen gedistribueerd wannee
 
 ## Wat het doet
 
-- Verbindt met een Gateway via WebSocket (LAN of tailnet).
-- Biedt node-mogelijkheden: Canvas, schermsnapshot, camera-opname, locatie, praatmodus, Voice wake.
-- Ontvangt `node.invoke`-commando's en rapporteert nodestatusgebeurtenissen.
+- Maakt verbinding met een Gateway via WebSocket (LAN of tailnet).
+- Biedt node-mogelijkheden: Canvas, schermsnapshot, camera-opname, locatie, praatmodus, spraakactivering.
+- Ontvangt `node.invoke`-opdrachten en rapporteert nodestatusgebeurtenissen.
 
 ## Vereisten
 
@@ -39,21 +39,21 @@ Beschikbaarheid: iPhone-appbuilds worden via Apple-kanalen gedistribueerd wannee
 openclaw gateway --port 18789
 ```
 
-2. Open in de iOS-app Instellingen en kies een ontdekte Gateway (of schakel Handmatige host in en voer host/poort in).
+2. Open Instellingen in de iOS-app en kies een gevonden gateway (of schakel Handmatige host in en voer host/poort in).
 
-3. Keur het koppelingsverzoek goed op de Gateway-host:
+3. Keur het koppelingsverzoek goed op de gateway-host:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Als de app opnieuw probeert te koppelen met gewijzigde auth-gegevens (rol/scopes/publieke sleutel),
-wordt het vorige openstaande verzoek vervangen en wordt er een nieuwe `requestId` gemaakt.
-Voer vóór goedkeuring opnieuw `openclaw devices list` uit.
+Als de app het koppelen opnieuw probeert met gewijzigde auth-gegevens (rol/scopes/openbare sleutel),
+wordt het vorige openstaande verzoek vervangen en wordt er een nieuwe `requestId` aangemaakt.
+Voer `openclaw devices list` opnieuw uit vóór goedkeuring.
 
-Optioneel: als de iOS-node altijd verbinding maakt vanuit een strikt beheerd subnet, kun je
-je expliciet aanmelden voor automatische goedkeuring van nodes bij eerste gebruik met expliciete CIDR's of exacte IP's:
+Optioneel: als de iOS-node altijd verbinding maakt vanaf een strikt gecontroleerd subnet, kun je
+je aanmelden voor automatische goedkeuring van nodes bij de eerste keer, met expliciete CIDR's of exacte IP's:
 
 ```json5
 {
@@ -68,8 +68,8 @@ je expliciet aanmelden voor automatische goedkeuring van nodes bij eerste gebrui
 ```
 
 Dit is standaard uitgeschakeld. Het geldt alleen voor nieuwe `role: node`-koppeling zonder
-aangevraagde scopes. Operator-/browserkoppeling en elke wijziging in rol, scope, metadata of
-publieke sleutel vereisen nog steeds handmatige goedkeuring.
+aangevraagde scopes. Koppeling voor operator/browser en elke wijziging van rol, scope, metadata of
+openbare sleutel vereist nog steeds handmatige goedkeuring.
 
 4. Controleer de verbinding:
 
@@ -78,14 +78,14 @@ openclaw nodes status
 openclaw gateway call node.list --params "{}"
 ```
 
-## Push via relay voor officiële builds
+## Relay-ondersteunde push voor officiële builds
 
-Officieel gedistribueerde iOS-builds gebruiken de externe pushrelay in plaats van het ruwe APNs-token
-naar de Gateway te publiceren.
+Officieel gedistribueerde iOS-builds gebruiken de externe pushrelay in plaats van de ruwe APNs-
+token naar de gateway te publiceren.
 
-Officiële/TestFlight-builds uit de publieke App Store-releaselane gebruiken de gehoste relay op `https://ios-push-relay.openclaw.ai`.
+Officiële App Store-builds uit de publieke release-lane gebruiken de gehoste relay op `https://ios-push-relay.openclaw.ai`.
 
-Aangepaste relay-implementaties vereisen een bewust gescheiden iOS-build-/implementatiepad waarvan de relay-URL overeenkomt met de Gateway-relay-URL. De publieke App Store-releaselane accepteert geen aangepaste relay-URL-overschrijvingen. Als je een aangepaste relaybuild gebruikt, stel dan de overeenkomende Gateway-relay-URL in:
+Aangepaste relay-implementaties vereisen een bewust apart iOS-build-/implementatiepad waarvan de relay-URL overeenkomt met de gateway-relay-URL. De publieke App Store-release-lane accepteert geen overrides voor aangepaste relay-URL's. Als je een aangepaste relay-build gebruikt, stel dan de overeenkomende gateway-relay-URL in:
 
 ```json5
 {
@@ -104,95 +104,95 @@ Aangepaste relay-implementaties vereisen een bewust gescheiden iOS-build-/implem
 Zo werkt de flow:
 
 - De iOS-app registreert zich bij de relay met App Attest en een StoreKit-apptransactie-JWS.
-- De relay retourneert een ondoorzichtige relay-handle plus een registratiegebonden verzendtoekenning.
-- De iOS-app haalt de gekoppelde Gateway-identiteit op en neemt die op in de relayregistratie, zodat de door relay ondersteunde registratie wordt gedelegeerd aan die specifieke Gateway.
-- De app stuurt die door relay ondersteunde registratie door naar de gekoppelde Gateway met `push.apns.register`.
-- De Gateway gebruikt die opgeslagen relay-handle voor `push.test`, achtergrond-wakes en wake nudges.
-- Aangepaste Gateway-relay-URL's moeten overeenkomen met de relay-URL die in de iOS-build is ingebakken.
-- Als de app later verbinding maakt met een andere Gateway of een build met een andere relaybasis-URL, vernieuwt deze de relayregistratie in plaats van de oude binding opnieuw te gebruiken.
+- De relay retourneert een opaak relay-handle plus een registratiegebonden verzendrecht.
+- De iOS-app haalt de identiteit van de gekoppelde gateway op en neemt die op in de relayregistratie, zodat de relay-ondersteunde registratie aan die specifieke gateway wordt gedelegeerd.
+- De app stuurt die relay-ondersteunde registratie door naar de gekoppelde gateway met `push.apns.register`.
+- De gateway gebruikt dat opgeslagen relay-handle voor `push.test`, achtergrond-wakes en wake-nudges.
+- Aangepaste gateway-relay-URL's moeten overeenkomen met de relay-URL die in de iOS-build is ingebakken.
+- Als de app later verbinding maakt met een andere gateway of met een build met een andere relaybasis-URL, vernieuwt deze de relayregistratie in plaats van de oude binding opnieuw te gebruiken.
 
-Wat de Gateway voor dit pad **niet** nodig heeft:
+Wat de gateway voor dit pad **niet** nodig heeft:
 
-- Geen implementatiebrede relay-token.
-- Geen directe APNs-sleutel voor officiële/TestFlight-verzendingen via relay.
+- Geen relay-token voor de hele implementatie.
+- Geen directe APNs-sleutel voor officiële App Store-verzendingen via relay.
 
 Verwachte operatorflow:
 
-1. Installeer de officiële/TestFlight-iOS-build.
-2. Optioneel: stel `gateway.push.apns.relay.baseUrl` op de Gateway alleen in wanneer je een bewust gescheiden aangepaste relaybuild gebruikt.
-3. Koppel de app aan de Gateway en laat deze het verbinden afronden.
-4. De app publiceert `push.apns.register` automatisch nadat deze een APNs-token heeft, de operatorsessie is verbonden en relayregistratie is geslaagd.
-5. Daarna kunnen `push.test`, reconnect-wakes en wake nudges de opgeslagen door relay ondersteunde registratie gebruiken.
+1. Installeer de officiële iOS-app.
+2. Optioneel: stel `gateway.push.apns.relay.baseUrl` op de gateway alleen in bij gebruik van een bewust aparte aangepaste relay-build.
+3. Koppel de app aan de gateway en laat de verbinding afronden.
+4. De app publiceert `push.apns.register` automatisch nadat deze een APNs-token heeft, de operatorsessie verbonden is en relayregistratie slaagt.
+5. Daarna kunnen `push.test`, reconnect-wakes en wake-nudges de opgeslagen relay-ondersteunde registratie gebruiken.
 
 ## Achtergrond-alive-beacons
 
 Wanneer iOS de app wekt voor een stille push, achtergrondverversing of significant-location-gebeurtenis, probeert de app
-kort opnieuw als node te verbinden en roept daarna `node.event` aan met `event: "node.presence.alive"`.
-De Gateway registreert dit alleen als `lastSeenAtMs`/`lastSeenReason` in de gekoppelde node-/apparaatmetadata
+een korte node-reconnect en roept daarna `node.event` aan met `event: "node.presence.alive"`.
+De gateway registreert dit als `lastSeenAtMs`/`lastSeenReason` op de metadata van de gekoppelde node/het gekoppelde apparaat, maar alleen
 nadat de geauthenticeerde node-apparaatidentiteit bekend is.
 
-De app beschouwt een achtergrond-wake alleen als succesvol geregistreerd wanneer de Gateway-respons
-`handled: true` bevat. Oudere Gateways kunnen `node.event` bevestigen met `{ "ok": true }`; die respons is
-compatibel, maar telt niet als duurzame last-seen-update.
+De app behandelt een achtergrondwake alleen als succesvol geregistreerd wanneer de gatewayrespons
+`handled: true` bevat. Oudere gateways kunnen `node.event` bevestigen met `{ "ok": true }`; die respons is
+compatibel, maar telt niet als een duurzame last-seen-update.
 
 Compatibiliteitsopmerking:
 
-- `OPENCLAW_APNS_RELAY_BASE_URL` werkt nog steeds als tijdelijke env-overschrijving voor de Gateway.
-- De publieke App Store-releaselane weigert `OPENCLAW_PUSH_RELAY_BASE_URL` voor iOS-builds.
+- `OPENCLAW_APNS_RELAY_BASE_URL` werkt nog steeds als tijdelijke env-override voor de gateway.
+- De publieke App Store-release-lane weigert `OPENCLAW_PUSH_RELAY_BASE_URL` voor iOS-builds.
 
 ## Authenticatie- en vertrouwensflow
 
-De relay bestaat om twee beperkingen af te dwingen die directe APNs-op-Gateway niet kan bieden voor
+De relay bestaat om twee beperkingen af te dwingen die directe APNs-op-gateway niet kan bieden voor
 officiële iOS-builds:
 
-- Alleen echte OpenClaw-iOS-builds die via Apple zijn gedistribueerd, kunnen de gehoste relay gebruiken.
-- Een Gateway kan door relay ondersteunde pushes alleen verzenden voor iOS-apparaten die met die specifieke
-  Gateway zijn gekoppeld.
+- Alleen echte OpenClaw iOS-builds die via Apple worden gedistribueerd, kunnen de gehoste relay gebruiken.
+- Een gateway kan relay-ondersteunde pushes alleen verzenden voor iOS-apparaten die aan die specifieke
+  gateway zijn gekoppeld.
 
 Stap voor stap:
 
 1. `iOS app -> gateway`
-   - De app koppelt eerst met de Gateway via de normale Gateway-auth-flow.
-   - Dat geeft de app een geauthenticeerde nodesessie plus een geauthenticeerde operatorsessie.
+   - De app koppelt eerst met de gateway via de normale Gateway-auth-flow.
+   - Daarmee krijgt de app een geauthenticeerde nodesessie plus een geauthenticeerde operatorsessie.
    - De operatorsessie wordt gebruikt om `gateway.identity.get` aan te roepen.
 
 2. `iOS app -> relay`
    - De app roept de relayregistratie-eindpunten aan via HTTPS.
    - Registratie bevat App Attest-bewijs plus een StoreKit-apptransactie-JWS.
    - De relay valideert de bundle-ID, het App Attest-bewijs en het Apple-distributiebewijs, en vereist het
-     officiële/productiedistributiepad.
-   - Dit blokkeert lokale Xcode-/dev-builds van het gebruik van de gehoste relay. Een lokale build kan
+     officiële/productie-distributiepad.
+   - Dit is wat lokale Xcode-/dev-builds blokkeert om de gehoste relay te gebruiken. Een lokale build kan
      ondertekend zijn, maar voldoet niet aan het officiële Apple-distributiebewijs dat de relay verwacht.
 
 3. `gateway identity delegation`
-   - Vóór relayregistratie haalt de app de gekoppelde Gateway-identiteit op uit
+   - Vóór relayregistratie haalt de app de identiteit van de gekoppelde gateway op via
      `gateway.identity.get`.
-   - De app neemt die Gateway-identiteit op in de relayregistratiepayload.
-   - De relay retourneert een relay-handle en een registratiegebonden verzendtoekenning die zijn gedelegeerd aan
-     die Gateway-identiteit.
+   - De app neemt die gateway-identiteit op in de relayregistratiepayload.
+   - De relay retourneert een relay-handle en een registratiegebonden verzendrecht die aan
+     die gateway-identiteit zijn gedelegeerd.
 
 4. `gateway -> relay`
-   - De Gateway slaat de relay-handle en verzendtoekenning uit `push.apns.register` op.
-   - Bij `push.test`, reconnect-wakes en wake nudges ondertekent de Gateway het verzendverzoek met zijn
+   - De gateway slaat het relay-handle en verzendrecht uit `push.apns.register` op.
+   - Bij `push.test`, reconnect-wakes en wake-nudges ondertekent de gateway het verzendverzoek met zijn
      eigen apparaatidentiteit.
-   - De relay verifieert zowel de opgeslagen verzendtoekenning als de Gateway-handtekening tegen de gedelegeerde
-     Gateway-identiteit uit de registratie.
-   - Een andere Gateway kan die opgeslagen registratie niet hergebruiken, zelfs niet als deze op de een of andere manier de handle verkrijgt.
+   - De relay verifieert zowel het opgeslagen verzendrecht als de gatewayhandtekening tegen de gedelegeerde
+     gateway-identiteit uit de registratie.
+   - Een andere gateway kan die opgeslagen registratie niet hergebruiken, zelfs niet als deze op de een of andere manier het handle verkrijgt.
 
 5. `relay -> APNs`
-   - De relay bezit de productie-APNs-referenties en het ruwe APNs-token voor de officiële build.
-   - De Gateway slaat nooit het ruwe APNs-token op voor door relay ondersteunde officiële builds.
-   - De relay verzendt de uiteindelijke push naar APNs namens de gekoppelde Gateway.
+   - De relay beheert de productie-APNs-referenties en de ruwe APNs-token voor de officiële build.
+   - De gateway slaat de ruwe APNs-token nooit op voor relay-ondersteunde officiële builds.
+   - De relay verzendt de uiteindelijke push naar APNs namens de gekoppelde gateway.
 
 Waarom dit ontwerp is gemaakt:
 
-- Om productie-APNs-referenties uit gebruikers-Gateways te houden.
-- Om te voorkomen dat ruwe APNs-tokens van officiële builds op de Gateway worden opgeslagen.
-- Om gebruik van de gehoste relay alleen toe te staan voor officiële/TestFlight OpenClaw-builds.
-- Om te voorkomen dat één Gateway wake-pushes verzendt naar iOS-apparaten die bij een andere Gateway horen.
+- Om productie-APNs-referenties uit gebruikersgateways te houden.
+- Om te voorkomen dat ruwe APNs-tokens van officiële builds op de gateway worden opgeslagen.
+- Om gebruik van de gehoste relay alleen toe te staan voor officiële OpenClaw iOS-builds.
+- Om te voorkomen dat één gateway wake-pushes verzendt naar iOS-apparaten die bij een andere gateway horen.
 
 Lokale/handmatige builds blijven directe APNs gebruiken. Als je die builds zonder relay test, heeft de
-Gateway nog steeds directe APNs-referenties nodig:
+gateway nog steeds directe APNs-referenties nodig:
 
 ```bash
 export OPENCLAW_APNS_TEAM_ID="TEAMID"
@@ -200,11 +200,11 @@ export OPENCLAW_APNS_KEY_ID="KEYID"
 export OPENCLAW_APNS_PRIVATE_KEY_P8="$(cat /path/to/AuthKey_KEYID.p8)"
 ```
 
-Dit zijn runtime-env-vars voor de Gateway-host, geen Fastlane-instellingen. `apps/ios/fastlane/.env` slaat alleen
-App Store Connect-/TestFlight-auth op, zoals `APP_STORE_CONNECT_KEY_ID` en
-`APP_STORE_CONNECT_ISSUER_ID`; het configureert geen directe APNs-levering voor lokale iOS-builds.
+Dit zijn runtime-env-vars voor de gateway-host, geen Fastlane-instellingen. `apps/ios/fastlane/.env` slaat alleen
+App Store Connect-auth op, zoals `APP_STORE_CONNECT_KEY_ID` en
+`APP_STORE_CONNECT_ISSUER_ID`; het configureert geen directe APNs-aflevering voor lokale iOS-builds.
 
-Aanbevolen opslag op de Gateway-host:
+Aanbevolen opslag op de gateway-host:
 
 ```bash
 mkdir -p ~/.openclaw/credentials/apns
@@ -216,15 +216,15 @@ export OPENCLAW_APNS_PRIVATE_KEY_PATH="$HOME/.openclaw/credentials/apns/AuthKey_
 
 Commit het `.p8`-bestand niet en plaats het niet onder de repo-checkout.
 
-## Discovery-paden
+## Ontdekkingspaden
 
 ### Bonjour (LAN)
 
 De iOS-app browset `_openclaw-gw._tcp` op `local.` en, wanneer geconfigureerd, hetzelfde
-wide-area DNS-SD-discoverydomein. Gateways op hetzelfde LAN verschijnen automatisch via `local.`;
-discovery over netwerken heen kan het geconfigureerde wide-area-domein gebruiken zonder het beacontype te wijzigen.
+wide-area DNS-SD-ontdekkingsdomein. Gateways op hetzelfde LAN verschijnen automatisch vanuit `local.`;
+cross-network-ontdekking kan het geconfigureerde wide-area-domein gebruiken zonder het beacontype te wijzigen.
 
-### Tailnet (over netwerken heen)
+### Tailnet (cross-network)
 
 Als mDNS is geblokkeerd, gebruik dan een unicast DNS-SD-zone (kies een domein; voorbeeld:
 `openclaw.internal.`) en Tailscale split DNS.
@@ -232,7 +232,7 @@ Zie [Bonjour](/nl/gateway/bonjour) voor het CoreDNS-voorbeeld.
 
 ### Handmatige host/poort
 
-Schakel in Instellingen **Handmatige host** in en voer de Gateway-host + poort in (standaard `18789`).
+Schakel in Instellingen **Handmatige host** in en voer de gateway-host + poort in (standaard `18789`).
 
 ## Canvas + A2UI
 
@@ -246,23 +246,23 @@ Opmerkingen:
 
 - De Gateway-canvashost serveert `/__openclaw__/canvas/` en `/__openclaw__/a2ui/`.
 - Deze wordt geserveerd vanaf de Gateway-HTTP-server (dezelfde poort als `gateway.port`, standaard `18789`).
-- De iOS-node houdt de ingebouwde scaffold als de verbonden standaardweergave. `canvas.a2ui.push` en `canvas.a2ui.reset` gebruiken de gebundelde app-eigen A2UI-pagina.
-- Externe Gateway-A2UI-pagina's zijn op iOS alleen voor rendering; native A2UI-knopacties worden alleen geaccepteerd vanaf gebundelde app-eigen pagina's.
+- De iOS-node behoudt de ingebouwde scaffold als de verbonden standaardweergave. `canvas.a2ui.push` en `canvas.a2ui.reset` gebruiken de gebundelde app-eigen A2UI-pagina.
+- Externe Gateway-A2UI-pagina's zijn alleen render-only op iOS; native A2UI-knopacties worden alleen geaccepteerd vanuit gebundelde app-eigen pagina's.
 - Keer terug naar de ingebouwde scaffold met `canvas.navigate` en `{"url":""}`.
 
 ## Relatie met Computer Use
 
-De iOS-app is een mobiel node-oppervlak, geen Codex Computer Use-backend. Codex
+De iOS-app is een mobiele node-interface, geen Codex Computer Use-backend. Codex
 Computer Use en `cua-driver mcp` besturen een lokale macOS-desktop via MCP-
-tools; de iOS-app biedt iPhone-mogelijkheden via OpenClaw-nodecommando's
+tools; de iOS-app biedt iPhone-mogelijkheden via OpenClaw-nodeopdrachten
 zoals `canvas.*`, `camera.*`, `screen.*`, `location.*` en `talk.*`.
 
-Agents kunnen de iOS-app nog steeds via OpenClaw bedienen door nodecommando's
-aan te roepen, maar die aanroepen lopen via het Gateway-nodeprotocol en volgen de iOS-
+Agents kunnen de iOS-app nog steeds via OpenClaw bedienen door node-
+opdrachten aan te roepen, maar die aanroepen lopen via het gateway-nodeprotocol en volgen de iOS-
 voorgrond-/achtergrondlimieten. Gebruik [Codex Computer Use](/nl/plugins/codex-computer-use)
 voor lokale desktopbesturing en deze pagina voor iOS-node-mogelijkheden.
 
-### Canvas eval / snapshot
+### Canvas-eval / snapshot
 
 ```bash
 openclaw nodes invoke --node "iOS Node" --command canvas.eval --params '{"javaScript":"(() => { const {ctx} = window.__openclaw; ctx.clearRect(0,0,innerWidth,innerHeight); ctx.lineWidth=6; ctx.strokeStyle=\"#ff2d55\"; ctx.beginPath(); ctx.moveTo(40,40); ctx.lineTo(innerWidth-40, innerHeight-40); ctx.stroke(); return \"ok\"; })()"}'
@@ -272,24 +272,24 @@ openclaw nodes invoke --node "iOS Node" --command canvas.eval --params '{"javaSc
 openclaw nodes invoke --node "iOS Node" --command canvas.snapshot --params '{"maxWidth":900,"format":"jpeg"}'
 ```
 
-## Voice wake + praatmodus
+## Spraakactivering + praatmodus
 
-- Voice wake en praatmodus zijn beschikbaar in Instellingen.
-- iOS-nodes met praatmogelijkheden adverteren de `talk`-mogelijkheid en kunnen
+- Spraakactivering en praatmodus zijn beschikbaar in Instellingen.
+- iOS-nodes met praatondersteuning adverteren de `talk`-mogelijkheid en kunnen
   `talk.ptt.start`, `talk.ptt.stop`, `talk.ptt.cancel` en `talk.ptt.once` declareren;
-  de Gateway staat die push-to-talk-commando's standaard toe voor vertrouwde
-  nodes met praatmogelijkheden.
-- iOS kan achtergrondaudio onderbreken; beschouw spraakfuncties als best-effort wanneer de app niet actief is.
+  de Gateway staat die push-to-talk-opdrachten standaard toe voor vertrouwde
+  nodes met praatondersteuning.
+- iOS kan achtergrondaudio onderbreken; behandel spraakfuncties als best-effort wanneer de app niet actief is.
 
 ## Veelvoorkomende fouten
 
-- `NODE_BACKGROUND_UNAVAILABLE`: breng de iOS-app naar de voorgrond (canvas-/camera-/schermcommando's vereisen dit).
-- `A2UI_HOST_UNAVAILABLE`: de gebundelde A2UI-pagina was niet bereikbaar in de app-WebView; houd de app op de voorgrond op het tabblad Scherm en probeer het opnieuw.
+- `NODE_BACKGROUND_UNAVAILABLE`: breng de iOS-app naar de voorgrond (canvas-/camera-/schermopdrachten vereisen dit).
+- `A2UI_HOST_UNAVAILABLE`: de gebundelde A2UI-pagina was niet bereikbaar in de app-WebView; houd de app op de voorgrond op het tabblad Scherm en probeer opnieuw.
 - Koppelingsprompt verschijnt nooit: voer `openclaw devices list` uit en keur handmatig goed.
-- Opnieuw verbinden mislukt na herinstallatie: het Keychain-koppelingstoken is gewist; koppel de node opnieuw.
+- Reconnect mislukt na herinstallatie: de Keychain-koppelingstoken is gewist; koppel de node opnieuw.
 
 ## Gerelateerde docs
 
 - [Koppelen](/nl/channels/pairing)
-- [Discovery](/nl/gateway/discovery)
+- [Ontdekking](/nl/gateway/discovery)
 - [Bonjour](/nl/gateway/bonjour)

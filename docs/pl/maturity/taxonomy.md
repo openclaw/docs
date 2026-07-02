@@ -1,12 +1,12 @@
 ---
-summary: Szczegółowe omówienie obszarów produktu i kontroli stojących za kartą wyników dojrzałości OpenClaw.
+summary: Szczegółowy opis obszarów produktu i kontroli stojących za kartą oceny dojrzałości OpenClaw.
 title: Taksonomia dojrzałości
 x-i18n:
-    generated_at: "2026-06-27T17:44:35Z"
+    generated_at: "2026-07-02T08:55:51Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2a51eb22fb31d1c7d94a183d3515c7ddc54a754f6f68e502d17b95593a648db5
+    source_hash: de1212d026348cc64719475d636c0af3ab330f12d246b63697126f5011965124
     source_path: maturity/taxonomy.md
     workflow: 16
 ---
@@ -22,17 +22,17 @@ x-i18n:
 
 ## Jak czytać tę stronę
 
-Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Discord lub aplikacja macOS. Każda powierzchnia zawiera kategorie, a każda kategoria zawiera kontrole na poziomie możliwości, które obejmują scenariusze QA. Użyj karty wyników do oceny na poziomie wydania; użyj tej strony, aby sprawdzić model, który za nią stoi.
+Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Discord lub aplikacja macOS. Każda powierzchnia zawiera kategorie, a każda kategoria zawiera kontrole na poziomie możliwości, które obejmują scenariusze QA. Używaj karty wyników do oceny na poziomie wydania; tej strony używaj do sprawdzenia modelu, który za nią stoi.
 
 ## Poziomy dojrzałości
 
 <div className="maturity-level-list">
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Planowane</span></span></span><span>Kierunek jest znany, ale nie istnieje obsługiwana ścieżka użytkownika.</span><span className="maturity-level-promotion">Awans: istnieją zgłoszenie projektowe, właściciel i docelowa powierzchnia.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Planowane</span></span></span><span>Kierunek jest znany, ale nie istnieje obsługiwana ścieżka użytkownika.</span><span className="maturity-level-promotion">Awans: istnieją issue projektowe, właściciel i docelowa powierzchnia.</span></div>
   <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span></span><span>Zaimplementowane z zastrzeżeniami, flagami, kompilacjami ze źródeł lub przepływami tylko dla maintainerów.</span><span className="maturity-level-promotion">Awans: maintainer może uruchomić scenariusz z bieżącej gałęzi main.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span></span><span>Rzeczywiści użytkownicy mogą to wypróbować, ale należy spodziewać się zmian łamiących zgodność i niepełnego UX.</span><span className="maturity-level-promotion">Awans: udokumentowana konfiguracja, podstawowe testy, znane zastrzeżenia i co najmniej jeden dowód z rzeczywistego środowiska.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span></span><span>Prawdziwi użytkownicy mogą to wypróbować, ale należy oczekiwać zmian łamiących zgodność i niepełnego UX.</span><span className="maturity-level-promotion">Awans: udokumentowana konfiguracja, podstawowe testy, znane zastrzeżenia i co najmniej jeden dowód z rzeczywistego środowiska.</span></div>
   <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span></span><span>Istnieje publiczna ścieżka, a główny przepływ pracy jest użyteczny z ograniczonymi zastrzeżeniami.</span><span className="maturity-level-promotion">Awans: dokumentacja instalacji/aktualizacji, testy regresji, runbook wsparcia i pomyślny dowód scenariusza w oczekiwanym środowisku.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span></span><span>Zalecana ścieżka dla typowych użytkowników. Awarie są traktowane jako regresje.</span><span className="maturity-level-promotion">Awans: bramka wydania, ścieżka doctor/rozwiązywania problemów, obszerna dokumentacja i powtarzalne dowody z rzeczywistego użycia.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>Dopracowane, przyjemne, dobrze zinstrumentowane i konkurencyjne wobec najlepszego porównywalnego przepływu pracy.</span><span className="maturity-level-promotion">Awans: poziom Stabilne plus zaliczenie karty wyników użytkowników wśród reprezentatywnych użytkowników.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span></span><span>Zalecana ścieżka dla zwykłych użytkowników. Awarie są traktowane jako regresje.</span><span className="maturity-level-promotion">Awans: bramka wydania, ścieżka doctor/rozwiązywania problemów, szeroka dokumentacja i powtarzalne dowody z rzeczywistego użycia.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>Dopracowane, przyjemne w użyciu, dobrze zinstrumentowane i konkurencyjne wobec najlepszego porównywalnego przepływu pracy.</span><span className="maturity-level-promotion">Awans: poziom Stabilne plus zaliczenie karty wyników użytkownika przez reprezentatywnych użytkowników.</span></div>
 </div>
 
 ## Obszary produktu
@@ -44,37 +44,37 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     <a className="maturity-surface-link" href="#cli">
       <span className="maturity-surface-title">CLI</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>7 obszarów - 90% ukończone</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>7 obszarów - ukończono 90%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#gateway-runtime">
       <span className="maturity-surface-title">Środowisko uruchomieniowe Gateway</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>13 obszarów - 89% ukończone</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>13 obszarów - ukończono 89%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#agent-runtime">
       <span className="maturity-surface-title">Środowisko uruchomieniowe agenta</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 obszarów - 79% ukończone</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 obszarów - ukończono 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#session-memory-and-context-engine">
-      <span className="maturity-surface-title">Sesja, pamięć i silnik kontekstu</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 obszarów - 79% ukończone</span></span>
+      <span className="maturity-surface-title">Silnik sesji, pamięci i kontekstu</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 obszarów - ukończono 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#channel-framework">
       <span className="maturity-surface-title">Framework kanałów</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>8 obszarów - 79% ukończone</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>8 obszarów - ukończono 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#observability">
       <span className="maturity-surface-title">Obserwowalność</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - 79% ukończone</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#gateway-web-app">
       <span className="maturity-surface-title">Aplikacja webowa Gateway</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 obszarów - 79% ukończone</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 obszarów - ukończono 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#plugins">
@@ -94,40 +94,48 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     <a className="maturity-surface-link" href="#media-understanding-and-media-generation">
       <span className="maturity-surface-title">Rozumienie mediów i generowanie mediów</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>6 obszarów - ukończono 68%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 obszarów - ukończono 68%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#voice-and-realtime-talk">
       <span className="maturity-surface-title">Głos i rozmowa w czasie rzeczywistym</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>6 obszarów - ukończono 68%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 obszarów - ukończono 68%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#tui">
       <span className="maturity-surface-title">TUI</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>5 obszarów - ukończono 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 obszarów - ukończono 66%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#clawhub">
       <span className="maturity-surface-title">ClawHub</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>4 obszary - ukończono 62%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 obszary - ukończono 62%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#openclaw-app-sdk">
       <span className="maturity-surface-title">OpenClaw App SDK</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>6 obszarów - ukończono 53%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 obszarów - ukończono 53%</span></span>
     </a>
 
   </Tab>
   <Tab title="Platforma">
 
     <a className="maturity-surface-link" href="#linux-gateway-host">
-      <span className="maturity-surface-title">Host Gateway dla Linuksa</span>
+      <span className="maturity-surface-title">Host Gateway na Linuksie</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>5 obszarów - ukończono 89%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#macos-gateway-host">
-      <span className="maturity-surface-title">Host Gateway dla macOS</span>
+      <span className="maturity-surface-title">Host Gateway na macOS</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>7 obszarów - ukończono 88%</span></span>
+    </a>
+    <a className="maturity-surface-link" href="#android-app">
+      <span className="maturity-surface-title">Aplikacja na Androida</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>7 obszarów - ukończono 80%</span></span>
+    </a>
+    <a className="maturity-surface-link" href="#ios-app">
+      <span className="maturity-surface-title">Aplikacja na iOS</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>8 obszarów - ukończono 80%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#docker-and-podman-hosting">
@@ -146,48 +154,40 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
     </a>
 
     <a className="maturity-surface-link" href="#macos-companion-app">
-      <span className="maturity-surface-title">Aplikacja towarzysząca dla macOS</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>8 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-title">aplikacja towarzysząca macOS</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>8 obszarów - ukończono w 78%</span></span>
     </a>
 
-    <a className="maturity-surface-link" href="#android-app">
-      <span className="maturity-surface-title">Aplikacja na Androida</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>7 obszarów - ukończono 66%</span></span>
-    </a>
 
     <a className="maturity-surface-link" href="#native-windows">
       <span className="maturity-surface-title">Natywny Windows</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>4 obszary - ukończono 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 obszary - ukończono w 66%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#kubernetes-hosting">
-      <span className="maturity-surface-title">Hosting Kubernetes</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>4 obszary - ukończono 61%</span></span>
+      <span className="maturity-surface-title">hosting Kubernetes</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 obszary - ukończono w 61%</span></span>
     </a>
 
-    <a className="maturity-surface-link" href="#ios-app">
-      <span className="maturity-surface-title">Aplikacja iOS</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>8 obszarów - ukończono 44%</span></span>
-    </a>
 
     <a className="maturity-surface-link" href="#nix-install-path">
-      <span className="maturity-surface-title">Ścieżka instalacji Nix</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>5 obszarów - ukończono 44%</span></span>
+      <span className="maturity-surface-title">ścieżka instalacji Nix</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>5 obszarów - ukończono w 44%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#watchos-companion-surfaces">
-      <span className="maturity-surface-title">Powierzchnie towarzyszące watchOS</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>5 obszarów - ukończono 44%</span></span>
+      <span className="maturity-surface-title">powierzchnie towarzyszące watchOS</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>5 obszarów - ukończono w 44%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#linux-companion-app">
-      <span className="maturity-surface-title">Aplikacja towarzysząca Linux</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Planowane</span></span><span>5 obszarów - ukończono 21%</span></span>
+      <span className="maturity-surface-title">aplikacja towarzysząca Linux</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Planowane</span></span><span>5 obszarów - ukończono w 21%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#native-windows-companion-app">
-      <span className="maturity-surface-title">Natywna aplikacja towarzysząca Windows</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Planowane</span></span><span>5 obszarów - ukończono 21%</span></span>
+      <span className="maturity-surface-title">natywna aplikacja towarzysząca Windows</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Planowane</span></span><span>5 obszarów - ukończono w 21%</span></span>
     </a>
 
   </Tab>
@@ -195,110 +195,110 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     <a className="maturity-surface-link" href="#discord">
       <span className="maturity-surface-title">Discord</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>6 obszarów - ukończono 87%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabilne</span></span><span>6 obszarów - ukończono w 87%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#telegram">
       <span className="maturity-surface-title">Telegram</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#slack">
       <span className="maturity-surface-title">Slack</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#imessage-and-bluebubbles">
       <span className="maturity-surface-title">iMessage i BlueBubbles</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#whatsapp">
       <span className="maturity-surface-title">WhatsApp</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#matrix">
       <span className="maturity-surface-title">Matrix</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>6 obszarów - ukończono 67%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>6 obszarów - ukończono w 67%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#google-chat">
       <span className="maturity-surface-title">Google Chat</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>5 obszarów - ukończono 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 obszarów - ukończono w 66%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#microsoft-teams">
       <span className="maturity-surface-title">Microsoft Teams</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>5 obszarów - ukończono 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 obszarów - ukończono w 66%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#signal">
       <span className="maturity-surface-title">Signal</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>5 obszarów - ukończono 66%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 obszarów - ukończono w 66%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels">
       <span className="maturity-surface-title">Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, kanały regionalne</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>4 obszary - ukończono 58%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 obszary - ukończono w 58%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat">
       <span className="maturity-surface-title">Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>4 obszary - ukończono 54%</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>4 obszary - ukończono w 54%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#voice-call-channel">
-      <span className="maturity-surface-title">Kanał połączeń głosowych</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>5 obszarów - ukończono 44%</span></span>
+      <span className="maturity-surface-title">kanał połączeń głosowych</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperymentalne</span></span><span>5 obszarów - ukończono w 44%</span></span>
     </a>
 
   </Tab>
   <Tab title="Dostawca i narzędzie">
 
     <a className="maturity-surface-link" href="#browser-automation-exec-and-sandbox-tools">
-      <span className="maturity-surface-title">Automatyzacja przeglądarki, exec i narzędzia sandbox</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>3 obszary - ukończono 79%</span></span>
+      <span className="maturity-surface-title">narzędzia do automatyzacji przeglądarki, exec i sandbox</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>3 obszary - ukończono w 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#openai-and-codex-provider-path">
-      <span className="maturity-surface-title">Ścieżka dostawcy OpenAI i Codex</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 79%</span></span>
+      <span className="maturity-surface-title">ścieżka dostawcy OpenAI i Codex</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#web-search-tools">
-      <span className="maturity-surface-title">Narzędzia wyszukiwania w sieci</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 obszary - ukończono 79%</span></span>
+      <span className="maturity-surface-title">narzędzia wyszukiwania w sieci</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 obszary - ukończono w 79%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#anthropic-provider-path">
-      <span className="maturity-surface-title">Ścieżka dostawcy Anthropic</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-title">ścieżka dostawcy Anthropic</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#google-provider-path">
-      <span className="maturity-surface-title">Ścieżka dostawcy Google</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono 78%</span></span>
+      <span className="maturity-surface-title">ścieżka dostawcy Google</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>5 obszarów - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#openrouter-provider-path">
-      <span className="maturity-surface-title">Ścieżka dostawcy OpenRouter</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 obszary - ukończono 78%</span></span>
+      <span className="maturity-surface-title">ścieżka dostawcy OpenRouter</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>4 obszary - ukończono w 78%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#image-video-and-music-generation-tools">
-      <span className="maturity-surface-title">Narzędzia do generowania obrazów, wideo i muzyki</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>5 obszarów - ukończono 68%</span></span>
+      <span className="maturity-surface-title">narzędzia do generowania obrazów, wideo i muzyki</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 obszarów - ukończono w 68%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#local-model-providers-ollama-vllm-sglang-lm-studio">
-      <span className="maturity-surface-title">Lokalni dostawcy modeli: Ollama, vLLM, SGLang, LM Studio</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>5 obszarów - ukończono 68%</span></span>
+      <span className="maturity-surface-title">lokalni dostawcy modeli: Ollama, vLLM, SGLang, LM Studio</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>5 obszarów - ukończono w 68%</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#long-tail-hosted-providers">
-      <span className="maturity-surface-title">Rzadziej używani dostawcy hostowani</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>3 obszary - ukończono 68%</span></span>
+      <span className="maturity-surface-title">dostawcy hostowani z długiego ogona</span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alpha</span></span><span>3 obszary - ukończono w 68%</span></span>
     </a>
 
   </Tab>
@@ -338,7 +338,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Wdrożenie](/pl/cli/onboard), [Konfiguracja](/pl/cli/configure), [Omówienie wdrożenia](/pl/start/onboarding-overview)</div>
+        <div className="maturity-category-docs">[Wdrożenie](/pl/cli/onboard), [Konfiguracja](/pl/cli/configure), [Omówienie wdrażania](/pl/start/onboarding-overview)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -368,7 +368,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Stan](/pl/cli/status), [Kondycja](/pl/cli/health), [Dzienniki](/pl/cli/logs), [Diagnostyka](/pl/gateway/diagnostics)</div>
+        <div className="maturity-category-docs">[Status](/pl/cli/status), [Kondycja](/pl/cli/health), [Logi](/pl/cli/logs), [Diagnostyka](/pl/gateway/diagnostics)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -397,12 +397,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Środowisko uruchomieniowe Gateway - M4 Stabilne - 13 obszarów">
     <a id="gateway-runtime" />
 
-    Podstawowa architektura, uwierzytelnianie, parowanie, dokumentacja protokołu, dokumentacja daemona i runbooki CLI są szerokie i aktualne.
+    Podstawowa architektura, uwierzytelnianie, parowanie, dokumentacja protokołu, dokumentacja demona i instrukcje operacyjne CLI są szerokie i aktualne.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 6%</span><span>Jakość stabilna - 81%</span><span>Kompletność stabilna - 89%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 12</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 6%</span><span>Jakość Stabilne - 81%</span><span>Kompletność Stabilne - 89%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 12</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zatwierdzenia i zdalne wykonywanie</span>
@@ -421,7 +421,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Interfejs API HTTP OpenAI](/pl/gateway/openai-http-api), [Interfejs API HTTP Openresponses](/pl/gateway/openresponses-http-api), [Interfejs API HTTP wywoływania narzędzi](/pl/gateway/tools-invoke-http-api), [Hooks](/pl/automation/hooks), [Indeks](/pl/web/index)</div>
+        <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Interfejs API HTTP Openai](/pl/gateway/openai-http-api), [Interfejs API HTTP Openresponses](/pl/gateway/openresponses-http-api), [Interfejs API HTTP wywoływania narzędzi](/pl/gateway/tools-invoke-http-api), [Hooki](/pl/automation/hooks), [Indeks](/pl/web/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -431,7 +431,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Architektura](/pl/concepts/architecture), [Interfejs Control UI](/pl/web/control-ui), [Webchat](/pl/web/webchat), [Canvas](/pl/refactor/canvas)</div>
+        <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Architektura](/pl/concepts/architecture), [Interfejs sterowania](/pl/web/control-ui), [Webchat](/pl/web/webchat), [Canvas](/pl/refactor/canvas)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -455,7 +455,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Dostęp sieciowy i wykrywanie</span>
+          <span className="maturity-category-title">Dostęp do sieci i wykrywanie</span>
           <span>6 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -465,7 +465,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Węzły i zdalne możliwości</span>
+          <span className="maturity-category-title">Węzły i możliwości zdalne</span>
           <span>8 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -481,12 +481,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Diagnostyka](/pl/gateway/diagnostics), [Diagnostyka naprawcza](/pl/gateway/doctor)</div>
+        <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Diagnostyka](/pl/gateway/diagnostics), [Doctor](/pl/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zgodność protokołu</span>
-          <span>7 możliwości / obsługiwane w LTS</span>
+          <span>7 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -496,7 +496,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Role i uprawnienia</span>
-          <span>5 możliwości / obsługiwane w LTS</span>
+          <span>5 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -506,7 +506,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Cykl życia Gateway</span>
-          <span>7 możliwości / obsługiwane w LTS</span>
+          <span>7 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
@@ -516,7 +516,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Mechanizmy kontroli bezpieczeństwa</span>
-          <span>6 możliwości / obsługiwane w LTS</span>
+          <span>6 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -526,7 +526,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Połączenie WebSocket</span>
-          <span>8 możliwości / obsługiwane w LTS</span>
+          <span>8 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
@@ -537,12 +537,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Środowisko uruchomieniowe agenta - M3 Beta - 9 obszarów">
+  <Accordion title="Runtime agenta - M3 Beta - 9 obszarów">
     <a id="agent-runtime" />
 
-    Główna pętla, modele, routing dostawców i strumieniowanie narzędzi są pełnoprawnymi obszarami, ale zachowanie dostawców zmienia się co tydzień i wymaga dowodu scenariuszowego dla każdego wydania.
+    Główna pętla, modele, routing dostawców i strumieniowanie narzędzi są pełnoprawnymi elementami, ale zachowanie dostawców zmienia się co tydzień i wymaga dowodu scenariuszowego dla każdego wydania.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 33%</span><span>Jakość Beta - 78%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 6</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 33%</span><span>Jakość Beta - 78%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 6</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -554,7 +554,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pętla agenta](/pl/concepts/agent-loop), [Agent](/pl/cli/agent), [Środowiska uruchomieniowe agenta](/pl/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">[Pętla agenta](/pl/concepts/agent-loop), [Agent](/pl/cli/agent), [Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -564,11 +564,11 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Środowiska uruchomieniowe agenta](/pl/concepts/agent-runtimes), [Anthropic](/pl/providers/anthropic), [Google](/pl/providers/google), [Podagenci](/pl/tools/subagents)</div>
+        <div className="maturity-category-docs">[Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes), [Anthropic](/pl/providers/anthropic), [Google](/pl/providers/google), [Podagenci](/pl/tools/subagents)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Wykonywanie u hostowanych dostawców</span>
+          <span className="maturity-category-title">Wykonywanie przez hostowanych dostawców</span>
           <span>5 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
@@ -578,7 +578,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Lokalni i samodzielnie hostowani dostawcy</span>
+          <span className="maturity-category-title">Dostawcy lokalni i samodzielnie hostowani</span>
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -594,7 +594,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Modele](/pl/concepts/models), [Modele](/pl/cli/models), [Openai](/pl/providers/openai), [Środowiska uruchomieniowe agenta](/pl/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">[Modele](/pl/concepts/models), [Modele](/pl/cli/models), [Openai](/pl/providers/openai), [Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -634,7 +634,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Piaskownica a zasady narzędzi a tryb podwyższony](/pl/gateway/sandbox-vs-tool-policy-vs-elevated), [Pętla agenta](/pl/concepts/agent-loop), [Podagenci](/pl/tools/subagents)</div>
+        <div className="maturity-category-docs">[Piaskownica kontra zasady narzędzi kontra podwyższone uprawnienia](/pl/gateway/sandbox-vs-tool-policy-vs-elevated), [Pętla agenta](/pl/concepts/agent-loop), [Podagenci](/pl/tools/subagents)</div>
       </div>
     </div>
 
@@ -643,36 +643,36 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Sesja, pamięć i silnik kontekstu - M3 Beta - 9 obszarów">
     <a id="session-memory-and-context-engine" />
 
-    Dobra dokumentacja i aktywna implementacja. Dojrzałość zależy od trwałości transkrypcji, jakości Compaction oraz parytetu między klientami.
+    Solidna dokumentacja i aktywna implementacja. Dojrzałość zależy od trwałości transkryptu, jakości Compaction oraz parytetu między klientami.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 30%</span><span>Jakość Beta - 77%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 6</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Zarządzanie sesjami CLI i transkrypcjami</span>
-          <span>2 możliwości / z obsługą LTS</span>
+          <span className="maturity-category-title">Zarządzanie sesjami CLI i transkryptami</span>
+          <span>2 funkcje / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sesja](/pl/concepts/session), [Compaction zarządzania sesjami](/pl/reference/session-management-compaction), [Sesje](/pl/cli/sessions)</div>
+        <div className="maturity-category-docs">[Sesja](/pl/concepts/session), [Zarządzanie sesjami Compaction](/pl/reference/session-management-compaction), [Sesje](/pl/cli/sessions)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zarządzanie tokenami</span>
-          <span>3 możliwości / z obsługą LTS</span>
+          <span>3 funkcje / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Compaction](/pl/concepts/compaction), [Kontekst](/pl/concepts/context), [Compaction zarządzania sesjami](/pl/reference/session-management-compaction)</div>
+        <div className="maturity-category-docs">[Compaction](/pl/concepts/compaction), [Kontekst](/pl/concepts/context), [Zarządzanie sesjami Compaction](/pl/reference/session-management-compaction)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Silnik kontekstu</span>
-          <span>2 możliwości / z obsługą LTS</span>
+          <span>2 funkcje / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -681,48 +681,48 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Historia i parytet sesji między klientami</span>
-          <span>2 możliwości</span>
+          <span className="maturity-category-title">Historia między klientami i parytet sesji</span>
+          <span>2 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Czat webowy](/pl/web/webchat), [Android](/pl/platforms/android), [Routing kanałów](/pl/channels/channel-routing)</div>
+        <div className="maturity-category-docs">[Czat internetowy](/pl/web/webchat), [Android](/pl/platforms/android), [Routing kanałów](/pl/channels/channel-routing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Diagnostyka, konserwacja i odzyskiwanie</span>
-          <span>3 możliwości</span>
+          <span>3 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Diagnostyka](/pl/gateway/diagnostics), [Compaction zarządzania sesjami](/pl/reference/session-management-compaction), [Flagi](/pl/diagnostics/flags)</div>
+        <div className="maturity-category-docs">[Diagnostyka](/pl/gateway/diagnostics), [Zarządzanie sesjami Compaction](/pl/reference/session-management-compaction), [Flagi](/pl/diagnostics/flags)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Podstawowe prompty i kontekst</span>
-          <span>2 możliwości / z obsługą LTS</span>
+          <span className="maturity-category-title">Główne prompty i kontekst</span>
+          <span>2 funkcje / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kontekst](/pl/concepts/context), [Higiena transkrypcji](/pl/reference/transcript-hygiene), [Discord](/pl/channels/discord)</div>
+        <div className="maturity-category-docs">[Kontekst](/pl/concepts/context), [Higiena transkryptu](/pl/reference/transcript-hygiene), [Discord](/pl/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pamięć</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Konfiguracja pamięci](/pl/reference/memory-config), [Qmd pamięci](/pl/concepts/memory-qmd), [Pamięć](/pl/concepts/memory), [Discord](/pl/channels/discord)</div>
+        <div className="maturity-category-docs">[Konfiguracja pamięci](/pl/reference/memory-config), [Pamięć Qmd](/pl/concepts/memory-qmd), [Pamięć](/pl/concepts/memory), [Discord](/pl/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Routing sesji</span>
-          <span>2 możliwości / z obsługą LTS</span>
+          <span>2 funkcje / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -735,9 +735,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>2 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Compaction zarządzania sesją](/pl/reference/session-management-compaction), [Higiena transkrypcji](/pl/reference/transcript-hygiene)</div>
+        <div className="maturity-category-docs">[Zarządzanie sesją Compaction](/pl/reference/session-management-compaction), [Higiena transkrypcji](/pl/reference/transcript-hygiene)</div>
       </div>
     </div>
 
@@ -746,7 +746,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Framework kanałów - M3 Beta - 8 obszarów">
     <a id="channel-framework" />
 
-    Wiele kanałów współdzieli kontrakty dostarczania i routingu Gateway, ale zachowanie kanałów różni się zależnie od ograniczeń nadrzędnego API i zasad konta.
+    Wiele kanałów współdzieli kontrakty dostarczania i routingu Gateway, ale zachowanie kanału różni się w zależności od nadrzędnego API i ograniczeń zasad konta.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 13%</span><span>Jakość Beta - 76%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 5</span></span></div>
 
@@ -754,80 +754,80 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Akcje kanałów, polecenia i zatwierdzenia</span>
+          <span className="maturity-category-title">Polecenia akcji kanałów i zatwierdzenia</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grupy](/pl/channels/groups), [Discord](/pl/channels/discord), [Google Chat](/pl/channels/googlechat), [Signal](/pl/channels/signal), [Matrix](/pl/channels/matrix)</div>
+        <div className="maturity-category-docs">[Grupy](/pl/channels/groups), [Discord](/pl/channels/discord), [Googlechat](/pl/channels/googlechat), [Signal](/pl/channels/signal), [Matrix](/pl/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja kanałów</span>
           <span>5 możliwości / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/channels/index), [Parowanie](/pl/channels/pairing), [Rozwiązywanie problemów](/pl/channels/troubleshooting), [Plugin kanałów SDK](/pl/plugins/sdk-channel-plugins)</div>
+        <div className="maturity-category-docs">[Indeks](/pl/channels/index), [Parowanie](/pl/channels/pairing), [Rozwiązywanie problemów](/pl/channels/troubleshooting), [Pluginy kanałów SDK](/pl/plugins/sdk-channel-plugins)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Wątki grupowe i zachowanie pomieszczeń w tle</span>
+          <span className="maturity-category-title">Zachowanie wątków grupowych i pokoi otoczenia</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>36%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "36%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>36%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "36%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grupy](/pl/channels/groups), [Wiadomości grupowe](/pl/channels/group-messages), [Zdarzenia pomieszczeń w tle](/pl/channels/ambient-room-events), [Grupy nadawcze](/pl/channels/broadcast-groups), [Discord](/pl/channels/discord)</div>
+        <div className="maturity-category-docs">[Grupy](/pl/channels/groups), [Wiadomości grupowe](/pl/channels/group-messages), [Zdarzenia pokoi otoczenia](/pl/channels/ambient-room-events), [Grupy rozgłoszeniowe](/pl/channels/broadcast-groups), [Discord](/pl/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp przychodzący i bramki tożsamości</span>
           <span>5 możliwości / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grupy dostępu](/pl/channels/access-groups), [Grupy](/pl/channels/groups), [Discord](/pl/channels/discord), [LINE](/pl/channels/line)</div>
+        <div className="maturity-category-docs">[Grupy dostępu](/pl/channels/access-groups), [Grupy](/pl/channels/groups), [Discord](/pl/channels/discord), [Line](/pl/channels/line)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Załączniki multimedialne i rozbudowane dane kanałów</span>
+          <span className="maturity-category-title">Załączniki multimedialne i bogate dane kanału</span>
           <span>4 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[LINE](/pl/channels/line), [Signal](/pl/channels/signal), [Google Chat](/pl/channels/googlechat), [Matrix](/pl/channels/matrix), [Discord](/pl/channels/discord)</div>
+        <div className="maturity-category-docs">[Line](/pl/channels/line), [Signal](/pl/channels/signal), [Googlechat](/pl/channels/googlechat), [Matrix](/pl/channels/matrix), [Discord](/pl/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostarczanie wychodzące i potok odpowiedzi</span>
           <span>4 możliwości / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grupy](/pl/channels/groups), [Zdarzenia pomieszczeń w tle](/pl/channels/ambient-room-events), [Discord](/pl/channels/discord), [Matrix](/pl/channels/matrix), [Kanały konfiguracji](/pl/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[Grupy](/pl/channels/groups), [Zdarzenia pokoi otoczenia](/pl/channels/ambient-room-events), [Discord](/pl/channels/discord), [Matrix](/pl/channels/matrix), [Kanały konfiguracji](/pl/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
+          <span className="maturity-category-title">Routing i dostarczanie konwersacji</span>
           <span>10 możliwości / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Trasowanie kanałów](/pl/channels/channel-routing), [Grupy](/pl/channels/groups), [Discord](/pl/channels/discord), [Matrix](/pl/channels/matrix), [Rozwiązywanie problemów](/pl/channels/troubleshooting), [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)</div>
+        <div className="maturity-category-docs">[Routing kanałów](/pl/channels/channel-routing), [Grupy](/pl/channels/groups), [Discord](/pl/channels/discord), [Matrix](/pl/channels/matrix), [Rozwiązywanie problemów](/pl/channels/troubleshooting), [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Stan, kondycja i kontrolki operatora</span>
+          <span className="maturity-category-title">Stan kondycji i kontrolki operatora</span>
           <span>4 możliwości / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Kondycja](/pl/gateway/health), [Dokumentacja konfiguracji](/pl/gateway/configuration-reference), [Rozwiązywanie problemów](/pl/channels/troubleshooting), [Discord](/pl/channels/discord)</div>
@@ -836,61 +836,61 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Observability - M3 Beta - 5 areas">
+  <Accordion title="Obserwowalność - M3 Beta - 5 obszarów">
     <a id="observability" />
 
-    Dokumentacja OTel, Prometheus, logowania i diagnostyki istnieje. Wymaga publicznego przeglądu dojrzałości „na co operatorzy powinni patrzeć w pierwszej kolejności”.
+    Dokumentacja OTel, Prometheus, rejestrowania i diagnostyki istnieje. Wymaga publicznego przeglądu dojrzałości pod kątem „na co operatorzy powinni spojrzeć najpierw”.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 18%</span><span>Jakość Beta - 75%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 3</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Experimental - 18%</span><span>Jakość Beta - 75%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 3</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Stan i naprawa</span>
-          <span>12 możliwości / z obsługą LTS</span>
+          <span className="maturity-category-title">Kondycja i naprawa</span>
+          <span>12 możliwości / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>28%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "28%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>28%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "28%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Stan](/pl/gateway/health), [Telegram](/pl/channels/telegram), [Doctor](/pl/cli/doctor), [Doctor](/pl/gateway/doctor), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Stan](/pl/cli/health), [Protokół](/pl/gateway/protocol)</div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Kondycja](/pl/gateway/health), [Telegram](/pl/channels/telegram), [Doctor](/pl/cli/doctor), [Doctor](/pl/gateway/doctor), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Kondycja](/pl/cli/health), [Protokół](/pl/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Rejestrowanie</span>
-          <span>5 możliwości / z obsługą LTS</span>
+          <span>5 możliwości / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Rejestrowanie](/pl/logging), [Rejestrowanie](/pl/gateway/logging), [Logi](/pl/cli/logs)</div>
+        <div className="maturity-category-docs">[Rejestrowanie](/pl/logging), [Rejestrowanie](/pl/gateway/logging), [Dzienniki](/pl/cli/logs)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zbieranie diagnostyki</span>
           <span>8 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Diagnostyka](/pl/gateway/diagnostics), [Stan](/pl/gateway/health), [Harness Codex](/pl/plugins/codex-harness), [Protokół](/pl/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Diagnostyka](/pl/gateway/diagnostics), [Kondycja](/pl/gateway/health), [Uprząż Codex](/pl/plugins/codex-harness), [Protokół](/pl/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Eksport telemetrii</span>
           <span>13 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Hooki](/pl/plugins/hooks), [Opentelemetry](/pl/gateway/opentelemetry), [Rejestrowanie](/pl/logging), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Diagnostyka Otel](/pl/plugins/reference/diagnostics-otel), [Prometheus](/pl/gateway/prometheus), [Diagnostyka Prometheus](/pl/plugins/reference/diagnostics-prometheus)</div>
+        <div className="maturity-category-docs">[Hooki](/pl/plugins/hooks), [Opentelemetry](/pl/gateway/opentelemetry), [Rejestrowanie](/pl/logging), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Diagnostics Otel](/pl/plugins/reference/diagnostics-otel), [Prometheus](/pl/gateway/prometheus), [Diagnostics Prometheus](/pl/plugins/reference/diagnostics-prometheus)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Diagnostyka sesji</span>
-          <span>4 możliwości / z obsługą LTS</span>
+          <span>4 możliwości / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Opentelemetry](/pl/gateway/opentelemetry), [Prometheus](/pl/gateway/prometheus), [Diagnostyka](/pl/gateway/diagnostics), [Protokół](/pl/gateway/protocol)</div>
@@ -902,46 +902,46 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Aplikacja webowa Gateway - M3 Beta - 6 obszarów">
     <a id="gateway-web-app" />
 
-    Web UI jest udokumentowany z przepływami parowania, czatu, PWA, Talk, push oraz zdalnego Gateway. Awansuj po kartach wyników międzyprzeglądarkowych i mobilnego PWA.
+    Web UI jest udokumentowany z przepływami parowania, czatu, PWA, Talk, push i zdalnego Gateway. Awansuj po kartach wyników dla różnych przeglądarek i mobilnego PWA.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 4%</span><span>Jakość Beta - 74%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Experimental - 4%</span><span>Jakość Beta - 74%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Rozmowa w czasie rzeczywistym w przeglądarce</span>
-          <span>5 możliwości</span>
+          <span className="maturity-category-title">Rozmowy w przeglądarce w czasie rzeczywistym</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Protokół](/pl/gateway/protocol), [Rozmowa](/pl/nodes/talk)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp i zaufanie w przeglądarce</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Panel](/pl/web/dashboard), [Tailscale](/pl/gateway/tailscale), [Dostęp zdalny](/pl/gateway/remote)</div>
+        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Panel](/pl/web/dashboard), [Tailscale](/pl/gateway/tailscale), [Zdalnie](/pl/gateway/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Konfiguracja](/pl/gateway/configuration)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Interfejs przeglądarkowy</span>
-          <span>10 możliwości</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -951,45 +951,45 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konwersacje WebChat</span>
-          <span>15 możliwości</span>
+          <span>15 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>10%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "10%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Czat webowy](/pl/web/webchat), [Pierwsze kroki](/pl/start/getting-started), [Routing kanałów](/pl/channels/channel-routing), [Bezpieczne operacje na plikach](/pl/gateway/security/secure-file-operations)</div>
+        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Webchat](/pl/web/webchat), [Pierwsze kroki](/pl/start/getting-started), [Routing kanałów](/pl/channels/channel-routing), [Bezpieczne operacje na plikach](/pl/gateway/security/secure-file-operations)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konsola operatora</span>
-          <span>10 możliwości</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Stan](/pl/gateway/health), [Protokół](/pl/gateway/protocol), [Panel](/pl/web/dashboard)</div>
+        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Kondycja](/pl/gateway/health), [Protokół](/pl/gateway/protocol), [Panel](/pl/web/dashboard)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Pluginy - M3 Beta - 9 obszarów">
+  <Accordion title="Plugins - M3 Beta - 9 obszarów">
     <a id="plugins" />
 
-    Istnieje szeroka dokumentacja i mocne wewnętrzne dowody działania środowiska wykonawczego w obszarach manifestów, wykrywania, ładowania, architektury dostawców/narzędzi oraz granic zatwierdzania. Utrzymaj wiersz na poziomie beta, dopóki publiczne API SDK, podścieżki i dowody dystrybucji zewnętrznej nie będą mocniejsze.
+    Istnieje szeroka dokumentacja i mocne wewnętrzne dowody działania runtime’u dotyczące manifestów, wykrywania, ładowania, architektury providerów/narzędzi oraz granic zatwierdzania. Utrzymaj wiersz na poziomie beta, dopóki publiczne API SDK/ścieżki podrzędne i dowody dystrybucji zewnętrznej nie będą mocniejsze.
 
-    <div className="maturity-surface-rollup"><span>Zakres Eksperymentalne - 12%</span><span>Jakość Beta - 72%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 7</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 12%</span><span>Jakość Beta - 72%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowo - 7</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Tworzenie i pakowanie Pluginów</span>
+          <span className="maturity-category-title">Tworzenie i pakietowanie Pluginów</span>
           <span>8 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Budowanie Pluginów](/pl/plugins/building-plugins), [Przegląd SDK](/pl/plugins/sdk-overview), [Punkty wejścia SDK](/pl/plugins/sdk-entrypoints), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Manifest](/pl/plugins/manifest), [Referencje](/pl/plugins/reference)</div>
+        <div className="maturity-category-docs">[Tworzenie Pluginów](/pl/plugins/building-plugins), [Przegląd SDK](/pl/plugins/sdk-overview), [Punkty wejścia SDK](/pl/plugins/sdk-entrypoints), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Manifest](/pl/plugins/manifest), [Referencja](/pl/plugins/reference)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -999,7 +999,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Spis Pluginów](/pl/plugins/plugin-inventory), [Pluginy](/pl/cli/plugins), [Wewnętrzna architektura](/pl/plugins/architecture-internals)</div>
+        <div className="maturity-category-docs">[Inwentarz Pluginów](/pl/plugins/plugin-inventory), [Pluginy](/pl/cli/plugins), [Wewnętrzne szczegóły architektury](/pl/plugins/architecture-internals)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1009,7 +1009,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Canvas](/pl/plugins/reference/canvas), [Canvas](/pl/refactor/canvas), [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)</div>
+        <div className="maturity-category-docs">[Canvas](/pl/plugins/reference/canvas), [Canvas](/pl/refactor/canvas), [Referencja konfiguracji](/pl/gateway/configuration-reference)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1019,7 +1019,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>35%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "35%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Architektura](/pl/plugins/architecture), [Wewnętrzna architektura](/pl/plugins/architecture-internals), [Pluginy](/pl/cli/plugins)</div>
+        <div className="maturity-category-docs">[Architektura](/pl/plugins/architecture), [Wewnętrzne szczegóły architektury](/pl/plugins/architecture-internals), [Pluginy](/pl/cli/plugins)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1029,7 +1029,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pluginy kanałów SDK](/pl/plugins/sdk-channel-plugins), [Kanał przychodzący SDK](/pl/plugins/sdk-channel-inbound), [Kanał wychodzący SDK](/pl/plugins/sdk-channel-outbound)</div>
+        <div className="maturity-category-docs">[Pluginy kanałów SDK](/pl/plugins/sdk-channel-plugins), [Ruch przychodzący kanału SDK](/pl/plugins/sdk-channel-inbound), [Ruch wychodzący kanału SDK](/pl/plugins/sdk-channel-outbound)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1063,13 +1063,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Testowanie Pluginów</span>
+          <span className="maturity-category-title">Testowanie pluginów</span>
           <span>6 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>27%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "27%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Testowanie SDK](/pl/plugins/sdk-testing), [Konfiguracja SDK](/pl/plugins/sdk-setup), [Harness Codex](/pl/plugins/codex-harness)</div>
+        <div className="maturity-category-docs">[Testowanie SDK](/pl/plugins/sdk-testing), [Konfiguracja SDK](/pl/plugins/sdk-setup), [Środowisko testowe Codex](/pl/plugins/codex-harness)</div>
       </div>
     </div>
 
@@ -1078,16 +1078,16 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Bezpieczeństwo, uwierzytelnianie, parowanie i sekrety - M3 Beta - 6 obszarów">
     <a id="security-auth-pairing-and-secrets" />
 
-    Istnieje dobra dokumentacja i powierzchnie wzmacniania zabezpieczeń. Promuj po tym, jak regularne scenariusze aktualizacji i zabezpieczeń wykażą brak regresji konfiguracji.
+    Istnieją dobre dokumenty i powierzchnie wzmacniania zabezpieczeń. Promuj po tym, jak regularne przebiegi scenariuszy aktualizacji i bezpieczeństwa potwierdzą brak regresji konfiguracji.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Experimental - 16%</span><span>Jakość Beta - 72%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 16%</span><span>Jakość Beta - 72%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zasady zatwierdzania i zabezpieczenia narzędzi</span>
-          <span>2 możliwości / obsługiwane w LTS</span>
+          <span>2 funkcje / obsługiwane przez LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1097,19 +1097,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Uwierzytelnianie Gateway i dostęp zdalny</span>
-          <span>9 możliwości / obsługiwane w LTS</span>
+          <span>9 funkcji / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/gateway/security/index), [Runbook ekspozycji](/pl/gateway/security/exposure-runbook), [Uwierzytelnianie zaufanego proxy](/pl/gateway/trusted-proxy-auth), [Tailscale](/pl/gateway/tailscale), [Dostęp zdalny](/pl/gateway/remote), [Dokumentacja konfiguracji](/pl/gateway/configuration-reference), [Gateway](/pl/cli/gateway), [Doctor](/pl/cli/doctor), [Interfejs Control UI](/pl/web/control-ui), [Sterowanie przeglądarką](/pl/tools/browser-control), [Kontrole audytu](/pl/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[Indeks](/pl/gateway/security/index), [Runbook ekspozycji](/pl/gateway/security/exposure-runbook), [Uwierzytelnianie zaufanego proxy](/pl/gateway/trusted-proxy-auth), [Tailscale](/pl/gateway/tailscale), [Zdalny](/pl/gateway/remote), [Dokumentacja konfiguracji](/pl/gateway/configuration-reference), [Gateway](/pl/cli/gateway), [Doctor](/pl/cli/doctor), [Interfejs Control UI](/pl/web/control-ui), [Sterowanie przeglądarką](/pl/tools/browser-control), [Kontrole audytu](/pl/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrola dostępu kanału</span>
-          <span>3 możliwości / obsługiwane w LTS</span>
+          <span className="maturity-category-title">Kontrola dostępu do kanałów</span>
+          <span>3 funkcje / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Parowanie](/pl/channels/pairing), [Telegram](/pl/channels/telegram), [Grupy dostępu](/pl/channels/access-groups), [Kontrole audytu](/pl/gateway/security/audit-checks)</div>
@@ -1117,9 +1117,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Parowanie urządzeń i Node</span>
-          <span>11 możliwości / obsługiwane w LTS</span>
+          <span>11 funkcji / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Protokół](/pl/gateway/protocol), [Urządzenia](/pl/cli/devices), [Parowanie](/pl/channels/pairing), [Parowanie](/pl/gateway/pairing), [Zakresy operatora](/pl/gateway/operator-scopes), [Interfejs Control UI](/pl/web/control-ui), [Webchat](/pl/web/webchat), [Zatwierdzenia](/pl/cli/approvals)</div>
@@ -1127,9 +1127,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zaufanie do Plugin</span>
-          <span>2 możliwości</span>
+          <span>2 funkcje</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Manifest](/pl/plugins/manifest), [Żądania uprawnień Plugin](/pl/plugins/plugin-permission-requests), [Zarządzanie Plugin](/pl/plugins/manage-plugins), [Kontrole audytu](/pl/gateway/security/audit-checks)</div>
@@ -1137,9 +1137,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Higiena poświadczeń i sekretów</span>
-          <span>5 możliwości / obsługiwane w LTS</span>
+          <span>5 funkcji / obsługiwane przez LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Uwierzytelnianie](/pl/gateway/authentication), [Modele](/pl/cli/models), [Openai](/pl/providers/openai), [Oauth](/pl/concepts/oauth), [Sekrety](/pl/gateway/secrets), [Sekrety](/pl/cli/secrets), [Powierzchnia poświadczeń Secretref](/pl/reference/secretref-credential-surface), [Kontrole audytu](/pl/gateway/security/audit-checks)</div>
@@ -1148,19 +1148,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Automatyzacja: Cron, hooki, zadania, odpytywanie - M3 Beta - 6 obszarów">
+  <Accordion title="Automatyzacja: cron, haki, zadania, odpytywanie - M3 Beta - 6 obszarów">
     <a id="automation-cron-hooks-tasks-polling" />
 
-    Udokumentowane i używalne, ale dowód scenariuszowy powinien obejmować dostarczanie bez nadzoru, ponawianie prób i widoczność awarii.
+    Udokumentowane i użyteczne, ale dowód scenariuszowy powinien obejmować nienadzorowane dostarczanie, ponowienia i widoczność awarii.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Experimental - 2%</span><span>Jakość Beta - 72%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 2%</span><span>Jakość Beta - 72%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zadania Cron</span>
-          <span>15 możliwości</span>
+          <span>15 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1170,7 +1170,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Przyjmowanie zdarzeń</span>
-          <span>15 możliwości</span>
+          <span>15 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1179,18 +1179,18 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Hooki automatyzacji</span>
-          <span>11 możliwości</span>
+          <span className="maturity-category-title">Haki automatyzacji</span>
+          <span>11 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Hooki](/pl/automation/hooks), [Hooki](/pl/cli/hooks), [Hooki](/pl/plugins/hooks), [Żądania uprawnień Plugin](/pl/plugins/plugin-permission-requests), [Ścieżki podrzędne SDK](/pl/plugins/sdk-subpaths)</div>
+        <div className="maturity-category-docs">[Haki](/pl/automation/hooks), [Haki](/pl/cli/hooks), [Haki](/pl/plugins/hooks), [Żądania uprawnień Plugin](/pl/plugins/plugin-permission-requests), [Podścieżki SDK](/pl/plugins/sdk-subpaths)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zadania i przepływy w tle</span>
-          <span>10 możliwości</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1200,7 +1200,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Heartbeat</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1209,8 +1209,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sterowanie odpytywaniem</span>
-          <span>10 możliwości</span>
+          <span className="maturity-category-title">Kontrolki odpytywania</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1221,15 +1221,15 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Rozumienie multimediów i generowanie multimediów - M2 Alpha - 6 obszarów">
+  <Accordion title="Rozumienie i generowanie multimediów - M2 Alpha - 6 obszarów">
     <a id="media-understanding-and-media-generation" />
 
-    Istnieje szeroki zakres możliwości, ale różnice między dostawcami, limity plików i parytet węzłów/aplikacji sprawiają, że nie jest to jeszcze stabilne.
+    Istnieje szeroka powierzchnia funkcji, ale zmienność dostawców, limity plików i parytet węzłów/aplikacji sprawiają, że nie jest ona jeszcze stabilna.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 2%</span><span>Jakość Alpha - 64%</span><span>Kompletność Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pobieranie i dostęp do multimediów</span>
@@ -1238,7 +1238,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Przegląd multimediów](/pl/tools/media-overview), [Rozumienie multimediów](/pl/nodes/media-understanding), [Bezpieczne operacje na plikach](/pl/gateway/security/secure-file-operations), [PDF](/pl/tools/pdf), [Generowanie obrazów](/pl/tools/image-generation), [QR](/pl/cli/qr), [LINE](/pl/channels/line), [WhatsApp](/pl/channels/whatsapp)</div>
+        <div className="maturity-category-docs">[Omówienie multimediów](/pl/tools/media-overview), [Rozumienie multimediów](/pl/nodes/media-understanding), [Bezpieczne operacje na plikach](/pl/gateway/security/secure-file-operations), [Pdf](/pl/tools/pdf), [Generowanie obrazów](/pl/tools/image-generation), [Qr](/pl/cli/qr), [Line](/pl/channels/line), [Whatsapp](/pl/channels/whatsapp)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1248,7 +1248,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Obrazy](/pl/nodes/images), [Przegląd multimediów](/pl/tools/media-overview), [Discord](/pl/channels/discord)</div>
+        <div className="maturity-category-docs">[Obrazy](/pl/nodes/images), [Omówienie multimediów](/pl/tools/media-overview), [Discord](/pl/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1258,7 +1258,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Przegląd multimediów](/pl/tools/media-overview), [Generowanie obrazów](/pl/tools/image-generation), [Manifest](/pl/plugins/manifest), [Środowisko testowe Codex](/pl/plugins/codex-harness)</div>
+        <div className="maturity-category-docs">[Omówienie multimediów](/pl/tools/media-overview), [Generowanie obrazów](/pl/tools/image-generation), [Manifest](/pl/plugins/manifest), [Harness Codex](/pl/plugins/codex-harness)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1268,7 +1268,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TTS](/pl/tools/tts), [Przegląd multimediów](/pl/tools/media-overview), [Discord](/pl/channels/discord)</div>
+        <div className="maturity-category-docs">[Tts](/pl/tools/tts), [Omówienie multimediów](/pl/tools/media-overview), [Discord](/pl/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1278,7 +1278,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>7%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "7%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Dźwięk](/pl/nodes/audio), [Rozumienie multimediów](/pl/nodes/media-understanding), [Przegląd multimediów](/pl/tools/media-overview), [WhatsApp](/pl/channels/whatsapp), [Obrazy](/pl/nodes/images), [Infer](/pl/cli/infer), [PDF](/pl/tools/pdf)</div>
+        <div className="maturity-category-docs">[Dźwięk](/pl/nodes/audio), [Rozumienie multimediów](/pl/nodes/media-understanding), [Omówienie multimediów](/pl/tools/media-overview), [Whatsapp](/pl/channels/whatsapp), [Obrazy](/pl/nodes/images), [Infer](/pl/cli/infer), [Pdf](/pl/tools/pdf)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1288,7 +1288,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>5%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "5%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Generowanie obrazów](/pl/tools/image-generation), [Przegląd multimediów](/pl/tools/media-overview), [Skills](/pl/tools/skills), [Generowanie muzyki](/pl/tools/music-generation), [Generowanie wideo](/pl/tools/video-generation)</div>
+        <div className="maturity-category-docs">[Generowanie obrazów](/pl/tools/image-generation), [Omówienie multimediów](/pl/tools/media-overview), [Skills](/pl/tools/skills), [Generowanie muzyki](/pl/tools/music-generation), [Generowanie wideo](/pl/tools/video-generation)</div>
       </div>
     </div>
 
@@ -1297,31 +1297,31 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Głos i rozmowa w czasie rzeczywistym - M2 Alpha - 6 obszarów">
     <a id="voice-and-realtime-talk" />
 
-    W Control UI, aplikacjach i u dostawców istnieje wiele implementacji. Przed wersją beta potrzebne są karty oceny opóźnień, trybów awarii i konfiguracji.
+    Istnieje wiele implementacji w Control UI, aplikacjach i dostawcach. Przed wersją beta potrzebne są karty wyników dotyczące opóźnień, trybów awarii i konfiguracji.
 
-    <div className="maturity-surface-rollup"><span>Zakres Eksperymentalne - 0%</span><span>Jakość Alpha - 61%</span><span>Kompletność Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 61%</span><span>Kompletność Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Dostawcy rozmów</span>
+          <span className="maturity-category-title">Dostawcy Talk</span>
           <span>7 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/pl/providers/openai), [Google](/pl/providers/google), [Pluginy dostawców SDK](/pl/plugins/sdk-provider-plugins), [Rozmowa](/pl/nodes/talk), [Interfejs sterowania](/pl/web/control-ui)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Openai](/pl/providers/openai), [Google](/pl/providers/google), [Pluginy dostawców SDK](/pl/plugins/sdk-provider-plugins), [Talk](/pl/nodes/talk), [Interfejs Control UI](/pl/web/control-ui)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sesje rozmów w czasie rzeczywistym</span>
+          <span className="maturity-category-title">Sesje Talk w czasie rzeczywistym</span>
           <span>11 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Rozmowa](/pl/nodes/talk), [Interfejs sterowania](/pl/web/control-ui)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Talk](/pl/nodes/talk), [Interfejs Control UI](/pl/web/control-ui)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1329,19 +1329,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Rozmowa](/pl/nodes/talk), [Openai](/pl/providers/openai), [Google](/pl/providers/google)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Talk](/pl/nodes/talk), [Openai](/pl/providers/openai), [Google](/pl/providers/google)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Rozmowa w aplikacji natywnej</span>
+          <span className="maturity-category-title">Talk w aplikacji natywnej</span>
           <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Rozmowa](/pl/nodes/talk), [Voicewake](/pl/platforms/mac/voicewake)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Talk](/pl/nodes/talk), [Voicewake](/pl/platforms/mac/voicewake)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1349,41 +1349,41 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div className="maturity-category-docs">[Voicewake](/pl/nodes/voicewake), [Voicewake](/pl/platforms/mac/voicewake), [Nakładka głosowa](/pl/platforms/mac/voice-overlay)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Obserwowalność rozmów</span>
+          <span className="maturity-category-title">Obserwowalność Talk</span>
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Interfejs sterowania](/pl/web/control-ui), [Nakładka głosowa](/pl/platforms/mac/voice-overlay), [Rozmowa](/pl/nodes/talk)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Interfejs Control UI](/pl/web/control-ui), [Nakładka głosowa](/pl/platforms/mac/voice-overlay), [Talk](/pl/nodes/talk)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="TUI - M2 Alpha - 5 obszarów">
+  <Accordion title="TUI - M2 Alfa - 5 obszarów">
     <a id="tui" />
 
-    Obecne w dokumentacji i źródle, ale mniej widoczne jako podstawowy przepływ pracy użytkownika. Wymaga jednoznacznej definicji scenariusza.
+    Obecne w dokumentacji i kodzie źródłowym, ale mniej widoczne jako podstawowy przepływ pracy użytkownika. Wymaga jednoznacznej definicji scenariusza.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 59%</span><span>Kompletność Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość alfa - 59%</span><span>Kompletność alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Tryby działania</span>
+          <span className="maturity-category-title">Tryby środowiska uruchomieniowego</span>
           <span>14 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[TUI](/pl/cli/tui), [TUI](/pl/web/tui), [Indeks](/pl/cli/index)</div>
       </div>
       <div className="maturity-category-row">
@@ -1391,9 +1391,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Dane wejściowe i polecenia</span>
           <span>8 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[TUI](/pl/web/tui)</div>
       </div>
       <div className="maturity-category-row">
@@ -1401,9 +1401,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Zarządzanie sesjami</span>
           <span>3 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[TUI](/pl/web/tui), [Sesje](/pl/cli/sessions)</div>
       </div>
       <div className="maturity-category-row">
@@ -1411,9 +1411,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Lokalne wykonywanie powłoki</span>
           <span>4 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[TUI](/pl/web/tui), [TUI](/pl/cli/tui)</div>
       </div>
       <div className="maturity-category-row">
@@ -1421,74 +1421,74 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Renderowanie i bezpieczeństwo danych wyjściowych</span>
           <span>4 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[TUI](/pl/web/tui), [QR](/pl/cli/qr), [Logi](/pl/cli/logs), [Uzupełnianie](/pl/cli/completion)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="ClawHub - M2 Alfa - 4 obszary">
+  <Accordion title="ClawHub - M2 Alpha - 4 obszary">
     <a id="clawhub" />
 
-    Publiczna dokumentacja i koncepcja ekosystemu istnieją. Potrzebne są karty ocen instalacji, zaufania, aktualizacji, wycofywania zmian i zgodności.
+    Istnieją publiczna dokumentacja i koncepcja ekosystemu. Potrzebne są karty wyników dotyczące instalacji, zaufania, aktualizacji, wycofywania zmian i zgodności.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Alfa - 58%</span><span>Kompletność Alfa - 62%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 58%</span><span>Kompletność Alpha - 62%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Publikowanie</span>
-          <span>7 możliwości</span>
+          <span>7 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div className="maturity-category-docs">[Publikowanie](/pl/clawhub/publishing), [Tworzenie Skills](/pl/tools/creating-skills), [Społeczność](/pl/plugins/community)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Odkrywanie katalogu</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div className="maturity-category-docs">[Plugin](/pl/tools/plugin), [Pluginy](/pl/cli/plugins), [Skills](/pl/cli/skills), [Skills](/pl/tools/skills), [Społeczność](/pl/plugins/community)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zgodność i zaufanie</span>
-          <span>12 możliwości</span>
+          <span>12 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>56%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "56%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>56%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "56%" }} /></span></span></div>
         <div className="maturity-category-docs">[Plugin](/pl/tools/plugin), [Pluginy](/pl/cli/plugins), [Zgodność](/pl/plugins/compatibility), [Inwentarz Pluginów](/pl/plugins/plugin-inventory), [Publikowanie](/pl/clawhub/publishing), [Skills](/pl/tools/skills), [Konfiguracja Skills](/pl/tools/skills-config)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Cykl życia i kondycja Pluginów</span>
-          <span>26 możliwości</span>
+          <span className="maturity-category-title">Cykl życia i kondycja Pluginu</span>
+          <span>26 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div className="maturity-category-docs">[Plugin](/pl/tools/plugin), [Pluginy](/pl/cli/plugins), [Skills](/pl/cli/skills), [Skills](/pl/tools/skills), [Protokół](/pl/gateway/protocol), [Pakiety](/pl/plugins/bundles), [Rozwiązywanie zależności](/pl/plugins/dependency-resolution)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="OpenClaw App SDK - M2 Alfa - 6 obszarów">
+  <Accordion title="OpenClaw App SDK - M2 Alpha - 6 obszarów">
     <a id="openclaw-app-sdk" />
 
-    OpenClaw App SDK to odrębny kontrakt aplikacji zewnętrznej, niezależny od środowiska uruchomieniowego Gateway i Plugin SDK. Obecna punktacja pokazuje rzeczywistą ścieżkę `@openclaw/sdk` z lukami dotyczącymi publicznego pakowania, automatycznego odkrywania, zatwierdzeń, helperów i zgodności.
+    OpenClaw App SDK to odrębny kontrakt aplikacji zewnętrznej, oddzielny od środowiska uruchomieniowego Gateway i Plugin SDK. Obecna punktacja pokazuje rzeczywistą ścieżkę `@openclaw/sdk` z lukami dotyczącymi publicznego pakietowania, automatycznego odkrywania, zatwierdzeń, helperów i zgodności.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 3%</span><span>Jakość Alfa - 54%</span><span>Kompletność Alfa - 53%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 3%</span><span>Jakość Alpha - 54%</span><span>Kompletność Alpha - 53%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -1497,60 +1497,60 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">API klienta</span>
           <span>4 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>51%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "51%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/pl/gateway/external-apps), [Projekt API SDK OpenClaw](/pl/gateway/external-apps)</div>
+        <div className="maturity-category-docs">[Openclaw Sdk](/pl/gateway/external-apps), [Projekt API Openclaw Sdk](/pl/gateway/external-apps)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp do Gateway</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/pl/gateway/external-apps), [Projekt API SDK OpenClaw](/pl/gateway/external-apps), [Protokół](/pl/gateway/protocol), [Indeks](/pl/gateway/security/index)</div>
+        <div className="maturity-category-docs">[Openclaw Sdk](/pl/gateway/external-apps), [Projekt API Openclaw Sdk](/pl/gateway/external-apps), [Protokół](/pl/gateway/protocol), [Indeks](/pl/gateway/security/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konwersacje agentów</span>
           <span>6 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/pl/gateway/external-apps), [Projekt API SDK OpenClaw](/pl/gateway/external-apps), [Protokół](/pl/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Openclaw Sdk](/pl/gateway/external-apps), [Projekt API Openclaw Sdk](/pl/gateway/external-apps), [Protokół](/pl/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zdarzenia i zatwierdzenia</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/pl/gateway/external-apps), [Projekt API SDK OpenClaw](/pl/gateway/external-apps), [Protokół](/pl/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Openclaw Sdk](/pl/gateway/external-apps), [Projekt API Openclaw Sdk](/pl/gateway/external-apps), [Protokół](/pl/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pomocniki zasobów</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>17%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "17%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>17%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "17%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>62%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "62%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/pl/gateway/external-apps), [Projekt API SDK OpenClaw](/pl/gateway/external-apps)</div>
+        <div className="maturity-category-docs">[Openclaw Sdk](/pl/gateway/external-apps), [Projekt API Openclaw Sdk](/pl/gateway/external-apps)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zgodność</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Projekt API SDK OpenClaw](/pl/gateway/external-apps), [Typebox](/pl/concepts/typebox), [Protokół](/pl/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Projekt API Openclaw Sdk](/pl/gateway/external-apps), [Typebox](/pl/concepts/typebox), [Protokół](/pl/gateway/protocol)</div>
       </div>
     </div>
 
@@ -1561,19 +1561,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 ### Platforma
 
 <AccordionGroup>
-  <Accordion title="Host Gateway Linux - M4 Stabilny - 5 obszarów">
+  <Accordion title="Host Linux Gateway - M4 Stable - 5 obszarów">
     <a id="linux-gateway-host" />
 
-    Zalecane jest środowisko uruchomieniowe Node, udokumentowano usługę użytkownika systemd, a wskazówki dotyczące VPS/kontenerów są obszerne.
+    Zalecane jest środowisko uruchomieniowe Node, udokumentowano usługę użytkownika systemd, a wskazówki dotyczące VPS/kontenerów są szerokie.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Beta - 75%</span><span>Kompletność Stabilna - 89%</span><span><span className="maturity-lts maturity-lts-partial">Częściowo - 4</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Beta - 75%</span><span>Kompletność Stabilne - 89%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 4</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja hosta i aktualizacje</span>
-          <span>4 funkcje / z obsługą LTS</span>
+          <span>4 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -1583,7 +1583,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Środowisko uruchomieniowe Gateway i sterowanie usługą</span>
-          <span>6 funkcji / z obsługą LTS</span>
+          <span>6 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -1592,8 +1592,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Dostęp zdalny i zabezpieczenia</span>
-          <span>6 funkcji / z obsługą LTS</span>
+          <span className="maturity-category-title">Dostęp zdalny i bezpieczeństwo</span>
+          <span>6 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -1603,17 +1603,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Diagnostyka i naprawa</span>
-          <span>4 funkcje / z obsługą LTS</span>
+          <span>4 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Status](/pl/cli/status), [Dzienniki](/pl/cli/logs), [Doctor](/pl/cli/doctor), [Diagnostyka](/pl/gateway/diagnostics), [Indeks](/pl/gateway/index)</div>
+        <div className="maturity-category-docs">[Stan](/pl/cli/status), [Dzienniki](/pl/cli/logs), [Doctor](/pl/cli/doctor), [Diagnostyka](/pl/gateway/diagnostics), [Indeks](/pl/gateway/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Cele wdrożenia</span>
-          <span>3 funkcje</span>
+          <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -1624,12 +1624,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Host Gateway dla macOS - M4 Stabilne - 7 obszarów">
+  <Accordion title="Host Gateway macOS - M4 stabilne - 7 obszarów">
     <a id="macos-gateway-host" />
 
-    Ścieżka usługi LaunchAgent, lokalne/zdalne tryby Gateway, instalacja CLI i integracja z aplikacją są udokumentowane.
+    Ścieżka usługi LaunchAgent, lokalne/zdalne tryby Gateway, instalacja CLI i integracja aplikacji są udokumentowane.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Beta - 74%</span><span>Kompletność Stabilne - 88%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Beta - 74%</span><span>Kompletność stabilna - 88%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -1651,7 +1651,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/pl/platforms/macos), [Dołączony Gateway](/pl/platforms/mac/bundled-gateway), [Zdalny](/pl/platforms/mac/remote), [Indeks](/pl/gateway/index), [Gateway](/pl/cli/gateway), [Bonjour](/pl/gateway/bonjour)</div>
+        <div className="maturity-category-docs">[Macos](/pl/platforms/macos), [Dołączony Gateway](/pl/platforms/mac/bundled-gateway), [Zdalne](/pl/platforms/mac/remote), [Indeks](/pl/gateway/index), [Gateway](/pl/cli/gateway), [Bonjour](/pl/gateway/bonjour)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1661,7 +1661,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Zdalny](/pl/platforms/mac/remote), [Zdalny](/pl/gateway/remote), [Tailscale](/pl/gateway/tailscale)</div>
+        <div className="maturity-category-docs">[Zdalne](/pl/platforms/mac/remote), [Zdalne](/pl/gateway/remote), [Tailscale](/pl/gateway/tailscale)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1685,13 +1685,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Uprawnienia i funkcje natywne</span>
+          <span className="maturity-category-title">Uprawnienia i natywne możliwości</span>
           <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/pl/platforms/macos), [Zdalny](/pl/platforms/mac/remote)</div>
+        <div className="maturity-category-docs">[Macos](/pl/platforms/macos), [Zdalne](/pl/platforms/mac/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1706,11 +1706,185 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
     </div>
 
   </Accordion>
+  <Accordion title="Aplikacja Android - M4 Stabilne - 7 obszarów">
+    <a id="android-app" />
+
+    Istnieje oficjalna dystrybucja w Google Play, dokumentacja budowania i uruchamiania ze źródeł jest utrzymywana, a aplikacja Android jest udokumentowana jako zwykły węzeł towarzyszący dla użytkowników.
+
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość stabilna - 80%</span><span>Kompletność stabilna - 80%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Przechwytywanie multimediów</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Kamera](/pl/nodes/camera)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Czat mobilny</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Konfiguracja połączenia</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Bonjour](/pl/gateway/bonjour), [Parowanie](/pl/gateway/pairing)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Dystrybucja</span>
+          <span>3 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Ustawienia</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Głos</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Rozmowa](/pl/nodes/talk)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Środowisko uruchomieniowe urządzenia</span>
+          <span>2 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Rozwiązywanie problemów](/pl/nodes/troubleshooting), [Protokół](/pl/gateway/protocol)</div>
+      </div>
+    </div>
+
+  </Accordion>
+  <Accordion title="iOS app - M4 Stable - 8 areas">
+    <a id="ios-app" />
+
+    Istnieje oficjalna dystrybucja w App Store, udokumentowano powiadomienia push obsługiwane przez przekaźnik, a aplikacja iOS jest opisana jako zwykły węzeł towarzyszący dla użytkowników.
+
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość stabilna - 80%</span><span>Kompletność stabilna - 80%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Multimedia i udostępnianie</span>
+          <span>1 funkcja</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Aparat](/pl/nodes/camera)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Canvas i ekran</span>
+          <span>1 funkcja</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Canvas](/pl/plugins/reference/canvas)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Czat i sesje</span>
+          <span>1 funkcja</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Webchat](/pl/web/webchat), [Protokół](/pl/gateway/protocol)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Konfiguracja i diagnostyka Gateway</span>
+          <span>7 funkcji</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Parowanie](/pl/channels/pairing)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Dystrybucja</span>
+          <span>1 funkcja</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Polecenia urządzenia</span>
+          <span>2 funkcje</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Protokół](/pl/gateway/protocol)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Powiadomienia i działanie w tle</span>
+          <span>1 funkcja</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Konfiguracja](/pl/gateway/configuration)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Głos</span>
+          <span>1 funkcja</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
+        <div className="maturity-category-docs">[iOS](/pl/platforms/ios), [Talk](/pl/nodes/talk)</div>
+      </div>
+    </div>
+
+  </Accordion>
 
   <Accordion title="Hosting Docker i Podman - M3 Beta - 4 obszary">
     <a id="docker-and-podman-hosting" />
 
-    Dokumentacja instalacji istnieje i obejmuje typowe ścieżki wdrożenia. Awansuj po tym, jak cykliczne smoke testy wydania obejmą zachowanie aktualizacji i woluminów.
+    Dokumentacja instalacji istnieje i obejmuje typowe ścieżki wdrożenia. Awansuj po cyklicznych testach smoke wydania, które obejmą zachowanie aktualizacji i wolumenów.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 7%</span><span>Jakość Beta - 71%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
@@ -1718,8 +1892,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja kontenerów</span>
-          <span>6 funkcji</span>
+          <span className="maturity-category-title">Konfiguracja kontenera</span>
+          <span>6 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1728,33 +1902,33 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Operacje na kontenerach</span>
-          <span>11 funkcji</span>
+          <span className="maturity-category-title">Operacje kontenerowe</span>
+          <span>11 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Podman](/pl/install/podman), [Środowisko uruchomieniowe Docker Vm](/pl/install/docker-vm-runtime), [Docker](/pl/install/docker), [Hetzner](/pl/install/hetzner), [Hostinger](/pl/install/hostinger)</div>
+        <div className="maturity-category-docs">[Podman](/pl/install/podman), [Docker Vm Runtime](/pl/install/docker-vm-runtime), [Docker](/pl/install/docker), [Hetzner](/pl/install/hetzner), [Hostinger](/pl/install/hostinger)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Wydanie i walidacja obrazów</span>
-          <span>5 funkcji</span>
+          <span className="maturity-category-title">Wydanie i walidacja obrazu</span>
+          <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/pl/install/docker), [Środowisko uruchomieniowe Docker Vm](/pl/install/docker-vm-runtime), [Pełna walidacja wydania](/pl/reference/full-release-validation)</div>
+        <div className="maturity-category-docs">[Docker](/pl/install/docker), [Docker Vm Runtime](/pl/install/docker-vm-runtime), [Pełna walidacja wydania](/pl/reference/full-release-validation)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Piaskownica agenta i narzędzia</span>
-          <span>3 funkcje</span>
+          <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/pl/install/docker), [Środowisko uruchomieniowe Docker Vm](/pl/install/docker-vm-runtime)</div>
+        <div className="maturity-category-docs">[Docker](/pl/install/docker), [Docker Vm Runtime](/pl/install/docker-vm-runtime)</div>
       </div>
     </div>
 
@@ -1763,7 +1937,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Windows przez WSL2 - M3 Beta - 6 obszarów">
     <a id="windows-via-wsl2" />
 
-    Zalecana ścieżka dla Windows z wytycznymi dotyczącymi systemd/usługi użytkownika oraz dokumentacją łańcucha rozruchowego. Promować po powtarzalnych kartach wyników instalacji/aktualizacji.
+    Zalecana ścieżka Windows z wytycznymi dotyczącymi systemd/usługi użytkownika i dokumentacją łańcucha rozruchowego. Awans po powtarzalnych kartach wyników instalacji/aktualizacji.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 6%</span><span>Jakość Alpha - 69%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 5</span></span></div>
 
@@ -1775,7 +1949,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>6 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Windows](/pl/platforms/windows), [Pierwsze kroki](/pl/start/getting-started)</div>
       </div>
@@ -1785,9 +1959,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>8 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/pl/platforms/windows), [Pierwsze kroki](/pl/start/getting-started), [Aktualizacja](/pl/install/updating), [Onboard](/pl/cli/onboard), [Doctor](/pl/cli/doctor), [Status](/pl/cli/status), [Logi](/pl/cli/logs)</div>
+        <div className="maturity-category-docs">[Windows](/pl/platforms/windows), [Pierwsze kroki](/pl/start/getting-started), [Aktualizowanie](/pl/install/updating), [Onboard](/pl/cli/onboard), [Doctor](/pl/cli/doctor), [Status](/pl/cli/status), [Logi](/pl/cli/logs)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1795,19 +1969,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>10 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Windows](/pl/platforms/windows), [Indeks](/pl/gateway/index), [Doctor](/pl/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Dostęp i ekspozycja Gateway</span>
+          <span className="maturity-category-title">Dostęp do Gateway i ekspozycja</span>
           <span>11 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Uwierzytelnianie](/pl/gateway/authentication), [Sekrety](/pl/gateway/secrets), [Zdalny dostęp](/pl/gateway/remote), [Runbook ekspozycji](/pl/gateway/security/exposure-runbook), [Windows](/pl/platforms/windows)</div>
+        <div className="maturity-category-docs">[Uwierzytelnianie](/pl/gateway/authentication), [Sekrety](/pl/gateway/secrets), [Zdalnie](/pl/gateway/remote), [Runbook ekspozycji](/pl/gateway/security/exposure-runbook), [Windows](/pl/platforms/windows)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1821,13 +1995,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Przeglądarka i interfejs Control UI</span>
+          <span className="maturity-category-title">Przeglądarka i interfejs sterowania</span>
           <span>6 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Rozwiązywanie problemów z Browser Wsl2 Windows Remote Cdp](/pl/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Przeglądarka](/pl/tools/browser), [Control UI](/pl/web/control-ui)</div>
+        <div className="maturity-category-docs">[Rozwiązywanie problemów z Browser Wsl2 Windows Remote Cdp](/pl/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Przeglądarka](/pl/tools/browser), [Interfejs sterowania](/pl/web/control-ui)</div>
       </div>
     </div>
 
@@ -1836,9 +2010,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Raspberry Pi i małe urządzenia z Linuksem - M3 Beta - 4 obszary">
     <a id="raspberry-pi-and-small-linux-devices" />
 
-    Dokumentacja platformy istnieje, a ścieżka Gateway jest oparta na Linuksie. Aby przejść wyżej, potrzebne jest potwierdzenie smoke dla wydania na konkretnym sprzęcie.
+    Dokumentacja platformy istnieje, a ścieżka Gateway jest oparta na Linuksie. Aby przejść wyżej, potrzebny jest dowód smoke proof wydania specyficzny dla sprzętu.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 67%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 67%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -1848,9 +2022,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>12 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/pl/install/raspberry-pi), [Indeks](/pl/install/index), [FAQ pierwszego uruchomienia](/pl/help/faq-first-run), [FAQ](/pl/help/faq), [Linux](/pl/platforms/linux), [Instalator](/pl/install/installer)</div>
+        <div className="maturity-category-docs">[Raspberry Pi](/pl/install/raspberry-pi), [Indeks](/pl/install/index), [FAQ: pierwsze uruchomienie](/pl/help/faq-first-run), [FAQ](/pl/help/faq), [Linux](/pl/platforms/linux), [Instalator](/pl/install/installer)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1858,9 +2032,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>9 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/pl/install/raspberry-pi), [Uwierzytelnianie](/pl/gateway/authentication), [Tajne dane](/pl/gateway/secrets), [Parowanie](/pl/gateway/pairing), [Urządzenia](/pl/cli/devices), [Zdalny](/pl/gateway/remote), [Tailscale](/pl/gateway/tailscale)</div>
+        <div className="maturity-category-docs">[Raspberry Pi](/pl/install/raspberry-pi), [Uwierzytelnianie](/pl/gateway/authentication), [Sekrety](/pl/gateway/secrets), [Parowanie](/pl/gateway/pairing), [Urządzenia](/pl/cli/devices), [Zdalny](/pl/gateway/remote), [Tailscale](/pl/gateway/tailscale)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1868,7 +2042,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>10 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Indeks](/pl/gateway/index), [Gateway](/pl/cli/gateway), [Raspberry Pi](/pl/install/raspberry-pi), [Linux](/pl/platforms/linux), [VPS](/pl/vps)</div>
       </div>
@@ -1878,7 +2052,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div className="maturity-category-docs">[Raspberry Pi](/pl/install/raspberry-pi), [Linux](/pl/platforms/linux), [Kondycja](/pl/gateway/health), [Diagnostyka](/pl/gateway/diagnostics)</div>
       </div>
@@ -1889,21 +2063,21 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Aplikacja towarzysząca macOS - M3 Beta - 8 obszarów">
     <a id="macos-companion-app" />
 
-    Rozbudowana aplikacja paska menu, uprawnienia, tryb Node, Canvas, wybudzanie głosem, WebChat i tryb zdalny już istnieją. Nadal rozwijają się wystarczająco szybko, by unikać statusu Stabilne.
+    Rozbudowana aplikacja paska menu, uprawnienia, tryb Node, Canvas, wybudzanie głosem, WebChat i tryb zdalny istnieją. Nadal zmienia się wystarczająco szybko, aby unikać statusu stabilnego.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Alpha - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Canvas</span>
+          <span className="maturity-category-title">Kanwa</span>
           <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Canvas](/pl/platforms/mac/canvas), [Macos](/pl/platforms/macos), [Webchat](/pl/web/webchat)</div>
+        <div className="maturity-category-docs">[Kanwa](/pl/platforms/mac/canvas), [Macos](/pl/platforms/macos), [Webchat](/pl/web/webchat)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1911,9 +2085,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>7 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Bundled Gateway](/pl/platforms/mac/bundled-gateway), [Macos](/pl/platforms/macos), [Proces podrzędny](/pl/platforms/mac/child-process), [Konfiguracja deweloperska](/pl/platforms/mac/dev-setup)</div>
+        <div className="maturity-category-docs">[Wbudowany Gateway](/pl/platforms/mac/bundled-gateway), [Macos](/pl/platforms/macos), [Proces potomny](/pl/platforms/mac/child-process), [Konfiguracja deweloperska](/pl/platforms/mac/dev-setup)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1921,7 +2095,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Pasek menu](/pl/platforms/mac/menu-bar), [Ikona](/pl/platforms/mac/icon), [Macos](/pl/platforms/macos), [Kondycja](/pl/platforms/mac/health), [Rejestrowanie](/pl/platforms/mac/logging), [Zdalne](/pl/platforms/mac/remote)</div>
       </div>
@@ -1931,7 +2105,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Macos](/pl/platforms/macos), [Xpc](/pl/platforms/mac/xpc), [Uprawnienia](/pl/platforms/mac/permissions), [Podpisywanie](/pl/platforms/mac/signing), [Peekaboo](/pl/platforms/mac/peekaboo)</div>
       </div>
@@ -1941,7 +2115,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Zdalne](/pl/platforms/mac/remote), [Macos](/pl/platforms/macos), [Zdalne](/pl/gateway/remote)</div>
       </div>
@@ -1951,7 +2125,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Voicewake](/pl/platforms/mac/voicewake), [Nakładka głosowa](/pl/platforms/mac/voice-overlay), [Rozmowa](/pl/nodes/talk), [Macos](/pl/platforms/macos)</div>
       </div>
@@ -1961,7 +2135,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Webchat](/pl/platforms/mac/webchat), [Macos](/pl/platforms/macos), [Webchat](/pl/web/webchat)</div>
       </div>
@@ -1971,92 +2145,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Webchat](/pl/platforms/mac/webchat), [Zdalne](/pl/gateway/remote), [Zdalne](/pl/platforms/mac/remote)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Aplikacja na Androida - M2 Alpha - 7 obszarów">
-    <a id="android-app" />
-
-    Publiczna ścieżka Google Play istnieje, ale dokumentacja aplikacji nadal opisuje przebudowę jako skrajnie alfa i wskazuje prace nad utwardzeniem wydania.
-
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 59%</span><span>Kompletność Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Przechwytywanie multimediów</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Kamera](/pl/nodes/camera)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Czat mobilny</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja połączenia</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Bonjour](/pl/gateway/bonjour), [Parowanie](/pl/gateway/pairing)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Dystrybucja</span>
-          <span>3 funkcje</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Ustawienia</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Głos</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Rozmowa](/pl/nodes/talk)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Środowisko uruchomieniowe urządzenia</span>
-          <span>2 funkcje</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/pl/platforms/android), [Rozwiązywanie problemów](/pl/nodes/troubleshooting), [Protokół](/pl/gateway/protocol)</div>
       </div>
     </div>
 
@@ -2067,60 +2158,60 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     Podstawowe przepływy CLI/Gateway działają, ale dokumentacja nadal zaleca WSL2, aby uzyskać pełne środowisko, i wymienia zastrzeżenia dotyczące natywnego działania.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 58%</span><span>Kompletność Alpha - 66%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 1</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Alpha - 58%</span><span>Kompletność Alpha - 66%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 1</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI</span>
-          <span>9 możliwości / obsługiwane w LTS</span>
+          <span>9 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>64%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "64%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/install/index), [Instalator](/pl/install/installer), [Windows](/pl/platforms/windows), [Pierwsze kroki](/pl/start/getting-started), [Onboard](/pl/cli/onboard)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>64%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "64%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Indeks](/pl/install/index), [Instalator](/pl/install/installer), [Windows](/pl/platforms/windows), [Pierwsze kroki](/pl/start/getting-started), [Wdrażanie](/pl/cli/onboard)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zarządzanie Gateway</span>
-          <span>11 możliwości</span>
+          <span>11 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Windows](/pl/platforms/windows), [Indeks](/pl/gateway/index), [Gateway](/pl/cli/gateway), [Doctor](/pl/cli/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sieć</span>
-          <span>4 możliwości</span>
+          <span className="maturity-category-title">Sieci</span>
+          <span>4 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Windows](/pl/platforms/windows), [Indeks](/pl/gateway/index), [Gateway](/pl/cli/gateway)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Aktualizacje</span>
-          <span>4 możliwości</span>
+          <span>4 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Aktualizowanie](/pl/install/updating), [CI](/pl/ci)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Hosting Kubernetes - M2 Alpha - 4 obszary">
+  <Accordion title="Hosting Kubernetes - M2 Alfa - 4 obszary">
     <a id="kubernetes-hosting" />
 
-    Hosting Kubernetes to odrębna ścieżka wdrażania klastra oparta na Kustomize. Bieżąca ocena pokazuje rzeczywistą minimalną ścieżkę wdrożenia z lukami dotyczącymi CI specyficznego dla Kubernetes, pakietowania ingress/TLS/NetworkPolicy, kopii zapasowych/przywracania oraz wzmacniania ekspozycji produkcyjnej.
+    Hosting Kubernetes to odrębna ścieżka wdrażania klastra oparta na Kustomize. Obecna ocena pokazuje rzeczywistą minimalną ścieżkę wdrożenia, z brakami dotyczącymi CI specyficznego dla Kubernetes, pakietowania ingress/TLS/NetworkPolicy, kopii zapasowych i przywracania oraz utwardzania ekspozycji produkcyjnej.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Alpha - 55%</span><span>Kompletność Alpha - 61%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Experimental - 0%</span><span>Jakość Alpha - 55%</span><span>Kompletność Alpha - 61%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -2129,7 +2220,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Konfiguracja wdrożenia</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div className="maturity-category-docs">[Kubernetes](/pl/install/kubernetes), [Indeks](/pl/install/index)</div>
@@ -2139,7 +2230,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Konfiguracja i sekrety</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div className="maturity-category-docs">[Kubernetes](/pl/install/kubernetes), [Sekrety](/pl/gateway/secrets), [Środowisko](/pl/help/environment)</div>
@@ -2149,17 +2240,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Dostęp i ekspozycja</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/pl/install/kubernetes), [Uwierzytelnianie](/pl/gateway/authentication), [Zdalny dostęp](/pl/gateway/remote), [Runbook ekspozycji](/pl/gateway/security/exposure-runbook)</div>
+        <div className="maturity-category-docs">[Kubernetes](/pl/install/kubernetes), [Uwierzytelnianie](/pl/gateway/authentication), [Zdalny](/pl/gateway/remote), [Runbook ekspozycji](/pl/gateway/security/exposure-runbook)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Cykl życia klastra</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Experimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div className="maturity-category-docs">[Kubernetes](/pl/install/kubernetes), [Indeks](/pl/gateway/index)</div>
@@ -2168,105 +2259,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Aplikacja iOS - M1 eksperymentalne - 8 obszarów">
-    <a id="ios-app" />
-
-    Wewnętrzna wersja zapoznawcza / super-alpha. Przepływy push oparte na TestFlight i przekaźniku istnieją, ale nie ma jeszcze publicznej dystrybucji.
-
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość eksperymentalna - 41%</span><span>Kompletność eksperymentalna - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Multimedia i udostępnianie</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Kamera](/pl/nodes/camera)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Kanwa i ekran</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Kanwa](/pl/plugins/reference/canvas)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Czat i sesje</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Czat internetowy](/pl/web/webchat), [Protokół](/pl/gateway/protocol)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i diagnostyka Gateway</span>
-          <span>7 funkcji</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Parowanie](/pl/channels/pairing)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Dystrybucja</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Polecenia urządzenia</span>
-          <span>2 funkcje</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Protokół](/pl/gateway/protocol)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Powiadomienia i działanie w tle</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Konfiguracja](/pl/gateway/configuration)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Głos</span>
-          <span>1 funkcja</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ios](/pl/platforms/ios), [Rozmowa](/pl/nodes/talk)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Ścieżka instalacji Nix - M1 eksperymentalne - 5 obszarów">
+  <Accordion title="Ścieżka instalacji Nix - M1 Experimental - 5 obszarów">
     <a id="nix-install-path" />
 
-    Opcjonalny proces instalacji. Wymaga jaśniejszej deklaracji wsparcia przed promowaniem do wersji alfa/beta.
+    Opcjonalny przepływ instalacji. Wymaga jaśniejszej obietnicy wsparcia przed awansem do wersji alpha/beta.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość eksperymentalna - 41%</span><span>Kompletność eksperymentalna - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Eksperymentalna - 41%</span><span>Kompletność Eksperymentalna - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -2282,7 +2280,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Cykl życia Plugin</span>
+          <span className="maturity-category-title">Cykl życia Pluginu</span>
           <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2324,19 +2322,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="powierzchnie towarzyszące watchOS - M1 Eksperymentalne - 5 obszarów">
+  <Accordion title="Powierzchnie aplikacji towarzyszącej watchOS - M1 Eksperymentalne - 5 obszarów">
     <a id="watchos-companion-surfaces" />
 
-    Źródło ma powierzchnie aplikacji/rozszerzenia Watch; publiczna dokumentacja nie przedstawia tego jeszcze jako funkcji dla użytkownika.
+    Źródło zawiera powierzchnie aplikacji/rozszerzenia Watch; dokumentacja publiczna nie przedstawia tego jeszcze jako funkcji użytkownika.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość eksperymentalna - 41%</span><span>Kompletność eksperymentalna - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Eksperymentalna - 41%</span><span>Kompletność Eksperymentalna - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostarczanie i odzyskiwanie</span>
-          <span>7 możliwości</span>
+          <span>7 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2346,7 +2344,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Zatwierdzenia Exec</span>
-          <span>3 możliwości</span>
+          <span>3 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2356,7 +2354,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dystrybucja i wsparcie</span>
-          <span>6 możliwości</span>
+          <span>6 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2366,7 +2364,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Powiadomienia i odpowiedzi</span>
-          <span>7 możliwości</span>
+          <span>7 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2375,8 +2373,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Interfejs aplikacji na zegarek</span>
-          <span>3 możliwości</span>
+          <span className="maturity-category-title">Interfejs użytkownika aplikacji Watch</span>
+          <span>3 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2387,19 +2385,19 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Aplikacja towarzysząca dla Linux - M0 Planowane - 5 obszarów">
+  <Accordion title="Aplikacja towarzysząca dla systemu Linux - M0 Planowane - 5 obszarów">
     <a id="linux-companion-app" />
 
-    Dokumentacja mówi, że natywne aplikacje towarzyszące dla Linux są planowane; Gateway jest obecnie obsługiwaną ścieżką dla Linux.
+    Dokumentacja informuje, że natywne aplikacje towarzyszące dla systemu Linux są planowane; Gateway jest obecnie obsługiwaną ścieżką dla systemu Linux.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość eksperymentalna - 19%</span><span>Kompletność eksperymentalna - 21%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Eksperymentalna - 19%</span><span>Kompletność Eksperymentalna - 21%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dystrybucja aplikacji</span>
-          <span>3 możliwości</span>
+          <span>3 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2409,17 +2407,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Łączność Gateway</span>
-          <span>4 możliwości</span>
+          <span>4 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/pl/platforms/linux), [Indeks](/pl/gateway/index), [Parowanie](/pl/gateway/pairing), [Zdalne](/pl/gateway/remote)</div>
+        <div className="maturity-category-docs">[Linux](/pl/platforms/linux), [Indeks](/pl/gateway/index), [Parowanie](/pl/gateway/pairing), [Zdalny dostęp](/pl/gateway/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Czat i sesje</span>
-          <span>3 możliwości</span>
+          <span>3 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2428,18 +2426,18 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Możliwości pulpitu</span>
-          <span>9 możliwości</span>
+          <span className="maturity-category-title">Funkcje pulpitu</span>
+          <span>9 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/pl/platforms/linux), [Zatwierdzenia wykonania](/pl/tools/exec-approvals), [Sekrety](/pl/gateway/secrets), [Indeks](/pl/nodes/index), [Wykonanie](/pl/tools/exec), [Rozmowa](/pl/nodes/talk), [Kamera](/pl/nodes/camera)</div>
+        <div className="maturity-category-docs">[Linux](/pl/platforms/linux), [Zatwierdzenia Exec](/pl/tools/exec-approvals), [Sekrety](/pl/gateway/secrets), [Indeks](/pl/nodes/index), [Exec](/pl/tools/exec), [Rozmowa](/pl/nodes/talk), [Kamera](/pl/nodes/camera)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Status i diagnostyka</span>
-          <span>7 możliwości</span>
+          <span className="maturity-category-title">Stan i diagnostyka</span>
+          <span>7 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
@@ -2521,7 +2519,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Discord - M4 stabilne - 6 obszarów">
     <a id="discord" />
 
-    Szczegółowa dokumentacja i szerokie pokrycie funkcji. Ścieżki głosu/delegowania powinny nadal być oceniane osobno jako beta/alfa.
+    Szczegółowa dokumentacja i szerokie pokrycie funkcji. Ścieżki głosowe/delegowania powinny pozostać oceniane osobno jako beta/alfa.
 
     <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość beta - 73%</span><span>Kompletność stabilna - 87%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 4</span></span></div>
 
@@ -2530,17 +2528,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
-          <span>10 możliwości / objęte wsparciem LTS</span>
+          <span>10 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/pl/channels/discord), [Discord](/pl/plugins/reference/discord), [Fly](/pl/install/fly), [Polecenia z ukośnikiem](/pl/tools/slash-commands), [Kondycja](/pl/gateway/health), [Kanały](/pl/cli/channels), [Kanały konfiguracji](/pl/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[Discord](/pl/channels/discord), [Discord](/pl/plugins/reference/discord), [Fly](/pl/install/fly), [Polecenia ukośnikowe](/pl/tools/slash-commands), [Kondycja](/pl/gateway/health), [Kanały](/pl/cli/channels), [Kanały konfiguracji](/pl/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp i tożsamość</span>
-          <span>6 możliwości / objęte wsparciem LTS</span>
+          <span>6 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
@@ -2549,18 +2547,18 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
-          <span>12 możliwości / objęte wsparciem LTS</span>
+          <span className="maturity-category-title">Routing i dostarczanie konwersacji</span>
+          <span>12 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/pl/channels/discord), [Trasowanie kanałów](/pl/channels/channel-routing), [Grupy](/pl/channels/groups), [Grupy dostępu](/pl/channels/access-groups), [Agenty ACP](/pl/tools/acp-agents), [Podagenty](/pl/tools/subagents)</div>
+        <div className="maturity-category-docs">[Discord](/pl/channels/discord), [Routing kanałów](/pl/channels/channel-routing), [Grupy](/pl/channels/groups), [Grupy dostępu](/pl/channels/access-groups), [Agenci ACP](/pl/tools/acp-agents), [Subagenci](/pl/tools/subagents)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Media i treści rozszerzone</span>
-          <span>1 możliwość / objęte wsparciem LTS</span>
+          <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
+          <span>1 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
@@ -2575,7 +2573,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabilne</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/pl/channels/discord), [Polecenia z ukośnikiem](/pl/tools/slash-commands)</div>
+        <div className="maturity-category-docs">[Discord](/pl/channels/discord), [Polecenia ukośnikowe](/pl/tools/slash-commands)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2594,9 +2592,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Telegram - M3 Beta - 5 obszarów">
     <a id="telegram" />
 
-    Kanał główny jest wystarczająco dojrzały do regularnego użycia, ale UX o wysokiej zmienności i skrajne przypadki dotyczące mediów wymagają powtarzalnego potwierdzania scenariuszami.
+    Kanał podstawowy jest wystarczająco dojrzały do regularnego użycia, ale doświadczenie użytkownika o dużej zmienności i przypadki brzegowe multimediów wymagają cyklicznego potwierdzania scenariuszy.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 68%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Pełne - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 68%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Pełne - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -2605,17 +2603,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
           <span>10 funkcji / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Konfiguracja kanałów](/pl/gateway/config-channels), [Kanały](/pl/cli/channels)</div>
+        <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Kanały konfiguracji](/pl/gateway/config-channels), [Kanały](/pl/cli/channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp i tożsamość</span>
           <span>10 funkcji / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Parowanie](/pl/channels/pairing), [Grupy dostępu](/pl/channels/access-groups), [Grupy](/pl/channels/groups), [Wielu agentów](/pl/concepts/multi-agent)</div>
@@ -2623,9 +2621,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
-          <span>1 funkcja / obsługiwana w LTS</span>
+          <span>1 funkcja / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Grupy](/pl/channels/groups), [Wielu agentów](/pl/concepts/multi-agent)</div>
@@ -2633,9 +2631,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media i treści rozszerzone</span>
-          <span>1 funkcja / obsługiwana w LTS</span>
+          <span>1 funkcja / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Lokalizacja](/pl/channels/location)</div>
@@ -2645,10 +2643,10 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Natywne elementy sterujące i zatwierdzenia</span>
           <span>9 funkcji / obsługiwane w LTS</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Zatwierdzenia wykonania](/pl/tools/exec-approvals), [Reakcje](/pl/tools/reactions)</div>
+        <div className="maturity-category-docs">[Telegram](/pl/channels/telegram), [Zatwierdzenia exec](/pl/tools/exec-approvals), [Reakcje](/pl/tools/reactions)</div>
       </div>
     </div>
 
@@ -2659,7 +2657,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     Pełnoprawna dokumentacja kanału i powierzchnia trasowania. Wymaga kart wyników dla scenariuszy instalacji w obszarze roboczym i administracji.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Alfa - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Pełne - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość alfa - 66%</span><span>Kompletność beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Pełne - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -2671,7 +2669,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/pl/channels/slack), [Slack](/pl/plugins/reference/slack), [Sekrety](/pl/gateway/secrets), [Automatyzacja QA E2E](/pl/concepts/qa-e2e-automation), [Rozwiązywanie problemów](/pl/channels/troubleshooting)</div>
+        <div className="maturity-category-docs">[Slack](/pl/channels/slack), [Sekrety](/pl/gateway/secrets), [Automatyzacja QA E2E](/pl/concepts/qa-e2e-automation), [Rozwiązywanie problemów](/pl/channels/troubleshooting)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2685,7 +2683,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing i dostarczanie konwersacji</span>
+          <span className="maturity-category-title">Routing i dostarczanie rozmów</span>
           <span>5 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2695,7 +2693,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
+          <span className="maturity-category-title">Media i treści rozszerzone</span>
           <span>1 możliwości / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2711,7 +2709,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/pl/channels/slack), [Polecenia ukośnikowe](/pl/tools/slash-commands), [Zatwierdzenia wykonania](/pl/tools/exec-approvals)</div>
+        <div className="maturity-category-docs">[Slack](/pl/channels/slack), [Polecenia slash](/pl/tools/slash-commands), [Zatwierdzenia exec](/pl/tools/exec-approvals)</div>
       </div>
     </div>
 
@@ -2720,61 +2718,61 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="iMessage i BlueBubbles - M3 Beta - 5 obszarów">
     <a id="imessage-and-bluebubbles" />
 
-    Obsługiwany iMessage działa przez imsg na hoście macOS z zalogowaną aplikacją Messages; starsze konfiguracje BlueBubbles wymagają migracji. Zachowaj widoczność zastrzeżeń dotyczących uprawnień macOS, wrappera SSH, SIP/private API i migracji.
+    Obsługiwane iMessage działa przez imsg na hoście macOS Messages z zalogowanym kontem; starsze konfiguracje BlueBubbles wymagają migracji. Zachowaj widoczne zastrzeżenia dotyczące uprawnień macOS, wrappera SSH, SIP/prywatnego API oraz migracji.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie: eksperymentalne - 0%</span><span>Jakość: alfa - 66%</span><span>Kompletność: beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
-          <span>11 funkcji</span>
+          <span>11 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Bluebubbles Imessage](/pl/announcements/bluebubbles-imessage), [Imessage z Bluebubbles](/pl/channels/imessage-from-bluebubbles), [Konfiguracja kanałów](/pl/gateway/config-channels), [Imessage](/pl/channels/imessage)</div>
+        <div className="maturity-category-docs">[Bluebubbles iMessage](/pl/announcements/bluebubbles-imessage), [iMessage z Bluebubbles](/pl/channels/imessage-from-bluebubbles), [Konfiguracja kanałów](/pl/gateway/config-channels), [iMessage](/pl/channels/imessage)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp i tożsamość</span>
-          <span>6 funkcji</span>
+          <span>6 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Imessage](/pl/channels/imessage), [Imessage z Bluebubbles](/pl/channels/imessage-from-bluebubbles), [Konfiguracja kanałów](/pl/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[iMessage](/pl/channels/imessage), [iMessage z Bluebubbles](/pl/channels/imessage-from-bluebubbles), [Konfiguracja kanałów](/pl/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing i dostarczanie rozmów</span>
-          <span>4 funkcje</span>
+          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
+          <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Imessage](/pl/channels/imessage)</div>
+        <div className="maturity-category-docs">[iMessage](/pl/channels/imessage)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media i treści rozszerzone</span>
-          <span>7 funkcji</span>
+          <span>7 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Imessage](/pl/channels/imessage), [Imessage z Bluebubbles](/pl/channels/imessage-from-bluebubbles), [Konfiguracja kanałów](/pl/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[iMessage](/pl/channels/imessage), [iMessage z Bluebubbles](/pl/channels/imessage-from-bluebubbles), [Konfiguracja kanałów](/pl/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Natywne elementy sterujące i zatwierdzenia</span>
-          <span>3 funkcje</span>
+          <span className="maturity-category-title">Natywne kontrolki i zatwierdzenia</span>
+          <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Imessage](/pl/channels/imessage)</div>
+        <div className="maturity-category-docs">[iMessage](/pl/channels/imessage)</div>
       </div>
     </div>
 
@@ -2783,39 +2781,39 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="WhatsApp - M3 Beta - 5 obszarów">
     <a id="whatsapp" />
 
-    Ścieżka rdzeniowa jest ważna i udokumentowana; zmienność nadrzędnego Baileys/sesji utrzymuje ją poniżej poziomu Stabilne.
+    Podstawowa ścieżka jest ważna i udokumentowana; zmienność upstream Baileys/sesji utrzymuje ją poniżej poziomu stabilnego.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Zakres Eksperymentalne - 0%</span><span>Jakość Alpha - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja kanału i operacje</span>
+          <span className="maturity-category-title">Konfiguracja i obsługa kanału</span>
           <span>5 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/pl/channels/whatsapp), [Konfiguracja kanałów](/pl/gateway/config-channels), [WhatsApp](/pl/plugins/reference/whatsapp), [Automatyzacja QA E2E](/pl/concepts/qa-e2e-automation), [Diagnostyka](/pl/gateway/doctor)</div>
+        <div className="maturity-category-docs">[WhatsApp](/pl/channels/whatsapp), [Konfiguracja kanałów](/pl/gateway/config-channels), [WhatsApp](/pl/plugins/reference/whatsapp), [Automatyzacja QA E2E](/pl/concepts/qa-e2e-automation), [Doctor](/pl/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp i tożsamość</span>
           <span>7 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[WhatsApp](/pl/channels/whatsapp), [Konfiguracja kanałów](/pl/gateway/config-channels), [Automatyzacja QA E2E](/pl/concepts/qa-e2e-automation), [Parowanie](/pl/channels/pairing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing i dostarczanie konwersacji</span>
+          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
           <span>4 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[WhatsApp](/pl/channels/whatsapp), [Wiadomości grupowe](/pl/channels/group-messages)</div>
       </div>
@@ -2824,18 +2822,18 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
           <span>2 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[WhatsApp](/pl/channels/whatsapp)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Natywne kontrolki i zatwierdzenia</span>
+          <span className="maturity-category-title">Natywne elementy sterujące i zatwierdzenia</span>
           <span>2 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[WhatsApp](/pl/channels/whatsapp)</div>
       </div>
@@ -2843,12 +2841,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Matrix - M2 Alfa - 6 obszarów">
+  <Accordion title="Matrix - M2 Alpha - 6 obszarów">
     <a id="matrix" />
 
-    Obsługiwane przez dołączony plugin. Wymaga kart wyników dla mostka, uwierzytelniania i cyklu życia pokoju.
+    Obsługiwane przez dołączony Plugin. Wymaga kart wyników dla mostu, uwierzytelniania i cyklu życia pokoju.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość alfa - 60%</span><span>Kompletność alfa - 67%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 60%</span><span>Kompletność Alpha - 67%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -2858,8 +2856,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/pl/channels/matrix), [Migracja Matrix](/pl/channels/matrix-migration)</div>
       </div>
       <div className="maturity-category-row">
@@ -2868,38 +2866,38 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>7 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/pl/channels/matrix), [Grupy](/pl/channels/groups), [Ochrona przed pętlą botów](/pl/channels/bot-loop-protection)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
+          <span className="maturity-category-title">Trasowanie i dostarczanie konwersacji</span>
           <span>1 możliwość</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/pl/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
+          <span className="maturity-category-title">Multimedia i treści wzbogacone</span>
           <span>1 możliwość</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/pl/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Natywne elementy sterujące i zatwierdzenia</span>
+          <span className="maturity-category-title">Natywne kontrolki i zatwierdzenia</span>
           <span>6 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/pl/channels/matrix)</div>
       </div>
       <div className="maturity-category-row">
@@ -2908,18 +2906,81 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>3 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div className="maturity-category-docs">[Matrix](/pl/channels/matrix), [Migracja Matrix](/pl/channels/matrix-migration)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Google Chat - M2 Alpha - 5 areas">
+  <Accordion title="Google Chat - M2 Alpha - 5 obszarów">
     <a id="google-chat" />
 
-    Udokumentowany kanał, ale konfiguracja przedsiębiorstwa/administratora zwiększa ryzyko dojrzałości.
+    Udokumentowany kanał, ale konfiguracja enterprise/administracyjna zwiększa ryzyko dojrzałości.
+
+    <div className="maturity-surface-rollup"><span>Pokrycie: eksperymentalne - 0%</span><span>Jakość: Alpha - 59%</span><span>Kompletność: Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Konfiguracja kanałów i operacje</span>
+          <span>16 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Google Chat](/pl/plugins/reference/googlechat), [Konfiguracja kanałów](/pl/gateway/config-channels), [Dokumentacja CLI kreatora](/pl/start/wizard-cli-reference), [Sekrety](/pl/gateway/secrets), [Powierzchnia poświadczeń Secretref](/pl/reference/secretref-credential-surface), [Kondycja](/pl/gateway/health), [Inwentarz Pluginów](/pl/plugins/plugin-inventory), [Indeks](/pl/channels/index)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Dostęp i tożsamość</span>
+          <span>11 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Parowanie](/pl/channels/pairing), [Grupy dostępu](/pl/channels/access-groups), [Konfiguracja kanałów](/pl/gateway/config-channels), [Ochrona przed pętlą bota](/pl/channels/bot-loop-protection), [Routing kanałów](/pl/channels/channel-routing)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Routing i dostarczanie rozmów</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Ochrona przed pętlą bota](/pl/channels/bot-loop-protection), [Grupy dostępu](/pl/channels/access-groups), [Routing kanałów](/pl/channels/channel-routing)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Media i treści rozszerzone</span>
+          <span>1 możliwość</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Wiadomość](/pl/cli/message), [Rozumienie mediów](/pl/nodes/media-understanding), [Powierzchnia poświadczeń Secretref](/pl/reference/secretref-credential-surface)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Natywne kontrolki i zatwierdzenia</span>
+          <span>16 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Wiadomość](/pl/cli/message), [Rozumienie mediów](/pl/nodes/media-understanding), [Powierzchnia poświadczeń Secretref](/pl/reference/secretref-credential-surface), [Reakcje](/pl/tools/reactions), [Polecenia z ukośnikiem](/pl/tools/slash-commands), [Konfiguracja agentów](/pl/gateway/config-agents), [Refaktoryzacja cyklu życia wiadomości](/pl/concepts/message-lifecycle-refactor)</div>
+      </div>
+    </div>
+
+  </Accordion>
+
+  <Accordion title="Microsoft Teams - M2 Alfa - 5 obszarów">
+    <a id="microsoft-teams" />
+
+    Przepływy uwierzytelniania i administracji w przedsiębiorstwie wymagają jawnego potwierdzenia scenariuszami.
 
     <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość alfa - 59%</span><span>Kompletność alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
@@ -2927,71 +2988,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i operacje kanałów</span>
-          <span>16 możliwości</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Google Chat](/pl/plugins/reference/googlechat), [Konfiguracja kanałów](/pl/gateway/config-channels), [Dokumentacja referencyjna CLI kreatora](/pl/start/wizard-cli-reference), [Sekrety](/pl/gateway/secrets), [Powierzchnia danych uwierzytelniających Secretref](/pl/reference/secretref-credential-surface), [Kondycja](/pl/gateway/health), [Spis Pluginów](/pl/plugins/plugin-inventory), [Indeks](/pl/channels/index)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Dostęp i tożsamość</span>
-          <span>11 możliwości</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Parowanie](/pl/channels/pairing), [Grupy dostępu](/pl/channels/access-groups), [Konfiguracja kanałów](/pl/gateway/config-channels), [Ochrona przed pętlą botów](/pl/channels/bot-loop-protection), [Routing kanałów](/pl/channels/channel-routing)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing i dostarczanie rozmów</span>
-          <span>1 możliwość</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Ochrona przed pętlą botów](/pl/channels/bot-loop-protection), [Grupy dostępu](/pl/channels/access-groups), [Routing kanałów](/pl/channels/channel-routing)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Media i treści rozszerzone</span>
-          <span>1 możliwość</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Wiadomość](/pl/cli/message), [Rozumienie mediów](/pl/nodes/media-understanding), [Powierzchnia danych uwierzytelniających Secretref](/pl/reference/secretref-credential-surface)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrolki natywne i zatwierdzenia</span>
-          <span>16 możliwości</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/pl/channels/googlechat), [Wiadomość](/pl/cli/message), [Rozumienie mediów](/pl/nodes/media-understanding), [Powierzchnia danych uwierzytelniających Secretref](/pl/reference/secretref-credential-surface), [Reakcje](/pl/tools/reactions), [Polecenia slash](/pl/tools/slash-commands), [Konfiguracja agentów](/pl/gateway/config-agents), [Refaktoryzacja cyklu życia wiadomości](/pl/concepts/message-lifecycle-refactor)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Microsoft Teams - M2 Alpha - 5 obszarów">
-    <a id="microsoft-teams" />
-
-    Przepływy uwierzytelniania i administracji w przedsiębiorstwie wymagają jednoznacznego potwierdzenia scenariuszami.
-
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 59%</span><span>Kompletność Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i obsługa kanału</span>
-          <span>9 możliwości</span>
+          <span className="maturity-category-title">Konfiguracja i operacje kanału</span>
+          <span>9 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3001,7 +2999,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostęp i tożsamość</span>
-          <span>9 możliwości</span>
+          <span>9 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3010,8 +3008,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
-          <span>5 możliwości</span>
+          <span className="maturity-category-title">Trasowanie i dostarczanie konwersacji</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3021,7 +3019,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3031,12 +3029,12 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Natywne elementy sterujące i zatwierdzenia</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/pl/channels/msteams), [Zaawansowane zatwierdzenia Exec](/pl/tools/exec-approvals-advanced)</div>
+        <div className="maturity-category-docs">[Msteams](/pl/channels/msteams), [Zaawansowane zatwierdzenia exec](/pl/tools/exec-approvals-advanced)</div>
       </div>
     </div>
 
@@ -3047,18 +3045,18 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     Istnieje dokumentacja obsługiwanych kanałów; potrzebne są mocniejsze dowody instalacji i ponownego połączenia.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 59%</span><span>Kompletność Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość Alpha - 59%</span><span>Kompletność Alpha - 66%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i obsługa kanału</span>
+          <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
           <span>7 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div className="maturity-category-docs">[Signal](/pl/channels/signal), [Signal](/pl/plugins/reference/signal)</div>
       </div>
       <div className="maturity-category-row">
@@ -3066,116 +3064,63 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span className="maturity-category-title">Dostęp i tożsamość</span>
           <span>6 możliwości</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing i dostarczanie konwersacji</span>
-          <span>1 możliwość</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
-          <span>7 możliwości</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Natywne kontrolki i zatwierdzenia</span>
-          <span>3 możliwości</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, kanały regionalne - M2 Alfa - 4 obszary">
-    <a id="feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels" />
-
-    Ważne pokrycie regionalne, ale poziom publicznego wsparcia powinien być kalibrowany według typu konta, zatwierdzenia upstream i dowodów od opiekunów.
-
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalny - 0%</span><span>Jakość Alfa - 55%</span><span>Kompletność Alfa - 58%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
-          <span>6 możliwości</span>
-        </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/channels/index), [Parowanie](/pl/channels/pairing), [Feishu](/pl/plugins/reference/feishu), [Wewnętrzne mechanizmy architektury](/pl/plugins/architecture-internals)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Dostęp i tożsamość</span>
-          <span>1 możliwości</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
-          <span>1 możliwości</span>
+          <span>1 możliwość</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media i treści rozszerzone</span>
-          <span>1 możliwości</span>
+          <span>7 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Natywne elementy sterujące i zatwierdzenia</span>
+          <span>3 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Signal](/pl/channels/signal)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 Alpha - 4 obszary">
-    <a id="mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat" />
+  <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, kanały regionalne - M2 Alpha - 4 obszary">
+    <a id="feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels" />
 
-    Obsługiwane powierzchnie istnieją, ale dojrzałość prawdopodobnie różni się w zależności od upstreamu i pokrycia przez opiekunów. Oceń indywidualnie później.
+    Ważne pokrycie regionalne, ale poziom publicznego wsparcia należy kalibrować według typu konta, zatwierdzenia upstream i dowodów od maintainerów.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 53%</span><span>Kompletność Alpha - 54%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 55%</span><span>Kompletność Alpha - 58%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
-          <span>1 funkcja</span>
+          <span className="maturity-category-title">Konfiguracja i operacje kanałów</span>
+          <span>6 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Indeks](/pl/channels/index), [Parowanie](/pl/channels/pairing), [Feishu](/pl/plugins/reference/feishu), [Wewnętrzne szczegóły architektury](/pl/plugins/architecture-internals)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3189,7 +3134,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Trasowanie i dostarczanie rozmów</span>
+          <span className="maturity-category-title">Routing i dostarczanie konwersacji</span>
           <span>1 funkcja</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3211,12 +3156,65 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
   </Accordion>
 
-  <Accordion title="Kanał połączeń głosowych - M1 eksperymentalne - 5 obszarów">
+  <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 Alfa - 4 obszary">
+    <a id="mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat" />
+
+    Obsługiwane interfejsy istnieją, ale dojrzałość prawdopodobnie różni się w zależności od upstreamu i zakresu opieki maintainerów. Oceń je później osobno.
+
+    <div className="maturity-surface-rollup"><span>Zakres eksperymentalny - 0%</span><span>Jakość Alfa - 53%</span><span>Kompletność Alfa - 54%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Konfiguracja i obsługa kanałów</span>
+          <span>1 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Dostęp i tożsamość</span>
+          <span>1 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Kierowanie i dostarczanie konwersacji</span>
+          <span>1 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Media i treści wzbogacone</span>
+          <span>1 możliwości</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalny</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">Brak powiązanej dokumentacji</div>
+      </div>
+    </div>
+
+  </Accordion>
+
+  <Accordion title="Kanał połączeń głosowych - M1 Eksperymentalny - 5 obszarów">
     <a id="voice-call-channel" />
 
-    Opcjonalna/Plugin ścieżka ze złożonym zachowaniem w czasie rzeczywistym. Wymaga karty wyników scenariuszy przed publiczną wersją beta.
+    Opcjonalna ścieżka/wtyczka o złożonym działaniu w czasie rzeczywistym. Przed publiczną wersją beta wymaga karty wyników scenariuszy.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 0%</span><span>Jakość eksperymentalna - 41%</span><span>Kompletność eksperymentalna - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Zakres Eksperymentalny - 0%</span><span>Jakość Eksperymentalny - 41%</span><span>Kompletność Eksperymentalny - 44%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
@@ -3228,7 +3226,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Voicecall](/pl/cli/voicecall), [Połączenie głosowe](/pl/plugins/voice-call), [Protokół](/pl/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Połączenie głosowe](/pl/cli/voicecall), [Połączenie głosowe](/pl/plugins/voice-call), [Protokół](/pl/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3238,7 +3236,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Połączenie głosowe](/pl/plugins/voice-call), [Voicecall](/pl/cli/voicecall)</div>
+        <div className="maturity-category-docs">[Połączenie głosowe](/pl/plugins/voice-call), [Połączenie głosowe](/pl/cli/voicecall)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3252,13 +3250,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Multimedia i treści rozszerzone</span>
+          <span className="maturity-category-title">Media i treści rozszerzone</span>
           <span>2 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Połączenie głosowe](/pl/plugins/voice-call), [Inwentarz Pluginów](/pl/plugins/plugin-inventory)</div>
+        <div className="maturity-category-docs">[Połączenie głosowe](/pl/plugins/voice-call), [Inwentarz Plugin](/pl/plugins/plugin-inventory)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3282,7 +3280,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Automatyzacja przeglądarki, exec i narzędzia piaskownicy - M3 Beta - 3 obszary">
     <a id="browser-automation-exec-and-sandbox-tools" />
 
-    Narzędzia podstawowe są udokumentowane, ale bezpieczeństwo hosta i UX uprawnień powinny pozostawać aktywnie oceniane w scorecardzie.
+    Narzędzia podstawowe są udokumentowane, ale bezpieczeństwo hosta i UX uprawnień powinny pozostać pod aktywnym przeglądem w karcie wyników.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 21%</span><span>Jakość Beta - 75%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 2</span></span></div>
 
@@ -3291,7 +3289,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Automatyzacja przeglądarki</span>
-          <span>8 możliwości</span>
+          <span>8 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -3301,31 +3299,31 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Wywoływanie i wykonywanie narzędzi</span>
-          <span>6 możliwości / obsługiwane przez LTS</span>
+          <span>6 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Exec](/pl/tools/exec), [Proces w tle](/pl/gateway/background-process), [Narzędzia wywołują API HTTP](/pl/gateway/tools-invoke-http-api), [Zakresy operatora](/pl/gateway/operator-scopes), [Protokół](/pl/gateway/protocol), [Zatwierdzenia Exec](/pl/tools/exec-approvals), [Zaawansowane zatwierdzenia Exec](/pl/tools/exec-approvals-advanced), [Podwyższone uprawnienia](/pl/tools/elevated)</div>
+        <div className="maturity-category-docs">[Exec](/pl/tools/exec), [Proces w tle](/pl/gateway/background-process), [Narzędzia: wywoływanie HTTP API](/pl/gateway/tools-invoke-http-api), [Zakresy operatora](/pl/gateway/operator-scopes), [Protokół](/pl/gateway/protocol), [Zatwierdzenia Exec](/pl/tools/exec-approvals), [Zaawansowane zatwierdzenia Exec](/pl/tools/exec-approvals-advanced), [Podwyższone](/pl/tools/elevated)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Piaskownica i zasady narzędzi</span>
-          <span>6 możliwości / obsługiwane przez LTS</span>
+          <span className="maturity-category-title">Sandbox i zasady narzędzi</span>
+          <span>6 funkcji / obsługiwane w LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Piaskownica](/pl/gateway/sandboxing), [Piaskownica kontra zasady narzędzi kontra podwyższone uprawnienia](/pl/gateway/sandbox-vs-tool-policy-vs-elevated), [Narzędzia piaskownicy dla wielu agentów](/pl/tools/multi-agent-sandbox-tools), [Dokumentacja referencyjna uprzęży Codex](/pl/plugins/codex-harness-reference), [Narzędzia konfiguracji](/pl/gateway/config-tools)</div>
+        <div className="maturity-category-docs">[Sandboxing](/pl/gateway/sandboxing), [Sandbox kontra zasady narzędzi kontra podwyższone uprawnienia](/pl/gateway/sandbox-vs-tool-policy-vs-elevated), [Narzędzia sandbox dla wielu agentów](/pl/tools/multi-agent-sandbox-tools), [Dokumentacja referencyjna harnessu Codex](/pl/plugins/codex-harness-reference), [Konfiguracja narzędzi](/pl/gateway/config-tools)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Ścieżka dostawcy OpenAI i Codex - M3 Beta - 5 obszarów">
+  <Accordion title="Ścieżka providera OpenAI i Codex - M3 Beta - 5 obszarów">
     <a id="openai-and-codex-provider-path" />
 
-    Szczegółowa dokumentacja, ścieżka OAuth/subskrypcji, głos w czasie rzeczywistym, obraz i zachowanie kompatybilności. Zmienność dostawcy nie pozwala uznać tego za Stable bez dowodu z karty wyników wydania.
+    Szczegółowa dokumentacja, ścieżka OAuth/subskrypcji, głos w czasie rzeczywistym, obraz i zachowanie zgodności. Zmienność providerów uniemożliwia osiągnięcie statusu Stable bez dowodu z karty wyników wydania.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 26%</span><span>Jakość Beta - 74%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Częściowe - 3</span></span></div>
 
@@ -3388,51 +3386,51 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Narzędzia wyszukiwania w sieci - M3 Beta - 4 obszary">
     <a id="web-search-tools" />
 
-    Istnieje wielu dostawców i dokumentacja. Wymaga dowodów dotyczących limitów, błędów i SSRF dla każdej rodziny dostawców.
+    Istnieje wielu dostawców i dokumentacja. Wymaga potwierdzenia limitów, błędów i SSRF dla każdej rodziny dostawców.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie: eksperymentalne - 9%</span><span>Jakość: Beta - 74%</span><span>Kompletność: Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie eksperymentalne - 9%</span><span>Jakość Beta - 74%</span><span>Kompletność Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostawcy wyszukiwania</span>
-          <span>19 funkcji</span>
+          <span>19 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>11%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "11%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/pl/tools/web), [Brave Search](/pl/tools/brave-search), [Tavily](/pl/tools/tavily), [Exa Search](/pl/tools/exa-search), [Firecrawl](/pl/tools/firecrawl), [Perplexity Search](/pl/tools/perplexity-search), [Duckduckgo Search](/pl/tools/duckduckgo-search), [Searxng Search](/pl/tools/searxng-search), [Gemini Search](/pl/tools/gemini-search), [Grok Search](/pl/tools/grok-search), [Kimi Search](/pl/tools/kimi-search), [Minimax Search](/pl/tools/minimax-search), [Ollama Search](/pl/tools/ollama-search), [Podścieżki SDK](/pl/plugins/sdk-subpaths), [Przegląd SDK](/pl/plugins/sdk-overview), [Manifest](/pl/plugins/manifest)</div>
+        <div className="maturity-category-docs">[Web](/pl/tools/web), [Brave Search](/pl/tools/brave-search), [Tavily](/pl/tools/tavily), [Exa Search](/pl/tools/exa-search), [Firecrawl](/pl/tools/firecrawl), [Perplexity Search](/pl/tools/perplexity-search), [Duckduckgo Search](/pl/tools/duckduckgo-search), [Searxng Search](/pl/tools/searxng-search), [Gemini Search](/pl/tools/gemini-search), [Grok Search](/pl/tools/grok-search), [Kimi Search](/pl/tools/kimi-search), [Minimax Search](/pl/tools/minimax-search), [Ollama Search](/pl/tools/ollama-search), [Sdk Subpaths](/pl/plugins/sdk-subpaths), [Sdk Overview](/pl/plugins/sdk-overview), [Manifest](/pl/plugins/manifest)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja i diagnostyka</span>
-          <span>9 funkcji</span>
+          <span>9 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/pl/tools/web), [Pobieranie Web](/pl/tools/web-fetch), [FAQ](/pl/help/faq), [Koszty użycia API](/pl/reference/api-usage-costs), [Brave Search](/pl/tools/brave-search), [Perplexity Search](/pl/tools/perplexity-search), [Tavily](/pl/tools/tavily), [Firecrawl](/pl/tools/firecrawl)</div>
+        <div className="maturity-category-docs">[Web](/pl/tools/web), [Web Fetch](/pl/tools/web-fetch), [Faq](/pl/help/faq), [Api Usage Costs](/pl/reference/api-usage-costs), [Brave Search](/pl/tools/brave-search), [Perplexity Search](/pl/tools/perplexity-search), [Tavily](/pl/tools/tavily), [Firecrawl](/pl/tools/firecrawl)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Bezpieczeństwo sieci</span>
-          <span>4 funkcje</span>
+          <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/pl/tools/web), [Pobieranie Web](/pl/tools/web-fetch), [Firecrawl](/pl/tools/firecrawl), [Searxng Search](/pl/tools/searxng-search)</div>
+        <div className="maturity-category-docs">[Web](/pl/tools/web), [Web Fetch](/pl/tools/web-fetch), [Firecrawl](/pl/tools/firecrawl), [Searxng Search](/pl/tools/searxng-search)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Dostępność narzędzi i pobieranie</span>
-          <span>11 funkcji</span>
+          <span>11 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Narzędzia konfiguracji](/pl/gateway/config-tools), [Pobieranie Web](/pl/tools/web-fetch), [Web](/pl/tools/web), [FAQ](/pl/help/faq)</div>
+        <div className="maturity-category-docs">[Config Tools](/pl/gateway/config-tools), [Web Fetch](/pl/tools/web-fetch), [Web](/pl/tools/web), [Faq](/pl/help/faq)</div>
       </div>
     </div>
 
@@ -3450,7 +3448,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Uwierzytelnianie i odzyskiwanie dostawcy</span>
-          <span>9 możliwości</span>
+          <span>9 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3459,18 +3457,18 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Wybór modelu i środowiska wykonawczego</span>
-          <span>10 możliwości</span>
+          <span className="maturity-category-title">Wybór modelu i środowiska uruchomieniowego</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/pl/providers/anthropic), [Agenci konfiguracji](/pl/gateway/config-agents), [Modele](/pl/concepts/models), [Backendy CLI](/pl/gateway/cli-backends)</div>
+        <div className="maturity-category-docs">[Anthropic](/pl/providers/anthropic), [Agenty konfiguracji](/pl/gateway/config-agents), [Modele](/pl/concepts/models), [Backendy CLI](/pl/gateway/cli-backends)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Transport żądań i semantyka tur</span>
-          <span>10 możliwości</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
@@ -3480,7 +3478,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pamięć podręczna promptów i kontekst</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3489,13 +3487,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Wejścia multimedialne</span>
-          <span>4 możliwości</span>
+          <span className="maturity-category-title">Dane wejściowe mediów</span>
+          <span>4 funkcje</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/pl/providers/anthropic), [Agenci konfiguracji](/pl/gateway/config-agents)</div>
+        <div className="maturity-category-docs">[Anthropic](/pl/providers/anthropic), [Agenty konfiguracji](/pl/gateway/config-agents)</div>
       </div>
     </div>
 
@@ -3504,16 +3502,16 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Ścieżka dostawcy Google - M3 Beta - 5 obszarów">
     <a id="google-provider-path" />
 
-    Pełnoprawny dostawca z powierzchniami modeli i czasu rzeczywistego. Wymaga osobnej oceny Live/Talk.
+    Pełnoprawny dostawca z powierzchniami modelu i czasu rzeczywistego. Wymaga osobnej punktacji Live/Talk.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Zakres</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfiguracja dostawcy i poświadczenia</span>
-          <span>10 możliwości</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3523,7 +3521,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Routing modeli i punkty końcowe</span>
-          <span>10 możliwości</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3533,17 +3531,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Bezpośrednie środowisko uruchomieniowe Gemini</span>
-          <span>9 możliwości</span>
+          <span>9 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/pl/providers/google), [Dostawcy modeli](/pl/concepts/model-providers), [FAQ dotyczące modeli](/pl/help/faq-models), [Testowanie na żywo](/pl/help/testing-live)</div>
+        <div className="maturity-category-docs">[Google](/pl/providers/google), [Dostawcy modeli](/pl/concepts/model-providers), [FAQ dotyczące modeli](/pl/help/faq-models), [Testy na żywo](/pl/help/testing-live)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Multimedia, wyszukiwanie i czas rzeczywisty</span>
-          <span>10 możliwości</span>
+          <span className="maturity-category-title">Media, wyszukiwanie i czas rzeczywisty</span>
+          <span>10 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3553,7 +3551,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Buforowanie promptów</span>
-          <span>5 możliwości</span>
+          <span>5 funkcji</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3569,13 +3567,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
 
     Ujednolicona ścieżka dostawcy jest udokumentowana i wartościowa, ale zachowanie specyficzne dla modelu bywa różne.
 
-    <div className="maturity-surface-rollup"><span>Zakres: eksperymentalne - 0%</span><span>Jakość: Alfa - 66%</span><span>Kompletność: Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 66%</span><span>Kompletność Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja i uwierzytelnianie dostawcy</span>
+          <span className="maturity-category-title">Konfiguracja dostawcy i uwierzytelnianie</span>
           <span>14 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3585,7 +3583,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Środowisko wykonawcze czatu i normalizacja</span>
+          <span className="maturity-category-title">Środowisko uruchomieniowe czatu i normalizacja</span>
           <span>15 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3595,7 +3593,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Odzyskiwanie dostawcy i diagnostyka</span>
+          <span className="maturity-category-title">Odzyskiwanie dostawców i diagnostyka</span>
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3611,13 +3609,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openrouter](/pl/providers/openrouter), [Generowanie obrazów](/pl/tools/image-generation), [Generowanie muzyki](/pl/tools/music-generation), [Omówienie multimediów](/pl/tools/media-overview), [Generowanie wideo](/pl/tools/video-generation), [Tts](/pl/tools/tts)</div>
+        <div className="maturity-category-docs">[Openrouter](/pl/providers/openrouter), [Generowanie obrazów](/pl/tools/image-generation), [Generowanie muzyki](/pl/tools/music-generation), [Przegląd multimediów](/pl/tools/media-overview), [Generowanie wideo](/pl/tools/video-generation), [Tts](/pl/tools/tts)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Narzędzia generowania obrazów, wideo i muzyki - M2 Alpha - 5 obszarów">
+  <Accordion title="Narzędzia do generowania obrazów, wideo i muzyki - M2 Alpha - 5 obszarów">
     <a id="image-video-and-music-generation-tools" />
 
     Możliwość istnieje u różnych dostawców, ale jakość, opóźnienia i zgodność parametrów różnią się zbyt mocno, aby uznać ją za beta bez dowodów dla każdego dostawcy.
@@ -3628,13 +3626,13 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Routing i wykrywanie multimediów</span>
+          <span className="maturity-category-title">Routing i wykrywanie mediów</span>
           <span>4 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Agenci konfiguracji](/pl/gateway/config-agents), [Generowanie obrazów](/pl/tools/image-generation), [Generowanie wideo](/pl/tools/video-generation), [Generowanie muzyki](/pl/tools/music-generation)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Konfiguracja agentów](/pl/gateway/config-agents), [Generowanie obrazów](/pl/tools/image-generation), [Generowanie wideo](/pl/tools/video-generation), [Generowanie muzyki](/pl/tools/music-generation)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3642,9 +3640,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>12 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Przegląd multimediów](/pl/tools/media-overview), [Generowanie obrazów](/pl/tools/image-generation), [Generowanie wideo](/pl/tools/video-generation), [Generowanie muzyki](/pl/tools/music-generation)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Przegląd mediów](/pl/tools/media-overview), [Generowanie obrazów](/pl/tools/image-generation), [Generowanie wideo](/pl/tools/video-generation), [Generowanie muzyki](/pl/tools/music-generation)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3652,9 +3650,9 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>9 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Generowanie obrazów](/pl/tools/image-generation), [Infer](/pl/cli/infer), [Przegląd multimediów](/pl/tools/media-overview)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">[Generowanie obrazów](/pl/tools/image-generation), [Infer](/pl/cli/infer), [Przegląd mediów](/pl/tools/media-overview)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3662,8 +3660,8 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>11 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div className="maturity-category-docs">[Generowanie wideo](/pl/tools/video-generation), [Runway](/pl/providers/runway), [Pixverse](/pl/providers/pixverse), [Fal](/pl/providers/fal), [Openrouter](/pl/providers/openrouter)</div>
       </div>
       <div className="maturity-category-row">
@@ -3672,36 +3670,36 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
           <span>6 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div className="maturity-category-docs">[Generowanie muzyki](/pl/tools/music-generation)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Lokalni dostawcy modeli: Ollama, vLLM, SGLang, LM Studio - M2 Alfa - 5 obszarów">
+  <Accordion title="Lokalni dostawcy modeli: Ollama, vLLM, SGLang, LM Studio - M2 Alpha - 5 obszarów">
     <a id="local-model-providers-ollama-vllm-sglang-lm-studio" />
 
-    Przydatne i udokumentowane, ale zmienność środowisk jest duża.
+    Przydatne i udokumentowane, ale zróżnicowanie środowisk jest duże.
 
-    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 61%</span><span>Kompletność Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
+    <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alpha - 61%</span><span>Kompletność Alpha - 68%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Obszar</span><span>Pokrycie</span><span>Jakość</span><span>Kompletność</span><span>Dokumentacja</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Konfiguracja dostawców, cykl życia i diagnostyka</span>
+          <span className="maturity-category-title">Konfiguracja, cykl życia i diagnostyka dostawcy</span>
           <span>12 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Modele lokalne](/pl/gateway/local-models), [Lmstudio](/pl/providers/lmstudio), [Ollama](/pl/providers/ollama), [Vllm](/pl/providers/vllm), [Lokalne usługi modeli](/pl/gateway/local-model-services), [Konfiguracja agentów](/pl/gateway/config-agents), [Rozwiązywanie problemów](/pl/gateway/troubleshooting), [Doctor](/pl/gateway/doctor)</div>
+        <div className="maturity-category-docs">[Modele lokalne](/pl/gateway/local-models), [Lmstudio](/pl/providers/lmstudio), [Ollama](/pl/providers/ollama), [Vllm](/pl/providers/vllm), [Usługi modeli lokalnych](/pl/gateway/local-model-services), [Konfiguracja agentów](/pl/gateway/config-agents), [Rozwiązywanie problemów](/pl/gateway/troubleshooting), [Doctor](/pl/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Natywne Plugin dostawców</span>
+          <span className="maturity-category-title">Natywne Pluginy dostawców</span>
           <span>10 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3721,7 +3719,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pamięć lokalna i osadzania</span>
+          <span className="maturity-category-title">Pamięć lokalna i osadzenia</span>
           <span>5 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3731,7 +3729,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Bezpieczeństwo sieci i kontrola promptów</span>
+          <span className="maturity-category-title">Bezpieczeństwo sieci i kontrolki promptów</span>
           <span>2 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3746,7 +3744,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
   <Accordion title="Dostawcy hostowani z długiego ogona - M2 Alpha - 3 obszary">
     <a id="long-tail-hosted-providers" />
 
-    Istnieje wiele stron dokumentacji/referencyjnych; wynik powinien być generowany z metadanych dostawców oraz pokrycia testami smoke na żywo.
+    Istnieje wiele stron dokumentacji/referencyjnych; wynik powinien być generowany z metadanych dostawcy oraz pokrycia testami dymnymi na żywo.
 
     <div className="maturity-surface-rollup"><span>Pokrycie Eksperymentalne - 0%</span><span>Jakość Alfa - 61%</span><span>Kompletność Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Brak</span></span></div>
 
@@ -3755,17 +3753,17 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Hostowani dostawcy LLM</span>
-          <span>12 funkcji</span>
+          <span>12 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/pl/providers/index), [Dostawcy modeli](/pl/concepts/model-providers), [Testowanie na żywo](/pl/help/testing-live), [Onboard](/pl/cli/onboard)</div>
+        <div className="maturity-category-docs">[Indeks](/pl/providers/index), [Dostawcy modeli](/pl/concepts/model-providers), [Testowanie na żywo](/pl/help/testing-live), [Wdrażanie](/pl/cli/onboard)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Hostowani dostawcy mediów</span>
-          <span>8 funkcji</span>
+          <span className="maturity-category-title">Hostowani dostawcy multimediów</span>
+          <span>8 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -3775,7 +3773,7 @@ Powierzchnia to obszar produktu, taki jak środowisko uruchomieniowe Gateway, Di
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Operacje dostawców</span>
-          <span>12 funkcji</span>
+          <span>12 możliwości</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperymentalne</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>

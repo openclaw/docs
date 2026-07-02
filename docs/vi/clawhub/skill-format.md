@@ -1,0 +1,208 @@
+---
+read_when:
+    - Xuất bản Skills
+    - Gỡ lỗi lỗi xuất bản
+summary: Định dạng thư mục Skills, các tệp bắt buộc, các loại tệp được phép, giới hạn.
+x-i18n:
+    generated_at: "2026-07-02T08:27:53Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: bbd17c0b7a5c4e6ad6c554bdd3f604424283990503a1c493f49000fbfbb29712
+    source_path: clawhub/skill-format.md
+    workflow: 16
+---
+
+# Định dạng kỹ năng
+
+## Trên ổ đĩa
+
+Một kỹ năng là một thư mục.
+
+Bắt buộc:
+
+- `SKILL.md` (hoặc `skill.md`; `skills.md` kế thừa cũng được chấp nhận)
+
+Tùy chọn:
+
+- bất kỳ tệp hỗ trợ _dạng văn bản_ nào (xem “Tệp được phép”)
+- `.clawhubignore` (mẫu bỏ qua khi xuất bản, `.clawdhubignore` kế thừa)
+- `.gitignore` (cũng được tôn trọng)
+
+## Nhập từ GitHub
+
+Trình nhập GitHub trên web nghiêm ngặt hơn publish/sync cục bộ. Nó chỉ phát hiện
+các tệp `SKILL.md` hoặc `skills.md` kế thừa trong kho công khai, không phải fork, thuộc sở hữu của
+tài khoản GitHub đã đăng nhập. Nó không nhập kho riêng tư, fork,
+kho đã lưu trữ/bị vô hiệu hóa, hoặc kho công khai của bên thứ ba.
+
+Siêu dữ liệu cài đặt cục bộ (do CLI ghi):
+
+- `<skill>/.clawhub/origin.json` (`.clawdhub` kế thừa)
+
+Trạng thái cài đặt workdir (do CLI ghi):
+
+- `<workdir>/.clawhub/lock.json` (`.clawdhub` kế thừa)
+
+## `SKILL.md`
+
+- Markdown với YAML frontmatter tùy chọn.
+- Máy chủ trích xuất siêu dữ liệu từ frontmatter trong quá trình xuất bản.
+- `description` được dùng làm phần tóm tắt kỹ năng trong UI/tìm kiếm.
+
+## Siêu dữ liệu frontmatter
+
+Siêu dữ liệu kỹ năng được khai báo trong YAML frontmatter ở đầu `SKILL.md` của bạn. Phần này cho registry (và phân tích bảo mật) biết kỹ năng của bạn cần gì để chạy.
+
+### Frontmatter cơ bản
+
+```yaml
+---
+name: my-skill
+description: Short summary of what this skill does.
+version: 1.0.0
+---
+```
+
+### Siêu dữ liệu runtime (`metadata.openclaw`)
+
+Khai báo các yêu cầu runtime của kỹ năng dưới `metadata.openclaw` (bí danh: `metadata.clawdbot`, `metadata.clawdis`).
+
+```yaml
+---
+name: my-skill
+description: Manage tasks via the Todoist API.
+metadata:
+  openclaw:
+    requires:
+      env:
+        - TODOIST_API_KEY
+      bins:
+        - curl
+    primaryEnv: TODOIST_API_KEY
+---
+```
+
+Dùng `requires.env` cho các biến môi trường phải có trước khi kỹ năng có thể chạy. Dùng `envVars` khi bạn cần siêu dữ liệu theo từng biến, bao gồm các biến tùy chọn với `required: false`.
+
+### Tham chiếu đầy đủ về trường
+
+| Trường             | Kiểu       | Mô tả                                                                                                                                     |
+| ------------------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `requires.env`     | `string[]` | Các biến môi trường bắt buộc mà kỹ năng của bạn kỳ vọng.                                                                                  |
+| `requires.bins`    | `string[]` | Các tệp nhị phân CLI bắt buộc đều phải được cài đặt.                                                                                      |
+| `requires.anyBins` | `string[]` | Các tệp nhị phân CLI trong đó ít nhất một tệp phải tồn tại.                                                                               |
+| `requires.config`  | `string[]` | Đường dẫn tệp cấu hình mà kỹ năng của bạn đọc.                                                                                            |
+| `primaryEnv`       | `string`   | Biến môi trường thông tin xác thực chính cho kỹ năng của bạn.                                                                             |
+| `envVars`          | `array`    | Khai báo biến môi trường với `name`, `required` tùy chọn và `description` tùy chọn. Đặt `required: false` cho biến môi trường tùy chọn. |
+| `always`           | `boolean`  | Nếu là `true`, kỹ năng luôn hoạt động (không cần cài đặt rõ ràng).                                                                        |
+| `skillKey`         | `string`   | Ghi đè khóa gọi kỹ năng.                                                                                                                  |
+| `emoji`            | `string`   | Emoji hiển thị cho kỹ năng.                                                                                                               |
+| `homepage`         | `string`   | URL tới trang chủ hoặc tài liệu của kỹ năng.                                                                                              |
+| `os`               | `string[]` | Giới hạn hệ điều hành (ví dụ `["macos"]`, `["linux"]`).                                                                                   |
+| `install`          | `array`    | Đặc tả cài đặt cho phần phụ thuộc (xem bên dưới).                                                                                         |
+| `nix`              | `object`   | Đặc tả plugin Nix (xem README).                                                                                                           |
+| `config`           | `object`   | Đặc tả cấu hình Clawdbot (xem README).                                                                                                    |
+
+### Đặc tả cài đặt
+
+Nếu kỹ năng của bạn cần cài đặt phần phụ thuộc, hãy khai báo chúng trong mảng `install`:
+
+```yaml
+metadata:
+  openclaw:
+    install:
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: node
+        package: typescript
+        bins: [tsc]
+```
+
+Các loại cài đặt được hỗ trợ: `brew`, `node`, `go`, `uv`.
+
+### Biến môi trường tùy chọn
+
+Khai báo các biến môi trường tùy chọn dưới `metadata.openclaw.envVars` và đặt `required: false`. Không thêm mục tùy chọn vào `requires.env`, vì `requires.env` nghĩa là kỹ năng không thể chạy nếu thiếu chúng.
+
+```yaml
+metadata:
+  openclaw:
+    primaryEnv: TODOIST_API_KEY
+    envVars:
+      - name: TODOIST_API_KEY
+        required: true
+        description: Todoist API token used for authenticated requests.
+      - name: TODOIST_PROJECT_ID
+        required: false
+        description: Optional default project ID when the user does not specify one.
+```
+
+### Vì sao điều này quan trọng
+
+Phân tích bảo mật của ClawHub kiểm tra rằng những gì kỹ năng của bạn khai báo khớp với những gì nó thực sự làm. Nếu mã của bạn tham chiếu `TODOIST_API_KEY` nhưng frontmatter không khai báo biến đó dưới `requires.env`, `primaryEnv`, hoặc `envVars`, phân tích sẽ gắn cờ không khớp siêu dữ liệu. Giữ khai báo chính xác giúp kỹ năng của bạn vượt qua đánh giá và giúp người dùng hiểu họ đang cài đặt gì.
+
+### Ví dụ: frontmatter hoàn chỉnh
+
+```yaml
+---
+name: todoist-cli
+description: Manage Todoist tasks, projects, and labels from the command line.
+version: 1.2.0
+metadata:
+  openclaw:
+    requires:
+      env:
+        - TODOIST_API_KEY
+      bins:
+        - curl
+    primaryEnv: TODOIST_API_KEY
+    envVars:
+      - name: TODOIST_API_KEY
+        required: true
+        description: Todoist API token.
+      - name: TODOIST_PROJECT_ID
+        required: false
+        description: Optional default project ID.
+    emoji: "\u2705"
+    homepage: https://github.com/example/todoist-cli
+---
+```
+
+## Tệp được phép
+
+Chỉ các tệp “dạng văn bản” được publish chấp nhận.
+
+- Danh sách phần mở rộng được phép nằm trong `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`).
+- Tệp script vẫn được quét sau khi tải lên; các tệp PowerShell `.ps1`, `.psm1`, và `.psd1` được chấp nhận là văn bản.
+- Kiểu nội dung bắt đầu bằng `text/` được xem là văn bản; cộng thêm một danh sách nhỏ được phép (JSON/YAML/TOML/JS/TS/Markdown/SVG).
+
+Giới hạn (phía máy chủ):
+
+- Tổng kích thước bundle: 50MB.
+- Văn bản embedding bao gồm `SKILL.md` + tối đa khoảng 40 tệp không phải `.md` (giới hạn nỗ lực tốt nhất).
+
+## Slug
+
+- Mặc định được suy ra từ tên thư mục.
+- Phạm vi package phải khớp chính xác với handle nhà xuất bản ClawHub. Handle nhà xuất bản có thể dùng chữ cái thường, số, dấu gạch nối, dấu chấm và dấu gạch dưới; chúng phải bắt đầu và kết thúc bằng chữ cái thường hoặc số.
+- Slug package phải là chữ thường và an toàn cho npm, ví dụ `@example.tools/demo-plugin` hoặc `demo-plugin`.
+
+## Phiên bản + thẻ
+
+- Mỗi lần xuất bản tạo một phiên bản mới (semver).
+- Thẻ là con trỏ dạng chuỗi tới một phiên bản; `latest` thường được dùng.
+
+## Giấy phép
+
+- Tất cả kỹ năng được xuất bản trên ClawHub được cấp phép theo `MIT-0`.
+- Bất kỳ ai cũng có thể dùng, sửa đổi và phân phối lại các kỹ năng đã xuất bản, bao gồm cả mục đích thương mại.
+- Không bắt buộc ghi công.
+- Không thêm điều khoản giấy phép xung đột trong `SKILL.md`; ClawHub không hỗ trợ ghi đè giấy phép theo từng kỹ năng.
+
+## Kỹ năng trả phí
+
+- ClawHub không hỗ trợ kỹ năng trả phí, định giá theo từng kỹ năng, paywall, hoặc chia sẻ doanh thu.
+- Không thêm siêu dữ liệu giá vào `SKILL.md`; nó không thuộc định dạng kỹ năng và sẽ không khiến kỹ năng đã xuất bản trở thành trả phí.
+- Nếu kỹ năng của bạn tích hợp với một dịch vụ bên thứ ba có trả phí, hãy ghi rõ chi phí bên ngoài và tài khoản bắt buộc trong hướng dẫn kỹ năng và khai báo env (`requires.env` cho biến bắt buộc, hoặc `envVars` với `required: false` cho biến tùy chọn).
