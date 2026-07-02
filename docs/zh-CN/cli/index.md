@@ -2,26 +2,26 @@
 read_when:
     - 找到合适的 `openclaw` 子命令
     - 查找全局标志或输出样式规则
-summary: OpenClaw CLI 索引：命令列表、全局标志，以及按命令页面的链接
+summary: OpenClaw CLI 索引：命令列表、全局标志，以及指向各命令页面的链接
 title: CLI 参考
 x-i18n:
-    generated_at: "2026-06-30T22:06:09Z"
+    generated_at: "2026-07-02T00:44:04Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e5102afd4cfe8be5ec45b352cf714f0ecc965bbe03f6a1c3c1b22aa409cde7b9
+    source_hash: 627ccd257834e9bc8cacf2f2ac4600530ff4aa1132d2c34fcb0922b29a1facce
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` 是主要的 CLI 入口点。每个核心命令都有专门的参考页面，或与其别名命令一起记录；此索引列出了命令、全局标志，以及适用于整个 CLI 的输出样式规则。
+`openclaw` 是主要的 CLI 入口点。每个核心命令都有专用参考页面，或记录在它所别名指向的命令中；此索引列出命令、全局标志，以及适用于整个 CLI 的输出样式规则。
 
 按意图使用设置命令：
 
-- `openclaw setup` 和 `openclaw onboard` 会运行完整的首次引导流程，涵盖 Gateway 网关、模型凭证、工作区、渠道、Skills 和健康状态。
-- `openclaw setup --baseline` 会创建基线配置和工作区，而不会进入引导式新手引导流程。
-- `openclaw configure` 会更改现有设置中的特定部分，例如模型凭证、Gateway 网关、渠道、插件或 Skills。
-- `openclaw channels add` 会在基线存在后配置渠道账号；不带标志运行时进入引导式渠道设置，或使用渠道特定标志用于脚本。
+- `openclaw setup` 和 `openclaw onboard` 会运行完整的引导式首次运行流程，涵盖 Gateway 网关、模型凭证、工作区、渠道、Skills 和健康状态。
+- `openclaw setup --baseline` 会创建基线配置和工作区，而不进入引导式新手引导流程。
+- `openclaw configure` 会更改现有设置中的目标部分，例如模型凭证、Gateway 网关、渠道、插件或 Skills。
+- `openclaw channels add` 会在基线存在后配置渠道账户；不带标志运行可进入引导式渠道设置，或使用渠道专用标志用于脚本。
 
 ## 命令页面
 
@@ -29,12 +29,12 @@ x-i18n:
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 设置和新手引导 | [`crestodian`](/zh-CN/cli/crestodian) · [`setup`](/zh-CN/cli/setup) · [`onboard`](/zh-CN/cli/onboard) · [`configure`](/zh-CN/cli/configure) · [`config`](/zh-CN/cli/config) · [`completion`](/zh-CN/cli/completion) · [`doctor`](/zh-CN/cli/doctor) · [`dashboard`](/zh-CN/cli/dashboard) |
 | 重置和卸载  | [`backup`](/zh-CN/cli/backup) · [`reset`](/zh-CN/cli/reset) · [`uninstall`](/zh-CN/cli/uninstall) · [`update`](/zh-CN/cli/update)                                                                                                                                 |
-| 消息和智能体 | [`message`](/zh-CN/cli/message) · [`agent`](/zh-CN/cli/agent) · [`agents`](/zh-CN/cli/agents) · [`acp`](/zh-CN/cli/acp) · [`mcp`](/zh-CN/cli/mcp)                                                                                                                       |
+| 消息和智能体 | [`message`](/zh-CN/cli/message) · [`agent`](/zh-CN/cli/agent) · [`agents`](/zh-CN/cli/agents) · [`attach`](/cli/attach) · [`acp`](/zh-CN/cli/acp) · [`mcp`](/zh-CN/cli/mcp)                                                                                             |
 | 健康和会话  | [`status`](/zh-CN/cli/status) · [`health`](/zh-CN/cli/health) · [`sessions`](/zh-CN/cli/sessions)                                                                                                                                                           |
 | Gateway 网关和日志     | [`gateway`](/zh-CN/cli/gateway) · [`logs`](/zh-CN/cli/logs) · [`system`](/zh-CN/cli/system)                                                                                                                                                                 |
 | 模型和推理 | [`models`](/zh-CN/cli/models) · [`infer`](/zh-CN/cli/infer) · `capability`（[`infer`](/zh-CN/cli/infer) 的别名）· [`memory`](/zh-CN/cli/memory) · [`commitments`](/zh-CN/cli/commitments) · [`wiki`](/zh-CN/cli/wiki)                                                      |
 | 网络和节点    | [`directory`](/zh-CN/cli/directory) · [`nodes`](/zh-CN/cli/nodes) · [`devices`](/zh-CN/cli/devices) · [`node`](/zh-CN/cli/node)                                                                                                                                   |
-| 运行时和沙箱  | [`approvals`](/zh-CN/cli/approvals) · `exec-policy`（参见 [`approvals`](/zh-CN/cli/approvals)）· [`sandbox`](/zh-CN/cli/sandbox) · [`tui`](/zh-CN/cli/tui) · `chat`/`terminal`（[`tui --local`](/zh-CN/cli/tui) 的别名）· [`browser`](/zh-CN/cli/browser)                 |
+| 运行时和沙箱  | [`approvals`](/zh-CN/cli/approvals) · `exec-policy`（见 [`approvals`](/zh-CN/cli/approvals)）· [`sandbox`](/zh-CN/cli/sandbox) · [`tui`](/zh-CN/cli/tui) · `chat`/`terminal`（[`tui --local`](/zh-CN/cli/tui) 的别名）· [`browser`](/zh-CN/cli/browser)                 |
 | 自动化           | [`cron`](/zh-CN/cli/cron) · [`tasks`](/zh-CN/cli/tasks) · [`hooks`](/zh-CN/cli/hooks) · [`webhooks`](/zh-CN/cli/webhooks) · [`transcripts`](/zh-CN/cli/transcripts)                                                                                                     |
 | 设备发现和文档   | [`dns`](/zh-CN/cli/dns) · [`docs`](/zh-CN/cli/docs)                                                                                                                                                                                                   |
 | 配对和渠道 | [`pairing`](/zh-CN/cli/pairing) · [`qr`](/zh-CN/cli/qr) · [`channels`](/zh-CN/cli/channels)                                                                                                                                                                 |
@@ -46,21 +46,21 @@ x-i18n:
 
 | 标志                    | 用途                                                               |
 | ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | 将状态隔离在 `~/.openclaw-dev` 下，并偏移默认端口         |
-| `--profile <name>`      | 将状态隔离在 `~/.openclaw-<name>` 下                              |
-| `--container <name>`    | 面向指定容器执行                                |
+| `--dev`                 | 将状态隔离到 `~/.openclaw-dev` 下，并偏移默认端口         |
+| `--profile <name>`      | 将状态隔离到 `~/.openclaw-<name>` 下                              |
+| `--container <name>`    | 针对具名容器执行                                |
 | `--no-color`            | 禁用 ANSI 颜色（也会遵循 `NO_COLOR=1`）                  |
-| `--update`              | [`openclaw update`](/zh-CN/cli/update) 的简写（仅限源码安装） |
+| `--update`              | [`openclaw update`](/zh-CN/cli/update) 的简写（仅源代码安装） |
 | `-V`, `--version`, `-v` | 打印版本并退出                                                |
 
 ## 输出模式
 
-- ANSI 颜色和进度指示器仅在 TTY 会话中渲染。
-- 在支持的位置，OSC-8 超链接会渲染为可点击链接；否则 CLI 会回退到纯 URL。
-- `--json`（以及支持处的 `--plain`）会禁用样式，以便输出干净内容。
+- ANSI 颜色和进度指示器只会在 TTY 会话中渲染。
+- OSC-8 超链接会在支持的位置渲染为可点击链接；否则 CLI 会回退为纯 URL。
+- `--json`（以及支持位置的 `--plain`）会禁用样式，以获得干净输出。
 - 长时间运行的命令会显示进度指示器（支持时使用 OSC 9;4）。
 
-调色板的事实来源：`src/terminal/palette.ts`。
+调色板事实来源：`src/terminal/palette.ts`。
 
 ## 命令树
 
@@ -197,6 +197,7 @@ openclaw [--dev] [--profile <name>] <command>
     bind
     unbind
     set-identity
+  attach
   acp
   mcp
     serve
@@ -377,7 +378,7 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-插件可以添加其他顶级命令，例如 [`openclaw workboard`](/zh-CN/cli/workboard) 或 `openclaw voicecall`。
+插件可以添加额外的顶级命令，例如 [`openclaw workboard`](/zh-CN/cli/workboard) 或 `openclaw voicecall`。
 
 </Accordion>
 
@@ -389,14 +390,14 @@ openclaw [--dev] [--profile <name>] <command>
 
 - `/status` — 快速诊断。
 - `/trace` — 会话范围的插件跟踪/调试行。
-- `/config` — 持久化配置更改。
+- `/config` — 持久化的配置更改。
 - `/debug` — 仅运行时的配置覆盖（内存中，不写入磁盘；需要 `commands.debug: true`）。
 
-## 使用量跟踪
+## 用量跟踪
 
-当 OAuth/API 凭证可用时，`openclaw status --usage` 和 Control UI 会显示提供商使用量/配额。数据直接来自提供商使用量端点，并规范化为 `X% left`。当前有使用窗口的提供商：Anthropic、GitHub Copilot、Gemini CLI、OpenAI Codex、MiniMax、Xiaomi 和 z.ai。
+当 OAuth/API 凭证可用时，`openclaw status --usage` 和 Control UI 会展示提供商用量/配额。数据直接来自提供商用量端点，并规范化为 `X% left`。具有当前用量窗口的提供商：Anthropic、GitHub Copilot、Gemini CLI、OpenAI Codex、MiniMax、Xiaomi 和 z.ai。
 
-了解详情请参阅[使用量跟踪](/zh-CN/concepts/usage-tracking)。
+请参阅[用量跟踪](/zh-CN/concepts/usage-tracking)了解详情。
 
 ## 相关
 

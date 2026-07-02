@@ -1,43 +1,43 @@
 ---
 read_when:
     - Vuoi capire in che modo Task Flow si collega alle attività in background
-    - Ti imbatti in TaskFlow o openclaw tasks flow nelle note di rilascio o nella documentazione
-    - Vuoi ispezionare o gestire lo stato durevole del flusso
-summary: Livello di orchestrazione TaskFlow sopra le attività in background
+    - Trovi TaskFlow o openclaw tasks flow nelle note di rilascio o nella documentazione
+    - Vuoi ispezionare o gestire lo stato persistente del flusso
+summary: Livello di orchestrazione del flusso di attività sopra le attività in background
 title: Flusso delle attività
 x-i18n:
-    generated_at: "2026-06-27T17:09:17Z"
+    generated_at: "2026-07-02T00:59:18Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
+    source_hash: 7b74a773e34c02421d22ce11ae0aa29fed82664383f0680e7623787db7d79c8e
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Il flusso di attività è il substrato di orchestrazione dei flussi che si colloca sopra le [attività in background](/it/automation/tasks). Gestisce flussi durevoli a più passaggi con il proprio stato, tracciamento delle revisioni e semantica di sincronizzazione, mentre le singole attività restano l'unità di lavoro distaccato.
+TaskFlow è il substrato di orchestrazione dei flussi che si colloca sopra le [attività in background](/it/automation/tasks). Gestisce flussi durevoli a più passaggi con il proprio stato, tracciamento delle revisioni e semantica di sincronizzazione, mentre le singole attività restano l'unità di lavoro distaccato.
 
-## Quando usare il flusso di attività
+## Quando usare TaskFlow
 
-Usa il flusso di attività quando il lavoro comprende più passaggi sequenziali o ramificati e ti serve un tracciamento durevole dell'avanzamento tra i riavvii del Gateway. Per singole operazioni in background, una semplice [attività](/it/automation/tasks) è sufficiente.
+Usa TaskFlow quando il lavoro si estende su più passaggi sequenziali o ramificati e hai bisogno di un tracciamento durevole dell'avanzamento attraverso i riavvii del gateway. Per singole operazioni in background, è sufficiente una semplice [attività](/it/automation/tasks).
 
-| Scenario                              | Uso                         |
-| ------------------------------------- | --------------------------- |
-| Singolo processo in background        | Attività semplice           |
-| Pipeline a più passaggi (A poi B poi C) | Flusso di attività (gestito) |
-| Osservare attività create esternamente | Flusso di attività (rispecchiato) |
-| Promemoria una tantum                 | Processo Cron               |
+| Scenario                              | Uso                      |
+| ------------------------------------- | ------------------------ |
+| Singolo job in background             | Attività semplice        |
+| Pipeline a più passaggi (A poi B poi C) | TaskFlow (gestito)       |
+| Osservare attività create esternamente | TaskFlow (specchiato)    |
+| Promemoria una tantum                 | Job Cron                 |
 
-## Modello affidabile di workflow pianificato
+## Pattern di workflow pianificato affidabile
 
-Per workflow ricorrenti come briefing di intelligence di mercato, tratta la pianificazione, l'orchestrazione e i controlli di affidabilità come livelli separati:
+Per workflow ricorrenti, come briefing di market intelligence, tratta la pianificazione, l'orchestrazione e i controlli di affidabilità come livelli separati:
 
-1. Usa le [attività pianificate](/it/automation/cron-jobs) per la temporizzazione.
-2. Usa una sessione cron persistente quando il workflow deve basarsi sul contesto precedente.
+1. Usa [Attività pianificate](/it/automation/cron-jobs) per la temporizzazione.
+2. Archivia il contesto precedente nei file, nel database o nello stato degli strumenti propri del workflow.
 3. Usa [Lobster](/it/tools/lobster) per passaggi deterministici, gate di approvazione e token di ripresa.
-4. Usa il flusso di attività per tracciare l'esecuzione a più passaggi attraverso attività figlie, attese, tentativi e riavvii del Gateway.
+4. Usa TaskFlow per tracciare l'esecuzione a più passaggi attraverso attività figlie, attese, tentativi e riavvii del gateway.
 
-Esempio di struttura cron:
+Forma di cron di esempio:
 
 ```bash
 openclaw cron add \
@@ -51,9 +51,9 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Usa `session:<id>` invece di `isolated` quando il workflow ricorrente necessita di cronologia deliberata, riepiloghi delle esecuzioni precedenti o contesto permanente. Usa `isolated` quando ogni esecuzione deve partire da zero e tutto lo stato richiesto è esplicito nel workflow.
+Usa `session:<id>` quando il job deve puntare a una chat/sessione nota per il contesto di consegna o per il seeding sicuro delle preferenze. Cron esegue comunque ogni run in una sessione distaccata, quindi inserisci i riepiloghi delle run precedenti e lo stato permanente del workflow in uno storage esplicito che il job possa leggere.
 
-All'interno del workflow, inserisci i controlli di affidabilità prima del passaggio di riepilogo dell'LLM:
+All'interno del workflow, inserisci i controlli di affidabilità prima del passaggio di riepilogo LLM:
 
 ```yaml
 name: market-intel-brief
@@ -76,15 +76,15 @@ steps:
     condition: $approve.approved
 ```
 
-Controlli preflight consigliati:
+Controlli preliminari consigliati:
 
-- Disponibilità del browser e scelta del profilo, per esempio `openclaw` per lo stato gestito o `user` quando è richiesta una sessione Chrome con accesso effettuato. Vedi [Browser](/it/tools/browser).
+- Disponibilità del browser e scelta del profilo, ad esempio `openclaw` per lo stato gestito o `user` quando è richiesta una sessione Chrome con accesso effettuato. Vedi [Browser](/it/tools/browser).
 - Credenziali API e quota per ogni fonte.
 - Raggiungibilità di rete per gli endpoint richiesti.
 - Strumenti richiesti abilitati per l'agente, come `lobster`, `browser` e `llm-task`.
-- Destinazione degli errori configurata per cron, così gli errori preflight sono visibili. Vedi [attività pianificate](/it/automation/cron-jobs#delivery-and-output).
+- Destinazione di errore configurata per cron, in modo che gli errori dei controlli preliminari siano visibili. Vedi [Attività pianificate](/it/automation/cron-jobs#delivery-and-output).
 
-Campi consigliati di provenienza dei dati per ogni elemento raccolto:
+Campi di provenienza dei dati consigliati per ogni elemento raccolto:
 
 ```json
 {
@@ -96,17 +96,17 @@ Campi consigliati di provenienza dei dati per ogni elemento raccolto:
 }
 ```
 
-Fai in modo che il workflow rifiuti o contrassegni come obsoleti gli elementi prima del riepilogo. Il passaggio LLM dovrebbe ricevere solo JSON strutturato e dovrebbe essere istruito a preservare `sourceUrl`, `retrievedAt` e `asOf` nel proprio output. Usa [attività LLM](/it/tools/llm-task) quando ti serve un passaggio del modello con schema validato all'interno del workflow.
+Fai in modo che il workflow rifiuti o contrassegni come obsoleti gli elementi prima del riepilogo. Il passaggio LLM dovrebbe ricevere solo JSON strutturato e dovrebbe essere istruito a preservare `sourceUrl`, `retrievedAt` e `asOf` nel proprio output. Usa [LLM Task](/it/tools/llm-task) quando hai bisogno di un passaggio del modello con schema validato all'interno del workflow.
 
-Per workflow riutilizzabili da team o community, impacchetta la CLI, i file `.lobster` e qualsiasi nota di configurazione come skill o plugin e pubblicali tramite [ClawHub](/it/clawhub). Mantieni i guardrail specifici del workflow in quel pacchetto, a meno che all'API del plugin manchi una capacità generica necessaria.
+Per workflow riutilizzabili da team o community, pacchettizza la CLI, i file `.lobster` e le eventuali note di configurazione come skill o plugin e pubblicalo tramite [ClawHub](/clawhub). Mantieni i guardrail specifici del workflow in quel pacchetto, a meno che all'API del plugin manchi una capacità generica necessaria.
 
 ## Modalità di sincronizzazione
 
 ### Modalità gestita
 
-Il flusso di attività possiede il ciclo di vita end-to-end. Crea attività come passaggi del flusso, le porta a completamento e fa avanzare automaticamente lo stato del flusso.
+TaskFlow possiede il ciclo di vita end-to-end. Crea attività come passaggi del flusso, le porta a completamento e fa avanzare automaticamente lo stato del flusso.
 
-Esempio: un flusso di report settimanale che (1) raccoglie dati, (2) genera il report e (3) lo consegna. Il flusso di attività crea ogni passaggio come attività in background, attende il completamento e poi passa al passaggio successivo.
+Esempio: un flusso di report settimanale che (1) raccoglie dati, (2) genera il report e (3) lo consegna. TaskFlow crea ogni passaggio come attività in background, attende il completamento e poi passa al passaggio successivo.
 
 ```
 Flow: weekly-report
@@ -115,22 +115,22 @@ Flow: weekly-report
   Step 3: deliver         → task created → running
 ```
 
-### Modalità rispecchiata
+### Modalità specchiata
 
-Il flusso di attività osserva attività create esternamente e mantiene sincronizzato lo stato del flusso senza assumere la proprietà della creazione delle attività. È utile quando le attività hanno origine da processi cron, comandi CLI o altre fonti e vuoi una vista unificata del loro avanzamento come flusso.
+TaskFlow osserva attività create esternamente e mantiene sincronizzato lo stato del flusso senza assumere la proprietà della creazione delle attività. Questo è utile quando le attività provengono da job cron, comandi CLI o altre fonti e vuoi una vista unificata del loro avanzamento come flusso.
 
-Esempio: tre processi cron indipendenti che insieme formano una routine di "operazioni mattutine". Un flusso rispecchiato traccia il loro avanzamento collettivo senza controllare quando o come vengono eseguiti.
+Esempio: tre job cron indipendenti che insieme formano una routine "morning ops". Un flusso specchiato traccia il loro avanzamento collettivo senza controllare quando o come vengono eseguiti.
 
 ## Stato durevole e tracciamento delle revisioni
 
-Ogni flusso persiste il proprio stato e traccia le revisioni, così l'avanzamento sopravvive ai riavvii del Gateway. Il tracciamento delle revisioni abilita il rilevamento dei conflitti quando più fonti tentano di far avanzare lo stesso flusso contemporaneamente.
-Il registro dei flussi usa SQLite con manutenzione limitata del write-ahead log, inclusi checkpoint
-periodici e allo spegnimento, così i Gateway di lunga durata non conservano
-file sidecar `registry.sqlite-wal` senza limiti.
+Ogni flusso persiste il proprio stato e traccia le revisioni, così l'avanzamento sopravvive ai riavvii del gateway. Il tracciamento delle revisioni consente il rilevamento dei conflitti quando più fonti tentano di far avanzare lo stesso flusso contemporaneamente.
+Il registro dei flussi usa SQLite con manutenzione bounded del write-ahead log, inclusi checkpoint
+periodici e allo spegnimento, così i gateway a esecuzione prolungata non conservano
+file sidecar `registry.sqlite-wal` illimitati.
 
 ## Comportamento di annullamento
 
-`openclaw tasks flow cancel` imposta sul flusso un intento di annullamento persistente. Le attività attive all'interno del flusso vengono annullate e non vengono avviati nuovi passaggi. L'intento di annullamento persiste tra i riavvii, quindi un flusso annullato resta annullato anche se il Gateway si riavvia prima che tutte le attività figlie siano terminate.
+`openclaw tasks flow cancel` imposta un intento di annullamento persistente sul flusso. Le attività attive all'interno del flusso vengono annullate e non vengono avviati nuovi passaggi. L'intento di annullamento persiste attraverso i riavvii, quindi un flusso annullato resta annullato anche se il gateway si riavvia prima che tutte le attività figlie siano terminate.
 
 ## Comandi CLI
 
@@ -145,19 +145,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| Comando                           | Descrizione                                      |
-| --------------------------------- | ------------------------------------------------ |
+| Comando                           | Descrizione                                           |
+| --------------------------------- | ----------------------------------------------------- |
 | `openclaw tasks flow list`        | Mostra i flussi tracciati con stato e modalità di sincronizzazione |
-| `openclaw tasks flow show <id>`   | Ispeziona un flusso per ID flusso o chiave di ricerca |
+| `openclaw tasks flow show <id>`   | Ispeziona un flusso per ID flusso o chiave di lookup  |
 | `openclaw tasks flow cancel <id>` | Annulla un flusso in esecuzione e le sue attività attive |
 
 ## Come i flussi si relazionano alle attività
 
-I flussi coordinano le attività, non le sostituiscono. Un singolo flusso può guidare più attività in background durante il proprio ciclo di vita. Usa `openclaw tasks` per ispezionare i record delle singole attività e `openclaw tasks flow` per ispezionare il flusso di orchestrazione.
+I flussi coordinano le attività, non le sostituiscono. Un singolo flusso può guidare più attività in background durante il suo ciclo di vita. Usa `openclaw tasks` per ispezionare i record delle singole attività e `openclaw tasks flow` per ispezionare il flusso orchestratore.
 
 ## Correlati
 
-- [Attività in background](/it/automation/tasks) — il registro del lavoro distaccato coordinato dai flussi
-- [CLI: attività](/it/cli/tasks) — riferimento dei comandi CLI per `openclaw tasks flow`
+- [Attività in background](/it/automation/tasks) — il registro del lavoro distaccato che i flussi coordinano
+- [CLI: tasks](/it/cli/tasks) — riferimento dei comandi CLI per `openclaw tasks flow`
 - [Panoramica dell'automazione](/it/automation) — tutti i meccanismi di automazione in sintesi
-- [Processi Cron](/it/automation/cron-jobs) — processi pianificati che possono alimentare i flussi
+- [Job Cron](/it/automation/cron-jobs) — job pianificati che possono alimentare i flussi

@@ -1,49 +1,49 @@
 ---
 read_when:
-    - Поиск подходящей `openclaw` подкоманды
+    - Поиск подходящей подкоманды `openclaw`
     - Поиск глобальных флагов или правил оформления вывода
-summary: 'Индекс CLI OpenClaw: список команд, глобальные флаги и ссылки на страницы отдельных команд'
+summary: 'Индекс OpenClaw CLI: список команд, глобальные флаги и ссылки на страницы отдельных команд'
 title: Справочник CLI
 x-i18n:
-    generated_at: "2026-06-30T22:28:27Z"
+    generated_at: "2026-07-02T01:06:56Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e5102afd4cfe8be5ec45b352cf714f0ecc965bbe03f6a1c3c1b22aa409cde7b9
+    source_hash: 627ccd257834e9bc8cacf2f2ac4600530ff4aa1132d2c34fcb0922b29a1facce
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` — основная точка входа CLI. Для каждой основной команды есть либо
-отдельная справочная страница, либо документация вместе с командой, псевдонимом
-которой она является; этот указатель перечисляет команды, глобальные флаги и
-правила оформления вывода, которые применяются во всем CLI.
+`openclaw` — основная точка входа CLI. Каждая основная команда имеет либо
+отдельную справочную страницу, либо документирована вместе с командой, для которой она является псевдонимом; этот
+индекс перечисляет команды, глобальные флаги и правила оформления вывода, которые
+применяются во всем CLI.
 
 Используйте команды настройки по назначению:
 
-- `openclaw setup` и `openclaw onboard` запускают полный управляемый путь первого запуска для Gateway, аутентификации моделей, рабочей области, каналов, Skills и проверки состояния.
-- `openclaw setup --baseline` создает базовую конфигурацию и рабочую область без прохождения управляемого процесса первоначальной настройки.
-- `openclaw configure` изменяет отдельные части существующей настройки, например аутентификацию моделей, Gateway, каналы, плагины или Skills.
-- `openclaw channels add` настраивает учетные записи каналов после создания базовой конфигурации; запускайте без флагов для управляемой настройки канала или с флагами конкретного канала для скриптов.
+- `openclaw setup` и `openclaw onboard` запускают полный управляемый путь первого запуска для gateway, аутентификации модели, рабочей области, каналов, skills и проверки состояния.
+- `openclaw setup --baseline` создает базовую конфигурацию и рабочую область без прохождения управляемого потока онбординга.
+- `openclaw configure` изменяет целевые части существующей настройки, такие как аутентификация модели, gateway, каналы, plugins или skills.
+- `openclaw channels add` настраивает учетные записи каналов после создания базовой конфигурации; запускайте ее без флагов для управляемой настройки канала или с флагами, специфичными для канала, для скриптов.
 
 ## Страницы команд
 
-| Область              | Команды                                                                                                                                                                                                                                   |
+| Область              | Команды                                                                                                                                                                                                                                  |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Настройка и онбординг | [`crestodian`](/ru/cli/crestodian) · [`setup`](/ru/cli/setup) · [`onboard`](/ru/cli/onboard) · [`configure`](/ru/cli/configure) · [`config`](/ru/cli/config) · [`completion`](/ru/cli/completion) · [`doctor`](/ru/cli/doctor) · [`dashboard`](/ru/cli/dashboard) |
 | Сброс и удаление     | [`backup`](/ru/cli/backup) · [`reset`](/ru/cli/reset) · [`uninstall`](/ru/cli/uninstall) · [`update`](/ru/cli/update)                                                                                                                                 |
-| Сообщения и агенты   | [`message`](/ru/cli/message) · [`agent`](/ru/cli/agent) · [`agents`](/ru/cli/agents) · [`acp`](/ru/cli/acp) · [`mcp`](/ru/cli/mcp)                                                                                                                       |
-| Состояние и сеансы   | [`status`](/ru/cli/status) · [`health`](/ru/cli/health) · [`sessions`](/ru/cli/sessions)                                                                                                                                                           |
+| Сообщения и агенты   | [`message`](/ru/cli/message) · [`agent`](/ru/cli/agent) · [`agents`](/ru/cli/agents) · [`attach`](/cli/attach) · [`acp`](/ru/cli/acp) · [`mcp`](/ru/cli/mcp)                                                                                             |
+| Состояние и сессии   | [`status`](/ru/cli/status) · [`health`](/ru/cli/health) · [`sessions`](/ru/cli/sessions)                                                                                                                                                           |
 | Gateway и журналы    | [`gateway`](/ru/cli/gateway) · [`logs`](/ru/cli/logs) · [`system`](/ru/cli/system)                                                                                                                                                                 |
-| Модели и инференс    | [`models`](/ru/cli/models) · [`infer`](/ru/cli/infer) · `capability` (псевдоним [`infer`](/ru/cli/infer)) · [`memory`](/ru/cli/memory) · [`commitments`](/ru/cli/commitments) · [`wiki`](/ru/cli/wiki)                                                      |
+| Модели и инференс    | [`models`](/ru/cli/models) · [`infer`](/ru/cli/infer) · `capability` (псевдоним для [`infer`](/ru/cli/infer)) · [`memory`](/ru/cli/memory) · [`commitments`](/ru/cli/commitments) · [`wiki`](/ru/cli/wiki)                                                      |
 | Сеть и узлы          | [`directory`](/ru/cli/directory) · [`nodes`](/ru/cli/nodes) · [`devices`](/ru/cli/devices) · [`node`](/ru/cli/node)                                                                                                                                   |
-| Runtime и песочница  | [`approvals`](/ru/cli/approvals) · `exec-policy` (см. [`approvals`](/ru/cli/approvals)) · [`sandbox`](/ru/cli/sandbox) · [`tui`](/ru/cli/tui) · `chat`/`terminal` (псевдонимы [`tui --local`](/ru/cli/tui)) · [`browser`](/ru/cli/browser)                 |
+| Среда выполнения и песочница | [`approvals`](/ru/cli/approvals) · `exec-policy` (см. [`approvals`](/ru/cli/approvals)) · [`sandbox`](/ru/cli/sandbox) · [`tui`](/ru/cli/tui) · `chat`/`terminal` (псевдонимы для [`tui --local`](/ru/cli/tui)) · [`browser`](/ru/cli/browser)                 |
 | Автоматизация        | [`cron`](/ru/cli/cron) · [`tasks`](/ru/cli/tasks) · [`hooks`](/ru/cli/hooks) · [`webhooks`](/ru/cli/webhooks) · [`transcripts`](/ru/cli/transcripts)                                                                                                     |
-| Обнаружение и документация | [`dns`](/ru/cli/dns) · [`docs`](/ru/cli/docs)                                                                                                                                                                                             |
+| Обнаружение и документация | [`dns`](/ru/cli/dns) · [`docs`](/ru/cli/docs)                                                                                                                                                                                                   |
 | Сопряжение и каналы  | [`pairing`](/ru/cli/pairing) · [`qr`](/ru/cli/qr) · [`channels`](/ru/cli/channels)                                                                                                                                                                 |
-| Безопасность и плагины | [`security`](/ru/cli/security) · [`secrets`](/ru/cli/secrets) · [`skills`](/ru/cli/skills) · [`plugins`](/ru/cli/plugins) · [`proxy`](/ru/cli/proxy)                                                                                                   |
-| Устаревшие псевдонимы | [`daemon`](/ru/cli/daemon) (служба Gateway) · [`clawbot`](/ru/cli/clawbot) (пространство имен)                                                                                                                                                 |
-| Плагины (необязательно) | [`path`](/ru/cli/path) · [`policy`](/ru/cli/policy) · [`voicecall`](/ru/cli/voicecall) · [`workboard`](/ru/cli/workboard) (если установлен)                                                                                                       |
+| Безопасность и plugins | [`security`](/ru/cli/security) · [`secrets`](/ru/cli/secrets) · [`skills`](/ru/cli/skills) · [`plugins`](/ru/cli/plugins) · [`proxy`](/ru/cli/proxy)                                                                                                     |
+| Устаревшие псевдонимы | [`daemon`](/ru/cli/daemon) (служба gateway) · [`clawbot`](/ru/cli/clawbot) (пространство имен)                                                                                                                                                         |
+| Plugins (необязательно) | [`path`](/ru/cli/path) · [`policy`](/ru/cli/policy) · [`voicecall`](/ru/cli/voicecall) · [`workboard`](/ru/cli/workboard) (если установлен)                                                                                                              |
 
 ## Глобальные флаги
 
@@ -53,7 +53,7 @@ x-i18n:
 | `--profile <name>`      | Изолировать состояние в `~/.openclaw-<name>`                          |
 | `--container <name>`    | Нацелить выполнение на именованный контейнер                          |
 | `--no-color`            | Отключить цвета ANSI (`NO_COLOR=1` также учитывается)                 |
-| `--update`              | Сокращение для [`openclaw update`](/ru/cli/update) (только установки из исходного кода) |
+| `--update`              | Сокращение для [`openclaw update`](/ru/cli/update) (только установки из исходников) |
 | `-V`, `--version`, `-v` | Вывести версию и завершить работу                                     |
 
 ## Режимы вывода
@@ -68,7 +68,7 @@ x-i18n:
 
 ## Дерево команд
 
-<Accordion title="Full command tree">
+<Accordion title="Полное дерево команд">
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -201,6 +201,7 @@ openclaw [--dev] [--profile <name>] <command>
     bind
     unbind
     set-identity
+  attach
   acp
   mcp
     serve
@@ -381,34 +382,34 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Плагины могут добавлять дополнительные команды верхнего уровня, например
+Plugins могут добавлять дополнительные команды верхнего уровня, такие как
 [`openclaw workboard`](/ru/cli/workboard) или `openclaw voicecall`.
 
 </Accordion>
 
-## Слеш-команды чата
+## Слэш-команды чата
 
-Сообщения чата поддерживают команды `/...`. См. [слеш-команды](/ru/tools/slash-commands).
+Сообщения чата поддерживают команды `/...`. См. [слэш-команды](/ru/tools/slash-commands).
 
 Основное:
 
 - `/status` — быстрая диагностика.
-- `/trace` — строки трассировки/отладки плагина в пределах сеанса.
-- `/config` — сохраняемые изменения конфигурации.
-- `/debug` — переопределения конфигурации только для runtime (в памяти, не на диске; требует `commands.debug: true`).
+- `/trace` — строки трассировки/отладки plugin в рамках сессии.
+- `/config` — сохраненные изменения конфигурации.
+- `/debug` — переопределения конфигурации только для среды выполнения (в памяти, не на диске; требуется `commands.debug: true`).
 
 ## Отслеживание использования
 
 `openclaw status --usage` и Control UI показывают использование/квоту провайдера, когда
-доступны учетные данные OAuth/API. Данные поступают напрямую из конечных точек
-использования провайдера и нормализуются до `X% left`. Провайдеры с текущими
-окнами использования: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
+доступны учетные данные OAuth/API. Данные поступают напрямую из конечных точек использования
+провайдера и нормализуются в формат `X% left`. Провайдеры с текущими окнами использования:
+Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
 Xiaomi и z.ai.
 
-Подробности см. в разделе [Отслеживание использования](/ru/concepts/usage-tracking).
+Подробнее см. [Отслеживание использования](/ru/concepts/usage-tracking).
 
-## См. также
+## Связанные материалы
 
-- [Слеш-команды](/ru/tools/slash-commands)
+- [Слэш-команды](/ru/tools/slash-commands)
 - [Конфигурация](/ru/gateway/configuration)
 - [Окружение](/ru/help/environment)

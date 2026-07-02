@@ -1,43 +1,43 @@
 ---
 read_when:
-    - Vous voulez comprendre le lien entre le flux de tâches et les tâches en arrière-plan
-    - Vous rencontrez TaskFlow ou openclaw tasks flow dans les notes de version ou la documentation
-    - Vous voulez inspecter ou gérer l’état durable du flux
-summary: Couche d’orchestration TaskFlow au-dessus des tâches en arrière-plan
-title: Flux de tâches
+    - Vous voulez comprendre comment Task Flow se rapporte aux tâches en arrière-plan
+    - Vous rencontrez Flux de tâches ou le flux de tâches openclaw dans les notes de version ou la documentation
+    - Vous souhaitez inspecter ou gérer l’état durable du flux
+summary: Couche d’orchestration des flux de tâches au-dessus des tâches en arrière-plan
+title: Flux de tâche
 x-i18n:
-    generated_at: "2026-06-27T17:09:10Z"
+    generated_at: "2026-07-02T00:52:05Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
+    source_hash: 7b74a773e34c02421d22ce11ae0aa29fed82664383f0680e7623787db7d79c8e
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Task Flow est le substrat d’orchestration de flux situé au-dessus des [tâches en arrière-plan](/fr/automation/tasks). Il gère des flux durables en plusieurs étapes avec leur propre état, leur suivi des révisions et leur sémantique de synchronisation, tandis que les tâches individuelles restent l’unité de travail détaché.
+Task Flow est le substrat d’orchestration de flux situé au-dessus des [tâches en arrière-plan](/fr/automation/tasks). Il gère des flux durables en plusieurs étapes avec leur propre état, suivi de révision et sémantique de synchronisation, tandis que les tâches individuelles restent l’unité de travail détaché.
 
 ## Quand utiliser Task Flow
 
-Utilisez Task Flow lorsque le travail couvre plusieurs étapes séquentielles ou avec embranchements et que vous avez besoin d’un suivi durable de la progression entre les redémarrages du gateway. Pour les opérations uniques en arrière-plan, une simple [tâche](/fr/automation/tasks) suffit.
+Utilisez Task Flow lorsque le travail couvre plusieurs étapes séquentielles ou ramifiées et que vous avez besoin d’un suivi durable de la progression lors des redémarrages du Gateway. Pour les opérations uniques en arrière-plan, une simple [tâche](/fr/automation/tasks) suffit.
 
-| Scénario                              | Utilisation          |
-| ------------------------------------- | -------------------- |
-| Tâche unique en arrière-plan          | Tâche simple         |
+| Scénario                              | Utilisation                  |
+| ------------------------------------- | ---------------------------- |
+| Tâche unique en arrière-plan          | Tâche simple                 |
 | Pipeline en plusieurs étapes (A puis B puis C) | Task Flow (géré)    |
-| Observer des tâches créées en externe | Task Flow (miroir)   |
-| Rappel ponctuel                       | Tâche Cron           |
+| Observer des tâches créées en externe | Task Flow (en miroir)        |
+| Rappel ponctuel                       | Tâche Cron                   |
 
 ## Modèle de workflow planifié fiable
 
-Pour les workflows récurrents tels que les briefings de veille de marché, traitez la planification, l’orchestration et les contrôles de fiabilité comme des couches séparées :
+Pour les workflows récurrents tels que les briefings de veille de marché, traitez la planification, l’orchestration et les contrôles de fiabilité comme des couches distinctes :
 
 1. Utilisez les [tâches planifiées](/fr/automation/cron-jobs) pour le déclenchement temporel.
-2. Utilisez une session cron persistante lorsque le workflow doit s’appuyer sur un contexte antérieur.
-3. Utilisez [Lobster](/fr/tools/lobster) pour les étapes déterministes, les barrières d’approbation et les jetons de reprise.
-4. Utilisez Task Flow pour suivre l’exécution en plusieurs étapes à travers les tâches enfants, les attentes, les nouvelles tentatives et les redémarrages du gateway.
+2. Stockez le contexte antérieur dans les propres fichiers, la base de données ou l’état d’outil du workflow.
+3. Utilisez [Lobster](/fr/tools/lobster) pour les étapes déterministes, les points d’approbation et les jetons de reprise.
+4. Utilisez Task Flow pour suivre l’exécution en plusieurs étapes à travers les tâches enfants, les attentes, les nouvelles tentatives et les redémarrages du Gateway.
 
-Exemple de forme cron :
+Exemple de forme Cron :
 
 ```bash
 openclaw cron add \
@@ -51,7 +51,7 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Utilisez `session:<id>` au lieu de `isolated` lorsque le workflow récurrent a besoin d’un historique volontaire, de résumés d’exécutions précédentes ou d’un contexte permanent. Utilisez `isolated` lorsque chaque exécution doit démarrer à neuf et que tout l’état requis est explicite dans le workflow.
+Utilisez `session:<id>` lorsque la tâche doit cibler un chat ou une session connus pour le contexte de livraison ou l’initialisation sûre des préférences. Cron exécute toujours chaque lancement dans une session détachée ; placez donc les résumés d’exécutions précédentes et l’état permanent du workflow dans un stockage explicite que la tâche peut lire.
 
 Dans le workflow, placez les contrôles de fiabilité avant l’étape de résumé par LLM :
 
@@ -76,13 +76,13 @@ steps:
     condition: $approve.approved
 ```
 
-Contrôles préalables recommandés :
+Contrôles de prévol recommandés :
 
-- Disponibilité du navigateur et choix du profil, par exemple `openclaw` pour un état géré ou `user` lorsqu’une session Chrome connectée est requise. Voir [Navigateur](/fr/tools/browser).
+- Disponibilité du navigateur et choix du profil, par exemple `openclaw` pour l’état géré ou `user` lorsqu’une session Chrome connectée est requise. Consultez [Navigateur](/fr/tools/browser).
 - Identifiants d’API et quota pour chaque source.
 - Accessibilité réseau des points de terminaison requis.
 - Outils requis activés pour l’agent, tels que `lobster`, `browser` et `llm-task`.
-- Destination d’échec configurée pour cron afin que les échecs de contrôle préalable soient visibles. Voir [Tâches planifiées](/fr/automation/cron-jobs#delivery-and-output).
+- Destination d’échec configurée pour Cron afin que les échecs de prévol soient visibles. Consultez [Tâches planifiées](/fr/automation/cron-jobs#delivery-and-output).
 
 Champs de provenance des données recommandés pour chaque élément collecté :
 
@@ -98,15 +98,15 @@ Champs de provenance des données recommandés pour chaque élément collecté :
 
 Faites rejeter ou marquer comme obsolètes les éléments par le workflow avant la synthèse. L’étape LLM ne doit recevoir que du JSON structuré et doit être invitée à préserver `sourceUrl`, `retrievedAt` et `asOf` dans sa sortie. Utilisez [LLM Task](/fr/tools/llm-task) lorsque vous avez besoin d’une étape de modèle validée par schéma dans le workflow.
 
-Pour les workflows réutilisables par une équipe ou une communauté, empaquetez la CLI, les fichiers `.lobster` et toutes les notes de configuration sous forme de skill ou de plugin, puis publiez-les via [ClawHub](/fr/clawhub). Conservez les garde-fous propres au workflow dans ce paquet, sauf si l’API de plugin ne fournit pas une capacité générique nécessaire.
+Pour les workflows réutilisables par une équipe ou une communauté, packagez la CLI, les fichiers `.lobster` et toute note de configuration sous forme de skill ou de plugin, puis publiez-les via [ClawHub](/clawhub). Conservez les garde-fous propres au workflow dans ce package, sauf si l’API de plugin ne fournit pas une capacité générique nécessaire.
 
 ## Modes de synchronisation
 
 ### Mode géré
 
-Task Flow possède le cycle de vie de bout en bout. Il crée des tâches comme étapes de flux, les mène jusqu’à leur achèvement et fait avancer automatiquement l’état du flux.
+Task Flow possède le cycle de vie de bout en bout. Il crée des tâches comme étapes du flux, les mène à leur achèvement et fait avancer automatiquement l’état du flux.
 
-Exemple : un flux de rapport hebdomadaire qui (1) collecte des données, (2) génère le rapport et (3) le livre. Task Flow crée chaque étape comme tâche en arrière-plan, attend son achèvement, puis passe à l’étape suivante.
+Exemple : un flux de rapport hebdomadaire qui (1) collecte les données, (2) génère le rapport et (3) le livre. Task Flow crée chaque étape comme tâche en arrière-plan, attend son achèvement, puis passe à l’étape suivante.
 
 ```
 Flow: weekly-report
@@ -115,22 +115,22 @@ Flow: weekly-report
   Step 3: deliver         → task created → running
 ```
 
-### Mode miroir
+### Mode en miroir
 
-Task Flow observe les tâches créées en externe et maintient l’état du flux synchronisé sans prendre en charge la création des tâches. C’est utile lorsque les tâches proviennent de tâches cron, de commandes CLI ou d’autres sources, et que vous voulez une vue unifiée de leur progression sous forme de flux.
+Task Flow observe les tâches créées en externe et maintient l’état du flux synchronisé sans prendre en charge la création des tâches. C’est utile lorsque les tâches proviennent de tâches Cron, de commandes CLI ou d’autres sources, et que vous souhaitez une vue unifiée de leur progression sous forme de flux.
 
-Exemple : trois tâches cron indépendantes qui forment ensemble une routine « opérations du matin ». Un flux miroir suit leur progression collective sans contrôler quand ni comment elles s’exécutent.
+Exemple : trois tâches Cron indépendantes qui forment ensemble une routine « opérations du matin ». Un flux en miroir suit leur progression collective sans contrôler quand ni comment elles s’exécutent.
 
 ## État durable et suivi des révisions
 
-Chaque flux persiste son propre état et suit les révisions afin que la progression survive aux redémarrages du gateway. Le suivi des révisions permet la détection de conflits lorsque plusieurs sources tentent de faire avancer le même flux simultanément.
-Le registre des flux utilise SQLite avec une maintenance bornée du journal d’écriture anticipée, y compris
-des points de contrôle périodiques et à l’arrêt, afin que les gateways de longue durée ne conservent pas
+Chaque flux persiste son propre état et suit les révisions afin que la progression survive aux redémarrages du Gateway. Le suivi des révisions permet la détection des conflits lorsque plusieurs sources tentent de faire avancer le même flux simultanément.
+Le registre des flux utilise SQLite avec une maintenance bornée du journal d’écriture anticipée, notamment
+des points de contrôle périodiques et à l’arrêt, afin que les Gateways de longue durée ne conservent pas
 de fichiers annexes `registry.sqlite-wal` non bornés.
 
 ## Comportement d’annulation
 
-`openclaw tasks flow cancel` définit une intention d’annulation persistante sur le flux. Les tâches actives dans le flux sont annulées, et aucune nouvelle étape n’est démarrée. L’intention d’annulation persiste entre les redémarrages, de sorte qu’un flux annulé reste annulé même si le gateway redémarre avant que toutes les tâches enfants aient terminé.
+`openclaw tasks flow cancel` définit une intention d’annulation persistante sur le flux. Les tâches actives dans le flux sont annulées et aucune nouvelle étape n’est démarrée. L’intention d’annulation persiste après les redémarrages ; ainsi, un flux annulé reste annulé même si le Gateway redémarre avant que toutes les tâches enfants ne soient terminées.
 
 ## Commandes CLI
 
@@ -147,9 +147,9 @@ openclaw tasks flow cancel <lookup>
 
 | Commande                          | Description                                      |
 | --------------------------------- | ------------------------------------------------ |
-| `openclaw tasks flow list`        | Affiche les flux suivis avec leur statut et leur mode de synchronisation |
-| `openclaw tasks flow show <id>`   | Inspecter un flux par identifiant de flux ou clé de recherche |
-| `openclaw tasks flow cancel <id>` | Annuler un flux en cours d’exécution et ses tâches actives |
+| `openclaw tasks flow list`        | Affiche les flux suivis avec leur état et leur mode de synchronisation |
+| `openclaw tasks flow show <id>`   | Inspecte un flux par identifiant de flux ou clé de recherche |
+| `openclaw tasks flow cancel <id>` | Annule un flux en cours d’exécution et ses tâches actives |
 
 ## Relation entre les flux et les tâches
 

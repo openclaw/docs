@@ -1,36 +1,36 @@
 ---
 read_when: Finding which docs page covers a topic before reading the page
-summary: OpenClaw दस्तावेज़ पृष्ठों के लिए जनरेट किया गया शीर्षक मानचित्र
+summary: OpenClaw दस्तावेज़ पृष्ठों के लिए जनरेट किया गया शीर्षक मैप
 title: दस्तावेज़ मानचित्र
 x-i18n:
-    generated_at: "2026-07-01T12:59:41Z"
+    generated_at: "2026-07-02T00:57:09Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9942f57ca1e0a9ae1a0fc8a766c0a0d1429856dc906bb5acb60eda38f927b607
+    source_hash: 504b554aa699d78c9a3c958d3c724949efdac172cf4a7a0f343c3a3e9bb8c3d7
     source_path: docs_map.md
     workflow: 16
 ---
 
-# OpenClaw दस्तावेज़ मैप
+# OpenClaw दस्तावेज़ मानचित्र
 
-यह फ़ाइल एजेंटों को दस्तावेज़ीकरण ट्री में नेविगेट करने में मदद करने के लिए `docs/**/*.md` और `docs/**/*.mdx` शीर्षकों से जनरेट की गई है।
+यह फ़ाइल `docs/**/*.md` और `docs/**/*.mdx` शीर्षकों से जनरेट की जाती है, ताकि एजेंट दस्तावेज़ीकरण ट्री में नेविगेट कर सकें।
 इसे हाथ से संपादित न करें; `pnpm docs:map:gen` चलाएँ।
 
 ## agent-runtime-architecture.md
 
-- Route: /agent-runtime-architecture
-- Headings:
+- मार्ग: /agent-runtime-architecture
+- शीर्षक:
   - H2: Runtime लेआउट
   - H2: सीमाएँ
-  - H2: Manifests
+  - H2: मैनिफ़ेस्ट
   - H2: Runtime चयन
   - H2: संबंधित
 
 ## announcements/bluebubbles-imessage.md
 
-- Route: /announcements/bluebubbles-imessage
-- Headings:
+- मार्ग: /announcements/bluebubbles-imessage
+- शीर्षक:
   - H1: BlueBubbles हटाना और imsg iMessage पथ
   - H2: क्या बदला
   - H2: क्या करें
@@ -39,114 +39,114 @@ x-i18n:
 
 ## auth-credential-semantics.md
 
-- Route: /auth-credential-semantics
-- Headings:
+- मार्ग: /auth-credential-semantics
+- शीर्षक:
   - H2: स्थिर probe कारण कोड
-  - H2: Token credentials
+  - H2: टोकन क्रेडेंशियल
   - H3: पात्रता नियम
-  - H3: Resolution नियम
-  - H2: Agent copy portability
-  - H2: केवल-config auth routes
-  - H2: Explicit auth order filtering
-  - H2: Probe target resolution
-  - H2: External CLI credential discovery
-  - H2: OAuth SecretRef Policy Guard
+  - H3: समाधान नियम
+  - H2: एजेंट कॉपी पोर्टेबिलिटी
+  - H2: केवल-config auth रूट
+  - H2: स्पष्ट auth क्रम फ़िल्टरिंग
+  - H2: Probe लक्ष्य समाधान
+  - H2: बाहरी CLI क्रेडेंशियल खोज
+  - H2: OAuth SecretRef नीति गार्ड
   - H2: Legacy-Compatible Messaging
   - H2: संबंधित
 
 ## automation/auth-monitoring.md
 
-- Route: /automation/auth-monitoring
-- Headings:
+- मार्ग: /automation/auth-monitoring
+- शीर्षक:
   - H2: संबंधित
 
 ## automation/clawflow.md
 
-- Route: /automation/clawflow
-- Headings:
+- मार्ग: /automation/clawflow
+- शीर्षक:
   - H2: संबंधित
 
 ## automation/cron-jobs.md
 
-- Route: /automation/cron-jobs
-- Headings:
+- मार्ग: /automation/cron-jobs
+- शीर्षक:
   - H2: त्वरित शुरुआत
-  - H2: cron कैसे काम करता है
-  - H2: Schedule प्रकार
-  - H3: महीने के दिन और सप्ताह के दिन OR logic का उपयोग करते हैं
-  - H2: Execution styles
-  - H3: Command payloads
-  - H3: अलग-थलग jobs के लिए payload विकल्प
-  - H2: Delivery और output
-  - H2: Output भाषा
+  - H2: Cron कैसे काम करता है
+  - H2: शेड्यूल प्रकार
+  - H3: महीने के दिन और सप्ताह के दिन OR लॉजिक का उपयोग करते हैं
+  - H2: निष्पादन शैलियाँ
+  - H3: कमांड payloads
+  - H3: पृथक jobs के लिए payload विकल्प
+  - H2: डिलीवरी और आउटपुट
+  - H2: आउटपुट भाषा
   - H2: CLI उदाहरण
-  - H2: Webhooks
-  - H3: Authentication
-  - H2: Gmail PubSub integration
-  - H3: Wizard setup (अनुशंसित)
+  - H2: Webhook
+  - H3: प्रमाणीकरण
+  - H2: Gmail PubSub इंटीग्रेशन
+  - H3: विज़ार्ड सेटअप (अनुशंसित)
   - H3: Gateway auto-start
-  - H3: Manual one-time setup
-  - H3: Gmail model override
-  - H2: Jobs प्रबंधित करना
-  - H2: Configuration
-  - H2: Troubleshooting
-  - H3: Command ladder
+  - H3: मैन्युअल एक-बार सेटअप
+  - H3: Gmail मॉडल override
+  - H2: jobs प्रबंधित करना
+  - H2: कॉन्फ़िगरेशन
+  - H2: समस्या निवारण
+  - H3: कमांड ladder
   - H2: संबंधित
 
 ## automation/cron-vs-heartbeat.md
 
-- Route: /automation/cron-vs-heartbeat
-- Headings:
+- मार्ग: /automation/cron-vs-heartbeat
+- शीर्षक:
   - H2: संबंधित
 
 ## automation/gmail-pubsub.md
 
-- Route: /automation/gmail-pubsub
-- Headings:
+- मार्ग: /automation/gmail-pubsub
+- शीर्षक:
   - H2: संबंधित
 
 ## automation/hooks.md
 
-- Route: /automation/hooks
-- Headings:
-  - H2: सही surface चुनें
+- मार्ग: /automation/hooks
+- शीर्षक:
+  - H2: सही सतह चुनें
   - H2: त्वरित शुरुआत
-  - H2: Event प्रकार
-  - H2: Hooks लिखना
+  - H2: इवेंट प्रकार
+  - H2: hooks लिखना
   - H3: Hook संरचना
-  - H3: HOOK.md format
+  - H3: HOOK.md फ़ॉर्मैट
   - H3: Handler implementation
-  - H3: Event context highlights
-  - H2: Hook discovery
+  - H3: इवेंट संदर्भ highlights
+  - H2: Hook खोज
   - H3: Hook packs
-  - H2: Bundled hooks
+  - H2: बंडल किए गए hooks
   - H3: session-memory विवरण
   - H3: bootstrap-extra-files config
   - H3: command-logger विवरण
   - H3: compaction-notifier विवरण
   - H3: boot-md विवरण
   - H2: Plugin hooks
-  - H2: Configuration
-  - H2: CLI reference
-  - H2: Best practices
-  - H2: Troubleshooting
-  - H3: Hook नहीं मिला
-  - H3: Hook eligible नहीं है
-  - H3: Hook execute नहीं हो रहा है
+  - H2: कॉन्फ़िगरेशन
+  - H2: CLI संदर्भ
+  - H2: सर्वोत्तम अभ्यास
+  - H2: समस्या निवारण
+  - H3: Hook खोजा नहीं गया
+  - H3: Hook पात्र नहीं है
+  - H3: Hook निष्पादित नहीं हो रहा
   - H2: संबंधित
 
 ## automation/index.md
 
-- Route: /automation
-- Headings:
-  - H2: त्वरित निर्णय मार्गदर्शिका
+- मार्ग: /automation
+- शीर्षक:
+  - H2: त्वरित निर्णय गाइड
   - H3: Scheduled Tasks (Cron) बनाम Heartbeat
-  - H2: मुख्य concepts
-  - H3: Scheduled tasks (cron)
+  - H2: मुख्य अवधारणाएँ
+  - H3: निर्धारित tasks (cron)
   - H3: Tasks
   - H3: अनुमानित commitments
   - H3: Task Flow
-  - H3: Standing orders
+  - H3: स्थायी आदेश
   - H3: Hooks
   - H3: Heartbeat
   - H2: वे साथ में कैसे काम करते हैं
@@ -154,180 +154,180 @@ x-i18n:
 
 ## automation/poll.md
 
-- Route: /automation/poll
-- Headings:
+- मार्ग: /automation/poll
+- शीर्षक:
   - H2: संबंधित
 
 ## automation/standing-orders.md
 
-- Route: /automation/standing-orders
-- Headings:
-  - H2: Standing orders क्यों
+- मार्ग: /automation/standing-orders
+- शीर्षक:
+  - H2: स्थायी आदेश क्यों
   - H2: वे कैसे काम करते हैं
-  - H2: Standing order की anatomy
-  - H2: Standing orders और cron jobs
+  - H2: स्थायी आदेश की रचना
+  - H2: स्थायी आदेश और cron jobs
   - H2: उदाहरण
-  - H3: उदाहरण 1: content और social media (साप्ताहिक चक्र)
-  - H3: उदाहरण 2: finance operations (event-triggered)
-  - H3: उदाहरण 3: monitoring और alerts (continuous)
-  - H2: Execute-verify-report pattern
-  - H2: Multi-program architecture
-  - H2: Best practices
+  - H3: उदाहरण 1: कंटेंट और सोशल मीडिया (साप्ताहिक चक्र)
+  - H3: उदाहरण 2: वित्त संचालन (event-triggered)
+  - H3: उदाहरण 3: मॉनिटरिंग और अलर्ट (निरंतर)
+  - H2: execute-verify-report पैटर्न
+  - H2: मल्टी-प्रोग्राम आर्किटेक्चर
+  - H2: सर्वोत्तम अभ्यास
   - H3: करें
   - H3: बचें
   - H2: संबंधित
 
 ## automation/taskflow.md
 
-- Route: /automation/taskflow
-- Headings:
+- मार्ग: /automation/taskflow
+- शीर्षक:
   - H2: Task Flow कब उपयोग करें
-  - H2: Reliable scheduled workflow pattern
-  - H2: Sync modes
+  - H2: विश्वसनीय निर्धारित workflow पैटर्न
+  - H2: Sync मोड
   - H3: Managed mode
   - H3: Mirrored mode
-  - H2: Durable state और revision tracking
-  - H2: Cancel behavior
-  - H2: CLI commands
-  - H2: Flows tasks से कैसे संबंधित हैं
+  - H2: टिकाऊ state और revision tracking
+  - H2: Cancel व्यवहार
+  - H2: CLI कमांड
+  - H2: flows tasks से कैसे संबंधित हैं
   - H2: संबंधित
 
 ## automation/tasks.md
 
-- Route: /automation/tasks
-- Headings:
-  - H2: संक्षेप में
+- मार्ग: /automation/tasks
+- शीर्षक:
+  - H2: TL;DR
   - H2: त्वरित शुरुआत
-  - H2: Task क्या बनाता है
+  - H2: task क्या बनाता है
   - H2: Task lifecycle
-  - H2: Delivery और notifications
-  - H3: Notification policies
-  - H2: CLI reference
+  - H2: डिलीवरी और सूचनाएँ
+  - H3: सूचना नीतियाँ
+  - H2: CLI संदर्भ
   - H2: Chat task board (/tasks)
   - H2: Status integration (task pressure)
-  - H2: Storage और maintenance
-  - H3: Tasks कहाँ रहते हैं
-  - H3: Automatic maintenance
-  - H2: Tasks अन्य systems से कैसे संबंधित हैं
+  - H2: स्टोरेज और रखरखाव
+  - H3: tasks कहाँ रहते हैं
+  - H3: स्वचालित रखरखाव
+  - H2: tasks अन्य systems से कैसे संबंधित हैं
   - H2: संबंधित
 
 ## automation/troubleshooting.md
 
-- Route: /automation/troubleshooting
-- Headings:
+- मार्ग: /automation/troubleshooting
+- शीर्षक:
   - H2: संबंधित
 
 ## automation/webhook.md
 
-- Route: /automation/webhook
-- Headings:
+- मार्ग: /automation/webhook
+- शीर्षक:
   - H2: संबंधित
 
 ## brave-search.md
 
-- Route: /brave-search
-- Headings:
+- मार्ग: /brave-search
+- शीर्षक:
   - H2: संबंधित
 
 ## channels/access-groups.md
 
-- Route: /channels/access-groups
-- Headings:
-  - H2: Static message sender groups
-  - H2: Allowlists से reference groups
-  - H2: Supported message-channel paths
+- मार्ग: /channels/access-groups
+- शीर्षक:
+  - H2: स्थिर message sender groups
+  - H2: allowlists से reference groups
+  - H2: समर्थित message-channel पथ
   - H2: Plugin diagnostics
-  - H2: Discord channel audiences
-  - H2: Security notes
-  - H2: Troubleshooting
+  - H2: Discord चैनल audiences
+  - H2: सुरक्षा नोट्स
+  - H2: समस्या निवारण
 
 ## channels/ambient-room-events.md
 
-- Route: /channels/ambient-room-events
-- Headings:
-  - H2: अनुशंसित setup
+- मार्ग: /channels/ambient-room-events
+- शीर्षक:
+  - H2: अनुशंसित सेटअप
   - H2: क्या बदलता है
   - H2: Discord उदाहरण
   - H2: Slack उदाहरण
   - H2: Telegram उदाहरण
-  - H2: Agent specific policy
-  - H2: Visible reply modes
-  - H2: History
-  - H2: Troubleshooting
+  - H2: एजेंट-विशिष्ट नीति
+  - H2: दृश्य reply modes
+  - H2: इतिहास
+  - H2: समस्या निवारण
   - H2: संबंधित
 
 ## channels/bot-loop-protection.md
 
-- Route: /channels/bot-loop-protection
-- Headings:
+- मार्ग: /channels/bot-loop-protection
+- शीर्षक:
   - H1: Bot loop protection
   - H2: Defaults
-  - H2: Shared defaults configure करें
-  - H2: हर channel या account के लिए override करें
-  - H2: Channel support
+  - H2: साझा defaults कॉन्फ़िगर करें
+  - H2: प्रति चैनल या account override करें
+  - H2: चैनल समर्थन
 
 ## channels/broadcast-groups.md
 
-- Route: /channels/broadcast-groups
-- Headings:
+- मार्ग: /channels/broadcast-groups
+- शीर्षक:
   - H2: अवलोकन
-  - H2: Use cases
-  - H2: Configuration
-  - H3: Basic setup
+  - H2: उपयोग मामले
+  - H2: कॉन्फ़िगरेशन
+  - H3: मूल सेटअप
   - H3: Processing strategy
-  - H3: Complete example
+  - H3: पूरा उदाहरण
   - H2: यह कैसे काम करता है
   - H3: Message flow
   - H3: Session isolation
   - H3: उदाहरण: isolated sessions
-  - H2: Best practices
+  - H2: सर्वोत्तम अभ्यास
   - H2: Compatibility
   - H3: Providers
   - H3: Routing
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H2: उदाहरण
-  - H2: API reference
+  - H2: API संदर्भ
   - H3: Config schema
   - H3: Fields
-  - H2: Limitations
-  - H2: Future enhancements
+  - H2: सीमाएँ
+  - H2: भविष्य के सुधार
   - H2: संबंधित
 
 ## channels/channel-routing.md
 
-- Route: /channels/channel-routing
-- Headings:
+- मार्ग: /channels/channel-routing
+- शीर्षक:
   - H1: Channels और routing
-  - H2: Key terms
+  - H2: मुख्य शब्द
   - H2: Outbound target prefixes
   - H2: Session key shapes (उदाहरण)
   - H2: Main DM route pinning
   - H2: Guarded inbound recording
-  - H2: Routing rules (agent कैसे चुना जाता है)
-  - H2: Broadcast groups (कई agents चलाएँ)
+  - H2: Routing rules (एजेंट कैसे चुना जाता है)
+  - H2: Broadcast groups (कई एजेंट चलाएँ)
   - H2: Config overview
   - H2: Session storage
-  - H2: WebChat behavior
+  - H2: WebChat व्यवहार
   - H2: Reply context
   - H2: संबंधित
 
 ## channels/clickclack.md
 
-- Route: /channels/clickclack
-- Headings:
-  - H2: त्वरित setup
-  - H2: Multiple bots
-  - H2: Targets
-  - H2: Permissions
-  - H2: Troubleshooting
+- मार्ग: /channels/clickclack
+- शीर्षक:
+  - H2: त्वरित सेटअप
+  - H2: कई bots
+  - H2: लक्ष्य
+  - H2: अनुमतियाँ
+  - H2: समस्या निवारण
 
 ## channels/discord.md
 
-- Route: /channels/discord
-- Headings:
-  - H2: त्वरित setup
-  - H2: अनुशंसित: guild workspace setup करें
-  - H2: Runtime model
+- मार्ग: /channels/discord
+- शीर्षक:
+  - H2: त्वरित सेटअप
+  - H2: अनुशंसित: guild workspace सेट करें
+  - H2: Runtime मॉडल
   - H2: Forum channels
   - H2: Interactive components
   - H2: Access control और routing
@@ -338,17 +338,17 @@ x-i18n:
   - H2: Components v2 UI
   - H2: Voice
   - H3: Voice channels
-  - H3: Voice में users का अनुसरण करें
+  - H3: Voice में users को follow करें
   - H3: Voice messages
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H2: Configuration reference
   - H2: Safety और operations
   - H2: संबंधित
 
 ## channels/feishu.md
 
-- Route: /channels/feishu
-- Headings:
+- मार्ग: /channels/feishu
+- शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: Access control
   - H3: Direct messages
@@ -356,17 +356,17 @@ x-i18n:
   - H2: Group configuration examples
   - H3: सभी groups allow करें, @mention आवश्यक नहीं
   - H3: सभी groups allow करें, फिर भी @mention आवश्यक रखें
-  - H3: केवल specific groups allow करें
-  - H3: Group के भीतर senders restrict करें
-  - H2: Group/user IDs प्राप्त करें
+  - H3: केवल विशिष्ट groups allow करें
+  - H3: group के भीतर senders प्रतिबंधित करें
+  - H2: group/user IDs प्राप्त करें
   - H3: Group IDs (chatid, format: ocxxx)
   - H3: User IDs (openid, format: ouxxx)
-  - H2: Common commands
-  - H2: Troubleshooting
-  - H3: Bot group chats में respond नहीं करता
-  - H3: Bot messages receive नहीं करता
+  - H2: सामान्य कमांड
+  - H2: समस्या निवारण
+  - H3: Bot group chats में response नहीं देता
+  - H3: Bot messages प्राप्त नहीं करता
   - H3: QR setup Feishu mobile app में react नहीं करता
-  - H3: App Secret leak हो गया
+  - H3: App Secret लीक हो गया
   - H2: Advanced configuration
   - H3: Multiple accounts
   - H3: Message limits
@@ -374,18 +374,18 @@ x-i18n:
   - H3: Quota optimization
   - H3: ACP sessions
   - H4: Persistent ACP binding
-  - H4: Chat से ACP spawn करें
+  - H4: chat से ACP spawn करें
   - H3: Multi-agent routing
-  - H2: Per-user agent isolation (Dynamic Agent Creation)
-  - H3: त्वरित setup
+  - H2: प्रति-user agent isolation (Dynamic Agent Creation)
+  - H3: त्वरित सेटअप
   - H3: यह कैसे काम करता है
   - H3: Configuration options
   - H3: Session scope
-  - H3: Typical multi-user deployment
+  - H3: सामान्य multi-user deployment
   - H3: Verification
-  - H3: Notes
+  - H3: नोट्स
   - H2: Configuration reference
-  - H2: Supported message types
+  - H2: समर्थित message types
   - H3: Receive
   - H3: Send
   - H3: Threads और replies
@@ -393,41 +393,41 @@ x-i18n:
 
 ## channels/googlechat.md
 
-- Route: /channels/googlechat
-- Headings:
+- मार्ग: /channels/googlechat
+- शीर्षक:
   - H2: Install
-  - H2: त्वरित setup (beginner)
+  - H2: त्वरित सेटअप (आरंभिक)
   - H2: Google Chat में जोड़ें
   - H2: Public URL (केवल-Webhook)
   - H3: विकल्प A: Tailscale Funnel (अनुशंसित)
   - H3: विकल्प B: Reverse Proxy (Caddy)
   - H3: विकल्प C: Cloudflare Tunnel
   - H2: यह कैसे काम करता है
-  - H2: Targets
+  - H2: लक्ष्य
   - H2: Config highlights
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H3: 405 Method Not Allowed
-  - H3: Other issues
+  - H3: अन्य समस्याएँ
   - H2: संबंधित
 
 ## channels/group-messages.md
 
-- Route: /channels/group-messages
-- Headings:
-  - H2: Behavior
+- मार्ग: /channels/group-messages
+- शीर्षक:
+  - H2: व्यवहार
   - H2: Config example (WhatsApp)
   - H3: Activation command (केवल-owner)
-  - H2: कैसे उपयोग करें
+  - H2: उपयोग कैसे करें
   - H2: Testing / verification
-  - H2: Known considerations
+  - H2: ज्ञात विचारणीय बातें
   - H2: संबंधित
 
 ## channels/groups.md
 
-- Route: /channels/groups
-- Headings:
-  - H2: Beginner intro (2 मिनट)
-  - H2: Visible replies
+- मार्ग: /channels/groups
+- शीर्षक:
+  - H2: शुरुआती परिचय (2 मिनट)
+  - H2: दृश्य replies
   - H2: Context visibility और allowlists
   - H2: Session keys
   - H2: Pattern: personal DMs + public groups (single agent)
@@ -446,15 +446,15 @@ x-i18n:
 
 ## channels/imessage-from-bluebubbles.md
 
-- Route: /channels/imessage-from-bluebubbles
-- Headings:
+- मार्ग: /channels/imessage-from-bluebubbles
+- शीर्षक:
   - H2: Migration checklist
-  - H2: यह migration कब उचित है
+  - H2: यह migration कब सार्थक है
   - H2: imsg क्या करता है
   - H2: शुरू करने से पहले
   - H2: Config translation
   - H2: Group registry footgun
-  - H2: Step-by-step
+  - H2: चरण-दर-चरण
   - H2: Action parity at a glance
   - H2: Pairing, sessions, और ACP bindings
   - H2: कोई rollback channel नहीं
@@ -462,9 +462,9 @@ x-i18n:
 
 ## channels/imessage.md
 
-- Route: /channels/imessage
-- Headings:
-  - H2: त्वरित setup
+- मार्ग: /channels/imessage
+- शीर्षक:
+  - H2: त्वरित सेटअप
   - H2: Requirements और permissions (macOS)
   - H2: imsg private API सक्षम करना
   - H3: Setup
@@ -476,49 +476,49 @@ x-i18n:
   - H2: Private API actions
   - H2: Config writes
   - H2: Coalescing split-send DMs (command + URL in one composition)
-  - H3: Scenarios और agent क्या देखता है
-  - H2: Bridge या gateway restart के बाद inbound recovery
+  - H3: Scenarios और एजेंट क्या देखता है
+  - H2: bridge या Gateway restart के बाद inbound recovery
   - H3: Operator-visible signal
   - H3: Migration
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H2: Configuration reference pointers
   - H2: संबंधित
 
 ## channels/index.md
 
-- Route: /channels
-- Headings:
+- मार्ग: /channels
+- शीर्षक:
   - H2: Delivery notes
-  - H2: Supported channels
-  - H2: Notes
+  - H2: समर्थित channels
+  - H2: नोट्स
 
 ## channels/irc.md
 
-- Route: /channels/irc
-- Headings:
+- मार्ग: /channels/irc
+- शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: Security defaults
   - H2: Access control
   - H3: Common gotcha: allowFrom DMs के लिए है, channels के लिए नहीं
   - H2: Reply triggering (mentions)
   - H2: Security note (public channels के लिए अनुशंसित)
-  - H3: Channel में सभी के लिए same tools
-  - H3: Sender के अनुसार अलग tools (owner को अधिक power मिलती है)
+  - H3: channel में सभी के लिए वही tools
+  - H3: प्रति sender अलग tools (owner को अधिक power मिलती है)
   - H2: NickServ
   - H2: Environment variables
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H2: संबंधित
 
 ## channels/line.md
 
-- मार्ग: /channels/line
+- रूट: /channels/line
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: सेटअप
   - H2: कॉन्फ़िगर करें
   - H2: एक्सेस नियंत्रण
   - H2: संदेश व्यवहार
-  - H2: चैनल डेटा (समृद्ध संदेश)
+  - H2: चैनल डेटा (रिच संदेश)
   - H2: ACP समर्थन
   - H2: आउटबाउंड मीडिया
   - H2: समस्या निवारण
@@ -526,7 +526,7 @@ x-i18n:
 
 ## channels/location.md
 
-- मार्ग: /channels/location
+- रूट: /channels/location
 - शीर्षक:
   - H2: टेक्स्ट फ़ॉर्मैटिंग
   - H2: संदर्भ फ़ील्ड
@@ -535,24 +535,24 @@ x-i18n:
 
 ## channels/matrix-migration.md
 
-- मार्ग: /channels/matrix-migration
+- रूट: /channels/matrix-migration
 - शीर्षक:
   - H2: माइग्रेशन अपने-आप क्या करता है
   - H2: माइग्रेशन अपने-आप क्या नहीं कर सकता
   - H2: अनुशंसित अपग्रेड फ़्लो
   - H2: एन्क्रिप्टेड माइग्रेशन कैसे काम करता है
   - H2: सामान्य संदेश और उनका अर्थ
-  - H3: अपग्रेड और डिटेक्शन संदेश
+  - H3: अपग्रेड और पहचान संदेश
   - H3: एन्क्रिप्टेड-स्टेट रिकवरी संदेश
-  - H3: मैन्युअल रिकवरी संदेश
+  - H3: मैनुअल रिकवरी संदेश
   - H3: कस्टम Plugin इंस्टॉल संदेश
-  - H2: यदि एन्क्रिप्टेड इतिहास फिर भी वापस नहीं आता
-  - H2: यदि आप भविष्य के संदेशों के लिए नए सिरे से शुरू करना चाहते हैं
+  - H2: अगर एन्क्रिप्टेड इतिहास फिर भी वापस नहीं आता
+  - H2: अगर आप भविष्य के संदेशों के लिए नए सिरे से शुरू करना चाहते हैं
   - H2: संबंधित
 
 ## channels/matrix-presentation.md
 
-- मार्ग: /channels/matrix-presentation
+- रूट: /channels/matrix-presentation
 - शीर्षक:
   - H2: इवेंट सामग्री
   - H2: फ़ॉलबैक व्यवहार
@@ -563,7 +563,7 @@ x-i18n:
 
 ## channels/matrix-push-rules.md
 
-- मार्ग: /channels/matrix-push-rules
+- रूट: /channels/matrix-push-rules
 - शीर्षक:
   - H2: पूर्वापेक्षाएँ
   - H2: चरण
@@ -573,7 +573,7 @@ x-i18n:
 
 ## channels/matrix.md
 
-- मार्ग: /channels/matrix
+- रूट: /channels/matrix
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: सेटअप
@@ -583,20 +583,20 @@ x-i18n:
   - H3: Allowlist लक्ष्य फ़ॉर्मैट
   - H3: खाता ID सामान्यीकरण
   - H3: कैश किए गए क्रेडेंशियल
-  - H3: पर्यावरण चर
+  - H3: एनवायरनमेंट वेरिएबल
   - H2: कॉन्फ़िगरेशन उदाहरण
-  - H2: स्ट्रीमिंग पूर्वावलोकन
-  - H2: वॉइस संदेश
+  - H2: स्ट्रीमिंग प्रीव्यू
+  - H2: वॉयस संदेश
   - H2: अनुमोदन मेटाडेटा
-  - H3: शांत फ़ाइनलाइज़्ड पूर्वावलोकनों के लिए सेल्फ़-होस्टेड पुश नियम
+  - H3: शांत अंतिम प्रीव्यू के लिए सेल्फ-होस्टेड पुश नियम
   - H2: बॉट-से-बॉट रूम
   - H2: एन्क्रिप्शन और सत्यापन
   - H3: एन्क्रिप्शन सक्षम करें
-  - H3: स्थिति और ट्रस्ट संकेत
-  - H3: इस डिवाइस को रिकवरी कुंजी से सत्यापित करें
-  - H3: क्रॉस-साइनिंग बूटस्ट्रैप या रिपेयर करें
+  - H3: स्थिति और भरोसे के संकेत
+  - H3: रिकवरी कुंजी से इस डिवाइस को सत्यापित करें
+  - H3: क्रॉस-साइनिंग को बूटस्ट्रैप या रिपेयर करें
   - H3: रूम-की बैकअप
-  - H3: सत्यापनों को सूचीबद्ध करना, अनुरोध करना और उनका जवाब देना
+  - H3: सत्यापन सूचीबद्ध करना, अनुरोध करना और जवाब देना
   - H3: मल्टी-अकाउंट नोट्स
   - H2: प्रोफ़ाइल प्रबंधन
   - H2: थ्रेड
@@ -614,50 +614,50 @@ x-i18n:
   - H2: स्लैश कमांड
   - H2: मल्टी-अकाउंट
   - H2: निजी/LAN होमसर्वर
-  - H2: Matrix ट्रैफ़िक को प्रॉक्सी करना
-  - H2: लक्ष्य रिज़ॉल्यूशन
+  - H2: Matrix ट्रैफ़िक प्रॉक्सी करना
+  - H2: लक्ष्य समाधान
   - H2: कॉन्फ़िगरेशन संदर्भ
   - H3: खाता और कनेक्शन
   - H3: एन्क्रिप्शन
   - H3: एक्सेस और नीति
   - H3: रिप्लाई व्यवहार
-  - H3: प्रतिक्रिया सेटिंग्स
+  - H3: प्रतिक्रिया सेटिंग
   - H3: टूलिंग और प्रति-रूम ओवरराइड
-  - H3: Exec अनुमोदन सेटिंग्स
+  - H3: Exec अनुमोदन सेटिंग
   - H2: संबंधित
 
 ## channels/mattermost.md
 
-- मार्ग: /channels/mattermost
+- रूट: /channels/mattermost
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: त्वरित सेटअप
   - H2: नेटिव स्लैश कमांड
-  - H2: पर्यावरण चर (डिफ़ॉल्ट खाता)
+  - H2: एनवायरनमेंट वेरिएबल (डिफ़ॉल्ट खाता)
   - H2: चैट मोड
   - H2: थ्रेडिंग और सेशन
-  - H2: एक्सेस नियंत्रण (DM)
+  - H2: एक्सेस नियंत्रण (DMs)
   - H2: चैनल (समूह)
-  - H2: आउटबाउंड डिलीवरी के लक्ष्य
-  - H2: DM चैनल रीट्राई
-  - H2: पूर्वावलोकन स्ट्रीमिंग
+  - H2: आउटबाउंड डिलीवरी के लिए लक्ष्य
+  - H2: DM चैनल पुनःप्रयास
+  - H2: प्रीव्यू स्ट्रीमिंग
   - H2: प्रतिक्रियाएँ (संदेश टूल)
   - H2: इंटरैक्टिव बटन (संदेश टूल)
   - H3: डायरेक्ट API इंटीग्रेशन (बाहरी स्क्रिप्ट)
-  - H2: डायरेक्टरी अडैप्टर
+  - H2: डायरेक्टरी एडाप्टर
   - H2: मल्टी-अकाउंट
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## channels/msteams.md
 
-- मार्ग: /channels/msteams
+- रूट: /channels/msteams
 - शीर्षक:
   - H2: बंडल किया गया Plugin
   - H2: त्वरित सेटअप
   - H2: लक्ष्य
-  - H2: कॉन्फ़िग राइट्स
-  - H2: एक्सेस नियंत्रण (DM + समूह)
+  - H2: कॉन्फ़िग लेखन
+  - H2: एक्सेस नियंत्रण (DMs + समूह)
   - H3: यह कैसे काम करता है
   - H3: चरण 1: Azure Bot बनाएँ
   - H3: चरण 2: क्रेडेंशियल प्राप्त करें
@@ -666,18 +666,18 @@ x-i18n:
   - H3: चरण 5: Teams App Manifest बनाएँ
   - H3: चरण 6: OpenClaw कॉन्फ़िगर करें
   - H3: चरण 7: Gateway चलाएँ
-  - H2: फ़ेडरेटेड प्रमाणीकरण (सर्टिफ़िकेट और मैनेज्ड आइडेंटिटी)
-  - H3: विकल्प A: सर्टिफ़िकेट-आधारित प्रमाणीकरण
+  - H2: फ़ेडरेटेड प्रमाणीकरण (प्रमाणपत्र और मैनेज्ड आइडेंटिटी)
+  - H3: विकल्प A: प्रमाणपत्र-आधारित प्रमाणीकरण
   - H3: विकल्प B: Azure Managed Identity
   - H3: AKS Workload Identity सेटअप
-  - H3: Auth प्रकार तुलना
-  - H2: स्थानीय डेवलपमेंट (टनलिंग)
-  - H2: Bot का परीक्षण
-  - H2: पर्यावरण चर
-  - H2: सदस्य जानकारी एक्शन
+  - H3: प्रमाणीकरण प्रकार तुलना
+  - H2: स्थानीय विकास (टनलिंग)
+  - H2: Bot की टेस्टिंग
+  - H2: एनवायरनमेंट वेरिएबल
+  - H2: सदस्य जानकारी कार्रवाई
   - H2: इतिहास संदर्भ
   - H2: वर्तमान Teams RSC अनुमतियाँ (मैनिफ़ेस्ट)
-  - H2: उदाहरण Teams मैनिफ़ेस्ट (रेडैक्टेड)
+  - H2: उदाहरण Teams मैनिफ़ेस्ट (संशोधित)
   - H3: मैनिफ़ेस्ट सावधानियाँ (अनिवार्य फ़ील्ड)
   - H3: मौजूदा ऐप अपडेट करना
   - H2: क्षमताएँ: केवल RSC बनाम Graph
@@ -692,20 +692,20 @@ x-i18n:
   - H2: कॉन्फ़िगरेशन
   - H2: रूटिंग और सेशन
   - H2: रिप्लाई शैली: थ्रेड बनाम पोस्ट
-  - H3: रिज़ॉल्यूशन प्राथमिकता
+  - H3: समाधान प्राथमिकता
   - H3: थ्रेड संदर्भ संरक्षण
-  - H2: अटैचमेंट और चित्र
+  - H2: अटैचमेंट और इमेज
   - H2: समूह चैट में फ़ाइलें भेजना
-  - H3: समूह चैट के लिए SharePoint क्यों चाहिए
+  - H3: समूह चैट को SharePoint की आवश्यकता क्यों होती है
   - H3: सेटअप
-  - H3: शेयरिंग व्यवहार
+  - H3: साझा करने का व्यवहार
   - H3: फ़ॉलबैक व्यवहार
-  - H3: फ़ाइलें संग्रहित स्थान
+  - H3: फ़ाइलों का संग्रहित स्थान
   - H2: पोल (Adaptive Cards)
   - H2: प्रेज़ेंटेशन कार्ड
   - H2: लक्ष्य फ़ॉर्मैट
   - H2: प्रोएक्टिव मैसेजिंग
-  - H2: टीम और चैनल ID (सामान्य चूक)
+  - H2: टीम और चैनल IDs (सामान्य चूक)
   - H2: निजी चैनल
   - H2: समस्या निवारण
   - H3: सामान्य समस्याएँ
@@ -716,12 +716,12 @@ x-i18n:
 
 ## channels/nextcloud-talk.md
 
-- मार्ग: /channels/nextcloud-talk
+- रूट: /channels/nextcloud-talk
 - शीर्षक:
   - H2: बंडल किया गया Plugin
   - H2: त्वरित सेटअप (शुरुआती)
   - H2: नोट्स
-  - H2: एक्सेस नियंत्रण (DM)
+  - H2: एक्सेस नियंत्रण (DMs)
   - H2: रूम (समूह)
   - H2: क्षमताएँ
   - H2: कॉन्फ़िगरेशन संदर्भ (Nextcloud Talk)
@@ -729,7 +729,7 @@ x-i18n:
 
 ## channels/nostr.md
 
-- मार्ग: /channels/nostr
+- रूट: /channels/nostr
 - शीर्षक:
   - H2: बंडल किया गया Plugin
   - H3: पुराने/कस्टम इंस्टॉल
@@ -743,36 +743,36 @@ x-i18n:
   - H2: कुंजी फ़ॉर्मैट
   - H2: रिले
   - H2: प्रोटोकॉल समर्थन
-  - H2: परीक्षण
+  - H2: टेस्टिंग
   - H3: स्थानीय रिले
-  - H3: मैन्युअल परीक्षण
+  - H3: मैनुअल टेस्ट
   - H2: समस्या निवारण
   - H3: संदेश प्राप्त नहीं हो रहे
-  - H3: जवाब नहीं भेजे जा रहे
-  - H3: डुप्लिकेट जवाब
+  - H3: प्रतिक्रियाएँ भेजी नहीं जा रहीं
+  - H3: डुप्लिकेट प्रतिक्रियाएँ
   - H2: सुरक्षा
   - H2: सीमाएँ (MVP)
   - H2: संबंधित
 
 ## channels/pairing.md
 
-- मार्ग: /channels/pairing
+- रूट: /channels/pairing
 - शीर्षक:
   - H2: 1) DM पेयरिंग (इनबाउंड चैट एक्सेस)
-  - H3: भेजने वाले को अनुमोदित करें
-  - H3: पुन: उपयोग योग्य भेजने वाले समूह
+  - H3: प्रेषक को अनुमोदित करें
+  - H3: पुनःउपयोग योग्य प्रेषक समूह
   - H3: स्टेट कहाँ रहता है
-  - H2: 2) Node डिवाइस पेयरिंग (iOS/Android/macOS/headless नोड)
-  - H3: Telegram के माध्यम से पेयर करें (iOS के लिए अनुशंसित)
-  - H3: Node डिवाइस को अनुमोदित करें
-  - H3: वैकल्पिक trusted-CIDR Node ऑटो-अप्रूव
+  - H2: 2) Node डिवाइस पेयरिंग (iOS/Android/macOS/हेडलेस नोड्स)
+  - H3: Telegram के ज़रिए पेयर करें (iOS के लिए अनुशंसित)
+  - H3: नोड डिवाइस को अनुमोदित करें
+  - H3: वैकल्पिक trusted-CIDR नोड ऑटो-अप्रूव
   - H3: Node पेयरिंग स्टेट स्टोरेज
   - H3: नोट्स
   - H2: संबंधित दस्तावेज़
 
 ## channels/qa-channel.md
 
-- मार्ग: /channels/qa-channel
+- रूट: /channels/qa-channel
 - शीर्षक:
   - H2: यह क्या करता है
   - H2: कॉन्फ़िग
@@ -781,14 +781,14 @@ x-i18n:
 
 ## channels/qqbot.md
 
-- मार्ग: /channels/qqbot
+- रूट: /channels/qqbot
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: सेटअप
   - H2: कॉन्फ़िगर करें
   - H3: मल्टी-अकाउंट सेटअप
   - H3: समूह चैट
-  - H3: वॉइस (STT / TTS)
+  - H3: वॉयस (STT / TTS)
   - H2: लक्ष्य फ़ॉर्मैट
   - H2: स्लैश कमांड
   - H2: इंजन आर्किटेक्चर
@@ -798,7 +798,7 @@ x-i18n:
 
 ## channels/raft.md
 
-- मार्ग: /channels/raft
+- रूट: /channels/raft
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: पूर्वापेक्षाएँ
@@ -810,18 +810,18 @@ x-i18n:
 
 ## channels/signal.md
 
-- मार्ग: /channels/signal
+- रूट: /channels/signal
 - शीर्षक:
   - H2: पूर्वापेक्षाएँ
   - H2: त्वरित सेटअप (शुरुआती)
   - H2: यह क्या है
-  - H2: कॉन्फ़िग राइट्स
+  - H2: कॉन्फ़िग लेखन
   - H2: नंबर मॉडल (महत्वपूर्ण)
   - H2: सेटअप पथ A: मौजूदा Signal खाते को लिंक करें (QR)
   - H2: सेटअप पथ B: समर्पित बॉट नंबर रजिस्टर करें (SMS, Linux)
   - H2: बाहरी डेमन मोड (httpUrl)
   - H2: कंटेनर मोड (bbernhard/signal-cli-rest-api)
-  - H2: एक्सेस नियंत्रण (DM + समूह)
+  - H2: एक्सेस नियंत्रण (DMs + समूह)
   - H2: यह कैसे काम करता है (व्यवहार)
   - H2: मीडिया + सीमाएँ
   - H2: टाइपिंग + रीड रसीदें
@@ -835,7 +835,7 @@ x-i18n:
 
 ## channels/slack.md
 
-- मार्ग: /channels/slack
+- रूट: /channels/slack
 - शीर्षक:
   - H2: Socket Mode या HTTP Request URLs चुनना
   - H3: रिले मोड
@@ -843,22 +843,22 @@ x-i18n:
   - H2: त्वरित सेटअप
   - H2: Socket Mode ट्रांसपोर्ट ट्यूनिंग
   - H2: मैनिफ़ेस्ट और स्कोप चेकलिस्ट
-  - H3: अतिरिक्त मैनिफ़ेस्ट सेटिंग्स
+  - H3: अतिरिक्त मैनिफ़ेस्ट सेटिंग
   - H2: टोकन मॉडल
-  - H2: एक्शन और गेट
+  - H2: कार्रवाइयाँ और गेट
   - H2: एक्सेस नियंत्रण और रूटिंग
-  - H2: थ्रेडिंग, सेशन, और रिप्लाई टैग
+  - H2: थ्रेडिंग, सेशन और रिप्लाई टैग
   - H2: Ack प्रतिक्रियाएँ
-  - H3: Emoji (ackReaction)
+  - H3: इमोजी (ackReaction)
   - H3: स्कोप (messages.ackReactionScope)
   - H2: टेक्स्ट स्ट्रीमिंग
   - H2: टाइपिंग प्रतिक्रिया फ़ॉलबैक
-  - H2: मीडिया, चंकिंग, और डिलीवरी
+  - H2: मीडिया, चंकिंग और डिलीवरी
   - H2: कमांड और स्लैश व्यवहार
-  - H2: इंटरैक्टिव जवाब
+  - H2: इंटरैक्टिव रिप्लाई
   - H3: Plugin-स्वामित्व वाले मोडल सबमिशन
   - H2: Slack में नेटिव अनुमोदन
-  - H2: इवेंट और ऑपरेशनल व्यवहार
+  - H2: इवेंट और परिचालन व्यवहार
   - H2: कॉन्फ़िगरेशन संदर्भ
   - H2: समस्या निवारण
   - H2: अटैचमेंट विज़न संदर्भ
@@ -866,43 +866,43 @@ x-i18n:
   - H3: इनबाउंड पाइपलाइन
   - H3: थ्रेड-रूट अटैचमेंट इनहेरिटेंस
   - H3: मल्टी-अटैचमेंट हैंडलिंग
-  - H3: आकार, डाउनलोड, और मॉडल सीमाएँ
+  - H3: आकार, डाउनलोड और मॉडल सीमाएँ
   - H3: ज्ञात सीमाएँ
   - H3: संबंधित दस्तावेज़
   - H2: संबंधित
 
 ## channels/sms.md
 
-- मार्ग: /channels/sms
+- रूट: /channels/sms
 - शीर्षक:
   - H2: शुरू करने से पहले
   - H2: त्वरित सेटअप
   - H2: कॉन्फ़िगरेशन उदाहरण
   - H3: कॉन्फ़िग फ़ाइल
-  - H3: पर्यावरण चर
-  - H3: SecretRef auth टोकन
-  - H3: Allowlist-केवल निजी नंबर
-  - H3: Messaging Service भेजने वाला
+  - H3: एनवायरनमेंट वेरिएबल
+  - H3: SecretRef प्रमाणीकरण टोकन
+  - H3: केवल-Allowlist निजी नंबर
+  - H3: Messaging Service प्रेषक
   - H3: डिफ़ॉल्ट आउटबाउंड लक्ष्य
   - H2: एक्सेस नियंत्रण
   - H2: SMS भेजना
   - H2: सेटअप सत्यापित करें
-  - H3: macOS iMessage/SMS से एंड-टू-एंड परीक्षण
+  - H3: macOS iMessage/SMS से एंड-टू-एंड टेस्ट
   - H2: Webhook सुरक्षा
   - H2: मल्टी-अकाउंट कॉन्फ़िग
   - H2: समस्या निवारण
-  - H3: Twilio 403 लौटाता है या OpenClaw Webhook अस्वीकार करता है
+  - H3: Twilio 403 लौटाता है या OpenClaw Webhook को अस्वीकार करता है
   - H3: कोई पेयरिंग अनुरोध दिखाई नहीं देता
   - H3: आउटबाउंड भेजना विफल होता है
   - H3: संदेश आते हैं लेकिन एजेंट जवाब नहीं देता
 
 ## channels/synology-chat.md
 
-- मार्ग: /channels/synology-chat
+- रूट: /channels/synology-chat
 - शीर्षक:
   - H2: बंडल किया गया Plugin
   - H2: त्वरित सेटअप
-  - H2: पर्यावरण चर
+  - H2: एनवायरनमेंट वेरिएबल
   - H2: DM नीति और एक्सेस नियंत्रण
   - H2: आउटबाउंड डिलीवरी
   - H2: मल्टी-अकाउंट
@@ -912,14 +912,14 @@ x-i18n:
 
 ## channels/telegram.md
 
-- मार्ग: /channels/telegram
+- रूट: /channels/telegram
 - शीर्षक:
   - H2: त्वरित सेटअप
-  - H2: Telegram साइड सेटिंग्स
+  - H2: Telegram साइड सेटिंग
   - H2: एक्सेस नियंत्रण और सक्रियण
   - H3: समूह बॉट पहचान
   - H2: रनटाइम व्यवहार
-  - H2: फीचर संदर्भ
+  - H2: फ़ीचर संदर्भ
   - H2: त्रुटि रिप्लाई नियंत्रण
   - H2: समस्या निवारण
   - H2: कॉन्फ़िगरेशन संदर्भ
@@ -927,17 +927,17 @@ x-i18n:
 
 ## channels/tlon.md
 
-- मार्ग: /channels/tlon
+- रूट: /channels/tlon
 - शीर्षक:
   - H2: बंडल किया गया Plugin
   - H2: सेटअप
   - H2: निजी/LAN शिप
   - H2: समूह चैनल
   - H2: एक्सेस नियंत्रण
-  - H2: स्वामी और अनुमोदन प्रणाली
-  - H2: ऑटो-अक्सेप्ट सेटिंग्स
+  - H2: स्वामी और अनुमोदन सिस्टम
+  - H2: ऑटो-एक्सेप्ट सेटिंग
   - H2: डिलीवरी लक्ष्य (CLI/cron)
-  - H2: बंडल किया गया skill
+  - H2: बंडल की गई skill
   - H2: क्षमताएँ
   - H2: समस्या निवारण
   - H2: कॉन्फ़िगरेशन संदर्भ
@@ -946,7 +946,7 @@ x-i18n:
 
 ## channels/troubleshooting.md
 
-- मार्ग: /channels/troubleshooting
+- रूट: /channels/troubleshooting
 - शीर्षक:
   - H2: कमांड लैडर
   - H2: अपडेट के बाद
@@ -977,18 +977,18 @@ x-i18n:
   - H2: यह क्या है
   - H2: सेटअप (विस्तृत)
   - H3: क्रेडेंशियल जनरेट करें
-  - H3: बॉट कॉन्फ़िगर करें
-  - H3: अभिगम नियंत्रण (अनुशंसित)
-  - H2: टोकन रिफ्रेश (वैकल्पिक)
-  - H2: बहु-खाता समर्थन
-  - H2: अभिगम नियंत्रण
+  - H3: bot कॉन्फ़िगर करें
+  - H3: एक्सेस नियंत्रण (अनुशंसित)
+  - H2: Token रिफ़्रेश (वैकल्पिक)
+  - H2: मल्टी-अकाउंट समर्थन
+  - H2: एक्सेस नियंत्रण
   - H2: समस्या निवारण
-  - H2: कॉन्फ़िगरेशन
-  - H3: खाता कॉन्फ़िगरेशन
+  - H2: Config
+  - H3: अकाउंट Config
   - H3: प्रदाता विकल्प
-  - H2: टूल कार्रवाइयाँ
+  - H2: टूल कार्रवाइयां
   - H2: सुरक्षा और संचालन
-  - H2: सीमाएँ
+  - H2: सीमाएं
   - H2: संबंधित
 
 ## channels/wechat.md
@@ -998,12 +998,12 @@ x-i18n:
   - H2: नामकरण
   - H2: यह कैसे काम करता है
   - H2: इंस्टॉल करें
-  - H2: लॉगिन
-  - H2: अभिगम नियंत्रण
+  - H2: Login
+  - H2: एक्सेस नियंत्रण
   - H2: संगतता
-  - H2: साइडकार प्रक्रिया
+  - H2: Sidecar प्रक्रिया
   - H2: समस्या निवारण
-  - H2: संबंधित दस्तावेज़
+  - H2: संबंधित docs
 
 ## channels/whatsapp.md
 
@@ -1012,23 +1012,23 @@ x-i18n:
   - H2: इंस्टॉल करें (मांग पर)
   - H2: त्वरित सेटअप
   - H2: डिप्लॉयमेंट पैटर्न
-  - H2: रनटाइम मॉडल
-  - H2: स्वीकृति प्रॉम्प्ट
-  - H2: Plugin हुक और गोपनीयता
-  - H2: अभिगम नियंत्रण और सक्रियण
-  - H2: कॉन्फ़िगर किए गए ACP बाइंडिंग
-  - H2: निजी-नंबर और स्वयं-चैट व्यवहार
-  - H2: संदेश सामान्यीकरण और संदर्भ
-  - H2: डिलीवरी, चंकिंग और मीडिया
-  - H2: जवाब उद्धरण
-  - H2: प्रतिक्रिया स्तर
-  - H2: पावती प्रतिक्रियाएँ
-  - H2: लाइफ़साइकल स्थिति प्रतिक्रियाएँ
-  - H2: बहु-खाता और क्रेडेंशियल
-  - H2: टूल, कार्रवाइयाँ, और कॉन्फ़िगरेशन लिखना
+  - H2: Runtime मॉडल
+  - H2: Approval प्रॉम्प्ट
+  - H2: Plugin hooks और गोपनीयता
+  - H2: एक्सेस नियंत्रण और सक्रियण
+  - H2: कॉन्फ़िगर किए गए ACP bindings
+  - H2: निजी-नंबर और self-chat व्यवहार
+  - H2: Message normalization और context
+  - H2: Delivery, chunking, और media
+  - H2: Reply quoting
+  - H2: Reaction स्तर
+  - H2: Acknowledgment reactions
+  - H2: Lifecycle status reactions
+  - H2: मल्टी-अकाउंट और क्रेडेंशियल
+  - H2: Tools, actions, और Config writes
   - H2: समस्या निवारण
-  - H2: सिस्टम प्रॉम्प्ट
-  - H2: कॉन्फ़िगरेशन संदर्भ संकेतक
+  - H2: System prompts
+  - H2: Configuration reference pointers
   - H2: संबंधित
 
 ## channels/yuanbao.md
@@ -1036,36 +1036,36 @@ x-i18n:
 - मार्ग: /channels/yuanbao
 - शीर्षक:
   - H2: त्वरित शुरुआत
-  - H3: इंटरैक्टिव सेटअप (विकल्प)
-  - H2: अभिगम नियंत्रण
-  - H3: सीधे संदेश
-  - H3: समूह चैट
-  - H2: कॉन्फ़िगरेशन उदाहरण
-  - H3: खुली DM नीति के साथ बुनियादी सेटअप
-  - H3: DM को विशिष्ट उपयोगकर्ताओं तक सीमित करें
-  - H3: समूहों में @mention आवश्यकता अक्षम करें
-  - H3: आउटबाउंड संदेश डिलीवरी अनुकूलित करें
-  - H3: मर्ज-टेक्स्ट रणनीति ट्यून करें
-  - H2: सामान्य कमांड
+  - H3: Interactive setup (विकल्प)
+  - H2: एक्सेस नियंत्रण
+  - H3: Direct messages
+  - H3: Group chats
+  - H2: Configuration उदाहरण
+  - H3: open DM नीति के साथ बुनियादी सेटअप
+  - H3: DMs को विशिष्ट users तक सीमित करें
+  - H3: Groups में @mention आवश्यकता अक्षम करें
+  - H3: Outbound message delivery अनुकूलित करें
+  - H3: merge-text रणनीति ट्यून करें
+  - H2: सामान्य commands
   - H2: समस्या निवारण
-  - H3: बॉट समूह चैट में जवाब नहीं देता
-  - H3: बॉट संदेश प्राप्त नहीं करता
-  - H3: बॉट खाली या फ़ॉलबैक जवाब भेजता है
-  - H3: App Secret लीक हो गया
-  - H2: उन्नत कॉन्फ़िगरेशन
-  - H3: कई खाते
-  - H3: संदेश सीमाएँ
-  - H3: स्ट्रीमिंग
-  - H3: समूह चैट इतिहास संदर्भ
-  - H3: रिप्लाई-टू मोड
-  - H3: Markdown संकेत इंजेक्शन
-  - H3: डीबग मोड
-  - H3: बहु-एजेंट रूटिंग
-  - H2: कॉन्फ़िगरेशन संदर्भ
-  - H2: समर्थित संदेश प्रकार
+  - H3: Bot group chats में जवाब नहीं देता
+  - H3: Bot messages प्राप्त नहीं करता
+  - H3: Bot खाली या fallback replies भेजता है
+  - H3: App Secret लीक हुआ
+  - H2: उन्नत configuration
+  - H3: कई अकाउंट
+  - H3: Message सीमाएं
+  - H3: Streaming
+  - H3: Group chat history context
+  - H3: Reply-to mode
+  - H3: Markdown hint injection
+  - H3: Debug mode
+  - H3: Multi-agent routing
+  - H2: Configuration reference
+  - H2: समर्थित message types
   - H3: प्राप्त करें
   - H3: भेजें
-  - H3: थ्रेड और जवाब
+  - H3: Threads और replies
   - H2: संबंधित
 
 ## channels/zalo.md
@@ -1075,20 +1075,20 @@ x-i18n:
   - H2: बंडल किया गया Plugin
   - H2: त्वरित सेटअप (शुरुआती)
   - H2: यह क्या है
-  - H2: सेटअप (तेज़ पथ)
-  - H3: 1) बॉट टोकन बनाएँ (Zalo Bot Platform)
-  - H3: 2) टोकन कॉन्फ़िगर करें (env या config)
+  - H2: सेटअप (तेज़ रास्ता)
+  - H3: 1) bot token बनाएं (Zalo Bot Platform)
+  - H3: 2) token कॉन्फ़िगर करें (env या Config)
   - H2: यह कैसे काम करता है (व्यवहार)
-  - H2: सीमाएँ
-  - H2: अभिगम नियंत्रण (DMs)
-  - H3: DM अभिगम
-  - H2: अभिगम नियंत्रण (समूह)
-  - H2: लॉन्ग-पोलिंग बनाम Webhook
-  - H2: समर्थित संदेश प्रकार
-  - H2: क्षमताएँ
-  - H2: डिलीवरी लक्ष्य (CLI/cron)
+  - H2: सीमाएं
+  - H2: एक्सेस नियंत्रण (DMs)
+  - H3: DM एक्सेस
+  - H2: एक्सेस नियंत्रण (Groups)
+  - H2: Long-polling बनाम Webhook
+  - H2: समर्थित message types
+  - H2: क्षमताएं
+  - H2: Delivery targets (CLI/Cron)
   - H2: समस्या निवारण
-  - H2: कॉन्फ़िगरेशन संदर्भ (Zalo)
+  - H2: Configuration reference (Zalo)
   - H2: संबंधित
 
 ## channels/zaloclawbot.md
@@ -1096,15 +1096,15 @@ x-i18n:
 - मार्ग: /channels/zaloclawbot
 - शीर्षक:
   - H2: संगतता
-  - H2: पूर्वापेक्षाएँ
-  - H2: ऑनबोर्ड के साथ इंस्टॉल करें (अनुशंसित)
+  - H2: पूर्वापेक्षाएं
+  - H2: onboard के साथ इंस्टॉल करें (अनुशंसित)
   - H2: मैनुअल इंस्टॉलेशन
   - H3: 1. Plugin इंस्टॉल करें
-  - H3: 2. config में Plugin सक्षम करें
-  - H3: 3. QR कोड जनरेट करें और लॉगिन करें
-  - H3: 4. gateway पुनः शुरू करें
+  - H3: 2. Config में Plugin सक्षम करें
+  - H3: 3. QR code जनरेट करें और log in करें
+  - H3: 4. Gateway पुनरारंभ करें
   - H2: यह कैसे काम करता है
-  - H2: आंतरिक कार्यप्रणाली
+  - H2: पर्दे के पीछे
   - H2: समस्या निवारण
 
 ## channels/zalouser.md
@@ -1115,14 +1115,14 @@ x-i18n:
   - H2: त्वरित सेटअप (शुरुआती)
   - H2: यह क्या है
   - H2: नामकरण
-  - H2: ID खोजना (निर्देशिका)
-  - H2: सीमाएँ
-  - H2: अभिगम नियंत्रण (DMs)
-  - H2: समूह अभिगम (वैकल्पिक)
-  - H3: समूह उल्लेख गेटिंग
-  - H2: बहु-खाता
-  - H2: पर्यावरण चर
-  - H2: टाइपिंग, प्रतिक्रियाएँ, और डिलीवरी पावती
+  - H2: IDs ढूंढना (directory)
+  - H2: सीमाएं
+  - H2: एक्सेस नियंत्रण (DMs)
+  - H2: Group एक्सेस (वैकल्पिक)
+  - H3: Group mention gating
+  - H2: मल्टी-अकाउंट
+  - H2: Environment variables
+  - H2: Typing, reactions, और delivery acknowledgements
   - H2: समस्या निवारण
   - H2: संबंधित
 
@@ -1130,41 +1130,41 @@ x-i18n:
 
 - मार्ग: /ci
 - शीर्षक:
-  - H2: पाइपलाइन अवलोकन
-  - H2: फ़ेल-फ़ास्ट क्रम
-  - H2: PR संदर्भ और प्रमाण
-  - H2: दायरा और रूटिंग
-  - H2: ClawSweeper गतिविधि अग्रेषण
-  - H2: मैनुअल dispatches
-  - H2: रनर
-  - H2: रनर पंजीकरण बजट
-  - H2: स्थानीय समकक्ष
+  - H2: Pipeline अवलोकन
+  - H2: Fail-fast क्रम
+  - H2: PR context और evidence
+  - H2: Scope और routing
+  - H2: ClawSweeper activity forwarding
+  - H2: Manual dispatches
+  - H2: Runners
+  - H2: Runner registration budget
+  - H2: Local equivalents
   - H2: OpenClaw Performance
-  - H2: पूर्ण रिलीज़ सत्यापन
-  - H2: लाइव और E2E शार्ड
-  - H2: पैकेज स्वीकृति
-  - H3: जॉब
-  - H3: उम्मीदवार स्रोत
-  - H3: सुइट प्रोफ़ाइल
-  - H3: लेगेसी संगतता विंडो
+  - H2: Full Release Validation
+  - H2: Live और E2E shards
+  - H2: Package Acceptance
+  - H3: Jobs
+  - H3: Candidate sources
+  - H3: Suite profiles
+  - H3: Legacy compatibility windows
   - H3: उदाहरण
-  - H2: इंस्टॉल स्मोक
-  - H2: स्थानीय Docker E2E
-  - H3: ट्यून करने योग्य पैरामीटर
-  - H3: पुन: प्रयोज्य लाइव/E2E वर्कफ़्लो
-  - H3: रिलीज़-पथ चंक
-  - H2: Plugin प्री-रिलीज़
-  - H2: QA लैब
+  - H2: Install smoke
+  - H2: Local Docker E2E
+  - H3: Tunables
+  - H3: Reusable live/E2E workflow
+  - H3: Release-path chunks
+  - H2: Plugin Prerelease
+  - H2: QA Lab
   - H2: CodeQL
-  - H3: सुरक्षा श्रेणियाँ
-  - H3: प्लेटफ़ॉर्म-विशिष्ट सुरक्षा शार्ड
-  - H3: महत्वपूर्ण गुणवत्ता श्रेणियाँ
-  - H2: रखरखाव वर्कफ़्लो
+  - H3: Security categories
+  - H3: Platform-specific security shards
+  - H3: Critical Quality categories
+  - H2: Maintenance workflows
   - H3: Docs Agent
   - H3: Test Performance Agent
-  - H3: मर्ज के बाद डुप्लिकेट PR
-  - H2: स्थानीय चेक गेट और बदली हुई रूटिंग
-  - H2: Testbox सत्यापन
+  - H3: Duplicate PRs After Merge
+  - H2: Local check gates और changed routing
+  - H2: Testbox validation
   - H2: संबंधित
 
 ## clawhub/cli.md
@@ -1173,7 +1173,7 @@ x-i18n:
 - शीर्षक:
   - H1: ClawHub CLI
   - H2: खोजें और इंस्टॉल करें
-  - H2: प्रकाशित करें और बनाए रखें
+  - H2: प्रकाशित करें और रखरखाव करें
   - H2: संबंधित
 
 ## clawhub/publishing.md
@@ -1181,30 +1181,30 @@ x-i18n:
 - मार्ग: /clawhub/publishing
 - शीर्षक:
   - H1: ClawHub पर प्रकाशन
-  - H2: मालिक
+  - H2: Owners
   - H2: Skills
   - H2: Plugins
-  - H2: रिलीज़ प्रवाह
+  - H2: Release Flow
   - H2: FAQ
-  - H3: पैकेज scope चयनित मालिक से मेल खाना चाहिए
+  - H3: Package scope चयनित owner से मेल खाना चाहिए
 
 ## cli/acp.md
 
 - मार्ग: /cli/acp
 - शीर्षक:
   - H2: यह क्या नहीं है
-  - H2: संगतता मैट्रिक्स
-  - H2: ज्ञात सीमाएँ
+  - H2: Compatibility Matrix
+  - H2: ज्ञात सीमाएं
   - H2: उपयोग
-  - H2: ACP क्लाइंट (डीबग)
-  - H2: प्रोटोकॉल स्मोक टेस्टिंग
+  - H2: ACP client (debug)
+  - H2: Protocol smoke testing
   - H2: इसका उपयोग कैसे करें
-  - H2: एजेंट चुनना
-  - H2: acpx से उपयोग करें (Codex, Claude, अन्य ACP क्लाइंट)
-  - H2: Zed एडिटर सेटअप
-  - H2: सेशन मैपिंग
+  - H2: Agents चुनना
+  - H2: acpx से उपयोग करें (Codex, Claude, अन्य ACP clients)
+  - H2: Zed editor setup
+  - H2: Session mapping
   - H2: विकल्प
-  - H3: acp क्लाइंट विकल्प
+  - H3: acp client options
   - H2: संबंधित
 
 ## cli/agent.md
@@ -1215,7 +1215,7 @@ x-i18n:
   - H2: विकल्प
   - H2: उदाहरण
   - H2: नोट्स
-  - H2: JSON डिलीवरी स्थिति
+  - H2: JSON delivery status
   - H2: संबंधित
 
 ## cli/agents.md
@@ -1224,10 +1224,10 @@ x-i18n:
 - शीर्षक:
   - H1: openclaw agents
   - H2: उदाहरण
-  - H2: रूटिंग बाइंडिंग
-  - H3: --bind प्रारूप
-  - H3: बाइंडिंग scope व्यवहार
-  - H2: कमांड सतह
+  - H2: Routing bindings
+  - H3: --bind format
+  - H3: Binding scope behavior
+  - H2: Command surface
   - H3: agents
   - H3: agents list
   - H3: agents add [name]
@@ -1235,7 +1235,7 @@ x-i18n:
   - H3: agents bind
   - H3: agents unbind
   - H3: agents delete
-  - H2: पहचान फ़ाइलें
+  - H2: Identity files
   - H2: पहचान सेट करें
   - H2: संबंधित
 
@@ -1245,13 +1245,18 @@ x-i18n:
 - शीर्षक:
   - H1: openclaw approvals
   - H2: openclaw exec-policy
-  - H2: सामान्य कमांड
-  - H2: किसी फ़ाइल से स्वीकृतियाँ बदलें
-  - H2: "कभी प्रॉम्प्ट न करें" / YOLO उदाहरण
-  - H2: Allowlist हेल्पर
+  - H2: सामान्य commands
+  - H2: फ़ाइल से approvals बदलें
+  - H2: "Never prompt" / YOLO उदाहरण
+  - H2: Allowlist helpers
   - H2: सामान्य विकल्प
   - H2: नोट्स
   - H2: संबंधित
+
+## cli/attach.md
+
+- मार्ग: /cli/attach
+- शीर्षक: कोई नहीं
 
 ## cli/backup.md
 
@@ -1259,8 +1264,8 @@ x-i18n:
 - शीर्षक:
   - H1: openclaw backup
   - H2: नोट्स
-  - H2: किसका बैकअप लिया जाता है
-  - H2: अमान्य config व्यवहार
+  - H2: किसका backup लिया जाता है
+  - H2: Invalid Config behavior
   - H2: आकार और प्रदर्शन
   - H2: संबंधित
 
@@ -1269,18 +1274,18 @@ x-i18n:
 - मार्ग: /cli/browser
 - शीर्षक:
   - H1: openclaw browser
-  - H2: सामान्य फ़्लैग
-  - H2: त्वरित शुरुआत (स्थानीय)
+  - H2: सामान्य flags
+  - H2: त्वरित शुरुआत (local)
   - H2: त्वरित समस्या निवारण
-  - H2: लाइफ़साइकल
-  - H2: यदि कमांड मौजूद नहीं है
-  - H2: प्रोफ़ाइल
-  - H2: टैब
-  - H2: स्नैपशॉट / स्क्रीनशॉट / कार्रवाइयाँ
-  - H2: स्थिति और स्टोरेज
-  - H2: डीबगिंग
+  - H2: Lifecycle
+  - H2: यदि command गायब है
+  - H2: Profiles
+  - H2: Tabs
+  - H2: Snapshot / screenshot / actions
+  - H2: State और storage
+  - H2: Debugging
   - H2: MCP के जरिए मौजूदा Chrome
-  - H2: रिमोट ब्राउज़र नियंत्रण (node होस्ट प्रॉक्सी)
+  - H2: Remote browser control (node host proxy)
   - H2: संबंधित
 
 ## cli/channels.md
@@ -1288,13 +1293,13 @@ x-i18n:
 - मार्ग: /cli/channels
 - शीर्षक:
   - H1: openclaw channels
-  - H2: सामान्य कमांड
-  - H2: स्थिति / क्षमताएँ / resolve / लॉग
-  - H2: खाते जोड़ें / हटाएँ
-  - H2: लॉगिन और लॉगआउट (इंटरैक्टिव)
+  - H2: सामान्य commands
+  - H2: Status / capabilities / resolve / logs
+  - H2: अकाउंट जोड़ें / हटाएं
+  - H2: Login और logout (interactive)
   - H2: समस्या निवारण
-  - H2: क्षमता probe
-  - H2: नामों को ID में resolve करें
+  - H2: Capabilities probe
+  - H2: नामों को IDs में resolve करें
   - H2: संबंधित
 
 ## cli/clawbot.md
@@ -1302,7 +1307,7 @@ x-i18n:
 - मार्ग: /cli/clawbot
 - शीर्षक:
   - H1: openclaw clawbot
-  - H2: माइग्रेशन
+  - H2: Migration
   - H2: संबंधित
 
 ## cli/commitments.md
@@ -1312,7 +1317,7 @@ x-i18n:
   - H2: उपयोग
   - H2: विकल्प
   - H2: उदाहरण
-  - H2: आउटपुट
+  - H2: Output
   - H2: संबंधित
 
 ## cli/completion.md
@@ -1329,19 +1334,19 @@ x-i18n:
 
 - मार्ग: /cli/config
 - शीर्षक:
-  - H2: रूट विकल्प
+  - H2: Root options
   - H2: उदाहरण
   - H3: config schema
-  - H3: पथ
-  - H2: मान
-  - H2: config set मोड
+  - H3: Paths
+  - H2: Values
+  - H2: config set modes
   - H2: config patch
-  - H2: प्रदाता बिल्डर फ़्लैग
-  - H2: ड्राई रन
-  - H3: JSON आउटपुट आकार
-  - H2: लिखने की सुरक्षा
-  - H2: उपकमांड
-  - H2: सत्यापित करें
+  - H2: Provider builder flags
+  - H2: Dry run
+  - H3: JSON output shape
+  - H2: Write safety
+  - H2: Subcommands
+  - H2: Validate
   - H2: संबंधित
 
 ## cli/configure.md
@@ -1360,12 +1365,12 @@ x-i18n:
   - H1: openclaw crestodian
   - H2: Crestodian क्या दिखाता है
   - H2: उदाहरण
-  - H2: सुरक्षित स्टार्टअप
-  - H2: संचालन और स्वीकृति
-  - H2: सेटअप बूटस्ट्रैप
-  - H2: मॉडल-सहायित प्लानर
-  - H2: किसी एजेंट पर स्विच करना
-  - H2: संदेश बचाव मोड
+  - H2: Safe startup
+  - H2: Operations और approval
+  - H2: Setup bootstrap
+  - H2: Model-Assisted Planner
+  - H2: agent पर स्विच करना
+  - H2: Message rescue mode
   - H2: संबंधित
 
 ## cli/cron.md
@@ -1373,27 +1378,27 @@ x-i18n:
 - मार्ग: /cli/cron
 - शीर्षक:
   - H1: openclaw cron
-  - H2: जॉब जल्दी बनाएँ
-  - H2: सेशन
-  - H2: डिलीवरी
-  - H3: डिलीवरी स्वामित्व
-  - H3: विफलता डिलीवरी
-  - H2: शेड्यूलिंग
-  - H3: वन-शॉट जॉब
-  - H3: आवर्ती जॉब
-  - H3: मैनुअल रन
-  - H2: मॉडल
-  - H3: अलग-थलग cron मॉडल प्राथमिकता
-  - H3: तेज़ मोड
-  - H3: लाइव मॉडल स्विच पुनःप्रयास
-  - H2: रन आउटपुट और अस्वीकृतियाँ
-  - H3: बासी पावती दमन
-  - H3: साइलेंट टोकन दमन
-  - H3: संरचित अस्वीकृतियाँ
-  - H2: रिटेंशन
-  - H2: पुराने जॉब माइग्रेट करना
-  - H2: सामान्य संपादन
-  - H2: सामान्य एडमिन कमांड
+  - H2: Jobs जल्दी बनाएं
+  - H2: Sessions
+  - H2: Delivery
+  - H3: Delivery ownership
+  - H3: Failure delivery
+  - H2: Scheduling
+  - H3: One-shot jobs
+  - H3: Recurring jobs
+  - H3: Manual runs
+  - H2: Models
+  - H3: Isolated Cron model precedence
+  - H3: Fast mode
+  - H3: Live model switch retries
+  - H2: Run output और denials
+  - H3: Stale acknowledgement suppression
+  - H3: Silent token suppression
+  - H3: Structured denials
+  - H2: Retention
+  - H2: पुराने jobs माइग्रेट करना
+  - H2: सामान्य edits
+  - H2: सामान्य admin commands
   - H2: संबंधित
 
 ## cli/daemon.md
@@ -1402,9 +1407,9 @@ x-i18n:
 - शीर्षक:
   - H1: openclaw daemon
   - H2: उपयोग
-  - H2: उपकमांड
+  - H2: Subcommands
   - H2: सामान्य विकल्प
-  - H2: प्राथमिकता दें
+  - H2: Prefer
   - H2: संबंधित
 
 ## cli/dashboard.md
@@ -1419,18 +1424,18 @@ x-i18n:
 - मार्ग: /cli/devices
 - शीर्षक:
   - H1: openclaw devices
-  - H2: कमांड
+  - H2: Commands
   - H3: openclaw devices list
   - H3: openclaw devices remove
   - H3: openclaw devices clear --yes [--pending]
   - H3: openclaw devices approve [requestId] [--latest]
-  - H2: Paperclip / openclawgateway पहली-बार स्वीकृति
+  - H2: Paperclip / openclawgateway first-run approval
   - H3: openclaw devices reject
   - H3: openclaw devices rotate --device --role [--scope ]
   - H3: openclaw devices revoke --device --role
   - H2: सामान्य विकल्प
   - H2: नोट्स
-  - H2: टोकन drift रिकवरी चेकलिस्ट
+  - H2: Token drift recovery checklist
   - H2: संबंधित
 
 ## cli/directory.md
@@ -1438,13 +1443,13 @@ x-i18n:
 - मार्ग: /cli/directory
 - शीर्षक:
   - H1: openclaw directory
-  - H2: सामान्य फ़्लैग
+  - H2: सामान्य flags
   - H2: नोट्स
-  - H2: message send के साथ परिणामों का उपयोग
-  - H2: ID प्रारूप (चैनल के अनुसार)
-  - H2: स्वयं ("me")
-  - H2: पीयर (संपर्क/उपयोगकर्ता)
-  - H2: समूह
+  - H2: Message send के साथ results का उपयोग करना
+  - H2: ID formats (channel के अनुसार)
+  - H2: Self ("me")
+  - H2: Peers (contacts/users)
+  - H2: Groups
   - H2: संबंधित
 
 ## cli/dns.md
@@ -1452,7 +1457,7 @@ x-i18n:
 - मार्ग: /cli/dns
 - शीर्षक:
   - H1: openclaw dns
-  - H2: सेटअप
+  - H2: Setup
   - H2: dns setup
   - H2: संबंधित
 
@@ -1464,8 +1469,8 @@ x-i18n:
   - H2: उपयोग
   - H2: उदाहरण
   - H2: यह कैसे काम करता है
-  - H2: आउटपुट
-  - H2: निकास कोड
+  - H2: Output
+  - H2: Exit codes
   - H2: संबंधित
 
 ## cli/doctor.md
@@ -1476,11 +1481,11 @@ x-i18n:
   - H2: इसका उपयोग क्यों करें
   - H2: उदाहरण
   - H2: विकल्प
-  - H2: लिंट मोड
-  - H2: संरचित स्वास्थ्य जाँच
-  - H2: जाँच चयन
-  - H2: अपग्रेड के बाद का मोड
-  - H2: macOS: launchctl env ओवरराइड
+  - H2: Lint mode
+  - H2: Structured Health Checks
+  - H2: Check Selection
+  - H2: Post-upgrade mode
+  - H2: macOS: launchctl env overrides
   - H2: संबंधित
 
 ## cli/flows.md
@@ -1488,8 +1493,8 @@ x-i18n:
 - मार्ग: /cli/flows
 - शीर्षक:
   - H1: openclaw tasks flow
-  - H2: उपकमांड
-  - H3: स्थिति फ़िल्टर मान
+  - H2: Subcommands
+  - H3: Status filter values
   - H2: उदाहरण
   - H2: संबंधित
 
@@ -1497,10 +1502,10 @@ x-i18n:
 
 - मार्ग: /cli/gateway
 - शीर्षक:
-  - H2: Gateway चलाएँ
+  - H2: Gateway चलाएं
   - H3: विकल्प
-  - H2: Gateway पुनः शुरू करें
-  - H3: Gateway प्रोफ़ाइलिंग
+  - H2: Gateway पुनरारंभ करें
+  - H3: Gateway profiling
   - H2: चल रहे Gateway से क्वेरी करें
   - H3: gateway health
   - H3: gateway usage-cost
@@ -1508,9 +1513,9 @@ x-i18n:
   - H3: gateway diagnostics export
   - H3: gateway status
   - H3: gateway probe
-  - H4: SSH पर रिमोट (Mac ऐप समानता)
+  - H4: SSH के ऊपर remote (Mac app parity)
   - H3: gateway call
-  - H2: Gateway सेवा प्रबंधित करें
+  - H2: Gateway service प्रबंधित करें
   - H3: wrapper के साथ इंस्टॉल करें
   - H2: gateways खोजें (Bonjour)
   - H3: gateway discover
@@ -1526,18 +1531,18 @@ x-i18n:
 
 ## cli/hooks.md
 
-- Route: /cli/hooks
+- मार्ग: /cli/hooks
 - शीर्षक:
   - H1: openclaw hooks
-  - H2: सभी हुक सूचीबद्ध करें
-  - H2: हुक जानकारी प्राप्त करें
-  - H2: हुक पात्रता जांचें
-  - H2: एक Hook सक्षम करें
-  - H2: एक Hook अक्षम करें
-  - H2: नोट्स
-  - H2: हुक पैक इंस्टॉल करें
-  - H2: हुक पैक अपडेट करें
-  - H2: बंडल किए गए हुक
+  - H2: सभी hooks सूचीबद्ध करें
+  - H2: hook जानकारी प्राप्त करें
+  - H2: hooks पात्रता जांचें
+  - H2: Hook सक्षम करें
+  - H2: Hook अक्षम करें
+  - H2: टिप्पणियां
+  - H2: hook packs इंस्टॉल करें
+  - H2: hook packs अपडेट करें
+  - H2: bundled hooks
   - H3: session-memory
   - H3: bootstrap-extra-files
   - H3: command-logger
@@ -1546,22 +1551,22 @@ x-i18n:
 
 ## cli/index.md
 
-- Route: /cli
+- मार्ग: /cli
 - शीर्षक:
-  - H2: कमांड पेज
-  - H2: वैश्विक फ्लैग
+  - H2: कमांड पृष्ठ
+  - H2: वैश्विक flags
   - H2: आउटपुट मोड
   - H2: कमांड ट्री
-  - H2: चैट स्लैश कमांड
+  - H2: चैट slash commands
   - H2: उपयोग ट्रैकिंग
   - H2: संबंधित
 
 ## cli/infer.md
 
-- Route: /cli/infer
+- मार्ग: /cli/infer
 - शीर्षक:
   - H2: infer को skill में बदलें
-  - H2: infer क्यों उपयोग करें
+  - H2: infer का उपयोग क्यों करें
   - H2: कमांड ट्री
   - H2: सामान्य कार्य
   - H2: व्यवहार
@@ -1570,58 +1575,58 @@ x-i18n:
   - H2: ऑडियो
   - H2: TTS
   - H2: वीडियो
-  - H2: वेब
+  - H2: Web
   - H2: एम्बेडिंग
   - H2: JSON आउटपुट
   - H2: सामान्य गलतियां
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/logs.md
 
-- Route: /cli/logs
+- मार्ग: /cli/logs
 - शीर्षक:
   - H1: openclaw logs
   - H2: विकल्प
   - H2: साझा Gateway RPC विकल्प
   - H2: उदाहरण
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/mcp.md
 
-- Route: /cli/mcp
+- मार्ग: /cli/mcp
 - शीर्षक:
   - H2: सही MCP पथ चुनें
   - H2: MCP सर्वर के रूप में OpenClaw
   - H3: serve कब उपयोग करें
   - H3: यह कैसे काम करता है
-  - H3: क्लाइंट मोड चुनें
+  - H3: client मोड चुनें
   - H3: serve क्या उजागर करता है
   - H3: उपयोग
-  - H3: ब्रिज टूल
+  - H3: Bridge tools
   - H3: इवेंट मॉडल
-  - H3: Claude चैनल सूचनाएं
-  - H3: MCP क्लाइंट कॉन्फिग
+  - H3: Claude चैनल notifications
+  - H3: MCP client config
   - H3: विकल्प
-  - H3: सुरक्षा और भरोसे की सीमा
-  - H3: परीक्षण
+  - H3: सुरक्षा और trust boundary
+  - H3: टेस्टिंग
   - H3: समस्या निवारण
-  - H2: MCP क्लाइंट रजिस्ट्री के रूप में OpenClaw
-  - H3: सहेजी गई MCP सर्वर परिभाषाएं
-  - H3: सामान्य सर्वर रेसिपी
-  - H3: JSON आउटपुट आकार
-  - H3: Stdio ट्रांसपोर्ट
-  - H3: SSE / HTTP ट्रांसपोर्ट
-  - H3: OAuth वर्कफ़्लो
-  - H3: Streamable HTTP ट्रांसपोर्ट
+  - H2: MCP client registry के रूप में OpenClaw
+  - H3: सहेजी गई MCP server definitions
+  - H3: सामान्य server recipes
+  - H3: JSON output shapes
+  - H3: Stdio transport
+  - H3: SSE / HTTP transport
+  - H3: OAuth workflow
+  - H3: Streamable HTTP transport
   - H2: Control UI
-  - H2: मौजूदा सीमाएं
+  - H2: वर्तमान सीमाएं
   - H2: संबंधित
 
 ## cli/memory.md
 
-- Route: /cli/memory
+- मार्ग: /cli/memory
 - शीर्षक:
   - H1: openclaw memory
   - H2: उदाहरण
@@ -1631,214 +1636,214 @@ x-i18n:
 
 ## cli/message.md
 
-- Route: /cli/message
+- मार्ग: /cli/message
 - शीर्षक:
   - H1: openclaw message
   - H2: उपयोग
-  - H2: सामान्य फ्लैग
+  - H2: सामान्य flags
   - H2: SecretRef व्यवहार
-  - H2: कार्रवाइयां
-  - H3: कोर
-  - H3: थ्रेड
-  - H3: इमोजी
-  - H3: स्टिकर
-  - H3: भूमिकाएं / चैनल / सदस्य / वॉइस
-  - H3: इवेंट
-  - H3: मॉडरेशन (Discord)
-  - H3: ब्रॉडकास्ट
+  - H2: Actions
+  - H3: Core
+  - H3: Threads
+  - H3: Emojis
+  - H3: Stickers
+  - H3: Roles / Channels / Members / Voice
+  - H3: Events
+  - H3: Moderation (Discord)
+  - H3: Broadcast
   - H2: उदाहरण
   - H2: संबंधित
 
 ## cli/migrate.md
 
-- Route: /cli/migrate
+- मार्ग: /cli/migrate
 - शीर्षक:
   - H1: openclaw migrate
   - H2: कमांड
   - H2: सुरक्षा मॉडल
-  - H2: Claude प्रोवाइडर
-  - H3: Claude क्या इम्पोर्ट करता है
-  - H3: आर्काइव और मैन्युअल-समीक्षा स्थिति
-  - H2: Codex प्रोवाइडर
-  - H3: Codex क्या इम्पोर्ट करता है
-  - H3: मैन्युअल-समीक्षा Codex स्थिति
-  - H2: Hermes प्रोवाइडर
-  - H3: Hermes क्या इम्पोर्ट करता है
-  - H3: समर्थित .env कुंजियां
-  - H3: केवल-आर्काइव स्थिति
+  - H2: Claude provider
+  - H3: Claude क्या import करता है
+  - H3: Archive और manual-review state
+  - H2: Codex provider
+  - H3: Codex क्या import करता है
+  - H3: Manual-review Codex state
+  - H2: Hermes provider
+  - H3: Hermes क्या import करता है
+  - H3: समर्थित .env keys
+  - H3: Archive-only state
   - H3: लागू करने के बाद
-  - H2: Plugin अनुबंध
-  - H2: ऑनबोर्डिंग इंटीग्रेशन
+  - H2: Plugin contract
+  - H2: Onboarding integration
   - H2: संबंधित
 
 ## cli/models.md
 
-- Route: /cli/models
+- मार्ग: /cli/models
 - शीर्षक:
   - H1: openclaw models
   - H2: सामान्य कमांड
-  - H3: मॉडल स्कैन
-  - H3: मॉडल स्थिति
-  - H2: उपनाम + फ़ॉलबैक
-  - H2: ऑथ प्रोफाइल
+  - H3: Models scan
+  - H3: Models status
+  - H2: Aliases + fallbacks
+  - H2: Auth profiles
   - H2: संबंधित
 
 ## cli/node.md
 
-- Route: /cli/node
+- मार्ग: /cli/node
 - शीर्षक:
   - H1: openclaw node
-  - H2: node होस्ट क्यों उपयोग करें?
-  - H2: ब्राउज़र प्रॉक्सी (शून्य-कॉन्फिग)
-  - H2: रन (फ़ोरग्राउंड)
-  - H2: node होस्ट के लिए Gateway ऑथ
-  - H2: सेवा (बैकग्राउंड)
-  - H2: पेयरिंग
-  - H2: Exec अनुमोदन
+  - H2: node host का उपयोग क्यों करें?
+  - H2: Browser proxy (zero-config)
+  - H2: Run (foreground)
+  - H2: node host के लिए Gateway auth
+  - H2: Service (background)
+  - H2: Pairing
+  - H2: Exec approvals
   - H2: संबंधित
 
 ## cli/nodes.md
 
-- Route: /cli/nodes
+- मार्ग: /cli/nodes
 - शीर्षक:
   - H1: openclaw nodes
   - H2: सामान्य कमांड
-  - H2: इनवोक
+  - H2: Invoke
   - H2: संबंधित
 
 ## cli/onboard.md
 
-- Route: /cli/onboard
+- मार्ग: /cli/onboard
 - शीर्षक:
   - H1: openclaw onboard
   - H2: संबंधित गाइड
   - H2: उदाहरण
-  - H2: लोकेल
-  - H3: गैर-इंटरैक्टिव Z.AI एंडपॉइंट विकल्प
-  - H2: अतिरिक्त गैर-इंटरैक्टिव फ्लैग
-  - H2: फ़्लो नोट्स
-  - H2: सामान्य फ़ॉलो-अप कमांड
+  - H2: Locale
+  - H3: Non-interactive Z.AI endpoint choices
+  - H2: अतिरिक्त non-interactive flags
+  - H2: Flow notes
+  - H2: सामान्य follow-up commands
 
 ## cli/pairing.md
 
-- Route: /cli/pairing
+- मार्ग: /cli/pairing
 - शीर्षक:
   - H1: openclaw pairing
   - H2: कमांड
   - H2: pairing list
   - H2: pairing approve
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/path.md
 
-- Route: /cli/path
+- मार्ग: /cli/path
 - शीर्षक:
   - H1: openclaw path
-  - H2: इसे क्यों उपयोग करें
-  - H2: इसका उपयोग कैसे किया जाता है
+  - H2: इसका उपयोग क्यों करें
+  - H2: इसका उपयोग कैसे होता है
   - H2: यह कैसे काम करता है
-  - H2: सबकमांड
-  - H2: वैश्विक फ्लैग
-  - H2: oc:// सिंटैक्स
-  - H2: फ़ाइल प्रकार से एड्रेसिंग
-  - H2: म्यूटेशन अनुबंध
+  - H2: Subcommands
+  - H2: Global flags
+  - H2: oc:// syntax
+  - H2: file kind द्वारा addressing
+  - H2: Mutation contract
   - H2: उदाहरण
-  - H2: फ़ाइल प्रकार के अनुसार रेसिपी
+  - H2: file kind के अनुसार recipes
   - H3: Markdown
   - H3: JSONC
   - H3: JSONL
   - H3: YAML
-  - H2: सबकमांड संदर्भ
+  - H2: Subcommand reference
   - H3: resolve
   - H3: find
   - H3: set
   - H3: validate
   - H3: emit
-  - H2: एग्ज़िट कोड
-  - H2: आउटपुट मोड
-  - H2: नोट्स
+  - H2: Exit codes
+  - H2: Output mode
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/plugins.md
 
-- Route: /cli/plugins
+- मार्ग: /cli/plugins
 - शीर्षक:
   - H2: कमांड
-  - H3: लेखक
-  - H3: प्रोवाइडर स्कैफ़ोल्ड
-  - H3: इंस्टॉल
-  - H4: Marketplace शॉर्टहैंड
-  - H3: सूची
-  - H3: Plugin इंडेक्स
-  - H3: अनइंस्टॉल
-  - H3: अपडेट
-  - H3: निरीक्षण
+  - H3: Author
+  - H3: Provider Scaffold
+  - H3: Install
+  - H4: Marketplace shorthand
+  - H3: List
+  - H3: Plugin index
+  - H3: Uninstall
+  - H3: Update
+  - H3: Inspect
   - H3: Doctor
-  - H3: रजिस्ट्री
+  - H3: Registry
   - H3: Marketplace
   - H2: संबंधित
 
 ## cli/policy.md
 
-- Route: /cli/policy
+- मार्ग: /cli/policy
 - शीर्षक:
   - H1: openclaw policy
-  - H2: क्विक स्टार्ट
-  - H3: पॉलिसी नियम संदर्भ
-  - H4: स्कोप्ड ओवरले
-  - H4: चैनल
-  - H4: MCP सर्वर
-  - H4: मॉडल प्रोवाइडर
-  - H4: नेटवर्क
-  - H4: इनग्रेस और चैनल पहुंच
+  - H2: Quick start
+  - H3: Policy rule reference
+  - H4: Scoped overlays
+  - H4: Channels
+  - H4: MCP servers
+  - H4: Model providers
+  - H4: Network
+  - H4: Ingress और channel access
   - H4: Gateway
-  - H4: एजेंट वर्कस्पेस
-  - H4: सैंडबॉक्स स्थिति
-  - H4: डेटा हैंडलिंग
-  - H4: सीक्रेट
-  - H4: Exec अनुमोदन
-  - H4: ऑथ प्रोफाइल
-  - H4: टूल मेटाडेटा
-  - H4: टूल स्थिति
-  - H2: पॉलिसी कॉन्फिगर करें
-  - H2: पॉलिसी स्थिति स्वीकार करें
-  - H2: निष्कर्ष
-  - H2: मरम्मत
-  - H2: एग्ज़िट कोड
+  - H4: Agent workspace
+  - H4: Sandbox posture
+  - H4: Data Handling
+  - H4: Secrets
+  - H4: Exec approvals
+  - H4: Auth profiles
+  - H4: Tool metadata
+  - H4: Tool posture
+  - H2: policy कॉन्फिगर करें
+  - H2: policy state स्वीकार करें
+  - H2: Findings
+  - H2: Repair
+  - H2: Exit codes
   - H2: संबंधित
 
 ## cli/proxy.md
 
-- Route: /cli/proxy
+- मार्ग: /cli/proxy
 - शीर्षक:
   - H1: openclaw proxy
   - H2: कमांड
-  - H2: वैलिडेट
-  - H2: क्वेरी प्रीसेट
-  - H2: नोट्स
+  - H2: Validate
+  - H2: Query presets
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/qr.md
 
-- Route: /cli/qr
+- मार्ग: /cli/qr
 - शीर्षक:
   - H1: openclaw qr
   - H2: उपयोग
   - H2: विकल्प
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/reset.md
 
-- Route: /cli/reset
+- मार्ग: /cli/reset
 - शीर्षक:
   - H1: openclaw reset
   - H2: संबंधित
 
 ## cli/sandbox.md
 
-- Route: /cli/sandbox
+- मार्ग: /cli/sandbox
 - शीर्षक:
   - H2: अवलोकन
   - H2: कमांड
@@ -1846,64 +1851,64 @@ x-i18n:
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
   - H2: उपयोग के मामले
-  - H3: Docker इमेज अपडेट करने के बाद
-  - H3: सैंडबॉक्स कॉन्फिगरेशन बदलने के बाद
-  - H3: SSH लक्ष्य या SSH ऑथ सामग्री बदलने के बाद
-  - H3: OpenShell स्रोत, पॉलिसी, या मोड बदलने के बाद
+  - H3: Docker image अपडेट करने के बाद
+  - H3: sandbox configuration बदलने के बाद
+  - H3: SSH target या SSH auth material बदलने के बाद
+  - H3: OpenShell source, policy, या mode बदलने के बाद
   - H3: setupCommand बदलने के बाद
-  - H3: केवल किसी विशिष्ट एजेंट के लिए
+  - H3: केवल किसी विशिष्ट agent के लिए
   - H2: इसकी आवश्यकता क्यों है
-  - H2: रजिस्ट्री माइग्रेशन
-  - H2: कॉन्फिगरेशन
+  - H2: Registry migration
+  - H2: Configuration
   - H2: संबंधित
 
 ## cli/secrets.md
 
-- Route: /cli/secrets
+- मार्ग: /cli/secrets
 - शीर्षक:
   - H1: openclaw secrets
-  - H2: रनटाइम स्नैपशॉट फिर से लोड करें
-  - H2: ऑडिट
-  - H2: कॉन्फिगर करें (इंटरैक्टिव हेल्पर)
-  - H2: सहेजी गई योजना लागू करें
-  - H2: रोलबैक बैकअप क्यों नहीं
+  - H2: runtime snapshot फिर से लोड करें
+  - H2: Audit
+  - H2: Configure (interactive helper)
+  - H2: सहेजा गया plan लागू करें
+  - H2: rollback backups क्यों नहीं
   - H2: उदाहरण
   - H2: संबंधित
 
 ## cli/security.md
 
-- Route: /cli/security
+- मार्ग: /cli/security
 - शीर्षक:
   - H1: openclaw security
-  - H2: ऑडिट
-  - H2: JSON आउटपुट
+  - H2: Audit
+  - H2: JSON output
   - H2: --fix क्या बदलता है
   - H2: संबंधित
 
 ## cli/sessions.md
 
-- Route: /cli/sessions
+- मार्ग: /cli/sessions
 - शीर्षक:
   - H1: openclaw sessions
-  - H2: क्लीनअप रखरखाव
-  - H2: सत्र Compact करें
+  - H2: Cleanup maintenance
+  - H2: session compact करें
   - H3: sessions.compact RPC
   - H2: संबंधित
 
 ## cli/setup.md
 
-- Route: /cli/setup
+- मार्ग: /cli/setup
 - शीर्षक:
   - H1: openclaw setup
   - H2: विकल्प
-  - H3: बेसलाइन मोड
+  - H3: Baseline mode
   - H2: उदाहरण
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/skills.md
 
-- Route: /cli/skills
+- मार्ग: /cli/skills
 - शीर्षक:
   - H1: openclaw skills
   - H2: कमांड
@@ -1912,29 +1917,29 @@ x-i18n:
 
 ## cli/status.md
 
-- Route: /cli/status
+- मार्ग: /cli/status
 - शीर्षक:
   - H2: संबंधित
 
 ## cli/system.md
 
-- Route: /cli/system
+- मार्ग: /cli/system
 - शीर्षक:
   - H1: openclaw system
   - H2: सामान्य कमांड
   - H2: system event
   - H2: system heartbeat last|enable|disable
   - H2: system presence
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: संबंधित
 
 ## cli/tasks.md
 
-- Route: /cli/tasks
+- मार्ग: /cli/tasks
 - शीर्षक:
   - H2: उपयोग
-  - H2: रूट विकल्प
-  - H2: सबकमांड
+  - H2: Root Options
+  - H2: Subcommands
   - H3: list
   - H3: show
   - H3: notify
@@ -1946,35 +1951,35 @@ x-i18n:
 
 ## cli/transcripts.md
 
-- Route: /cli/transcripts
+- मार्ग: /cli/transcripts
 - शीर्षक:
   - H1: openclaw transcripts
   - H2: कमांड
   - H2: आउटपुट
-  - H2: प्रति दिन कई मीटिंग
-  - H2: अनुपलब्ध सारांश
-  - H2: कॉन्फिगरेशन
+  - H2: प्रति दिन कई meetings
+  - H2: Missing summaries
+  - H2: Configuration
 
 ## cli/tui.md
 
-- Route: /cli/tui
+- मार्ग: /cli/tui
 - शीर्षक:
   - H1: openclaw tui
   - H2: विकल्प
   - H2: उदाहरण
-  - H2: कॉन्फिग मरम्मत लूप
+  - H2: Config repair loop
   - H2: संबंधित
 
 ## cli/uninstall.md
 
-- Route: /cli/uninstall
+- मार्ग: /cli/uninstall
 - शीर्षक:
   - H1: openclaw uninstall
   - H2: संबंधित
 
 ## cli/update.md
 
-- Route: /cli/update
+- मार्ग: /cli/update
 - शीर्षक:
   - H1: openclaw update
   - H2: उपयोग
@@ -1983,23 +1988,23 @@ x-i18n:
   - H2: update repair
   - H2: update wizard
   - H2: यह क्या करता है
-  - H3: कंट्रोल-प्लेन प्रतिक्रिया आकार
-  - H2: Git चेकआउट फ़्लो
-  - H3: चैनल चयन
-  - H3: अपडेट चरण
-  - H2: --update शॉर्टहैंड
+  - H3: Control-plane response shape
+  - H2: Git checkout flow
+  - H3: Channel selection
+  - H3: Update steps
+  - H2: --update shorthand
   - H2: संबंधित
 
 ## cli/voicecall.md
 
-- Route: /cli/voicecall
+- मार्ग: /cli/voicecall
 - शीर्षक:
   - H1: openclaw voicecall
-  - H2: सबकमांड
-  - H2: सेटअप और स्मोक
+  - H2: Subcommands
+  - H2: Setup और smoke
   - H3: setup
   - H3: smoke
-  - H2: कॉल लाइफ़साइकल
+  - H2: Call lifecycle
   - H3: call
   - H3: start
   - H3: continue
@@ -2007,33 +2012,33 @@ x-i18n:
   - H3: dtmf
   - H3: end
   - H3: status
-  - H2: लॉग और मेट्रिक्स
+  - H2: Logs और metrics
   - H3: tail
   - H3: latency
-  - H2: Webhook उजागर करना
+  - H2: Webhooks उजागर करना
   - H3: expose
   - H2: संबंधित
 
 ## cli/webhooks.md
 
-- Route: /cli/webhooks
+- मार्ग: /cli/webhooks
 - शीर्षक:
   - H1: openclaw webhooks
-  - H2: सबकमांड
+  - H2: Subcommands
   - H2: webhooks gmail setup
   - H3: आवश्यक
-  - H3: Pub/Sub विकल्प
-  - H3: OpenClaw डिलीवरी विकल्प
-  - H3: gog watch serve विकल्प
-  - H3: Tailscale एक्सपोज़र
+  - H3: Pub/Sub options
+  - H3: OpenClaw delivery options
+  - H3: gog watch serve options
+  - H3: Tailscale exposure
   - H3: आउटपुट
   - H2: webhooks gmail run
-  - H2: एंड-टू-एंड फ़्लो
+  - H2: End-to-end flow
   - H2: संबंधित
 
 ## cli/wiki.md
 
-- Route: /cli/wiki
+- मार्ग: /cli/wiki
 - शीर्षक:
   - H1: openclaw wiki
   - H2: यह किसके लिए है
@@ -2053,145 +2058,145 @@ x-i18n:
   - H3: wiki unsafe-local import
   - H3: wiki obsidian ...
   - H2: व्यावहारिक उपयोग मार्गदर्शन
-  - H2: कॉन्फिगरेशन टाई-इन
+  - H2: Configuration tie-ins
   - H2: संबंधित
 
 ## cli/workboard.md
 
-- Route: /cli/workboard
+- मार्ग: /cli/workboard
 - शीर्षक:
   - H2: उपयोग
   - H2: list
   - H2: create
   - H2: show
   - H2: dispatch
-  - H2: स्लैश कमांड समानता
-  - H2: अनुमतियां
+  - H2: Slash Command Parity
+  - H2: Permissions
   - H2: समस्या निवारण
-  - H3: कोई कार्ड दिखाई नहीं देता
+  - H3: कोई Cards दिखाई नहीं देते
   - H3: Dispatch Data-Only कहता है
-  - H3: Dispatch कुछ शुरू नहीं करता
+  - H3: Dispatch कुछ भी शुरू नहीं करता
   - H2: संबंधित
 
 ## concepts/active-memory.md
 
-- Route: /concepts/active-memory
+- मार्ग: /concepts/active-memory
 - शीर्षक:
-  - H2: क्विक स्टार्ट
-  - H2: गति संबंधी सुझाव
-  - H3: Cerebras सेटअप
+  - H2: Quick start
+  - H2: Speed recommendations
+  - H3: Cerebras setup
   - H2: इसे कैसे देखें
-  - H2: सत्र टॉगल
+  - H2: Session toggle
   - H2: यह कब चलता है
-  - H2: सत्र प्रकार
+  - H2: Session types
   - H2: यह कहां चलता है
-  - H2: इसे क्यों उपयोग करें
+  - H2: इसका उपयोग क्यों करें
   - H2: यह कैसे काम करता है
-  - H2: क्वेरी मोड
-  - H2: प्रॉम्प्ट शैलियां
-  - H2: मॉडल फ़ॉलबैक पॉलिसी
-  - H2: मेमोरी टूल
-  - H3: बिल्ट-इन memory-core
-  - H3: LanceDB मेमोरी
+  - H2: Query modes
+  - H2: Prompt styles
+  - H2: Model fallback policy
+  - H2: Memory tools
+  - H3: Built-in memory-core
+  - H3: LanceDB memory
   - H3: Lossless Claw
-  - H2: उन्नत एस्केप हैच
-  - H2: ट्रांसक्रिप्ट पर्सिस्टेंस
-  - H2: कॉन्फिगरेशन
-  - H2: अनुशंसित सेटअप
-  - H3: कोल्ड-स्टार्ट ग्रेस
-  - H2: डिबगिंग
+  - H2: Advanced escape hatches
+  - H2: Transcript persistence
+  - H2: Configuration
+  - H2: Recommended setup
+  - H3: Cold-start grace
+  - H2: Debugging
   - H2: सामान्य समस्याएं
-  - H2: संबंधित पेज
+  - H2: संबंधित पृष्ठ
 
 ## concepts/agent-loop.md
 
-- Route: /concepts/agent-loop
+- मार्ग: /concepts/agent-loop
 - शीर्षक:
-  - H2: एंट्री पॉइंट
-  - H2: यह कैसे काम करता है (उच्च-स्तर)
-  - H2: क्यूइंग + कंकरेंसी
-  - H2: सत्र + वर्कस्पेस तैयारी
-  - H2: प्रॉम्प्ट असेंबली + सिस्टम प्रॉम्प्ट
-  - H2: हुक पॉइंट (जहां आप इंटरसेप्ट कर सकते हैं)
-  - H3: आंतरिक हुक (Gateway हुक)
-  - H3: Plugin हुक (एजेंट + Gateway लाइफ़साइकल)
-  - H2: स्ट्रीमिंग + आंशिक जवाब
-  - H2: टूल निष्पादन + मैसेजिंग टूल
-  - H2: जवाब आकार देना + सप्रेशन
-  - H2: Compaction + पुनः प्रयास
-  - H2: इवेंट स्ट्रीम (आज)
-  - H2: चैट चैनल हैंडलिंग
-  - H2: टाइमआउट
-  - H2: चीज़ें कहां जल्दी समाप्त हो सकती हैं
+  - H2: Entry points
+  - H2: यह कैसे काम करता है (high-level)
+  - H2: Queueing + concurrency
+  - H2: Session + workspace preparation
+  - H2: Prompt assembly + system prompt
+  - H2: Hook points (जहां आप intercept कर सकते हैं)
+  - H3: Internal hooks (Gateway hooks)
+  - H3: Plugin hooks (agent + gateway lifecycle)
+  - H2: Streaming + partial replies
+  - H2: Tool execution + messaging tools
+  - H2: Reply shaping + suppression
+  - H2: Compaction + retries
+  - H2: Event streams (आज)
+  - H2: Chat channel handling
+  - H2: Timeouts
+  - H2: जहां चीजें जल्दी समाप्त हो सकती हैं
   - H2: संबंधित
 
 ## concepts/agent-runtimes.md
 
-- Route: /concepts/agent-runtimes
+- मार्ग: /concepts/agent-runtimes
 - शीर्षक:
-  - H2: Codex सतहें
-  - H2: रनटाइम स्वामित्व
-  - H2: रनटाइम चयन
-  - H2: GitHub Copilot एजेंट रनटाइम
-  - H2: संगतता अनुबंध
-  - H2: स्थिति लेबल
+  - H2: Codex surfaces
+  - H2: Runtime ownership
+  - H2: Runtime selection
+  - H2: GitHub Copilot agent runtime
+  - H2: Compatibility contract
+  - H2: Status labels
   - H2: संबंधित
 
 ## concepts/agent-workspace.md
 
-- Route: /concepts/agent-workspace
+- मार्ग: /concepts/agent-workspace
 - शीर्षक:
   - H2: डिफ़ॉल्ट स्थान
-  - H2: अतिरिक्त वर्कस्पेस फ़ोल्डर
-  - H2: वर्कस्पेस फ़ाइल मैप
-  - H2: वर्कस्पेस में क्या नहीं है
-  - H2: Git बैकअप (अनुशंसित, निजी)
-  - H2: सीक्रेट कमिट न करें
-  - H2: वर्कस्पेस को नई मशीन पर ले जाना
-  - H2: उन्नत नोट्स
+  - H2: अतिरिक्त workspace folders
+  - H2: Workspace file map
+  - H2: workspace में क्या नहीं है
+  - H2: Git backup (अनुशंसित, निजी)
+  - H2: secrets commit न करें
+  - H2: workspace को नई मशीन पर ले जाना
+  - H2: उन्नत टिप्पणियां
   - H2: संबंधित
 
 ## concepts/agent.md
 
-- रूट: /concepts/agent
+- मार्ग: /concepts/agent
 - शीर्षक:
-  - H2: वर्कस्पेस (आवश्यक)
+  - H2: कार्यस्थान (आवश्यक)
   - H2: बूटस्ट्रैप फ़ाइलें (इंजेक्ट की गई)
-  - H2: बिल्ट-इन टूल्स
+  - H2: अंतर्निहित उपकरण
   - H2: Skills
   - H2: रनटाइम सीमाएँ
   - H2: सत्र
-  - H2: स्ट्रीमिंग के दौरान संचालन
-  - H2: मॉडल refs
+  - H2: स्ट्रीमिंग के दौरान निर्देशन
+  - H2: मॉडल संदर्भ
   - H2: कॉन्फ़िगरेशन (न्यूनतम)
   - H2: संबंधित
 
 ## concepts/architecture.md
 
-- रूट: /concepts/architecture
+- मार्ग: /concepts/architecture
 - शीर्षक:
   - H2: अवलोकन
-  - H2: घटक और फ़्लो
-  - H3: Gateway (daemon)
+  - H2: घटक और प्रवाह
+  - H3: Gateway (डेमन)
   - H3: क्लाइंट (mac ऐप / CLI / वेब एडमिन)
-  - H3: नोड्स (macOS / iOS / Android / हेडलेस)
+  - H3: Node (macOS / iOS / Android / हेडलेस)
   - H3: WebChat
   - H2: कनेक्शन जीवनचक्र (एकल क्लाइंट)
   - H2: वायर प्रोटोकॉल (सारांश)
   - H2: पेयरिंग + स्थानीय भरोसा
   - H2: प्रोटोकॉल टाइपिंग और कोडजन
   - H2: रिमोट एक्सेस
-  - H2: ऑपरेशंस स्नैपशॉट
+  - H2: संचालन स्नैपशॉट
   - H2: अपरिवर्तनीयताएँ
   - H2: संबंधित
 
 ## concepts/channel-docking.md
 
-- रूट: /concepts/channel-docking
+- मार्ग: /concepts/channel-docking
 - शीर्षक:
   - H2: उदाहरण
   - H2: इसका उपयोग क्यों करें
-  - H2: आवश्यक कॉन्फ़िग
+  - H2: आवश्यक कॉन्फ़िगरेशन
   - H2: कमांड
   - H2: क्या बदलता है
   - H2: क्या नहीं बदलता
@@ -2199,7 +2204,7 @@ x-i18n:
 
 ## concepts/commitments.md
 
-- रूट: /concepts/commitments
+- मार्ग: /concepts/commitments
 - शीर्षक:
   - H2: प्रतिबद्धताएँ सक्षम करें
   - H2: यह कैसे काम करता है
@@ -2212,18 +2217,18 @@ x-i18n:
 
 ## concepts/compaction.md
 
-- रूट: /concepts/compaction
+- मार्ग: /concepts/compaction
 - शीर्षक:
   - H2: यह कैसे काम करता है
   - H2: ऑटो-Compaction
   - H2: मैनुअल Compaction
   - H2: कॉन्फ़िगरेशन
   - H3: अलग मॉडल का उपयोग करना
-  - H3: आइडेंटिफ़ायर संरक्षण
+  - H3: पहचानकर्ता संरक्षण
   - H3: सक्रिय ट्रांसक्रिप्ट बाइट गार्ड
   - H3: उत्तराधिकारी ट्रांसक्रिप्ट
   - H3: Compaction सूचनाएँ
-  - H3: मेमरी फ्लश
+  - H3: मेमोरी फ्लश
   - H2: प्लग करने योग्य Compaction प्रदाता
   - H2: Compaction बनाम प्रूनिंग
   - H2: समस्या निवारण
@@ -2231,7 +2236,7 @@ x-i18n:
 
 ## concepts/context-engine.md
 
-- रूट: /concepts/context-engine
+- मार्ग: /concepts/context-engine
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: यह कैसे काम करता है
@@ -2245,13 +2250,13 @@ x-i18n:
   - H3: विफलता अलगाव
   - H3: ownsCompaction
   - H2: कॉन्फ़िगरेशन संदर्भ
-  - H2: Compaction और मेमरी से संबंध
+  - H2: Compaction और मेमोरी से संबंध
   - H2: सुझाव
   - H2: संबंधित
 
 ## concepts/context.md
 
-- रूट: /concepts/context
+- मार्ग: /concepts/context
 - शीर्षक:
   - H2: त्वरित शुरुआत (कॉन्टेक्स्ट निरीक्षण करें)
   - H2: उदाहरण आउटपुट
@@ -2260,9 +2265,9 @@ x-i18n:
   - H3: /context map
   - H2: कॉन्टेक्स्ट विंडो में क्या गिना जाता है
   - H2: OpenClaw सिस्टम प्रॉम्प्ट कैसे बनाता है
-  - H2: इंजेक्ट की गई वर्कस्पेस फ़ाइलें (प्रोजेक्ट कॉन्टेक्स्ट)
-  - H2: Skills: इंजेक्ट की गई बनाम मांग पर लोड की गई
-  - H2: टूल्स: दो लागतें होती हैं
+  - H2: इंजेक्ट की गई कार्यस्थान फ़ाइलें (प्रोजेक्ट कॉन्टेक्स्ट)
+  - H2: Skills: इंजेक्टेड बनाम मांग पर लोडेड
+  - H2: उपकरण: दो लागतें होती हैं
   - H2: कमांड, निर्देश, और "इनलाइन शॉर्टकट"
   - H2: सत्र, Compaction, और प्रूनिंग (क्या बना रहता है)
   - H2: /context वास्तव में क्या रिपोर्ट करता है
@@ -2270,22 +2275,22 @@ x-i18n:
 
 ## concepts/delegate-architecture.md
 
-- रूट: /concepts/delegate-architecture
+- मार्ग: /concepts/delegate-architecture
 - शीर्षक:
   - H2: डेलीगेट क्या है?
   - H2: डेलीगेट क्यों?
   - H2: क्षमता स्तर
-  - H3: स्तर 1: केवल-पढ़ें + ड्राफ़्ट
-  - H3: स्तर 2: प्रतिनिधि के रूप में भेजें
+  - H3: स्तर 1: केवल-पढ़ें + ड्राफ्ट
+  - H3: स्तर 2: ओर से भेजना
   - H3: स्तर 3: सक्रिय
   - H2: पूर्वापेक्षाएँ: अलगाव और हार्डनिंग
-  - H3: कठोर अवरोध (गैर-परक्राम्य)
-  - H3: टूल प्रतिबंध
+  - H3: हार्ड ब्लॉक (समझौता-रहित)
+  - H3: उपकरण प्रतिबंध
   - H3: सैंडबॉक्स अलगाव
   - H3: ऑडिट ट्रेल
   - H2: डेलीगेट सेट अप करना
   - H3: 1. डेलीगेट एजेंट बनाएँ
-  - H3: 2. आइडेंटिटी प्रदाता डेलीगेशन कॉन्फ़िगर करें
+  - H3: 2. आइडेंटिटी प्रोवाइडर डेलिगेशन कॉन्फ़िगर करें
   - H4: Microsoft 365
   - H4: Google Workspace
   - H3: 3. डेलीगेट को चैनलों से बाँधें
@@ -2296,13 +2301,13 @@ x-i18n:
 
 ## concepts/dreaming.md
 
-- रूट: /concepts/dreaming
+- मार्ग: /concepts/dreaming
 - शीर्षक:
   - H2: Dreaming क्या लिखता है
-  - H2: फ़ेज़ मॉडल
+  - H2: चरण मॉडल
   - H2: सत्र ट्रांसक्रिप्ट इनजेशन
   - H2: ड्रीम डायरी
-  - H2: गहरे रैंकिंग सिग्नल
+  - H2: गहरे रैंकिंग संकेत
   - H2: QA शैडो ट्रायल रिपोर्ट कवरेज
   - H2: शेड्यूलिंग
   - H2: त्वरित शुरुआत
@@ -2310,16 +2315,16 @@ x-i18n:
   - H2: CLI वर्कफ़्लो
   - H2: मुख्य डिफ़ॉल्ट
   - H2: ड्रीम्स UI
-  - H2: Dreaming कभी नहीं चलता: स्थिति अवरोधित दिखाती है
+  - H2: Dreaming कभी नहीं चलता: स्थिति अवरुद्ध दिखाती है
   - H2: संबंधित
 
 ## concepts/experimental-features.md
 
-- रूट: /concepts/experimental-features
+- मार्ग: /concepts/experimental-features
 - शीर्षक:
-  - H2: वर्तमान में दस्तावेज़ित फ़्लैग
+  - H2: वर्तमान में प्रलेखित फ़्लैग
   - H2: स्थानीय मॉडल लीन मोड
-  - H3: ये तीन टूल क्यों
+  - H3: ये तीन उपकरण क्यों
   - H3: इसे कब चालू करें
   - H3: इसे कब बंद रखें
   - H3: सक्षम करें
@@ -2328,28 +2333,28 @@ x-i18n:
 
 ## concepts/features.md
 
-- रूट: /concepts/features
+- मार्ग: /concepts/features
 - शीर्षक:
-  - H2: मुख्य बिंदु
+  - H2: प्रमुख बातें
   - H2: पूरी सूची
   - H2: संबंधित
 
 ## concepts/mantis-slack-desktop-runbook.md
 
-- रूट: /concepts/mantis-slack-desktop-runbook
+- मार्ग: /concepts/mantis-slack-desktop-runbook
 - शीर्षक:
   - H2: स्टोरेज मॉडल
   - H2: GitHub डिस्पैच
   - H2: स्थानीय CLI
   - H2: हाइड्रेट मोड
-  - H2: समय व्याख्या
+  - H2: टाइमिंग व्याख्या
   - H2: साक्ष्य चेकलिस्ट
-  - H2: विफलता हैंडलिंग
+  - H2: विफलता प्रबंधन
   - H2: संबंधित
 
 ## concepts/mantis.md
 
-- रूट: /concepts/mantis
+- मार्ग: /concepts/mantis
 - शीर्षक:
   - H2: लक्ष्य
   - H2: गैर-लक्ष्य
@@ -2357,12 +2362,12 @@ x-i18n:
   - H2: कमांड आकार
   - H2: रन जीवनचक्र
   - H2: Discord MVP
-  - H2: मौजूदा QA हिस्से
+  - H2: मौजूदा QA भाग
   - H2: साक्ष्य मॉडल
   - H2: ब्राउज़र और VNC
   - H2: मशीनें
-  - H2: सीक्रेट्स
-  - H2: GitHub आर्टिफ़ैक्ट और PR टिप्पणियाँ
+  - H2: सीक्रेट
+  - H2: GitHub आर्टिफैक्ट और PR टिप्पणियाँ
   - H2: निजी डिप्लॉयमेंट नोट्स
   - H2: परिदृश्य जोड़ना
   - H2: प्रदाता विस्तार
@@ -2370,7 +2375,7 @@ x-i18n:
 
 ## concepts/markdown-formatting.md
 
-- रूट: /concepts/markdown-formatting
+- मार्ग: /concepts/markdown-formatting
 - शीर्षक:
   - H2: लक्ष्य
   - H2: पाइपलाइन
@@ -2381,12 +2386,12 @@ x-i18n:
   - H2: लिंक नीति
   - H2: स्पॉइलर
   - H2: चैनल फ़ॉर्मैटर कैसे जोड़ें या अपडेट करें
-  - H2: सामान्य उलझनें
+  - H2: सामान्य समस्याएँ
   - H2: संबंधित
 
 ## concepts/memory-builtin.md
 
-- रूट: /concepts/memory-builtin
+- मार्ग: /concepts/memory-builtin
 - शीर्षक:
   - H2: यह क्या प्रदान करता है
   - H2: शुरुआत करना
@@ -2399,31 +2404,31 @@ x-i18n:
 
 ## concepts/memory-honcho.md
 
-- रूट: /concepts/memory-honcho
+- मार्ग: /concepts/memory-honcho
 - शीर्षक:
   - H2: यह क्या प्रदान करता है
-  - H2: उपलब्ध टूल
+  - H2: उपलब्ध उपकरण
   - H2: शुरुआत करना
   - H2: कॉन्फ़िगरेशन
-  - H2: मौजूदा मेमरी माइग्रेट करना
+  - H2: मौजूदा मेमोरी माइग्रेट करना
   - H2: यह कैसे काम करता है
-  - H2: Honcho बनाम बिल्टइन मेमरी
+  - H2: Honcho बनाम अंतर्निहित मेमोरी
   - H2: CLI कमांड
   - H2: आगे पढ़ें
   - H2: संबंधित
 
 ## concepts/memory-qmd.md
 
-- रूट: /concepts/memory-qmd
+- मार्ग: /concepts/memory-qmd
 - शीर्षक:
-  - H2: यह बिल्टइन से अधिक क्या जोड़ता है
+  - H2: यह अंतर्निहित पर क्या जोड़ता है
   - H2: शुरुआत करना
   - H3: पूर्वापेक्षाएँ
   - H3: सक्षम करें
   - H2: साइडकार कैसे काम करता है
   - H2: खोज प्रदर्शन और संगतता
   - H2: मॉडल ओवरराइड
-  - H2: अतिरिक्त पथ इंडेक्स करना
+  - H2: अतिरिक्त पाथ इंडेक्स करना
   - H2: सत्र ट्रांसक्रिप्ट इंडेक्स करना
   - H2: खोज दायरा
   - H2: उद्धरण
@@ -2434,35 +2439,35 @@ x-i18n:
 
 ## concepts/memory-search.md
 
-- रूट: /concepts/memory-search
+- मार्ग: /concepts/memory-search
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: समर्थित प्रदाता
   - H2: खोज कैसे काम करती है
   - H2: खोज गुणवत्ता सुधारना
-  - H3: समयगत क्षय
+  - H3: कालिक क्षय
   - H3: MMR (विविधता)
   - H3: दोनों सक्षम करें
-  - H2: मल्टीमॉडल मेमरी
-  - H2: सत्र मेमरी खोज
+  - H2: मल्टीमॉडल मेमोरी
+  - H2: सत्र मेमोरी खोज
   - H2: समस्या निवारण
   - H2: आगे पढ़ें
   - H2: संबंधित
 
 ## concepts/memory.md
 
-- रूट: /concepts/memory
+- मार्ग: /concepts/memory
 - शीर्षक:
   - H2: यह कैसे काम करता है
   - H2: क्या कहाँ जाता है
-  - H2: कार्रवाई-संवेदनशील मेमरी
+  - H2: क्रिया-संवेदनशील मेमोरी
   - H2: अनुमानित प्रतिबद्धताएँ
-  - H2: मेमरी टूल
-  - H2: मेमरी Wiki सहायक Plugin
-  - H2: मेमरी खोज
-  - H2: मेमरी बैकएंड
-  - H2: नॉलेज विकी लेयर
-  - H2: स्वचालित मेमरी फ्लश
+  - H2: मेमोरी उपकरण
+  - H2: मेमोरी Wiki साथी Plugin
+  - H2: मेमोरी खोज
+  - H2: मेमोरी बैकएंड
+  - H2: ज्ञान wiki लेयर
+  - H2: स्वचालित मेमोरी फ्लश
   - H2: Dreaming
   - H2: ग्राउंडेड बैकफ़िल और लाइव प्रमोशन
   - H2: CLI
@@ -2471,7 +2476,7 @@ x-i18n:
 
 ## concepts/message-lifecycle-refactor.md
 
-- रूट: /concepts/message-lifecycle-refactor
+- मार्ग: /concepts/message-lifecycle-refactor
 - शीर्षक:
   - H2: समस्याएँ
   - H2: लक्ष्य
@@ -2482,27 +2487,27 @@ x-i18n:
   - H3: संदेश
   - H3: लक्ष्य
   - H3: संबंध
-  - H3: मूल
+  - H3: उद्गम
   - H3: रसीद
   - H2: प्राप्ति कॉन्टेक्स्ट
   - H2: भेजने का कॉन्टेक्स्ट
   - H2: लाइव कॉन्टेक्स्ट
-  - H2: अडैप्टर सतह
-  - H2: सार्वजनिक SDK कटौती
+  - H2: एडाप्टर सतह
+  - H2: सार्वजनिक SDK कमी
   - H2: चैनल इनबाउंड से संबंध
   - H2: संगतता गार्डरेल
   - H2: आंतरिक स्टोरेज
   - H2: विफलता वर्ग
   - H2: चैनल मैपिंग
   - H2: माइग्रेशन योजना
-  - H3: फ़ेज़ 1: आंतरिक संदेश डोमेन
-  - H3: फ़ेज़ 2: टिकाऊ भेजने का कोर
-  - H3: फ़ेज़ 3: चैनल इनबाउंड ब्रिज
-  - H3: फ़ेज़ 4: तैयार डिस्पैचर ब्रिज
-  - H3: फ़ेज़ 5: एकीकृत लाइव जीवनचक्र
-  - H3: फ़ेज़ 6: सार्वजनिक SDK
-  - H3: फ़ेज़ 7: सभी प्रेषक
-  - H3: फ़ेज़ 8: Turn-नामित संगतता हटाएँ
+  - H3: चरण 1: आंतरिक संदेश डोमेन
+  - H3: चरण 2: टिकाऊ भेजने का कोर
+  - H3: चरण 3: चैनल इनबाउंड ब्रिज
+  - H3: चरण 4: तैयार डिस्पैचर ब्रिज
+  - H3: चरण 5: एकीकृत लाइव जीवनचक्र
+  - H3: चरण 6: सार्वजनिक SDK
+  - H3: चरण 7: सभी प्रेषक
+  - H3: चरण 8: Turn-नामित संगतता हटाएँ
   - H2: परीक्षण योजना
   - H2: खुले प्रश्न
   - H2: स्वीकृति मानदंड
@@ -2510,48 +2515,48 @@ x-i18n:
 
 ## concepts/messages.md
 
-- रूट: /concepts/messages
+- मार्ग: /concepts/messages
 - शीर्षक:
-  - H2: संदेश फ़्लो (उच्च स्तर)
+  - H2: संदेश प्रवाह (उच्च स्तर)
   - H2: इनबाउंड डीड्यूप
   - H2: इनबाउंड डिबाउंसिंग
   - H2: सत्र और डिवाइस
-  - H2: टूल परिणाम मेटाडेटा
+  - H2: उपकरण परिणाम मेटाडेटा
   - H2: इनबाउंड बॉडी और इतिहास कॉन्टेक्स्ट
   - H2: क्यूइंग और फ़ॉलोअप
   - H2: चैनल रन स्वामित्व
   - H2: स्ट्रीमिंग, चंकिंग, और बैचिंग
   - H2: रीजनिंग दृश्यता और टोकन
-  - H2: प्रीफ़िक्स, थ्रेडिंग, और जवाब
-  - H2: मौन जवाब
+  - H2: प्रीफ़िक्स, थ्रेडिंग, और उत्तर
+  - H2: मौन उत्तर
   - H2: संबंधित
 
 ## concepts/model-failover.md
 
-- रूट: /concepts/model-failover
+- मार्ग: /concepts/model-failover
 - शीर्षक:
-  - H2: रनटाइम फ़्लो
+  - H2: रनटाइम प्रवाह
   - H2: चयन स्रोत नीति
-  - H2: ऑथ विफलता स्किप कैश
-  - H2: उपयोगकर्ता-दृश्य फ़ॉलबैक सूचनाएँ
-  - H2: ऑथ स्टोरेज (कुंजियाँ + OAuth)
+  - H2: प्रमाणीकरण विफलता स्किप कैश
+  - H2: उपयोगकर्ता-दृश्यमान फ़ॉलबैक सूचनाएँ
+  - H2: प्रमाणीकरण स्टोरेज (कुंजियाँ + OAuth)
   - H2: प्रोफ़ाइल ID
   - H2: रोटेशन क्रम
-  - H3: सत्र स्टिकीनेस (कैश-अनुकूल)
+  - H3: सत्र स्टिकिनेस (कैश-अनुकूल)
   - H3: OpenAI Codex सदस्यता प्लस API-कुंजी बैकअप
   - H2: कूलडाउन
-  - H2: बिलिंग निष्क्रिय करती है
+  - H2: बिलिंग अक्षम करता है
   - H2: मॉडल फ़ॉलबैक
   - H3: उम्मीदवार श्रृंखला नियम
-  - H3: कौन सी त्रुटियाँ फ़ॉलबैक आगे बढ़ाती हैं
+  - H3: कौन-सी त्रुटियाँ फ़ॉलबैक आगे बढ़ाती हैं
   - H3: कूलडाउन स्किप बनाम प्रोब व्यवहार
   - H2: सत्र ओवरराइड और लाइव मॉडल स्विचिंग
   - H2: ऑब्ज़र्वेबिलिटी और विफलता सारांश
-  - H2: संबंधित कॉन्फ़िग
+  - H2: संबंधित कॉन्फ़िगरेशन
 
 ## concepts/model-providers.md
 
-- रूट: /concepts/model-providers
+- मार्ग: /concepts/model-providers
 - शीर्षक:
   - H2: त्वरित नियम
   - H2: Plugin-स्वामित्व वाला प्रदाता व्यवहार
@@ -2567,10 +2572,10 @@ x-i18n:
   - H3: Z.AI (GLM)
   - H3: Vercel AI Gateway
   - H3: अन्य बंडल किए गए प्रदाता Plugin
-  - H4: जानने योग्य विशिष्टताएँ
+  - H4: जानने योग्य विचित्रताएँ
   - H2: models.providers के माध्यम से प्रदाता (कस्टम/base URL)
   - H3: Moonshot AI (Kimi)
-  - H3: Kimi coding
+  - H3: Kimi कोडिंग
   - H3: Volcano Engine (Doubao)
   - H3: BytePlus (International)
   - H3: Synthetic
@@ -2585,16 +2590,16 @@ x-i18n:
 
 ## concepts/models.md
 
-- रूट: /concepts/models
+- मार्ग: /concepts/models
 - शीर्षक:
   - H2: मॉडल चयन कैसे काम करता है
   - H2: चयन स्रोत और फ़ॉलबैक व्यवहार
   - H2: त्वरित मॉडल नीति
   - H2: ऑनबोर्डिंग (अनुशंसित)
   - H2: कॉन्फ़िग कुंजियाँ (अवलोकन)
-  - H3: सुरक्षित अलाउलिस्ट संपादन
-  - H2: "मॉडल अनुमत नहीं है" (और जवाब क्यों रुक जाते हैं)
-  - H2: चैट में मॉडल स्विच करना (/model)
+  - H3: सुरक्षित allowlist संपादन
+  - H2: "Model is not allowed" (और उत्तर क्यों रुकते हैं)
+  - H2: चैट में मॉडल बदलना (/model)
   - H2: CLI कमांड
   - H3: models list
   - H3: models status
@@ -2604,27 +2609,27 @@ x-i18n:
 
 ## concepts/multi-agent.md
 
-- रूट: /concepts/multi-agent
+- मार्ग: /concepts/multi-agent
 - शीर्षक:
   - H2: "एक एजेंट" क्या है?
-  - H2: पथ (त्वरित मानचित्र)
+  - H2: पाथ (त्वरित मैप)
   - H3: एकल-एजेंट मोड (डिफ़ॉल्ट)
-  - H2: एजेंट हेल्पर
+  - H2: एजेंट सहायक
   - H2: त्वरित शुरुआत
-  - H2: अनेक एजेंट = अनेक लोग, अनेक व्यक्तित्व
-  - H2: क्रॉस-एजेंट QMD मेमरी खोज
-  - H2: एक WhatsApp नंबर, अनेक लोग (DM विभाजन)
+  - H2: कई एजेंट = कई लोग, कई व्यक्तित्व
+  - H2: क्रॉस-एजेंट QMD मेमोरी खोज
+  - H2: एक WhatsApp नंबर, कई लोग (DM विभाजन)
   - H2: रूटिंग नियम (संदेश एजेंट कैसे चुनते हैं)
-  - H2: अनेक खाते / फ़ोन नंबर
+  - H2: कई खाते / फ़ोन नंबर
   - H2: अवधारणाएँ
   - H2: प्लेटफ़ॉर्म उदाहरण
   - H2: सामान्य पैटर्न
-  - H2: प्रति-एजेंट सैंडबॉक्स और टूल कॉन्फ़िगरेशन
+  - H2: प्रति-एजेंट सैंडबॉक्स और उपकरण कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## concepts/oauth.md
 
-- रूट: /concepts/oauth
+- मार्ग: /concepts/oauth
 - शीर्षक:
   - H2: टोकन सिंक (यह क्यों मौजूद है)
   - H2: स्टोरेज (टोकन कहाँ रहते हैं)
@@ -2634,26 +2639,26 @@ x-i18n:
   - H3: Anthropic setup-token
   - H3: OpenAI Codex (ChatGPT OAuth)
   - H2: रिफ़्रेश + समाप्ति
-  - H2: अनेक खाते (प्रोफ़ाइल) + रूटिंग
-  - H3: 1) पसंदीदा: अलग एजेंट
-  - H3: 2) उन्नत: एक एजेंट में अनेक प्रोफ़ाइल
+  - H2: कई खाते (प्रोफ़ाइल) + रूटिंग
+  - H3: 1) पसंदीदा: अलग-अलग एजेंट
+  - H3: 2) उन्नत: एक एजेंट में कई प्रोफ़ाइल
   - H2: संबंधित
 
 ## concepts/parallel-specialist-lanes.md
 
-- रूट: /concepts/parallel-specialist-lanes
+- मार्ग: /concepts/parallel-specialist-lanes
 - शीर्षक:
-  - H2: मूल सिद्धांत
+  - H2: प्रथम सिद्धांत
   - H2: अनुशंसित रोलआउट
-  - H3: चरण 1: लेन अनुबंध + पृष्ठभूमि में भारी काम
+  - H3: चरण 1: लेन अनुबंध + पृष्ठभूमि में भारी कार्य
   - H3: चरण 2: प्राथमिकता और समवर्ती नियंत्रण
-  - H3: चरण 3: समन्वयक / ट्रैफिक कंट्रोलर
+  - H3: चरण 3: समन्वयक / ट्रैफिक नियंत्रक
   - H2: न्यूनतम लेन अनुबंध टेम्पलेट
   - H2: संबंधित
 
 ## concepts/personal-agent-benchmark-pack.md
 
-- रूट: /concepts/personal-agent-benchmark-pack
+- मार्ग: /concepts/personal-agent-benchmark-pack
 - शीर्षक:
   - H2: परिदृश्य
   - H2: गोपनीयता मॉडल
@@ -2661,18 +2666,18 @@ x-i18n:
 
 ## concepts/presence.md
 
-- रूट: /concepts/presence
+- मार्ग: /concepts/presence
 - शीर्षक:
   - H2: उपस्थिति फ़ील्ड (क्या दिखाई देता है)
   - H2: उत्पादक (उपस्थिति कहाँ से आती है)
   - H3: 1) Gateway स्वयं प्रविष्टि
   - H3: 2) WebSocket कनेक्ट
   - H4: एकबारगी CLI कमांड क्यों दिखाई नहीं देते
-  - H3: 3) सिस्टम-इवेंट बीकन
-  - H3: 4) Node कनेक्ट करता है (भूमिका: node)
+  - H3: 3) system-event बीकन
+  - H3: 4) Node कनेक्ट होते हैं (भूमिका: node)
   - H2: मर्ज + डीडुप नियम (instanceId क्यों मायने रखता है)
   - H2: TTL और सीमित आकार
-  - H2: रिमोट/टनल चेतावनी (loopback IP)
+  - H2: रिमोट/टनल सावधानी (लूपबैक IP)
   - H2: उपभोक्ता
   - H3: macOS इंस्टेंस टैब
   - H2: डीबगिंग सुझाव
@@ -2680,13 +2685,13 @@ x-i18n:
 
 ## concepts/progress-drafts.md
 
-- रूट: /concepts/progress-drafts
+- मार्ग: /concepts/progress-drafts
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: उपयोगकर्ता क्या देखते हैं
   - H2: मोड चुनें
   - H2: लेबल कॉन्फ़िगर करें
-  - H2: प्रगति लाइनों को नियंत्रित करें
+  - H2: प्रगति पंक्तियों को नियंत्रित करें
   - H2: चैनल व्यवहार
   - H2: अंतिम रूप देना
   - H2: समस्या निवारण
@@ -2694,74 +2699,74 @@ x-i18n:
 
 ## concepts/qa-e2e-automation.md
 
-- रूट: /concepts/qa-e2e-automation
+- मार्ग: /concepts/qa-e2e-automation
 - शीर्षक:
   - H2: कमांड सतह
   - H2: ऑपरेटर प्रवाह
   - H2: लाइव ट्रांसपोर्ट कवरेज
   - H2: Telegram, Discord, Slack, और WhatsApp QA संदर्भ
-  - H3: साझा CLI फ़्लैग
+  - H3: साझा CLI फ्लैग
   - H3: Telegram QA
   - H3: Discord QA
   - H3: Slack QA
-  - H4: Slack वर्कस्पेस सेट अप करना
+  - H4: Slack कार्यक्षेत्र सेट अप करना
   - H3: WhatsApp QA
   - H3: Convex क्रेडेंशियल पूल
   - H2: रेपो-समर्थित सीड
   - H2: प्रदाता मॉक लेन
-  - H2: ट्रांसपोर्ट अडैप्टर
+  - H2: ट्रांसपोर्ट एडेप्टर
   - H3: चैनल जोड़ना
-  - H3: परिदृश्य हेल्पर नाम
+  - H3: परिदृश्य सहायक नाम
   - H2: रिपोर्टिंग
   - H2: संबंधित दस्तावेज़
 
 ## concepts/qa-matrix.md
 
-- रूट: /concepts/qa-matrix
+- मार्ग: /concepts/qa-matrix
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: लेन क्या करती है
   - H2: CLI
-  - H3: सामान्य फ़्लैग
-  - H3: प्रदाता फ़्लैग
+  - H3: सामान्य फ्लैग
+  - H3: प्रदाता फ्लैग
   - H2: प्रोफ़ाइल
   - H2: परिदृश्य
   - H2: पर्यावरण चर
-  - H2: आउटपुट आर्टिफ़ैक्ट
-  - H2: ट्रायेज सुझाव
+  - H2: आउटपुट आर्टिफैक्ट
+  - H2: ट्रायाज सुझाव
   - H2: लाइव ट्रांसपोर्ट अनुबंध
   - H2: संबंधित
 
 ## concepts/queue-steering.md
 
-- रूट: /concepts/queue-steering
+- मार्ग: /concepts/queue-steering
 - शीर्षक:
   - H2: रनटाइम सीमा
   - H2: मोड
   - H2: बर्स्ट उदाहरण
-  - H2: दायरा
+  - H2: स्कोप
   - H2: डिबाउंस
   - H2: संबंधित
 
 ## concepts/queue.md
 
-- रूट: /concepts/queue
+- मार्ग: /concepts/queue
 - शीर्षक:
   - H2: क्यों
   - H2: यह कैसे काम करता है
   - H2: डिफ़ॉल्ट
   - H2: क्यू मोड
   - H2: क्यू विकल्प
-  - H2: स्टीयर और स्ट्रीमिंग
+  - H2: संचालन और स्ट्रीमिंग
   - H2: प्राथमिकता क्रम
   - H2: प्रति-सत्र ओवरराइड
-  - H2: दायरा और गारंटी
+  - H2: स्कोप और गारंटी
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## concepts/retry.md
 
-- रूट: /concepts/retry
+- मार्ग: /concepts/retry
 - शीर्षक:
   - H2: लक्ष्य
   - H2: डिफ़ॉल्ट
@@ -2775,11 +2780,11 @@ x-i18n:
 
 ## concepts/session-pruning.md
 
-- रूट: /concepts/session-pruning
+- मार्ग: /concepts/session-pruning
 - शीर्षक:
   - H2: यह क्यों मायने रखता है
   - H2: यह कैसे काम करता है
-  - H2: लेगेसी इमेज सफ़ाई
+  - H2: लेगेसी छवि सफ़ाई
   - H2: स्मार्ट डिफ़ॉल्ट
   - H2: सक्षम या अक्षम करें
   - H2: प्रूनिंग बनाम Compaction
@@ -2788,12 +2793,12 @@ x-i18n:
 
 ## concepts/session-tool.md
 
-- रूट: /concepts/session-tool
+- मार्ग: /concepts/session-tool
 - शीर्षक:
   - H2: उपलब्ध टूल
-  - H2: सत्रों को सूचीबद्ध करना और पढ़ना
+  - H2: सत्रों की सूची बनाना और पढ़ना
   - H2: क्रॉस-सत्र संदेश भेजना
-  - H2: स्थिति और ऑर्केस्ट्रेशन हेल्पर
+  - H2: स्थिति और ऑर्केस्ट्रेशन सहायक
   - H2: उप-एजेंट स्पॉन करना
   - H2: दृश्यता
   - H2: आगे पढ़ें
@@ -2801,11 +2806,11 @@ x-i18n:
 
 ## concepts/session.md
 
-- रूट: /concepts/session
+- मार्ग: /concepts/session
 - शीर्षक:
-  - H2: संदेश कैसे रूट किए जाते हैं
+  - H2: संदेश कैसे रूट होते हैं
   - H2: DM अलगाव
-  - H3: Dock लिंक किए गए चैनल
+  - H3: डॉक लिंक किए गए चैनल
   - H2: सत्र जीवनचक्र
   - H2: स्थिति कहाँ रहती है
   - H2: सत्र रखरखाव
@@ -2815,7 +2820,7 @@ x-i18n:
 
 ## concepts/soul.md
 
-- रूट: /concepts/soul
+- मार्ग: /concepts/soul
 - शीर्षक:
   - H2: SOUL.md में क्या होना चाहिए
   - H2: यह क्यों काम करता है
@@ -2826,29 +2831,29 @@ x-i18n:
 
 ## concepts/streaming.md
 
-- रूट: /concepts/streaming
+- मार्ग: /concepts/streaming
 - शीर्षक:
   - H2: ब्लॉक स्ट्रीमिंग (चैनल संदेश)
   - H3: ब्लॉक स्ट्रीमिंग के साथ मीडिया डिलीवरी
-  - H2: चंकिंग एल्गोरिदम (निचली/ऊपरी सीमाएँ)
-  - H2: कोअलेसिंग (स्ट्रीम किए गए ब्लॉक मर्ज करें)
-  - H2: ब्लॉक के बीच मानव-जैसी गति
+  - H2: चंकिंग एल्गोरिदम (निम्न/उच्च सीमाएँ)
+  - H2: कोएलसिंग (स्ट्रीम किए गए ब्लॉक मर्ज करें)
+  - H2: ब्लॉकों के बीच मानव-जैसी गति
   - H2: "चंक स्ट्रीम करें या सब कुछ"
   - H2: प्रीव्यू स्ट्रीमिंग मोड
   - H3: चैनल मैपिंग
   - H3: रनटाइम व्यवहार
   - H3: टूल-प्रगति प्रीव्यू अपडेट
-  - H3: टिप्पणी प्रगति लेन
+  - H3: कमेंट्री प्रगति लेन
   - H2: संबंधित
 
 ## concepts/system-prompt.md
 
-- रूट: /concepts/system-prompt
+- मार्ग: /concepts/system-prompt
 - शीर्षक:
   - H2: संरचना
   - H2: प्रॉम्प्ट मोड
   - H2: प्रॉम्प्ट स्नैपशॉट
-  - H2: वर्कस्पेस बूटस्ट्रैप इंजेक्शन
+  - H2: कार्यक्षेत्र बूटस्ट्रैप इंजेक्शन
   - H2: समय प्रबंधन
   - H2: Skills
   - H2: दस्तावेज़ीकरण
@@ -2856,16 +2861,16 @@ x-i18n:
 
 ## concepts/timezone.md
 
-- रूट: /concepts/timezone
+- मार्ग: /concepts/timezone
 - शीर्षक:
-  - H2: तीन टाइमज़ोन सतहें
-  - H2: उपयोगकर्ता टाइमज़ोन सेट करना
+  - H2: तीन समयक्षेत्र सतहें
+  - H2: उपयोगकर्ता समयक्षेत्र सेट करना
   - H2: कब ओवरराइड करें
   - H2: संबंधित
 
 ## concepts/typebox.md
 
-- रूट: /concepts/typebox
+- मार्ग: /concepts/typebox
 - शीर्षक:
   - H2: मानसिक मॉडल (30 सेकंड)
   - H2: स्कीमा कहाँ रहते हैं
@@ -2875,7 +2880,7 @@ x-i18n:
   - H2: न्यूनतम क्लाइंट (Node.js)
   - H2: कार्य किया हुआ उदाहरण: एक मेथड शुरू से अंत तक जोड़ें
   - H2: Swift कोडजन व्यवहार
-  - H2: वर्शनिंग + संगतता
+  - H2: वर्ज़निंग + संगतता
   - H2: स्कीमा पैटर्न और परंपराएँ
   - H2: लाइव स्कीमा JSON
   - H2: जब आप स्कीमा बदलते हैं
@@ -2883,7 +2888,7 @@ x-i18n:
 
 ## concepts/typing-indicators.md
 
-- रूट: /concepts/typing-indicators
+- मार्ग: /concepts/typing-indicators
 - शीर्षक:
   - H2: डिफ़ॉल्ट
   - H2: मोड
@@ -2893,7 +2898,7 @@ x-i18n:
 
 ## concepts/usage-tracking.md
 
-- रूट: /concepts/usage-tracking
+- मार्ग: /concepts/usage-tracking
 - शीर्षक:
   - H2: यह क्या है
   - H2: यह कहाँ दिखाई देता है
@@ -2914,43 +2919,43 @@ x-i18n:
 
 ## date-time.md
 
-- रूट: /date-time
+- मार्ग: /date-time
 - शीर्षक:
-  - H2: संदेश एनवेलप (डिफ़ॉल्ट रूप से स्थानीय)
+  - H2: संदेश एनवलप (डिफ़ॉल्ट रूप से स्थानीय)
   - H3: उदाहरण
-  - H2: सिस्टम प्रॉम्प्ट: वर्तमान तारीख और समय
-  - H2: सिस्टम इवेंट लाइनें (डिफ़ॉल्ट रूप से स्थानीय)
-  - H3: उपयोगकर्ता टाइमज़ोन + फ़ॉर्मैट कॉन्फ़िगर करें
-  - H2: समय फ़ॉर्मैट पहचान (ऑटो)
+  - H2: सिस्टम प्रॉम्प्ट: वर्तमान दिनांक और समय
+  - H2: सिस्टम इवेंट पंक्तियाँ (डिफ़ॉल्ट रूप से स्थानीय)
+  - H3: उपयोगकर्ता समयक्षेत्र + फ़ॉर्मैट कॉन्फ़िगर करें
+  - H2: समय फ़ॉर्मैट पहचान (स्वचालित)
   - H2: टूल पेलोड + कनेक्टर (कच्चा प्रदाता समय + सामान्यीकृत फ़ील्ड)
   - H2: संबंधित दस्तावेज़
 
 ## debug/node-issue.md
 
-- रूट: /debug/node-issue
+- मार्ग: /debug/node-issue
 - शीर्षक:
   - H1: Node + tsx "\\name is not a function" क्रैश
   - H2: सारांश
   - H2: पर्यावरण
   - H2: पुनरुत्पादन (केवल Node)
   - H2: रेपो में न्यूनतम पुनरुत्पादन
-  - H2: Node वर्शन जाँच
+  - H2: Node संस्करण जाँच
   - H2: नोट्स / परिकल्पना
   - H2: रिग्रेशन इतिहास
   - H2: वर्कअराउंड
   - H2: संदर्भ
-  - H2: अगले कदम
+  - H2: अगले चरण
   - H2: संबंधित
 
 ## diagnostics/flags.md
 
-- रूट: /diagnostics/flags
+- मार्ग: /diagnostics/flags
 - शीर्षक:
   - H2: यह कैसे काम करता है
-  - H2: कॉन्फ़िग के ज़रिए सक्षम करें
+  - H2: कॉन्फ़िग के माध्यम से सक्षम करें
   - H2: env ओवरराइड (एकबारगी)
-  - H2: प्रोफ़ाइलिंग फ़्लैग
-  - H2: टाइमलाइन आर्टिफ़ैक्ट
+  - H2: प्रोफ़ाइलिंग फ्लैग
+  - H2: टाइमलाइन आर्टिफैक्ट
   - H2: लॉग कहाँ जाते हैं
   - H2: लॉग निकालें
   - H2: नोट्स
@@ -2958,27 +2963,27 @@ x-i18n:
 
 ## gateway/authentication.md
 
-- रूट: /gateway/authentication
+- मार्ग: /gateway/authentication
 - शीर्षक:
   - H2: अनुशंसित सेटअप (API कुंजी, कोई भी प्रदाता)
   - H2: Anthropic: Claude CLI और टोकन संगतता
   - H2: Anthropic नोट
-  - H2: मॉडल auth स्थिति जाँचना
+  - H2: मॉडल प्रमाणीकरण स्थिति जाँचना
   - H2: API कुंजी रोटेशन व्यवहार (gateway)
-  - H2: gateway चलते समय प्रदाता auth हटाना
-  - H2: कौन सा क्रेडेंशियल उपयोग हो, इसे नियंत्रित करना
-  - H3: OpenAI और लेगेसी openai-codex id
+  - H2: gateway चलते समय प्रदाता प्रमाणीकरण हटाना
+  - H2: कौन सा क्रेडेंशियल उपयोग हो, नियंत्रित करना
+  - H3: OpenAI और लेगेसी openai-codex ids
   - H3: लॉगिन के दौरान (CLI)
   - H3: प्रति-सत्र (चैट कमांड)
   - H3: प्रति-एजेंट (CLI ओवरराइड)
   - H2: समस्या निवारण
   - H3: "कोई क्रेडेंशियल नहीं मिला"
-  - H3: टोकन समाप्त होने वाला/समाप्त
+  - H3: टोकन समाप्त हो रहा/समाप्त हो चुका
   - H2: संबंधित
 
 ## gateway/background-process.md
 
-- रूट: /gateway/background-process
+- मार्ग: /gateway/background-process
 - शीर्षक:
   - H2: exec टूल
   - H2: चाइल्ड प्रोसेस ब्रिजिंग
@@ -2988,22 +2993,22 @@ x-i18n:
 
 ## gateway/bonjour.md
 
-- रूट: /gateway/bonjour
+- मार्ग: /gateway/bonjour
 - शीर्षक:
   - H2: Tailscale पर वाइड-एरिया Bonjour (Unicast DNS-SD)
   - H3: Gateway कॉन्फ़िग (अनुशंसित)
   - H3: एकबारगी DNS सर्वर सेटअप (gateway होस्ट)
   - H3: Tailscale DNS सेटिंग्स
-  - H3: Gateway लिसनर सुरक्षा (अनुशंसित)
+  - H3: Gateway लिस्नर सुरक्षा (अनुशंसित)
   - H2: क्या विज्ञापित होता है
   - H2: सेवा प्रकार
   - H2: TXT कुंजियाँ (गैर-गुप्त संकेत)
   - H2: macOS पर डीबगिंग
   - H2: Gateway लॉग में डीबगिंग
-  - H2: iOS node पर डीबगिंग
+  - H2: iOS Node पर डीबगिंग
   - H2: Bonjour कब सक्षम करें
   - H2: Bonjour कब अक्षम करें
-  - H2: Docker सावधानियाँ
+  - H2: Docker गॉचा
   - H2: अक्षम Bonjour का समस्या निवारण
   - H2: सामान्य विफलता मोड
   - H2: एस्केप किए गए इंस्टेंस नाम (\032)
@@ -3012,7 +3017,7 @@ x-i18n:
 
 ## gateway/bridge-protocol.md
 
-- रूट: /gateway/bridge-protocol
+- मार्ग: /gateway/bridge-protocol
 - शीर्षक:
   - H2: यह क्यों मौजूद था
   - H2: ट्रांसपोर्ट
@@ -3020,34 +3025,34 @@ x-i18n:
   - H2: फ़्रेम
   - H2: Exec जीवनचक्र इवेंट
   - H2: ऐतिहासिक tailnet उपयोग
-  - H2: वर्शनिंग
+  - H2: वर्ज़निंग
   - H2: संबंधित
 
 ## gateway/cli-backends.md
 
-- रूट: /gateway/cli-backends
+- मार्ग: /gateway/cli-backends
 - शीर्षक:
-  - H2: शुरुआती लोगों के लिए त्वरित शुरुआत
+  - H2: शुरुआती लोगों के लिए अनुकूल त्वरित शुरुआत
   - H2: इसे फ़ॉलबैक के रूप में उपयोग करना
   - H2: कॉन्फ़िगरेशन अवलोकन
   - H3: उदाहरण कॉन्फ़िगरेशन
   - H2: यह कैसे काम करता है
   - H2: सत्र
   - H2: claude-cli सत्रों से फ़ॉलबैक प्रील्यूड
-  - H2: इमेज (पास-थ्रू)
+  - H2: छवियाँ (पास-थ्रू)
   - H2: इनपुट / आउटपुट
   - H2: डिफ़ॉल्ट (Plugin-स्वामित्व)
   - H2: Plugin-स्वामित्व वाले डिफ़ॉल्ट
-  - H2: नेटिव compaction स्वामित्व
+  - H2: नेटिव Compaction स्वामित्व
   - H2: MCP ओवरले बंडल करें
-  - H2: इतिहास कैप फिर से सीड करें
+  - H2: इतिहास सीमा फिर से सीड करें
   - H2: सीमाएँ
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## gateway/config-agents.md
 
-- रूट: /gateway/config-agents
+- मार्ग: /gateway/config-agents
 - शीर्षक:
   - H2: एजेंट डिफ़ॉल्ट
   - H3: agents.defaults.workspace
@@ -3060,7 +3065,7 @@ x-i18n:
   - H3: agents.defaults.bootstrapTotalMaxChars
   - H3: प्रति-एजेंट बूटस्ट्रैप प्रोफ़ाइल ओवरराइड
   - H3: agents.defaults.bootstrapPromptTruncationWarning
-  - H3: कॉन्टेक्स्ट बजट स्वामित्व मैप
+  - H3: संदर्भ बजट स्वामित्व मानचित्र
   - H4: agents.defaults.startupContext
   - H4: agents.defaults.contextLimits
   - H4: agents.list[].contextLimits
@@ -3083,25 +3088,25 @@ x-i18n:
   - H3: agents.defaults.sandbox
   - H3: agents.list (प्रति-एजेंट ओवरराइड)
   - H2: मल्टी-एजेंट रूटिंग
-  - H3: बाइंडिंग मैच फ़ील्ड
+  - H3: बाइंडिंग मिलान फ़ील्ड
   - H3: प्रति-एजेंट एक्सेस प्रोफ़ाइल
   - H2: सत्र
   - H2: संदेश
-  - H3: प्रतिक्रिया उपसर्ग
+  - H3: प्रतिक्रिया प्रीफ़िक्स
   - H3: Ack प्रतिक्रिया
   - H3: इनबाउंड डिबाउंस
   - H3: TTS (टेक्स्ट-टू-स्पीच)
-  - H2: बात
+  - H2: बातचीत
   - H2: संबंधित
 
 ## gateway/config-channels.md
 
-- रूट: /gateway/config-channels
+- मार्ग: /gateway/config-channels
 - शीर्षक:
   - H2: चैनल
   - H3: DM और समूह एक्सेस
   - H3: चैनल मॉडल ओवरराइड
-  - H3: चैनल डिफ़ॉल्ट और heartbeat
+  - H3: चैनल डिफ़ॉल्ट और Heartbeat
   - H3: WhatsApp
   - H3: Telegram
   - H3: Discord
@@ -3117,7 +3122,7 @@ x-i18n:
   - H3: अन्य Plugin चैनल
   - H3: समूह चैट उल्लेख गेटिंग
   - H4: DM इतिहास सीमाएँ
-  - H4: सेल्फ-चैट मोड
+  - H4: स्वयं-चैट मोड
   - H3: कमांड (चैट कमांड हैंडलिंग)
   - H2: संबंधित
 
@@ -3128,7 +3133,7 @@ x-i18n:
   - H2: टूल्स
   - H3: टूल प्रोफ़ाइल
   - H3: टूल समूह
-  - H3: सैंडबॉक्स टूल नीति के भीतर MCP और Plugin टूल्स
+  - H3: सैंडबॉक्स टूल नीति के अंदर MCP और Plugin टूल
   - H3: tools.codeMode
   - H3: tools.allow / tools.deny
   - H3: tools.byProvider
@@ -3153,17 +3158,17 @@ x-i18n:
 - रूट: /gateway/configuration-examples
 - शीर्षक:
   - H2: त्वरित शुरुआत
-  - H3: न्यूनतम आवश्यक
-  - H3: अनुशंसित स्टार्टर
-  - H2: विस्तृत उदाहरण (मुख्य विकल्प)
-  - H3: सिमलिंक किया गया सिबलिंग skill repo
+  - H3: बिल्कुल न्यूनतम
+  - H3: अनुशंसित शुरुआती कॉन्फ़िगरेशन
+  - H2: विस्तारित उदाहरण (मुख्य विकल्प)
+  - H3: सिमलिंक किया गया सिबलिंग skill रिपॉज़िटरी
   - H2: सामान्य पैटर्न
-  - H3: एक ओवरराइड के साथ साझा skill baseline
-  - H3: मल्टी-प्लेटफ़ॉर्म सेटअप
-  - H3: विश्वसनीय Node नेटवर्क auto-approval
-  - H3: सुरक्षित DM मोड (साझा इनबॉक्स / multi-user DMs)
-  - H3: Anthropic API key + MiniMax fallback
-  - H3: कार्य bot (restricted access)
+  - H3: एक ओवरराइड के साथ साझा skill आधार
+  - H3: बहु-प्लैटफ़ॉर्म सेटअप
+  - H3: विश्वसनीय नोड नेटवर्क स्वतः-अनुमोदन
+  - H3: सुरक्षित DM मोड (साझा इनबॉक्स / बहु-उपयोगकर्ता DMs)
+  - H3: Anthropic API कुंजी + MiniMax फ़ॉलबैक
+  - H3: कार्य bot (प्रतिबंधित पहुँच)
   - H3: केवल स्थानीय मॉडल
   - H2: सुझाव
   - H2: संबंधित
@@ -3173,66 +3178,66 @@ x-i18n:
 - रूट: /gateway/configuration-reference
 - शीर्षक:
   - H2: चैनल
-  - H2: एजेंट डिफ़ॉल्ट, multi-agent, sessions, और messages
+  - H2: एजेंट डिफ़ॉल्ट, बहु-एजेंट, सेशन और संदेश
   - H2: टूल्स और कस्टम प्रदाता
   - H2: मॉडल
   - H2: MCP
   - H2: Skills
   - H2: Plugins
-  - H3: Codex harness plugin config
-  - H2: Commitments
+  - H3: Codex हार्नेस Plugin कॉन्फ़िगरेशन
+  - H2: प्रतिबद्धताएँ
   - H2: ब्राउज़र
   - H2: UI
   - H2: Gateway
-  - H3: OpenAI-compatible endpoints
-  - H3: Multi-instance isolation
+  - H3: OpenAI-संगत एंडपॉइंट
+  - H3: बहु-इंस्टेंस आइसोलेशन
   - H3: gateway.tls
   - H3: gateway.reload
-  - H2: Hooks
-  - H3: Gmail integration
-  - H2: Canvas plugin host
-  - H2: Discovery
+  - H2: हुक्स
+  - H3: Gmail इंटीग्रेशन
+  - H2: कैनवास Plugin होस्ट
+  - H2: डिस्कवरी
   - H3: mDNS (Bonjour)
-  - H3: Wide-area (DNS-SD)
-  - H2: Environment
-  - H3: env (inline env vars)
-  - H3: Env var substitution
-  - H2: Secrets
+  - H3: वाइड-एरिया (DNS-SD)
+  - H2: वातावरण
+  - H3: env (इनलाइन env vars)
+  - H3: Env var प्रतिस्थापन
+  - H2: सीक्रेट्स
   - H3: SecretRef
-  - H3: Supported credential surface
-  - H3: Secret providers config
-  - H2: Auth storage
+  - H3: समर्थित क्रेडेंशियल सतह
+  - H3: सीक्रेट प्रदाता कॉन्फ़िगरेशन
+  - H2: Auth स्टोरेज
   - H3: auth.cooldowns
-  - H2: Logging
-  - H2: Diagnostics
-  - H2: Update
+  - H2: लॉगिंग
+  - H2: डायग्नॉस्टिक्स
+  - H2: अपडेट
   - H2: ACP
   - H2: CLI
-  - H2: Wizard
-  - H2: Identity
-  - H2: Bridge (legacy, removed)
+  - H2: विज़ार्ड
+  - H2: पहचान
+  - H2: ब्रिज (लीगेसी, हटाया गया)
   - H2: Cron
   - H3: cron.retry
   - H3: cron.failureAlert
   - H3: cron.failureDestination
-  - H2: Media model template variables
-  - H2: Config includes ($include)
+  - H2: मीडिया मॉडल टेम्पलेट वैरिएबल
+  - H2: कॉन्फ़िगरेशन includes ($include)
   - H2: संबंधित
 
 ## gateway/configuration.md
 
 - रूट: /gateway/configuration
 - शीर्षक:
-  - H2: न्यूनतम कॉन्फ़िग
-  - H2: कॉन्फ़िग संपादित करना
+  - H2: न्यूनतम कॉन्फ़िगरेशन
+  - H2: कॉन्फ़िगरेशन संपादित करना
   - H2: सख्त वैलिडेशन
   - H2: सामान्य कार्य
-  - H2: कॉन्फ़िग hot reload
-  - H3: Reload मोड
-  - H3: क्या hot-apply होता है बनाम किसे restart चाहिए
-  - H3: Reload planning
-  - H2: Config RPC (programmatic updates)
-  - H2: Environment variables
+  - H2: कॉन्फ़िगरेशन हॉट रीलोड
+  - H3: रीलोड मोड
+  - H3: क्या हॉट-अप्लाई होता है बनाम किसे रीस्टार्ट चाहिए
+  - H3: रीलोड योजना
+  - H2: कॉन्फ़िगरेशन RPC (प्रोग्रामेटिक अपडेट)
+  - H2: पर्यावरण वैरिएबल
   - H2: पूरा संदर्भ
   - H2: संबंधित
 
@@ -3242,11 +3247,11 @@ x-i18n:
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: चैट कमांड
-  - H2: export में क्या शामिल है
-  - H2: Privacy model
-  - H2: Stability recorder
+  - H2: एक्सपोर्ट में क्या शामिल है
+  - H2: गोपनीयता मॉडल
+  - H2: स्थिरता रिकॉर्डर
   - H2: उपयोगी विकल्प
-  - H2: diagnostics अक्षम करें
+  - H2: डायग्नॉस्टिक्स अक्षम करें
   - H2: संबंधित
 
 ## gateway/discovery.md
@@ -3254,15 +3259,15 @@ x-i18n:
 - रूट: /gateway/discovery
 - शीर्षक:
   - H2: शब्दावली
-  - H2: हम direct और SSH दोनों क्यों रखते हैं
-  - H2: Discovery inputs (clients कैसे जानें कि gateway कहाँ है)
-  - H3: 1) Bonjour / DNS-SD discovery
-  - H4: Service beacon details
-  - H3: 2) Tailnet (cross-network)
-  - H3: 3) Manual / SSH target
-  - H2: Transport selection (client policy)
-  - H2: Pairing + auth (direct transport)
-  - H2: component के अनुसार ज़िम्मेदारियाँ
+  - H2: हम डायरेक्ट और SSH दोनों क्यों रखते हैं
+  - H2: डिस्कवरी इनपुट (क्लाइंट कैसे जानें कि gateway कहाँ है)
+  - H3: 1) Bonjour / DNS-SD डिस्कवरी
+  - H4: सेवा बीकन विवरण
+  - H3: 2) Tailnet (क्रॉस-नेटवर्क)
+  - H3: 3) मैनुअल / SSH लक्ष्य
+  - H2: ट्रांसपोर्ट चयन (क्लाइंट नीति)
+  - H2: पेयरिंग + auth (डायरेक्ट ट्रांसपोर्ट)
+  - H2: घटक के अनुसार ज़िम्मेदारियाँ
   - H2: संबंधित
 
 ## gateway/doctor.md
@@ -3270,11 +3275,11 @@ x-i18n:
 - रूट: /gateway/doctor
 - शीर्षक:
   - H2: त्वरित शुरुआत
-  - H3: Headless और automation मोड
-  - H2: Read-only lint mode
+  - H3: हेडलेस और ऑटोमेशन मोड
+  - H2: रीड-ओनली लिंट मोड
   - H2: यह क्या करता है (सारांश)
-  - H2: Dreams UI backfill और reset
-  - H2: विस्तृत व्यवहार और rationale
+  - H2: Dreams UI बैकफ़िल और रीसेट
+  - H2: विस्तृत व्यवहार और तर्क
   - H2: संबंधित
 
 ## gateway/external-apps.md
@@ -3282,8 +3287,8 @@ x-i18n:
 - रूट: /gateway/external-apps
 - शीर्षक:
   - H2: आज क्या उपलब्ध है
-  - H2: अनुशंसित पथ
-  - H2: App code बनाम plugin code
+  - H2: अनुशंसित मार्ग
+  - H2: ऐप कोड बनाम Plugin कोड
   - H2: संबंधित
 
 ## gateway/gateway-lock.md
@@ -3291,9 +3296,9 @@ x-i18n:
 - रूट: /gateway/gateway-lock
 - शीर्षक:
   - H2: क्यों
-  - H2: Mechanism
-  - H2: Error surface
-  - H2: Operational notes
+  - H2: तंत्र
+  - H2: त्रुटि सतह
+  - H2: संचालन संबंधी नोट्स
   - H2: संबंधित
 
 ## gateway/health.md
@@ -3301,12 +3306,12 @@ x-i18n:
 - रूट: /gateway/health
 - शीर्षक:
   - H2: त्वरित जाँचें
-  - H2: गहन diagnostics
-  - H2: Health monitor config
-  - H2: Uptime monitoring
-  - H3: Monitoring service setup examples
+  - H2: गहन डायग्नॉस्टिक्स
+  - H2: हेल्थ मॉनिटर कॉन्फ़िगरेशन
+  - H2: अपटाइम मॉनिटरिंग
+  - H3: मॉनिटरिंग सेवा सेटअप उदाहरण
   - H2: जब कुछ विफल हो
-  - H2: समर्पित "health" command
+  - H2: समर्पित "health" कमांड
   - H2: संबंधित
 
 ## gateway/heartbeat.md
@@ -3314,51 +3319,51 @@ x-i18n:
 - रूट: /gateway/heartbeat
 - शीर्षक:
   - H2: त्वरित शुरुआत (शुरुआती)
-  - H2: डिफ़ॉल्ट
-  - H2: Heartbeat prompt किसलिए है
-  - H2: Response contract
-  - H2: कॉन्फ़िग
-  - H3: Scope और precedence
-  - H3: Per-agent heartbeats
-  - H3: Active hours example
-  - H3: 24/7 setup
-  - H3: Multi-account example
-  - H3: Field notes
-  - H2: Delivery behavior
-  - H2: Visibility controls
-  - H3: प्रत्येक flag क्या करता है
-  - H3: Per-channel बनाम per-account examples
-  - H3: Common patterns
-  - H2: HEARTBEAT.md (optional)
-  - H3: tasks: blocks
-  - H3: क्या agent HEARTBEAT.md अपडेट कर सकता है?
-  - H2: Manual wake (on-demand)
-  - H2: Reasoning delivery (optional)
-  - H2: Cost awareness
-  - H2: heartbeat के बाद context overflow
+  - H2: डिफ़ॉल्ट्स
+  - H2: heartbeat प्रॉम्प्ट किसके लिए है
+  - H2: प्रतिक्रिया अनुबंध
+  - H2: कॉन्फ़िगरेशन
+  - H3: स्कोप और प्राथमिकता
+  - H3: प्रति-एजेंट heartbeats
+  - H3: सक्रिय घंटे उदाहरण
+  - H3: 24/7 सेटअप
+  - H3: बहु-अकाउंट उदाहरण
+  - H3: फ़ील्ड नोट्स
+  - H2: डिलीवरी व्यवहार
+  - H2: दृश्यता नियंत्रण
+  - H3: प्रत्येक फ़्लैग क्या करता है
+  - H3: प्रति-चैनल बनाम प्रति-अकाउंट उदाहरण
+  - H3: सामान्य पैटर्न
+  - H2: HEARTBEAT.md (वैकल्पिक)
+  - H3: tasks: ब्लॉक
+  - H3: क्या एजेंट HEARTBEAT.md अपडेट कर सकता है?
+  - H2: मैनुअल वेक (मांग पर)
+  - H2: रीजनिंग डिलीवरी (वैकल्पिक)
+  - H2: लागत जागरूकता
+  - H2: heartbeat के बाद संदर्भ ओवरफ़्लो
   - H2: संबंधित
 
 ## gateway/index.md
 
 - रूट: /gateway
 - शीर्षक:
-  - H2: 5-minute local startup
-  - H2: Runtime model
-  - H2: OpenAI-compatible endpoints
-  - H3: Port और bind precedence
-  - H3: Hot reload modes
-  - H2: Operator command set
-  - H2: Multiple gateways (same host)
-  - H2: Remote access
-  - H2: Supervision और service lifecycle
-  - H2: Dev profile quick path
-  - H2: Protocol quick reference (operator view)
-  - H2: Operational checks
-  - H3: Liveness
-  - H3: Readiness
-  - H3: Gap recovery
-  - H2: Common failure signatures
-  - H2: Safety guarantees
+  - H2: 5-मिनट स्थानीय स्टार्टअप
+  - H2: रनटाइम मॉडल
+  - H2: OpenAI-संगत एंडपॉइंट
+  - H3: पोर्ट और बाइंड प्राथमिकता
+  - H3: हॉट रीलोड मोड
+  - H2: ऑपरेटर कमांड सेट
+  - H2: कई gateways (एक ही होस्ट)
+  - H2: दूरस्थ पहुँच
+  - H2: सुपरविज़न और सेवा जीवनचक्र
+  - H2: देव प्रोफ़ाइल त्वरित पथ
+  - H2: प्रोटोकॉल त्वरित संदर्भ (ऑपरेटर दृश्य)
+  - H2: संचालन संबंधी जाँचें
+  - H3: सक्रियता
+  - H3: तत्परता
+  - H3: गैप रिकवरी
+  - H2: सामान्य विफलता संकेत
+  - H2: सुरक्षा गारंटी
   - H2: संबंधित
 
 ## gateway/local-model-services.md
@@ -3366,39 +3371,39 @@ x-i18n:
 - रूट: /gateway/local-model-services
 - शीर्षक:
   - H2: यह कैसे काम करता है
-  - H2: Config shape
-  - H2: Fields
-  - H2: Inferrs example
-  - H2: ds4 example
-  - H2: Operational notes
+  - H2: कॉन्फ़िगरेशन आकार
+  - H2: फ़ील्ड्स
+  - H2: Inferrs उदाहरण
+  - H2: ds4 उदाहरण
+  - H2: संचालन संबंधी नोट्स
   - H2: संबंधित
 
 ## gateway/local-models.md
 
 - रूट: /gateway/local-models
 - शीर्षक:
-  - H2: Hardware floor
-  - H2: backend चुनें
+  - H2: हार्डवेयर न्यूनतम स्तर
+  - H2: बैकएंड चुनें
   - H2: अनुशंसित: LM Studio + बड़ा स्थानीय मॉडल (Responses API)
-  - H3: Hybrid config: hosted primary, local fallback
-  - H3: Local-first with hosted safety net
-  - H3: Regional hosting / data routing
-  - H2: अन्य OpenAI-compatible local proxies
-  - H2: छोटे या अधिक सख्त backends
-  - H2: Troubleshooting
+  - H3: हाइब्रिड कॉन्फ़िगरेशन: होस्टेड प्राथमिक, स्थानीय फ़ॉलबैक
+  - H3: होस्टेड सुरक्षा नेट के साथ लोकल-फ़र्स्ट
+  - H3: क्षेत्रीय होस्टिंग / डेटा रूटिंग
+  - H2: अन्य OpenAI-संगत स्थानीय प्रॉक्सी
+  - H2: छोटे या अधिक सख्त बैकएंड
+  - H2: समस्या निवारण
   - H2: संबंधित
 
 ## gateway/logging.md
 
 - रूट: /gateway/logging
 - शीर्षक:
-  - H1: Logging
-  - H2: File-based logger
-  - H2: Console capture
-  - H2: Redaction
-  - H2: Gateway WebSocket logs
-  - H3: WS log style
-  - H2: Console formatting (subsystem logging)
+  - H1: लॉगिंग
+  - H2: फ़ाइल-आधारित लॉगर
+  - H2: कंसोल कैप्चर
+  - H2: रिडैक्शन
+  - H2: Gateway WebSocket लॉग्स
+  - H3: WS लॉग शैली
+  - H2: कंसोल फ़ॉर्मैटिंग (सब-सिस्टम लॉगिंग)
   - H2: संबंधित
 
 ## gateway/multiple-gateways.md
@@ -3406,14 +3411,14 @@ x-i18n:
 - रूट: /gateway/multiple-gateways
 - शीर्षक:
   - H2: सर्वोत्तम अनुशंसित सेटअप
-  - H2: Rescue-Bot Quickstart
+  - H2: Rescue-Bot त्वरित शुरुआत
   - H2: यह क्यों काम करता है
-  - H2: What --profile rescue onboard Changes
-  - H2: सामान्य multi-gateway setup
-  - H2: Isolation checklist
-  - H2: Port mapping (derived)
-  - H2: Browser/CDP notes (common footgun)
-  - H2: Manual env example
+  - H2: --profile rescue onboard क्या बदलता है
+  - H2: सामान्य बहु-gateway सेटअप
+  - H2: आइसोलेशन चेकलिस्ट
+  - H2: पोर्ट मैपिंग (व्युत्पन्न)
+  - H2: ब्राउज़र/CDP नोट्स (सामान्य गलती)
+  - H2: मैनुअल env उदाहरण
   - H2: त्वरित जाँचें
   - H2: संबंधित
 
@@ -3427,66 +3432,66 @@ x-i18n:
 
 - रूट: /gateway/openai-http-api
 - शीर्षक:
-  - H2: Authentication
-  - H2: Security boundary (important)
-  - H2: इस endpoint का उपयोग कब करें
-  - H2: Agent-first model contract
-  - H2: endpoint सक्षम करना
-  - H2: endpoint अक्षम करना
-  - H2: Session behavior
-  - H2: यह surface क्यों महत्वपूर्ण है
-  - H2: Model list और agent routing
-  - H2: Streaming (SSE)
-  - H2: Chat tool contract
-  - H3: समर्थित request fields
-  - H3: असमर्थित variants
-  - H3: Non-streaming tool response shape
-  - H3: Streaming tool response shape
-  - H3: Tool follow-up loop
-  - H2: Open WebUI quick setup
-  - H2: Examples
+  - H2: प्रमाणीकरण
+  - H2: सुरक्षा सीमा (महत्वपूर्ण)
+  - H2: इस एंडपॉइंट का उपयोग कब करें
+  - H2: एजेंट-फ़र्स्ट मॉडल अनुबंध
+  - H2: एंडपॉइंट सक्षम करना
+  - H2: एंडपॉइंट अक्षम करना
+  - H2: सेशन व्यवहार
+  - H2: यह सतह क्यों मायने रखती है
+  - H2: मॉडल सूची और एजेंट रूटिंग
+  - H2: स्ट्रीमिंग (SSE)
+  - H2: चैट टूल अनुबंध
+  - H3: समर्थित अनुरोध फ़ील्ड्स
+  - H3: असमर्थित वैरिएंट
+  - H3: नॉन-स्ट्रीमिंग टूल प्रतिक्रिया आकार
+  - H3: स्ट्रीमिंग टूल प्रतिक्रिया आकार
+  - H3: टूल फ़ॉलो-अप लूप
+  - H2: Open WebUI त्वरित सेटअप
+  - H2: उदाहरण
   - H2: संबंधित
 
 ## gateway/openresponses-http-api.md
 
 - रूट: /gateway/openresponses-http-api
 - शीर्षक:
-  - H2: Authentication, security, और routing
-  - H2: Session behavior
-  - H2: Request shape (supported)
-  - H2: Items (input)
+  - H2: प्रमाणीकरण, सुरक्षा और रूटिंग
+  - H2: सेशन व्यवहार
+  - H2: अनुरोध आकार (समर्थित)
+  - H2: आइटम (इनपुट)
   - H3: message
-  - H3: functioncalloutput (turn-based tools)
+  - H3: functioncalloutput (टर्न-आधारित टूल्स)
   - H3: reasoning और itemreference
-  - H2: Tools (client-side function tools)
-  - H2: Images (inputimage)
-  - H2: Files (inputfile)
-  - H2: File + image limits (config)
-  - H2: Streaming (SSE)
-  - H2: Usage
-  - H2: Errors
-  - H2: Examples
+  - H2: टूल्स (क्लाइंट-साइड function टूल्स)
+  - H2: इमेजेस (inputimage)
+  - H2: फ़ाइलें (inputfile)
+  - H2: फ़ाइल + इमेज सीमाएँ (कॉन्फ़िगरेशन)
+  - H2: स्ट्रीमिंग (SSE)
+  - H2: उपयोग
+  - H2: त्रुटियाँ
+  - H2: उदाहरण
   - H2: संबंधित
 
 ## gateway/openshell.md
 
 - रूट: /gateway/openshell
 - शीर्षक:
-  - H2: Prerequisites
+  - H2: पूर्वापेक्षाएँ
   - H2: त्वरित शुरुआत
-  - H2: Workspace modes
+  - H2: वर्कस्पेस मोड
   - H3: mirror
   - H3: remote
-  - H3: mode चुनना
-  - H2: Configuration reference
-  - H2: Examples
-  - H3: Minimal remote setup
-  - H3: Mirror mode with GPU
-  - H3: custom gateway के साथ per-agent OpenShell
-  - H2: Lifecycle management
-  - H3: कब दोबारा बनाएँ
-  - H2: Security hardening
-  - H2: Current limitations
+  - H3: मोड चुनना
+  - H2: कॉन्फ़िगरेशन संदर्भ
+  - H2: उदाहरण
+  - H3: न्यूनतम remote सेटअप
+  - H3: GPU के साथ Mirror मोड
+  - H3: कस्टम gateway के साथ प्रति-एजेंट OpenShell
+  - H2: जीवनचक्र प्रबंधन
+  - H3: कब फिर से बनाना है
+  - H2: सुरक्षा हार्डनिंग
+  - H2: वर्तमान सीमाएँ
   - H2: यह कैसे काम करता है
   - H2: संबंधित
 
@@ -3494,57 +3499,57 @@ x-i18n:
 
 - रूट: /gateway/opentelemetry
 - शीर्षक:
-  - H2: यह साथ में कैसे फिट होता है
+  - H2: यह साथ में कैसे फ़िट होता है
   - H2: त्वरित शुरुआत
-  - H2: Signals exported
-  - H2: Configuration reference
-  - H3: Environment variables
-  - H2: Privacy और content capture
-  - H2: Sampling और flushing
-  - H2: Exported metrics
-  - H3: Model usage
-  - H3: Message flow
-  - H3: Talk
-  - H3: Queues और sessions
-  - H3: Session liveness telemetry
-  - H3: Harness lifecycle
-  - H3: Tool execution
+  - H2: एक्सपोर्ट किए गए सिग्नल
+  - H2: कॉन्फ़िगरेशन संदर्भ
+  - H3: पर्यावरण वैरिएबल
+  - H2: गोपनीयता और कंटेंट कैप्चर
+  - H2: सैंपलिंग और फ़्लशिंग
+  - H2: एक्सपोर्टेड मेट्रिक्स
+  - H3: मॉडल उपयोग
+  - H3: संदेश प्रवाह
+  - H3: बातचीत
+  - H3: कतारें और सेशन
+  - H3: सेशन सक्रियता टेलीमेट्री
+  - H3: हार्नेस जीवनचक्र
+  - H3: टूल निष्पादन
   - H3: Exec
-  - H3: Diagnostics internals (memory और tool loop)
-  - H2: Exported spans
-  - H2: Diagnostic event catalog
-  - H2: exporter के बिना
-  - H2: Disable
+  - H3: डायग्नॉस्टिक्स आंतरिक विवरण (मेमोरी और टूल लूप)
+  - H2: एक्सपोर्ट किए गए स्पैन
+  - H2: डायग्नॉस्टिक इवेंट कैटलॉग
+  - H2: एक्सपोर्टर के बिना
+  - H2: अक्षम करें
   - H2: संबंधित
 
 ## gateway/operator-scopes.md
 
 - रूट: /gateway/operator-scopes
 - शीर्षक:
-  - H2: Roles
-  - H2: Scope levels
-  - H2: Method scope केवल पहला gate है
-  - H2: Device pairing approvals
-  - H2: Node pairing approvals
-  - H2: Shared-secret auth
+  - H2: भूमिकाएँ
+  - H2: स्कोप स्तर
+  - H2: मेथड स्कोप केवल पहला गेट है
+  - H2: डिवाइस पेयरिंग अनुमोदन
+  - H2: नोड पेयरिंग अनुमोदन
+  - H2: साझा-सीक्रेट auth
 
 ## gateway/pairing.md
 
 - रूट: /gateway/pairing
 - शीर्षक:
-  - H2: Concepts
-  - H2: pairing कैसे काम करता है
-  - H2: CLI workflow (headless friendly)
-  - H2: API surface (gateway protocol)
-  - H2: Node command gating (2026.3.31+)
-  - H2: Node event trust boundaries (2026.3.31+)
-  - H2: Auto-approval (macOS app)
-  - H2: Trusted-CIDR device auto-approval
-  - H2: Metadata-upgrade auto-approval
-  - H2: QR pairing helpers
-  - H2: Locality और forwarded headers
-  - H2: Storage (local, private)
-  - H2: Transport behavior
+  - H2: अवधारणाएँ
+  - H2: पेयरिंग कैसे काम करती है
+  - H2: CLI वर्कफ़्लो (हेडलेस के अनुकूल)
+  - H2: API सतह (gateway प्रोटोकॉल)
+  - H2: नोड कमांड gating (2026.3.31+)
+  - H2: नोड इवेंट ट्रस्ट सीमाएँ (2026.3.31+)
+  - H2: स्वतः-अनुमोदन (macOS ऐप)
+  - H2: Trusted-CIDR डिवाइस स्वतः-अनुमोदन
+  - H2: मेटाडेटा-अपग्रेड स्वतः-अनुमोदन
+  - H2: QR पेयरिंग सहायक
+  - H2: स्थानीयता और forwarded headers
+  - H2: स्टोरेज (स्थानीय, निजी)
+  - H2: ट्रांसपोर्ट व्यवहार
   - H2: संबंधित
 
 ## gateway/prometheus.md
@@ -3552,43 +3557,43 @@ x-i18n:
 - रूट: /gateway/prometheus
 - शीर्षक:
   - H2: त्वरित शुरुआत
-  - H2: Metrics exported
-  - H2: Label policy
-  - H2: PromQL recipes
+  - H2: एक्सपोर्ट किए गए मेट्रिक्स
+  - H2: लेबल नीति
+  - H2: PromQL रेसिपी
   - H2: Prometheus और OpenTelemetry export के बीच चयन
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H2: संबंधित
 
 ## gateway/protocol.md
 
 - रूट: /gateway/protocol
 - शीर्षक:
-  - H2: Transport
-  - H2: Handshake (connect)
-  - H3: Node example
-  - H2: Framing
-  - H2: Roles + scopes
-  - H3: Roles
-  - H3: Scopes (operator)
-  - H3: Caps/commands/permissions (node)
-  - H2: Presence
-  - H3: Node background alive event
-  - H2: Broadcast event scoping
-  - H2: Common RPC method families
-  - H3: Common event families
-  - H3: Node helper methods
-  - H3: Task ledger RPCs
-  - H3: Operator helper methods
-  - H3: models.list views
-  - H2: Exec approvals
-  - H2: Agent delivery fallback
-  - H2: Versioning
-  - H3: Client constants
+  - H2: ट्रांसपोर्ट
+  - H2: हैंडशेक (कनेक्ट)
+  - H3: Node उदाहरण
+  - H2: फ़्रेमिंग
+  - H2: भूमिकाएँ + स्कोप
+  - H3: भूमिकाएँ
+  - H3: स्कोप (ऑपरेटर)
+  - H3: कैप्स/कमांड/अनुमतियाँ (नोड)
+  - H2: उपस्थिति
+  - H3: नोड बैकग्राउंड alive इवेंट
+  - H2: ब्रॉडकास्ट इवेंट स्कोपिंग
+  - H2: सामान्य RPC मेथड परिवार
+  - H3: सामान्य इवेंट परिवार
+  - H3: नोड हेल्पर मेथड्स
+  - H3: कार्य लेजर RPCs
+  - H3: ऑपरेटर हेल्पर मेथड्स
+  - H3: models.list दृश्य
+  - H2: Exec अनुमोदन
+  - H2: एजेंट डिलीवरी फ़ॉलबैक
+  - H2: वर्ज़निंग
+  - H3: क्लाइंट constants
   - H2: Auth
-  - H2: Device identity + pairing
-  - H3: Device auth migration diagnostics
-  - H2: TLS + pinning
-  - H2: Scope
+  - H2: डिवाइस पहचान + पेयरिंग
+  - H3: डिवाइस auth माइग्रेशन डायग्नॉस्टिक्स
+  - H2: TLS + पिनिंग
+  - H2: स्कोप
   - H2: संबंधित
 
 ## gateway/remote-gateway-readme.md
@@ -3596,17 +3601,17 @@ x-i18n:
 - रूट: /gateway/remote-gateway-readme
 - शीर्षक:
   - H1: Remote Gateway के साथ OpenClaw.app चलाना
-  - H2: Overview
+  - H2: अवलोकन
   - H2: त्वरित सेटअप
-  - H3: Step 1: SSH Config जोड़ें
-  - H3: Step 2: SSH Key कॉपी करें
-  - H3: Step 3: Remote Gateway Auth कॉन्फ़िगर करें
-  - H3: Step 4: SSH Tunnel शुरू करें
-  - H3: Step 5: OpenClaw.app restart करें
-  - H2: Login पर Auto-Start Tunnel
-  - H3: PLIST file बनाएँ
+  - H3: चरण 1: SSH Config जोड़ें
+  - H3: चरण 2: SSH Key कॉपी करें
+  - H3: चरण 3: Remote Gateway Auth कॉन्फ़िगर करें
+  - H3: चरण 4: SSH Tunnel शुरू करें
+  - H3: चरण 5: OpenClaw.app रीस्टार्ट करें
+  - H2: लॉगिन पर Tunnel स्वतः शुरू करें
+  - H3: PLIST फ़ाइल बनाएँ
   - H3: Launch Agent लोड करें
-  - H2: Troubleshooting
+  - H2: समस्या निवारण
   - H2: यह कैसे काम करता है
   - H2: संबंधित
 
@@ -3614,22 +3619,22 @@ x-i18n:
 
 - मार्ग: /gateway/remote
 - शीर्षक:
-  - H2: मूल विचार
+  - H2: मुख्य विचार
   - H2: सामान्य VPN और tailnet सेटअप
   - H3: आपके tailnet में हमेशा चालू Gateway
   - H3: होम डेस्कटॉप Gateway चलाता है
   - H3: लैपटॉप Gateway चलाता है
   - H2: कमांड प्रवाह (क्या कहां चलता है)
   - H2: SSH टनल (CLI + टूल)
-  - H2: CLI रिमोट डिफ़ॉल्ट
+  - H2: CLI रिमोट डिफॉल्ट
   - H2: क्रेडेंशियल प्राथमिकता
   - H2: चैट UI रिमोट एक्सेस
   - H2: macOS ऐप रिमोट मोड
   - H2: सुरक्षा नियम (रिमोट/VPN)
   - H3: macOS: LaunchAgent के जरिए स्थायी SSH टनल
-  - H4: चरण 1: SSH कॉन्फ़िग जोड़ें
+  - H4: चरण 1: SSH कॉन्फिग जोड़ें
   - H4: चरण 2: SSH कुंजी कॉपी करें (एक बार)
-  - H4: चरण 3: gateway टोकन कॉन्फ़िगर करें
+  - H4: चरण 3: gateway टोकन कॉन्फिगर करें
   - H4: चरण 4: LaunchAgent बनाएं
   - H4: चरण 5: LaunchAgent लोड करें
   - H4: समस्या निवारण
@@ -3639,15 +3644,15 @@ x-i18n:
 
 - मार्ग: /gateway/sandbox-vs-tool-policy-vs-elevated
 - शीर्षक:
-  - H2: त्वरित डीबग
+  - H2: त्वरित डिबग
   - H2: सैंडबॉक्स: टूल कहां चलते हैं
-  - H3: Bind mounts (सुरक्षा त्वरित जांच)
+  - H3: बाइंड माउंट (सुरक्षा त्वरित जांच)
   - H2: टूल नीति: कौन से टूल मौजूद हैं/कॉल किए जा सकते हैं
-  - H3: टूल समूह (शॉर्टहैंड)
-  - H2: उन्नत: केवल exec "होस्ट पर चलाएं"
-  - H2: सामान्य "sandbox jail" सुधार
-  - H3: "टूल X sandbox tool policy द्वारा अवरुद्ध"
-  - H3: "मुझे लगा यह main था, फिर यह sandboxed क्यों है?"
+  - H3: टूल समूह (संक्षिप्त रूप)
+  - H2: एलिवेटेड: केवल exec "होस्ट पर चलाएं"
+  - H2: सामान्य "सैंडबॉक्स जेल" सुधार
+  - H3: "टूल X सैंडबॉक्स टूल नीति द्वारा ब्लॉक किया गया"
+  - H3: "मुझे लगा यह मुख्य था, यह सैंडबॉक्स में क्यों है?"
   - H2: संबंधित
 
 ## gateway/sandboxing.md
@@ -3665,10 +3670,10 @@ x-i18n:
   - H4: वर्कस्पेस मोड
   - H4: OpenShell जीवनचक्र
   - H2: वर्कस्पेस एक्सेस
-  - H2: कस्टम bind mounts
+  - H2: कस्टम बाइंड माउंट
   - H2: इमेज और सेटअप
   - H2: setupCommand (एक बार का कंटेनर सेटअप)
-  - H2: टूल नीति और escape hatches
+  - H2: टूल नीति और निकास मार्ग
   - H2: मल्टी-एजेंट ओवरराइड
   - H2: न्यूनतम सक्षम उदाहरण
   - H2: संबंधित
@@ -3677,16 +3682,16 @@ x-i18n:
 
 - मार्ग: /gateway/secrets-plan-contract
 - शीर्षक:
-  - H2: प्लान फ़ाइल का आकार
-  - H2: प्रदाता upserts और deletes
+  - H2: प्लान फ़ाइल आकार
+  - H2: प्रोवाइडर upsert और delete
   - H2: समर्थित लक्ष्य दायरा
   - H2: लक्ष्य प्रकार व्यवहार
-  - H2: पथ सत्यापन नियम
+  - H2: पाथ सत्यापन नियम
   - H2: विफलता व्यवहार
-  - H2: Exec प्रदाता सहमति व्यवहार
-  - H2: रनटाइम और ऑडिट दायरा नोट्स
+  - H2: Exec प्रोवाइडर सहमति व्यवहार
+  - H2: रनटाइम और ऑडिट दायरे पर टिप्पणियां
   - H2: ऑपरेटर जांच
-  - H2: संबंधित दस्तावेज़
+  - H2: संबंधित दस्तावेज
 
 ## gateway/secrets.md
 
@@ -3695,23 +3700,23 @@ x-i18n:
   - H2: लक्ष्य और रनटाइम मॉडल
   - H2: एजेंट-एक्सेस सीमा
   - H2: सक्रिय-सतह फ़िल्टरिंग
-  - H2: Gateway प्रमाणीकरण सतह डायग्नोस्टिक्स
+  - H2: Gateway auth सतह निदान
   - H2: ऑनबोर्डिंग संदर्भ प्रीफ्लाइट
   - H2: SecretRef अनुबंध
-  - H2: प्रदाता कॉन्फ़िग
+  - H2: प्रोवाइडर कॉन्फिग
   - H2: फ़ाइल-समर्थित API कुंजियां
   - H2: Exec एकीकरण उदाहरण
   - H2: MCP सर्वर पर्यावरण चर
-  - H2: Sandbox SSH प्रमाणीकरण सामग्री
+  - H2: सैंडबॉक्स SSH auth सामग्री
   - H2: समर्थित क्रेडेंशियल सतह
   - H2: आवश्यक व्यवहार और प्राथमिकता
   - H2: सक्रियण ट्रिगर
-  - H2: कमजोर और पुनर्प्राप्त सिग्नल
-  - H2: कमांड-पथ समाधान
-  - H2: ऑडिट और कॉन्फ़िगर वर्कफ़्लो
+  - H2: कमजोर और पुनर्प्राप्त संकेत
+  - H2: कमांड-पाथ समाधान
+  - H2: ऑडिट और कॉन्फिगर वर्कफ़्लो
   - H2: एक-तरफ़ा सुरक्षा नीति
-  - H2: लेगेसी प्रमाणीकरण संगतता नोट्स
-  - H2: Web UI नोट
+  - H2: लीगेसी auth संगतता टिप्पणियां
+  - H2: Web UI टिप्पणी
   - H2: संबंधित
 
 ## gateway/security/audit-checks.md
@@ -3725,13 +3730,13 @@ x-i18n:
 - मार्ग: /gateway/security/exposure-runbook
 - शीर्षक:
   - H2: एक्सपोज़र पैटर्न चुनें
-  - H2: प्री-फ्लाइट इन्वेंटरी
+  - H2: प्री-फ्लाइट इन्वेंट्री
   - H2: बेसलाइन जांच
   - H2: न्यूनतम सुरक्षित बेसलाइन
   - H2: DM और समूह एक्सपोज़र
   - H2: रिवर्स प्रॉक्सी जांच
   - H2: टूल और सैंडबॉक्स समीक्षा
-  - H2: बदलाव के बाद सत्यापन
+  - H2: परिवर्तन के बाद सत्यापन
   - H2: रोलबैक प्लान
   - H2: समीक्षा चेकलिस्ट
 
@@ -3740,82 +3745,82 @@ x-i18n:
 - मार्ग: /gateway/security
 - शीर्षक:
   - H2: पहले दायरा: निजी सहायक सुरक्षा मॉडल
-  - H2: त्वरित जांच: openclaw security audit
-  - H3: प्रकाशित पैकेज dependency lock
-  - H3: डिप्लॉयमेंट और होस्ट trust
+  - H2: त्वरित जांच: openclaw सुरक्षा ऑडिट
+  - H3: प्रकाशित पैकेज निर्भरता लॉक
+  - H3: डिप्लॉयमेंट और होस्ट भरोसा
   - H3: सुरक्षित फ़ाइल संचालन
   - H3: साझा Slack वर्कस्पेस: वास्तविक जोखिम
   - H3: कंपनी-साझा एजेंट: स्वीकार्य पैटर्न
-  - H2: Gateway और node trust अवधारणा
-  - H2: Trust boundary matrix
+  - H2: Gateway और Node भरोसा अवधारणा
+  - H2: भरोसा सीमा मैट्रिक्स
   - H2: डिज़ाइन के अनुसार कमजोरियां नहीं
-  - H2: 60 सेकंड में कठोर बेसलाइन
+  - H2: 60 सेकंड में सख्त बेसलाइन
   - H2: साझा इनबॉक्स त्वरित नियम
   - H2: संदर्भ दृश्यता मॉडल
   - H2: ऑडिट क्या जांचता है (उच्च स्तर)
-  - H2: क्रेडेंशियल भंडारण मानचित्र
+  - H2: क्रेडेंशियल संग्रहण मानचित्र
   - H2: सुरक्षा ऑडिट चेकलिस्ट
   - H2: सुरक्षा ऑडिट शब्दावली
   - H2: HTTP पर Control UI
-  - H2: असुरक्षित या खतरनाक flags सारांश
-  - H2: रिवर्स प्रॉक्सी कॉन्फ़िगरेशन
-  - H2: HSTS और origin नोट्स
-  - H2: स्थानीय session logs डिस्क पर रहते हैं
+  - H2: असुरक्षित या खतरनाक फ़्लैग सारांश
+  - H2: रिवर्स प्रॉक्सी कॉन्फिगरेशन
+  - H2: HSTS और origin टिप्पणियां
+  - H2: स्थानीय सेशन लॉग डिस्क पर रहते हैं
   - H2: Node निष्पादन (system.run)
   - H2: डायनेमिक Skills (watcher / remote nodes)
   - H2: खतरा मॉडल
-  - H2: मूल अवधारणा: बुद्धिमत्ता से पहले एक्सेस नियंत्रण
+  - H2: मुख्य अवधारणा: बुद्धिमत्ता से पहले एक्सेस नियंत्रण
   - H2: कमांड प्राधिकरण मॉडल
-  - H2: Control plane tools जोखिम
+  - H2: कंट्रोल प्लेन टूल जोखिम
   - H2: Plugins
-  - H2: DM एक्सेस मॉडल: pairing, allowlist, open, disabled
-  - H2: DM session isolation (multi-user mode)
+  - H2: DM एक्सेस मॉडल: पेयरिंग, allowlist, खुला, अक्षम
+  - H2: DM सेशन अलगाव (बहु-उपयोगकर्ता मोड)
   - H3: सुरक्षित DM मोड (अनुशंसित)
-  - H2: DMs और समूहों के लिए allowlists
-  - H2: Prompt injection (यह क्या है, क्यों महत्वपूर्ण है)
-  - H2: बाहरी सामग्री special-token sanitization
-  - H2: असुरक्षित बाहरी सामग्री bypass flags
-  - H3: Prompt injection के लिए सार्वजनिक DMs आवश्यक नहीं
-  - H3: स्व-होस्टेड LLM बैकएंड
-  - H3: मॉडल क्षमता (सुरक्षा नोट)
-  - H2: समूहों में reasoning और verbose output
-  - H2: कॉन्फ़िगरेशन hardening उदाहरण
+  - H2: DM और समूहों के लिए allowlist
+  - H2: प्रॉम्प्ट इंजेक्शन (यह क्या है, क्यों मायने रखता है)
+  - H2: बाहरी सामग्री विशेष-टोकन सैनिटाइजेशन
+  - H2: असुरक्षित बाहरी सामग्री बाइपास फ़्लैग
+  - H3: प्रॉम्प्ट इंजेक्शन के लिए सार्वजनिक DM आवश्यक नहीं
+  - H3: स्वयं-होस्ट किए गए LLM बैकएंड
+  - H3: मॉडल क्षमता (सुरक्षा टिप्पणी)
+  - H2: समूहों में रीजनिंग और वर्बोज़ आउटपुट
+  - H2: कॉन्फिगरेशन सख्तीकरण उदाहरण
   - H3: फ़ाइल अनुमतियां
   - H3: नेटवर्क एक्सपोज़र (bind, port, firewall)
-  - H3: UFW के साथ Docker port publishing
-  - H3: mDNS/Bonjour discovery
-  - H3: Gateway WebSocket लॉक डाउन करें (स्थानीय प्रमाणीकरण)
-  - H3: Tailscale Serve identity headers
-  - H3: node host के जरिए ब्राउज़र नियंत्रण (अनुशंसित)
-  - H3: डिस्क पर secrets
+  - H3: UFW के साथ Docker पोर्ट प्रकाशन
+  - H3: mDNS/Bonjour डिस्कवरी
+  - H3: Gateway WebSocket लॉक डाउन करें (local auth)
+  - H3: Tailscale Serve पहचान हेडर
+  - H3: Node होस्ट के जरिए ब्राउज़र नियंत्रण (अनुशंसित)
+  - H3: डिस्क पर सीक्रेट
   - H3: वर्कस्पेस .env फ़ाइलें
-  - H3: Logs और transcripts (redaction और retention)
-  - H3: DMs: डिफ़ॉल्ट रूप से pairing
+  - H3: लॉग और ट्रांसक्रिप्ट (redaction और retention)
+  - H3: DM: डिफॉल्ट रूप से पेयरिंग
   - H3: समूह: हर जगह उल्लेख आवश्यक
   - H3: अलग नंबर (WhatsApp, Signal, Telegram)
-  - H3: केवल-पठन मोड (sandbox और tools के जरिए)
+  - H3: केवल-पढ़ने वाला मोड (सैंडबॉक्स और टूल के जरिए)
   - H3: सुरक्षित बेसलाइन (कॉपी/पेस्ट)
-  - H2: Sandboxing (अनुशंसित)
-  - H3: उप-एजेंट delegation guardrail
+  - H2: सैंडबॉक्सिंग (अनुशंसित)
+  - H3: सब-एजेंट डेलिगेशन गार्डरेल
   - H2: ब्राउज़र नियंत्रण जोखिम
-  - H3: ब्राउज़र SSRF नीति (डिफ़ॉल्ट रूप से सख्त)
-  - H2: प्रति-एजेंट एक्सेस प्रोफ़ाइल (multi-agent)
-  - H3: उदाहरण: पूर्ण एक्सेस (कोई sandbox नहीं)
-  - H3: उदाहरण: केवल-पठन tools + केवल-पठन वर्कस्पेस
-  - H3: उदाहरण: कोई filesystem/shell एक्सेस नहीं (provider messaging allowed)
+  - H3: ब्राउज़र SSRF नीति (डिफॉल्ट रूप से सख्त)
+  - H2: प्रति-एजेंट एक्सेस प्रोफ़ाइल (मल्टी-एजेंट)
+  - H3: उदाहरण: पूरा एक्सेस (कोई सैंडबॉक्स नहीं)
+  - H3: उदाहरण: केवल-पढ़ने वाले टूल + केवल-पढ़ने वाला वर्कस्पेस
+  - H3: उदाहरण: कोई फ़ाइल सिस्टम/शेल एक्सेस नहीं (प्रोवाइडर मैसेजिंग अनुमत)
   - H2: घटना प्रतिक्रिया
   - H3: सीमित करें
-  - H3: रोटेट करें (यदि secrets लीक हुए हों तो compromise मानें)
-  - H3: ऑडिट
+  - H3: रोटेट करें (यदि सीक्रेट लीक हुए हैं तो समझौता मानें)
+  - H3: ऑडिट करें
   - H3: रिपोर्ट के लिए एकत्र करें
-  - H2: Secret scanning
-  - H2: सुरक्षा मुद्दों की रिपोर्टिंग
+  - H2: सीक्रेट स्कैनिंग
+  - H2: सुरक्षा समस्याओं की रिपोर्टिंग
 
 ## gateway/security/secure-file-operations.md
 
 - मार्ग: /gateway/security/secure-file-operations
 - शीर्षक:
-  - H2: डिफ़ॉल्ट: कोई Python helper नहीं
+  - H2: डिफॉल्ट: कोई Python हेल्पर नहीं
   - H2: Python के बिना क्या सुरक्षित रहता है
   - H2: Python क्या जोड़ता है
   - H2: Plugin और core मार्गदर्शन
@@ -3833,13 +3838,13 @@ x-i18n:
 - मार्ग: /gateway/tailscale
 - शीर्षक:
   - H2: मोड
-  - H2: प्रमाणीकरण
-  - H2: कॉन्फ़िग उदाहरण
-  - H3: केवल-tailnet (Serve)
-  - H3: केवल-tailnet (Tailnet IP से bind करें)
+  - H2: Auth
+  - H2: कॉन्फिग उदाहरण
+  - H3: केवल Tailnet (Serve)
+  - H3: केवल Tailnet (Tailnet IP से bind करें)
   - H3: सार्वजनिक इंटरनेट (Funnel + साझा पासवर्ड)
   - H2: CLI उदाहरण
-  - H2: नोट्स
+  - H2: टिप्पणियां
   - H2: ब्राउज़र नियंत्रण (रिमोट Gateway + स्थानीय ब्राउज़र)
   - H2: Tailscale पूर्वापेक्षाएं + सीमाएं
   - H2: और जानें
@@ -3852,7 +3857,7 @@ x-i18n:
   - H2: प्रमाणीकरण
   - H2: सुरक्षा सीमा (महत्वपूर्ण)
   - H2: अनुरोध body
-  - H2: नीति + routing व्यवहार
+  - H2: नीति + रूटिंग व्यवहार
   - H2: प्रतिक्रियाएं
   - H2: उदाहरण
   - H2: संबंधित
@@ -3863,25 +3868,25 @@ x-i18n:
 - शीर्षक:
   - H2: कमांड सीढ़ी
   - H2: अपडेट के बाद
-  - H2: split brain installs और newer config guard
-  - H2: रोलबैक के बाद protocol mismatch
-  - H2: path escape के रूप में Skill symlink छोड़ा गया
-  - H2: लंबे संदर्भ के लिए Anthropic 429 अतिरिक्त उपयोग आवश्यक
-  - H2: upstream 403 blocked responses
-  - H2: स्थानीय OpenAI-compatible backend सीधे probes पास करता है लेकिन agent runs विफल होते हैं
+  - H2: स्प्लिट-ब्रेन इंस्टॉल और नया कॉन्फिग गार्ड
+  - H2: रोलबैक के बाद प्रोटोकॉल असंगति
+  - H2: Skill symlink पाथ escape के रूप में छोड़ा गया
+  - H2: Anthropic 429 लंबे संदर्भ के लिए अतिरिक्त उपयोग आवश्यक
+  - H2: upstream 403 ब्लॉक की गई प्रतिक्रियाएं
+  - H2: स्थानीय OpenAI-compatible बैकएंड सीधे probes पास करता है लेकिन एजेंट रन विफल होते हैं
   - H2: कोई उत्तर नहीं
-  - H2: Dashboard control UI connectivity
-  - H3: Auth detail codes quick map
-  - H2: Gateway service नहीं चल रही
-  - H2: macOS gateway चुपचाप जवाब देना बंद करता है, फिर dashboard छूने पर फिर शुरू होता है
-  - H2: अधिक मेमोरी उपयोग के दौरान Gateway exits
-  - H2: Gateway ने अमान्य config अस्वीकार किया
-  - H2: Gateway probe warnings
-  - H2: Channel connected, messages not flowing
-  - H2: Cron और Heartbeat delivery
-  - H2: Node paired, tool fails
-  - H2: Browser tool fails
-  - H2: यदि आपने अपग्रेड किया और कुछ अचानक टूट गया
+  - H2: डैशबोर्ड control UI कनेक्टिविटी
+  - H3: Auth विवरण कोड त्वरित मानचित्र
+  - H2: Gateway सेवा नहीं चल रही
+  - H2: macOS gateway चुपचाप जवाब देना बंद करता है, फिर डैशबोर्ड छूने पर फिर शुरू करता है
+  - H2: अधिक मेमोरी उपयोग के दौरान Gateway बाहर निकलता है
+  - H2: Gateway ने अमान्य कॉन्फिग अस्वीकार किया
+  - H2: Gateway probe चेतावनियां
+  - H2: चैनल कनेक्ट है, संदेश प्रवाहित नहीं हो रहे
+  - H2: Cron और Heartbeat डिलीवरी
+  - H2: Node पेयर हुआ, टूल विफल
+  - H2: ब्राउज़र टूल विफल
+  - H2: यदि आपने अपग्रेड किया और अचानक कुछ टूट गया
   - H2: संबंधित
 
 ## gateway/trusted-proxy-auth.md
@@ -3891,36 +3896,36 @@ x-i18n:
   - H2: कब उपयोग करें
   - H2: कब उपयोग न करें
   - H2: यह कैसे काम करता है
-  - H2: Control UI pairing behavior
-  - H2: कॉन्फ़िगरेशन
-  - H3: कॉन्फ़िगरेशन संदर्भ
+  - H2: Control UI पेयरिंग व्यवहार
+  - H2: कॉन्फिगरेशन
+  - H3: कॉन्फिगरेशन संदर्भ
   - H2: TLS termination और HSTS
   - H3: रोलआउट मार्गदर्शन
-  - H2: Proxy setup examples
-  - H2: Mixed token configuration
-  - H2: Operator scopes header
+  - H2: प्रॉक्सी सेटअप उदाहरण
+  - H2: मिश्रित टोकन कॉन्फिगरेशन
+  - H2: ऑपरेटर scopes हेडर
   - H2: सुरक्षा चेकलिस्ट
   - H2: सुरक्षा ऑडिट
   - H2: समस्या निवारण
-  - H2: token auth से migration
+  - H2: token auth से माइग्रेशन
   - H2: संबंधित
 
 ## help/debugging.md
 
 - मार्ग: /help/debugging
 - शीर्षक:
-  - H2: Runtime debug overrides
-  - H2: Session trace output
-  - H2: Plugin lifecycle trace
-  - H2: CLI startup and command profiling
-  - H2: Gateway watch mode
-  - H2: Dev profile + dev gateway (--dev)
-  - H2: Raw stream logging (OpenClaw)
-  - H2: Raw OpenAI-compatible chunk logging
-  - H2: सुरक्षा नोट्स
-  - H2: VSCode में डीबगिंग
+  - H2: रनटाइम डिबग ओवरराइड
+  - H2: सेशन trace आउटपुट
+  - H2: Plugin जीवनचक्र trace
+  - H2: CLI स्टार्टअप और कमांड प्रोफाइलिंग
+  - H2: Gateway watch मोड
+  - H2: dev प्रोफ़ाइल + dev gateway (--dev)
+  - H2: रॉ stream लॉगिंग (OpenClaw)
+  - H2: रॉ OpenAI-compatible chunk लॉगिंग
+  - H2: सुरक्षा टिप्पणियां
+  - H2: VSCode में डिबगिंग
   - H3: सेटअप
-  - H3: नोट्स
+  - H3: टिप्पणियां
   - H2: संबंधित
 
 ## help/environment.md
@@ -3928,57 +3933,57 @@ x-i18n:
 - मार्ग: /help/environment
 - शीर्षक:
   - H2: प्राथमिकता (सबसे अधिक → सबसे कम)
-  - H2: प्रदाता क्रेडेंशियल और वर्कस्पेस .env
-  - H2: Config env block
-  - H2: Shell env import
-  - H2: Exec shell snapshots
-  - H2: Runtime-injected env vars
+  - H2: प्रोवाइडर क्रेडेंशियल और वर्कस्पेस .env
+  - H2: कॉन्फिग env ब्लॉक
+  - H2: शेल env इम्पोर्ट
+  - H2: Exec शेल स्नैपशॉट
+  - H2: रनटाइम-इंजेक्टेड env vars
   - H2: UI env vars
-  - H2: Config में env var substitution
+  - H2: कॉन्फिग में Env var substitution
   - H2: Secret refs बनाम ${ENV} strings
-  - H2: Path-related env vars
-  - H2: Logging
+  - H2: पाथ-संबंधित env vars
+  - H2: लॉगिंग
   - H3: OPENCLAWHOME
-  - H2: nvm users: webfetch TLS failures
-  - H2: Legacy environment variables
+  - H2: nvm उपयोगकर्ता: webfetch TLS विफलताएं
+  - H2: लीगेसी पर्यावरण चर
   - H2: संबंधित
 
 ## help/faq-first-run.md
 
 - मार्ग: /help/faq-first-run
 - शीर्षक:
-  - H2: त्वरित शुरुआत और पहली बार सेटअप
+  - H2: त्वरित शुरुआत और first-run सेटअप
   - H2: संबंधित
 
 ## help/faq-models.md
 
 - मार्ग: /help/faq-models
 - शीर्षक:
-  - H2: मॉडल: defaults, selection, aliases, switching
-  - H2: Model failover और "All models failed"
-  - H2: Auth profiles: वे क्या हैं और उन्हें कैसे प्रबंधित करें
+  - H2: मॉडल: डिफॉल्ट, चयन, aliases, स्विचिंग
+  - H2: मॉडल failover और "सभी मॉडल विफल हुए"
+  - H2: Auth प्रोफ़ाइल: वे क्या हैं और उन्हें कैसे प्रबंधित करें
   - H2: संबंधित
 
 ## help/faq.md
 
 - मार्ग: /help/faq
 - शीर्षक:
-  - H2: यदि कुछ टूटा हो तो पहले 60 सेकंड
-  - H2: त्वरित शुरुआत और पहली बार सेटअप
+  - H2: यदि कुछ टूटा है तो पहले 60 सेकंड
+  - H2: त्वरित शुरुआत और first-run सेटअप
   - H2: OpenClaw क्या है?
   - H2: Skills और automation
-  - H2: Sandboxing और memory
-  - H2: चीज़ें डिस्क पर कहां रहती हैं
-  - H2: Config basics
-  - H2: Remote gateways और nodes
-  - H2: Env vars और .env loading
-  - H2: Sessions और multiple chats
-  - H2: Models, failover, और auth profiles
-  - H2: Gateway: ports, "already running", और remote mode
-  - H2: Logging और debugging
-  - H2: Media और attachments
-  - H2: Security और access control
-  - H2: Chat commands, aborting tasks, और "it will not stop"
+  - H2: सैंडबॉक्सिंग और मेमोरी
+  - H2: चीजें डिस्क पर कहां रहती हैं
+  - H2: कॉन्फिग मूल बातें
+  - H2: रिमोट gateways और nodes
+  - H2: Env vars और .env लोडिंग
+  - H2: सेशन और कई चैट
+  - H2: मॉडल, failover, और auth प्रोफ़ाइल
+  - H2: Gateway: पोर्ट, "पहले से चल रहा", और रिमोट मोड
+  - H2: लॉगिंग और डिबगिंग
+  - H2: मीडिया और attachments
+  - H2: सुरक्षा और एक्सेस नियंत्रण
+  - H2: चैट कमांड, कार्य रोकना, और "यह नहीं रुकेगा"
   - H2: विविध
   - H2: संबंधित
 
@@ -3987,30 +3992,30 @@ x-i18n:
 - मार्ग: /help
 - शीर्षक:
   - H2: FAQ
-  - H2: Diagnostics
-  - H2: Testing
-  - H2: Community और meta
+  - H2: निदान
+  - H2: परीक्षण
+  - H2: समुदाय और meta
 
 ## help/scripts.md
 
 - मार्ग: /help/scripts
 - शीर्षक:
-  - H2: Conventions
-  - H2: Auth monitoring scripts
+  - H2: परंपराएं
+  - H2: Auth निगरानी scripts
   - H2: GitHub read helper
-  - H2: Scripts जोड़ते समय
+  - H2: scripts जोड़ते समय
   - H2: संबंधित
 
 ## help/testing-live.md
 
-- मार्ग: /help/testing-live
+- रूट: /help/testing-live
 - शीर्षक:
   - H2: लाइव: स्थानीय स्मोक कमांड
   - H2: लाइव: Android Node क्षमता स्वीप
-  - H2: लाइव: मॉडल स्मोक (प्रोफ़ाइल कुंजियाँ)
-  - H3: परत 1: प्रत्यक्ष मॉडल पूर्णता (बिना Gateway)
-  - H3: परत 2: Gateway + dev एजेंट स्मोक ("@openclaw" वास्तव में क्या करता है)
-  - H2: लाइव: CLI बैकएंड स्मोक (Claude, Gemini, या अन्य स्थानीय CLIs)
+  - H2: लाइव: मॉडल स्मोक (प्रोफ़ाइल कुंजियां)
+  - H3: लेयर 1: डायरेक्ट मॉडल कम्प्लीशन (कोई Gateway नहीं)
+  - H3: लेयर 2: Gateway + डेवलपमेंट एजेंट स्मोक ("@openclaw" वास्तव में क्या करता है)
+  - H2: लाइव: CLI बैकएंड स्मोक (Claude, Gemini, या अन्य स्थानीय CLI)
   - H2: लाइव: APNs HTTP/2 प्रॉक्सी पहुंच-योग्यता
   - H2: लाइव: ACP बाइंड स्मोक (/acp spawn ... --bind here)
   - H2: लाइव: Codex ऐप-सर्वर हार्नेस स्मोक
@@ -4018,21 +4023,21 @@ x-i18n:
   - H2: लाइव: मॉडल मैट्रिक्स (हम क्या कवर करते हैं)
   - H3: आधुनिक स्मोक सेट (टूल कॉलिंग + इमेज)
   - H3: बेसलाइन: टूल कॉलिंग (Read + वैकल्पिक Exec)
-  - H3: विज़न: इमेज भेजना (अटैचमेंट → मल्टीमॉडल संदेश)
+  - H3: विज़न: इमेज भेजना (अटैचमेंट → मल्टीमोडल संदेश)
   - H3: एग्रीगेटर / वैकल्पिक Gateway
   - H2: क्रेडेंशियल (कभी कमिट न करें)
   - H2: Deepgram लाइव (ऑडियो ट्रांसक्रिप्शन)
   - H2: BytePlus कोडिंग प्लान लाइव
   - H2: ComfyUI वर्कफ़्लो मीडिया लाइव
   - H2: इमेज जनरेशन लाइव
-  - H2: संगीत जनरेशन लाइव
+  - H2: म्यूज़िक जनरेशन लाइव
   - H2: वीडियो जनरेशन लाइव
   - H2: मीडिया लाइव हार्नेस
   - H2: संबंधित
 
 ## help/testing-updates-plugins.md
 
-- मार्ग: /help/testing-updates-plugins
+- रूट: /help/testing-updates-plugins
 - शीर्षक:
   - H2: हम क्या सुरक्षित रखते हैं
   - H2: विकास के दौरान स्थानीय प्रमाण
@@ -4041,80 +4046,80 @@ x-i18n:
   - H2: रिलीज़ डिफ़ॉल्ट
   - H2: लेगेसी संगतता
   - H2: कवरेज जोड़ना
-  - H2: विफलता ट्रायेज
+  - H2: विफलता ट्रायाज
 
 ## help/testing.md
 
-- मार्ग: /help/testing
+- रूट: /help/testing
 - शीर्षक:
-  - H2: त्वरित शुरुआत
+  - H2: क्विक स्टार्ट
   - H2: टेस्ट अस्थायी डायरेक्टरी
   - H2: QA-विशिष्ट रनर
   - H3: Convex के माध्यम से साझा Telegram क्रेडेंशियल (v1)
   - H3: QA में चैनल जोड़ना
-  - H2: टेस्ट सूट (क्या कहाँ चलता है)
+  - H2: टेस्ट सूट (क्या कहां चलता है)
   - H3: यूनिट / इंटीग्रेशन (डिफ़ॉल्ट)
   - H3: स्थिरता (Gateway)
   - H3: E2E (रेपो एग्रीगेट)
   - H3: E2E (Gateway स्मोक)
   - H3: E2E (Control UI मॉक्ड ब्राउज़र)
   - H3: E2E: OpenShell बैकएंड स्मोक
-  - H3: लाइव (वास्तविक प्रोवाइडर + वास्तविक मॉडल)
-  - H2: मुझे कौन-सा सूट चलाना चाहिए?
-  - H2: लाइव (नेटवर्क को छूने वाले) टेस्ट
+  - H3: लाइव (वास्तविक प्रदाता + वास्तविक मॉडल)
+  - H2: मुझे कौन सा सूट चलाना चाहिए?
+  - H2: लाइव (नेटवर्क-स्पर्शी) टेस्ट
   - H2: Docker रनर (वैकल्पिक "Linux में काम करता है" जांच)
   - H2: डॉक्स सैनिटी
   - H2: ऑफ़लाइन रिग्रेशन (CI-सुरक्षित)
   - H2: एजेंट विश्वसनीयता मूल्यांकन (Skills)
-  - H2: कॉन्ट्रैक्ट टेस्ट (plugin और चैनल आकार)
+  - H2: कॉन्ट्रैक्ट टेस्ट (Plugin और चैनल आकार)
   - H3: कमांड
   - H3: चैनल कॉन्ट्रैक्ट
-  - H3: प्रोवाइडर स्थिति कॉन्ट्रैक्ट
-  - H3: प्रोवाइडर कॉन्ट्रैक्ट
-  - H3: कब चलाएँ
+  - H3: प्रदाता स्थिति कॉन्ट्रैक्ट
+  - H3: प्रदाता कॉन्ट्रैक्ट
+  - H3: कब चलाएं
   - H2: रिग्रेशन जोड़ना (मार्गदर्शन)
   - H2: संबंधित
 
 ## help/troubleshooting.md
 
-- मार्ग: /help/troubleshooting
+- रूट: /help/troubleshooting
 - शीर्षक:
   - H2: पहले 60 सेकंड
   - H2: असिस्टेंट सीमित लगता है या टूल गायब हैं
   - H2: Anthropic लंबा कॉन्टेक्स्ट 429
   - H2: स्थानीय OpenAI-संगत बैकएंड सीधे काम करता है लेकिन OpenClaw में विफल होता है
-  - H2: Plugin इंस्टॉल गायब openclaw extensions के साथ विफल होता है
-  - H2: इंस्टॉल नीति plugin इंस्टॉल या अपडेट ब्लॉक करती है
-  - H2: Plugin मौजूद है लेकिन संदिग्ध स्वामित्व से ब्लॉक है
+  - H2: Plugin इंस्टॉल अनुपलब्ध openclaw एक्सटेंशन के साथ विफल होता है
+  - H2: इंस्टॉल नीति Plugin इंस्टॉल या अपडेट रोकती है
+  - H2: Plugin मौजूद है लेकिन संदिग्ध स्वामित्व से अवरुद्ध है
   - H2: निर्णय वृक्ष
   - H2: संबंधित
 
 ## index.md
 
-- मार्ग: /
+- रूट: /
 - शीर्षक:
   - H1: OpenClaw 🦞
   - H2: OpenClaw क्या है?
   - H2: यह कैसे काम करता है
-  - H2: मुख्य क्षमताएँ
-  - H2: त्वरित शुरुआत
+  - H2: मुख्य क्षमताएं
+  - H2: क्विक स्टार्ट
   - H2: डैशबोर्ड
   - H2: कॉन्फ़िगरेशन (वैकल्पिक)
-  - H2: यहाँ से शुरू करें
+  - H2: यहां से शुरू करें
   - H2: और जानें
 
 ## install/ansible.md
 
-- मार्ग: /install/ansible
+- रूट: /install/ansible
 - शीर्षक:
-  - H2: पूर्वापेक्षाएँ
+  - H2: पूर्वापेक्षाएं
   - H2: आपको क्या मिलता है
-  - H2: त्वरित शुरुआत
+  - H2: क्विक स्टार्ट
   - H2: क्या इंस्टॉल होता है
   - H2: इंस्टॉल के बाद सेटअप
-  - H3: त्वरित कमांड
+  - H3: क्विक कमांड
   - H2: सुरक्षा आर्किटेक्चर
-  - H2: मैन्युअल इंस्टॉलेशन
+  - H2: मैनुअल इंस्टॉलेशन
   - H2: अपडेट करना
   - H2: समस्या निवारण
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -4122,7 +4127,7 @@ x-i18n:
 
 ## install/azure.md
 
-- मार्ग: /install/azure
+- रूट: /install/azure
 - शीर्षक:
   - H2: आप क्या करेंगे
   - H2: आपको क्या चाहिए
@@ -4136,79 +4141,79 @@ x-i18n:
 
 ## install/bun.md
 
-- मार्ग: /install/bun
+- रूट: /install/bun
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: लाइफ़साइकल स्क्रिप्ट
-  - H2: सावधानियाँ
+  - H2: सावधानियां
   - H2: संबंधित
 
 ## install/clawdock.md
 
-- मार्ग: /install/clawdock
+- रूट: /install/clawdock
 - शीर्षक:
   - H2: इंस्टॉल करें
   - H2: आपको क्या मिलता है
-  - H3: बुनियादी संचालन
+  - H3: बुनियादी ऑपरेशन
   - H3: कंटेनर एक्सेस
-  - H3: Web UI और पेयरिंग
+  - H3: वेब UI और पेयरिंग
   - H3: सेटअप और रखरखाव
-  - H3: यूटिलिटी
+  - H3: उपयोगिताएं
   - H2: पहली बार का फ़्लो
   - H2: कॉन्फ़िग और सीक्रेट
   - H2: संबंधित
 
 ## install/development-channels.md
 
-- मार्ग: /install/development-channels
+- रूट: /install/development-channels
 - शीर्षक:
   - H2: चैनल बदलना
-  - H2: एकबारगी संस्करण या टैग लक्ष्यीकरण
+  - H2: एकबारगी वर्शन या टैग लक्ष्यीकरण
   - H2: ड्राई रन
-  - H2: Plugins और चैनल
+  - H2: Plugin और चैनल
   - H2: वर्तमान स्थिति जांचना
-  - H2: टैगिंग सर्वोत्तम अभ्यास
+  - H2: टैगिंग की सर्वोत्तम प्रथाएं
   - H2: macOS ऐप उपलब्धता
   - H2: संबंधित
 
 ## install/digitalocean.md
 
-- मार्ग: /install/digitalocean
+- रूट: /install/digitalocean
 - शीर्षक:
-  - H2: पूर्वापेक्षाएँ
+  - H2: पूर्वापेक्षाएं
   - H2: सेटअप
-  - H2: परसिस्टेंस और बैकअप
-  - H2: 1 GB RAM सुझाव
+  - H2: पर्सिस्टेंस और बैकअप
+  - H2: 1 GB RAM टिप्स
   - H2: समस्या निवारण
   - H2: अगले चरण
   - H2: संबंधित
 
 ## install/docker-vm-runtime.md
 
-- मार्ग: /install/docker-vm-runtime
+- रूट: /install/docker-vm-runtime
 - शीर्षक:
   - H2: आवश्यक बाइनरी इमेज में बेक करें
-  - H2: बिल्ड और लॉन्च
-  - H2: क्या कहाँ परसिस्ट रहता है
+  - H2: बिल्ड और लॉन्च करें
+  - H2: क्या कहां पर्सिस्ट होता है
   - H2: अपडेट
   - H2: संबंधित
 
 ## install/docker.md
 
-- मार्ग: /install/docker
+- रूट: /install/docker
 - शीर्षक:
   - H2: क्या Docker मेरे लिए सही है?
-  - H2: पूर्वापेक्षाएँ
-  - H2: कंटेनरीकृत Gateway
-  - H3: मैन्युअल फ़्लो
-  - H3: एनवायरनमेंट वैरिएबल
+  - H2: पूर्वापेक्षाएं
+  - H2: कंटेनराइज़्ड Gateway
+  - H3: मैनुअल फ़्लो
+  - H3: एनवायरनमेंट वेरिएबल
   - H3: ऑब्ज़र्वेबिलिटी
   - H3: हेल्थ चेक
-  - H3: LAN बनाम loopback
-  - H3: होस्ट स्थानीय प्रोवाइडर
+  - H3: LAN बनाम local loopback
+  - H3: होस्ट स्थानीय प्रदाता
   - H3: Docker में Claude CLI बैकएंड
   - H3: Bonjour / mDNS
-  - H3: स्टोरेज और परसिस्टेंस
+  - H3: स्टोरेज और पर्सिस्टेंस
   - H3: शेल हेल्पर (वैकल्पिक)
   - H3: VPS पर चला रहे हैं?
   - H2: एजेंट सैंडबॉक्स
@@ -4218,14 +4223,14 @@ x-i18n:
 
 ## install/exe-dev.md
 
-- मार्ग: /install/exe-dev
+- रूट: /install/exe-dev
 - शीर्षक:
-  - H2: शुरुआती त्वरित पथ
+  - H2: शुरुआती लोगों के लिए त्वरित रास्ता
   - H2: आपको क्या चाहिए
   - H2: Shelley के साथ स्वचालित इंस्टॉल
-  - H2: मैन्युअल इंस्टॉलेशन
-  - H2: 1) VM बनाएँ
-  - H2: 2) पूर्वापेक्षाएँ इंस्टॉल करें (VM पर)
+  - H2: मैनुअल इंस्टॉलेशन
+  - H2: 1) VM बनाएं
+  - H2: 2) पूर्वापेक्षाएं इंस्टॉल करें (VM पर)
   - H2: 3) OpenClaw इंस्टॉल करें
   - H2: 4) OpenClaw को पोर्ट 8000 पर प्रॉक्सी करने के लिए nginx सेटअप करें
   - H2: 5) OpenClaw एक्सेस करें और विशेषाधिकार दें
@@ -4236,21 +4241,21 @@ x-i18n:
 
 ## install/fly.md
 
-- मार्ग: /install/fly
+- रूट: /install/fly
 - शीर्षक:
   - H2: आपको क्या चाहिए
-  - H2: शुरुआती त्वरित पथ
+  - H2: शुरुआती लोगों के लिए त्वरित रास्ता
   - H2: समस्या निवारण
-  - H3: "ऐप अपेक्षित पते पर नहीं सुन रहा है"
-  - H3: हेल्थ चेक विफल / कनेक्शन अस्वीकार
-  - H3: OOM / मेमोरी समस्याएँ
-  - H3: Gateway लॉक समस्याएँ
+  - H3: "ऐप अपेक्षित पते पर सुन नहीं रहा है"
+  - H3: हेल्थ चेक विफल / कनेक्शन अस्वीकृत
+  - H3: OOM / मेमोरी समस्याएं
+  - H3: Gateway लॉक समस्याएं
   - H3: कॉन्फ़िग पढ़ा नहीं जा रहा
   - H3: SSH के माध्यम से कॉन्फ़िग लिखना
-  - H3: स्टेट परसिस्ट नहीं हो रहा
+  - H3: स्टेट पर्सिस्ट नहीं हो रहा
   - H2: अपडेट
   - H3: मशीन कमांड अपडेट करना
-  - H2: निजी डिप्लॉयमेंट (कठोर)
+  - H2: निजी डिप्लॉयमेंट (मज़बूत)
   - H3: निजी डिप्लॉयमेंट कब उपयोग करें
   - H3: सेटअप
   - H3: निजी डिप्लॉयमेंट एक्सेस करना
@@ -4263,10 +4268,10 @@ x-i18n:
 
 ## install/gcp.md
 
-- मार्ग: /install/gcp
+- रूट: /install/gcp
 - शीर्षक:
   - H2: हम क्या कर रहे हैं (सरल शब्दों में)?
-  - H2: त्वरित पथ (अनुभवी ऑपरेटर)
+  - H2: त्वरित रास्ता (अनुभवी ऑपरेटर)
   - H2: आपको क्या चाहिए
   - H2: समस्या निवारण
   - H2: सर्विस अकाउंट (सुरक्षा सर्वोत्तम अभ्यास)
@@ -4275,21 +4280,21 @@ x-i18n:
 
 ## install/hetzner.md
 
-- मार्ग: /install/hetzner
+- रूट: /install/hetzner
 - शीर्षक:
   - H2: लक्ष्य
   - H2: हम क्या कर रहे हैं (सरल शब्दों में)?
-  - H2: त्वरित पथ (अनुभवी ऑपरेटर)
+  - H2: त्वरित रास्ता (अनुभवी ऑपरेटर)
   - H2: आपको क्या चाहिए
-  - H2: Infrastructure as Code (Terraform)
+  - H2: इंफ़्रास्ट्रक्चर ऐज़ कोड (Terraform)
   - H2: अगले चरण
   - H2: संबंधित
 
 ## install/hostinger.md
 
-- मार्ग: /install/hostinger
+- रूट: /install/hostinger
 - शीर्षक:
-  - H2: पूर्वापेक्षाएँ
+  - H2: पूर्वापेक्षाएं
   - H2: विकल्प A: 1-क्लिक OpenClaw
   - H2: विकल्प B: VPS पर OpenClaw
   - H2: अपना सेटअप सत्यापित करें
@@ -4299,15 +4304,15 @@ x-i18n:
 
 ## install/index.md
 
-- मार्ग: /install
+- रूट: /install
 - शीर्षक:
-  - H2: सिस्टम आवश्यकताएँ
+  - H2: सिस्टम आवश्यकताएं
   - H2: अनुशंसित: इंस्टॉलर स्क्रिप्ट
-  - H2: वैकल्पिक इंस्टॉल विधियाँ
+  - H2: वैकल्पिक इंस्टॉल विधियां
   - H3: स्थानीय प्रीफ़िक्स इंस्टॉलर (install-cli.sh)
   - H3: npm, pnpm, या bun
   - H3: स्रोत से
-  - H3: GitHub main checkout से इंस्टॉल करें
+  - H3: GitHub main चेकआउट से इंस्टॉल करें
   - H3: कंटेनर और पैकेज मैनेजर
   - H2: इंस्टॉल सत्यापित करें
   - H2: होस्टिंग और डिप्लॉयमेंट
@@ -4316,12 +4321,12 @@ x-i18n:
 
 ## install/installer.md
 
-- मार्ग: /install/installer
+- रूट: /install/installer
 - शीर्षक:
-  - H2: त्वरित कमांड
+  - H2: क्विक कमांड
   - H2: install.sh
   - H3: फ़्लो (install.sh)
-  - H3: स्रोत checkout पहचान
+  - H3: स्रोत चेकआउट पहचान
   - H3: उदाहरण (install.sh)
   - H2: install-cli.sh
   - H3: फ़्लो (install-cli.sh)
@@ -4335,20 +4340,20 @@ x-i18n:
 
 ## install/kubernetes.md
 
-- मार्ग: /install/kubernetes
+- रूट: /install/kubernetes
 - शीर्षक:
   - H2: Helm क्यों नहीं?
   - H2: आपको क्या चाहिए
-  - H2: त्वरित शुरुआत
-  - H2: Kind के साथ स्थानीय परीक्षण
-  - H2: चरण दर चरण
+  - H2: क्विक स्टार्ट
+  - H2: Kind के साथ स्थानीय टेस्टिंग
+  - H2: चरण-दर-चरण
   - H3: 1) डिप्लॉय करें
   - H3: 2) Gateway एक्सेस करें
   - H2: क्या डिप्लॉय होता है
   - H2: कस्टमाइज़ेशन
   - H3: एजेंट निर्देश
   - H3: Gateway कॉन्फ़िग
-  - H3: प्रोवाइडर जोड़ें
+  - H3: प्रदाता जोड़ें
   - H3: कस्टम नेमस्पेस
   - H3: कस्टम इमेज
   - H3: पोर्ट-फ़ॉरवर्ड से आगे एक्सपोज़ करें
@@ -4360,51 +4365,51 @@ x-i18n:
 
 ## install/macos-vm.md
 
-- मार्ग: /install/macos-vm
+- रूट: /install/macos-vm
 - शीर्षक:
   - H2: अनुशंसित डिफ़ॉल्ट (अधिकांश उपयोगकर्ता)
   - H2: macOS VM विकल्प
   - H3: आपके Apple Silicon Mac पर स्थानीय VM (Lume)
-  - H3: होस्टेड Mac प्रोवाइडर (क्लाउड)
-  - H2: त्वरित पथ (Lume, अनुभवी उपयोगकर्ता)
+  - H3: होस्टेड Mac प्रदाता (क्लाउड)
+  - H2: त्वरित रास्ता (Lume, अनुभवी उपयोगकर्ता)
   - H2: आपको क्या चाहिए (Lume)
   - H2: 1) Lume इंस्टॉल करें
-  - H2: 2) macOS VM बनाएँ
+  - H2: 2) macOS VM बनाएं
   - H2: 3) Setup Assistant पूरा करें
   - H2: 4) VM IP पता प्राप्त करें
   - H2: 5) VM में SSH करें
   - H2: 6) OpenClaw इंस्टॉल करें
   - H2: 7) चैनल कॉन्फ़िगर करें
-  - H2: 8) VM को headless चलाएँ
+  - H2: 8) VM को हेडलेस चलाएं
   - H2: बोनस: iMessage इंटीग्रेशन
-  - H2: गोल्डन इमेज सेव करें
+  - H2: गोल्डन इमेज सहेजें
   - H2: 24/7 चलाना
   - H2: समस्या निवारण
   - H2: संबंधित डॉक्स
 
 ## install/migrating-claude.md
 
-- मार्ग: /install/migrating-claude
+- रूट: /install/migrating-claude
 - शीर्षक:
-  - H2: इम्पोर्ट करने के दो तरीके
-  - H2: क्या इम्पोर्ट होता है
+  - H2: इंपोर्ट करने के दो तरीके
+  - H2: क्या इंपोर्ट होता है
   - H2: क्या केवल आर्काइव रहता है
   - H2: स्रोत चयन
   - H2: अनुशंसित फ़्लो
-  - H2: कॉन्फ़्लिक्ट संभालना
+  - H2: कॉन्फ़्लिक्ट हैंडलिंग
   - H2: ऑटोमेशन के लिए JSON आउटपुट
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## install/migrating-hermes.md
 
-- मार्ग: /install/migrating-hermes
+- रूट: /install/migrating-hermes
 - शीर्षक:
-  - H2: इम्पोर्ट करने के दो तरीके
-  - H2: क्या इम्पोर्ट होता है
+  - H2: इंपोर्ट करने के दो तरीके
+  - H2: क्या इंपोर्ट होता है
   - H2: क्या केवल आर्काइव रहता है
   - H2: अनुशंसित फ़्लो
-  - H2: कॉन्फ़्लिक्ट संभालना
+  - H2: कॉन्फ़्लिक्ट हैंडलिंग
   - H2: सीक्रेट
   - H2: ऑटोमेशन के लिए JSON आउटपुट
   - H2: समस्या निवारण
@@ -4412,58 +4417,58 @@ x-i18n:
 
 ## install/migrating.md
 
-- मार्ग: /install/migrating
+- रूट: /install/migrating
 - शीर्षक:
-  - H2: किसी अन्य एजेंट सिस्टम से इम्पोर्ट करें
-  - H2: OpenClaw को नई मशीन पर ले जाएँ
+  - H2: किसी अन्य एजेंट सिस्टम से इंपोर्ट करें
+  - H2: OpenClaw को नई मशीन पर ले जाएं
   - H3: माइग्रेशन चरण
-  - H3: सामान्य समस्याएँ
+  - H3: सामान्य कमियां
   - H3: सत्यापन चेकलिस्ट
-  - H2: किसी plugin को उसी स्थान पर अपग्रेड करें
+  - H2: Plugin को उसी स्थान पर अपग्रेड करें
   - H2: संबंधित
 
 ## install/nix.md
 
-- मार्ग: /install/nix
+- रूट: /install/nix
 - शीर्षक:
   - H2: आपको क्या मिलता है
-  - H2: त्वरित शुरुआत
+  - H2: क्विक स्टार्ट
   - H2: Nix-मोड रनटाइम व्यवहार
   - H3: Nix मोड में क्या बदलता है
-  - H3: कॉन्फ़िग और स्टेट पथ
-  - H3: सर्विस PATH खोज
+  - H3: कॉन्फ़िग और स्टेट पाथ
+  - H3: सर्विस PATH डिस्कवरी
   - H2: संबंधित
 
 ## install/node.md
 
-- मार्ग: /install/node
+- रूट: /install/node
 - शीर्षक:
-  - H2: अपना संस्करण जांचें
+  - H2: अपना वर्शन जांचें
   - H2: Node इंस्टॉल करें
   - H2: समस्या निवारण
-  - H3: openclaw: command not found
-  - H3: npm install -g पर अनुमति त्रुटियाँ (Linux)
+  - H3: openclaw: कमांड नहीं मिला
+  - H3: npm install -g पर अनुमति त्रुटियां (Linux)
   - H2: संबंधित
 
 ## install/northflank.mdx
 
-- मार्ग: /install/northflank
+- रूट: /install/northflank
 - शीर्षक:
   - H1: Northflank
-  - H2: कैसे शुरू करें
+  - H2: शुरू कैसे करें
   - H2: आपको क्या मिलता है
   - H2: चैनल कनेक्ट करें
   - H2: अगले चरण
 
 ## install/oracle.md
 
-- मार्ग: /install/oracle
+- रूट: /install/oracle
 - शीर्षक:
-  - H2: पूर्वापेक्षाएँ
+  - H2: पूर्वापेक्षाएं
   - H2: सेटअप
-  - H2: सुरक्षा स्थिति सत्यापित करें
+  - H2: सुरक्षा मुद्रा सत्यापित करें
   - H2: ARM नोट्स
-  - H2: परसिस्टेंस और बैकअप
+  - H2: पर्सिस्टेंस और बैकअप
   - H2: फ़ॉलबैक: SSH टनल
   - H2: समस्या निवारण
   - H2: अगले चरण
@@ -4471,10 +4476,10 @@ x-i18n:
 
 ## install/podman.md
 
-- मार्ग: /install/podman
+- रूट: /install/podman
 - शीर्षक:
-  - H2: पूर्वापेक्षाएँ
-  - H2: त्वरित शुरुआत
+  - H2: पूर्वापेक्षाएं
+  - H2: क्विक स्टार्ट
   - H2: Podman और Tailscale
   - H2: Systemd (Quadlet, वैकल्पिक)
   - H2: कॉन्फ़िग, env, और स्टोरेज
@@ -4484,28 +4489,28 @@ x-i18n:
 
 ## install/railway.mdx
 
-- मार्ग: /install/railway
+- रूट: /install/railway
 - शीर्षक:
   - H1: Railway
-  - H2: त्वरित चेकलिस्ट (नए उपयोगकर्ता)
+  - H2: क्विक चेकलिस्ट (नए उपयोगकर्ता)
   - H2: वन-क्लिक डिप्लॉय
   - H2: आपको क्या मिलता है
   - H2: आवश्यक Railway सेटिंग्स
   - H3: सार्वजनिक नेटवर्किंग
   - H3: वॉल्यूम (आवश्यक)
-  - H3: वैरिएबल
+  - H3: वेरिएबल
   - H2: चैनल कनेक्ट करें
   - H2: बैकअप और माइग्रेशन
   - H2: अगले चरण
 
 ## install/raspberry-pi.md
 
-- रूट: /install/raspberry-pi
+- मार्ग: /install/raspberry-pi
 - शीर्षक:
   - H2: हार्डवेयर संगतता
   - H2: पूर्वापेक्षाएँ
   - H2: सेटअप
-  - H2: प्रदर्शन सुझाव
+  - H2: प्रदर्शन संबंधी सुझाव
   - H2: अनुशंसित मॉडल सेटअप
   - H2: ARM बाइनरी नोट्स
   - H2: स्थायित्व और बैकअप
@@ -4515,7 +4520,7 @@ x-i18n:
 
 ## install/render.mdx
 
-- रूट: /install/render
+- मार्ग: /install/render
 - शीर्षक:
   - H1: Render
   - H2: पूर्वापेक्षाएँ
@@ -4533,18 +4538,18 @@ x-i18n:
   - H2: स्केलिंग
   - H2: बैकअप और माइग्रेशन
   - H2: समस्या निवारण
-  - H3: सेवा शुरू नहीं होगी
-  - H3: धीमे कोल्ड स्टार्ट (मुफ्त टियर)
-  - H3: रीडिप्लॉय के बाद डेटा हानि
+  - H3: सर्विस शुरू नहीं होगी
+  - H3: धीमे cold starts (फ्री टियर)
+  - H3: फिर से डिप्लॉय करने के बाद डेटा हानि
   - H3: Health check विफलताएँ
   - H2: अगले चरण
 
 ## install/uninstall.md
 
-- रूट: /install/uninstall
+- मार्ग: /install/uninstall
 - शीर्षक:
   - H2: आसान रास्ता (CLI अभी भी इंस्टॉल है)
-  - H2: मैनुअल सेवा हटाना (CLI इंस्टॉल नहीं है)
+  - H2: मैन्युअल सर्विस हटाना (CLI इंस्टॉल नहीं है)
   - H3: macOS (launchd)
   - H3: Linux (systemd user unit)
   - H3: Windows (Scheduled Task)
@@ -4555,31 +4560,31 @@ x-i18n:
 
 ## install/updating.md
 
-- रूट: /install/updating
+- मार्ग: /install/updating
 - शीर्षक:
   - H2: अनुशंसित: openclaw update
   - H2: npm और git इंस्टॉल के बीच स्विच करें
   - H2: विकल्प: इंस्टॉलर फिर से चलाएँ
-  - H2: विकल्प: मैनुअल npm, pnpm, या bun
+  - H2: विकल्प: मैन्युअल npm, pnpm, या bun
   - H3: उन्नत npm इंस्टॉल विषय
   - H2: Auto-updater
   - H2: अपडेट करने के बाद
   - H3: doctor चलाएँ
-  - H3: gateway को पुनरारंभ करें
+  - H3: gateway रीस्टार्ट करें
   - H3: सत्यापित करें
   - H2: रोलबैक
-  - H3: किसी संस्करण को पिन करें (npm)
-  - H3: किसी कमिट को पिन करें (स्रोत)
-  - H2: यदि आप अटक गए हैं
+  - H3: कोई वर्जन पिन करें (npm)
+  - H3: कोई कमिट पिन करें (स्रोत)
+  - H2: अगर आप अटक गए हैं
   - H2: संबंधित
 
 ## install/upstash.md
 
-- रूट: /install/upstash
+- मार्ग: /install/upstash
 - शीर्षक:
   - H2: पूर्वापेक्षाएँ
   - H2: Box बनाएँ
-  - H2: SSH टनल के साथ कनेक्ट करें
+  - H2: SSH tunnel से कनेक्ट करें
   - H2: OpenClaw इंस्टॉल करें
   - H2: ऑनबोर्डिंग चलाएँ
   - H2: Gateway शुरू करें
@@ -4589,34 +4594,34 @@ x-i18n:
 
 ## logging.md
 
-- रूट: /logging
+- मार्ग: /logging
 - शीर्षक:
   - H2: लॉग कहाँ रहते हैं
   - H2: लॉग कैसे पढ़ें
-  - H3: CLI: लाइव tail (अनुशंसित)
+  - H3: CLI: live tail (अनुशंसित)
   - H3: Control UI (वेब)
-  - H3: केवल-चैनल लॉग
-  - H2: लॉग प्रारूप
+  - H3: केवल चैनल लॉग
+  - H2: लॉग फ़ॉर्मैट
   - H3: फ़ाइल लॉग (JSONL)
-  - H3: Console आउटपुट
+  - H3: Console output
   - H3: Gateway WebSocket लॉग
   - H2: लॉगिंग कॉन्फ़िगर करना
   - H3: लॉग स्तर
   - H3: लक्षित मॉडल ट्रांसपोर्ट डायग्नॉस्टिक्स
-  - H3: ट्रेस सहसंबंध
+  - H3: Trace correlation
   - H3: मॉडल कॉल आकार और समय
-  - H3: Console शैलियाँ
-  - H3: रिडैक्शन
+  - H3: Console styles
+  - H3: Redaction
   - H2: डायग्नॉस्टिक्स और OpenTelemetry
   - H2: समस्या निवारण सुझाव
   - H2: संबंधित
 
 ## maturity/scorecard.md
 
-- रूट: /maturity/scorecard
+- मार्ग: /maturity/scorecard
 - शीर्षक:
-  - H1: परिपक्वता स्कोरकार्ड
-  - H2: यह पेज किस लिए है
+  - H1: Maturity scorecard
+  - H2: यह पृष्ठ किसके लिए है
   - H2: एक नज़र में
   - H2: स्कोर बैंड
   - H2: Surface explorer
@@ -4625,155 +4630,155 @@ x-i18n:
 
 ## maturity/taxonomy.md
 
-- रूट: /maturity/taxonomy
+- मार्ग: /maturity/taxonomy
 - शीर्षक:
-  - H1: परिपक्वता टैक्सोनॉमी
-  - H2: यह पेज कैसे पढ़ें
+  - H1: Maturity taxonomy
+  - H2: इस पृष्ठ को कैसे पढ़ें
   - H2: परिपक्वता स्तर
   - H2: उत्पाद क्षेत्र
   - H2: विवरण
   - H3: Core
   - H3: Platform
   - H3: Channel
-  - H3: Provider और टूल
+  - H3: Provider और tool
 
 ## network.md
 
-- रूट: /network
+- मार्ग: /network
 - शीर्षक:
   - H2: Core मॉडल
   - H2: पेयरिंग + पहचान
-  - H2: डिस्कवरी + ट्रांसपोर्ट
-  - H2: Nodes + ट्रांसपोर्ट
+  - H2: Discovery + transports
+  - H2: Nodes + transports
   - H2: सुरक्षा
   - H2: संबंधित
 
 ## nodes/audio.md
 
-- रूट: /nodes/audio
+- मार्ग: /nodes/audio
 - शीर्षक:
   - H2: क्या काम करता है
   - H2: Auto-detection (डिफ़ॉल्ट)
-  - H2: कॉन्फ़िग उदाहरण
+  - H2: Config उदाहरण
   - H3: Provider + CLI fallback (OpenAI + Whisper CLI)
-  - H3: Scope gating के साथ केवल-Provider
-  - H3: केवल-Provider (Deepgram)
-  - H3: केवल-Provider (Mistral Voxtral)
-  - H3: केवल-Provider (SenseAudio)
-  - H3: ट्रांसक्रिप्ट को चैट में echo करें (opt-in)
+  - H3: Scope gating के साथ केवल-provider
+  - H3: केवल-provider (Deepgram)
+  - H3: केवल-provider (Mistral Voxtral)
+  - H3: केवल-provider (SenseAudio)
+  - H3: चैट में transcript echo करें (opt-in)
   - H2: नोट्स और सीमाएँ
-  - H3: Proxy environment समर्थन
-  - H2: समूहों में मेंशन पहचान
-  - H2: सावधानियाँ
+  - H3: Proxy environment support
+  - H2: समूहों में mention detection
+  - H2: ध्यान देने योग्य बातें
   - H2: संबंधित
 
 ## nodes/camera.md
 
-- रूट: /nodes/camera
+- मार्ग: /nodes/camera
 - शीर्षक:
   - H2: iOS node
   - H3: उपयोगकर्ता सेटिंग (डिफ़ॉल्ट रूप से चालू)
-  - H3: कमांड (Gateway node.invoke के माध्यम से)
-  - H3: Foreground आवश्यकता
+  - H3: Commands (Gateway node.invoke के ज़रिए)
+  - H3: Foreground requirement
   - H3: CLI helper
   - H2: Android node
   - H3: Android उपयोगकर्ता सेटिंग (डिफ़ॉल्ट रूप से चालू)
   - H3: अनुमतियाँ
-  - H3: Android foreground आवश्यकता
-  - H3: Android कमांड (Gateway node.invoke के माध्यम से)
+  - H3: Android foreground requirement
+  - H3: Android commands (Gateway node.invoke के ज़रिए)
   - H3: Payload guard
-  - H2: macOS ऐप
+  - H2: macOS app
   - H3: उपयोगकर्ता सेटिंग (डिफ़ॉल्ट रूप से बंद)
   - H3: CLI helper (node invoke)
   - H2: सुरक्षा + व्यावहारिक सीमाएँ
-  - H2: macOS स्क्रीन वीडियो (OS-स्तर)
+  - H2: macOS screen video (OS-level)
   - H2: संबंधित
 
 ## nodes/images.md
 
-- रूट: /nodes/images
+- मार्ग: /nodes/images
 - शीर्षक:
   - H2: लक्ष्य
   - H2: CLI Surface
   - H2: WhatsApp Web चैनल व्यवहार
   - H2: Auto-Reply Pipeline
-  - H2: Inbound Media To Commands
+  - H2: आने वाले मीडिया को Commands में बदलना
   - H2: सीमाएँ और त्रुटियाँ
-  - H2: परीक्षणों के लिए नोट्स
+  - H2: Tests के लिए नोट्स
   - H2: संबंधित
 
 ## nodes/index.md
 
-- रूट: /nodes
+- मार्ग: /nodes
 - शीर्षक:
   - H2: पेयरिंग + स्थिति
-  - H2: रिमोट node host (system.run)
+  - H2: Remote node host (system.run)
   - H3: क्या कहाँ चलता है
   - H3: node host शुरू करें (foreground)
-  - H3: SSH टनल के माध्यम से रिमोट gateway (loopback bind)
-  - H3: node host शुरू करें (सेवा)
+  - H3: SSH tunnel के ज़रिए remote gateway (loopback bind)
+  - H3: node host शुरू करें (service)
   - H3: पेयर + नाम
-  - H3: कमांड को allowlist करें
-  - H3: exec को node पर पॉइंट करें
-  - H2: कमांड invoke करना
-  - H2: कमांड नीति
-  - H2: कॉन्फ़िग (openclaw.json)
-  - H2: स्क्रीनशॉट (canvas snapshots)
+  - H3: commands को allowlist करें
+  - H3: exec को node पर इंगित करें
+  - H2: Commands चलाना
+  - H2: Command policy
+  - H2: Config (openclaw.json)
+  - H2: Screenshots (canvas snapshots)
   - H3: Canvas controls
   - H3: A2UI (Canvas)
-  - H2: फ़ोटो + वीडियो (node camera)
-  - H2: स्क्रीन रिकॉर्डिंग (nodes)
-  - H2: स्थान (nodes)
+  - H2: Photos + videos (node camera)
+  - H2: Screen recordings (nodes)
+  - H2: Location (nodes)
   - H2: SMS (Android nodes)
-  - H2: Android डिवाइस + निजी डेटा कमांड
-  - H2: सिस्टम कमांड (node host / mac node)
+  - H2: Android device + personal data commands
+  - H2: System commands (node host / mac node)
   - H2: Exec node binding
-  - H2: अनुमतियों का मानचित्र
+  - H2: Permissions map
   - H2: Headless node host (cross-platform)
   - H2: Mac node mode
 
 ## nodes/location-command.md
 
-- रूट: /nodes/location-command
+- मार्ग: /nodes/location-command
 - शीर्षक:
-  - H2: TL;DR
-  - H2: selector क्यों (सिर्फ़ switch नहीं)
-  - H2: सेटिंग्स मॉडल
-  - H2: अनुमतियों की मैपिंग (node.permissions)
-  - H2: कमांड: location.get
-  - H2: पृष्ठभूमि व्यवहार
-  - H2: मॉडल/टूलिंग इंटीग्रेशन
-  - H2: UX कॉपी (सुझाई गई)
+  - H2: संक्षेप में
+  - H2: selector क्यों (सिर्फ switch नहीं)
+  - H2: Settings model
+  - H2: Permissions mapping (node.permissions)
+  - H2: Command: location.get
+  - H2: Background behavior
+  - H2: Model/tooling integration
+  - H2: UX copy (सुझाया गया)
   - H2: संबंधित
 
 ## nodes/media-understanding.md
 
-- रूट: /nodes/media-understanding
+- मार्ग: /nodes/media-understanding
 - शीर्षक:
   - H2: लक्ष्य
   - H2: उच्च-स्तरीय व्यवहार
-  - H2: कॉन्फ़िग अवलोकन
-  - H3: मॉडल प्रविष्टियाँ
+  - H2: Config अवलोकन
+  - H3: Model entries
   - H3: Provider credentials (apiKey)
   - H2: डिफ़ॉल्ट और सीमाएँ
-  - H3: मीडिया समझ को auto-detect करें (डिफ़ॉल्ट)
-  - H3: Proxy environment समर्थन (provider मॉडल)
-  - H2: क्षमताएँ (वैकल्पिक)
+  - H3: Auto-detect media understanding (डिफ़ॉल्ट)
+  - H3: Proxy environment support (provider models)
+  - H2: Capabilities (वैकल्पिक)
   - H2: Provider support matrix (OpenClaw integrations)
-  - H2: मॉडल चयन मार्गदर्शन
+  - H2: Model selection guidance
   - H2: Attachment policy
-  - H2: कॉन्फ़िग उदाहरण
-  - H2: स्थिति आउटपुट
+  - H2: Config उदाहरण
+  - H2: Status output
   - H2: नोट्स
   - H2: संबंधित
 
 ## nodes/talk.md
 
-- रूट: /nodes/talk
+- मार्ग: /nodes/talk
 - शीर्षक:
   - H2: व्यवहार (macOS)
-  - H2: उत्तरों में voice directives
-  - H2: कॉन्फ़िग (/.openclaw/openclaw.json)
+  - H2: जवाबों में voice directives
+  - H2: Config (/.openclaw/openclaw.json)
   - H2: macOS UI
   - H2: Android UI
   - H2: नोट्स
@@ -4781,88 +4786,88 @@ x-i18n:
 
 ## nodes/troubleshooting.md
 
-- रूट: /nodes/troubleshooting
+- मार्ग: /nodes/troubleshooting
 - शीर्षक:
-  - H2: कमांड ladder
-  - H2: Foreground आवश्यकताएँ
-  - H2: अनुमतियाँ matrix
-  - H2: पेयरिंग बनाम अनुमोदन
-  - H2: सामान्य node त्रुटि कोड
-  - H2: तेज़ रिकवरी loop
+  - H2: Command ladder
+  - H2: Foreground requirements
+  - H2: Permissions matrix
+  - H2: पेयरिंग बनाम approvals
+  - H2: सामान्य node error codes
+  - H2: तेज़ recovery loop
   - H2: संबंधित
 
 ## nodes/voicewake.md
 
-- रूट: /nodes/voicewake
+- मार्ग: /nodes/voicewake
 - शीर्षक:
-  - H2: स्टोरेज (Gateway host)
-  - H2: प्रोटोकॉल
-  - H3: मेथड
-  - H3: रूटिंग मेथड (trigger → target)
-  - H3: इवेंट
-  - H2: क्लाइंट व्यवहार
-  - H3: macOS ऐप
+  - H2: Storage (Gateway host)
+  - H2: Protocol
+  - H3: Methods
+  - H3: Routing methods (trigger → target)
+  - H3: Events
+  - H2: Client behavior
+  - H3: macOS app
   - H3: iOS node
   - H3: Android node
   - H2: संबंधित
 
 ## openclaw-agent-runtime.md
 
-- रूट: /openclaw-agent-runtime
+- मार्ग: /openclaw-agent-runtime
 - शीर्षक:
   - H2: Type checking और linting
   - H2: Agent Runtime Tests चलाना
-  - H2: मैनुअल परीक्षण
+  - H2: मैन्युअल testing
   - H2: Clean slate reset
   - H2: संदर्भ
   - H2: संबंधित
 
 ## perplexity.md
 
-- रूट: /perplexity
+- मार्ग: /perplexity
 - शीर्षक:
   - H2: संबंधित
 
 ## plan/codex-context-engine-harness.md
 
-- रूट: /plan/codex-context-engine-harness
+- मार्ग: /plan/codex-context-engine-harness
 - शीर्षक:
   - H2: स्थिति
   - H2: लक्ष्य
   - H2: गैर-लक्ष्य
   - H2: मौजूदा आर्किटेक्चर
   - H2: मौजूदा अंतर
-  - H2: वांछित व्यवहार
+  - H2: अपेक्षित व्यवहार
   - H2: डिज़ाइन बाधाएँ
-  - H3: Codex app-server मूल thread state के लिए canonical रहता है
-  - H3: Context engine assembly को Codex inputs में प्रोजेक्ट किया जाना चाहिए
-  - H3: Prompt-cache stability मायने रखती है
+  - H3: Codex app-server native thread state के लिए canonical रहता है
+  - H3: Context engine assembly को Codex inputs में project करना होगा
+  - H3: Prompt-cache स्थिरता मायने रखती है
   - H3: Runtime selection semantics नहीं बदलते
-  - H2: कार्यान्वयन योजना
-  - H3: 1. पुन: उपयोग योग्य context-engine attempt helpers निर्यात या स्थानांतरित करें
+  - H2: Implementation plan
+  - H3: 1. पुनः उपयोग योग्य context-engine attempt helpers को export या relocate करें
   - H3: 2. Codex context projection helper जोड़ें
-  - H3: 3. Codex thread startup से पहले bootstrap वायर करें
-  - H3: 4. thread/start / thread/resume और turn/start से पहले assemble वायर करें
-  - H3: 5. prompt-cache stable formatting सुरक्षित रखें
-  - H3: 6. transcript mirroring के बाद post-turn वायर करें
-  - H3: 7. usage और prompt-cache runtime context को normalize करें
+  - H3: 3. Codex thread startup से पहले bootstrap wire करें
+  - H3: 4. thread/start / thread/resume और turn/start से पहले assemble wire करें
+  - H3: 5. Prompt-cache stable formatting बनाए रखें
+  - H3: 6. Transcript mirroring के बाद post-turn wire करें
+  - H3: 7. Usage और prompt-cache runtime context normalize करें
   - H3: 8. Compaction नीति
   - H4: /compact और explicit OpenClaw compaction
   - H4: In-turn Codex native contextCompaction events
   - H3: 9. Session reset और binding behavior
   - H3: 10. Error handling
-  - H2: परीक्षण योजना
+  - H2: Test plan
   - H3: Unit tests
-  - H3: अपडेट करने के लिए मौजूदा परीक्षण
+  - H3: अपडेट करने के लिए मौजूदा tests
   - H3: Integration / live tests
   - H2: Observability
   - H2: Migration / compatibility
   - H2: खुले प्रश्न
-  - H2: स्वीकृति मानदंड
+  - H2: Acceptance criteria
 
 ## plan/ui-channels.md
 
-- रूट: /plan/ui-channels
+- मार्ग: /plan/ui-channels
 - शीर्षक:
   - H2: स्थिति
   - H2: समस्या
@@ -4873,28 +4878,28 @@ x-i18n:
   - H2: Runtime capability contract
   - H2: Channel mapping
   - H2: Refactor steps
-  - H2: परीक्षण
+  - H2: Tests
   - H2: खुले प्रश्न
   - H2: संबंधित
 
 ## platforms/android.md
 
-- रूट: /platforms/android
+- मार्ग: /platforms/android
 - शीर्षक:
-  - H2: समर्थन snapshot
-  - H2: सिस्टम नियंत्रण
-  - H2: कनेक्शन रनबुक
+  - H2: Support snapshot
+  - H2: System control
+  - H2: Connection runbook
   - H3: पूर्वापेक्षाएँ
   - H3: 1) Gateway शुरू करें
-  - H3: 2) डिस्कवरी सत्यापित करें (वैकल्पिक)
+  - H3: 2) discovery सत्यापित करें (वैकल्पिक)
   - H4: Tailnet (Vienna ⇄ London) discovery via unicast DNS-SD
   - H3: 3) Android से कनेक्ट करें
   - H3: Presence alive beacons
-  - H3: 4) पेयरिंग अनुमोदित करें (CLI)
+  - H3: 4) पेयरिंग approve करें (CLI)
   - H3: 5) सत्यापित करें कि node कनेक्ट है
-  - H3: 6) चैट + इतिहास
+  - H3: 6) Chat + history
   - H3: 7) Canvas + camera
-  - H4: Gateway Canvas Host (वेब सामग्री के लिए अनुशंसित)
+  - H4: Gateway Canvas Host (web content के लिए अनुशंसित)
   - H3: 8) Voice + विस्तारित Android command surface
   - H2: Assistant entrypoints
   - H2: Notification forwarding
@@ -4902,13 +4907,13 @@ x-i18n:
 
 ## platforms/digitalocean.md
 
-- रूट: /platforms/digitalocean
+- मार्ग: /platforms/digitalocean
 - शीर्षक:
   - H2: संबंधित
 
 ## platforms/easyrunner.md
 
-- रूट: /platforms/easyrunner
+- मार्ग: /platforms/easyrunner
 - शीर्षक:
   - H2: शुरू करने से पहले
   - H2: Compose app
@@ -4919,21 +4924,21 @@ x-i18n:
 
 ## platforms/index.md
 
-- रूट: /platforms
+- मार्ग: /platforms
 - शीर्षक:
   - H2: अपना OS चुनें
-  - H2: VPS और होस्टिंग
+  - H2: VPS और hosting
   - H2: सामान्य लिंक
   - H2: Gateway service install (CLI)
   - H2: संबंधित
 
 ## platforms/ios.md
 
-- रूट: /platforms/ios
+- मार्ग: /platforms/ios
 - शीर्षक:
   - H2: यह क्या करता है
   - H2: आवश्यकताएँ
-  - H2: त्वरित शुरुआत (pair + connect)
+  - H2: Quick start (pair + connect)
   - H2: आधिकारिक builds के लिए relay-backed push
   - H2: Background alive beacons
   - H2: Authentication और trust flow
@@ -4942,39 +4947,39 @@ x-i18n:
   - H3: Tailnet (cross-network)
   - H3: Manual host/port
   - H2: Canvas + A2UI
-  - H2: Computer Use relationship
+  - H2: Computer Use संबंध
   - H3: Canvas eval / snapshot
   - H2: Voice wake + talk mode
   - H2: सामान्य त्रुटियाँ
-  - H2: संबंधित दस्तावेज़
+  - H2: संबंधित docs
 
 ## platforms/linux.md
 
-- रूट: /platforms/linux
+- मार्ग: /platforms/linux
 - शीर्षक:
-  - H2: शुरुआती लोगों के लिए त्वरित रास्ता (VPS)
+  - H2: शुरुआती quick path (VPS)
   - H2: इंस्टॉल करें
   - H2: Gateway
   - H2: Gateway service install (CLI)
-  - H2: सिस्टम नियंत्रण (systemd user unit)
+  - H2: System control (systemd user unit)
   - H2: Memory pressure और OOM kills
   - H2: संबंधित
 
 ## platforms/mac/bundled-gateway.md
 
-- रूट: /platforms/mac/bundled-gateway
+- मार्ग: /platforms/mac/bundled-gateway
 - शीर्षक:
   - H2: CLI इंस्टॉल करें (local mode के लिए आवश्यक)
   - H2: Launchd (Gateway as LaunchAgent)
-  - H2: संस्करण संगतता
+  - H2: Version compatibility
   - H2: macOS पर state directory
-  - H2: ऐप कनेक्टिविटी डीबग करें
+  - H2: App connectivity debug करें
   - H2: Smoke check
   - H2: संबंधित
 
 ## platforms/mac/canvas.md
 
-- रूट: /platforms/mac/canvas
+- मार्ग: /platforms/mac/canvas
 - शीर्षक:
   - H2: Canvas कहाँ रहता है
   - H2: Panel behavior
@@ -4982,12 +4987,12 @@ x-i18n:
   - H2: Canvas में A2UI
   - H3: A2UI commands (v0.8)
   - H2: Canvas से agent runs trigger करना
-  - H2: सुरक्षा नोट्स
+  - H2: Security notes
   - H2: संबंधित
 
 ## platforms/mac/child-process.md
 
-- रूट: /platforms/mac/child-process
+- मार्ग: /platforms/mac/child-process
 - शीर्षक:
   - H2: डिफ़ॉल्ट व्यवहार (launchd)
   - H2: Unsigned dev builds
@@ -4998,7 +5003,7 @@ x-i18n:
 
 ## platforms/mac/dev-setup.md
 
-- मार्ग: /platforms/mac/dev-setup
+- रूट: /platforms/mac/dev-setup
 - शीर्षक:
   - H1: macOS डेवलपर सेटअप
   - H2: पूर्वापेक्षाएँ
@@ -5006,16 +5011,16 @@ x-i18n:
   - H2: 2. ऐप बनाएँ और पैकेज करें
   - H2: 3. CLI इंस्टॉल करें
   - H2: समस्या निवारण
-  - H3: बिल्ड विफल: टूलचेन या SDK बेमेल
+  - H3: बिल्ड विफल: टूलचेन या SDK असंगति
   - H3: अनुमति देने पर ऐप क्रैश होता है
-  - H3: Gateway "Starting..." पर अनिश्चितकाल तक रहता है
+  - H3: Gateway "शुरू हो रहा है..." अनिश्चित काल तक
   - H2: संबंधित
 
 ## platforms/mac/health.md
 
-- मार्ग: /platforms/mac/health
+- रूट: /platforms/mac/health
 - शीर्षक:
-  - H1: macOS पर हेल्थ चेक
+  - H1: macOS पर स्वास्थ्य जाँच
   - H2: मेनू बार
   - H2: सेटिंग्स
   - H2: प्रोब कैसे काम करता है
@@ -5024,17 +5029,17 @@ x-i18n:
 
 ## platforms/mac/icon.md
 
-- मार्ग: /platforms/mac/icon
+- रूट: /platforms/mac/icon
 - शीर्षक:
   - H1: मेनू बार आइकन अवस्थाएँ
   - H2: संबंधित
 
 ## platforms/mac/logging.md
 
-- मार्ग: /platforms/mac/logging
+- रूट: /platforms/mac/logging
 - शीर्षक:
   - H1: लॉगिंग (macOS)
-  - H2: रोलिंग डायग्नॉस्टिक्स फ़ाइल लॉग (डीबग पेन)
+  - H2: रोलिंग डायग्नोस्टिक्स फ़ाइल लॉग (डीबग पेन)
   - H2: macOS पर यूनिफ़ाइड लॉगिंग निजी डेटा
   - H2: OpenClaw (ai.openclaw) के लिए सक्षम करें
   - H2: डीबगिंग के बाद अक्षम करें
@@ -5042,13 +5047,13 @@ x-i18n:
 
 ## platforms/mac/menu-bar.md
 
-- मार्ग: /platforms/mac/menu-bar
+- रूट: /platforms/mac/menu-bar
 - शीर्षक:
   - H2: क्या दिखाया जाता है
   - H2: अवस्था मॉडल
   - H2: IconState enum (Swift)
-  - H3: ActivityKind → glyph
-  - H3: विज़ुअल मैपिंग
+  - H3: ActivityKind → ग्लिफ़
+  - H3: दृश्य मैपिंग
   - H2: संदर्भ सबमेनू
   - H2: स्थिति पंक्ति पाठ (मेनू)
   - H2: इवेंट इनजेशन
@@ -5058,10 +5063,10 @@ x-i18n:
 
 ## platforms/mac/peekaboo.md
 
-- मार्ग: /platforms/mac/peekaboo
+- रूट: /platforms/mac/peekaboo
 - शीर्षक:
   - H2: यह क्या है (और क्या नहीं है)
-  - H2: कंप्यूटर उपयोग से संबंध
+  - H2: Computer Use से संबंध
   - H2: ब्रिज सक्षम करें
   - H2: क्लाइंट खोज क्रम
   - H2: सुरक्षा और अनुमतियाँ
@@ -5071,17 +5076,17 @@ x-i18n:
 
 ## platforms/mac/permissions.md
 
-- मार्ग: /platforms/mac/permissions
+- रूट: /platforms/mac/permissions
 - शीर्षक:
   - H2: स्थिर अनुमतियों की आवश्यकताएँ
-  - H2: Node और CLI रनटाइम के लिए एक्सेसिबिलिटी अनुदान
-  - H2: प्रॉम्प्ट गायब होने पर रिकवरी चेकलिस्ट
+  - H2: Node और CLI रनटाइम के लिए Accessibility अनुदान
+  - H2: प्रॉम्प्ट गायब होने पर पुनर्प्राप्ति चेकलिस्ट
   - H2: फ़ाइलों और फ़ोल्डरों की अनुमतियाँ (Desktop/Documents/Downloads)
   - H2: संबंधित
 
 ## platforms/mac/remote.md
 
-- मार्ग: /platforms/mac/remote
+- रूट: /platforms/mac/remote
 - शीर्षक:
   - H2: मोड
   - H2: रिमोट ट्रांसपोर्ट
@@ -5092,35 +5097,35 @@ x-i18n:
   - H2: सुरक्षा नोट्स
   - H2: WhatsApp लॉगिन फ़्लो (रिमोट)
   - H2: समस्या निवारण
-  - H2: नोटिफ़िकेशन ध्वनियाँ
+  - H2: सूचना ध्वनियाँ
   - H2: संबंधित
 
 ## platforms/mac/signing.md
 
-- मार्ग: /platforms/mac/signing
+- रूट: /platforms/mac/signing
 - शीर्षक:
   - H1: mac साइनिंग (डीबग बिल्ड)
   - H2: उपयोग
-  - H3: एड-हॉक साइनिंग नोट
+  - H3: ऐड-हॉक साइनिंग नोट
   - H2: About के लिए बिल्ड मेटाडेटा
   - H2: क्यों
   - H2: संबंधित
 
 ## platforms/mac/skills.md
 
-- मार्ग: /platforms/mac/skills
+- रूट: /platforms/mac/skills
 - शीर्षक:
   - H2: डेटा स्रोत
-  - H2: इंस्टॉल क्रियाएँ
+  - H2: इंस्टॉल कार्रवाइयाँ
   - H2: Env/API कुंजियाँ
   - H2: रिमोट मोड
   - H2: संबंधित
 
 ## platforms/mac/voice-overlay.md
 
-- मार्ग: /platforms/mac/voice-overlay
+- रूट: /platforms/mac/voice-overlay
 - शीर्षक:
-  - H1: वॉइस ओवरले लाइफ़सायकल (macOS)
+  - H1: वॉइस ओवरले जीवनचक्र (macOS)
   - H2: वर्तमान आशय
   - H2: लागू किया गया (9 दिसंबर, 2025)
   - H2: अगले चरण
@@ -5130,15 +5135,15 @@ x-i18n:
 
 ## platforms/mac/voicewake.md
 
-- मार्ग: /platforms/mac/voicewake
+- रूट: /platforms/mac/voicewake
 - शीर्षक:
   - H1: वॉइस वेक और पुश-टू-टॉक
   - H2: आवश्यकताएँ
   - H2: मोड
   - H2: रनटाइम व्यवहार (वेक-वर्ड)
-  - H2: लाइफ़सायकल इनवेरिएंट
+  - H2: जीवनचक्र अपरिवर्तनीयताएँ
   - H2: स्टिकी ओवरले विफलता मोड (पिछला)
-  - H2: पुश-टू-टॉक विवरण
+  - H2: पुश-टू-टॉक विशिष्टताएँ
   - H2: उपयोगकर्ता-दृश्य सेटिंग्स
   - H2: फ़ॉरवर्डिंग व्यवहार
   - H2: फ़ॉरवर्डिंग पेलोड
@@ -5147,17 +5152,17 @@ x-i18n:
 
 ## platforms/mac/webchat.md
 
-- मार्ग: /platforms/mac/webchat
+- रूट: /platforms/mac/webchat
 - शीर्षक:
   - H2: लॉन्च और डीबगिंग
-  - H2: यह कैसे जुड़ा है
+  - H2: यह कैसे वायर किया गया है
   - H2: सुरक्षा सतह
   - H2: ज्ञात सीमाएँ
   - H2: संबंधित
 
 ## platforms/mac/xpc.md
 
-- मार्ग: /platforms/mac/xpc
+- रूट: /platforms/mac/xpc
 - शीर्षक:
   - H1: OpenClaw macOS IPC आर्किटेक्चर
   - H2: लक्ष्य
@@ -5165,36 +5170,36 @@ x-i18n:
   - H3: Gateway + node ट्रांसपोर्ट
   - H3: Node सेवा + ऐप IPC
   - H3: PeekabooBridge (UI ऑटोमेशन)
-  - H2: संचालन फ़्लो
+  - H2: परिचालन फ़्लो
   - H2: हार्डनिंग नोट्स
   - H2: संबंधित
 
 ## platforms/macos.md
 
-- मार्ग: /platforms/macos
+- रूट: /platforms/macos
 - शीर्षक:
   - H2: डाउनलोड
-  - H2: पहली बार चलाना
+  - H2: पहला रन
   - H2: Gateway मोड चुनें
-  - H2: ऐप किन चीज़ों का स्वामी है
+  - H2: ऐप क्या स्वामित्व रखता है
   - H2: macOS विवरण पृष्ठ
   - H2: संबंधित
 
 ## platforms/oracle.md
 
-- मार्ग: /platforms/oracle
+- रूट: /platforms/oracle
 - शीर्षक:
   - H2: संबंधित
 
 ## platforms/raspberry-pi.md
 
-- मार्ग: /platforms/raspberry-pi
+- रूट: /platforms/raspberry-pi
 - शीर्षक:
   - H2: संबंधित
 
 ## platforms/windows.md
 
-- मार्ग: /platforms/windows
+- रूट: /platforms/windows
 - शीर्षक:
   - H2: अनुशंसित: Windows Hub
   - H3: Windows Hub में क्या शामिल है
@@ -5209,28 +5214,28 @@ x-i18n:
   - H3: ट्रे आइकन दिखाई नहीं देता
   - H3: स्थानीय सेटअप विफल होता है
   - H3: ऐप कहता है कि पेयरिंग आवश्यक है
-  - H3: वेब चैट रिमोट Gateway तक नहीं पहुँच सकती
+  - H3: वेब चैट रिमोट Gateway तक नहीं पहुँच सकता
   - H3: screen.snapshot, camera, या audio कमांड विफल होते हैं
   - H3: Git या GitHub कनेक्टिविटी विफल होती है
   - H2: संबंधित
 
 ## plugins/adding-capabilities.md
 
-- मार्ग: /plugins/adding-capabilities
+- रूट: /plugins/adding-capabilities
 - शीर्षक:
-  - H2: क्षमता कब बनाएँ
+  - H2: capability कब बनानी है
   - H2: मानक क्रम
   - H2: क्या कहाँ जाता है
-  - H2: प्रदाता और हार्नेस सीम
+  - H2: Provider और harness सीमाएँ
   - H2: फ़ाइल चेकलिस्ट
-  - H2: कार्य किया हुआ उदाहरण: इमेज जनरेशन
-  - H2: एम्बेडिंग प्रदाता
+  - H2: काम किया हुआ उदाहरण: इमेज जनरेशन
+  - H2: एम्बेडिंग Provider
   - H2: समीक्षा चेकलिस्ट
   - H2: संबंधित
 
 ## plugins/admin-http-rpc.md
 
-- मार्ग: /plugins/admin-http-rpc
+- रूट: /plugins/admin-http-rpc
 - शीर्षक:
   - H2: इसे सक्षम करने से पहले
   - H2: सक्षम करें
@@ -5246,115 +5251,115 @@ x-i18n:
 
 ## plugins/agent-tools.md
 
-- मार्ग: /plugins/agent-tools
+- रूट: /plugins/agent-tools
 - शीर्षक:
   - H2: संबंधित
 
 ## plugins/architecture-internals.md
 
-- मार्ग: /plugins/architecture-internals
+- रूट: /plugins/architecture-internals
 - शीर्षक:
   - H2: लोड पाइपलाइन
-  - H3: मैनिफ़ेस्ट-फ़र्स्ट व्यवहार
+  - H3: Manifest-first व्यवहार
   - H3: Plugin कैश सीमा
-  - H2: रजिस्ट्री मॉडल
-  - H2: वार्तालाप बाइंडिंग कॉलबैक
-  - H2: प्रदाता रनटाइम हुक
-  - H3: हुक क्रम और उपयोग
-  - H3: प्रदाता उदाहरण
-  - H3: बिल्ट-इन उदाहरण
-  - H2: रनटाइम हेल्पर
+  - H2: Registry मॉडल
+  - H2: Conversation binding callbacks
+  - H2: Provider रनटाइम hooks
+  - H3: Hook क्रम और उपयोग
+  - H3: Provider उदाहरण
+  - H3: अंतर्निहित उदाहरण
+  - H2: रनटाइम helpers
   - H3: api.runtime.imageGeneration
   - H2: Gateway HTTP रूट
-  - H2: Plugin SDK इम्पोर्ट पथ
-  - H2: संदेश टूल स्कीमा
-  - H2: चैनल लक्ष्य रिज़ॉल्यूशन
-  - H2: कॉन्फ़िग-समर्थित डायरेक्टरी
-  - H2: प्रदाता कैटलॉग
-  - H2: रीड-ओनली चैनल निरीक्षण
-  - H2: पैकेज पैक
-  - H3: चैनल कैटलॉग मेटाडेटा
-  - H2: संदर्भ इंजन Plugin
-  - H2: नई क्षमता जोड़ना
-  - H3: क्षमता चेकलिस्ट
-  - H3: क्षमता टेम्पलेट
+  - H2: Plugin SDK import paths
+  - H2: Message tool schemas
+  - H2: Channel target resolution
+  - H2: Config-backed directories
+  - H2: Provider catalogs
+  - H2: रीड-ओनली channel inspection
+  - H2: Package packs
+  - H3: Channel catalog metadata
+  - H2: Context engine plugins
+  - H2: नई capability जोड़ना
+  - H3: Capability चेकलिस्ट
+  - H3: Capability टेम्पलेट
   - H2: संबंधित
 
 ## plugins/architecture.md
 
-- मार्ग: /plugins/architecture
+- रूट: /plugins/architecture
 - शीर्षक:
-  - H2: सार्वजनिक क्षमता मॉडल
+  - H2: सार्वजनिक capability मॉडल
   - H3: बाहरी संगतता रुख
-  - H3: Plugin आकार
-  - H3: लेगेसी हुक
+  - H3: Plugin shapes
+  - H3: Legacy hooks
   - H3: संगतता संकेत
   - H2: आर्किटेक्चर अवलोकन
-  - H3: Plugin मेटाडेटा स्नैपशॉट और लुकअप टेबल
-  - H3: सक्रियण योजना
-  - H3: चैनल Plugin और साझा संदेश टूल
-  - H2: क्षमता स्वामित्व मॉडल
-  - H3: क्षमता लेयरिंग
-  - H3: मल्टी-क्षमता कंपनी Plugin उदाहरण
-  - H3: क्षमता उदाहरण: वीडियो समझ
+  - H3: Plugin metadata snapshot और lookup table
+  - H3: Activation planning
+  - H3: Channel plugins और साझा message tool
+  - H2: Capability ownership model
+  - H3: Capability layering
+  - H3: Multi-capability company plugin example
+  - H3: Capability example: video understanding
   - H2: अनुबंध और प्रवर्तन
   - H3: अनुबंध में क्या शामिल होता है
   - H2: निष्पादन मॉडल
-  - H2: एक्सपोर्ट सीमा
+  - H2: Export boundary
   - H2: आंतरिक विवरण और संदर्भ
   - H2: संबंधित
 
 ## plugins/building-extensions.md
 
-- मार्ग: /plugins/building-extensions
+- रूट: /plugins/building-extensions
 - शीर्षक:
   - H2: संबंधित
 
 ## plugins/building-plugins.md
 
-- मार्ग: /plugins/building-plugins
+- रूट: /plugins/building-plugins
 - शीर्षक:
   - H2: आवश्यकताएँ
-  - H2: Plugin आकार चुनें
-  - H2: क्विकस्टार्ट
-  - H2: टूल पंजीकृत करना
-  - H2: इम्पोर्ट परंपराएँ
+  - H2: Plugin shape चुनें
+  - H2: Quickstart
+  - H2: Tools पंजीकृत करना
+  - H2: Import conventions
   - H2: सबमिशन-पूर्व चेकलिस्ट
-  - H2: बीटा रिलीज़ के विरुद्ध परीक्षण करें
+  - H2: beta releases के विरुद्ध परीक्षण करें
   - H2: अगले चरण
   - H2: संबंधित
 
 ## plugins/bundles.md
 
-- मार्ग: /plugins/bundles
+- रूट: /plugins/bundles
 - शीर्षक:
-  - H2: बंडल क्यों मौजूद हैं
-  - H2: बंडल इंस्टॉल करें
-  - H2: OpenClaw बंडलों से क्या मैप करता है
+  - H2: Bundles क्यों मौजूद हैं
+  - H2: Bundle इंस्टॉल करें
+  - H2: OpenClaw bundles से क्या मैप करता है
   - H3: अभी समर्थित
   - H4: Skill सामग्री
-  - H4: हुक पैक
+  - H4: Hook packs
   - H4: एम्बेडेड OpenClaw के लिए MCP
   - H4: एम्बेडेड OpenClaw सेटिंग्स
   - H4: एम्बेडेड OpenClaw LSP
-  - H3: पता चला लेकिन निष्पादित नहीं किया गया
-  - H2: बंडल फ़ॉर्मैट
-  - H2: पहचान प्राथमिकता
-  - H2: रनटाइम निर्भरताएँ और क्लीनअप
+  - H3: पहचाना गया लेकिन निष्पादित नहीं
+  - H2: Bundle formats
+  - H2: Detection precedence
+  - H2: Runtime dependencies और cleanup
   - H2: सुरक्षा
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## plugins/cli-backend-plugins.md
 
-- मार्ग: /plugins/cli-backend-plugins
+- रूट: /plugins/cli-backend-plugins
 - शीर्षक:
-  - H2: Plugin किसका स्वामी है
-  - H2: न्यूनतम बैकएंड Plugin
-  - H2: कॉन्फ़िग आकार
-  - H2: उन्नत बैकएंड हुक
-  - H3: ownsNativeCompaction: OpenClaw Compaction से ऑप्ट आउट करना
-  - H2: MCP टूल ब्रिज
+  - H2: Plugin क्या स्वामित्व रखता है
+  - H2: न्यूनतम backend plugin
+  - H2: Config shape
+  - H2: उन्नत backend hooks
+  - H3: ownsNativeCompaction: OpenClaw compaction से opt out करना
+  - H2: MCP tool bridge
   - H2: उपयोगकर्ता कॉन्फ़िगरेशन
   - H2: सत्यापन
   - H2: चेकलिस्ट
@@ -5362,17 +5367,17 @@ x-i18n:
 
 ## plugins/codex-computer-use.md
 
-- मार्ग: /plugins/codex-computer-use
+- रूट: /plugins/codex-computer-use
 - शीर्षक:
   - H2: OpenClaw.app और Peekaboo
   - H2: iOS ऐप
-  - H2: प्रत्यक्ष cua-driver MCP
+  - H2: Direct cua-driver MCP
   - H2: त्वरित सेटअप
   - H2: कमांड
-  - H2: मार्केटप्लेस विकल्प
-  - H2: बंडल किया गया macOS मार्केटप्लेस
-  - H2: रिमोट कैटलॉग सीमा
-  - H2: कॉन्फ़िगरेशन संदर्भ
+  - H2: Marketplace विकल्प
+  - H2: Bundled macOS marketplace
+  - H2: Remote catalog limit
+  - H2: Configuration reference
   - H2: OpenClaw क्या जाँचता है
   - H2: macOS अनुमतियाँ
   - H2: समस्या निवारण
@@ -5380,128 +5385,128 @@ x-i18n:
 
 ## plugins/codex-harness-reference.md
 
-- मार्ग: /plugins/codex-harness-reference
+- रूट: /plugins/codex-harness-reference
 - शीर्षक:
-  - H2: Plugin कॉन्फ़िग सतह
-  - H2: ऐप-सर्वर ट्रांसपोर्ट
-  - H2: अनुमोदन और सैंडबॉक्स मोड
-  - H2: सैंडबॉक्स्ड नेटिव निष्पादन
-  - H2: प्रमाणीकरण और वातावरण आइसोलेशन
-  - H2: डायनामिक टूल
-  - H2: टाइमआउट
-  - H2: मॉडल खोज
-  - H2: वर्कस्पेस बूटस्ट्रैप फ़ाइलें
-  - H2: वातावरण ओवरराइड
+  - H2: Plugin config surface
+  - H2: App-server transport
+  - H2: Approval and sandbox modes
+  - H2: Sandboxed native execution
+  - H2: Auth and environment isolation
+  - H2: Dynamic tools
+  - H2: Timeouts
+  - H2: Model discovery
+  - H2: Workspace bootstrap files
+  - H2: Environment overrides
   - H2: संबंधित
 
 ## plugins/codex-harness-runtime.md
 
-- मार्ग: /plugins/codex-harness-runtime
+- रूट: /plugins/codex-harness-runtime
 - शीर्षक:
   - H2: अवलोकन
-  - H2: थ्रेड बाइंडिंग और मॉडल परिवर्तन
-  - H2: दृश्य उत्तर और Heartbeat
-  - H2: हुक सीमाएँ
-  - H2: V1 समर्थन अनुबंध
-  - H2: नेटिव अनुमतियाँ और MCP elicitations
-  - H2: कतार स्टीयरिंग
-  - H2: Codex फ़ीडबैक अपलोड
-  - H2: Compaction और ट्रांसक्रिप्ट मिरर
-  - H2: मीडिया और डिलीवरी
+  - H2: Thread bindings and model changes
+  - H2: Visible replies and heartbeats
+  - H2: Hook boundaries
+  - H2: V1 support contract
+  - H2: Native permissions and MCP elicitations
+  - H2: Queue steering
+  - H2: Codex feedback upload
+  - H2: Compaction and transcript mirror
+  - H2: Media and delivery
   - H2: संबंधित
 
 ## plugins/codex-harness.md
 
-- मार्ग: /plugins/codex-harness
+- रूट: /plugins/codex-harness
 - शीर्षक:
   - H2: आवश्यकताएँ
-  - H2: क्विकस्टार्ट
+  - H2: Quickstart
   - H2: कॉन्फ़िगरेशन
-  - H2: Codex रनटाइम सत्यापित करें
-  - H2: रूटिंग और मॉडल चयन
-  - H2: डिप्लॉयमेंट पैटर्न
-  - H3: बेसिक Codex डिप्लॉयमेंट
-  - H3: मिश्रित प्रदाता डिप्लॉयमेंट
-  - H3: फ़ेल-क्लोज़्ड Codex डिप्लॉयमेंट
-  - H2: ऐप-सर्वर नीति
-  - H2: कमांड और डायग्नॉस्टिक्स
-  - H3: Codex थ्रेड स्थानीय रूप से निरीक्षण करें
-  - H2: नेटिव Codex Plugin
-  - H2: कंप्यूटर उपयोग
-  - H2: रनटाइम सीमाएँ
+  - H2: Codex runtime सत्यापित करें
+  - H2: Routing and model selection
+  - H2: Deployment patterns
+  - H3: Basic Codex deployment
+  - H3: Mixed provider deployment
+  - H3: Fail-closed Codex deployment
+  - H2: App-server policy
+  - H2: Commands and diagnostics
+  - H3: Codex threads को स्थानीय रूप से निरीक्षण करें
+  - H2: Native Codex plugins
+  - H2: Computer Use
+  - H2: Runtime boundaries
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## plugins/codex-native-plugins.md
 
-- मार्ग: /plugins/codex-native-plugins
+- रूट: /plugins/codex-native-plugins
 - शीर्षक:
   - H2: आवश्यकताएँ
-  - H2: क्विकस्टार्ट
-  - H2: चैट से Plugin प्रबंधित करें
-  - H2: नेटिव Plugin सेटअप कैसे काम करता है
-  - H2: V1 समर्थन सीमा
-  - H2: ऐप इन्वेंटरी और स्वामित्व
-  - H2: थ्रेड ऐप कॉन्फ़िग
-  - H2: विनाशकारी कार्रवाई नीति
+  - H2: Quickstart
+  - H2: चैट से plugins प्रबंधित करें
+  - H2: Native plugin setup कैसे काम करता है
+  - H2: V1 support boundary
+  - H2: App inventory and ownership
+  - H2: Thread app config
+  - H2: Destructive action policy
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## plugins/community.md
 
-- मार्ग: /plugins/community
+- रूट: /plugins/community
 - शीर्षक:
-  - H2: Plugin खोजें
-  - H2: Plugin प्रकाशित करें
+  - H2: plugins खोजें
+  - H2: plugins प्रकाशित करें
   - H2: संबंधित
 
 ## plugins/compatibility.md
 
-- मार्ग: /plugins/compatibility
+- रूट: /plugins/compatibility
 - शीर्षक:
-  - H2: संगतता रजिस्ट्री
-  - H2: Plugin निरीक्षक पैकेज
-  - H3: मेंटेनर स्वीकृति लेन
-  - H2: डेप्रिकेशन नीति
+  - H2: संगतता registry
+  - H2: Plugin inspector package
+  - H3: Maintainer acceptance lane
+  - H2: Deprecation policy
   - H2: वर्तमान संगतता क्षेत्र
-  - H3: WhatsApp इनबाउंड कॉलबैक फ़्लैट एलियस
-  - H3: WhatsApp इनबाउंड एडमिशन फ़ील्ड
+  - H3: WhatsApp Inbound Callback Flat Aliases
+  - H3: WhatsApp Inbound Admission Fields
   - H2: रिलीज़ नोट्स
 
 ## plugins/copilot.md
 
-- मार्ग: /plugins/copilot
+- रूट: /plugins/copilot
 - शीर्षक:
   - H2: आवश्यकताएँ
   - H2: Plugin इंस्टॉल
-  - H2: क्विकस्टार्ट
-  - H2: समर्थित प्रदाता
+  - H2: Quickstart
+  - H2: समर्थित providers
   - H2: BYOK
   - H2: Auth
-  - H2: कॉन्फ़िगरेशन सतह
+  - H2: Configuration surface
   - H2: Compaction
-  - H2: ट्रांसक्रिप्ट मिररिंग
-  - H2: अतिरिक्त प्रश्न (/btw)
+  - H2: Transcript mirroring
+  - H2: Side questions (/btw)
   - H2: Doctor
   - H2: सीमाएँ
-  - H2: अनुमतियाँ और askuser
-  - H3: सेशन-स्तर GitHub टोकन
+  - H2: Permissions and askuser
+  - H3: Session-level GitHub token
   - H2: संबंधित
 
 ## plugins/dependency-resolution.md
 
-- मार्ग: /plugins/dependency-resolution
+- रूट: /plugins/dependency-resolution
 - शीर्षक:
   - H2: ज़िम्मेदारी विभाजन
-  - H2: इंस्टॉल रूट
-  - H2: स्थानीय Plugin
-  - H2: स्टार्टअप और रीलोड
-  - H2: बंडल किए गए Plugin
-  - H2: लेगेसी क्लीनअप
+  - H2: Install roots
+  - H2: Local plugins
+  - H2: Startup and reload
+  - H2: Bundled plugins
+  - H2: Legacy cleanup
 
 ## plugins/google-meet.md
 
-- मार्ग: /plugins/google-meet
+- रूट: /plugins/google-meet
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H3: स्थानीय Gateway + Parallels Chrome
@@ -5509,46 +5514,46 @@ x-i18n:
   - H2: ट्रांसपोर्ट
   - H3: Chrome
   - H3: Twilio
-  - H2: OAuth और पूर्व-जांच
-  - H3: Google क्रेडेंशियल बनाएं
-  - H3: रिफ्रेश टोकन मिंट करें
+  - H2: OAuth और प्रीफ़्लाइट
+  - H3: Google क्रेडेंशियल बनाएँ
+  - H3: रिफ़्रेश टोकन जारी करें
   - H3: doctor से OAuth सत्यापित करें
   - H2: कॉन्फ़िगरेशन
-  - H2: औज़ार
+  - H2: टूल
   - H2: एजेंट और bidi मोड
   - H2: लाइव टेस्ट चेकलिस्ट
   - H2: समस्या निवारण
-  - H3: एजेंट Google Meet औज़ार नहीं देख सकता
-  - H3: कोई कनेक्टेड Google Meet-सक्षम नोड नहीं
+  - H3: एजेंट Google Meet टूल नहीं देख सकता
+  - H3: कोई कनेक्टेड Google Meet-सक्षम Node नहीं
   - H3: ब्राउज़र खुलता है लेकिन एजेंट शामिल नहीं हो सकता
   - H3: मीटिंग बनाना विफल होता है
   - H3: एजेंट शामिल होता है लेकिन बोलता नहीं
-  - H3: Twilio सेटअप जांच विफल होती है
+  - H3: Twilio सेटअप जाँचें विफल होती हैं
   - H3: Twilio कॉल शुरू होती है लेकिन मीटिंग में कभी प्रवेश नहीं करती
   - H2: नोट्स
   - H2: संबंधित
 
 ## plugins/hooks.md
 
-- मार्ग: /plugins/hooks
+- रूट: /plugins/hooks
 - शीर्षक:
   - H2: त्वरित शुरुआत
   - H2: हुक कैटलॉग
   - H2: रनटाइम हुक डीबग करें
-  - H2: औज़ार कॉल नीति
-  - H3: Exec environment हुक
-  - H3: औज़ार परिणाम स्थायित्व
+  - H2: टूल कॉल नीति
+  - H3: Exec वातावरण हुक
+  - H3: टूल परिणाम पर्सिस्टेंस
   - H2: प्रॉम्प्ट और मॉडल हुक
   - H3: सेशन एक्सटेंशन और अगले-टर्न इंजेक्शन
-  - H2: संदेश हुक
-  - H2: इंस्टॉल हुक
-  - H2: Gateway जीवनचक्र
-  - H2: आगामी डिप्रिकेशन
+  - H2: मैसेज हुक
+  - H2: हुक इंस्टॉल करें
+  - H2: Gateway लाइफ़साइकिल
+  - H2: आगामी डिप्रीकेशन
   - H2: संबंधित
 
 ## plugins/install-overrides.md
 
-- मार्ग: /plugins/install-overrides
+- रूट: /plugins/install-overrides
 - शीर्षक:
   - H2: वातावरण
   - H2: व्यवहार
@@ -5556,34 +5561,34 @@ x-i18n:
 
 ## plugins/llama-cpp.md
 
-- मार्ग: /plugins/llama-cpp
+- रूट: /plugins/llama-cpp
 - शीर्षक:
   - H2: कॉन्फ़िगरेशन
   - H2: नेटिव रनटाइम
 
 ## plugins/manage-plugins.md
 
-- मार्ग: /plugins/manage-plugins
+- रूट: /plugins/manage-plugins
 - शीर्षक:
-  - H2: plugins सूचीबद्ध करें और खोजें
-  - H2: plugins इंस्टॉल करें
-  - H2: पुनः शुरू करें और निरीक्षण करें
-  - H2: plugins अपडेट करें
-  - H2: plugins अनइंस्टॉल करें
+  - H2: Plugin सूचीबद्ध करें और खोजें
+  - H2: Plugin इंस्टॉल करें
+  - H2: रीस्टार्ट करें और निरीक्षण करें
+  - H2: Plugin अपडेट करें
+  - H2: Plugin अनइंस्टॉल करें
   - H2: स्रोत चुनें
-  - H2: plugins प्रकाशित करें
+  - H2: Plugin प्रकाशित करें
   - H2: संबंधित
 
 ## plugins/manifest.md
 
-- मार्ग: /plugins/manifest
+- रूट: /plugins/manifest
 - शीर्षक:
   - H2: यह फ़ाइल क्या करती है
   - H2: न्यूनतम उदाहरण
   - H2: समृद्ध उदाहरण
   - H2: शीर्ष-स्तरीय फ़ील्ड संदर्भ
-  - H2: जनरेशन provider मेटाडेटा संदर्भ
-  - H2: औज़ार मेटाडेटा संदर्भ
+  - H2: जनरेशन प्रदाता मेटाडेटा संदर्भ
+  - H2: टूल मेटाडेटा संदर्भ
   - H2: providerAuthChoices संदर्भ
   - H2: commandAliases संदर्भ
   - H2: activation संदर्भ
@@ -5603,121 +5608,121 @@ x-i18n:
   - H2: providerRequest संदर्भ
   - H2: secretProviderIntegrations संदर्भ
   - H2: modelPricing संदर्भ
-  - H3: OpenClaw Provider Index
-  - H2: Manifest बनाम package.json
-  - H3: package.json फ़ील्ड जो discovery को प्रभावित करते हैं
-  - H2: Discovery प्राथमिकता (डुप्लीकेट plugin ids)
-  - H2: JSON Schema आवश्यकताएं
+  - H3: OpenClaw प्रदाता इंडेक्स
+  - H2: मैनिफ़ेस्ट बनाम package.json
+  - H3: package.json फ़ील्ड जो डिस्कवरी को प्रभावित करते हैं
+  - H2: डिस्कवरी प्राथमिकता (डुप्लिकेट Plugin आईडी)
+  - H2: JSON स्कीमा आवश्यकताएँ
   - H2: वैलिडेशन व्यवहार
   - H2: नोट्स
   - H2: संबंधित
 
 ## plugins/memory-lancedb.md
 
-- मार्ग: /plugins/memory-lancedb
+- रूट: /plugins/memory-lancedb
 - शीर्षक:
   - H2: इंस्टॉलेशन
   - H2: त्वरित शुरुआत
-  - H2: Provider-समर्थित embeddings
-  - H2: Ollama embeddings
-  - H2: OpenAI-संगत providers
-  - H2: Recall और capture सीमाएं
+  - H2: प्रदाता-समर्थित एम्बेडिंग
+  - H2: Ollama एम्बेडिंग
+  - H2: OpenAI-संगत प्रदाता
+  - H2: रिकॉल और कैप्चर सीमाएँ
   - H2: कमांड
   - H2: स्टोरेज
-  - H2: रनटाइम निर्भरताएं
+  - H2: रनटाइम निर्भरताएँ
   - H2: समस्या निवारण
-  - H3: इनपुट लंबाई context length से अधिक है
-  - H3: असमर्थित embedding मॉडल
-  - H3: Plugin लोड होता है लेकिन कोई memories दिखाई नहीं देतीं
+  - H3: इनपुट लंबाई संदर्भ लंबाई से अधिक है
+  - H3: असमर्थित एम्बेडिंग मॉडल
+  - H3: Plugin लोड होता है लेकिन कोई मेमरी दिखाई नहीं देती
   - H2: संबंधित
 
 ## plugins/memory-wiki.md
 
-- मार्ग: /plugins/memory-wiki
+- रूट: /plugins/memory-wiki
 - शीर्षक:
   - H2: यह क्या जोड़ता है
-  - H2: यह memory के साथ कैसे फिट होता है
-  - H2: अनुशंसित hybrid pattern
-  - H2: Vault मोड
-  - H3: isolated
-  - H3: bridge
-  - H3: unsafe-local
-  - H2: Vault लेआउट
-  - H2: Open Knowledge Format imports
-  - H2: संरचित claims और evidence
-  - H2: एजेंट-फ़ेसिंग entity metadata
-  - H2: Compile pipeline
-  - H2: डैशबोर्ड और health reports
-  - H2: Search और retrieval
-  - H2: एजेंट औज़ार
-  - H2: प्रॉम्प्ट और context व्यवहार
+  - H2: यह मेमरी के साथ कैसे फिट बैठता है
+  - H2: अनुशंसित हाइब्रिड पैटर्न
+  - H2: वॉल्ट मोड
+  - H3: आइसोलेटेड
+  - H3: ब्रिज
+  - H3: असुरक्षित-लोकल
+  - H2: वॉल्ट लेआउट
+  - H2: Open Knowledge Format इम्पोर्ट
+  - H2: संरचित दावे और प्रमाण
+  - H2: एजेंट-फेसिंग एंटिटी मेटाडेटा
+  - H2: कम्पाइल पाइपलाइन
+  - H2: डैशबोर्ड और स्वास्थ्य रिपोर्ट
+  - H2: खोज और पुनर्प्राप्ति
+  - H2: एजेंट टूल
+  - H2: प्रॉम्प्ट और संदर्भ व्यवहार
   - H2: कॉन्फ़िगरेशन
-  - H3: उदाहरण: QMD + bridge मोड
+  - H3: उदाहरण: QMD + ब्रिज मोड
   - H2: CLI
   - H2: Obsidian समर्थन
-  - H2: अनुशंसित workflow
+  - H2: अनुशंसित वर्कफ़्लो
   - H2: संबंधित दस्तावेज़
 
 ## plugins/message-presentation.md
 
-- मार्ग: /plugins/message-presentation
+- रूट: /plugins/message-presentation
 - शीर्षक:
-  - H2: Contract
-  - H2: Producer उदाहरण
-  - H2: Renderer contract
-  - H2: Core render flow
-  - H2: Degradation rules
-  - H2: Provider mapping
-  - H2: Presentation बनाम InteractiveReply
-  - H2: Delivery pin
-  - H2: Plugin author checklist
+  - H2: कॉन्ट्रैक्ट
+  - H2: प्रोड्यूसर उदाहरण
+  - H2: रेंडरर कॉन्ट्रैक्ट
+  - H2: कोर रेंडर फ़्लो
+  - H2: डिग्रेडेशन नियम
+  - H2: प्रदाता मैपिंग
+  - H2: प्रेज़ेंटेशन बनाम InteractiveReply
+  - H2: डिलीवरी पिन
+  - H2: Plugin लेखक चेकलिस्ट
   - H2: संबंधित दस्तावेज़
 
 ## plugins/oc-path.md
 
-- मार्ग: /plugins/oc-path
+- रूट: /plugins/oc-path
 - शीर्षक:
   - H2: इसे क्यों सक्षम करें
-  - H2: यह कहां चलता है
+  - H2: यह कहाँ चलता है
   - H2: सक्षम करें
-  - H2: निर्भरताएं
+  - H2: निर्भरताएँ
   - H2: यह क्या प्रदान करता है
-  - H2: अन्य plugins से संबंध
+  - H2: अन्य Plugin से संबंध
   - H2: सुरक्षा
   - H2: संबंधित
 
 ## plugins/plugin-inventory.md
 
-- मार्ग: /plugins/plugin-inventory
+- रूट: /plugins/plugin-inventory
 - शीर्षक:
-  - H1: Plugin inventory
-  - H2: परिभाषाएं
+  - H1: Plugin इन्वेंटरी
+  - H2: परिभाषाएँ
   - H2: Plugin इंस्टॉल करें
-  - H2: Core npm package
+  - H2: कोर npm पैकेज
   - H2: आधिकारिक बाहरी पैकेज
-  - H2: केवल source checkout
+  - H2: केवल स्रोत चेकआउट
 
 ## plugins/plugin-permission-requests.md
 
-- मार्ग: /plugins/plugin-permission-requests
+- रूट: /plugins/plugin-permission-requests
 - शीर्षक:
-  - H2: सही gate चुनें
-  - H2: औज़ार कॉल से पहले approval का अनुरोध करें
+  - H2: सही गेट चुनें
+  - H2: टूल कॉल से पहले अनुमोदन का अनुरोध करें
   - H2: निर्णय व्यवहार
-  - H2: approval prompts रूट करें
-  - H2: Codex native permissions
+  - H2: अनुमोदन प्रॉम्प्ट रूट करें
+  - H2: Codex नेटिव अनुमतियाँ
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## plugins/reference.md
 
-- मार्ग: /plugins/reference
+- रूट: /plugins/reference
 - शीर्षक:
   - H1: Plugin संदर्भ
 
 ## plugins/reference/acpx.md
 
-- मार्ग: /plugins/reference/acpx
+- रूट: /plugins/reference/acpx
 - शीर्षक:
   - H1: ACPx Plugin
   - H2: वितरण
@@ -5726,7 +5731,7 @@ x-i18n:
 
 ## plugins/reference/admin-http-rpc.md
 
-- मार्ग: /plugins/reference/admin-http-rpc
+- रूट: /plugins/reference/admin-http-rpc
 - शीर्षक:
   - H1: Admin Http Rpc Plugin
   - H2: वितरण
@@ -5735,7 +5740,7 @@ x-i18n:
 
 ## plugins/reference/alibaba.md
 
-- मार्ग: /plugins/reference/alibaba
+- रूट: /plugins/reference/alibaba
 - शीर्षक:
   - H1: Alibaba Plugin
   - H2: वितरण
@@ -5744,7 +5749,7 @@ x-i18n:
 
 ## plugins/reference/amazon-bedrock-mantle.md
 
-- मार्ग: /plugins/reference/amazon-bedrock-mantle
+- रूट: /plugins/reference/amazon-bedrock-mantle
 - शीर्षक:
   - H1: Amazon Bedrock Mantle Plugin
   - H2: वितरण
@@ -5753,7 +5758,7 @@ x-i18n:
 
 ## plugins/reference/amazon-bedrock.md
 
-- मार्ग: /plugins/reference/amazon-bedrock
+- रूट: /plugins/reference/amazon-bedrock
 - शीर्षक:
   - H1: Amazon Bedrock Plugin
   - H2: वितरण
@@ -5762,7 +5767,7 @@ x-i18n:
 
 ## plugins/reference/anthropic-vertex.md
 
-- मार्ग: /plugins/reference/anthropic-vertex
+- रूट: /plugins/reference/anthropic-vertex
 - शीर्षक:
   - H1: Anthropic Vertex Plugin
   - H2: वितरण
@@ -5771,7 +5776,7 @@ x-i18n:
 
 ## plugins/reference/anthropic.md
 
-- मार्ग: /plugins/reference/anthropic
+- रूट: /plugins/reference/anthropic
 - शीर्षक:
   - H1: Anthropic Plugin
   - H2: वितरण
@@ -5780,7 +5785,7 @@ x-i18n:
 
 ## plugins/reference/arcee.md
 
-- मार्ग: /plugins/reference/arcee
+- रूट: /plugins/reference/arcee
 - शीर्षक:
   - H1: Arcee Plugin
   - H2: वितरण
@@ -5789,7 +5794,7 @@ x-i18n:
 
 ## plugins/reference/azure-speech.md
 
-- मार्ग: /plugins/reference/azure-speech
+- रूट: /plugins/reference/azure-speech
 - शीर्षक:
   - H1: Azure Speech Plugin
   - H2: वितरण
@@ -5798,7 +5803,7 @@ x-i18n:
 
 ## plugins/reference/bonjour.md
 
-- मार्ग: /plugins/reference/bonjour
+- रूट: /plugins/reference/bonjour
 - शीर्षक:
   - H1: Bonjour Plugin
   - H2: वितरण
@@ -5806,7 +5811,7 @@ x-i18n:
 
 ## plugins/reference/brave.md
 
-- मार्ग: /plugins/reference/brave
+- रूट: /plugins/reference/brave
 - शीर्षक:
   - H1: Brave Plugin
   - H2: वितरण
@@ -5815,7 +5820,7 @@ x-i18n:
 
 ## plugins/reference/browser.md
 
-- मार्ग: /plugins/reference/browser
+- रूट: /plugins/reference/browser
 - शीर्षक:
   - H1: Browser Plugin
   - H2: वितरण
@@ -5824,7 +5829,7 @@ x-i18n:
 
 ## plugins/reference/byteplus.md
 
-- मार्ग: /plugins/reference/byteplus
+- रूट: /plugins/reference/byteplus
 - शीर्षक:
   - H1: BytePlus Plugin
   - H2: वितरण
@@ -5832,7 +5837,7 @@ x-i18n:
 
 ## plugins/reference/canvas.md
 
-- मार्ग: /plugins/reference/canvas
+- रूट: /plugins/reference/canvas
 - शीर्षक:
   - H1: Canvas Plugin
   - H2: वितरण
@@ -5840,7 +5845,7 @@ x-i18n:
 
 ## plugins/reference/cerebras.md
 
-- मार्ग: /plugins/reference/cerebras
+- रूट: /plugins/reference/cerebras
 - शीर्षक:
   - H1: Cerebras Plugin
   - H2: वितरण
@@ -5849,7 +5854,7 @@ x-i18n:
 
 ## plugins/reference/chutes.md
 
-- मार्ग: /plugins/reference/chutes
+- रूट: /plugins/reference/chutes
 - शीर्षक:
   - H1: Chutes Plugin
   - H2: वितरण
@@ -5858,7 +5863,7 @@ x-i18n:
 
 ## plugins/reference/clickclack.md
 
-- मार्ग: /plugins/reference/clickclack
+- रूट: /plugins/reference/clickclack
 - शीर्षक:
   - H1: Clickclack Plugin
   - H2: वितरण
@@ -5867,7 +5872,7 @@ x-i18n:
 
 ## plugins/reference/cloudflare-ai-gateway.md
 
-- मार्ग: /plugins/reference/cloudflare-ai-gateway
+- रूट: /plugins/reference/cloudflare-ai-gateway
 - शीर्षक:
   - H1: Cloudflare AI Gateway Plugin
   - H2: वितरण
@@ -5876,16 +5881,16 @@ x-i18n:
 
 ## plugins/reference/codex-supervisor.md
 
-- मार्ग: /plugins/reference/codex-supervisor
+- रूट: /plugins/reference/codex-supervisor
 - शीर्षक:
   - H1: Codex Supervisor Plugin
   - H2: वितरण
   - H2: सतह
-  - H2: सेशन सूचीकरण
+  - H2: सेशन लिस्टिंग
 
 ## plugins/reference/codex.md
 
-- मार्ग: /plugins/reference/codex
+- रूट: /plugins/reference/codex
 - शीर्षक:
   - H1: Codex Plugin
   - H2: वितरण
@@ -5894,7 +5899,7 @@ x-i18n:
 
 ## plugins/reference/cohere.md
 
-- मार्ग: /plugins/reference/cohere
+- रूट: /plugins/reference/cohere
 - शीर्षक:
   - H1: Cohere Plugin
   - H2: वितरण
@@ -5903,7 +5908,7 @@ x-i18n:
 
 ## plugins/reference/comfy.md
 
-- मार्ग: /plugins/reference/comfy
+- रूट: /plugins/reference/comfy
 - शीर्षक:
   - H1: ComfyUI Plugin
   - H2: वितरण
@@ -5912,7 +5917,7 @@ x-i18n:
 
 ## plugins/reference/copilot-proxy.md
 
-- मार्ग: /plugins/reference/copilot-proxy
+- रूट: /plugins/reference/copilot-proxy
 - शीर्षक:
   - H1: Copilot Proxy Plugin
   - H2: वितरण
@@ -5920,7 +5925,7 @@ x-i18n:
 
 ## plugins/reference/copilot.md
 
-- मार्ग: /plugins/reference/copilot
+- रूट: /plugins/reference/copilot
 - शीर्षक:
   - H1: Copilot Plugin
   - H2: वितरण
@@ -5929,7 +5934,7 @@ x-i18n:
 
 ## plugins/reference/deepgram.md
 
-- मार्ग: /plugins/reference/deepgram
+- रूट: /plugins/reference/deepgram
 - शीर्षक:
   - H1: Deepgram Plugin
   - H2: वितरण
@@ -5938,7 +5943,7 @@ x-i18n:
 
 ## plugins/reference/deepinfra.md
 
-- मार्ग: /plugins/reference/deepinfra
+- रूट: /plugins/reference/deepinfra
 - शीर्षक:
   - H1: DeepInfra Plugin
   - H2: वितरण
@@ -5947,7 +5952,7 @@ x-i18n:
 
 ## plugins/reference/deepseek.md
 
-- मार्ग: /plugins/reference/deepseek
+- रूट: /plugins/reference/deepseek
 - शीर्षक:
   - H1: DeepSeek Plugin
   - H2: वितरण
@@ -5956,7 +5961,7 @@ x-i18n:
 
 ## plugins/reference/diagnostics-otel.md
 
-- मार्ग: /plugins/reference/diagnostics-otel
+- रूट: /plugins/reference/diagnostics-otel
 - शीर्षक:
   - H1: Diagnostics OpenTelemetry Plugin
   - H2: वितरण
@@ -5964,7 +5969,7 @@ x-i18n:
 
 ## plugins/reference/diagnostics-prometheus.md
 
-- मार्ग: /plugins/reference/diagnostics-prometheus
+- रूट: /plugins/reference/diagnostics-prometheus
 - शीर्षक:
   - H1: Diagnostics Prometheus Plugin
   - H2: वितरण
@@ -5972,16 +5977,16 @@ x-i18n:
 
 ## plugins/reference/diffs-language-pack.md
 
-- मार्ग: /plugins/reference/diffs-language-pack
+- रूट: /plugins/reference/diffs-language-pack
 - शीर्षक:
   - H1: Diffs Language Pack Plugin
   - H2: वितरण
   - H2: सतह
-  - H2: जोड़ी गई भाषाएं
+  - H2: जोड़ी गई भाषाएँ
 
 ## plugins/reference/diffs.md
 
-- मार्ग: /plugins/reference/diffs
+- रूट: /plugins/reference/diffs
 - शीर्षक:
   - H1: Diffs Plugin
   - H2: वितरण
@@ -5989,7 +5994,7 @@ x-i18n:
 
 ## plugins/reference/discord.md
 
-- मार्ग: /plugins/reference/discord
+- रूट: /plugins/reference/discord
 - शीर्षक:
   - H1: Discord Plugin
   - H2: वितरण
@@ -5998,7 +6003,7 @@ x-i18n:
 
 ## plugins/reference/document-extract.md
 
-- मार्ग: /plugins/reference/document-extract
+- रूट: /plugins/reference/document-extract
 - शीर्षक:
   - H1: Document Extract Plugin
   - H2: वितरण
@@ -6007,7 +6012,7 @@ x-i18n:
 
 ## plugins/reference/duckduckgo.md
 
-- मार्ग: /plugins/reference/duckduckgo
+- रूट: /plugins/reference/duckduckgo
 - शीर्षक:
   - H1: DuckDuckGo Plugin
   - H2: वितरण
@@ -6016,7 +6021,7 @@ x-i18n:
 
 ## plugins/reference/elevenlabs.md
 
-- मार्ग: /plugins/reference/elevenlabs
+- रूट: /plugins/reference/elevenlabs
 - शीर्षक:
   - H1: Elevenlabs Plugin
   - H2: वितरण
@@ -6025,7 +6030,7 @@ x-i18n:
 
 ## plugins/reference/exa.md
 
-- मार्ग: /plugins/reference/exa
+- रूट: /plugins/reference/exa
 - शीर्षक:
   - H1: Exa Plugin
   - H2: वितरण
@@ -6034,7 +6039,7 @@ x-i18n:
 
 ## plugins/reference/fal.md
 
-- मार्ग: /plugins/reference/fal
+- रूट: /plugins/reference/fal
 - शीर्षक:
   - H1: fal Plugin
   - H2: वितरण
@@ -6043,7 +6048,7 @@ x-i18n:
 
 ## plugins/reference/feishu.md
 
-- मार्ग: /plugins/reference/feishu
+- रूट: /plugins/reference/feishu
 - शीर्षक:
   - H1: Feishu Plugin
   - H2: वितरण
@@ -6052,7 +6057,7 @@ x-i18n:
 
 ## plugins/reference/file-transfer.md
 
-- मार्ग: /plugins/reference/file-transfer
+- रूट: /plugins/reference/file-transfer
 - शीर्षक:
   - H1: File Transfer Plugin
   - H2: वितरण
@@ -6060,7 +6065,7 @@ x-i18n:
 
 ## plugins/reference/firecrawl.md
 
-- मार्ग: /plugins/reference/firecrawl
+- रूट: /plugins/reference/firecrawl
 - शीर्षक:
   - H1: Firecrawl Plugin
   - H2: वितरण
@@ -6069,7 +6074,7 @@ x-i18n:
 
 ## plugins/reference/fireworks.md
 
-- मार्ग: /plugins/reference/fireworks
+- रूट: /plugins/reference/fireworks
 - शीर्षक:
   - H1: Fireworks Plugin
   - H2: वितरण
@@ -6078,7 +6083,7 @@ x-i18n:
 
 ## plugins/reference/github-copilot.md
 
-- मार्ग: /plugins/reference/github-copilot
+- रूट: /plugins/reference/github-copilot
 - शीर्षक:
   - H1: GitHub Copilot Plugin
   - H2: वितरण
@@ -6087,7 +6092,7 @@ x-i18n:
 
 ## plugins/reference/gmi.md
 
-- मार्ग: /plugins/reference/gmi
+- रूट: /plugins/reference/gmi
 - शीर्षक:
   - H1: Gmi Plugin
   - H2: वितरण
@@ -6096,7 +6101,7 @@ x-i18n:
 
 ## plugins/reference/google-meet.md
 
-- मार्ग: /plugins/reference/google-meet
+- रूट: /plugins/reference/google-meet
 - शीर्षक:
   - H1: Google Meet Plugin
   - H2: वितरण
@@ -6105,7 +6110,7 @@ x-i18n:
 
 ## plugins/reference/google.md
 
-- मार्ग: /plugins/reference/google
+- रूट: /plugins/reference/google
 - शीर्षक:
   - H1: Google Plugin
   - H2: वितरण
@@ -6114,7 +6119,7 @@ x-i18n:
 
 ## plugins/reference/googlechat.md
 
-- मार्ग: /plugins/reference/googlechat
+- रूट: /plugins/reference/googlechat
 - शीर्षक:
   - H1: Google Chat Plugin
   - H2: वितरण
@@ -6123,7 +6128,7 @@ x-i18n:
 
 ## plugins/reference/gradium.md
 
-- मार्ग: /plugins/reference/gradium
+- रूट: /plugins/reference/gradium
 - शीर्षक:
   - H1: Gradium Plugin
   - H2: वितरण
@@ -6132,7 +6137,7 @@ x-i18n:
 
 ## plugins/reference/groq.md
 
-- मार्ग: /plugins/reference/groq
+- रूट: /plugins/reference/groq
 - शीर्षक:
   - H1: Groq Plugin
   - H2: वितरण
@@ -6141,7 +6146,7 @@ x-i18n:
 
 ## plugins/reference/huggingface.md
 
-- मार्ग: /plugins/reference/huggingface
+- रूट: /plugins/reference/huggingface
 - शीर्षक:
   - H1: Hugging Face Plugin
   - H2: वितरण
@@ -6150,7 +6155,7 @@ x-i18n:
 
 ## plugins/reference/imessage.md
 
-- मार्ग: /plugins/reference/imessage
+- रूट: /plugins/reference/imessage
 - शीर्षक:
   - H1: iMessage Plugin
   - H2: वितरण
@@ -6159,7 +6164,7 @@ x-i18n:
 
 ## plugins/reference/inworld.md
 
-- मार्ग: /plugins/reference/inworld
+- रूट: /plugins/reference/inworld
 - शीर्षक:
   - H1: Inworld Plugin
   - H2: वितरण
@@ -6168,7 +6173,7 @@ x-i18n:
 
 ## plugins/reference/irc.md
 
-- मार्ग: /plugins/reference/irc
+- रूट: /plugins/reference/irc
 - शीर्षक:
   - H1: IRC Plugin
   - H2: वितरण
@@ -6177,7 +6182,7 @@ x-i18n:
 
 ## plugins/reference/kilocode.md
 
-- मार्ग: /plugins/reference/kilocode
+- रूट: /plugins/reference/kilocode
 - शीर्षक:
   - H1: Kilocode Plugin
   - H2: वितरण
@@ -6186,7 +6191,7 @@ x-i18n:
 
 ## plugins/reference/kimi.md
 
-- मार्ग: /plugins/reference/kimi
+- रूट: /plugins/reference/kimi
 - शीर्षक:
   - H1: Kimi Plugin
   - H2: वितरण
@@ -6195,7 +6200,7 @@ x-i18n:
 
 ## plugins/reference/line.md
 
-- मार्ग: /plugins/reference/line
+- रूट: /plugins/reference/line
 - शीर्षक:
   - H1: LINE Plugin
   - H2: वितरण
@@ -6204,7 +6209,7 @@ x-i18n:
 
 ## plugins/reference/litellm.md
 
-- मार्ग: /plugins/reference/litellm
+- रूट: /plugins/reference/litellm
 - शीर्षक:
   - H1: LiteLLM Plugin
   - H2: वितरण
@@ -6213,7 +6218,7 @@ x-i18n:
 
 ## plugins/reference/llama-cpp.md
 
-- मार्ग: /plugins/reference/llama-cpp
+- रूट: /plugins/reference/llama-cpp
 - शीर्षक:
   - H1: Llama Cpp Plugin
   - H2: वितरण
@@ -6222,7 +6227,7 @@ x-i18n:
 
 ## plugins/reference/llm-task.md
 
-- मार्ग: /plugins/reference/llm-task
+- रूट: /plugins/reference/llm-task
 - शीर्षक:
   - H1: LLM Task Plugin
   - H2: वितरण
@@ -6230,7 +6235,7 @@ x-i18n:
 
 ## plugins/reference/lmstudio.md
 
-- मार्ग: /plugins/reference/lmstudio
+- रूट: /plugins/reference/lmstudio
 - शीर्षक:
   - H1: LM Studio Plugin
   - H2: वितरण
@@ -6239,7 +6244,7 @@ x-i18n:
 
 ## plugins/reference/lobster.md
 
-- मार्ग: /plugins/reference/lobster
+- रूट: /plugins/reference/lobster
 - शीर्षक:
   - H1: Lobster Plugin
   - H2: वितरण
@@ -6247,7 +6252,7 @@ x-i18n:
 
 ## plugins/reference/matrix.md
 
-- मार्ग: /plugins/reference/matrix
+- रूट: /plugins/reference/matrix
 - शीर्षक:
   - H1: Matrix Plugin
   - H2: वितरण
@@ -6256,7 +6261,7 @@ x-i18n:
 
 ## plugins/reference/mattermost.md
 
-- मार्ग: /plugins/reference/mattermost
+- रूट: /plugins/reference/mattermost
 - शीर्षक:
   - H1: Mattermost Plugin
   - H2: वितरण
@@ -6265,7 +6270,7 @@ x-i18n:
 
 ## plugins/reference/memory-core.md
 
-- मार्ग: /plugins/reference/memory-core
+- रूट: /plugins/reference/memory-core
 - शीर्षक:
   - H1: Memory Core Plugin
   - H2: वितरण
@@ -6273,7 +6278,7 @@ x-i18n:
 
 ## plugins/reference/memory-lancedb.md
 
-- मार्ग: /plugins/reference/memory-lancedb
+- रूट: /plugins/reference/memory-lancedb
 - शीर्षक:
   - H1: Memory Lancedb Plugin
   - H2: वितरण
@@ -6282,7 +6287,7 @@ x-i18n:
 
 ## plugins/reference/memory-wiki.md
 
-- मार्ग: /plugins/reference/memory-wiki
+- रूट: /plugins/reference/memory-wiki
 - शीर्षक:
   - H1: Memory Wiki Plugin
   - H2: वितरण
@@ -6291,19 +6296,19 @@ x-i18n:
 
 ## plugins/reference/microsoft-foundry.md
 
-- मार्ग: /plugins/reference/microsoft-foundry
+- रूट: /plugins/reference/microsoft-foundry
 - शीर्षक:
   - H1: Microsoft Foundry Plugin
   - H2: वितरण
   - H2: सतह
   - H2: आवश्यकताएँ
   - H2: चैट मॉडल
-  - H2: MAI छवि निर्माण
+  - H2: MAI छवि जनरेशन
   - H2: समस्या निवारण
 
 ## plugins/reference/microsoft.md
 
-- मार्ग: /plugins/reference/microsoft
+- रूट: /plugins/reference/microsoft
 - शीर्षक:
   - H1: Microsoft Plugin
   - H2: वितरण
@@ -6311,23 +6316,23 @@ x-i18n:
 
 ## plugins/reference/migrate-claude.md
 
-- मार्ग: /plugins/reference/migrate-claude
+- रूट: /plugins/reference/migrate-claude
 - शीर्षक:
-  - H1: Claude माइग्रेट करें Plugin
+  - H1: Migrate Claude Plugin
   - H2: वितरण
   - H2: सतह
 
 ## plugins/reference/migrate-hermes.md
 
-- मार्ग: /plugins/reference/migrate-hermes
+- रूट: /plugins/reference/migrate-hermes
 - शीर्षक:
-  - H1: Hermes माइग्रेट करें Plugin
+  - H1: Migrate Hermes Plugin
   - H2: वितरण
   - H2: सतह
 
 ## plugins/reference/minimax.md
 
-- मार्ग: /plugins/reference/minimax
+- रूट: /plugins/reference/minimax
 - शीर्षक:
   - H1: MiniMax Plugin
   - H2: वितरण
@@ -6336,7 +6341,7 @@ x-i18n:
 
 ## plugins/reference/mistral.md
 
-- मार्ग: /plugins/reference/mistral
+- रूट: /plugins/reference/mistral
 - शीर्षक:
   - H1: Mistral Plugin
   - H2: वितरण
@@ -6345,7 +6350,7 @@ x-i18n:
 
 ## plugins/reference/moonshot.md
 
-- मार्ग: /plugins/reference/moonshot
+- रूट: /plugins/reference/moonshot
 - शीर्षक:
   - H1: Moonshot Plugin
   - H2: वितरण
@@ -6354,7 +6359,7 @@ x-i18n:
 
 ## plugins/reference/msteams.md
 
-- मार्ग: /plugins/reference/msteams
+- रूट: /plugins/reference/msteams
 - शीर्षक:
   - H1: Microsoft Teams Plugin
   - H2: वितरण
@@ -6363,7 +6368,7 @@ x-i18n:
 
 ## plugins/reference/nextcloud-talk.md
 
-- मार्ग: /plugins/reference/nextcloud-talk
+- रूट: /plugins/reference/nextcloud-talk
 - शीर्षक:
   - H1: Nextcloud Talk Plugin
   - H2: वितरण
@@ -6372,7 +6377,7 @@ x-i18n:
 
 ## plugins/reference/nostr.md
 
-- मार्ग: /plugins/reference/nostr
+- रूट: /plugins/reference/nostr
 - शीर्षक:
   - H1: Nostr Plugin
   - H2: वितरण
@@ -6381,7 +6386,7 @@ x-i18n:
 
 ## plugins/reference/novita.md
 
-- मार्ग: /plugins/reference/novita
+- रूट: /plugins/reference/novita
 - शीर्षक:
   - H1: Novita Plugin
   - H2: वितरण
@@ -6390,7 +6395,7 @@ x-i18n:
 
 ## plugins/reference/nvidia.md
 
-- मार्ग: /plugins/reference/nvidia
+- रूट: /plugins/reference/nvidia
 - शीर्षक:
   - H1: NVIDIA Plugin
   - H2: वितरण
@@ -6399,7 +6404,7 @@ x-i18n:
 
 ## plugins/reference/oc-path.md
 
-- मार्ग: /plugins/reference/oc-path
+- रूट: /plugins/reference/oc-path
 - शीर्षक:
   - H1: Oc Path Plugin
   - H2: वितरण
@@ -6408,7 +6413,7 @@ x-i18n:
 
 ## plugins/reference/ollama.md
 
-- मार्ग: /plugins/reference/ollama
+- रूट: /plugins/reference/ollama
 - शीर्षक:
   - H1: Ollama Plugin
   - H2: वितरण
@@ -6417,7 +6422,7 @@ x-i18n:
 
 ## plugins/reference/open-prose.md
 
-- मार्ग: /plugins/reference/open-prose
+- रूट: /plugins/reference/open-prose
 - शीर्षक:
   - H1: Open Prose Plugin
   - H2: वितरण
@@ -6425,7 +6430,7 @@ x-i18n:
 
 ## plugins/reference/openai.md
 
-- मार्ग: /plugins/reference/openai
+- रूट: /plugins/reference/openai
 - शीर्षक:
   - H1: OpenAI Plugin
   - H2: वितरण
@@ -6434,7 +6439,7 @@ x-i18n:
 
 ## plugins/reference/opencode-go.md
 
-- मार्ग: /plugins/reference/opencode-go
+- रूट: /plugins/reference/opencode-go
 - शीर्षक:
   - H1: OpenCode Go Plugin
   - H2: वितरण
@@ -6443,7 +6448,7 @@ x-i18n:
 
 ## plugins/reference/opencode.md
 
-- मार्ग: /plugins/reference/opencode
+- रूट: /plugins/reference/opencode
 - शीर्षक:
   - H1: OpenCode Plugin
   - H2: वितरण
@@ -6452,7 +6457,7 @@ x-i18n:
 
 ## plugins/reference/openrouter.md
 
-- मार्ग: /plugins/reference/openrouter
+- रूट: /plugins/reference/openrouter
 - शीर्षक:
   - H1: OpenRouter Plugin
   - H2: वितरण
@@ -6461,7 +6466,7 @@ x-i18n:
 
 ## plugins/reference/openshell.md
 
-- मार्ग: /plugins/reference/openshell
+- रूट: /plugins/reference/openshell
 - शीर्षक:
   - H1: Openshell Plugin
   - H2: वितरण
@@ -6469,7 +6474,7 @@ x-i18n:
 
 ## plugins/reference/perplexity.md
 
-- मार्ग: /plugins/reference/perplexity
+- रूट: /plugins/reference/perplexity
 - शीर्षक:
   - H1: Perplexity Plugin
   - H2: वितरण
@@ -6478,7 +6483,7 @@ x-i18n:
 
 ## plugins/reference/pixverse.md
 
-- मार्ग: /plugins/reference/pixverse
+- रूट: /plugins/reference/pixverse
 - शीर्षक:
   - H1: PixVerse Plugin
   - H2: वितरण
@@ -6487,7 +6492,7 @@ x-i18n:
 
 ## plugins/reference/policy.md
 
-- मार्ग: /plugins/reference/policy
+- रूट: /plugins/reference/policy
 - शीर्षक:
   - H1: Policy Plugin
   - H2: वितरण
@@ -6497,7 +6502,7 @@ x-i18n:
 
 ## plugins/reference/qa-channel.md
 
-- मार्ग: /plugins/reference/qa-channel
+- रूट: /plugins/reference/qa-channel
 - शीर्षक:
   - H1: QA Channel Plugin
   - H2: वितरण
@@ -6506,7 +6511,7 @@ x-i18n:
 
 ## plugins/reference/qa-lab.md
 
-- मार्ग: /plugins/reference/qa-lab
+- रूट: /plugins/reference/qa-lab
 - शीर्षक:
   - H1: QA Lab Plugin
   - H2: वितरण
@@ -6514,7 +6519,7 @@ x-i18n:
 
 ## plugins/reference/qa-matrix.md
 
-- मार्ग: /plugins/reference/qa-matrix
+- रूट: /plugins/reference/qa-matrix
 - शीर्षक:
   - H1: QA Matrix Plugin
   - H2: वितरण
@@ -6522,7 +6527,7 @@ x-i18n:
 
 ## plugins/reference/qianfan.md
 
-- मार्ग: /plugins/reference/qianfan
+- रूट: /plugins/reference/qianfan
 - शीर्षक:
   - H1: Qianfan Plugin
   - H2: वितरण
@@ -6531,7 +6536,7 @@ x-i18n:
 
 ## plugins/reference/qqbot.md
 
-- मार्ग: /plugins/reference/qqbot
+- रूट: /plugins/reference/qqbot
 - शीर्षक:
   - H1: QQ Bot Plugin
   - H2: वितरण
@@ -6540,7 +6545,7 @@ x-i18n:
 
 ## plugins/reference/qwen.md
 
-- मार्ग: /plugins/reference/qwen
+- रूट: /plugins/reference/qwen
 - शीर्षक:
   - H1: Qwen Plugin
   - H2: वितरण
@@ -6549,7 +6554,7 @@ x-i18n:
 
 ## plugins/reference/raft.md
 
-- मार्ग: /plugins/reference/raft
+- रूट: /plugins/reference/raft
 - शीर्षक:
   - H1: Raft Plugin
   - H2: वितरण
@@ -6558,7 +6563,7 @@ x-i18n:
 
 ## plugins/reference/runway.md
 
-- मार्ग: /plugins/reference/runway
+- रूट: /plugins/reference/runway
 - शीर्षक:
   - H1: Runway Plugin
   - H2: वितरण
@@ -6567,7 +6572,7 @@ x-i18n:
 
 ## plugins/reference/searxng.md
 
-- मार्ग: /plugins/reference/searxng
+- रूट: /plugins/reference/searxng
 - शीर्षक:
   - H1: SearXNG Plugin
   - H2: वितरण
@@ -6575,7 +6580,7 @@ x-i18n:
 
 ## plugins/reference/senseaudio.md
 
-- मार्ग: /plugins/reference/senseaudio
+- रूट: /plugins/reference/senseaudio
 - शीर्षक:
   - H1: Senseaudio Plugin
   - H2: वितरण
@@ -6584,7 +6589,7 @@ x-i18n:
 
 ## plugins/reference/sglang.md
 
-- मार्ग: /plugins/reference/sglang
+- रूट: /plugins/reference/sglang
 - शीर्षक:
   - H1: SGLang Plugin
   - H2: वितरण
@@ -6593,7 +6598,7 @@ x-i18n:
 
 ## plugins/reference/signal.md
 
-- मार्ग: /plugins/reference/signal
+- रूट: /plugins/reference/signal
 - शीर्षक:
   - H1: Signal Plugin
   - H2: वितरण
@@ -6602,7 +6607,7 @@ x-i18n:
 
 ## plugins/reference/slack.md
 
-- मार्ग: /plugins/reference/slack
+- रूट: /plugins/reference/slack
 - शीर्षक:
   - H1: Slack Plugin
   - H2: वितरण
@@ -6611,7 +6616,7 @@ x-i18n:
 
 ## plugins/reference/sms.md
 
-- मार्ग: /plugins/reference/sms
+- रूट: /plugins/reference/sms
 - शीर्षक:
   - H1: Sms Plugin
   - H2: वितरण
@@ -6620,7 +6625,7 @@ x-i18n:
 
 ## plugins/reference/stepfun.md
 
-- मार्ग: /plugins/reference/stepfun
+- रूट: /plugins/reference/stepfun
 - शीर्षक:
   - H1: StepFun Plugin
   - H2: वितरण
@@ -6629,7 +6634,7 @@ x-i18n:
 
 ## plugins/reference/synology-chat.md
 
-- मार्ग: /plugins/reference/synology-chat
+- रूट: /plugins/reference/synology-chat
 - शीर्षक:
   - H1: Synology Chat Plugin
   - H2: वितरण
@@ -6638,7 +6643,7 @@ x-i18n:
 
 ## plugins/reference/synthetic.md
 
-- मार्ग: /plugins/reference/synthetic
+- रूट: /plugins/reference/synthetic
 - शीर्षक:
   - H1: Synthetic Plugin
   - H2: वितरण
@@ -6647,7 +6652,7 @@ x-i18n:
 
 ## plugins/reference/tavily.md
 
-- मार्ग: /plugins/reference/tavily
+- रूट: /plugins/reference/tavily
 - शीर्षक:
   - H1: Tavily Plugin
   - H2: वितरण
@@ -6656,7 +6661,7 @@ x-i18n:
 
 ## plugins/reference/telegram.md
 
-- मार्ग: /plugins/reference/telegram
+- रूट: /plugins/reference/telegram
 - शीर्षक:
   - H1: Telegram Plugin
   - H2: वितरण
@@ -6665,7 +6670,7 @@ x-i18n:
 
 ## plugins/reference/tencent.md
 
-- मार्ग: /plugins/reference/tencent
+- रूट: /plugins/reference/tencent
 - शीर्षक:
   - H1: Tencent Plugin
   - H2: वितरण
@@ -6674,7 +6679,7 @@ x-i18n:
 
 ## plugins/reference/tlon.md
 
-- मार्ग: /plugins/reference/tlon
+- रूट: /plugins/reference/tlon
 - शीर्षक:
   - H1: Tlon Plugin
   - H2: वितरण
@@ -6683,7 +6688,7 @@ x-i18n:
 
 ## plugins/reference/together.md
 
-- मार्ग: /plugins/reference/together
+- रूट: /plugins/reference/together
 - शीर्षक:
   - H1: Together Plugin
   - H2: वितरण
@@ -6692,7 +6697,7 @@ x-i18n:
 
 ## plugins/reference/tokenjuice.md
 
-- मार्ग: /plugins/reference/tokenjuice
+- रूट: /plugins/reference/tokenjuice
 - शीर्षक:
   - H1: Tokenjuice Plugin
   - H2: वितरण
@@ -6701,7 +6706,7 @@ x-i18n:
 
 ## plugins/reference/tts-local-cli.md
 
-- मार्ग: /plugins/reference/tts-local-cli
+- रूट: /plugins/reference/tts-local-cli
 - शीर्षक:
   - H1: TTS Local CLI Plugin
   - H2: वितरण
@@ -6709,7 +6714,7 @@ x-i18n:
 
 ## plugins/reference/twitch.md
 
-- मार्ग: /plugins/reference/twitch
+- रूट: /plugins/reference/twitch
 - शीर्षक:
   - H1: Twitch Plugin
   - H2: वितरण
@@ -6862,18 +6867,18 @@ x-i18n:
 
 - मार्ग: /plugins/sdk-agent-harness
 - शीर्षक:
-  - H2: हार्नेस का उपयोग कब करें
-  - H2: core के पास अब भी क्या रहता है
+  - H2: हार्नेस कब उपयोग करें
+  - H2: कोर अब भी क्या नियंत्रित करता है
   - H2: हार्नेस पंजीकृत करें
   - H2: चयन नीति
-  - H2: प्रदाता और हार्नेस युग्मन
-  - H3: टूल-परिणाम middleware
+  - H2: प्रदाता और हार्नेस की जोड़ी
+  - H3: टूल-परिणाम मिडलवेयर
   - H3: टर्मिनल परिणाम वर्गीकरण
-  - H3: एजेंट-अंत साइड इफ़ेक्ट
+  - H3: एजेंट-अंत साइड इफेक्ट
   - H3: उपयोगकर्ता इनपुट और टूल सतहें
   - H3: नेटिव Codex हार्नेस मोड
-  - H2: रनटाइम कठोरता
-  - H2: नेटिव सत्र और transcript mirror
+  - H2: रनटाइम सख्ती
+  - H2: नेटिव सत्र और ट्रांसक्रिप्ट मिरर
   - H2: टूल और मीडिया परिणाम
   - H2: वर्तमान सीमाएँ
   - H2: संबंधित
@@ -6882,20 +6887,20 @@ x-i18n:
 
 - मार्ग: /plugins/sdk-channel-inbound
 - शीर्षक:
-  - H2: core सहायक
+  - H2: कोर हेल्पर
   - H2: माइग्रेशन
 
 ## plugins/sdk-channel-ingress.md
 
 - मार्ग: /plugins/sdk-channel-ingress
 - शीर्षक:
-  - H1: चैनल ingress API
-  - H2: रनटाइम resolver
+  - H1: चैनल इनग्रेस एपीआई
+  - H2: रनटाइम रिज़ॉल्वर
   - H2: परिणाम
   - H2: एक्सेस समूह
   - H2: इवेंट मोड
   - H2: रूट और सक्रियण
-  - H2: संपादन
+  - H2: रिडैक्शन
   - H2: सत्यापन
 
 ## plugins/sdk-channel-message.md
@@ -6907,10 +6912,10 @@ x-i18n:
 
 - मार्ग: /plugins/sdk-channel-outbound
 - शीर्षक:
-  - H2: adapter
-  - H2: मौजूदा outbound adapter
-  - H2: टिकाऊ sends
-  - H2: संगतता dispatch
+  - H2: अडैप्टर
+  - H2: मौजूदा आउटबाउंड अडैप्टर
+  - H2: टिकाऊ भेजना
+  - H2: संगतता डिस्पैच
 
 ## plugins/sdk-channel-plugins.md
 
@@ -6918,8 +6923,8 @@ x-i18n:
 - शीर्षक:
   - H2: चैनल Plugin कैसे काम करते हैं
   - H2: अनुमोदन और चैनल क्षमताएँ
-  - H2: inbound mention नीति
-  - H2: walkthrough
+  - H2: इनबाउंड मेंशन नीति
+  - H2: चरण-दर-चरण मार्गदर्शिका
   - H2: फ़ाइल संरचना
   - H2: उन्नत विषय
   - H2: अगले चरण
@@ -6948,11 +6953,11 @@ x-i18n:
 - शीर्षक:
   - H2: क्या बदल रहा है
   - H2: यह क्यों बदला
-  - H2: Talk और रीयलटाइम वॉइस माइग्रेशन योजना
+  - H2: टॉक और रीयलटाइम वॉइस माइग्रेशन योजना
   - H2: संगतता नीति
   - H2: माइग्रेट कैसे करें
-  - H2: इंपोर्ट पथ संदर्भ
-  - H2: सक्रिय deprecations
+  - H2: इम्पोर्ट पाथ संदर्भ
+  - H2: सक्रिय डिप्रीकेशन
   - H2: हटाने की समयरेखा
   - H2: चेतावनियों को अस्थायी रूप से दबाना
   - H2: संबंधित
@@ -6961,32 +6966,32 @@ x-i18n:
 
 - मार्ग: /plugins/sdk-overview
 - शीर्षक:
-  - H2: इंपोर्ट परंपरा
-  - H2: subpath संदर्भ
-  - H2: पंजीकरण API
+  - H2: इम्पोर्ट कन्वेंशन
+  - H2: सबपाथ संदर्भ
+  - H2: पंजीकरण एपीआई
   - H3: क्षमता पंजीकरण
   - H3: टूल और कमांड
-  - H3: अवसंरचना
-  - H3: workflow Plugin के लिए host hooks
-  - H3: Gateway discovery पंजीकरण
-  - H3: CLI पंजीकरण metadata
-  - H3: CLI backend पंजीकरण
-  - H3: विशिष्ट slots
-  - H3: अप्रचलित memory embedding adapters
-  - H3: इवेंट और lifecycle
-  - H3: hook निर्णय semantics
-  - H3: API object fields
-  - H2: आंतरिक module परंपरा
+  - H3: इन्फ्रास्ट्रक्चर
+  - H3: वर्कफ़्लो Plugin के लिए होस्ट हुक
+  - H3: Gateway डिस्कवरी पंजीकरण
+  - H3: CLI पंजीकरण मेटाडेटा
+  - H3: CLI बैकएंड पंजीकरण
+  - H3: एक्सक्लूसिव स्लॉट
+  - H3: डिप्रीकेटेड मेमोरी एम्बेडिंग अडैप्टर
+  - H3: इवेंट और लाइफ़साइकल
+  - H3: हुक निर्णय सिमेंटिक्स
+  - H3: एपीआई ऑब्जेक्ट फ़ील्ड
+  - H2: आंतरिक मॉड्यूल कन्वेंशन
   - H2: संबंधित
 
 ## plugins/sdk-provider-plugins.md
 
 - मार्ग: /plugins/sdk-provider-plugins
 - शीर्षक:
-  - H2: walkthrough
+  - H2: चरण-दर-चरण मार्गदर्शिका
   - H2: ClawHub पर प्रकाशित करें
   - H2: फ़ाइल संरचना
-  - H2: catalog क्रम संदर्भ
+  - H2: कैटलॉग क्रम संदर्भ
   - H2: अगले चरण
   - H2: संबंधित
 
@@ -6994,30 +6999,30 @@ x-i18n:
 
 - मार्ग: /plugins/sdk-runtime
 - शीर्षक:
-  - H2: config लोडिंग और writes
-  - H2: पुन: उपयोग योग्य रनटाइम utilities
-  - H2: रनटाइम namespaces
-  - H2: रनटाइम references संग्रहीत करना
-  - H2: अन्य शीर्ष-स्तरीय api fields
+  - H2: कॉन्फ़िग लोड करना और लिखना
+  - H2: पुन: उपयोग योग्य रनटाइम यूटिलिटी
+  - H2: रनटाइम नेमस्पेस
+  - H2: रनटाइम संदर्भ संग्रहीत करना
+  - H2: अन्य शीर्ष-स्तरीय एपीआई फ़ील्ड
   - H2: संबंधित
 
 ## plugins/sdk-setup.md
 
 - मार्ग: /plugins/sdk-setup
 - शीर्षक:
-  - H2: पैकेज metadata
-  - H3: openclaw fields
+  - H2: पैकेज मेटाडेटा
+  - H3: openclaw फ़ील्ड
   - H3: openclaw.channel
   - H3: openclaw.install
-  - H3: स्थगित full load
-  - H2: Plugin manifest
+  - H3: स्थगित पूर्ण लोड
+  - H2: Plugin मैनिफ़ेस्ट
   - H2: ClawHub प्रकाशन
-  - H2: setup entry
-  - H3: संकीर्ण setup helper imports
-  - H3: चैनल-स्वामित्व वाला single-account promotion
-  - H2: config schema
-  - H3: चैनल config schemas बनाना
-  - H2: setup wizards
+  - H2: सेटअप एंट्री
+  - H3: संकीर्ण सेटअप हेल्पर इम्पोर्ट
+  - H3: चैनल-स्वामित्व वाला सिंगल-अकाउंट प्रमोशन
+  - H2: कॉन्फ़िग स्कीमा
+  - H3: चैनल कॉन्फ़िग स्कीमा बनाना
+  - H2: सेटअप विज़ार्ड
   - H2: प्रकाशित करना और इंस्टॉल करना
   - H2: संबंधित
 
@@ -7025,30 +7030,30 @@ x-i18n:
 
 - मार्ग: /plugins/sdk-subpaths
 - शीर्षक:
-  - H2: Plugin entry
-  - H3: अप्रचलित संगतता और test helpers
-  - H3: आरक्षित bundled Plugin helper subpaths
+  - H2: Plugin एंट्री
+  - H3: डिप्रीकेटेड संगतता और टेस्ट हेल्पर
+  - H3: आरक्षित बंडल्ड Plugin हेल्पर सबपाथ
   - H2: संबंधित
 
 ## plugins/sdk-testing.md
 
 - मार्ग: /plugins/sdk-testing
 - शीर्षक:
-  - H2: test utilities
-  - H3: उपलब्ध exports
-  - H3: types
-  - H2: target resolution का परीक्षण
-  - H2: परीक्षण पैटर्न
-  - H3: पंजीकरण contracts का परीक्षण
-  - H3: रनटाइम config access का परीक्षण
-  - H3: चैनल Plugin का unit testing
-  - H3: प्रदाता Plugin का unit testing
-  - H3: Plugin रनटाइम को mock करना
-  - H3: per-instance stubs के साथ परीक्षण
-  - H2: contract tests (in-repo Plugin)
-  - H3: scoped tests चलाना
-  - H2: lint enforcement (in-repo Plugin)
-  - H2: test configuration
+  - H2: टेस्ट यूटिलिटी
+  - H3: उपलब्ध एक्सपोर्ट
+  - H3: प्रकार
+  - H2: टेस्टिंग लक्ष्य रिज़ॉल्यूशन
+  - H2: टेस्टिंग पैटर्न
+  - H3: पंजीकरण कॉन्ट्रैक्ट की टेस्टिंग
+  - H3: रनटाइम कॉन्फ़िग एक्सेस की टेस्टिंग
+  - H3: चैनल Plugin की यूनिट टेस्टिंग
+  - H3: प्रदाता Plugin की यूनिट टेस्टिंग
+  - H3: Plugin रनटाइम को मॉक करना
+  - H3: प्रति-इंस्टेंस स्टब के साथ टेस्टिंग
+  - H2: कॉन्ट्रैक्ट टेस्ट (इन-रेपो Plugin)
+  - H3: स्कोप्ड टेस्ट चलाना
+  - H2: लिंट प्रवर्तन (इन-रेपो Plugin)
+  - H2: टेस्ट कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## plugins/tool-plugins.md
@@ -7056,57 +7061,57 @@ x-i18n:
 - मार्ग: /plugins/tool-plugins
 - शीर्षक:
   - H2: आवश्यकताएँ
-  - H2: quickstart
+  - H2: क्विकस्टार्ट
   - H2: टूल लिखें
-  - H2: वैकल्पिक और factory tools
-  - H2: return values
-  - H2: configuration
-  - H2: generated metadata
-  - H2: पैकेज metadata
-  - H2: CI में validate करें
-  - H2: स्थानीय रूप से install और inspect करें
+  - H2: वैकल्पिक और फ़ैक्टरी टूल
+  - H2: रिटर्न वैल्यू
+  - H2: कॉन्फ़िगरेशन
+  - H2: जनरेटेड मेटाडेटा
+  - H2: पैकेज मेटाडेटा
+  - H2: CI में सत्यापित करें
+  - H2: स्थानीय रूप से इंस्टॉल और निरीक्षण करें
   - H2: प्रकाशित करें
   - H2: समस्या निवारण
-  - H3: plugin entry नहीं मिला: ./dist/index.js
-  - H3: plugin entry defineToolPlugin metadata expose नहीं करता
-  - H3: openclaw.plugin.json generated metadata पुराना है
+  - H3: Plugin एंट्री नहीं मिली: ./dist/index.js
+  - H3: Plugin एंट्री defineToolPlugin मेटाडेटा एक्सपोज़ नहीं करती
+  - H3: openclaw.plugin.json जनरेटेड मेटाडेटा पुराना है
   - H3: package.json openclaw.extensions में ./dist/index.js शामिल होना चाहिए
-  - H3: package 'typebox' नहीं मिल सकता
-  - H3: install के बाद टूल दिखाई नहीं देता
+  - H3: पैकेज 'typebox' नहीं मिल सका
+  - H3: इंस्टॉल के बाद टूल दिखाई नहीं देता
   - H2: यह भी देखें
 
 ## plugins/voice-call.md
 
 - मार्ग: /plugins/voice-call
 - शीर्षक:
-  - H2: quick start
-  - H2: configuration
-  - H2: सत्र scope
-  - H2: रीयलटाइम वॉइस वार्तालाप
+  - H2: त्वरित शुरुआत
+  - H2: कॉन्फ़िगरेशन
+  - H2: सत्र स्कोप
+  - H2: रीयलटाइम वॉइस बातचीत
   - H3: टूल नीति
-  - H3: एजेंट वॉइस context
+  - H3: एजेंट वॉइस संदर्भ
   - H3: रीयलटाइम प्रदाता उदाहरण
-  - H2: streaming transcription
-  - H3: streaming प्रदाता उदाहरण
+  - H2: स्ट्रीमिंग ट्रांसक्रिप्शन
+  - H3: स्ट्रीमिंग प्रदाता उदाहरण
   - H2: कॉल के लिए TTS
   - H3: TTS उदाहरण
-  - H2: inbound calls
-  - H3: प्रति-नंबर routing
-  - H3: बोली गई आउटपुट contract
-  - H3: वार्तालाप startup behavior
-  - H3: Twilio stream disconnect grace
-  - H2: stale call reaper
+  - H2: इनबाउंड कॉल
+  - H3: प्रति-नंबर रूटिंग
+  - H3: बोले गए आउटपुट का कॉन्ट्रैक्ट
+  - H3: बातचीत शुरू होने का व्यवहार
+  - H3: Twilio स्ट्रीम डिस्कनेक्ट ग्रेस
+  - H2: बासी कॉल रीपर
   - H2: Webhook सुरक्षा
   - H2: CLI
   - H2: एजेंट टूल
   - H2: Gateway RPC
   - H2: समस्या निवारण
-  - H3: setup webhook exposure में विफल होता है
-  - H3: प्रदाता credentials विफल होते हैं
-  - H3: कॉल शुरू होते हैं लेकिन प्रदाता webhooks नहीं आते
-  - H3: signature verification विफल होता है
-  - H3: Google Meet Twilio joins विफल होते हैं
-  - H3: रीयलटाइम कॉल में speech नहीं है
+  - H3: सेटअप Webhook एक्सपोज़र में विफल होता है
+  - H3: प्रदाता क्रेडेंशियल विफल होते हैं
+  - H3: कॉल शुरू होते हैं लेकिन प्रदाता Webhook नहीं आते
+  - H3: सिग्नेचर सत्यापन विफल होता है
+  - H3: Google Meet Twilio जॉइन विफल होते हैं
+  - H3: रीयलटाइम कॉल में स्पीच नहीं है
   - H2: संबंधित
 
 ## plugins/webhooks.md
@@ -7114,13 +7119,13 @@ x-i18n:
 - मार्ग: /plugins/webhooks
 - शीर्षक:
   - H2: यह कहाँ चलता है
-  - H2: routes configure करें
+  - H2: रूट कॉन्फ़िगर करें
   - H2: सुरक्षा मॉडल
-  - H2: request format
-  - H2: समर्थित actions
+  - H2: अनुरोध प्रारूप
+  - H2: समर्थित क्रियाएँ
   - H3: createflow
   - H3: runtask
-  - H2: response shape
+  - H2: प्रतिक्रिया आकार
   - H2: संबंधित दस्तावेज़
 
 ## plugins/workboard.md
@@ -7128,22 +7133,22 @@ x-i18n:
 - मार्ग: /plugins/workboard
 - शीर्षक:
   - H2: डिफ़ॉल्ट स्थिति
-  - H2: cards में क्या होता है
-  - H2: card executions और tasks
+  - H2: कार्ड में क्या होता है
+  - H2: कार्ड निष्पादन और कार्य
   - H2: एजेंट समन्वय
-  - H3: dispatch worker चयन
-  - H3: worker prompt और lifecycle
-  - H3: dispatch entry points
-  - H2: CLI और slash command
-  - H2: session lifecycle sync
-  - H2: dashboard workflow
+  - H3: डिस्पैच वर्कर चयन
+  - H3: वर्कर प्रॉम्प्ट और लाइफ़साइकल
+  - H3: डिस्पैच एंट्री पॉइंट
+  - H2: CLI और स्लैश कमांड
+  - H2: सत्र लाइफ़साइकल सिंक
+  - H2: डैशबोर्ड वर्कफ़्लो
   - H2: अनुमतियाँ
-  - H2: configuration
+  - H2: कॉन्फ़िगरेशन
   - H2: समस्या निवारण
-  - H3: tab कहता है कि Workboard अनुपलब्ध है
-  - H3: cards save नहीं होते
-  - H3: card शुरू करने पर अपेक्षित session नहीं खुलता
-  - H3: dispatch worker शुरू नहीं करता
+  - H3: टैब कहता है कि Workboard उपलब्ध नहीं है
+  - H3: कार्ड सहेजे नहीं जाते
+  - H3: कार्ड शुरू करने से अपेक्षित सत्र नहीं खुलता
+  - H3: डिस्पैच वर्कर शुरू नहीं करता
   - H2: संबंधित
 
 ## plugins/zalouser.md
@@ -7152,10 +7157,10 @@ x-i18n:
 - शीर्षक:
   - H2: नामकरण
   - H2: यह कहाँ चलता है
-  - H2: install
-  - H3: विकल्प A: npm से install करें
-  - H3: विकल्प B: स्थानीय folder (dev) से install करें
-  - H2: config
+  - H2: इंस्टॉल करें
+  - H3: विकल्प A: npm से इंस्टॉल करें
+  - H3: विकल्प B: स्थानीय फ़ोल्डर से इंस्टॉल करें (dev)
+  - H2: कॉन्फ़िग
   - H2: CLI
   - H2: एजेंट टूल
   - H2: संबंधित
@@ -7164,13 +7169,13 @@ x-i18n:
 
 - मार्ग: /prose
 - शीर्षक:
-  - H2: install
-  - H2: slash command
+  - H2: इंस्टॉल करें
+  - H2: स्लैश कमांड
   - H2: यह क्या कर सकता है
-  - H2: उदाहरण: समानांतर शोध और synthesis
-  - H2: OpenClaw रनटाइम mapping
-  - H2: फ़ाइल locations
-  - H2: state backends
+  - H2: उदाहरण: समानांतर शोध और संश्लेषण
+  - H2: OpenClaw रनटाइम मैपिंग
+  - H2: फ़ाइल स्थान
+  - H2: स्टेट बैकएंड
   - H2: सुरक्षा
   - H2: संबंधित
 
@@ -7178,20 +7183,20 @@ x-i18n:
 
 - मार्ग: /providers/alibaba
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: built-in Wan models
+  - H2: शुरुआत करना
+  - H2: बिल्ट-इन Wan मॉडल
   - H2: क्षमताएँ और सीमाएँ
-  - H2: उन्नत configuration
+  - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/anthropic.md
 
 - मार्ग: /providers/anthropic
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: thinking defaults (Claude Fable 5, 4.8, और 4.6)
-  - H2: prompt caching
-  - H2: उन्नत configuration
+  - H2: शुरुआत करना
+  - H2: थिंकिंग डिफ़ॉल्ट (Claude Fable 5, 4.8, और 4.6)
+  - H2: प्रॉम्प्ट कैशिंग
+  - H2: उन्नत कॉन्फ़िगरेशन
   - H2: समस्या निवारण
   - H2: संबंधित
 
@@ -7199,19 +7204,19 @@ x-i18n:
 
 - मार्ग: /providers/arcee
 - शीर्षक:
-  - H2: Plugin install करें
-  - H2: शुरू करना
-  - H2: non-interactive setup
-  - H2: built-in catalog
-  - H2: समर्थित features
+  - H2: Plugin इंस्टॉल करें
+  - H2: शुरुआत करना
+  - H2: गैर-इंटरैक्टिव सेटअप
+  - H2: बिल्ट-इन कैटलॉग
+  - H2: समर्थित सुविधाएँ
   - H2: संबंधित
 
 ## providers/azure-speech.md
 
 - मार्ग: /providers/azure-speech
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: configuration options
+  - H2: शुरुआत करना
+  - H2: कॉन्फ़िगरेशन विकल्प
   - H2: नोट्स
   - H2: संबंधित
 
@@ -7219,101 +7224,101 @@ x-i18n:
 
 - मार्ग: /providers/bedrock-mantle
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: automatic model discovery
-  - H3: समर्थित regions
-  - H2: manual configuration
-  - H2: उन्नत configuration
+  - H2: शुरुआत करना
+  - H2: स्वचालित मॉडल डिस्कवरी
+  - H3: समर्थित क्षेत्र
+  - H2: मैनुअल कॉन्फ़िगरेशन
+  - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/bedrock.md
 
 - मार्ग: /providers/bedrock
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: automatic model discovery
-  - H2: quick setup (AWS path)
-  - H2: उन्नत configuration
+  - H2: शुरुआत करना
+  - H2: स्वचालित मॉडल डिस्कवरी
+  - H2: त्वरित सेटअप (AWS पाथ)
+  - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/cerebras.md
 
 - मार्ग: /providers/cerebras
 - शीर्षक:
-  - H2: Plugin install करें
-  - H2: शुरू करना
-  - H2: non-interactive setup
-  - H2: built-in catalog
-  - H2: manual config
+  - H2: Plugin इंस्टॉल करें
+  - H2: शुरुआत करना
+  - H2: गैर-इंटरैक्टिव सेटअप
+  - H2: बिल्ट-इन कैटलॉग
+  - H2: मैनुअल कॉन्फ़िग
   - H2: संबंधित
 
 ## providers/chutes.md
 
 - मार्ग: /providers/chutes
 - शीर्षक:
-  - H2: Plugin install करें
-  - H2: शुरू करना
-  - H2: discovery behavior
-  - H2: default aliases
-  - H2: built-in starter catalog
-  - H2: config example
+  - H2: Plugin इंस्टॉल करें
+  - H2: शुरुआत करना
+  - H2: डिस्कवरी व्यवहार
+  - H2: डिफ़ॉल्ट एलियस
+  - H2: बिल्ट-इन स्टार्टर कैटलॉग
+  - H2: कॉन्फ़िग उदाहरण
   - H2: संबंधित
 
 ## providers/claude-max-api-proxy.md
 
-- मार्ग: /providers/claude-max-api-proxy
+- रूट: /providers/claude-max-api-proxy
 - शीर्षक:
   - H2: इसका उपयोग क्यों करें?
   - H2: यह कैसे काम करता है
-  - H2: शुरू करना
-  - H2: अंतर्निहित कैटलॉग
+  - H2: शुरुआत करें
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: नोट्स
   - H2: संबंधित
 
 ## providers/cloudflare-ai-gateway.md
 
-- मार्ग: /providers/cloudflare-ai-gateway
+- रूट: /providers/cloudflare-ai-gateway
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: गैर-इंटरैक्टिव उदाहरण
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/cohere.md
 
-- मार्ग: /providers/cohere
+- रूट: /providers/cohere
 - शीर्षक:
   - H2: शुरू करें
-  - H2: केवल-पर्यावरण सेटअप
+  - H2: केवल-एनवायरनमेंट सेटअप
   - H2: संबंधित
 
 ## providers/comfy.md
 
-- मार्ग: /providers/comfy
+- रूट: /providers/comfy
 - शीर्षक:
   - H2: यह क्या समर्थित करता है
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िगरेशन
-  - H3: साझा कुंजियाँ
-  - H3: प्रति-क्षमता कुंजियाँ
+  - H3: साझा कुंजियां
+  - H3: प्रति-क्षमता कुंजियां
   - H2: वर्कफ़्लो विवरण
   - H2: संबंधित
 
 ## providers/deepgram.md
 
-- मार्ग: /providers/deepgram
+- रूट: /providers/deepgram
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िगरेशन विकल्प
-  - H2: वॉइस कॉल स्ट्रीमिंग STT
+  - H2: Voice Call स्ट्रीमिंग STT
   - H2: नोट्स
   - H2: संबंधित
 
 ## providers/deepinfra.md
 
-- मार्ग: /providers/deepinfra
+- रूट: /providers/deepinfra
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
   - H2: API कुंजी प्राप्त करना
@@ -7326,11 +7331,11 @@ x-i18n:
 
 ## providers/deepseek.md
 
-- मार्ग: /providers/deepseek
+- रूट: /providers/deepseek
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
-  - H2: अंतर्निहित कैटलॉग
+  - H2: शुरुआत करें
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: सोच और टूल
   - H2: लाइव परीक्षण
   - H2: कॉन्फ़िग उदाहरण
@@ -7338,32 +7343,32 @@ x-i18n:
 
 ## providers/ds4.md
 
-- मार्ग: /providers/ds4
+- रूट: /providers/ds4
 - शीर्षक:
-  - H2: आवश्यकताएँ
-  - H2: क्विकस्टार्ट
+  - H2: आवश्यकताएं
+  - H2: त्वरित शुरुआत
   - H2: पूरा कॉन्फ़िग
   - H2: मांग पर स्टार्टअप
-  - H2: Think Max
+  - H2: अधिकतम सोच
   - H2: परीक्षण
   - H2: समस्या निवारण
   - H2: संबंधित
 
 ## providers/elevenlabs.md
 
-- मार्ग: /providers/elevenlabs
+- रूट: /providers/elevenlabs
 - शीर्षक:
   - H2: प्रमाणीकरण
-  - H2: टेक्स्ट-टू-स्पीच
-  - H2: स्पीच-टू-टेक्स्ट
+  - H2: टेक्स्ट-से-स्पीच
+  - H2: स्पीच-से-टेक्स्ट
   - H2: स्ट्रीमिंग STT
   - H2: संबंधित
 
 ## providers/fal.md
 
-- मार्ग: /providers/fal
+- रूट: /providers/fal
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: इमेज जनरेशन
   - H2: वीडियो जनरेशन
   - H2: संगीत जनरेशन
@@ -7371,17 +7376,17 @@ x-i18n:
 
 ## providers/fireworks.md
 
-- मार्ग: /providers/fireworks
+- रूट: /providers/fireworks
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: गैर-इंटरैक्टिव सेटअप
-  - H2: अंतर्निहित कैटलॉग
-  - H2: कस्टम Fireworks मॉडल IDs
+  - H2: अंतर्निर्मित कैटलॉग
+  - H2: कस्टम Fireworks मॉडल ids
   - H2: संबंधित
 
 ## providers/github-copilot.md
 
-- मार्ग: /providers/github-copilot
+- रूट: /providers/github-copilot
 - शीर्षक:
   - H2: OpenClaw में Copilot उपयोग करने के तीन तरीके
   - H2: वैकल्पिक फ़्लैग
@@ -7393,7 +7398,7 @@ x-i18n:
 
 ## providers/gmi.md
 
-- मार्ग: /providers/gmi
+- रूट: /providers/gmi
 - शीर्षक:
   - H2: सेटअप
   - H2: डिफ़ॉल्ट
@@ -7404,49 +7409,49 @@ x-i18n:
 
 ## providers/google.md
 
-- मार्ग: /providers/google
+- रूट: /providers/google
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: क्षमताएँ
+  - H2: शुरुआत करें
+  - H2: क्षमताएं
   - H2: वेब खोज
   - H2: इमेज जनरेशन
   - H2: वीडियो जनरेशन
   - H2: संगीत जनरेशन
-  - H2: टेक्स्ट-टू-स्पीच
+  - H2: टेक्स्ट-से-स्पीच
   - H2: रीयलटाइम वॉइस
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/gradium.md
 
-- मार्ग: /providers/gradium
+- रूट: /providers/gradium
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
   - H2: सेटअप
   - H2: कॉन्फ़िग
-  - H2: वॉइस
-  - H3: प्रति-संदेश वॉइस ओवरराइड
+  - H2: आवाज़ें
+  - H3: प्रति-संदेश आवाज़ ओवरराइड
   - H2: आउटपुट
   - H2: स्वतः-चयन क्रम
   - H2: संबंधित
 
 ## providers/groq.md
 
-- मार्ग: /providers/groq
+- रूट: /providers/groq
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H3: कॉन्फ़िग फ़ाइल उदाहरण
-  - H2: अंतर्निहित कैटलॉग
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: रीजनिंग मॉडल
   - H2: ऑडियो ट्रांसक्रिप्शन
   - H2: संबंधित
 
 ## providers/huggingface.md
 
-- मार्ग: /providers/huggingface
+- रूट: /providers/huggingface
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H3: गैर-इंटरैक्टिव सेटअप
   - H2: मॉडल IDs
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7454,19 +7459,19 @@ x-i18n:
 
 ## providers/index.md
 
-- मार्ग: /providers
+- रूट: /providers
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: प्रदाता दस्तावेज़
   - H2: साझा अवलोकन पृष्ठ
   - H2: ट्रांसक्रिप्शन प्रदाता
-  - H2: समुदाय टूल
+  - H2: सामुदायिक टूल
 
 ## providers/inferrs.md
 
-- मार्ग: /providers/inferrs
+- रूट: /providers/inferrs
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: पूरा कॉन्फ़िग उदाहरण
   - H2: मांग पर स्टार्टअप
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7475,32 +7480,32 @@ x-i18n:
 
 ## providers/inworld.md
 
-- मार्ग: /providers/inworld
+- रूट: /providers/inworld
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िगरेशन विकल्प
   - H2: नोट्स
   - H2: संबंधित
 
 ## providers/kilocode.md
 
-- मार्ग: /providers/kilocode
+- रूट: /providers/kilocode
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: डिफ़ॉल्ट मॉडल
-  - H2: अंतर्निहित कैटलॉग
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: कॉन्फ़िग उदाहरण
   - H2: संबंधित
 
 ## providers/litellm.md
 
-- मार्ग: /providers/litellm
+- रूट: /providers/litellm
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: कॉन्फ़िगरेशन
-  - H3: पर्यावरण चर
+  - H3: एनवायरनमेंट वैरिएबल
   - H3: कॉन्फ़िग फ़ाइल
   - H2: उन्नत कॉन्फ़िगरेशन
   - H3: इमेज जनरेशन
@@ -7508,31 +7513,31 @@ x-i18n:
 
 ## providers/lmstudio.md
 
-- मार्ग: /providers/lmstudio
+- रूट: /providers/lmstudio
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: गैर-इंटरैक्टिव ऑनबोर्डिंग
   - H2: कॉन्फ़िगरेशन
   - H3: स्ट्रीमिंग उपयोग संगतता
   - H3: सोच संगतता
   - H3: स्पष्ट कॉन्फ़िगरेशन
   - H2: समस्या निवारण
-  - H3: LM Studio नहीं मिला
-  - H3: प्रमाणीकरण त्रुटियाँ (HTTP 401)
+  - H3: LM Studio का पता नहीं चला
+  - H3: प्रमाणीकरण त्रुटियां (HTTP 401)
   - H3: जस्ट-इन-टाइम मॉडल लोडिंग
   - H3: LAN या tailnet LM Studio होस्ट
   - H2: संबंधित
 
 ## providers/minimax.md
 
-- मार्ग: /providers/minimax
+- रूट: /providers/minimax
 - शीर्षक:
-  - H2: अंतर्निहित कैटलॉग
-  - H2: शुरू करना
+  - H2: अंतर्निर्मित कैटलॉग
+  - H2: शुरुआत करें
   - H2: openclaw configure के ज़रिए कॉन्फ़िगर करें
-  - H2: क्षमताएँ
+  - H2: क्षमताएं
   - H3: इमेज जनरेशन
-  - H3: टेक्स्ट-टू-स्पीच
+  - H3: टेक्स्ट-से-स्पीच
   - H3: संगीत जनरेशन
   - H3: वीडियो जनरेशन
   - H3: इमेज समझ
@@ -7544,37 +7549,37 @@ x-i18n:
 
 ## providers/mistral.md
 
-- मार्ग: /providers/mistral
+- रूट: /providers/mistral
 - शीर्षक:
-  - H2: शुरू करना
-  - H2: अंतर्निहित LLM कैटलॉग
+  - H2: शुरुआत करें
+  - H2: अंतर्निर्मित LLM कैटलॉग
   - H2: ऑडियो ट्रांसक्रिप्शन (Voxtral)
-  - H2: वॉइस कॉल स्ट्रीमिंग STT
+  - H2: Voice Call स्ट्रीमिंग STT
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/models.md
 
-- मार्ग: /providers/models
+- रूट: /providers/models
 - शीर्षक:
-  - H2: क्विक स्टार्ट (दो चरण)
+  - H2: त्वरित शुरुआत (दो चरण)
   - H2: समर्थित प्रदाता (स्टार्टर सेट)
   - H2: अतिरिक्त प्रदाता वैरिएंट
   - H2: संबंधित
 
 ## providers/moonshot.md
 
-- मार्ग: /providers/moonshot
+- रूट: /providers/moonshot
 - शीर्षक:
-  - H2: अंतर्निहित मॉडल कैटलॉग
-  - H2: शुरू करना
+  - H2: अंतर्निर्मित मॉडल कैटलॉग
+  - H2: शुरुआत करें
   - H2: Kimi वेब खोज
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/novita.md
 
-- मार्ग: /providers/novita
+- रूट: /providers/novita
 - शीर्षक:
   - H2: सेटअप
   - H2: डिफ़ॉल्ट
@@ -7585,19 +7590,19 @@ x-i18n:
 
 ## providers/nvidia.md
 
-- मार्ग: /providers/nvidia
+- रूट: /providers/nvidia
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िग उदाहरण
   - H2: विशेष कैटलॉग
   - H2: Nemotron 3 Ultra
-  - H2: बंडल फ़ॉलबैक कैटलॉग
+  - H2: बंडल किया गया फ़ॉलबैक कैटलॉग
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/ollama-cloud.md
 
-- मार्ग: /providers/ollama-cloud
+- रूट: /providers/ollama-cloud
 - शीर्षक:
   - H2: सेटअप
   - H2: डिफ़ॉल्ट
@@ -7609,11 +7614,11 @@ x-i18n:
 
 ## providers/ollama.md
 
-- मार्ग: /providers/ollama
+- रूट: /providers/ollama
 - शीर्षक:
   - H2: प्रमाणीकरण नियम
-  - H2: शुरू करना
-  - H2: Cloud मॉडल
+  - H2: शुरुआत करें
+  - H2: क्लाउड मॉडल
   - H2: मॉडल खोज (अंतर्निहित प्रदाता)
   - H2: विज़न और इमेज विवरण
   - H2: कॉन्फ़िगरेशन
@@ -7627,15 +7632,15 @@ x-i18n:
 
 ## providers/openai.md
 
-- मार्ग: /providers/openai
+- रूट: /providers/openai
 - शीर्षक:
-  - H2: त्वरित चुनाव
+  - H2: त्वरित चयन
   - H2: नामकरण मैप
   - H2: GPT-5.6 सीमित प्रीव्यू
   - H2: OpenClaw फ़ीचर कवरेज
   - H2: मेमोरी एम्बेडिंग
-  - H2: शुरू करना
-  - H2: मूल Codex ऐप-सर्वर प्रमाणीकरण
+  - H2: शुरुआत करें
+  - H2: नेटिव Codex ऐप-सर्वर प्रमाणीकरण
   - H2: इमेज जनरेशन
   - H2: वीडियो जनरेशन
   - H2: GPT-5 प्रॉम्प्ट योगदान
@@ -7651,21 +7656,21 @@ x-i18n:
 
 ## providers/opencode-go.md
 
-- मार्ग: /providers/opencode-go
+- रूट: /providers/opencode-go
 - शीर्षक:
-  - H2: अंतर्निहित कैटलॉग
-  - H2: शुरू करना
+  - H2: अंतर्निर्मित कैटलॉग
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िग उदाहरण
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/opencode.md
 
-- मार्ग: /providers/opencode
+- रूट: /providers/opencode
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िग उदाहरण
-  - H2: अंतर्निहित कैटलॉग
+  - H2: अंतर्निर्मित कैटलॉग
   - H3: Zen
   - H3: Go
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7673,16 +7678,16 @@ x-i18n:
 
 ## providers/openrouter.md
 
-- मार्ग: /providers/openrouter
+- रूट: /providers/openrouter
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िग उदाहरण
   - H2: मॉडल संदर्भ
   - H2: इमेज जनरेशन
   - H2: वीडियो जनरेशन
   - H2: संगीत जनरेशन
-  - H2: टेक्स्ट-टू-स्पीच
-  - H2: स्पीच-टू-टेक्स्ट (इनबाउंड ऑडियो)
+  - H2: टेक्स्ट-से-स्पीच
+  - H2: स्पीच-से-टेक्स्ट (इनबाउंड ऑडियो)
   - H2: Fusion राउटर
   - H2: प्रमाणीकरण और हेडर
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7690,20 +7695,20 @@ x-i18n:
 
 ## providers/perplexity-provider.md
 
-- मार्ग: /providers/perplexity-provider
+- रूट: /providers/perplexity-provider
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: खोज मोड
-  - H2: मूल API फ़िल्टरिंग
+  - H2: नेटिव API फ़िल्टरिंग
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/pixverse.md
 
-- मार्ग: /providers/pixverse
+- रूट: /providers/pixverse
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: समर्थित मोड और मॉडल
   - H2: प्रदाता विकल्प
   - H2: कॉन्फ़िगरेशन
@@ -7712,17 +7717,17 @@ x-i18n:
 
 ## providers/qianfan.md
 
-- मार्ग: /providers/qianfan
+- रूट: /providers/qianfan
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
-  - H2: अंतर्निहित कैटलॉग
+  - H2: शुरुआत करें
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: कॉन्फ़िग उदाहरण
   - H2: संबंधित
 
 ## providers/qwen-oauth.md
 
-- मार्ग: /providers/qwen-oauth
+- रूट: /providers/qwen-oauth
 - शीर्षक:
   - H2: सेटअप
   - H2: डिफ़ॉल्ट
@@ -7735,22 +7740,22 @@ x-i18n:
 
 ## providers/qwen.md
 
-- मार्ग: /providers/qwen
+- रूट: /providers/qwen
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: प्लान प्रकार और एंडपॉइंट
-  - H2: अंतर्निहित कैटलॉग
-  - H2: Thinking Controls
-  - H2: मल्टीमॉडल ऐड-ऑन
+  - H2: अंतर्निर्मित कैटलॉग
+  - H2: सोच नियंत्रण
+  - H2: मल्टीमोडल ऐड-ऑन
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/runway.md
 
-- मार्ग: /providers/runway
+- रूट: /providers/runway
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: समर्थित मोड और मॉडल
   - H2: कॉन्फ़िगरेशन
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7758,17 +7763,17 @@ x-i18n:
 
 ## providers/senseaudio.md
 
-- मार्ग: /providers/senseaudio
+- रूट: /providers/senseaudio
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: विकल्प
   - H2: संबंधित
 
 ## providers/sglang.md
 
-- मार्ग: /providers/sglang
+- रूट: /providers/sglang
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: मॉडल खोज (अंतर्निहित प्रदाता)
   - H2: स्पष्ट कॉन्फ़िगरेशन (मैनुअल मॉडल)
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7776,60 +7781,60 @@ x-i18n:
 
 ## providers/stepfun.md
 
-- मार्ग: /providers/stepfun
+- रूट: /providers/stepfun
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
   - H2: क्षेत्र और एंडपॉइंट अवलोकन
-  - H2: अंतर्निहित कैटलॉग
-  - H2: शुरू करना
+  - H2: अंतर्निर्मित कैटलॉग
+  - H2: शुरुआत करें
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/synthetic.md
 
-- मार्ग: /providers/synthetic
+- रूट: /providers/synthetic
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: कॉन्फ़िग उदाहरण
-  - H2: अंतर्निहित कैटलॉग
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: संबंधित
 
 ## providers/tencent.md
 
-- मार्ग: /providers/tencent
+- रूट: /providers/tencent
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: गैर-इंटरैक्टिव सेटअप
-  - H2: अंतर्निहित कैटलॉग
-  - H2: स्तरित मूल्य निर्धारण
+  - H2: अंतर्निर्मित कैटलॉग
+  - H2: स्तरीकृत मूल्य निर्धारण
   - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/together.md
 
-- मार्ग: /providers/together
+- रूट: /providers/together
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H3: गैर-इंटरैक्टिव उदाहरण
-  - H2: अंतर्निहित कैटलॉग
+  - H2: अंतर्निर्मित कैटलॉग
   - H2: वीडियो जनरेशन
   - H2: संबंधित
 
 ## providers/venice.md
 
-- मार्ग: /providers/venice
+- रूट: /providers/venice
 - शीर्षक:
   - H2: OpenClaw में Venice क्यों
   - H2: गोपनीयता मोड
   - H2: फ़ीचर
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: मॉडल चयन
   - H2: DeepSeek V4 रीप्ले व्यवहार
-  - H2: अंतर्निहित कैटलॉग (कुल 41)
+  - H2: अंतर्निर्मित कैटलॉग (कुल 41)
   - H2: मॉडल खोज
   - H2: स्ट्रीमिंग और टूल समर्थन
   - H2: मूल्य निर्धारण
-  - H3: Venice (अनामित) बनाम प्रत्यक्ष API
+  - H3: Venice (अनामीकृत) बनाम प्रत्यक्ष API
   - H2: उपयोग उदाहरण
   - H2: समस्या निवारण
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7837,9 +7842,9 @@ x-i18n:
 
 ## providers/vercel-ai-gateway.md
 
-- मार्ग: /providers/vercel-ai-gateway
+- रूट: /providers/vercel-ai-gateway
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: गैर-इंटरैक्टिव उदाहरण
   - H2: मॉडल ID शॉर्टहैंड
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7847,9 +7852,9 @@ x-i18n:
 
 ## providers/vllm.md
 
-- मार्ग: /providers/vllm
+- रूट: /providers/vllm
 - शीर्षक:
-  - H2: शुरू करना
+  - H2: शुरुआत करें
   - H2: मॉडल खोज (अंतर्निहित प्रदाता)
   - H2: स्पष्ट कॉन्फ़िगरेशन (मैनुअल मॉडल)
   - H2: उन्नत कॉन्फ़िगरेशन
@@ -7858,18 +7863,18 @@ x-i18n:
 
 ## providers/volcengine.md
 
-- रूट: /providers/volcengine
+- मार्ग: /providers/volcengine
 - शीर्षक:
   - H2: शुरू करना
-  - H2: Providers और endpoints
-  - H2: अंतर्निहित catalog
+  - H2: प्रदाता और एंडपॉइंट
+  - H2: अंतर्निहित कैटलॉग
   - H2: टेक्स्ट-टू-स्पीच
-  - H2: उन्नत configuration
+  - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## providers/vydra.md
 
-- रूट: /providers/vydra
+- मार्ग: /providers/vydra
 - शीर्षक:
   - H2: सेटअप
   - H2: क्षमताएं
@@ -7877,477 +7882,477 @@ x-i18n:
 
 ## providers/xai.md
 
-- रूट: /providers/xai
+- मार्ग: /providers/xai
 - शीर्षक:
-  - H2: अपना setup path चुनें
-  - H2: OAuth troubleshooting
-  - H2: अंतर्निहित catalog
-  - H2: OpenClaw feature coverage
-  - H3: Fast-mode mappings
-  - H3: Legacy compatibility aliases
-  - H2: Features
-  - H2: Live testing
+  - H2: अपना सेटअप पथ चुनें
+  - H2: OAuth समस्या निवारण
+  - H2: अंतर्निहित कैटलॉग
+  - H2: OpenClaw सुविधा कवरेज
+  - H3: तेज़-मोड मैपिंग
+  - H3: लीगेसी संगतता उपनाम
+  - H2: सुविधाएं
+  - H2: लाइव परीक्षण
   - H2: संबंधित
 
 ## providers/xiaomi.md
 
-- रूट: /providers/xiaomi
+- मार्ग: /providers/xiaomi
 - शीर्षक:
   - H2: शुरू करना
-  - H2: Pay-as-you-go catalog
-  - H2: Token Plan catalog
+  - H2: पे-ऐज़-यू-गो कैटलॉग
+  - H2: टोकन प्लान कैटलॉग
   - H2: टेक्स्ट-टू-स्पीच
-  - H2: Config example
+  - H2: कॉन्फ़िग उदाहरण
   - H2: संबंधित
 
 ## providers/zai.md
 
-- रूट: /providers/zai
+- मार्ग: /providers/zai
 - शीर्षक:
-  - H2: GLM models
+  - H2: GLM मॉडल
   - H2: शुरू करना
-  - H2: Config example
-  - H2: अंतर्निहित catalog
-  - H2: उन्नत configuration
+  - H2: कॉन्फ़िग उदाहरण
+  - H2: अंतर्निहित कैटलॉग
+  - H2: उन्नत कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## refactor/access.md
 
-- रूट: /refactor/access
+- मार्ग: /refactor/access
 - शीर्षक: कोई नहीं
 
 ## refactor/acp.md
 
-- रूट: /refactor/acp
+- मार्ग: /refactor/acp
 - शीर्षक:
   - H2: लक्ष्य
   - H2: गैर-लक्ष्य
-  - H2: Target Model
-  - H3: Gateway Instance Identity
-  - H3: ACP Session Ownership
-  - H3: ACPX Process Leases
-  - H2: Lifecycle Controller
-  - H2: Wrapper Contract
-  - H2: Session Visibility Contract
-  - H2: Migration Plan
-  - H3: Phase 1: Add Identity And Leases
-  - H3: Phase 2: Lease-First Cleanup
-  - H3: Phase 3: Lease-First Startup Reaping
-  - H3: Phase 4: Session Ownership Rows
-  - H3: Phase 5: Remove Legacy Heuristics
-  - H2: Tests
-  - H2: Compatibility Notes
-  - H2: Success Criteria
+  - H2: लक्ष्य मॉडल
+  - H3: Gateway इंस्टेंस पहचान
+  - H3: ACP सत्र स्वामित्व
+  - H3: ACPX प्रक्रिया लीज़
+  - H2: जीवनचक्र नियंत्रक
+  - H2: रैपर अनुबंध
+  - H2: सत्र दृश्यता अनुबंध
+  - H2: माइग्रेशन योजना
+  - H3: चरण 1: पहचान और लीज़ जोड़ें
+  - H3: चरण 2: लीज़-प्रथम क्लीनअप
+  - H3: चरण 3: लीज़-प्रथम स्टार्टअप रीपिंग
+  - H3: चरण 4: सत्र स्वामित्व पंक्तियां
+  - H3: चरण 5: लीगेसी ह्यूरिस्टिक्स हटाएं
+  - H2: परीक्षण
+  - H2: संगतता नोट्स
+  - H2: सफलता मानदंड
 
 ## refactor/canvas.md
 
-- रूट: /refactor/canvas
+- मार्ग: /refactor/canvas
 - शीर्षक:
-  - H1: Canvas plugin refactor
+  - H1: Canvas Plugin रीफैक्टर
   - H2: लक्ष्य
   - H2: गैर-लक्ष्य
-  - H2: Current branch state
-  - H2: Target shape
-  - H2: Migration steps
-  - H2: Audit checklist
-  - H2: Verification commands
+  - H2: वर्तमान ब्रांच स्थिति
+  - H2: लक्ष्य रूप
+  - H2: माइग्रेशन चरण
+  - H2: ऑडिट चेकलिस्ट
+  - H2: सत्यापन कमांड
 
 ## refactor/database-first.md
 
-- रूट: /refactor/database-first
+- मार्ग: /refactor/database-first
 - शीर्षक:
-  - H1: Database-First State Refactor
+  - H1: डेटाबेस-प्रथम स्टेट रीफैक्टर
   - H2: निर्णय
-  - H2: Hard Contract
-  - H2: Goal state and progress
-  - H3: Hard goal
-  - H3: Goal states
-  - H3: Current state
-  - H3: Remaining work
-  - H3: Do not regress
-  - H2: Code-Read Assumptions
-  - H2: Code-Read Findings
-  - H2: Current Code Shape
-  - H2: Target Schema Shape
-  - H2: Doctor Migration Shape
-  - H2: Migration Inventory
-  - H2: Migration Plan
-  - H3: Phase 0: Freeze The Boundary
-  - H3: Phase 1: Finish The Global Control Plane
-  - H3: Phase 2: Introduce Per-Agent Databases
-  - H3: Phase 3: Replace Session Store APIs
-  - H3: Phase 4: Move Transcripts, ACP Streams, Trajectories, And VFS
-  - H3: Phase 5: Backup, Restore, Vacuum, And Verify
-  - H3: Phase 6: Worker Runtime
-  - H3: Phase 7: Delete The Old World
-  - H2: Backup And Restore
-  - H2: Runtime Refactor Plan
-  - H2: Performance Rules
-  - H2: Static Bans
-  - H2: Done Criteria
+  - H2: कठोर अनुबंध
+  - H2: लक्ष्य स्थिति और प्रगति
+  - H3: कठोर लक्ष्य
+  - H3: लक्ष्य स्थितियां
+  - H3: वर्तमान स्थिति
+  - H3: शेष कार्य
+  - H3: पीछे न जाएं
+  - H2: कोड-पठन धारणाएं
+  - H2: कोड-पठन निष्कर्ष
+  - H2: वर्तमान कोड रूप
+  - H2: लक्ष्य स्कीमा रूप
+  - H2: Doctor माइग्रेशन रूप
+  - H2: माइग्रेशन सूची
+  - H2: माइग्रेशन योजना
+  - H3: चरण 0: सीमा फ्रीज़ करें
+  - H3: चरण 1: ग्लोबल कंट्रोल प्लेन पूरा करें
+  - H3: चरण 2: प्रति-एजेंट डेटाबेस पेश करें
+  - H3: चरण 3: सत्र स्टोर API बदलें
+  - H3: चरण 4: ट्रांसक्रिप्ट, ACP स्ट्रीम, ट्रैजेक्टरी और VFS स्थानांतरित करें
+  - H3: चरण 5: बैकअप, रीस्टोर, वैक्यूम और सत्यापित करें
+  - H3: चरण 6: वर्कर रनटाइम
+  - H3: चरण 7: पुरानी दुनिया हटाएं
+  - H2: बैकअप और रीस्टोर
+  - H2: रनटाइम रीफैक्टर योजना
+  - H2: प्रदर्शन नियम
+  - H2: स्थैतिक प्रतिबंध
+  - H2: पूर्णता मानदंड
 
 ## refactor/ingress-core.md
 
-- रूट: /refactor/ingress-core
+- मार्ग: /refactor/ingress-core
 - शीर्षक:
-  - H1: Ingress core deletion plan
-  - H2: Budget
-  - H2: Diagnosis
-  - H2: Hotspots
-  - H2: Current Code Read
-  - H2: Boundary
-  - H2: Acceptance Rule
-  - H2: Work Packages
-  - H2: Deletion Waves
-  - H2: Do Not Move
-  - H2: Verification
-  - H2: Exit Criteria
+  - H1: Ingress कोर हटाने की योजना
+  - H2: बजट
+  - H2: निदान
+  - H2: हॉटस्पॉट
+  - H2: वर्तमान कोड पठन
+  - H2: सीमा
+  - H2: स्वीकृति नियम
+  - H2: कार्य पैकेज
+  - H2: हटाने की तरंगें
+  - H2: न स्थानांतरित करें
+  - H2: सत्यापन
+  - H2: निकास मानदंड
 
 ## reference/AGENTS.default.md
 
-- रूट: /reference/AGENTS.default
+- मार्ग: /reference/AGENTS.default
 - शीर्षक:
   - H2: पहला रन (अनुशंसित)
-  - H2: सुरक्षा defaults
-  - H2: Existing solutions preflight
-  - H2: Session start (required)
-  - H2: Soul (required)
-  - H2: Shared spaces (recommended)
-  - H2: Memory system (recommended)
-  - H2: Tools और skills
-  - H2: Backup tip (recommended)
+  - H2: सुरक्षा डिफ़ॉल्ट
+  - H2: मौजूदा समाधानों की प्रीफ़्लाइट
+  - H2: सत्र आरंभ (आवश्यक)
+  - H2: आत्मा (आवश्यक)
+  - H2: साझा स्थान (अनुशंसित)
+  - H2: मेमोरी सिस्टम (अनुशंसित)
+  - H2: टूल और Skills
+  - H2: बैकअप सुझाव (अनुशंसित)
   - H2: OpenClaw क्या करता है
-  - H2: Core skills (Settings → Skills में सक्षम करें)
-  - H2: Usage notes
+  - H2: मुख्य Skills (Settings → Skills में सक्षम करें)
+  - H2: उपयोग नोट्स
   - H2: संबंधित
 
 ## reference/RELEASING.md
 
-- रूट: /reference/RELEASING
+- मार्ग: /reference/RELEASING
 - शीर्षक:
-  - H2: Version naming
-  - H2: Release cadence
-  - H2: Release operator checklist
-  - H2: Stable main closeout
-  - H2: Release preflight
-  - H2: Release test boxes
+  - H2: संस्करण नामकरण
+  - H2: रिलीज़ ताल
+  - H2: रिलीज़ ऑपरेटर चेकलिस्ट
+  - H2: स्थिर main क्लोज़आउट
+  - H2: रिलीज़ प्रीफ़्लाइट
+  - H2: रिलीज़ टेस्ट बॉक्स
   - H3: Vitest
   - H3: Docker
   - H3: QA Lab
-  - H3: Package
-  - H2: Release publish automation
-  - H2: NPM workflow inputs
-  - H2: Stable npm release sequence
-  - H2: Public references
+  - H3: पैकेज
+  - H2: रिलीज़ प्रकाशन ऑटोमेशन
+  - H2: NPM वर्कफ़्लो इनपुट
+  - H2: स्थिर npm रिलीज़ अनुक्रम
+  - H2: सार्वजनिक संदर्भ
   - H2: संबंधित
 
 ## reference/api-usage-costs.md
 
-- रूट: /reference/api-usage-costs
+- मार्ग: /reference/api-usage-costs
 - शीर्षक:
-  - H2: लागत कहां दिखाई देती है (chat + CLI)
-  - H2: keys कैसे खोजी जाती हैं
-  - H2: वे features जो keys खर्च कर सकते हैं
-  - H3: 1) Core model responses (chat + tools)
-  - H3: 2) Media understanding (audio/image/video)
-  - H3: 3) Image and video generation
-  - H3: 4) Memory embeddings + semantic search
-  - H3: 5) Web search tool
-  - H3: 5) Web fetch tool (Firecrawl)
-  - H3: 6) Provider usage snapshots (status/health)
-  - H3: 7) Compaction safeguard summarization
-  - H3: 8) Model scan / probe
-  - H3: 9) Talk (speech)
-  - H3: 10) Skills (third-party APIs)
+  - H2: लागतें कहां दिखाई देती हैं (चैट + CLI)
+  - H2: कुंजियां कैसे खोजी जाती हैं
+  - H2: वे सुविधाएं जो कुंजियों पर खर्च कर सकती हैं
+  - H3: 1) मुख्य मॉडल प्रतिक्रियाएं (चैट + टूल)
+  - H3: 2) मीडिया समझ (ऑडियो/छवि/वीडियो)
+  - H3: 3) छवि और वीडियो जनरेशन
+  - H3: 4) मेमोरी एम्बेडिंग + सेमांटिक खोज
+  - H3: 5) वेब खोज टूल
+  - H3: 5) वेब फ़ेच टूल (Firecrawl)
+  - H3: 6) प्रदाता उपयोग स्नैपशॉट (स्थिति/स्वास्थ्य)
+  - H3: 7) Compaction सुरक्षा सारांशीकरण
+  - H3: 8) मॉडल स्कैन / प्रोब
+  - H3: 9) बातचीत (स्पीच)
+  - H3: 10) Skills (तृतीय-पक्ष API)
   - H2: संबंधित
 
 ## reference/application-modernization-plan.md
 
-- रूट: /reference/application-modernization-plan
+- मार्ग: /reference/application-modernization-plan
 - शीर्षक:
   - H2: लक्ष्य
   - H2: सिद्धांत
-  - H2: Phase 1: Baseline audit
-  - H2: Phase 2: Product and UX cleanup
-  - H2: Phase 3: Frontend architecture tightening
-  - H2: Phase 4: Performance and reliability
-  - H2: Phase 5: Type, contract, and test hardening
-  - H2: Phase 6: Documentation and release readiness
-  - H2: Recommended first slice
-  - H2: Frontend skill update
+  - H2: चरण 1: बेसलाइन ऑडिट
+  - H2: चरण 2: उत्पाद और UX क्लीनअप
+  - H2: चरण 3: फ़्रंटएंड आर्किटेक्चर कसना
+  - H2: चरण 4: प्रदर्शन और विश्वसनीयता
+  - H2: चरण 5: प्रकार, अनुबंध और परीक्षण कठोरीकरण
+  - H2: चरण 6: दस्तावेज़ीकरण और रिलीज़ तैयारी
+  - H2: अनुशंसित पहला स्लाइस
+  - H2: फ़्रंटएंड स्किल अपडेट
 
 ## reference/code-mode.md
 
-- रूट: /reference/code-mode
+- मार्ग: /reference/code-mode
 - शीर्षक:
   - H2: यह क्या है?
   - H2: यह अच्छा क्यों है?
   - H2: इसे कैसे सक्षम करें
-  - H2: Technical tour
-  - H2: Runtime status
-  - H2: Scope
-  - H2: Terms
-  - H2: Configuration
-  - H2: Activation
-  - H2: Model-visible tools
+  - H2: तकनीकी टूर
+  - H2: रनटाइम स्थिति
+  - H2: दायरा
+  - H2: शब्द
+  - H2: कॉन्फ़िगरेशन
+  - H2: सक्रियण
+  - H2: मॉडल-दृश्य टूल
   - H2: exec
   - H2: wait
-  - H2: Guest runtime API
-  - H2: Internal namespaces
-  - H3: Registry lifecycle
-  - H3: Registration shape
-  - H3: Ownership and visibility
-  - H3: Scope serialization rules
-  - H3: Prompts
-  - H3: Cleanup
-  - H3: Test checklist
-  - H2: Output API
-  - H2: Tool catalog
-  - H2: Tool Search interaction
-  - H2: Tool names and collisions
-  - H2: Nested tool execution
-  - H2: Runtime state
-  - H2: QuickJS-WASI runtime
+  - H2: गेस्ट रनटाइम API
+  - H2: आंतरिक नेमस्पेस
+  - H3: रजिस्ट्री जीवनचक्र
+  - H3: पंजीकरण रूप
+  - H3: स्वामित्व और दृश्यता
+  - H3: दायरा सीरियलाइज़ेशन नियम
+  - H3: प्रॉम्प्ट
+  - H3: क्लीनअप
+  - H3: परीक्षण चेकलिस्ट
+  - H2: आउटपुट API
+  - H2: टूल कैटलॉग
+  - H2: टूल खोज इंटरैक्शन
+  - H2: टूल नाम और टकराव
+  - H2: नेस्टेड टूल निष्पादन
+  - H2: रनटाइम स्टेट
+  - H2: QuickJS-WASI रनटाइम
   - H2: TypeScript
-  - H2: Security boundary
-  - H2: Error codes
-  - H2: Telemetry
-  - H2: Debugging
-  - H2: Implementation layout
-  - H2: Validation checklist
-  - H2: E2E test plan
+  - H2: सुरक्षा सीमा
+  - H2: त्रुटि कोड
+  - H2: टेलीमेट्री
+  - H2: डीबगिंग
+  - H2: कार्यान्वयन लेआउट
+  - H2: सत्यापन चेकलिस्ट
+  - H2: E2E परीक्षण योजना
   - H2: संबंधित
 
 ## reference/credits.md
 
-- रूट: /reference/credits
+- मार्ग: /reference/credits
 - शीर्षक:
   - H2: नाम
   - H2: श्रेय
-  - H2: Core contributors
-  - H2: License
+  - H2: मुख्य योगदानकर्ता
+  - H2: लाइसेंस
   - H2: संबंधित
 
 ## reference/device-models.md
 
-- रूट: /reference/device-models
+- मार्ग: /reference/device-models
 - शीर्षक:
-  - H2: Data source
-  - H2: Updating the database
+  - H2: डेटा स्रोत
+  - H2: डेटाबेस अपडेट करना
   - H2: संबंधित
 
 ## reference/full-release-validation.md
 
-- रूट: /reference/full-release-validation
+- मार्ग: /reference/full-release-validation
 - शीर्षक:
-  - H2: Top-level stages
-  - H2: Release checks stages
-  - H2: Docker release-path chunks
-  - H2: Release profiles
-  - H2: Full-only additions
-  - H2: Focused reruns
-  - H2: Evidence to keep
-  - H2: Workflow files
+  - H2: शीर्ष-स्तरीय चरण
+  - H2: रिलीज़ जांच चरण
+  - H2: Docker रिलीज़-पथ खंड
+  - H2: रिलीज़ प्रोफ़ाइल
+  - H2: केवल-पूर्ण जोड़
+  - H2: केंद्रित पुनःरन
+  - H2: रखने योग्य साक्ष्य
+  - H2: वर्कफ़्लो फ़ाइलें
 
 ## reference/memory-config.md
 
-- रूट: /reference/memory-config
+- मार्ग: /reference/memory-config
 - शीर्षक:
-  - H2: Provider selection
-  - H3: Custom provider ids
-  - H3: API key resolution
-  - H2: Remote endpoint config
-  - H2: Provider-specific config
-  - H3: Inline embedding timeout
-  - H2: Hybrid search config
-  - H3: Full example
-  - H2: Additional memory paths
-  - H2: Multimodal memory (Gemini)
-  - H2: Embedding cache
-  - H2: Batch indexing
-  - H2: Session memory search (experimental)
-  - H2: SQLite vector acceleration (sqlite-vec)
-  - H2: Index storage
-  - H2: QMD backend config
-  - H3: Full QMD example
+  - H2: प्रदाता चयन
+  - H3: कस्टम प्रदाता ids
+  - H3: API कुंजी समाधान
+  - H2: रिमोट एंडपॉइंट कॉन्फ़िग
+  - H2: प्रदाता-विशिष्ट कॉन्फ़िग
+  - H3: इनलाइन एम्बेडिंग टाइमआउट
+  - H2: हाइब्रिड खोज कॉन्फ़िग
+  - H3: पूर्ण उदाहरण
+  - H2: अतिरिक्त मेमोरी पथ
+  - H2: मल्टीमोडल मेमोरी (Gemini)
+  - H2: एम्बेडिंग कैश
+  - H2: बैच इंडेक्सिंग
+  - H2: सत्र मेमोरी खोज (प्रायोगिक)
+  - H2: SQLite वेक्टर त्वरण (sqlite-vec)
+  - H2: इंडेक्स स्टोरेज
+  - H2: QMD बैकएंड कॉन्फ़िग
+  - H3: पूर्ण QMD उदाहरण
   - H2: Dreaming
-  - H3: User settings
-  - H3: Example
+  - H3: उपयोगकर्ता सेटिंग
+  - H3: उदाहरण
   - H2: संबंधित
 
 ## reference/prompt-caching.md
 
-- रूट: /reference/prompt-caching
+- मार्ग: /reference/prompt-caching
 - शीर्षक:
-  - H2: Primary knobs
-  - H3: cacheRetention (global default, model, and per-agent)
+  - H2: प्राथमिक नॉब
+  - H3: cacheRetention (ग्लोबल डिफ़ॉल्ट, मॉडल और प्रति-एजेंट)
   - H3: contextPruning.mode: "cache-ttl"
-  - H3: Heartbeat keep-warm
-  - H2: Provider behavior
-  - H3: Anthropic (direct API)
-  - H3: OpenAI (direct API)
+  - H3: Heartbeat गर्म रखें
+  - H2: प्रदाता व्यवहार
+  - H3: Anthropic (प्रत्यक्ष API)
+  - H3: OpenAI (प्रत्यक्ष API)
   - H3: Anthropic Vertex
   - H3: Amazon Bedrock
-  - H3: OpenRouter models
-  - H3: Other providers
-  - H3: Google Gemini direct API
-  - H3: Gemini CLI usage
-  - H2: System-prompt cache boundary
-  - H2: OpenClaw cache-stability guards
-  - H2: Tuning patterns
-  - H3: Mixed traffic (recommended default)
-  - H3: Cost-first baseline
-  - H2: Cache diagnostics
-  - H2: Live regression tests
-  - H3: Anthropic live expectations
-  - H3: OpenAI live expectations
-  - H3: diagnostics.cacheTrace config
-  - H3: Env toggles (one-off debugging)
-  - H3: What to inspect
-  - H2: Quick troubleshooting
+  - H3: OpenRouter मॉडल
+  - H3: अन्य प्रदाता
+  - H3: Google Gemini प्रत्यक्ष API
+  - H3: Gemini CLI उपयोग
+  - H2: सिस्टम-प्रॉम्प्ट कैश सीमा
+  - H2: OpenClaw कैश-स्थिरता गार्ड
+  - H2: ट्यूनिंग पैटर्न
+  - H3: मिश्रित ट्रैफ़िक (अनुशंसित डिफ़ॉल्ट)
+  - H3: लागत-प्रथम बेसलाइन
+  - H2: कैश डायग्नॉस्टिक्स
+  - H2: लाइव रिग्रेशन परीक्षण
+  - H3: Anthropic लाइव अपेक्षाएं
+  - H3: OpenAI लाइव अपेक्षाएं
+  - H3: diagnostics.cacheTrace कॉन्फ़िग
+  - H3: Env टॉगल (एकबारगी डीबगिंग)
+  - H3: क्या निरीक्षण करें
+  - H2: त्वरित समस्या निवारण
   - H2: संबंधित
 
 ## reference/release-performance-sweep.md
 
-- रूट: /reference/release-performance-sweep
+- मार्ग: /reference/release-performance-sweep
 - शीर्षक:
-  - H2: Snapshot
-  - H2: Install Footprint Timeline
-  - H2: What Changed In 5.28
-  - H2: Headline Numbers
-  - H3: Install footprint
-  - H3: npm package size
-  - H2: Kova agent turn summary
-  - H2: Source probes
-  - H2: Install footprint audit
-  - H3: Shrinkwrap boundary
-  - H2: Supply-chain interpretation
+  - H2: स्नैपशॉट
+  - H2: इंस्टॉल फ़ुटप्रिंट टाइमलाइन
+  - H2: 5.28 में क्या बदला
+  - H2: मुख्य संख्याएं
+  - H3: इंस्टॉल फ़ुटप्रिंट
+  - H3: npm पैकेज आकार
+  - H2: Kova एजेंट टर्न सारांश
+  - H2: स्रोत प्रोब
+  - H2: इंस्टॉल फ़ुटप्रिंट ऑडिट
+  - H3: Shrinkwrap सीमा
+  - H2: सप्लाई-चेन व्याख्या
 
 ## reference/rich-output-protocol.md
 
-- रूट: /reference/rich-output-protocol
+- मार्ग: /reference/rich-output-protocol
 - शीर्षक:
   - H2: [embed ...]
-  - H2: Stored rendering shape
+  - H2: संग्रहीत रेंडरिंग रूप
   - H2: संबंधित
 
 ## reference/rpc.md
 
-- रूट: /reference/rpc
+- मार्ग: /reference/rpc
 - शीर्षक:
-  - H2: Pattern A: HTTP daemon (signal-cli)
-  - H2: Pattern B: stdio child process (imsg)
-  - H2: Adapter guidelines
+  - H2: पैटर्न A: HTTP डेमन (signal-cli)
+  - H2: पैटर्न B: stdio चाइल्ड प्रक्रिया (imsg)
+  - H2: अडैप्टर दिशानिर्देश
   - H2: संबंधित
 
 ## reference/secret-placeholder-conventions.md
 
-- रूट: /reference/secret-placeholder-conventions
+- मार्ग: /reference/secret-placeholder-conventions
 - शीर्षक:
-  - H1: Secret placeholder conventions
-  - H2: Recommended style
-  - H2: Avoid these patterns in docs
-  - H2: Example
+  - H1: सीक्रेट प्लेसहोल्डर परंपराएं
+  - H2: अनुशंसित शैली
+  - H2: डॉक्स में इन पैटर्न से बचें
+  - H2: उदाहरण
 
 ## reference/secretref-credential-surface.md
 
-- रूट: /reference/secretref-credential-surface
+- मार्ग: /reference/secretref-credential-surface
 - शीर्षक:
-  - H2: Supported credentials
-  - H3: openclaw.json targets (secrets configure + secrets apply + secrets audit)
-  - H3: auth-profiles.json targets (secrets configure + secrets apply + secrets audit)
-  - H2: Unsupported credentials
+  - H2: समर्थित क्रेडेंशियल
+  - H3: openclaw.json लक्ष्य (secrets configure + secrets apply + secrets audit)
+  - H3: auth-profiles.json लक्ष्य (secrets configure + secrets apply + secrets audit)
+  - H2: असमर्थित क्रेडेंशियल
   - H2: संबंधित
 
 ## reference/session-management-compaction.md
 
-- रूट: /reference/session-management-compaction
+- मार्ग: /reference/session-management-compaction
 - शीर्षक:
-  - H2: Source of truth: the Gateway
-  - H2: Two persistence layers
-  - H2: On-disk locations
-  - H2: Store maintenance and disk controls
-  - H2: Cron sessions and run logs
-  - H2: Session keys (sessionKey)
-  - H2: Session ids (sessionId)
-  - H2: Session store schema (sessions.json)
-  - H2: Transcript structure (.jsonl)
-  - H2: Context windows vs tracked tokens
-  - H2: Compaction: what it is
-  - H2: Compaction chunk boundaries and tool pairing
-  - H2: When auto-compaction happens (OpenClaw runtime)
-  - H2: Compaction settings (reserveTokens, keepRecentTokens)
-  - H2: Pluggable compaction providers
-  - H2: User-visible surfaces
-  - H2: Silent housekeeping (NOREPLY)
-  - H2: Pre-compaction "memory flush" (implemented)
-  - H2: Troubleshooting checklist
+  - H2: सत्य का स्रोत: Gateway
+  - H2: दो पर्सिस्टेंस लेयर
+  - H2: ऑन-डिस्क स्थान
+  - H2: स्टोर रखरखाव और डिस्क नियंत्रण
+  - H2: Cron सत्र और रन लॉग
+  - H2: सत्र कुंजियां (sessionKey)
+  - H2: सत्र ids (sessionId)
+  - H2: सत्र स्टोर स्कीमा (sessions.json)
+  - H2: ट्रांसक्रिप्ट संरचना (.jsonl)
+  - H2: संदर्भ विंडो बनाम ट्रैक किए गए टोकन
+  - H2: Compaction: यह क्या है
+  - H2: Compaction चंक सीमाएं और टूल पेयरिंग
+  - H2: ऑटो-Compaction कब होता है (OpenClaw रनटाइम)
+  - H2: Compaction सेटिंग (reserveTokens, keepRecentTokens)
+  - H2: प्लगेबल Compaction प्रदाता
+  - H2: उपयोगकर्ता-दृश्य सतहें
+  - H2: मौन हाउसकीपिंग (NOREPLY)
+  - H2: प्री-Compaction "मेमोरी फ़्लश" (कार्यान्वित)
+  - H2: समस्या निवारण चेकलिस्ट
   - H2: संबंधित
 
 ## reference/templates/AGENTS.dev.md
 
-- रूट: /reference/templates/AGENTS.dev
+- मार्ग: /reference/templates/AGENTS.dev
 - शीर्षक:
-  - H1: AGENTS.md - OpenClaw Workspace
-  - H2: First run (one-time)
-  - H2: Backup tip (recommended)
-  - H2: Safety defaults
-  - H2: Existing solutions preflight
-  - H2: Daily memory (recommended)
-  - H2: Heartbeats (optional)
-  - H2: Customize
-  - H2: C-3PO Origin Memory
-  - H3: Birth Day: 2026-01-09
-  - H3: Core Truths (from Clawd)
+  - H1: AGENTS.md - OpenClaw वर्कस्पेस
+  - H2: पहला रन (एकबारगी)
+  - H2: बैकअप सुझाव (अनुशंसित)
+  - H2: सुरक्षा डिफ़ॉल्ट
+  - H2: मौजूदा समाधानों की प्रीफ़्लाइट
+  - H2: दैनिक मेमोरी (अनुशंसित)
+  - H2: Heartbeats (वैकल्पिक)
+  - H2: अनुकूलित करें
+  - H2: C-3PO मूल मेमोरी
+  - H3: जन्मदिन: 2026-01-09
+  - H3: मूल सत्य (Clawd से)
   - H2: संबंधित
 
 ## reference/templates/BOOT.md
 
-- रूट: /reference/templates/BOOT
+- मार्ग: /reference/templates/BOOT
 - शीर्षक:
   - H1: BOOT.md
   - H2: संबंधित
 
 ## reference/templates/BOOTSTRAP.md
 
-- रूट: /reference/templates/BOOTSTRAP
+- मार्ग: /reference/templates/BOOTSTRAP
 - शीर्षक:
   - H1: BOOTSTRAP.md - Hello, World
-  - H2: The Conversation
-  - H2: After You Know Who You Are
-  - H2: Connect (Optional)
-  - H2: When you are done
+  - H2: बातचीत
+  - H2: जब आप जान लें कि आप कौन हैं
+  - H2: कनेक्ट करें (वैकल्पिक)
+  - H2: जब आपका काम पूरा हो जाए
   - H2: संबंधित
 
 ## reference/templates/HEARTBEAT.md
 
-- रूट: /reference/templates/HEARTBEAT
+- मार्ग: /reference/templates/HEARTBEAT
 - शीर्षक:
-  - H1: HEARTBEAT.md template
+  - H1: HEARTBEAT.md टेम्पलेट
   - H2: संबंधित
 
 ## reference/templates/IDENTITY.dev.md
 
-- रूट: /reference/templates/IDENTITY.dev
+- मार्ग: /reference/templates/IDENTITY.dev
 - शीर्षक:
-  - H1: IDENTITY.md - Agent Identity
-  - H2: Role
-  - H2: Soul
-  - H2: Relationship with Clawd
-  - H2: Quirks
-  - H2: Catchphrase
+  - H1: IDENTITY.md - एजेंट पहचान
+  - H2: भूमिका
+  - H2: आत्मा
+  - H2: Clawd के साथ संबंध
+  - H2: विशेषताएं
+  - H2: तकियाकलाम
   - H2: संबंधित
 
 ## reference/templates/IDENTITY.md
 
-- रूट: /reference/templates/IDENTITY
+- मार्ग: /reference/templates/IDENTITY
 - शीर्षक:
-  - H1: IDENTITY.md - Who Am I?
+  - H1: IDENTITY.md - मैं कौन हूं?
   - H2: संबंधित
 
 ## reference/templates/SOUL.dev.md
 
-- मार्ग: /reference/templates/SOUL.dev
+- रूट: /reference/templates/SOUL.dev
 - शीर्षक:
   - H1: SOUL.md - C-3PO की आत्मा
   - H2: मैं कौन हूँ
@@ -8359,21 +8364,474 @@ x-i18n:
   - H2: स्वर्णिम नियम
   - H2: संबंधित
 
+## reference/templates/SOUL.md
+
+- रूट: /reference/templates/SOUL
+- शीर्षक:
+  - H1: SOUL.md - आप कौन हैं
+  - H2: मूल सत्य
+  - H2: सीमाएँ
+  - H2: माहौल
+  - H2: निरंतरता
+  - H2: संबंधित
+
+## reference/templates/TOOLS.dev.md
+
+- रूट: /reference/templates/TOOLS.dev
+- शीर्षक:
+  - H1: TOOLS.md - उपयोगकर्ता टूल नोट्स (संपादन योग्य)
+  - H2: उदाहरण
+  - H3: imsg
+  - H3: sag
+  - H2: संबंधित
+
+## reference/templates/TOOLS.md
+
+- रूट: /reference/templates/TOOLS
+- शीर्षक:
+  - H1: TOOLS.md - स्थानीय नोट्स
+  - H2: यहाँ क्या आता है
+  - H2: उदाहरण
+  - H2: अलग क्यों?
+  - H2: संबंधित
+
+## reference/templates/USER.dev.md
+
+- रूट: /reference/templates/USER.dev
+- शीर्षक:
+  - H1: USER.md - उपयोगकर्ता प्रोफ़ाइल
+  - H2: संबंधित
+
+## reference/templates/USER.md
+
+- रूट: /reference/templates/USER
+- शीर्षक:
+  - H1: USER.md - आपके मानव के बारे में
+  - H2: संदर्भ
+  - H2: संबंधित
+
+## reference/test.md
+
+- रूट: /reference/test
+- शीर्षक:
+  - H2: स्थानीय PR गेट
+  - H2: मॉडल विलंबता बेंच (स्थानीय कुंजियाँ)
+  - H2: CLI स्टार्टअप बेंच
+  - H2: Gateway स्टार्टअप बेंच
+  - H2: Gateway रीस्टार्ट बेंच
+  - H2: ऑनबोर्डिंग E2E (Docker)
+  - H2: QR इम्पोर्ट स्मोक (Docker)
+  - H2: संबंधित
+
+## reference/token-use.md
+
+- रूट: /reference/token-use
+- शीर्षक:
+  - H2: सिस्टम प्रॉम्प्ट कैसे बनाया जाता है
+  - H2: कॉन्टेक्स्ट विंडो में क्या गिना जाता है
+  - H2: वर्तमान टोकन उपयोग कैसे देखें
+  - H2: लागत अनुमान (जब दिखाया जाए)
+  - H2: कैश TTL और pruning प्रभाव
+  - H3: उदाहरण: heartbeat के साथ 1 घंटे का कैश गर्म रखें
+  - H3: उदाहरण: प्रति-एजेंट कैश रणनीति के साथ मिश्रित ट्रैफ़िक
+  - H3: Anthropic 1M कॉन्टेक्स्ट
+  - H2: टोकन दबाव कम करने के सुझाव
+  - H2: संबंधित
+
+## reference/transcript-hygiene.md
+
+- रूट: /reference/transcript-hygiene
+- शीर्षक:
+  - H2: वैश्विक नियम: runtime कॉन्टेक्स्ट उपयोगकर्ता ट्रांसक्रिप्ट नहीं है
+  - H2: यह कहाँ चलता है
+  - H2: वैश्विक नियम: इमेज sanitization
+  - H2: वैश्विक नियम: malformed tool calls
+  - H2: वैश्विक नियम: अधूरे reasoning-only turn
+  - H2: वैश्विक नियम: inter-session input provenance
+  - H2: प्रदाता मैट्रिक्स (वर्तमान व्यवहार)
+  - H2: ऐतिहासिक व्यवहार (2026.1.22 से पहले)
+  - H2: संबंधित
+
+## reference/wizard.md
+
+- रूट: /reference/wizard
+- शीर्षक:
+  - H2: फ़्लो विवरण (स्थानीय मोड)
+  - H2: non-interactive मोड
+  - H3: एजेंट जोड़ें (non-interactive)
+  - H2: Gateway wizard RPC
+  - H2: Signal सेटअप (signal-cli)
+  - H2: wizard क्या लिखता है
+  - H2: संबंधित डॉक्स
+
+## releases/2026.6.11.md
+
+- रूट: /releases/2026.6.11
+- शीर्षक:
+  - H1: OpenClaw v2026.6.11 रिलीज़ नोट्स (2026-06-30)
+  - H2: मुख्य बातें
+  - H3: चैनल डिलीवरी विश्वसनीयता
+  - H3: प्रदाता और मॉडल रिकवरी
+  - H3: सेशन, मेमरी, और भरोसे की निरंतरता
+  - H3: Slack राउटर रिले मोड
+  - H3: Raft External Agent wake bridge
+  - H3: आधिकारिक Plugin स्थापना और मरम्मत
+  - H2: चैनल और मैसेजिंग
+  - H3: अतिरिक्त चैनल सुधार
+  - H2: Gateway, सुरक्षा, और भरोसा
+  - H3: रीस्टार्ट और readiness रिकवरी
+  - H3: रिमोट परिणाम और मीडिया डिलीवरी
+  - H2: क्लाइंट और इंटरफ़ेस
+  - H3: क्लाइंट भेजना और reconnects
+  - H3: इंटरफ़ेस, सेटिंग्स, और ऑनबोर्डिंग सुधार
+  - H2: डॉक्स और एडमिन टूल्स
+  - H3: सेटअप और कमांड विश्वसनीयता
+  - H3: टूल्स और scheduled work
+
+## releases/index.md
+
+- रूट: /releases
+- शीर्षक:
+  - H1: रिलीज़ नोट्स
+  - H2: रिलीज़
+  - H2: कच्चा रिलीज़ इतिहास
+
+## security/CONTRIBUTING-THREAT-MODEL.md
+
+- रूट: /security/CONTRIBUTING-THREAT-MODEL
+- शीर्षक:
+  - H2: योगदान करने के तरीके
+  - H3: threat जोड़ें
+  - H3: mitigation सुझाएँ
+  - H3: attack chain प्रस्तावित करें
+  - H3: मौजूदा सामग्री ठीक या बेहतर करें
+  - H2: हम क्या उपयोग करते हैं
+  - H3: MITRE ATLAS framework
+  - H3: Threat ids
+  - H3: जोखिम स्तर
+  - H2: समीक्षा प्रक्रिया
+  - H2: संसाधन
+  - H2: संपर्क
+  - H2: मान्यता
+  - H2: संबंधित
+
+## security/THREAT-MODEL-ATLAS.md
+
+- रूट: /security/THREAT-MODEL-ATLAS
+- शीर्षक:
+  - H2: MITRE ATLAS framework
+  - H3: Framework attribution
+  - H3: इस Threat Model में योगदान
+  - H2: 1. परिचय
+  - H3: 1.1 उद्देश्य
+  - H3: 1.2 दायरा
+  - H3: 1.3 दायरे से बाहर
+  - H2: 2. सिस्टम आर्किटेक्चर
+  - H3: 2.1 भरोसे की सीमाएँ
+  - H3: 2.2 डेटा फ़्लो
+  - H2: 3. ATLAS Tactic के अनुसार threat विश्लेषण
+  - H3: 3.1 Reconnaissance (AML.TA0002)
+  - H4: T-RECON-001: Agent Endpoint Discovery
+  - H4: T-RECON-002: Channel Integration Probing
+  - H3: 3.2 Initial Access (AML.TA0004)
+  - H4: T-ACCESS-001: Pairing Code Interception
+  - H4: T-ACCESS-002: AllowFrom Spoofing
+  - H4: T-ACCESS-003: Token Theft
+  - H3: 3.3 Execution (AML.TA0005)
+  - H4: T-EXEC-001: Direct Prompt Injection
+  - H4: T-EXEC-002: Indirect Prompt Injection
+  - H4: T-EXEC-003: Tool Argument Injection
+  - H4: T-EXEC-004: Exec Approval Bypass
+  - H3: 3.4 Persistence (AML.TA0006)
+  - H4: T-PERSIST-001: Malicious Skill Installation
+  - H4: T-PERSIST-002: Skill Update Poisoning
+  - H4: T-PERSIST-003: Agent Configuration Tampering
+  - H3: 3.5 Defense Evasion (AML.TA0007)
+  - H4: T-EVADE-001: Moderation Pattern Bypass
+  - H4: T-EVADE-002: Content Wrapper Escape
+  - H3: 3.6 Discovery (AML.TA0008)
+  - H4: T-DISC-001: Tool Enumeration
+  - H4: T-DISC-002: Session Data Extraction
+  - H3: 3.7 Collection & Exfiltration (AML.TA0009, AML.TA0010)
+  - H4: T-EXFIL-001: webfetch के माध्यम से Data Theft
+  - H4: T-EXFIL-002: Unauthorized Message Sending
+  - H4: T-EXFIL-003: Credential Harvesting
+  - H3: 3.8 Impact (AML.TA0011)
+  - H4: T-IMPACT-001: Unauthorized Command Execution
+  - H4: T-IMPACT-002: Resource Exhaustion (DoS)
+  - H4: T-IMPACT-003: Reputation Damage
+  - H2: 4. ClawHub Supply Chain विश्लेषण
+  - H3: 4.1 वर्तमान सुरक्षा नियंत्रण
+  - H3: 4.2 Moderation Flag Patterns
+  - H3: 4.3 नियोजित सुधार
+  - H2: 5. जोखिम मैट्रिक्स
+  - H3: 5.1 संभावना बनाम प्रभाव
+  - H3: 5.2 Critical Path Attack Chains
+  - H2: 6. सिफ़ारिशों का सारांश
+  - H3: 6.1 तत्काल (P0)
+  - H3: 6.2 अल्पकालिक (P1)
+  - H3: 6.3 मध्यम अवधि (P2)
+  - H2: 7. परिशिष्ट
+  - H3: 7.1 ATLAS Technique Mapping
+  - H3: 7.2 मुख्य सुरक्षा फ़ाइलें
+  - H3: 7.3 शब्दावली
+  - H2: संबंधित
+
+## security/formal-verification.md
+
+- रूट: /security/formal-verification
+- शीर्षक:
+  - H2: मॉडल कहाँ रहते हैं
+  - H2: महत्वपूर्ण सावधानियाँ
+  - H2: परिणाम पुन: उत्पन्न करना
+  - H3: Gateway exposure और open gateway misconfiguration
+  - H3: Node exec pipeline (सबसे उच्च-जोखिम क्षमता)
+  - H3: Pairing store (DM gating)
+  - H3: Ingress gating (mentions + control-command bypass)
+  - H3: Routing/session-key isolation
+  - H2: v1++: अतिरिक्त bounded models (concurrency, retries, trace correctness)
+  - H3: Pairing store concurrency / idempotency
+  - H3: Ingress trace correlation / idempotency
+  - H3: Routing dmScope precedence + identityLinks
+  - H2: संबंधित
+
+## security/incident-response.md
+
+- रूट: /security/incident-response
+- शीर्षक:
+  - H2: 1. पहचान और triage
+  - H2: 2. आकलन
+  - H2: 3. प्रतिक्रिया
+  - H2: 4. संचार
+  - H2: 5. रिकवरी और follow-up
+
+## security/network-proxy.md
+
+- रूट: /security/network-proxy
+- शीर्षक:
+  - H2: proxy क्यों उपयोग करें
+  - H2: OpenClaw ट्रैफ़िक कैसे रूट करता है
+  - H2: संबंधित proxy शब्द
+  - H2: कॉन्फ़िगरेशन
+  - H3: Gateway Loopback Mode
+  - H2: proxy आवश्यकताएँ
+  - H2: अनुशंसित blocked destinations
+  - H2: सत्यापन
+  - H2: Proxy CA trust
+  - H2: सीमाएँ
+
+## specs/claw-supervisor.md
+
+- रूट: /specs/claw-supervisor
+- शीर्षक:
+  - H1: Claw Supervisor
+  - H2: लक्ष्य
+  - H2: उत्पाद मॉडल
+  - H2: आर्किटेक्चर
+  - H2: Codex App-Server Contract
+  - H2: Session Registry
+  - H2: Codex के लिए MCP Surface
+  - H2: Claw Control Surface
+  - H2: Launch Flow
+  - H2: परिनियोजन
+  - H2: सुरक्षा
+  - H2: कार्यान्वयन योजना
+  - H2: स्वीकृति परीक्षण
+  - H2: खुले प्रश्न
+
+## start/bootstrapping.md
+
+- रूट: /start/bootstrapping
+- शीर्षक:
+  - H2: bootstrapping क्या करता है
+  - H2: bootstrapping छोड़ना
+  - H2: यह कहाँ चलता है
+  - H2: संबंधित डॉक्स
+
+## start/docs-directory.md
+
+- रूट: /start/docs-directory
+- शीर्षक:
+  - H2: यहाँ से शुरू करें
+  - H2: प्रदाता और UX
+  - H2: साथी ऐप्स
+  - H2: संचालन और सुरक्षा
+  - H2: संबंधित
+
+## start/getting-started.md
+
+- रूट: /start/getting-started
+- शीर्षक:
+  - H2: आपको क्या चाहिए
+  - H2: त्वरित सेटअप
+  - H2: आगे क्या करें
+  - H2: संबंधित
+
+## start/hubs.md
+
+- रूट: /start/hubs
+- शीर्षक:
+  - H2: यहाँ से शुरू करें
+  - H2: स्थापना + अपडेट
+  - H2: मुख्य अवधारणाएँ
+  - H2: प्रदाता + ingress
+  - H2: Gateway + संचालन
+  - H2: टूल्स + ऑटोमेशन
+  - H2: Node, मीडिया, वॉइस
+  - H2: प्लेटफ़ॉर्म
+  - H2: macOS साथी ऐप (उन्नत)
+  - H2: Plugins
+  - H2: वर्कस्पेस + टेम्पलेट
+  - H2: प्रोजेक्ट
+  - H2: परीक्षण + रिलीज़
+  - H2: संबंधित
+
+## start/lore.md
+
+- रूट: /start/lore
+- शीर्षक:
+  - H1: OpenClaw की कथा 🦞📖
+  - H2: उत्पत्ति की कहानी
+  - H2: पहला मोल्ट (27 जनवरी, 2026)
+  - H2: नाम
+  - H2: Daleks बनाम Lobsters
+  - H2: मुख्य पात्र
+  - H3: Molty 🦞
+  - H3: Peter 👨‍💻
+  - H2: Moltiverse
+  - H2: महान घटनाएँ
+  - H3: Directory Dump (3 दिसंबर, 2025)
+  - H3: Great Molt (27 जनवरी, 2026)
+  - H3: Final Form (30 जनवरी, 2026)
+  - H3: Robot Shopping Spree (3 दिसंबर, 2025)
+  - H2: पवित्र पाठ
+  - H2: Lobster Creed
+  - H3: Icon Generation Saga (27 जनवरी, 2026)
+  - H2: भविष्य
+  - H2: संबंधित
+
+## start/onboarding-overview.md
+
+- रूट: /start/onboarding-overview
+- शीर्षक:
+  - H2: मुझे कौन-सा पथ उपयोग करना चाहिए?
+  - H2: onboarding क्या कॉन्फ़िगर करता है
+  - H2: CLI onboarding
+  - H2: macOS ऐप onboarding
+  - H2: कस्टम या सूचीबद्ध न किए गए प्रदाता
+  - H2: संबंधित
+
+## start/onboarding.md
+
+- रूट: /start/onboarding
+- शीर्षक:
+  - H2: संबंधित
+
+## start/openclaw.md
+
+- रूट: /start/openclaw
+- शीर्षक:
+  - H2: ⚠️ सुरक्षा पहले
+  - H2: पूर्वापेक्षाएँ
+  - H2: दो-फ़ोन सेटअप (अनुशंसित)
+  - H2: 5-मिनट की quick start
+  - H2: एजेंट को वर्कस्पेस दें (AGENTS)
+  - H2: वह config जो इसे "एक assistant" बनाता है
+  - H2: सेशन और मेमरी
+  - H2: Heartbeats (proactive mode)
+  - H2: मीडिया अंदर और बाहर
+  - H2: संचालन checklist
+  - H2: अगले कदम
+  - H2: संबंधित
+
+## start/quickstart.md
+
+- रूट: /start/quickstart
+- शीर्षक:
+  - H2: संबंधित
+
+## start/setup.md
+
+- रूट: /start/setup
+- शीर्षक:
+  - H2: TL;DR
+  - H2: पूर्वापेक्षाएँ (source से)
+  - H2: tailoring strategy (ताकि अपडेट नुकसान न करें)
+  - H2: इस repo से Gateway चलाएँ
+  - H2: स्थिर workflow (पहले macOS ऐप)
+  - H2: bleeding edge workflow (terminal में Gateway)
+  - H3: 0) (वैकल्पिक) macOS ऐप को source से भी चलाएँ
+  - H3: 1) dev Gateway शुरू करें
+  - H3: 2) macOS ऐप को अपने चल रहे Gateway की ओर इंगित करें
+  - H3: 3) सत्यापित करें
+  - H3: सामान्य footguns
+  - H2: Credential storage map
+  - H2: अपडेट करना (अपना सेटअप बिगाड़े बिना)
+  - H2: Linux (systemd user service)
+  - H2: संबंधित डॉक्स
+
+## start/showcase.md
+
+- रूट: /start/showcase
+- शीर्षक:
+  - H2: Discord से ताज़ा
+  - H2: ऑटोमेशन और workflow
+  - H2: ज्ञान और मेमरी
+  - H2: वॉइस और फ़ोन
+  - H2: इन्फ्रास्ट्रक्चर और परिनियोजन
+  - H2: घर और हार्डवेयर
+  - H2: समुदाय प्रोजेक्ट
+  - H2: अपना प्रोजेक्ट जमा करें
+  - H2: संबंधित
+
+## start/wizard-cli-automation.md
+
+- रूट: /start/wizard-cli-automation
+- शीर्षक:
+  - H2: बेसलाइन non-interactive उदाहरण
+  - H2: प्रदाता-विशिष्ट उदाहरण
+  - H2: एक और एजेंट जोड़ें
+  - H2: संबंधित डॉक्स
+
+## start/wizard-cli-reference.md
+
+- रूट: /start/wizard-cli-reference
+- शीर्षक:
+  - H2: wizard क्या करता है
+  - H2: स्थानीय फ़्लो विवरण
+  - H2: रिमोट मोड विवरण
+  - H2: auth और मॉडल विकल्प
+  - H2: आउटपुट और internals
+  - H2: संबंधित डॉक्स
+
+## start/wizard.md
+
+- रूट: /start/wizard
+- शीर्षक:
+  - H2: Locale
+  - H2: QuickStart बनाम Advanced
+  - H2: onboarding क्या कॉन्फ़िगर करता है
+  - H2: एक और एजेंट जोड़ें
+  - H2: पूरा reference
+  - H2: संबंधित डॉक्स
+
+## tools/acp-agents-setup.md
+
 - रूट: /tools/acp-agents-setup
 - शीर्षक:
   - H2: acpx हार्नेस समर्थन (वर्तमान)
-  - H2: आवश्यक कॉन्फिग
+  - H2: आवश्यक कॉन्फ़िगरेशन
   - H2: acpx बैकएंड के लिए Plugin सेटअप
-  - H3: acpx कमांड और संस्करण कॉन्फिगरेशन
-  - H3: स्वचालित डिपेंडेंसी इंस्टॉल
+  - H3: acpx कमांड और संस्करण कॉन्फ़िगरेशन
+  - H3: स्वचालित निर्भरता इंस्टॉल
   - H3: Plugin टूल्स MCP ब्रिज
   - H3: OpenClaw टूल्स MCP ब्रिज
-  - H3: रनटाइम ऑपरेशन टाइमआउट कॉन्फिगरेशन
-  - H3: हेल्थ प्रोब एजेंट कॉन्फिगरेशन
-  - H2: अनुमति कॉन्फिगरेशन
+  - H3: रनटाइम ऑपरेशन टाइमआउट कॉन्फ़िगरेशन
+  - H3: हेल्थ प्रोब एजेंट कॉन्फ़िगरेशन
+  - H2: अनुमति कॉन्फ़िगरेशन
   - H3: permissionMode
   - H3: nonInteractivePermissions
-  - H3: कॉन्फिगरेशन
+  - H3: कॉन्फ़िगरेशन
   - H2: संबंधित
 
 ## tools/acp-agents.md
@@ -8381,17 +8839,17 @@ x-i18n:
 - रूट: /tools/acp-agents
 - शीर्षक:
   - H2: मुझे कौन-सा पेज चाहिए?
-  - H2: क्या यह बिना अतिरिक्त सेटअप के काम करता है?
+  - H2: क्या यह डिफ़ॉल्ट रूप से काम करता है?
   - H2: समर्थित हार्नेस लक्ष्य
   - H2: ऑपरेटर रनबुक
   - H2: ACP बनाम सब-एजेंट
   - H2: ACP Claude Code कैसे चलाता है
   - H2: बाउंड सेशन
   - H3: मानसिक मॉडल
-  - H3: मौजूदा बातचीत बाइंड
+  - H3: वर्तमान-वार्तालाप बाइंड
   - H2: स्थायी चैनल बाइंडिंग
   - H3: बाइंडिंग मॉडल
-  - H3: प्रति एजेंट रनटाइम डिफॉल्ट
+  - H3: प्रति एजेंट रनटाइम डिफ़ॉल्ट
   - H3: उदाहरण
   - H3: व्यवहार
   - H2: ACP सेशन शुरू करें
@@ -8399,10 +8857,10 @@ x-i18n:
   - H2: स्पॉन बाइंड और थ्रेड मोड
   - H2: डिलीवरी मॉडल
   - H2: सैंडबॉक्स संगतता
-  - H2: सेशन लक्ष्य समाधान
+  - H2: सेशन लक्ष्य रिज़ॉल्यूशन
   - H2: ACP नियंत्रण
   - H3: रनटाइम विकल्प मैपिंग
-  - H2: acpx हार्नेस, Plugin सेटअप, और अनुमतियां
+  - H2: acpx हार्नेस, Plugin सेटअप, और अनुमतियाँ
   - H2: समस्या निवारण
   - H2: संबंधित
 
@@ -8410,8 +8868,8 @@ x-i18n:
 
 - रूट: /tools/agent-send
 - शीर्षक:
-  - H2: क्विक स्टार्ट
-  - H2: फ्लैग
+  - H2: त्वरित शुरुआत
+  - H2: फ़्लैग
   - H2: व्यवहार
   - H2: उदाहरण
   - H2: संबंधित
@@ -8430,7 +8888,7 @@ x-i18n:
 - रूट: /tools/brave-search
 - शीर्षक:
   - H2: API कुंजी प्राप्त करें
-  - H2: कॉन्फिग उदाहरण
+  - H2: कॉन्फ़िग उदाहरण
   - H2: टूल पैरामीटर
   - H2: नोट्स
   - H2: संबंधित
@@ -8440,16 +8898,16 @@ x-i18n:
 - रूट: /tools/browser-control
 - शीर्षक:
   - H2: नियंत्रण API (वैकल्पिक)
-  - H3: /act त्रुटि कॉन्ट्रैक्ट
+  - H3: /act त्रुटि अनुबंध
   - H3: Playwright आवश्यकता
   - H4: Docker Playwright इंस्टॉल
   - H2: यह कैसे काम करता है (आंतरिक)
-  - H2: CLI क्विक रेफरेंस
-  - H2: स्नैपशॉट और रेफ
+  - H2: CLI त्वरित संदर्भ
+  - H2: स्नैपशॉट और रेफ़
   - H2: प्रतीक्षा पावर-अप
   - H2: डीबग वर्कफ़्लो
   - H2: JSON आउटपुट
-  - H2: स्टेट और एनवायरनमेंट नॉब
+  - H2: स्टेट और एनवायरनमेंट नॉब्स
   - H2: सुरक्षा और गोपनीयता
   - H2: संबंधित
 
@@ -8457,22 +8915,22 @@ x-i18n:
 
 - रूट: /tools/browser-linux-troubleshooting
 - शीर्षक:
-  - H2: समस्या: "Failed to start Chrome CDP on port 18800"
+  - H2: समस्या: "पोर्ट 18800 पर Chrome CDP शुरू करने में विफल"
   - H3: मूल कारण
   - H3: समाधान 1: Google Chrome इंस्टॉल करें (अनुशंसित)
-  - H3: समाधान 2: Snap Chromium को Attach-Only Mode के साथ उपयोग करें
-  - H3: सत्यापित करना कि ब्राउज़र काम करता है
-  - H3: कॉन्फिग रेफरेंस
-  - H3: समस्या: "No Chrome tabs found for profile=\"user\""
+  - H3: समाधान 2: Attach-Only Mode के साथ Snap Chromium का उपयोग करें
+  - H3: ब्राउज़र के काम करने की पुष्टि करना
+  - H3: कॉन्फ़िग संदर्भ
+  - H3: समस्या: "profile=\"user\" के लिए कोई Chrome टैब नहीं मिला"
   - H2: संबंधित
 
 ## tools/browser-login.md
 
 - रूट: /tools/browser-login
 - शीर्षक:
-  - H2: मैनुअल लॉगिन (अनुशंसित)
-  - H2: कौन-सी Chrome प्रोफ़ाइल उपयोग होती है?
-  - H2: X/Twitter: अनुशंसित फ्लो
+  - H2: मैन्युअल लॉगिन (अनुशंसित)
+  - H2: कौन-सी Chrome प्रोफ़ाइल उपयोग की जाती है?
+  - H2: X/Twitter: अनुशंसित फ़्लो
   - H2: सैंडबॉक्सिंग + होस्ट ब्राउज़र एक्सेस
   - H2: संबंधित
 
@@ -8483,16 +8941,16 @@ x-i18n:
   - H2: पहले सही ब्राउज़र मोड चुनें
   - H3: विकल्प 1: WSL2 से Windows तक रॉ रिमोट CDP
   - H3: विकल्प 2: होस्ट-लोकल Chrome MCP
-  - H2: कार्यशील आर्किटेक्चर
-  - H2: यह सेटअप भ्रमित क्यों करता है
+  - H2: कार्यरत आर्किटेक्चर
+  - H2: यह सेटअप भ्रमित क्यों है
   - H2: Control UI के लिए महत्वपूर्ण नियम
   - H2: परतों में सत्यापित करें
   - H3: परत 1: सत्यापित करें कि Chrome Windows पर CDP सर्व कर रहा है
-  - H3: परत 2: सत्यापित करें कि WSL2 उस Windows एंडपॉइंट तक पहुंच सकता है
-  - H3: परत 3: सही ब्राउज़र प्रोफ़ाइल कॉन्फिगर करें
+  - H3: परत 2: सत्यापित करें कि WSL2 उस Windows एंडपॉइंट तक पहुँच सकता है
+  - H3: परत 3: सही ब्राउज़र प्रोफ़ाइल कॉन्फ़िगर करें
   - H3: परत 4: Control UI परत को अलग से सत्यापित करें
   - H3: परत 5: एंड-टू-एंड ब्राउज़र नियंत्रण सत्यापित करें
-  - H2: आम भ्रामक त्रुटियां
+  - H2: सामान्य भ्रामक त्रुटियाँ
   - H2: तेज़ ट्रायेज चेकलिस्ट
   - H2: व्यावहारिक निष्कर्ष
   - H2: संबंधित
@@ -8502,16 +8960,16 @@ x-i18n:
 - रूट: /tools/browser
 - शीर्षक:
   - H2: आपको क्या मिलता है
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: Plugin नियंत्रण
   - H2: एजेंट मार्गदर्शन
-  - H2: ब्राउज़र कमांड या टूल अनुपस्थित
-  - H2: प्रोफ़ाइल: openclaw बनाम user
-  - H2: कॉन्फिगरेशन
-  - H3: स्क्रीनशॉट विज़न (केवल-पाठ मॉडल समर्थन)
-  - H2: Brave या कोई अन्य Chromium-आधारित ब्राउज़र उपयोग करें
-  - H2: लोकल बनाम रिमोट नियंत्रण
-  - H2: Node ब्राउज़र प्रॉक्सी (शून्य-कॉन्फिग डिफॉल्ट)
+  - H2: अनुपलब्ध ब्राउज़र कमांड या टूल
+  - H2: प्रोफ़ाइल: openclaw बनाम उपयोगकर्ता
+  - H2: कॉन्फ़िगरेशन
+  - H3: स्क्रीनशॉट विज़न (टेक्स्ट-केवल मॉडल समर्थन)
+  - H2: Brave या किसी अन्य Chromium-आधारित ब्राउज़र का उपयोग करें
+  - H2: स्थानीय बनाम रिमोट नियंत्रण
+  - H2: Node ब्राउज़र प्रॉक्सी (ज़ीरो-कॉन्फ़िग डिफ़ॉल्ट)
   - H2: Browserless (होस्टेड रिमोट CDP)
   - H3: उसी होस्ट पर Browserless Docker
   - H2: डायरेक्ट WebSocket CDP प्रदाता
@@ -8519,7 +8977,7 @@ x-i18n:
   - H3: Notte
   - H2: सुरक्षा
   - H2: प्रोफ़ाइल (मल्टी-ब्राउज़र)
-  - H2: Chrome DevTools MCP के ज़रिए मौजूदा सेशन
+  - H2: Chrome DevTools MCP के माध्यम से मौजूदा सेशन
   - H3: कस्टम Chrome MCP लॉन्च
   - H2: आइसोलेशन गारंटी
   - H2: ब्राउज़र चयन
@@ -8537,7 +8995,7 @@ x-i18n:
   - H2: यह क्या नहीं करता
   - H2: संदर्भ कैसे काम करता है
   - H2: डिलीवरी मॉडल
-  - H2: सरफेस व्यवहार
+  - H2: सतह व्यवहार
   - H3: TUI
   - H3: बाहरी चैनल
   - H3: Control UI / वेब
@@ -8562,44 +9020,44 @@ x-i18n:
 - शीर्षक:
   - H2: सेटअप
   - H2: इसे कैसे उपयोग करें
-  - H2: त्रुटियां
-  - H2: सीमाएं
+  - H2: त्रुटियाँ
+  - H2: सीमाएँ
   - H2: संबंधित
 
 ## tools/creating-skills.md
 
 - रूट: /tools/creating-skills
 - शीर्षक:
-  - H2: अपना पहला skill बनाएं
-  - H2: SKILL.md रेफरेंस
+  - H2: अपनी पहली skill बनाएँ
+  - H2: SKILL.md संदर्भ
   - H3: आवश्यक फ़ील्ड
-  - H3: वैकल्पिक frontmatter कुंजियां
-  - H3: {baseDir} का उपयोग
+  - H3: वैकल्पिक frontmatter कुंजियाँ
+  - H3: {baseDir} का उपयोग करना
   - H2: सशर्त सक्रियण जोड़ना
-  - H2: Skill Workshop के ज़रिए प्रस्ताव करें
+  - H2: Skill Workshop के माध्यम से प्रस्तावित करें
   - H2: ClawHub पर प्रकाशित करना
-  - H2: श्रेष्ठ अभ्यास
+  - H2: सर्वोत्तम अभ्यास
   - H2: संबंधित
 
 ## tools/diffs.md
 
 - रूट: /tools/diffs
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: बिल्ट-इन सिस्टम मार्गदर्शन अक्षम करें
   - H2: सामान्य एजेंट वर्कफ़्लो
   - H2: इनपुट उदाहरण
-  - H2: टूल इनपुट रेफरेंस
+  - H2: टूल इनपुट संदर्भ
   - H2: सिंटैक्स हाइलाइटिंग
-  - H2: आउटपुट विवरण कॉन्ट्रैक्ट
-  - H2: संकुचित अपरिवर्तित सेक्शन
-  - H2: Plugin डिफॉल्ट
-  - H3: स्थायी व्यूअर URL कॉन्फिग
-  - H2: सुरक्षा कॉन्फिग
-  - H2: आर्टिफैक्ट लाइफ़साइकल और स्टोरेज
+  - H2: आउटपुट विवरण अनुबंध
+  - H2: संक्षिप्त अपरिवर्तित सेक्शन
+  - H2: Plugin डिफ़ॉल्ट
+  - H3: स्थायी व्यूअर URL कॉन्फ़िग
+  - H2: सुरक्षा कॉन्फ़िग
+  - H2: आर्टिफ़ैक्ट लाइफ़साइकल और स्टोरेज
   - H2: व्यूअर URL और नेटवर्क व्यवहार
   - H2: सुरक्षा मॉडल
-  - H2: फ़ाइल मोड के लिए ब्राउज़र आवश्यकताएं
+  - H2: फ़ाइल मोड के लिए ब्राउज़र आवश्यकताएँ
   - H2: समस्या निवारण
   - H2: संचालन मार्गदर्शन
   - H2: संबंधित
@@ -8609,7 +9067,7 @@ x-i18n:
 - रूट: /tools/duckduckgo-search
 - शीर्षक:
   - H2: सेटअप
-  - H2: कॉन्फिग
+  - H2: कॉन्फ़िग
   - H2: टूल पैरामीटर
   - H2: नोट्स
   - H2: संबंधित
@@ -8620,8 +9078,8 @@ x-i18n:
 - शीर्षक:
   - H2: निर्देश
   - H2: यह कैसे काम करता है
-  - H2: समाधान क्रम
-  - H2: उपलब्धता और allowlist
+  - H2: रिज़ॉल्यूशन क्रम
+  - H2: उपलब्धता और allowlists
   - H2: elevated क्या नियंत्रित नहीं करता
   - H2: संबंधित
 
@@ -8631,7 +9089,7 @@ x-i18n:
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
   - H2: API कुंजी प्राप्त करें
-  - H2: कॉन्फिग
+  - H2: कॉन्फ़िग
   - H2: बेस URL ओवरराइड
   - H2: टूल पैरामीटर
   - H3: सामग्री निष्कर्षण
@@ -8644,19 +9102,19 @@ x-i18n:
 - रूट: /tools/exec-approvals-advanced
 - शीर्षक:
   - H2: सुरक्षित बिन (केवल stdin)
-  - H3: Argv सत्यापन और अस्वीकृत फ्लैग
+  - H3: Argv वैलिडेशन और अस्वीकृत फ़्लैग
   - H3: विश्वसनीय बाइनरी डायरेक्टरी
   - H3: शेल चेनिंग, रैपर, और मल्टीप्लेक्सर
   - H3: सुरक्षित बिन बनाम allowlist
   - H2: इंटरप्रेटर/रनटाइम कमांड
   - H3: फ़ॉलोअप डिलीवरी व्यवहार
-  - H2: चैट चैनलों को अनुमोदन फ़ॉरवर्डिंग
+  - H2: चैट चैनलों तक अनुमोदन फ़ॉरवर्डिंग
   - H3: Plugin अनुमोदन फ़ॉरवर्डिंग
   - H3: किसी भी चैनल पर समान-चैट अनुमोदन
   - H3: नेटिव अनुमोदन डिलीवरी
-  - H3: macOS IPC फ्लो
+  - H3: macOS IPC फ़्लो
   - H2: FAQ
-  - H3: अनुमोदन लक्ष्य पर accountId और threadId कब उपयोग किए जाएंगे?
+  - H3: किसी अनुमोदन लक्ष्य पर accountId और threadId कब उपयोग किए जाएँगे?
   - H3: जब अनुमोदन किसी सेशन को भेजे जाते हैं, तो क्या उस सेशन में कोई भी उन्हें अनुमोदित कर सकता है?
   - H2: संबंधित
 
@@ -8665,11 +9123,11 @@ x-i18n:
 - रूट: /tools/exec-approvals
 - शीर्षक:
   - H2: प्रभावी नीति का निरीक्षण
-  - H2: यह कहां लागू होता है
+  - H2: यह कहाँ लागू होती है
   - H3: ट्रस्ट मॉडल
   - H3: macOS विभाजन
-  - H2: सेटिंग और स्टोरेज
-  - H2: नीति नॉब
+  - H2: सेटिंग्स और स्टोरेज
+  - H2: नीति नॉब्स
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
@@ -8677,16 +9135,16 @@ x-i18n:
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
   - H2: YOLO मोड (बिना अनुमोदन)
-  - H3: स्थायी gateway-host "never prompt" सेटअप
-  - H3: लोकल शॉर्टकट
+  - H3: स्थायी gateway-host "कभी प्रॉम्प्ट न करें" सेटअप
+  - H3: स्थानीय शॉर्टकट
   - H3: Node होस्ट
   - H3: केवल-सेशन शॉर्टकट
-  - H2: Allowlist (प्रति एजेंट)
-  - H3: argPattern के साथ आर्ग्युमेंट प्रतिबंधित करना
-  - H2: skill CLI को ऑटो-अलाउ करें
+  - H2: allowlist (प्रति एजेंट)
+  - H3: argPattern के साथ आर्ग्युमेंट सीमित करना
+  - H2: skill CLI को स्वतः अनुमति दें
   - H2: सुरक्षित बिन और अनुमोदन फ़ॉरवर्डिंग
   - H2: Control UI संपादन
-  - H2: अनुमोदन फ्लो
+  - H2: अनुमोदन फ़्लो
   - H2: सिस्टम इवेंट
   - H2: अस्वीकृत अनुमोदन व्यवहार
   - H2: निहितार्थ
@@ -8697,11 +9155,11 @@ x-i18n:
 - रूट: /tools/exec
 - शीर्षक:
   - H2: पैरामीटर
-  - H2: कॉन्फिग
+  - H2: कॉन्फ़िग
   - H3: PATH हैंडलिंग
   - H2: सेशन ओवरराइड (/exec)
   - H2: प्राधिकरण मॉडल
-  - H2: Exec अनुमोदन (कम्पैनियन ऐप / node होस्ट)
+  - H2: Exec अनुमोदन (सहायक ऐप / node होस्ट)
   - H2: Allowlist + सुरक्षित बिन
   - H2: उदाहरण
   - H2: applypatch
@@ -8712,14 +9170,14 @@ x-i18n:
 - रूट: /tools/firecrawl
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
-  - H2: बिना कुंजी webfetch और API कुंजियां
-  - H2: Firecrawl खोज कॉन्फिगर करें
-  - H2: Firecrawl webfetch फ़ॉलबैक कॉन्फिगर करें
-  - H3: सेल्फ-होस्टेड Firecrawl
+  - H2: बिना-कुंजी webfetch और API कुंजियाँ
+  - H2: Firecrawl खोज कॉन्फ़िगर करें
+  - H2: Firecrawl webfetch फ़ॉलबैक कॉन्फ़िगर करें
+  - H3: Self-hosted Firecrawl
   - H2: Firecrawl Plugin टूल्स
   - H3: firecrawlsearch
   - H3: firecrawlscrape
-  - H2: Stealth / बॉट परिहार
+  - H2: स्टेल्थ / बॉट परिहार
   - H2: webfetch Firecrawl का उपयोग कैसे करता है
   - H2: संबंधित
 
@@ -8728,7 +9186,7 @@ x-i18n:
 - रूट: /tools/gemini-search
 - शीर्षक:
   - H2: API कुंजी प्राप्त करें
-  - H2: कॉन्फिग
+  - H2: कॉन्फ़िग
   - H2: यह कैसे काम करता है
   - H2: समर्थित पैरामीटर
   - H2: मॉडल चयन
@@ -8740,10 +9198,10 @@ x-i18n:
 - रूट: /tools/goal
 - शीर्षक:
   - H1: लक्ष्य
-  - H2: क्विक स्टार्ट
-  - H2: लक्ष्य किसलिए हैं
-  - H2: कमांड रेफरेंस
-  - H2: स्थितियां
+  - H2: त्वरित शुरुआत
+  - H2: लक्ष्यों का उद्देश्य
+  - H2: कमांड संदर्भ
+  - H2: स्थितियाँ
   - H2: टोकन बजट
   - H2: मॉडल टूल्स
   - H2: TUI
@@ -8755,9 +9213,9 @@ x-i18n:
 
 - रूट: /tools/grok-search
 - शीर्षक:
-  - H2: ऑनबोर्डिंग और कॉन्फिगर
+  - H2: ऑनबोर्डिंग और कॉन्फ़िगर
   - H2: साइन इन करें या API कुंजी प्राप्त करें
-  - H2: कॉन्फिग
+  - H2: कॉन्फ़िग
   - H2: यह कैसे काम करता है
   - H2: समर्थित पैरामीटर
   - H2: बेस URL ओवरराइड
@@ -8767,16 +9225,16 @@ x-i18n:
 
 - रूट: /tools/image-generation
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: सामान्य रूट
   - H2: समर्थित प्रदाता
-  - H2: प्रदाता क्षमताएं
+  - H2: प्रदाता क्षमताएँ
   - H2: टूल पैरामीटर
-  - H2: कॉन्फिगरेशन
+  - H2: कॉन्फ़िगरेशन
   - H3: मॉडल चयन
   - H3: प्रदाता चयन क्रम
-  - H3: इमेज संपादन
-  - H2: प्रदाता गहन विवरण
+  - H3: छवि संपादन
+  - H2: प्रदाता डीप डाइव
   - H2: उदाहरण
   - H2: संबंधित
 
@@ -8784,13 +9242,13 @@ x-i18n:
 
 - रूट: /tools
 - शीर्षक:
-  - H2: यहां से शुरू करें
-  - H2: टूल्स, skills, या plugins चुनें
-  - H2: बिल्ट-इन टूल श्रेणियां
-  - H2: Plugin-प्रदान किए गए टूल्स
-  - H2: एक्सेस और अनुमोदन कॉन्फिगर करें
-  - H2: क्षमताएं विस्तारित करें
-  - H2: अनुपस्थित टूल्स का समस्या निवारण
+  - H2: यहाँ शुरू करें
+  - H2: टूल, Skills, या plugins चुनें
+  - H2: बिल्ट-इन टूल श्रेणियाँ
+  - H2: Plugin-प्रदत्त टूल
+  - H2: एक्सेस और अनुमोदन कॉन्फ़िगर करें
+  - H2: क्षमताएँ बढ़ाएँ
+  - H2: अनुपलब्ध टूल्स का समस्या निवारण
   - H2: संबंधित
 
 ## tools/kimi-search.md
@@ -8798,7 +9256,7 @@ x-i18n:
 - रूट: /tools/kimi-search
 - शीर्षक:
   - H2: API कुंजी प्राप्त करें
-  - H2: कॉन्फिग
+  - H2: कॉन्फ़िग
   - H2: यह कैसे काम करता है
   - H2: समर्थित पैरामीटर
   - H2: संबंधित
@@ -8808,7 +9266,7 @@ x-i18n:
 - रूट: /tools/llm-task
 - शीर्षक:
   - H2: Plugin सक्षम करें
-  - H2: कॉन्फिग (वैकल्पिक)
+  - H2: कॉन्फ़िग (वैकल्पिक)
   - H2: टूल पैरामीटर
   - H2: आउटपुट
   - H2: उदाहरण: Lobster वर्कफ़्लो चरण
@@ -8820,9 +9278,9 @@ x-i18n:
 
 - रूट: /tools/lobster
 - शीर्षक:
-  - H2: Hook
+  - H2: हुक
   - H2: क्यों
-  - H2: सादे प्रोग्राम के बजाय DSL क्यों?
+  - H2: साधारण प्रोग्रामों के बजाय DSL क्यों?
   - H2: यह कैसे काम करता है
   - H2: पैटर्न: छोटा CLI + JSON पाइप + अनुमोदन
   - H2: केवल-JSON LLM चरण (llm-task)
@@ -8835,7 +9293,7 @@ x-i18n:
   - H3: run
   - H3: resume
   - H3: वैकल्पिक इनपुट
-  - H2: आउटपुट एनवलप
+  - H2: आउटपुट एनवेलप
   - H2: अनुमोदन
   - H2: OpenProse
   - H2: सुरक्षा
@@ -8849,7 +9307,7 @@ x-i18n:
 - रूट: /tools/loop-detection
 - शीर्षक:
   - H2: यह क्यों मौजूद है
-  - H2: कॉन्फिगरेशन ब्लॉक
+  - H2: कॉन्फ़िगरेशन ब्लॉक
   - H3: फ़ील्ड व्यवहार
   - H2: अनुशंसित सेटअप
   - H2: पोस्ट-Compaction गार्ड
@@ -8860,11 +9318,11 @@ x-i18n:
 
 - रूट: /tools/media-overview
 - शीर्षक:
-  - H2: क्षमताएं
+  - H2: क्षमताएँ
   - H2: प्रदाता क्षमता मैट्रिक्स
   - H2: असिंक्रोनस बनाम सिंक्रोनस
-  - H2: स्पीच-टू-टेक्स्ट और वॉयस कॉल
-  - H2: प्रदाता मैपिंग (विक्रेता सतहों में कैसे बंटते हैं)
+  - H2: स्पीच-टू-टेक्स्ट और वॉइस कॉल
+  - H2: प्रदाता मैपिंग (विक्रेता सतहों में कैसे विभाजित होते हैं)
   - H2: संबंधित
 
 ## tools/minimax-search.md
@@ -8872,7 +9330,7 @@ x-i18n:
 - रूट: /tools/minimax-search
 - शीर्षक:
   - H2: Token Plan क्रेडेंशियल प्राप्त करें
-  - H2: कॉन्फ़िगरेशन
+  - H2: कॉन्फ़िग
   - H2: क्षेत्र चयन
   - H2: समर्थित पैरामीटर
   - H2: संबंधित
@@ -8883,11 +9341,11 @@ x-i18n:
 - शीर्षक:
   - H2: कॉन्फ़िगरेशन उदाहरण
   - H2: कॉन्फ़िगरेशन प्राथमिकता
-  - H3: Sandbox कॉन्फ़िगरेशन
+  - H3: Sandbox कॉन्फ़िग
   - H3: टूल प्रतिबंध
   - H2: एकल एजेंट से माइग्रेशन
   - H2: टूल प्रतिबंध उदाहरण
-  - H2: सामान्य चूक: "non-main"
+  - H2: सामान्य गलती: "non-main"
   - H2: परीक्षण
   - H2: समस्या निवारण
   - H2: संबंधित
@@ -8896,7 +9354,7 @@ x-i18n:
 
 - रूट: /tools/music-generation
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: समर्थित प्रदाता
   - H3: क्षमता मैट्रिक्स
   - H2: टूल पैरामीटर
@@ -8916,7 +9374,7 @@ x-i18n:
 - रूट: /tools/ollama-search
 - शीर्षक:
   - H2: सेटअप
-  - H2: कॉन्फ़िगरेशन
+  - H2: कॉन्फ़िग
   - H2: नोट्स
   - H2: संबंधित
 
@@ -8926,7 +9384,7 @@ x-i18n:
 - शीर्षक:
   - H2: Plugin इंस्टॉल करें
   - H2: API कुंजी (भुगतान वाला प्रदाता)
-  - H2: कॉन्फ़िगरेशन
+  - H2: कॉन्फ़िग
   - H2: बेस URL ओवरराइड
   - H2: टूल पैरामीटर
   - H2: नोट्स
@@ -8942,7 +9400,7 @@ x-i18n:
   - H2: निष्पादन मोड
   - H3: नेटिव प्रदाता मोड
   - H3: एक्सट्रैक्शन फ़ॉलबैक मोड
-  - H2: कॉन्फ़िगरेशन
+  - H2: कॉन्फ़िग
   - H2: आउटपुट विवरण
   - H2: त्रुटि व्यवहार
   - H2: उदाहरण
@@ -8955,7 +9413,7 @@ x-i18n:
   - H2: अनुशंसित डिफ़ॉल्ट
   - H2: OpenClaw होस्ट exec मोड
   - H2: Codex Guardian मैपिंग
-  - H2: ACPX हार्नेस अनुमतियां
+  - H2: ACPX हार्नेस अनुमतियाँ
   - H2: मोड चुनना
   - H2: संबंधित
 
@@ -8966,10 +9424,10 @@ x-i18n:
   - H2: Plugin इंस्टॉल करें
   - H2: Perplexity API कुंजी प्राप्त करना
   - H2: OpenRouter संगतता
-  - H2: कॉन्फ़िगरेशन उदाहरण
+  - H2: कॉन्फ़िग उदाहरण
   - H3: नेटिव Perplexity Search API
   - H3: OpenRouter / Sonar संगतता
-  - H2: कुंजी कहां सेट करें
+  - H2: कुंजी कहाँ सेट करें
   - H2: टूल पैरामीटर
   - H3: डोमेन फ़िल्टर नियम
   - H2: नोट्स
@@ -8979,13 +9437,13 @@ x-i18n:
 
 - रूट: /tools/plugin
 - शीर्षक:
-  - H2: आवश्यकताएं
-  - H2: क्विक स्टार्ट
+  - H2: आवश्यकताएँ
+  - H2: त्वरित शुरुआत
   - H2: कॉन्फ़िगरेशन
   - H3: इंस्टॉल स्रोत चुनें
   - H3: ऑपरेटर इंस्टॉल नीति
   - H3: Plugin नीति कॉन्फ़िगर करें
-  - H2: Plugin प्रारूपों को समझें
+  - H2: Plugin फ़ॉर्मैट समझें
   - H2: Plugin हुक
   - H2: सक्रिय Gateway सत्यापित करें
   - H2: समस्या निवारण
@@ -9007,9 +9465,9 @@ x-i18n:
 - रूट: /tools/searxng-search
 - शीर्षक:
   - H2: सेटअप
-  - H2: कॉन्फ़िगरेशन
-  - H2: पर्यावरण चर
-  - H2: Plugin कॉन्फ़िगरेशन संदर्भ
+  - H2: कॉन्फ़िग
+  - H2: पर्यावरण वैरिएबल
+  - H2: Plugin कॉन्फ़िग संदर्भ
   - H2: नोट्स
   - H2: संबंधित
 
@@ -9022,12 +9480,12 @@ x-i18n:
   - H2: चैट
   - H2: CLI
   - H2: प्रस्ताव सामग्री
-  - H2: समर्थन फ़ाइलें
+  - H2: सहायक फ़ाइलें
   - H2: एजेंट टूल
-  - H2: स्वीकृति और स्वायत्तता
-  - H2: Gateway विधियां
+  - H2: अनुमोदन और स्वायत्तता
+  - H2: Gateway विधियाँ
   - H2: स्टोरेज
-  - H2: सीमाएं
+  - H2: सीमाएँ
   - H2: समस्या निवारण
   - H2: संबंधित
 
@@ -9038,12 +9496,12 @@ x-i18n:
   - H2: लोडिंग (skills.load)
   - H2: इंस्टॉल (skills.install)
   - H2: ऑपरेटर इंस्टॉल नीति (security.installPolicy)
-  - H2: बंडल Skills allowlist
-  - H2: प्रति-Skill प्रविष्टियां (skills.entries)
+  - H2: बंडल की गई skill allowlist
+  - H2: प्रति-skill प्रविष्टियाँ (skills.entries)
   - H2: एजेंट allowlists (agents)
   - H2: वर्कशॉप (skills.workshop)
-  - H2: Symlink किए गए Skill रूट
-  - H2: Sandboxed Skills और env vars
+  - H2: सिमलिंक किए गए skill रूट
+  - H2: सैंडबॉक्स किए गए skills और env vars
   - H2: लोडिंग क्रम रिमाइंडर
   - H2: संबंधित
 
@@ -9052,19 +9510,19 @@ x-i18n:
 - रूट: /tools/skills
 - शीर्षक:
   - H2: लोडिंग क्रम
-  - H2: प्रति-एजेंट बनाम साझा Skills
+  - H2: प्रति-एजेंट बनाम साझा skills
   - H2: एजेंट allowlists
-  - H2: Plugins और Skills
+  - H2: Plugins और skills
   - H2: Skill Workshop
   - H2: ClawHub से इंस्टॉल करना
   - H2: सुरक्षा
-  - H2: SKILL.md प्रारूप
-  - H3: वैकल्पिक frontmatter कुंजियां
+  - H2: SKILL.md फ़ॉर्मैट
+  - H3: वैकल्पिक frontmatter कुंजियाँ
   - H2: गेटिंग
-  - H3: इंस्टॉलर विनिर्देश
-  - H2: कॉन्फ़िगरेशन ओवरराइड
+  - H3: इंस्टॉलर स्पेक्स
+  - H2: कॉन्फ़िग ओवरराइड
   - H2: पर्यावरण इंजेक्शन
-  - H2: स्नैपशॉट और रिफ्रेश
+  - H2: स्नैपशॉट और रिफ़्रेश
   - H2: टोकन प्रभाव
   - H2: संबंधित
 
@@ -9077,16 +9535,16 @@ x-i18n:
   - H2: कमांड सूची
   - H3: कोर कमांड
   - H3: Dock कमांड
-  - H3: बंडल Plugin कमांड
+  - H3: बंडल किए गए Plugin कमांड
   - H3: Skill कमांड
   - H2: /tools — एजेंट अभी क्या उपयोग कर सकता है
   - H2: /model — मॉडल चयन
-  - H2: /config — ऑन-डिस्क कॉन्फ़िगरेशन लेखन
-  - H2: /mcp — MCP सर्वर कॉन्फ़िगरेशन
-  - H2: /debug — केवल-runtime ओवरराइड
+  - H2: /config — ऑन-डिस्क कॉन्फ़िग लिखना
+  - H2: /mcp — MCP सर्वर कॉन्फ़िग
+  - H2: /debug — केवल-रनटाइम ओवरराइड
   - H2: /plugins — Plugin प्रबंधन
   - H2: /trace — Plugin ट्रेस आउटपुट
-  - H2: /btw — साइड प्रश्न
+  - H2: /btw — सहायक प्रश्न
   - H2: सतह नोट्स
   - H2: प्रदाता उपयोग और स्थिति
   - H2: संबंधित
@@ -9096,7 +9554,7 @@ x-i18n:
 - रूट: /tools/steer
 - शीर्षक:
   - H2: वर्तमान सत्र
-  - H2: Steer बनाम queue
+  - H2: स्टीयर बनाम क्यू
   - H2: उप-एजेंट
   - H2: ACP सत्र
   - H2: संबंधित
@@ -9105,48 +9563,48 @@ x-i18n:
 
 - रूट: /tools/subagents
 - शीर्षक:
-  - H2: Slash command
-  - H3: Thread binding controls
-  - H3: Spawn behavior
-  - H2: Context modes
+  - H2: स्लैश कमांड
+  - H3: थ्रेड बाइंडिंग नियंत्रण
+  - H3: स्पॉन व्यवहार
+  - H2: संदर्भ मोड
   - H2: टूल: sessionsspawn
-  - H3: Delegation prompt mode
+  - H3: डेलिगेशन प्रॉम्प्ट मोड
   - H3: टूल पैरामीटर
-  - H3: Task names and targeting
+  - H3: कार्य नाम और टार्गेटिंग
   - H2: टूल: sessionsyield
   - H2: टूल: subagents
-  - H2: Thread-bound sessions
-  - H3: Thread supporting channels
-  - H3: Quick flow
-  - H3: Manual controls
-  - H3: Config switches
+  - H2: थ्रेड-बाउंड सत्र
+  - H3: थ्रेड समर्थक चैनल
+  - H3: त्वरित फ़्लो
+  - H3: मैनुअल नियंत्रण
+  - H3: कॉन्फ़िग स्विच
   - H3: Allowlist
-  - H3: Discovery
-  - H3: Auto-archive
-  - H2: Nested sub-agents
-  - H3: Depth levels
-  - H3: Announce chain
-  - H3: Tool policy by depth
-  - H3: Per-agent spawn limit
-  - H3: Cascade stop
-  - H2: Authentication
-  - H2: Announce
-  - H3: Announce context
-  - H3: Stats line
-  - H3: Why prefer sessionshistory
-  - H2: Tool policy
-  - H3: Override via config
-  - H2: Concurrency
-  - H2: Liveness and recovery
-  - H2: Stopping
-  - H2: Limitations
+  - H3: डिस्कवरी
+  - H3: ऑटो-आर्काइव
+  - H2: नेस्टेड उप-एजेंट
+  - H3: गहराई स्तर
+  - H3: घोषणा शृंखला
+  - H3: गहराई के अनुसार टूल नीति
+  - H3: प्रति-एजेंट स्पॉन सीमा
+  - H3: कैस्केड स्टॉप
+  - H2: प्रमाणीकरण
+  - H2: घोषणा
+  - H3: घोषणा संदर्भ
+  - H3: आँकड़े पंक्ति
+  - H3: sessionshistory को प्राथमिकता क्यों दें
+  - H2: टूल नीति
+  - H3: कॉन्फ़िग के माध्यम से ओवरराइड
+  - H2: समवर्तीता
+  - H2: लाइवनेस और रिकवरी
+  - H2: रोकना
+  - H2: सीमाएँ
   - H2: संबंधित
 
 ## tools/tavily.md
 
 - रूट: /tools/tavily
 - शीर्षक:
-  - H2: शुरुआत करना
+  - H2: शुरू करना
   - H2: टूल संदर्भ
   - H3: tavilysearch
   - H3: tavilyextract
@@ -9161,15 +9619,15 @@ x-i18n:
   - H2: यह क्या करता है
   - H2: समाधान क्रम
   - H2: सत्र डिफ़ॉल्ट सेट करना
-  - H2: एजेंट द्वारा लागू करना
-  - H2: तेज मोड (/fast)
+  - H2: एजेंट के अनुसार अनुप्रयोग
+  - H2: तेज़ मोड (/fast)
   - H2: विस्तृत निर्देश (/verbose या /v)
   - H2: Plugin ट्रेस निर्देश (/trace)
-  - H2: Reasoning दृश्यता (/reasoning)
+  - H2: रीजनिंग दृश्यता (/reasoning)
   - H2: संबंधित
   - H2: Heartbeats
   - H2: वेब चैट UI
-  - H2: प्रदाता प्रोफ़ाइल
+  - H2: प्रदाता प्रोफ़ाइलें
 
 ## tools/tokenjuice.md
 
@@ -9185,29 +9643,29 @@ x-i18n:
 
 - रूट: /tools/tool-search
 - शीर्षक:
-  - H2: टर्न कैसे चलता है
+  - H2: एक टर्न कैसे चलता है
   - H2: मोड
   - H2: यह क्यों मौजूद है
   - H2: API
-  - H2: Runtime boundary
-  - H2: कॉन्फ़िगरेशन
-  - H2: Prompt and telemetry
-  - H2: E2E validation
-  - H2: Failure behavior
+  - H2: रनटाइम सीमा
+  - H2: कॉन्फ़िग
+  - H2: प्रॉम्प्ट और टेलीमेट्री
+  - H2: E2E सत्यापन
+  - H2: विफलता व्यवहार
   - H2: संबंधित
 
 ## tools/trajectory.md
 
 - रूट: /tools/trajectory
 - शीर्षक:
-  - H2: क्विक स्टार्ट
-  - H2: पहुंच
-  - H2: क्या रिकॉर्ड किया जाता है
+  - H2: त्वरित शुरुआत
+  - H2: एक्सेस
+  - H2: क्या रिकॉर्ड होता है
   - H2: बंडल फ़ाइलें
   - H2: कैप्चर स्थान
   - H2: कैप्चर अक्षम करें
-  - H2: फ्लश टाइमआउट ट्यून करें
-  - H2: गोपनीयता और सीमाएं
+  - H2: फ़्लश टाइमआउट ट्यून करें
+  - H2: गोपनीयता और सीमाएँ
   - H2: समस्या निवारण
   - H2: संबंधित
 
@@ -9215,22 +9673,22 @@ x-i18n:
 
 - रूट: /tools/tts
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: समर्थित प्रदाता
   - H2: कॉन्फ़िगरेशन
   - H3: प्रति-एजेंट वॉइस ओवरराइड
-  - H2: व्यक्तित्व
-  - H3: न्यूनतम व्यक्तित्व
-  - H3: पूर्ण व्यक्तित्व (प्रदाता-तटस्थ प्रॉम्प्ट)
-  - H3: व्यक्तित्व समाधान
-  - H3: प्रदाता व्यक्तित्व प्रॉम्प्ट का उपयोग कैसे करते हैं
+  - H2: पर्सोना
+  - H3: न्यूनतम पर्सोना
+  - H3: पूर्ण पर्सोना (प्रदाता-न्यूट्रल प्रॉम्प्ट)
+  - H3: पर्सोना समाधान
+  - H3: प्रदाता पर्सोना प्रॉम्प्ट का उपयोग कैसे करते हैं
   - H3: फ़ॉलबैक नीति
   - H2: मॉडल-चालित निर्देश
-  - H2: Slash commands
-  - H2: प्रति-उपयोगकर्ता प्राथमिकताएं
-  - H2: आउटपुट प्रारूप (निश्चित)
-  - H2: Auto-TTS व्यवहार
-  - H2: चैनल के अनुसार आउटपुट प्रारूप
+  - H2: स्लैश कमांड
+  - H2: प्रति-उपयोगकर्ता प्राथमिकताएँ
+  - H2: आउटपुट फ़ॉर्मैट (निश्चित)
+  - H2: ऑटो-TTS व्यवहार
+  - H2: चैनल के अनुसार आउटपुट फ़ॉर्मैट
   - H2: फ़ील्ड संदर्भ
   - H2: एजेंट टूल
   - H2: Gateway RPC
@@ -9241,7 +9699,7 @@ x-i18n:
 
 - रूट: /tools/video-generation
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: असिंक्रोनस जनरेशन कैसे काम करता है
   - H3: कार्य जीवनचक्र
   - H2: समर्थित प्रदाता
@@ -9249,10 +9707,10 @@ x-i18n:
   - H2: टूल पैरामीटर
   - H3: आवश्यक
   - H3: सामग्री इनपुट
-  - H3: शैली नियंत्रण
+  - H3: स्टाइल नियंत्रण
   - H3: उन्नत
-  - H4: फ़ॉलबैक और typed विकल्प
-  - H2: कार्रवाइयां
+  - H4: फ़ॉलबैक और टाइप किए गए विकल्प
+  - H2: कार्रवाइयाँ
   - H2: मॉडल चयन
   - H2: प्रदाता नोट्स
   - H2: प्रदाता क्षमता मोड
@@ -9264,38 +9722,38 @@ x-i18n:
 
 - रूट: /tools/web-fetch
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: टूल पैरामीटर
   - H2: यह कैसे काम करता है
   - H2: प्रगति अपडेट
-  - H2: कॉन्फ़िगरेशन
+  - H2: कॉन्फ़िग
   - H2: Firecrawl फ़ॉलबैक
   - H2: विश्वसनीय env प्रॉक्सी
-  - H2: सीमाएं और सुरक्षा
-  - H2: टूल प्रोफ़ाइल
+  - H2: सीमाएँ और सुरक्षा
+  - H2: टूल प्रोफ़ाइलें
   - H2: संबंधित
 
 ## tools/web.md
 
 - रूट: /tools/web
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: प्रदाता चुनना
   - H3: प्रदाता तुलना
   - H2: ऑटो-डिटेक्शन
   - H2: नेटिव OpenAI वेब खोज
   - H2: नेटिव Codex वेब खोज
   - H2: नेटवर्क सुरक्षा
-  - H2: वेब खोज सेट करना
-  - H2: कॉन्फ़िगरेशन
-  - H3: API कुंजियां संग्रहीत करना
+  - H2: वेब खोज सेट अप करना
+  - H2: कॉन्फ़िग
+  - H3: API कुंजियाँ संग्रहीत करना
   - H2: टूल पैरामीटर
   - H2: xsearch
-  - H3: xsearch कॉन्फ़िगरेशन
+  - H3: xsearch कॉन्फ़िग
   - H3: xsearch पैरामीटर
   - H3: xsearch उदाहरण
   - H2: उदाहरण
-  - H2: टूल प्रोफ़ाइल
+  - H2: टूल प्रोफ़ाइलें
   - H2: संबंधित
 
 ## tts.md
@@ -9310,9 +9768,9 @@ x-i18n:
 - शीर्षक:
   - H2: प्रदाता चुनें
   - H2: क्लाउड सेटअप कैसे काम करते हैं
-  - H2: पहले व्यवस्थापक पहुंच को मजबूत करें
+  - H2: पहले एडमिन एक्सेस को सुदृढ़ करें
   - H2: VPS पर साझा कंपनी एजेंट
-  - H2: VPS के साथ नोड्स का उपयोग करना
+  - H2: VPS के साथ नोड्स का उपयोग
   - H2: छोटे VM और ARM होस्ट के लिए स्टार्टअप ट्यूनिंग
   - H3: systemd ट्यूनिंग चेकलिस्ट (वैकल्पिक)
   - H2: संबंधित
@@ -9321,36 +9779,36 @@ x-i18n:
 
 - रूट: /web/control-ui
 - शीर्षक:
-  - H2: क्विक ओपन (स्थानीय)
+  - H2: त्वरित खोलना (स्थानीय)
   - H2: डिवाइस पेयरिंग (पहला कनेक्शन)
   - H2: व्यक्तिगत पहचान (ब्राउज़र-स्थानीय)
-  - H2: Runtime config endpoint
+  - H2: रनटाइम कॉन्फ़िग एंडपॉइंट
   - H2: भाषा समर्थन
-  - H2: Appearance themes
+  - H2: रूप-रंग थीम
   - H2: यह क्या कर सकता है (आज)
   - H2: MCP पेज
-  - H2: Activity tab
-  - H2: Chat behavior
+  - H2: Activity टैब
+  - H2: चैट व्यवहार
   - H2: PWA इंस्टॉल और वेब पुश
-  - H2: Hosted embeds
+  - H2: होस्टेड एम्बेड
   - H2: चैट संदेश चौड़ाई
   - H2: Tailnet एक्सेस (अनुशंसित)
   - H2: असुरक्षित HTTP
-  - H2: Content security policy
-  - H2: Avatar route auth
-  - H2: Assistant media route auth
+  - H2: सामग्री सुरक्षा नीति
+  - H2: अवतार रूट ऑथ
+  - H2: सहायक मीडिया रूट ऑथ
   - H2: UI बनाना
   - H2: खाली Control UI पेज
-  - H2: Debugging/testing: dev server + remote Gateway
+  - H2: डीबगिंग/परीक्षण: देव सर्वर + रिमोट Gateway
   - H2: संबंधित
 
 ## web/dashboard.md
 
 - रूट: /web/dashboard
 - शीर्षक:
-  - H2: Fast path (अनुशंसित)
-  - H2: Auth basics (स्थानीय बनाम रिमोट)
-  - H2: अगर आपको "unauthorized" / 1008 दिखे
+  - H2: तेज़ पथ (अनुशंसित)
+  - H2: ऑथ की मूल बातें (स्थानीय बनाम रिमोट)
+  - H2: यदि आपको "unauthorized" / 1008 दिखाई देता है
   - H2: संबंधित
 
 ## web/index.md
@@ -9358,11 +9816,11 @@ x-i18n:
 - रूट: /web
 - शीर्षक:
   - H2: Webhooks
-  - H2: Admin HTTP RPC
-  - H2: कॉन्फ़िगरेशन (डिफ़ॉल्ट-ऑन)
+  - H2: एडमिन HTTP RPC
+  - H2: कॉन्फ़िग (डिफ़ॉल्ट-ऑन)
   - H2: Tailscale एक्सेस
-  - H3: Integrated Serve (अनुशंसित)
-  - H3: Tailnet bind + token
+  - H3: इंटीग्रेटेड सर्व (अनुशंसित)
+  - H3: Tailnet बाइंड + टोकन
   - H3: सार्वजनिक इंटरनेट (Funnel)
   - H2: सुरक्षा नोट्स
   - H2: UI बनाना
@@ -9371,7 +9829,7 @@ x-i18n:
 
 - रूट: /web/tui
 - शीर्षक:
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H3: Gateway मोड
   - H3: स्थानीय मोड
   - H2: आपको क्या दिखाई देता है
@@ -9379,9 +9837,9 @@ x-i18n:
   - H2: भेजना + डिलीवरी
   - H2: पिकर + ओवरले
   - H2: कीबोर्ड शॉर्टकट
-  - H2: Slash commands
+  - H2: स्लैश कमांड
   - H2: स्थानीय शेल कमांड
-  - H2: स्थानीय TUI से कॉन्फ़िगरेशन सुधारें
+  - H2: स्थानीय TUI से कॉन्फ़िग सुधारें
   - H2: टूल आउटपुट
   - H2: टर्मिनल रंग
   - H2: इतिहास + स्ट्रीमिंग
@@ -9396,10 +9854,10 @@ x-i18n:
 - रूट: /web/webchat
 - शीर्षक:
   - H2: यह क्या है
-  - H2: क्विक स्टार्ट
+  - H2: त्वरित शुरुआत
   - H2: यह कैसे काम करता है (व्यवहार)
   - H3: ट्रांसक्रिप्ट और डिलीवरी मॉडल
-  - H2: Control UI एजेंट टूल्स पैनल
+  - H2: Control UI एजेंट टूल पैनल
   - H2: रिमोट उपयोग
   - H2: कॉन्फ़िगरेशन संदर्भ (WebChat)
   - H2: संबंधित

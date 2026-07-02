@@ -1,40 +1,40 @@
 ---
 read_when:
     - 尋找正確的 `openclaw` 子命令
-    - 查閱全域旗標或輸出樣式規則
+    - 查詢全域旗標或輸出樣式規則
 summary: OpenClaw 命令列介面索引：命令清單、全域旗標，以及各命令頁面的連結
 title: 命令列介面參考
 x-i18n:
-    generated_at: "2026-06-30T22:06:36Z"
+    generated_at: "2026-07-02T00:43:59Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e5102afd4cfe8be5ec45b352cf714f0ecc965bbe03f6a1c3c1b22aa409cde7b9
+    source_hash: 627ccd257834e9bc8cacf2f2ac4600530ff4aa1132d2c34fcb0922b29a1facce
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` 是主要的命令列介面進入點。每個核心命令都有專屬的參考頁面，或與其別名命令一併記錄；此索引列出命令、全域旗標，以及適用於整個命令列介面的輸出樣式規則。
+`openclaw` 是主要的命令列介面進入點。每個核心命令都有專用的參考頁面，或與其別名所指向的命令一起記錄；此索引列出命令、全域旗標，以及適用於整個命令列介面的輸出樣式規則。
 
-依意圖使用設定命令：
+依照意圖使用設定命令：
 
-- `openclaw setup` 和 `openclaw onboard` 會執行完整的引導式首次執行流程，涵蓋閘道、模型身分驗證、工作區、頻道、Skills 和健康狀態。
-- `openclaw setup --baseline` 會建立基準設定與工作區，而不進入引導式上手流程。
-- `openclaw configure` 會變更現有設定中的特定部分，例如模型身分驗證、閘道、頻道、外掛或 Skills。
-- `openclaw channels add` 會在基準已存在後設定頻道帳號；不帶旗標執行可進入引導式頻道設定，或搭配頻道專用旗標供腳本使用。
+- `openclaw setup` 和 `openclaw onboard` 會執行完整的引導式首次啟動流程，涵蓋閘道、模型驗證、工作區、頻道、Skills 和健康狀態。
+- `openclaw setup --baseline` 會建立基準設定與工作區，而不進入引導式初始設定流程。
+- `openclaw configure` 會變更既有設定中的特定部分，例如模型驗證、閘道、頻道、外掛或 Skills。
+- `openclaw channels add` 會在基準設定存在後設定頻道帳號；不帶旗標執行可進入引導式頻道設定，或搭配頻道專用旗標供指令碼使用。
 
 ## 命令頁面
 
-| 範圍                 | 命令                                                                                                                                                                                                                                      |
+| 領域                 | 命令                                                                                                                                                                                                                                  |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 設定與上手 | [`crestodian`](/zh-TW/cli/crestodian) · [`setup`](/zh-TW/cli/setup) · [`onboard`](/zh-TW/cli/onboard) · [`configure`](/zh-TW/cli/configure) · [`config`](/zh-TW/cli/config) · [`completion`](/zh-TW/cli/completion) · [`doctor`](/zh-TW/cli/doctor) · [`dashboard`](/zh-TW/cli/dashboard) |
+| 設定與初始設定 | [`crestodian`](/zh-TW/cli/crestodian) · [`setup`](/zh-TW/cli/setup) · [`onboard`](/zh-TW/cli/onboard) · [`configure`](/zh-TW/cli/configure) · [`config`](/zh-TW/cli/config) · [`completion`](/zh-TW/cli/completion) · [`doctor`](/zh-TW/cli/doctor) · [`dashboard`](/zh-TW/cli/dashboard) |
 | 重設與解除安裝  | [`backup`](/zh-TW/cli/backup) · [`reset`](/zh-TW/cli/reset) · [`uninstall`](/zh-TW/cli/uninstall) · [`update`](/zh-TW/cli/update)                                                                                                                                 |
-| 訊息與代理 | [`message`](/zh-TW/cli/message) · [`agent`](/zh-TW/cli/agent) · [`agents`](/zh-TW/cli/agents) · [`acp`](/zh-TW/cli/acp) · [`mcp`](/zh-TW/cli/mcp)                                                                                                                       |
+| 訊息與代理 | [`message`](/zh-TW/cli/message) · [`agent`](/zh-TW/cli/agent) · [`agents`](/zh-TW/cli/agents) · [`attach`](/cli/attach) · [`acp`](/zh-TW/cli/acp) · [`mcp`](/zh-TW/cli/mcp)                                                                                             |
 | 健康狀態與工作階段  | [`status`](/zh-TW/cli/status) · [`health`](/zh-TW/cli/health) · [`sessions`](/zh-TW/cli/sessions)                                                                                                                                                           |
-| 閘道與記錄     | [`gateway`](/zh-TW/cli/gateway) · [`logs`](/zh-TW/cli/logs) · [`system`](/zh-TW/cli/system)                                                                                                                                                                 |
+| 閘道與日誌     | [`gateway`](/zh-TW/cli/gateway) · [`logs`](/zh-TW/cli/logs) · [`system`](/zh-TW/cli/system)                                                                                                                                                                 |
 | 模型與推論 | [`models`](/zh-TW/cli/models) · [`infer`](/zh-TW/cli/infer) · `capability`（[`infer`](/zh-TW/cli/infer) 的別名） · [`memory`](/zh-TW/cli/memory) · [`commitments`](/zh-TW/cli/commitments) · [`wiki`](/zh-TW/cli/wiki)                                                      |
 | 網路與節點    | [`directory`](/zh-TW/cli/directory) · [`nodes`](/zh-TW/cli/nodes) · [`devices`](/zh-TW/cli/devices) · [`node`](/zh-TW/cli/node)                                                                                                                                   |
-| 執行階段與沙盒  | [`approvals`](/zh-TW/cli/approvals) · `exec-policy`（請參閱 [`approvals`](/zh-TW/cli/approvals)） · [`sandbox`](/zh-TW/cli/sandbox) · [`tui`](/zh-TW/cli/tui) · `chat`/`terminal`（[`tui --local`](/zh-TW/cli/tui) 的別名） · [`browser`](/zh-TW/cli/browser)                 |
+| 執行階段與沙箱  | [`approvals`](/zh-TW/cli/approvals) · `exec-policy`（參見 [`approvals`](/zh-TW/cli/approvals)） · [`sandbox`](/zh-TW/cli/sandbox) · [`tui`](/zh-TW/cli/tui) · `chat`/`terminal`（[`tui --local`](/zh-TW/cli/tui) 的別名） · [`browser`](/zh-TW/cli/browser)                 |
 | 自動化           | [`cron`](/zh-TW/cli/cron) · [`tasks`](/zh-TW/cli/tasks) · [`hooks`](/zh-TW/cli/hooks) · [`webhooks`](/zh-TW/cli/webhooks) · [`transcripts`](/zh-TW/cli/transcripts)                                                                                                     |
 | 探索與文件   | [`dns`](/zh-TW/cli/dns) · [`docs`](/zh-TW/cli/docs)                                                                                                                                                                                                   |
 | 配對與頻道 | [`pairing`](/zh-TW/cli/pairing) · [`qr`](/zh-TW/cli/qr) · [`channels`](/zh-TW/cli/channels)                                                                                                                                                                 |
@@ -48,7 +48,7 @@ x-i18n:
 | ----------------------- | --------------------------------------------------------------------- |
 | `--dev`                 | 將狀態隔離在 `~/.openclaw-dev` 下，並偏移預設連接埠         |
 | `--profile <name>`      | 將狀態隔離在 `~/.openclaw-<name>` 下                              |
-| `--container <name>`    | 指定具名容器作為執行目標                                |
+| `--container <name>`    | 指定要用於執行的具名容器                                |
 | `--no-color`            | 停用 ANSI 色彩（也會遵循 `NO_COLOR=1`）                  |
 | `--update`              | [`openclaw update`](/zh-TW/cli/update) 的簡寫（僅限原始碼安裝） |
 | `-V`, `--version`, `-v` | 列印版本並結束                                                |
@@ -56,11 +56,11 @@ x-i18n:
 ## 輸出模式
 
 - ANSI 色彩與進度指示器只會在 TTY 工作階段中呈現。
-- 支援時，OSC-8 超連結會呈現為可點擊連結；否則命令列介面會退回純文字 URL。
+- OSC-8 超連結會在支援處呈現為可點擊連結；否則命令列介面會退回純文字 URL。
 - `--json`（以及支援處的 `--plain`）會停用樣式，以產生乾淨輸出。
 - 長時間執行的命令會顯示進度指示器（支援時使用 OSC 9;4）。
 
-調色盤的真實來源：`src/terminal/palette.ts`。
+調色盤的唯一事實來源：`src/terminal/palette.ts`。
 
 ## 命令樹
 
@@ -197,6 +197,7 @@ openclaw [--dev] [--profile <name>] <command>
     bind
     unbind
     set-identity
+  attach
   acp
   mcp
     serve
@@ -377,27 +378,26 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-外掛可以新增額外的頂層命令，例如
-[`openclaw workboard`](/zh-TW/cli/workboard) 或 `openclaw voicecall`。
+外掛可以新增其他頂層命令，例如 [`openclaw workboard`](/zh-TW/cli/workboard) 或 `openclaw voicecall`。
 
 </Accordion>
 
 ## 聊天斜線命令
 
-聊天訊息支援 `/...` 命令。請參閱[斜線命令](/zh-TW/tools/slash-commands)。
+聊天訊息支援 `/...` 命令。參見[斜線命令](/zh-TW/tools/slash-commands)。
 
 重點：
 
 - `/status` — 快速診斷。
 - `/trace` — 工作階段範圍的外掛追蹤/除錯行。
-- `/config` — 持久化設定變更。
-- `/debug` — 僅限執行階段的設定覆寫（記憶體，不寫入磁碟；需要 `commands.debug: true`）。
+- `/config` — 持久化的設定變更。
+- `/debug` — 僅限執行階段的設定覆寫（記憶體，而非磁碟；需要 `commands.debug: true`）。
 
 ## 使用量追蹤
 
-當 OAuth/API 憑證可用時，`openclaw status --usage` 和控制介面會顯示供應商使用量/配額。資料直接來自供應商使用量端點，並正規化為 `X% left`。目前有使用量視窗的供應商：Anthropic、GitHub Copilot、Gemini CLI、OpenAI Codex、MiniMax、Xiaomi 和 z.ai。
+當 OAuth/API 憑證可用時，`openclaw status --usage` 和 Control UI 會顯示供應商使用量/配額。資料直接來自供應商使用量端點，並正規化為 `X% left`。目前具備使用量視窗的供應商：Anthropic、GitHub Copilot、Gemini CLI、OpenAI Codex、MiniMax、Xiaomi 和 z.ai。
 
-詳情請參閱[使用量追蹤](/zh-TW/concepts/usage-tracking)。
+詳情請參見[使用量追蹤](/zh-TW/concepts/usage-tracking)。
 
 ## 相關
 

@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Chcesz, aby agenci OpenClaw w trybie Codex używali natywnych wtyczek Codex
-    - Migrujesz zainstalowane ze źródła wyselekcjonowane przez OpenAI Pluginy Codex
-    - Diagnozujesz problemy z codexPlugins, inwentaryzacją aplikacji, działaniami destrukcyjnymi lub diagnostyką aplikacji Plugin
-summary: Skonfiguruj zmigrowane natywne Plugin Codex dla agentów OpenClaw w trybie Codex
-title: Natywne pluginy Codex
+    - Chcesz, aby agenci OpenClaw w trybie Codex używali natywnych Plugin Codex
+    - Migrujesz kuratorowane przez OpenAI pluginy Codex zainstalowane ze źródła
+    - Rozwiązujesz problemy z codexPlugins, inwentarzem aplikacji, destrukcyjnymi akcjami lub diagnostyką aplikacji Plugin
+summary: Skonfiguruj zmigrowane natywne pluginy Codex dla agentów OpenClaw w trybie Codex
+title: Natywne Pluginy Codex
 x-i18n:
-    generated_at: "2026-06-27T17:52:05Z"
+    generated_at: "2026-07-02T01:18:05Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 82d8eb7ca7c10db5220c49426f5e9db5992ee751d48b2ac8c89e93773fc87776
+    source_hash: 11a883137ba89936cf564a45b22c9e76097af669e2ef6c70c8c710bb2b79d3c0
     source_path: plugins/codex-native-plugins.md
     workflow: 16
 ---
 
-Natywna obsługa pluginów Codex pozwala agentowi OpenClaw w trybie Codex używać własnych możliwości aplikacji i pluginów app-server Codex w tym samym wątku Codex, który obsługuje turę OpenClaw.
+Natywna obsługa pluginów Codex pozwala agentowi OpenClaw działającemu w trybie Codex używać własnych możliwości aplikacji i pluginów Codex app-server w tym samym wątku Codex, który obsługuje turę OpenClaw.
 
-OpenClaw nie tłumaczy pluginów Codex na syntetyczne narzędzia dynamiczne OpenClaw `codex_plugin_*`. Wywołania Plugin pozostają w natywnej transkrypcji Codex, a app-server Codex odpowiada za wykonywanie MCP wspierane przez aplikacje.
+OpenClaw nie tłumaczy pluginów Codex na syntetyczne dynamiczne narzędzia OpenClaw `codex_plugin_*`. Wywołania pluginów pozostają w natywnym transkrypcie Codex, a Codex app-server odpowiada za wykonywanie MCP wspierane przez aplikację.
 
-Użyj tej strony po uruchomieniu bazowego [harnessu Codex](/pl/plugins/codex-harness).
+Użyj tej strony po uruchomieniu podstawowego [harnessu Codex](/pl/plugins/codex-harness).
 
 ## Wymagania
 
-- Wybranym runtime agenta OpenClaw musi być natywny harness Codex.
+- Wybranym środowiskiem uruchomieniowym agenta OpenClaw musi być natywny harness Codex.
 - `plugins.entries.codex.enabled` musi mieć wartość true.
 - `plugins.entries.codex.config.codexPlugins.enabled` musi mieć wartość true.
-- V1 obsługuje tylko pluginy `openai-curated`, które migracja wykryła jako zainstalowane ze źródła w źródłowym katalogu domowym Codex.
-- Docelowy app-server Codex musi widzieć oczekiwany marketplace, Plugin i spis aplikacji.
+- V1 obsługuje tylko pluginy `openai-curated`, które migracja zaobserwowała jako zainstalowane ze źródła w źródłowym katalogu domowym Codex.
+- Docelowy Codex app-server musi widzieć oczekiwany marketplace oraz inwentarz pluginów i aplikacji.
 
-`codexPlugins` nie wpływa na uruchomienia OpenClaw, zwykłe uruchomienia dostawcy OpenAI, powiązania konwersacji ACP ani inne harnessy, ponieważ te ścieżki nie tworzą wątków app-server Codex z natywną konfiguracją `apps`.
+`codexPlugins` nie wpływa na przebiegi OpenClaw, normalne przebiegi dostawcy OpenAI, powiązania rozmów ACP ani inne harnessy, ponieważ te ścieżki nie tworzą wątków Codex app-server z natywną konfiguracją `apps`.
 
-Dostęp do Codex po stronie OpenAI, dostępność aplikacji oraz kontrolki aplikacji/pluginów w obszarze roboczym pochodzą z zalogowanego konta Codex. Model konta OpenAI i administratora opisuje artykuł [Using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan).
+Dostęp do Codex po stronie OpenAI, dostępność aplikacji oraz kontrolki aplikacji/pluginów w obszarze roboczym pochodzą z zalogowanego konta Codex. Model konta OpenAI i administratora opisano w artykule [Używanie Codex z planem ChatGPT](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan).
 
 ## Szybki start
 
@@ -41,7 +41,7 @@ Podejrzyj migrację ze źródłowego katalogu domowego Codex:
 openclaw migrate codex --dry-run
 ```
 
-Użyj rygorystycznej weryfikacji aplikacji źródłowych, gdy chcesz, aby migracja sprawdziła dostępność aplikacji źródłowej przed zaplanowaniem natywnej aktywacji Plugin:
+Użyj ścisłej weryfikacji aplikacji źródłowej, gdy chcesz, aby migracja sprawdziła dostępność aplikacji źródłowej przed zaplanowaniem natywnej aktywacji pluginów:
 
 ```bash
 openclaw migrate codex --dry-run --verify-plugin-apps
@@ -53,7 +53,7 @@ Zastosuj migrację, gdy plan wygląda poprawnie:
 openclaw migrate apply codex --yes
 ```
 
-Migracja zapisuje jawne wpisy `codexPlugins` dla kwalifikujących się pluginów i wywołuje `plugin/install` app-server Codex dla wybranych pluginów. Typowa zmigrowana konfiguracja wygląda tak:
+Migracja zapisuje jawne wpisy `codexPlugins` dla kwalifikujących się pluginów i wywołuje `plugin/install` w Codex app-server dla wybranych pluginów. Typowa zmigrowana konfiguracja wygląda tak:
 
 ```json5
 {
@@ -80,7 +80,7 @@ Migracja zapisuje jawne wpisy `codexPlugins` dla kwalifikujących się pluginów
 }
 ```
 
-Po zmianie `codexPlugins` nowe konwersacje Codex automatycznie pobierają zaktualizowany zestaw aplikacji. Użyj `/new` lub `/reset`, aby odświeżyć bieżącą konwersację. Restart gateway nie jest wymagany przy zmianach włączania lub wyłączania Plugin.
+Po zmianie `codexPlugins` nowe rozmowy Codex automatycznie pobierają zaktualizowany zestaw aplikacji. Użyj `/new` lub `/reset`, aby odświeżyć bieżącą rozmowę. Restart Gateway nie jest wymagany przy zmianach włączania lub wyłączania pluginów.
 
 ## Zarządzanie pluginami z czatu
 
@@ -93,101 +93,165 @@ Użyj `/codex plugins`, gdy chcesz sprawdzić lub zmienić skonfigurowane natywn
 /codex plugins enable google-calendar
 ```
 
-`/codex plugins` jest aliasem `/codex plugins list`. Wynik listy pokazuje skonfigurowane klucze Plugin, stan włączenia/wyłączenia, nazwę Plugin Codex oraz marketplace z `plugins.entries.codex.config.codexPlugins.plugins`.
+`/codex plugins` jest aliasem dla `/codex plugins list`. Dane wyjściowe listy pokazują skonfigurowane klucze pluginów, stan włączenia/wyłączenia, nazwę pluginu Codex oraz marketplace z `plugins.entries.codex.config.codexPlugins.plugins`.
 
-`enable` i `disable` zapisują tylko konfigurację OpenClaw w `~/.openclaw/openclaw.json`; nie edytują `~/.codex/config.toml` ani nie instalują nowych pluginów Codex. Stan Plugin może zmienić tylko właściciel albo klient gateway z zakresem `operator.admin`.
+`enable` i `disable` zapisują tylko konfigurację OpenClaw w `~/.openclaw/openclaw.json`; nie edytują `~/.codex/config.toml` ani nie instalują nowych pluginów Codex. Stan pluginu może zmienić tylko właściciel albo klient Gateway z zakresem `operator.admin`.
 
-Włączenie skonfigurowanego Plugin włącza także globalny przełącznik `codexPlugins.enabled`. Jeśli Plugin został zapisany jako wyłączony, ponieważ migracja zwróciła `auth_required`, ponownie autoryzuj aplikację w Codex przed włączeniem jej w OpenClaw.
+Włączenie skonfigurowanego pluginu włącza również globalny przełącznik `codexPlugins.enabled`. Jeśli plugin został zapisany jako wyłączony, ponieważ migracja zwróciła `auth_required`, ponownie autoryzuj aplikację w Codex przed włączeniem jej w OpenClaw.
 
-## Jak działa natywna konfiguracja Plugin
+## Jak działa konfiguracja natywnych pluginów
 
 Integracja ma trzy oddzielne stany:
 
-- Zainstalowany: Codex ma lokalny pakiet Plugin w docelowym runtime app-server.
-- Włączony: konfiguracja OpenClaw zezwala na udostępnienie Plugin dla tur harnessu Codex.
-- Dostępny: app-server Codex potwierdza, że wpisy aplikacji Plugin są dostępne dla aktywnego konta i można je zmapować na zmigrowaną tożsamość Plugin.
+- Zainstalowany: Codex ma lokalny pakiet pluginu w docelowym środowisku uruchomieniowym app-server.
+- Włączony: konfiguracja OpenClaw pozwala udostępnić plugin turom harnessu Codex.
+- Dostępny: Codex app-server potwierdza, że wpisy aplikacji pluginu są dostępne dla aktywnego konta i można je zmapować na zmigrowaną tożsamość pluginu.
 
-Migracja jest trwałym etapem instalacji/kwalifikacji. Podczas planowania OpenClaw odczytuje szczegóły `plugin/read` źródłowego Codex i sprawdza, czy odpowiedź konta źródłowego app-server Codex jest kontem subskrypcji ChatGPT. Odpowiedzi konta inne niż ChatGPT albo brakujące odpowiedzi pomijają pluginy wspierane przez aplikacje z `codex_subscription_required`. Domyślnie migracja nie wywołuje źródłowego `app/list`; źródłowe pluginy wspierane przez aplikacje, które przejdą bramkę konta, są planowane bez weryfikacji dostępności aplikacji źródłowej, a awarie transportu wyszukiwania konta są pomijane z `codex_account_unavailable`. Z `--verify-plugin-apps` migracja pobiera świeży snapshot źródłowego `app/list` i wymaga, aby każda posiadana aplikacja była obecna, włączona i dostępna przed zaplanowaniem natywnej aktywacji. W tym trybie awarie transportu wyszukiwania konta przechodzą do bramki spisu aplikacji źródłowych. Spis aplikacji runtime jest kontrolą dostępności sesji docelowej po migracji. Konfiguracja sesji harnessu Codex oblicza następnie restrykcyjną konfigurację aplikacji wątku dla włączonych i dostępnych aplikacji Plugin.
+Migracja jest trwałym krokiem instalacji i kwalifikacji. Podczas planowania OpenClaw odczytuje szczegóły `plugin/read` ze źródłowego Codex i sprawdza, czy odpowiedź konta źródłowego Codex app-server dotyczy konta subskrypcji ChatGPT. Odpowiedzi kont innych niż ChatGPT albo brakujące odpowiedzi konta pomijają pluginy wspierane przez aplikację z `codex_subscription_required`. Domyślnie migracja nie wywołuje źródłowego `app/list`; pluginy źródłowe wspierane przez aplikację, które przejdą bramkę konta, są planowane bez weryfikacji dostępności aplikacji źródłowej, a awarie transportu podczas wyszukiwania konta powodują pominięcie z `codex_account_unavailable`. Z opcją `--verify-plugin-apps` migracja pobiera świeży snapshot źródłowego `app/list` i wymaga, aby każda posiadana aplikacja była obecna, włączona i dostępna przed zaplanowaniem natywnej aktywacji. W tym trybie awarie transportu podczas wyszukiwania konta przechodzą do bramki inwentarza aplikacji źródłowej. Inwentarz aplikacji środowiska uruchomieniowego jest sprawdzeniem dostępności sesji docelowej po migracji. Następnie konfiguracja sesji harnessu Codex oblicza restrykcyjną konfigurację aplikacji wątku dla włączonych i dostępnych aplikacji pluginów.
 
-Konfiguracja aplikacji wątku jest obliczana, gdy OpenClaw ustanawia sesję harnessu Codex albo zastępuje przestarzałe powiązanie wątku Codex. Nie jest przeliczana przy każdej turze, więc `/codex plugins enable` i `/codex plugins disable` wpływają na nowe konwersacje Codex. Użyj `/new` lub `/reset`, gdy bieżąca konwersacja powinna pobrać zaktualizowany zestaw aplikacji.
+Konfiguracja aplikacji wątku jest obliczana, gdy OpenClaw ustanawia sesję uprzęży Codex
+albo zastępuje nieaktualne powiązanie wątku Codex. Nie jest przeliczana przy każdej turze, więc
+`/codex plugins enable` i `/codex plugins disable` wpływają na nowe
+konwersacje Codex. Użyj `/new` albo `/reset`, gdy bieżąca konwersacja ma
+pobrać zaktualizowany zestaw aplikacji.
 
 ## Granica obsługi V1
 
-V1 jest celowo wąskie:
+V1 jest celowo wąski:
 
-- Do migracji kwalifikują się tylko pluginy `openai-curated`, które były już zainstalowane w spisie źródłowego app-server Codex.
-- Źródłowe pluginy wspierane przez aplikacje muszą przejść bramkę subskrypcji w czasie migracji. `--verify-plugin-apps` dodaje bramkę spisu aplikacji źródłowych. Konta zablokowane przez subskrypcję oraz, w trybie weryfikacji, niedostępne, wyłączone, brakujące aplikacje źródłowe albo awarie odświeżania spisu aplikacji źródłowych są raportowane jako pominięte elementy ręczne zamiast włączonych wpisów konfiguracji. Nieczytelne szczegóły Plugin są pomijane przed bramką spisu aplikacji źródłowych.
-- Migracja zapisuje jawne tożsamości Plugin z `marketplaceName` i `pluginName`; nie zapisuje lokalnych ścieżek pamięci podręcznej `marketplacePath`.
+- Do migracji kwalifikują się tylko Pluginy `openai-curated`, które były już zainstalowane w źródłowym
+  inwentarzu app-servera Codex.
+- Źródłowe Pluginy oparte na aplikacjach muszą przejść bramkę subskrypcji w czasie migracji.
+  `--verify-plugin-apps` dodaje bramkę źródłowego inwentarza aplikacji. Konta wymagające subskrypcji oraz,
+  w trybie weryfikacji, niedostępne, wyłączone, brakujące aplikacje źródłowe
+  albo błędy odświeżania źródłowego inwentarza aplikacji są zgłaszane jako pominięte elementy ręczne
+  zamiast włączonych wpisów konfiguracji. Nieczytelne szczegóły Pluginu są pomijane
+  przed bramką źródłowego inwentarza aplikacji.
+- Migracja zapisuje jawne tożsamości Pluginów z `marketplaceName` i
+  `pluginName`; nie zapisuje lokalnych ścieżek pamięci podręcznej `marketplacePath`.
 - `codexPlugins.enabled` jest globalnym przełącznikiem włączenia.
-- Nie ma symbolu wieloznacznego `plugins["*"]` ani klucza konfiguracji, który przyznaje dowolne uprawnienia instalacji.
-- Nieobsługiwane marketplace'y, pakiety Plugin z pamięci podręcznej, hooki i pliki konfiguracji Codex są zachowywane w raporcie migracji do ręcznego przeglądu.
+- Nie ma symbolu wieloznacznego `plugins["*"]` ani klucza konfiguracji, który przyznaje dowolne
+  uprawnienie instalacji.
+- Nieobsługiwane marketplace'y, buforowane pakiety Pluginów, hooki i pliki konfiguracji Codex
+  są zachowywane w raporcie migracji do ręcznego przeglądu.
 
-## Spis aplikacji i własność
+## Inwentarz aplikacji i własność
 
-OpenClaw odczytuje spis aplikacji Codex przez `app/list` app-server, buforuje go przez godzinę i asynchronicznie odświeża przestarzałe lub brakujące wpisy. Pamięć podręczna jest tylko w pamięci; restart CLI lub gateway ją usuwa, a OpenClaw odbudowuje ją z następnego odczytu `app/list`.
+OpenClaw odczytuje inwentarz aplikacji Codex przez `app/list` app-servera, buforuje go przez
+jedną godzinę oraz odświeża nieaktualne lub brakujące wpisy asynchronicznie. Pamięć podręczna jest
+wyłącznie w pamięci; ponowne uruchomienie CLI lub gatewaya ją usuwa, a OpenClaw odbudowuje ją
+przy następnym odczycie `app/list`.
 
-Migracja i runtime używają oddzielnych kluczy pamięci podręcznej:
+Migracja i środowisko uruchomieniowe używają osobnych kluczy pamięci podręcznej:
 
-- Weryfikacja migracji źródłowej używa źródłowego katalogu domowego Codex i opcji uruchamiania źródłowego app-server. Działa to tylko wtedy, gdy ustawiono `--verify-plugin-apps`, i wymusza świeże przejście źródłowego `app/list` dla tego uruchomienia planowania.
-- Konfiguracja runtime docelowego używa tożsamości app-server Codex agenta docelowego, gdy buduje konfigurację aplikacji wątku Codex. Aktywacja Plugin unieważnia ten docelowy klucz pamięci podręcznej, a następnie wymusza jego odświeżenie po `plugin/install`.
+- Weryfikacja migracji źródłowej używa źródłowego katalogu domowego Codex i opcji uruchomienia źródłowego app-servera. Działa to tylko wtedy, gdy ustawiono `--verify-plugin-apps`, i
+  wymusza świeże przejście przez źródłowe `app/list` dla tego przebiegu planowania.
+- Konfiguracja docelowego środowiska uruchomieniowego używa tożsamości app-servera Codex docelowego agenta, gdy
+  buduje konfigurację aplikacji wątku Codex. Aktywacja Pluginu unieważnia ten docelowy
+  klucz pamięci podręcznej, a następnie wymusza jego odświeżenie po `plugin/install`.
 
-Aplikacja Plugin jest ujawniana tylko wtedy, gdy OpenClaw może zmapować ją z powrotem na zmigrowany Plugin przez stabilną własność:
+Aplikacja Pluginu jest eksponowana tylko wtedy, gdy OpenClaw może zmapować ją z powrotem do zmigrowanego
+Pluginu przez stabilną własność:
 
-- dokładny identyfikator aplikacji ze szczegółów Plugin
+- dokładny identyfikator aplikacji ze szczegółów Pluginu
 - znana nazwa serwera MCP
 - unikatowe stabilne metadane
 
-Własność oparta wyłącznie na nazwie wyświetlanej albo niejednoznaczna jest wykluczona do czasu, aż następne odświeżenie spisu potwierdzi własność.
+Własność oparta wyłącznie na nazwie wyświetlanej albo niejednoznaczna jest wykluczana, dopóki następne odświeżenie inwentarza
+nie potwierdzi własności.
 
 ## Konfiguracja aplikacji wątku
 
-OpenClaw wstrzykuje restrykcyjną poprawkę `config.apps` dla wątku Codex: `_default` jest wyłączone i włączone są tylko aplikacje należące do włączonych zmigrowanych pluginów.
+OpenClaw wstrzykuje restrykcyjną łatkę `config.apps` dla wątku Codex:
+`_default` jest wyłączone i włączone są tylko aplikacje należące do włączonych zmigrowanych Pluginów.
 
-OpenClaw ustawia `destructive_enabled` na poziomie aplikacji z efektywnej globalnej lub per-Plugin polityki `allow_destructive_actions` i pozwala Codex egzekwować metadane destrukcyjnych narzędzi z natywnych adnotacji narzędzi aplikacji. `true`, `"auto"` i `"always"` ustawiają `destructive_enabled: true`; `false` ustawia je na false. Konfiguracja aplikacji `_default` jest wyłączona z `open_world_enabled: false`. Włączone aplikacje Plugin są emitowane z `open_world_enabled: true`; OpenClaw nie udostępnia osobnego pokrętła polityki open-world dla Plugin i nie utrzymuje per-Plugin list odrzuceń nazw narzędzi destrukcyjnych.
+OpenClaw ustawia `destructive_enabled` na poziomie aplikacji na podstawie efektywnej globalnej albo
+per-Pluginowej polityki `allow_destructive_actions` i pozwala Codex egzekwować
+metadane narzędzi destrukcyjnych z jego natywnych adnotacji narzędzi aplikacji. `true`,
+`"auto"` i `"ask"` ustawiają `destructive_enabled: true`; `false` ustawia ją
+na false. Konfiguracja aplikacji `_default` jest wyłączona z `open_world_enabled: false`.
+Włączone aplikacje Pluginów są emitowane z `open_world_enabled: true`; OpenClaw nie
+udostępnia osobnego pokrętła polityki open-world dla Pluginu i nie utrzymuje
+per-Pluginowych list blokowania nazw narzędzi destrukcyjnych.
 
-Tryb zatwierdzania narzędzi jest domyślnie automatyczny dla aplikacji Plugin, więc niedestrukcyjne narzędzia odczytu mogą działać bez interfejsu zatwierdzania w tym samym wątku. Narzędzia destrukcyjne pozostają kontrolowane przez politykę `destructive_enabled` każdej aplikacji.
+Tryb zatwierdzania narzędzi jest domyślnie automatyczny dla aplikacji Pluginów, więc niedestrukcyjne
+narzędzia odczytu mogą działać bez interfejsu zatwierdzania w tym samym wątku. Narzędzia destrukcyjne pozostają
+kontrolowane przez politykę `destructive_enabled` każdej aplikacji.
 
 ## Polityka działań destrukcyjnych
 
-Destrukcyjne wezwania Plugin są domyślnie dozwolone dla zmigrowanych pluginów Codex, natomiast niebezpieczne schematy i niejednoznaczna własność nadal kończą się odmową:
+Destrukcyjne żądania Pluginów są domyślnie dozwolone dla zmigrowanych Pluginów Codex,
+podczas gdy niebezpieczne schematy i niejednoznaczna własność nadal są domyślnie odrzucane:
 
 - Globalne `allow_destructive_actions` domyślnie ma wartość `true`.
-- Per-Plugin `allow_destructive_actions` zastępuje globalną politykę dla tego Plugin.
+- Per-Pluginowe `allow_destructive_actions` nadpisuje globalną politykę dla tego
+  Pluginu.
 - Gdy polityka ma wartość `false`, OpenClaw zwraca deterministyczną odmowę.
-- Gdy polityka ma wartość `true`, OpenClaw automatycznie akceptuje tylko bezpieczne schematy, które może zmapować na odpowiedź zatwierdzenia, takie jak pole logiczne approve.
-- Gdy polityka ma wartość `"auto"`, OpenClaw udostępnia destrukcyjne działania Plugin dla Codex, ale zamienia potwierdzone własnością wezwania zatwierdzania MCP na zatwierdzenia Plugin OpenClaw przed zwróceniem odpowiedzi zatwierdzenia Codex.
-- Gdy polityka ma wartość `"always"`, OpenClaw używa tego samego bramkowania zapisu/destrukcji Codex co `"auto"`, czyści trwałe per-narzędzie zastąpienia zatwierdzeń Codex dla aplikacji przed startem wątku i oferuje tylko jednorazowe zatwierdzenie lub odmowę, aby trwałe zatwierdzenia nie mogły tłumić późniejszych monitów o działania zapisu.
-- Brakująca tożsamość Plugin, niejednoznaczna własność, brakujący identyfikator tury, błędny identyfikator tury albo niebezpieczny schemat wezwania powodują odmowę zamiast wyświetlenia monitu.
+- Gdy polityka ma wartość `true`, OpenClaw automatycznie akceptuje tylko bezpieczne schematy, które może zmapować na
+  odpowiedź zatwierdzenia, takie jak boolowskie pole akceptacji.
+- Gdy polityka ma wartość `"auto"`, OpenClaw eksponuje destrukcyjne akcje Pluginu
+  do Codex, ale zamienia potwierdzone własnością żądania zatwierdzenia MCP na zatwierdzenia Pluginów OpenClaw przed zwróceniem odpowiedzi zatwierdzenia Codex.
+- Gdy polityka ma wartość `"ask"`, OpenClaw używa tej samej bramki zapisu/destrukcji Codex
+  co `"auto"`, czyści trwałe nadpisania zatwierdzeń per-narzędzie Codex dla
+  aplikacji przed startem wątku i oferuje tylko jednorazowe zatwierdzenie lub odmowę, aby
+  trwałe zatwierdzenia nie mogły tłumić późniejszych monitów o akcje zapisu.
+- Dla każdej dopuszczonej aplikacji, która używa `"ask"`, OpenClaw wybiera recenzenta
+  zatwierdzeń ludzkich Codex dla tej aplikacji, aby Codex wysyłał swoje żądania zatwierdzenia do
+  OpenClaw. Inne aplikacje i zatwierdzenia wątku niezwiązane z aplikacjami zachowują skonfigurowanego
+  recenzenta i politykę.
+- Brak tożsamości Pluginu, niejednoznaczna własność, brakujący identyfikator tury, błędny identyfikator tury
+  albo niebezpieczny schemat żądania powodują odmowę zamiast wyświetlenia monitu.
 
 ## Rozwiązywanie problemów
 
-**`auth_required`:** migracja zainstalowała Plugin, ale jedna z jego aplikacji nadal wymaga uwierzytelnienia. Jawny wpis Plugin jest zapisywany jako wyłączony do czasu ponownej autoryzacji i włączenia go.
+**`auth_required`:** migracja zainstalowała Plugin, ale jedna z jego aplikacji nadal
+wymaga uwierzytelnienia. Jawny wpis Pluginu jest zapisywany jako wyłączony, dopóki go
+ponownie nie autoryzujesz i nie włączysz.
 
-**`app_inaccessible`, `app_disabled` lub `app_missing`:**
-migracja nie zainstalowała Plugin, ponieważ spis aplikacji źródłowego Codex nie pokazał wszystkich posiadanych aplikacji jako obecnych, włączonych i dostępnych, gdy ustawiono `--verify-plugin-apps`. Ponownie autoryzuj lub włącz aplikację w Codex, a następnie uruchom ponownie migrację z `--verify-plugin-apps`.
+**`app_inaccessible`, `app_disabled` albo `app_missing`:**
+migracja nie zainstalowała Pluginu, ponieważ źródłowy inwentarz aplikacji Codex
+nie pokazał wszystkich posiadanych aplikacji jako obecnych, włączonych i dostępnych, gdy
+ustawiono `--verify-plugin-apps`. Ponownie autoryzuj albo włącz aplikację w Codex, a następnie
+uruchom migrację ponownie z `--verify-plugin-apps`.
 
-**`app_inventory_unavailable`:** migracja nie zainstalowała Plugin, ponieważ zażądano rygorystycznej weryfikacji aplikacji źródłowych, a odświeżenie spisu aplikacji źródłowego Codex nie powiodło się. Napraw dostęp do źródłowego app-server Codex albo spróbuj ponownie bez `--verify-plugin-apps`, jeśli akceptujesz szybszy plan bramkowany kontem.
+**`app_inventory_unavailable`:** migracja nie zainstalowała Pluginu, ponieważ
+zażądano ścisłej weryfikacji aplikacji źródłowych, a odświeżenie źródłowego inwentarza aplikacji Codex
+nie powiodło się. Napraw dostęp do źródłowego app-servera Codex albo ponów bez
+`--verify-plugin-apps`, jeśli akceptujesz szybszy plan z bramką konta.
 
-**`codex_subscription_required`:** migracja nie zainstalowała Plugin wspieranego przez aplikację, ponieważ konto źródłowego app-server Codex nie było zalogowane jako konto z subskrypcją ChatGPT. Zaloguj się do aplikacji Codex przy użyciu uwierzytelnienia subskrypcji, a następnie uruchom ponownie migrację.
+**`codex_subscription_required`:** migracja nie zainstalowała Pluginu opartego na aplikacji,
+ponieważ konto źródłowego app-servera Codex nie było zalogowane jako konto
+z subskrypcją ChatGPT. Zaloguj się do aplikacji Codex z uwierzytelnieniem subskrypcyjnym,
+a następnie uruchom migrację ponownie.
 
-**`codex_account_unavailable`:** migracja nie zainstalowała Plugin wspieranego przez aplikację, ponieważ nie można było odczytać konta źródłowego app-server Codex. Napraw uwierzytelnianie źródłowego app-server Codex albo uruchom ponownie z `--verify-plugin-apps`, jeśli chcesz, aby spis aplikacji źródłowych decydował o kwalifikacji, gdy wyszukiwanie konta się nie powiedzie.
+**`codex_account_unavailable`:** migracja nie zainstalowała Pluginu opartego na aplikacji,
+ponieważ nie można było odczytać konta źródłowego app-servera Codex. Napraw uwierzytelnianie źródłowego app-servera Codex albo uruchom ponownie z `--verify-plugin-apps`, jeśli chcesz, aby źródłowy inwentarz aplikacji
+decydował o kwalifikowalności, gdy wyszukiwanie konta się nie powiedzie.
 
-**`marketplace_missing` lub `plugin_missing`:** docelowy app-server Codex nie widzi oczekiwanego marketplace `openai-curated` albo Plugin. Uruchom ponownie migrację względem docelowego runtime albo sprawdź status Plugin app-server Codex.
+**`marketplace_missing` albo `plugin_missing`:** docelowy app-server Codex
+nie widzi oczekiwanego marketplace'u lub Pluginu `openai-curated`. Uruchom migrację ponownie
+względem docelowego środowiska uruchomieniowego albo sprawdź stan Pluginu app-servera Codex.
 
-**`app_inventory_missing` lub `app_inventory_stale`:** gotowość aplikacji pochodziła z pustej lub przestarzałej pamięci podręcznej. OpenClaw planuje asynchroniczne odświeżenie i wyklucza aplikacje Plugin do czasu, aż własność i gotowość będą znane.
+**`app_inventory_missing` albo `app_inventory_stale`:** gotowość aplikacji pochodziła z
+pustej lub nieaktualnej pamięci podręcznej. OpenClaw planuje asynchroniczne odświeżenie i wyklucza aplikacje Pluginów, dopóki własność i gotowość nie będą znane.
 
-**`app_ownership_ambiguous`:** spis aplikacji pasował tylko po nazwie wyświetlanej, więc aplikacja nie jest ujawniana wątkowi Codex.
+**`app_ownership_ambiguous`:** inwentarz aplikacji pasował tylko po nazwie wyświetlanej, więc
+aplikacja nie jest eksponowana w wątku Codex.
 
-**Konfiguracja się zmieniła, ale agent nie widzi Plugin:** użyj `/codex plugins list`, aby potwierdzić skonfigurowany stan, a następnie użyj `/new` lub `/reset`. Istniejące powiązania wątków Codex zachowują konfigurację aplikacji, z którą wystartowały, dopóki OpenClaw nie ustanowi nowej sesji harnessu albo nie zastąpi przestarzałego powiązania.
+**Konfiguracja się zmieniła, ale agent nie widzi Pluginu:** użyj `/codex plugins
+list`, aby potwierdzić skonfigurowany stan, a następnie użyj `/new` lub `/reset`. Istniejące
+powiązania wątków Codex zachowują konfigurację aplikacji, z którą zostały uruchomione, dopóki OpenClaw
+nie ustanowi nowej sesji harnessa lub nie zastąpi nieaktualnego powiązania.
 
-**Działanie destrukcyjne zostało odrzucone:** sprawdź globalne i właściwe dla poszczególnych Pluginów wartości
-`allow_destructive_actions`. Nawet gdy zasada ma wartość true, `"auto"` lub
-`"always"`, niebezpieczne schematy pozyskiwania danych i niejednoznaczna tożsamość Pluginu nadal kończą się odmową.
+**Destrukcyjna akcja została odrzucona:** sprawdź globalne i właściwe dla Pluginu
+wartości `allow_destructive_actions`. Nawet gdy polityka ma wartość true, `"auto"` lub
+`"ask"`, niebezpieczne schematy pozyskiwania informacji i niejednoznaczna tożsamość Pluginu nadal kończą się
+odmową.
 
 ## Powiązane
 
-- [Mechanizm Codex](/pl/plugins/codex-harness)
-- [Dokumentacja referencyjna mechanizmu Codex](/pl/plugins/codex-harness-reference)
-- [Środowisko uruchomieniowe mechanizmu Codex](/pl/plugins/codex-harness-runtime)
+- [Harness Codex](/pl/plugins/codex-harness)
+- [Dokumentacja referencyjna harnessa Codex](/pl/plugins/codex-harness-reference)
+- [Środowisko wykonawcze harnessa Codex](/pl/plugins/codex-harness-runtime)
 - [Dokumentacja referencyjna konfiguracji](/pl/gateway/configuration-reference#codex-harness-plugin-config)
 - [Migracja CLI](/pl/cli/migrate)
