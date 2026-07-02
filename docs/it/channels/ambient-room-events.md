@@ -1,30 +1,30 @@
 ---
 read_when:
     - Configurazione di stanze di gruppo o canale sempre attive
-    - Vuoi che l’agente osservi le conversazioni della stanza senza pubblicare automaticamente il testo finale
-    - Debug dell'indicatore di digitazione e dell'utilizzo dei token senza un messaggio visibile nella stanza
+    - Vuoi che l’agente monitori le conversazioni nella stanza senza pubblicare automaticamente il testo finale
+    - Debug di digitazione e utilizzo dei token senza messaggio visibile nella stanza
 sidebarTitle: Ambient room events
-summary: Consenti alle stanze di gruppo supportate di fornire contesto discreto a meno che l'agente non invii con lo strumento messaggi
+summary: Lascia che le stanze di gruppo supportate forniscano un contesto silenzioso, a meno che l'agente non invii tramite lo strumento di messaggistica
 title: Eventi ambientali della stanza
 x-i18n:
-    generated_at: "2026-06-27T17:09:24Z"
+    generated_at: "2026-07-02T17:38:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6423bea8aa1371fe53b610ae1ca794fc6d7866ecd767eee7b837a75004eebf83
+    source_hash: 8e3dcf5abab58d9bfd75b7cef6c8a55b98f6688a895774b8ba4a1ffc5723e0a6
     source_path: channels/ambient-room-events.md
     workflow: 16
 ---
 
-Gli eventi di stanza ambientali permettono a OpenClaw di elaborare le conversazioni di gruppo o canale non menzionate come contesto silenzioso. L'agente può aggiornare memoria e stato della sessione, ma la stanza resta silenziosa a meno che l'agente non chiami esplicitamente lo strumento `message`.
+Gli eventi ambientali della stanza consentono a OpenClaw di elaborare il parlato di gruppo o canale non menzionato come contesto silenzioso. L'agente può aggiornare la memoria e lo stato della sessione, ma la stanza resta silenziosa a meno che l'agente non chiami esplicitamente lo strumento `message`.
 
-Per le chat di gruppo sempre attive, questa è la modalità consigliata: combina `messages.groupChat.unmentionedInbound: "room_event"` con `messages.groupChat.visibleReplies: "message_tool"`. Usala quando l'agente deve ascoltare, decidere quando una risposta è utile ed evitare il vecchio pattern di prompt che rispondeva `NO_REPLY`.
+Per le chat di gruppo sempre attive, questa è la modalità consigliata: combina `messages.groupChat.unmentionedInbound: "room_event"` con `messages.groupChat.visibleReplies: "message_tool"`. Usala quando l'agente deve ascoltare, decidere quando una risposta è utile ed evitare il vecchio schema di prompt che rispondeva `NO_REPLY`.
 
-Supportati oggi: canali guild Discord, canali Slack e canali privati, DM Slack con più persone e gruppi o supergruppi Telegram. Gli altri canali di gruppo mantengono il comportamento di gruppo esistente, a meno che la pagina del loro canale indichi il supporto per gli eventi di stanza ambientali.
+Supportati oggi: canali guild di Discord, canali Slack e canali privati, DM Slack multi-persona e gruppi o supergruppi Telegram. Gli altri canali di gruppo mantengono il comportamento di gruppo esistente, a meno che la loro pagina del canale indichi che supportano gli eventi ambientali della stanza.
 
 ## Configurazione consigliata
 
-Imposta il comportamento globale delle chat di gruppo:
+Imposta il comportamento globale della chat di gruppo:
 
 ```json5
 {
@@ -38,21 +38,21 @@ Imposta il comportamento globale delle chat di gruppo:
 }
 ```
 
-Poi configura la stanza stessa come sempre attiva disabilitando il gating tramite menzione per quella stanza. Il canale deve comunque essere consentito dalla sua normale `groupPolicy`, dall'allowlist della stanza e dall'allowlist dei mittenti.
+Poi configura la stanza stessa come sempre attiva disabilitando il gating delle menzioni per quella stanza. Il canale deve comunque essere consentito dalla sua normale `groupPolicy`, dalla allowlist della stanza e dalla allowlist dei mittenti.
 
-Dopo aver salvato la configurazione, il Gateway ricarica a caldo le impostazioni `messages`. Riavvia solo quando il monitoraggio dei file o il ricaricamento della configurazione sono disabilitati.
+Dopo aver salvato la configurazione, il Gateway ricarica a caldo le impostazioni `messages`. Riavvia solo quando il monitoraggio dei file o il ricaricamento della configurazione è disabilitato.
 
 ## Cosa cambia
 
 Con `messages.groupChat.unmentionedInbound: "room_event"`:
 
-- i messaggi di gruppo o canale consentiti e non menzionati diventano eventi di stanza silenziosi
-- i messaggi menzionati restano richieste dell'utente
-- i comandi testuali e i comandi nativi restano richieste dell'utente
-- le richieste di interruzione o arresto restano richieste dell'utente
-- i messaggi diretti restano richieste dell'utente
+- i messaggi di gruppo o canale consentiti e non menzionati diventano eventi silenziosi della stanza
+- i messaggi menzionati restano richieste utente
+- i comandi di testo e i comandi nativi restano richieste utente
+- le richieste di annullamento o arresto restano richieste utente
+- i messaggi diretti restano richieste utente
 
-Gli eventi di stanza usano una consegna visibile rigorosa. Il testo finale dell'assistente è privato. L'agente deve chiamare `message(action=send)` per pubblicare nella stanza.
+Gli eventi della stanza usano una consegna visibile rigorosa. Il testo finale dell'assistente è privato. L'agente deve chiamare `message(action=send)` per pubblicare nella stanza.
 
 ## Esempio Discord
 
@@ -102,7 +102,7 @@ Usa la configurazione Discord per canale quando solo un canale deve essere ambie
 
 ## Esempio Slack
 
-Le allowlist dei canali Slack privilegiano gli ID. Usa ID di canale come `C12345678`, non `#channel-name`.
+Le allowlist dei canali Slack danno priorità agli ID. Usa ID di canale come `C12345678`, non `#channel-name`.
 
 ```json5
 {
@@ -153,11 +153,11 @@ Per i gruppi Telegram, il bot deve poter vedere i normali messaggi di gruppo. Se
 }
 ```
 
-Gli ID dei gruppi Telegram sono di solito numeri negativi come `-1001234567890`. Leggi `chat.id` da `openclaw logs --follow`, inoltra un messaggio di gruppo a un bot helper per ID oppure ispeziona `getUpdates` della Bot API.
+Gli ID dei gruppi Telegram sono di solito numeri negativi come `-1001234567890`. Leggi `chat.id` da `openclaw logs --follow`, inoltra un messaggio del gruppo a un bot helper per ID oppure ispeziona `getUpdates` della Bot API.
 
 ## Policy specifica dell'agente
 
-Usa un override dell'agente quando più agenti condividono la stessa stanza ma solo uno deve trattare le conversazioni non menzionate come contesto ambientale:
+Usa un override dell'agente quando più agenti condividono la stessa stanza ma solo uno deve trattare il parlato non menzionato come contesto ambientale:
 
 ```json5
 {
@@ -184,11 +184,11 @@ Il valore `agents.list[].groupChat.unmentionedInbound` specifico dell'agente sov
 
 ## Modalità di risposta visibile
 
-`messages.groupChat.visibleReplies` ha come valore predefinito `"automatic"` per le normali richieste utente in gruppi/canali. Mantieni quel valore predefinito quando vuoi che il testo finale dell'assistente venga pubblicato visibilmente senza richiedere una chiamata esplicita allo strumento di messaggistica.
+`messages.groupChat.visibleReplies` usa per impostazione predefinita `"automatic"` per le normali richieste utente di gruppo/canale. Mantieni questa impostazione predefinita quando vuoi che il testo finale dell'assistente venga pubblicato in modo visibile senza richiedere una chiamata esplicita allo strumento message.
 
-Per le stanze ambientali sempre attive, `messages.groupChat.visibleReplies: "message_tool"` resta comunque consigliato, soprattutto con modelli di ultima generazione affidabili nell'uso degli strumenti, come GPT 5.5. Permette all'agente di decidere quando parlare chiamando lo strumento di messaggistica. Se il modello restituisce testo finale senza chiamare lo strumento, OpenClaw mantiene privato quel testo finale e registra metadati di consegna soppressa.
+Per le stanze ambientali sempre attive, `messages.groupChat.visibleReplies: "message_tool"` resta consigliato, soprattutto con modelli di ultima generazione affidabili nell'uso degli strumenti, come GPT 5.5. Consente all'agente di decidere quando parlare chiamando lo strumento message. Se il modello restituisce testo finale senza chiamare lo strumento, OpenClaw mantiene privato quel testo finale e registra metadati di consegna soppressa.
 
-Gli eventi di stanza restano rigorosi anche quando altre richieste di gruppo usano risposte automatiche. Gli eventi di stanza ambientali non menzionati richiedono comunque `message(action=send)` per produrre output visibile.
+Gli eventi della stanza restano rigorosi anche quando altre richieste di gruppo usano risposte automatiche. Gli eventi ambientali della stanza non menzionati richiedono comunque `message(action=send)` per l'output visibile.
 
 ## Cronologia
 
@@ -196,21 +196,21 @@ Gli eventi di stanza restano rigorosi anche quando altre richieste di gruppo usa
 
 Imposta `historyLimit: 0` per disabilitare il contesto della cronologia di gruppo.
 
-I canali con supporto per eventi di stanza mantengono i messaggi di stanza ambientali recenti come contesto. Discord conserva la cronologia degli eventi di stanza finché un invio Discord visibile non riesce, così il contesto silenzioso non viene perso prima della consegna tramite lo strumento di messaggistica.
+I canali room-event supportati mantengono i messaggi ambientali recenti della stanza come contesto. Telegram mantiene una finestra per gruppo sempre attiva e scorrevole, limitata da `historyLimit`; i turni di richiesta utente selezionano le voci dopo l'ultima risposta registrata del bot, mentre i turni room-event ricevono l'intera finestra recente in modo che il modello possa vedere i propri post recenti. La chiave di modalità Telegram ritirata `includeGroupHistoryContext` viene rimossa da `openclaw doctor --fix`.
 
 ## Risoluzione dei problemi
 
-Se la stanza mostra digitazione o utilizzo di token ma nessun messaggio visibile:
+Se la stanza mostra digitazione o uso di token ma nessun messaggio visibile:
 
-1. Conferma che la stanza sia consentita dall'allowlist del canale e dall'allowlist dei mittenti.
+1. Conferma che la stanza sia consentita dalla allowlist del canale e dalla allowlist dei mittenti.
 2. Conferma che `requireMention: false` sia impostato al livello di stanza previsto.
 3. Controlla se `messages.groupChat.unmentionedInbound` o l'override dell'agente è `"room_event"`.
-4. Ispeziona i log per metadati del payload finale soppressi o `didSendViaMessagingTool: false`.
+4. Ispeziona i log per i metadati del payload finale soppresso o `didSendViaMessagingTool: false`.
 5. Per le normali richieste di gruppo, mantieni o ripristina `messages.groupChat.visibleReplies: "automatic"` se vuoi che le risposte finali vengano pubblicate automaticamente. Per le stanze ambientali che usano `message_tool`, usa un modello/runtime che chiami gli strumenti in modo affidabile.
 
 Se le stanze ambientali Telegram non si attivano affatto, controlla la modalità privacy di BotFather e verifica che il Gateway stia ricevendo i normali messaggi di gruppo.
 
-Se le stanze ambientali Slack non si attivano, verifica che la chiave del canale sia l'ID del canale Slack e che l'app abbia l'ambito `channels:history` o `groups:history` richiesto per quel tipo di stanza.
+Se le stanze ambientali Slack non si attivano, verifica che la chiave del canale sia l'ID del canale Slack e che l'app abbia lo scope richiesto `channels:history` o `groups:history` per quel tipo di stanza.
 
 ## Correlati
 
@@ -219,4 +219,4 @@ Se le stanze ambientali Slack non si attivano, verifica che la chiave del canale
 - [Slack](/it/channels/slack)
 - [Telegram](/it/channels/telegram)
 - [Risoluzione dei problemi dei canali](/it/channels/troubleshooting)
-- [Riferimento alla configurazione dei canali](/it/gateway/config-channels)
+- [Riferimento della configurazione dei canali](/it/gateway/config-channels)
