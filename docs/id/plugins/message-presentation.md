@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Menambahkan atau memodifikasi rendering kartu pesan, tombol, atau pilihan
-    - Membangun Plugin saluran yang mendukung pesan keluar yang kaya
+    - Menambahkan atau memodifikasi perenderan kartu pesan, tombol, atau pilihan
+    - Membangun plugin kanal yang mendukung pesan keluar kaya
     - Mengubah presentasi alat pesan atau kemampuan pengiriman
     - Men-debug regresi perenderan kartu/blok/komponen khusus penyedia
-summary: Kartu pesan semantik, tombol, pilihan, teks fallback, dan petunjuk pengiriman untuk Plugin channel
+summary: Kartu pesan semantik, tombol, pilihan, teks fallback, dan petunjuk pengiriman untuk plugin kanal
 title: Penyajian pesan
 x-i18n:
-    generated_at: "2026-06-27T17:49:54Z"
+    generated_at: "2026-07-02T22:49:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9fc5eca9dfe637fbdd56dcb473a68540035f8b990eab8cf139a4e27711536f57
+    source_hash: 5acb03b2aabcfefe4935440a3f799876afb3e9ee8c166704987f93f3667e68dd
     source_path: plugins/message-presentation.md
     workflow: 16
 ---
 
-Presentasi pesan adalah kontrak bersama OpenClaw untuk UI obrolan keluar yang kaya.
-Ini memungkinkan agen, perintah CLI, alur persetujuan, dan plugin mendeskripsikan intent pesan
-sekali saja, sementara setiap plugin saluran merender bentuk native terbaik yang dapat dibuatnya.
+Presentasi pesan adalah kontrak bersama OpenClaw untuk UI chat keluar yang kaya.
+Ini memungkinkan agen, perintah CLI, alur persetujuan, dan Plugin menjelaskan maksud
+pesan sekali saja, sementara setiap Plugin kanal merender bentuk native terbaik yang bisa dibuatnya.
 
 Gunakan presentasi untuk UI pesan portabel:
 
@@ -27,15 +27,15 @@ Gunakan presentasi untuk UI pesan portabel:
 - pemisah
 - tombol
 - menu pilihan
-- judul dan tone kartu
+- judul dan nada kartu
 
-Jangan tambahkan field native penyedia baru seperti Discord `components`, Slack
-`blocks`, Telegram `buttons`, Teams `card`, atau Feishu `card` ke tool pesan
-bersama. Itu adalah output perender yang dimiliki oleh plugin saluran.
+Jangan tambahkan bidang native penyedia baru seperti Discord `components`, Slack
+`blocks`, Telegram `buttons`, Teams `card`, atau Feishu `card` ke alat pesan
+bersama. Itu adalah output perender yang dimiliki oleh Plugin kanal.
 
 ## Kontrak
 
-Penulis plugin mengimpor kontrak publik dari:
+Penulis Plugin mengimpor kontrak publik dari:
 
 ```ts
 import type {
@@ -99,39 +99,39 @@ type ReplyPayloadDelivery = {
 
 Semantik tombol:
 
-- `action.type: "command"` menjalankan perintah slash native melalui path perintah
-  core. Gunakan ini untuk tombol dan menu perintah bawaan.
-- `action.type: "callback"` membawa data plugin yang opaque melalui path
-  interaksi saluran. Plugin saluran tidak boleh menafsirkan ulang data callback sebagai
-  perintah slash.
-- `value` adalah nilai callback opaque lama. Kontrol baru sebaiknya menggunakan `action`
-  agar plugin saluran dapat memetakan perintah dan callback tanpa menebak dari teks.
+- `action.type: "command"` menjalankan perintah garis miring native melalui jalur
+  perintah inti. Gunakan ini untuk tombol dan menu perintah bawaan.
+- `action.type: "callback"` membawa data Plugin opak melalui jalur interaksi
+  kanal. Plugin kanal tidak boleh menafsirkan ulang data callback sebagai perintah
+  garis miring.
+- `value` adalah nilai callback opak lama. Kontrol baru sebaiknya menggunakan `action`
+  agar Plugin kanal dapat memetakan perintah dan callback tanpa menebak dari teks.
 - `url` adalah tombol tautan. Ini dapat ada tanpa `value`.
-- `webApp` mendeskripsikan tombol aplikasi web native saluran. Telegram merender ini
-  sebagai `web_app` dan hanya mendukungnya di obrolan privat. `web_app` masih
+- `webApp` menjelaskan tombol aplikasi web native kanal. Telegram merender ini
+  sebagai `web_app` dan hanya mendukungnya di chat privat. `web_app` masih
   diterima dalam payload JSON longgar untuk kompatibilitas, tetapi produsen TypeScript
   sebaiknya menggunakan `webApp`.
-- `label` wajib ada dan juga digunakan dalam fallback teks.
+- `label` wajib dan juga digunakan dalam fallback teks.
 - `style` bersifat anjuran. Perender sebaiknya memetakan gaya yang tidak didukung ke
   default yang aman, bukan menggagalkan pengiriman.
-- `priority` bersifat opsional. Ketika saluran mengiklankan batas tindakan dan kontrol
-  harus dibuang, core mempertahankan tombol berprioritas lebih tinggi terlebih dahulu dan mempertahankan
-  urutan asli di antara tombol dengan prioritas yang sama. Ketika semua kontrol muat, urutan
-  yang dibuat penulis dipertahankan.
-- `disabled` bersifat opsional. Saluran harus ikut serta dengan `supportsDisabled`; jika tidak
-  core menurunkan kontrol nonaktif menjadi teks fallback non-interaktif.
-- `reusable` bersifat opsional. Saluran yang mendukung callback native yang dapat digunakan ulang dapat
-  mempertahankan tindakan tetap tersedia setelah interaksi berhasil. Gunakan untuk
-  tindakan berulang atau idempoten seperti refresh, inspect, atau detail lainnya;
-  biarkan tidak disetel untuk persetujuan sekali pakai normal dan tindakan destruktif.
+- `priority` opsional. Saat kanal mengiklankan batas tindakan dan kontrol
+  harus dibuang, inti mempertahankan tombol berprioritas lebih tinggi terlebih dahulu dan mempertahankan
+  urutan asli di antara tombol dengan prioritas yang sama. Saat semua kontrol muat, urutan
+  yang ditulis dipertahankan.
+- `disabled` opsional. Kanal harus ikut serta dengan `supportsDisabled`; jika tidak,
+  inti mendegradasi kontrol nonaktif menjadi teks fallback non-interaktif.
+- `reusable` opsional. Kanal yang mendukung callback native yang dapat digunakan ulang dapat
+  mempertahankan tindakan tetap tersedia setelah interaksi berhasil. Gunakan ini untuk
+  tindakan yang dapat diulang atau idempoten seperti refresh, inspeksi, atau detail lainnya;
+  biarkan tidak diatur untuk persetujuan sekali pakai normal dan tindakan destruktif.
 
 Semantik pilihan:
 
-- `options[].action` memiliki makna perintah/callback yang sama dengan `action` tombol.
+- `options[].action` memiliki arti perintah/callback yang sama seperti tombol `action`.
 - `options[].value` adalah nilai aplikasi terpilih lama.
-- `placeholder` bersifat anjuran dan dapat diabaikan oleh saluran tanpa dukungan
-  pilihan native.
-- Jika saluran tidak mendukung pilihan, teks fallback mencantumkan label.
+- `placeholder` bersifat anjuran dan dapat diabaikan oleh kanal tanpa dukungan pilihan
+  native.
+- Jika kanal tidak mendukung pilihan, teks fallback mencantumkan label.
 
 ## Contoh produsen
 
@@ -155,7 +155,7 @@ Kartu sederhana:
 }
 ```
 
-Tombol tautan khusus URL:
+Tombol tautan hanya URL:
 
 ```json
 {
@@ -232,7 +232,7 @@ Pengiriman yang dipin dengan JSON eksplisit:
 
 ## Kontrak perender
 
-Plugin saluran mendeklarasikan dukungan render pada adapter keluar mereka:
+Plugin kanal mendeklarasikan dukungan render pada adaptor keluar mereka:
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -277,8 +277,8 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-Boolean kapabilitas mendeskripsikan apa yang dapat dibuat interaktif oleh perender. `limits`
-opsional mendeskripsikan envelope generik yang dapat disesuaikan core sebelum memanggil
+Boolean kapabilitas menjelaskan apa yang dapat dibuat interaktif oleh perender. `limits`
+opsional menjelaskan amplop generik yang dapat diadaptasi inti sebelum memanggil
 perender:
 
 ```ts
@@ -314,36 +314,36 @@ type ChannelPresentationCapabilities = {
 };
 ```
 
-Core menerapkan batas generik ke kontrol semantik sebelum rendering. Perender
-tetap memiliki validasi dan pemotongan akhir yang spesifik penyedia untuk jumlah blok
-native, ukuran kartu, batas URL, dan kekhasan penyedia yang tidak dapat diekspresikan dalam
-kontrak generik. Jika batas menghapus setiap kontrol dari sebuah blok, core mempertahankan
+Inti menerapkan batas generik ke kontrol semantik sebelum rendering. Perender
+tetap memiliki validasi dan pemotongan khusus penyedia akhir untuk jumlah blok
+native, ukuran kartu, batas URL, dan kekhasan penyedia yang tidak dapat diungkapkan dalam
+kontrak generik. Jika batas menghapus setiap kontrol dari sebuah blok, inti mempertahankan
 label sebagai teks konteks non-interaktif sehingga pesan yang dikirim tetap memiliki
 fallback yang terlihat.
 
-## Alur render core
+## Alur render inti
 
-Ketika `ReplyPayload` atau tindakan pesan menyertakan `presentation`, core:
+Saat `ReplyPayload` atau tindakan pesan menyertakan `presentation`, inti:
 
 1. Menormalkan payload presentasi.
-2. Menyelesaikan adapter keluar saluran target.
+2. Menyelesaikan adaptor keluar kanal target.
 3. Membaca `presentationCapabilities`.
 4. Menerapkan batas kapabilitas generik seperti jumlah tindakan, panjang label, dan
-   jumlah opsi pilihan ketika adapter mengiklankannya.
-5. Memanggil `renderPresentation` ketika adapter dapat merender payload.
-6. Melakukan fallback ke teks konservatif ketika adapter tidak ada atau tidak dapat merender.
-7. Mengirim payload hasil melalui path pengiriman saluran normal.
-8. Menerapkan metadata pengiriman seperti `delivery.pin` setelah pesan pertama berhasil
-   dikirim.
+   jumlah opsi pilihan saat adaptor mengiklankannya.
+5. Memanggil `renderPresentation` saat adaptor dapat merender payload.
+6. Beralih ke teks konservatif saat adaptor tidak ada atau tidak dapat merender.
+7. Mengirim payload yang dihasilkan melalui jalur pengiriman kanal normal.
+8. Menerapkan metadata pengiriman seperti `delivery.pin` setelah pesan terkirim
+   pertama berhasil.
 
-Core memiliki perilaku fallback sehingga produsen dapat tetap agnostik terhadap saluran. Plugin
-saluran memiliki rendering native dan penanganan interaksi.
+Inti memiliki perilaku fallback sehingga produsen dapat tetap agnostik terhadap kanal. Plugin
+kanal memiliki rendering native dan penanganan interaksi.
 
 ## Aturan degradasi
 
-Presentasi harus aman dikirim di saluran terbatas.
+Presentasi harus aman untuk dikirim pada kanal terbatas.
 
-Teks fallback mencakup:
+Teks fallback menyertakan:
 
 - `title` sebagai baris pertama
 - blok `text` sebagai paragraf normal
@@ -352,34 +352,53 @@ Teks fallback mencakup:
 - label tombol, termasuk URL untuk tombol tautan
 - label opsi pilihan
 
+### Visibilitas fallback nilai tombol
+
+Saat kanal tidak dapat merender kontrol interaktif, nilai tombol dan pilihan
+beralih ke teks biasa. Perilaku fallback mempertahankan kegunaan sambil
+menjaga data callback opak tetap privat:
+
+- Tindakan bertipe **`command`** dirender sebagai `label: \`command\`` sehingga pengguna dapat
+  menyalin perintah dan menjalankannya secara manual di input kanal.
+- Tindakan bertipe **`callback`** dan bidang **`value`** lama dirender sebagai
+  hanya label. Nilai callback opak tidak diekspos dalam teks fallback.
+- Tombol **`url` / `webApp`** merender teks URL bersama label
+  tombol, karena URL ditujukan untuk pengguna.
+- **Opsi pilihan** dirender sebagai hanya label. Nilai opsi yang mendasarinya tidak
+  diekspos dalam teks fallback.
+
+Adaptor kanal yang menambahkan panduan perintah manual di UI fallback mereka (misalnya
+instruksi komentar dokumen Feishu) harus menurunkan pemeriksaan keberadaan perintah
+dari blok presentasi yang sama dengan yang digunakan perender fallback, sehingga
+teks panduan hanya muncul saat perintah manual benar-benar ditampilkan.
+
 Kontrol native yang tidak didukung sebaiknya didegradasi, bukan menggagalkan seluruh pengiriman.
 Contoh:
 
 - Telegram dengan tombol inline dinonaktifkan mengirim fallback teks.
-- Saluran tanpa dukungan pilihan mencantumkan opsi pilihan sebagai teks.
-- Tombol khusus URL menjadi tombol tautan native atau baris URL fallback.
+- Kanal tanpa dukungan pilihan mencantumkan opsi pilihan sebagai teks.
+- Tombol hanya URL menjadi tombol tautan native atau baris URL fallback.
 - Kegagalan pin opsional tidak menggagalkan pesan yang dikirim.
 
-Pengecualian utamanya adalah `delivery.pin.required: true`; jika pinning diminta sebagai
-wajib dan saluran tidak dapat memin pesan yang dikirim, pengiriman melaporkan kegagalan.
+Pengecualian utama adalah `delivery.pin.required: true`; jika penyematan diminta sebagai
+wajib dan kanal tidak dapat menyematkan pesan terkirim, pengiriman melaporkan kegagalan.
 
 ## Pemetaan penyedia
 
-Perender bundel saat ini:
+Perender bawaan saat ini:
 
-| Saluran         | Target render native                | Catatan                                                                                                                                             |
+| Saluran         | Target render native                | Catatan                                                                                                                                           |
 | --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Komponen dan kontainer komponen | Mempertahankan `channelData.discord.components` lama untuk produsen payload native penyedia yang sudah ada, tetapi pengiriman bersama baru sebaiknya menggunakan `presentation`. |
-| Slack           | Block Kit                           | Mempertahankan `channelData.slack.blocks` lama untuk produsen payload native penyedia yang sudah ada, tetapi pengiriman bersama baru sebaiknya menggunakan `presentation`.       |
-| Telegram        | Teks plus keyboard inline          | Tombol/pilihan memerlukan kapabilitas tombol inline untuk surface target; jika tidak, fallback teks digunakan.                                         |
-| Mattermost      | Teks plus props interaktif         | Blok lain didegradasi menjadi teks.                                                                                                                     |
-| Microsoft Teams | Adaptive Cards                      | Teks `message` polos disertakan bersama kartu ketika keduanya disediakan.                                                                            |
-| Feishu          | Kartu interaktif                   | Header kartu dapat menggunakan `title`; body menghindari duplikasi judul tersebut.                                                                                  |
-| Saluran biasa  | Fallback teks                       | Saluran tanpa perender tetap mendapatkan output yang dapat dibaca.                                                                                            |
+| Discord         | Komponen dan kontainer komponen     | Mempertahankan `channelData.discord.components` lama untuk produsen payload native-penyedia yang ada, tetapi pengiriman bersama baru harus menggunakan `presentation`. |
+| Slack           | Block Kit                           | Mempertahankan `channelData.slack.blocks` lama untuk produsen payload native-penyedia yang ada, tetapi pengiriman bersama baru harus menggunakan `presentation`.       |
+| Telegram        | Teks plus keyboard inline           | Tombol/pilihan memerlukan kapabilitas tombol inline untuk permukaan target; jika tidak, fallback teks digunakan.                                  |
+| Mattermost      | Teks plus properti interaktif       | Blok lain diturunkan menjadi teks.                                                                                                                |
+| Microsoft Teams | Adaptive Cards                      | Teks `message` biasa disertakan bersama kartu ketika keduanya disediakan.                                                                         |
+| Feishu          | Kartu interaktif                    | Header kartu dapat menggunakan `title`; isi menghindari duplikasi judul tersebut.                                                                 |
+| Saluran biasa   | Fallback teks                       | Saluran tanpa renderer tetap mendapatkan keluaran yang dapat dibaca.                                                                              |
 
-Kompatibilitas payload native provider adalah kemudahan transisi untuk produsen
-balasan yang sudah ada. Ini bukan alasan untuk menambahkan bidang native bersama
-yang baru.
+Kompatibilitas payload native-penyedia adalah kemudahan transisi untuk produsen
+balasan yang ada. Ini bukan alasan untuk menambahkan field native bersama baru.
 
 ## Presentation vs InteractiveReply
 
@@ -395,31 +414,18 @@ persetujuan dan interaksi. Ini mendukung:
 - judul
 - nada
 - konteks
-- pembatas
+- pemisah
 - tombol khusus URL
 - metadata pengiriman generik melalui `ReplyPayload.delivery`
 
 Gunakan helper dari `openclaw/plugin-sdk/interactive-runtime` saat menjembatani
 kode lama:
-
-```ts
-import {
-  adaptMessagePresentationForChannel,
-  applyPresentationActionLimits,
-  interactiveReplyToPresentation,
-  normalizeMessagePresentation,
-  presentationPageSize,
-  presentationToInteractiveControlsReply,
-  presentationToInteractiveReply,
-  renderMessagePresentationFallbackText,
-} from "openclaw/plugin-sdk/interactive-runtime";
-```
-
-Kode baru sebaiknya menerima atau menghasilkan `MessagePresentation` secara langsung. Payload
-`interactive` yang sudah ada adalah subset usang dari `presentation`; dukungan
+__OC_I18N_900011__
+Kode baru harus menerima atau menghasilkan `MessagePresentation` secara langsung.
+Payload `interactive` yang ada adalah subset usang dari `presentation`; dukungan
 runtime tetap ada untuk produsen lama.
 
-Tipe `InteractiveReply*` warisan dan helper konversi ditandai
+Tipe `InteractiveReply*` lama dan helper konversi ditandai
 `@deprecated` di SDK:
 
 - `InteractiveReply`, `InteractiveReplyBlock`, `InteractiveReplyButton`,
@@ -435,8 +441,8 @@ Tipe `InteractiveReply*` warisan dan helper konversi ditandai
 
 `presentationToInteractiveReply(...)` dan
 `presentationToInteractiveControlsReply(...)` tetap tersedia sebagai jembatan
-perender untuk implementasi kanal warisan. Kode produsen baru sebaiknya tidak memanggil
-keduanya; kirim `presentation` dan biarkan adaptasi inti/kanal menangani perenderan.
+renderer untuk implementasi saluran lama. Kode produsen baru tidak boleh
+memanggilnya; kirim `presentation` dan biarkan adaptasi inti/saluran menangani rendering.
 
 Helper persetujuan juga memiliki pengganti yang mengutamakan presentation:
 
@@ -448,48 +454,49 @@ Helper persetujuan juga memiliki pengganti yang mengutamakan presentation:
   `buildExecApprovalInteractiveReply(...)`
 
 `renderMessagePresentationFallbackText(...)` mengembalikan string kosong untuk
-blok presentation yang tidak memiliki fallback teks, seperti presentation yang hanya berisi
-pembatas. Transport yang membutuhkan isi kiriman tidak kosong dapat meneruskan
-`emptyFallback` untuk memilih isi minimal tanpa mengubah kontrak fallback default.
+blok presentation yang tidak memiliki fallback teks, seperti presentation yang
+hanya berisi pemisah. Transport yang memerlukan isi pengiriman yang tidak kosong
+dapat meneruskan `emptyFallback` untuk memilih isi minimal tanpa mengubah kontrak
+fallback default.
 
 ## Pin pengiriman
 
-Penyematan adalah perilaku pengiriman, bukan presentation. Gunakan `delivery.pin` alih-alih
-bidang native provider seperti `channelData.telegram.pin`.
+Penyematan adalah perilaku pengiriman, bukan presentation. Gunakan `delivery.pin`
+alih-alih field native-penyedia seperti `channelData.telegram.pin`.
 
 Semantik:
 
 - `pin: true` menyematkan pesan pertama yang berhasil dikirim.
 - `pin.notify` default-nya adalah `false`.
 - `pin.required` default-nya adalah `false`.
-- Kegagalan penyematan opsional menurun dengan baik dan membiarkan pesan terkirim tetap utuh.
-- Kegagalan penyematan wajib menggagalkan pengiriman.
-- Pesan yang dipecah menjadi beberapa bagian menyematkan bagian pertama yang terkirim, bukan bagian terakhir.
+- Kegagalan pin opsional diturunkan dan membiarkan pesan terkirim tetap utuh.
+- Kegagalan pin wajib menggagalkan pengiriman.
+- Pesan yang dipecah menyematkan potongan pertama yang terkirim, bukan potongan akhir.
 
-Aksi pesan `pin`, `unpin`, dan `pins` manual tetap ada untuk pesan yang sudah ada
-ketika provider mendukung operasi tersebut.
+Aksi pesan manual `pin`, `unpin`, dan `pins` tetap ada untuk pesan yang sudah ada
+ketika penyedia mendukung operasi tersebut.
 
-## Daftar periksa penulis Plugin
+## Checklist penulis Plugin
 
-- Deklarasikan `presentation` dari `describeMessageTool(...)` ketika kanal dapat
+- Deklarasikan `presentation` dari `describeMessageTool(...)` ketika saluran dapat
   merender atau menurunkan presentation semantik dengan aman.
-- Tambahkan `presentationCapabilities` ke adapter keluar runtime.
-- Implementasikan `renderPresentation` di kode runtime, bukan kode penyiapan Plugin
-  bidang kontrol.
-- Jauhkan pustaka UI native dari jalur penyiapan/katalog panas.
-- Deklarasikan batas kemampuan generik pada `presentationCapabilities.limits` ketika
+- Tambahkan `presentationCapabilities` ke adaptor outbound runtime.
+- Implementasikan `renderPresentation` di kode runtime, bukan kode setup Plugin
+  control-plane.
+- Jauhkan pustaka UI native dari jalur setup/katalog yang panas.
+- Deklarasikan batas kapabilitas generik pada `presentationCapabilities.limits` ketika
   batas tersebut diketahui.
-- Pertahankan batas platform final di perender dan pengujian.
+- Pertahankan batas platform final di renderer dan pengujian.
 - Tambahkan pengujian fallback untuk tombol yang tidak didukung, pilihan, tombol URL, duplikasi judul/teks,
   dan pengiriman campuran `message` plus `presentation`.
 - Tambahkan dukungan pin pengiriman melalui `deliveryCapabilities.pin` dan
-  `pinDeliveredMessage` hanya ketika provider dapat menyematkan id pesan yang terkirim.
-- Jangan mengekspos bidang kartu/blok/komponen/tombol native provider baru melalui
+  `pinDeliveredMessage` hanya ketika penyedia dapat menyematkan id pesan yang dikirim.
+- Jangan mengekspos field kartu/blok/komponen/tombol native-penyedia baru melalui
   skema aksi pesan bersama.
 
-## Dokumentasi terkait
+## Dokumen terkait
 
 - [CLI Pesan](/id/cli/message)
-- [Ikhtisar SDK Plugin](/id/plugins/sdk-overview)
+- [Ringkasan SDK Plugin](/id/plugins/sdk-overview)
 - [Arsitektur Plugin](/id/plugins/architecture-internals#message-tool-schemas)
-- [Rencana Refaktor Presentation Kanal](/id/plan/ui-channels)
+- [Rencana Refaktor Presentation Saluran](/id/plan/ui-channels)

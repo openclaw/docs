@@ -3,81 +3,81 @@ read_when: Finding which docs page covers a topic before reading the page
 summary: 為 OpenClaw 文件頁面產生的標題對照表
 title: 文件地圖
 x-i18n:
-    generated_at: "2026-07-02T00:43:50Z"
+    generated_at: "2026-07-02T22:22:15Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 504b554aa699d78c9a3c958d3c724949efdac172cf4a7a0f343c3a3e9bb8c3d7
+    source_hash: 6a4462a02558886466a5da704c18041c4e4c9c709c740d605d45bdca0a1fb2e8
     source_path: docs_map.md
     workflow: 16
 ---
 
 # OpenClaw 文件地圖
 
-此檔案是從 `docs/**/*.md` 和 `docs/**/*.mdx` 標題產生，用來協助代理瀏覽文件樹。
+此檔案由 `docs/**/*.md` 和 `docs/**/*.mdx` 標題產生，用來協助代理程式瀏覽文件樹。
 請勿手動編輯；請執行 `pnpm docs:map:gen`。
 
 ## agent-runtime-architecture.md
 
-- 路由：/agent-runtime-architecture
-- 標題：
-  - H2: 執行階段版面配置
+- Route: /agent-runtime-architecture
+- Headings:
+  - H2: 執行階段配置
   - H2: 邊界
-  - H2: 清單
+  - H2: 資訊清單
   - H2: 執行階段選擇
   - H2: 相關
 
 ## announcements/bluebubbles-imessage.md
 
-- 路由：/announcements/bluebubbles-imessage
-- 標題：
-  - H1: 移除 BlueBubbles 與 imsg iMessage 路徑
+- Route: /announcements/bluebubbles-imessage
+- Headings:
+  - H1: BlueBubbles 移除與 imsg iMessage 路徑
   - H2: 變更內容
-  - H2: 要做什麼
+  - H2: 該怎麼做
   - H2: 遷移注意事項
   - H2: 另請參閱
 
 ## auth-credential-semantics.md
 
-- 路由：/auth-credential-semantics
-- 標題：
+- Route: /auth-credential-semantics
+- Headings:
   - H2: 穩定的探測原因代碼
-  - H2: 權杖憑證
-  - H3: 適用性規則
+  - H2: 權杖認證
+  - H3: 資格規則
   - H3: 解析規則
-  - H2: 代理副本可攜性
+  - H2: 代理程式副本可攜性
   - H2: 僅設定檔的驗證路由
   - H2: 明確驗證順序篩選
   - H2: 探測目標解析
-  - H2: 外部命令列介面憑證探索
+  - H2: 外部命令列介面認證探索
   - H2: OAuth SecretRef 政策防護
   - H2: 舊版相容訊息
   - H2: 相關
 
 ## automation/auth-monitoring.md
 
-- 路由：/automation/auth-monitoring
-- 標題：
+- Route: /automation/auth-monitoring
+- Headings:
   - H2: 相關
 
 ## automation/clawflow.md
 
-- 路由：/automation/clawflow
-- 標題：
+- Route: /automation/clawflow
+- Headings:
   - H2: 相關
 
 ## automation/cron-jobs.md
 
-- 路由：/automation/cron-jobs
-- 標題：
+- Route: /automation/cron-jobs
+- Headings:
   - H2: 快速開始
   - H2: 排程如何運作
   - H2: 排程類型
-  - H3: 每月日期與每週日期使用 OR 邏輯
+  - H3: 日期與星期使用 OR 邏輯
   - H2: 執行樣式
-  - H3: 命令承載
-  - H3: 隔離作業的承載選項
-  - H2: 傳送與輸出
+  - H3: 命令酬載
+  - H3: 隔離工作用的酬載選項
+  - H2: 傳遞與輸出
   - H2: 輸出語言
   - H2: 命令列介面範例
   - H2: 網路鉤子
@@ -87,7 +87,7 @@ x-i18n:
   - H3: 閘道自動啟動
   - H3: 手動一次性設定
   - H3: Gmail 模型覆寫
-  - H2: 管理作業
+  - H2: 管理工作
   - H2: 設定
   - H2: 疑難排解
   - H3: 命令階梯
@@ -95,28 +95,28 @@ x-i18n:
 
 ## automation/cron-vs-heartbeat.md
 
-- 路由：/automation/cron-vs-heartbeat
-- 標題：
+- Route: /automation/cron-vs-heartbeat
+- Headings:
   - H2: 相關
 
 ## automation/gmail-pubsub.md
 
-- 路由：/automation/gmail-pubsub
-- 標題：
+- Route: /automation/gmail-pubsub
+- Headings:
   - H2: 相關
 
 ## automation/hooks.md
 
-- 路由：/automation/hooks
-- 標題：
-  - H2: 選擇正確介面
+- Route: /automation/hooks
+- Headings:
+  - H2: 選擇正確的介面
   - H2: 快速開始
   - H2: 事件類型
   - H2: 撰寫鉤子
   - H3: 鉤子結構
   - H3: HOOK.md 格式
-  - H3: 處理器實作
-  - H3: 事件脈絡重點
+  - H3: 處理常式實作
+  - H3: 事件情境重點
   - H2: 鉤子探索
   - H3: 鉤子套件
   - H2: 內建鉤子
@@ -137,15 +137,15 @@ x-i18n:
 
 ## automation/index.md
 
-- 路由：/automation
-- 標題：
+- Route: /automation
+- Headings:
   - H2: 快速決策指南
-  - H3: 排程任務（排程）與心跳偵測
+  - H3: 已排程工作（排程）與心跳偵測
   - H2: 核心概念
-  - H3: 排程任務（排程）
-  - H3: 任務
-  - H3: 推斷的承諾
-  - H3: TaskFlow
+  - H3: 已排程工作（排程）
+  - H3: 工作
+  - H3: 推斷承諾
+  - H3: Task Flow
   - H3: 常設指令
   - H3: 鉤子
   - H3: 心跳偵測
@@ -154,34 +154,34 @@ x-i18n:
 
 ## automation/poll.md
 
-- 路由：/automation/poll
-- 標題：
+- Route: /automation/poll
+- Headings:
   - H2: 相關
 
 ## automation/standing-orders.md
 
-- 路由：/automation/standing-orders
-- 標題：
-  - H2: 為什麼使用常設指令
-  - H2: 它們如何運作
+- Route: /automation/standing-orders
+- Headings:
+  - H2: 為什麼需要常設指令
+  - H2: 運作方式
   - H2: 常設指令的剖析
-  - H2: 常設指令加上排程作業
+  - H2: 常設指令加上排程工作
   - H2: 範例
-  - H3: 範例 1：內容與社群媒體（每週循環）
+  - H3: 範例 1：內容與社群媒體（每週週期）
   - H3: 範例 2：財務營運（事件觸發）
   - H3: 範例 3：監控與警示（持續）
-  - H2: 執行、驗證、回報模式
+  - H2: 執行-驗證-報告模式
   - H2: 多程式架構
   - H2: 最佳實務
-  - H3: 建議事項
-  - H3: 避免事項
+  - H3: 應做
+  - H3: 避免
   - H2: 相關
 
 ## automation/taskflow.md
 
-- 路由：/automation/taskflow
-- 標題：
-  - H2: 何時使用 TaskFlow
+- Route: /automation/taskflow
+- Headings:
+  - H2: 何時使用 Task Flow
   - H2: 可靠的排程工作流程模式
   - H2: 同步模式
   - H3: 受管理模式
@@ -189,78 +189,78 @@ x-i18n:
   - H2: 持久狀態與修訂追蹤
   - H2: 取消行為
   - H2: 命令列介面命令
-  - H2: 流程與任務的關係
+  - H2: 流程與工作的關係
   - H2: 相關
 
 ## automation/tasks.md
 
-- 路由：/automation/tasks
-- 標題：
-  - H2: 重點摘要
+- Route: /automation/tasks
+- Headings:
+  - H2: TL;DR
   - H2: 快速開始
-  - H2: 什麼會建立任務
-  - H2: 任務生命週期
-  - H2: 傳送與通知
+  - H2: 什麼會建立工作
+  - H2: 工作生命週期
+  - H2: 傳遞與通知
   - H3: 通知政策
   - H2: 命令列介面參考
-  - H2: 聊天任務看板（/tasks）
-  - H2: 狀態整合（任務壓力）
+  - H2: 聊天工作看板（/tasks）
+  - H2: 狀態整合（工作壓力）
   - H2: 儲存與維護
-  - H3: 任務所在位置
+  - H3: 工作所在位置
   - H3: 自動維護
-  - H2: 任務與其他系統的關係
+  - H2: 工作與其他系統的關係
   - H2: 相關
 
 ## automation/troubleshooting.md
 
-- 路由：/automation/troubleshooting
-- 標題：
+- Route: /automation/troubleshooting
+- Headings:
   - H2: 相關
 
 ## automation/webhook.md
 
-- 路由：/automation/webhook
-- 標題：
+- Route: /automation/webhook
+- Headings:
   - H2: 相關
 
 ## brave-search.md
 
-- 路由：/brave-search
-- 標題：
+- Route: /brave-search
+- Headings:
   - H2: 相關
 
 ## channels/access-groups.md
 
-- 路由：/channels/access-groups
-- 標題：
+- Route: /channels/access-groups
+- Headings:
   - H2: 靜態訊息傳送者群組
   - H2: 從允許清單參照群組
-  - H2: 支援的訊息頻道路徑
+  - H2: 支援的訊息通道路徑
   - H2: 外掛診斷
   - H2: Discord 頻道受眾
-  - H2: 安全性注意事項
+  - H2: 安全注意事項
   - H2: 疑難排解
 
 ## channels/ambient-room-events.md
 
-- 路由：/channels/ambient-room-events
-- 標題：
+- Route: /channels/ambient-room-events
+- Headings:
   - H2: 建議設定
   - H2: 變更內容
   - H2: Discord 範例
   - H2: Slack 範例
   - H2: Telegram 範例
-  - H2: 代理專屬政策
+  - H2: 代理程式特定政策
   - H2: 可見回覆模式
-  - H2: 歷程
+  - H2: 歷史
   - H2: 疑難排解
   - H2: 相關
 
 ## channels/bot-loop-protection.md
 
-- 路由：/channels/bot-loop-protection
-- 標題：
-  - H1: 機器人迴圈防護
+- Route: /channels/bot-loop-protection
+- Headings:
+  - H1: Bot 迴圈保護
   - H2: 預設值
   - H2: 設定共用預設值
   - H2: 依頻道或帳戶覆寫
@@ -268,8 +268,8 @@ x-i18n:
 
 ## channels/broadcast-groups.md
 
-- 路由：/channels/broadcast-groups
-- 標題：
+- Route: /channels/broadcast-groups
+- Headings:
   - H2: 概觀
   - H2: 使用案例
   - H2: 設定
@@ -290,48 +290,48 @@ x-i18n:
   - H3: 設定結構描述
   - H3: 欄位
   - H2: 限制
-  - H2: 未來改進
+  - H2: 未來增強功能
   - H2: 相關
 
 ## channels/channel-routing.md
 
-- 路由：/channels/channel-routing
-- 標題：
+- Route: /channels/channel-routing
+- Headings:
   - H1: 頻道與路由
   - H2: 關鍵術語
-  - H2: 輸出目標前綴
+  - H2: 輸出目標前置詞
   - H2: 工作階段鍵形狀（範例）
-  - H2: 主要私訊路由釘選
-  - H2: 受防護的輸入記錄
-  - H2: 路由規則（如何選擇代理）
-  - H2: 廣播群組（執行多個代理）
+  - H2: 主要私訊路由固定
+  - H2: 受防護的傳入記錄
+  - H2: 路由規則（如何選擇代理程式）
+  - H2: 廣播群組（執行多個代理程式）
   - H2: 設定概觀
   - H2: 工作階段儲存
   - H2: WebChat 行為
-  - H2: 回覆脈絡
+  - H2: 回覆情境
   - H2: 相關
 
 ## channels/clickclack.md
 
-- 路由：/channels/clickclack
-- 標題：
+- Route: /channels/clickclack
+- Headings:
   - H2: 快速設定
-  - H2: 多個機器人
+  - H2: 多個 bot
   - H2: 目標
   - H2: 權限
   - H2: 疑難排解
 
 ## channels/discord.md
 
-- 路由：/channels/discord
-- 標題：
+- Route: /channels/discord
+- Headings:
   - H2: 快速設定
-  - H2: 建議：設定 guild 工作區
+  - H2: 建議：設定公會工作區
   - H2: 執行階段模型
   - H2: 論壇頻道
-  - H2: 互動式元件
+  - H2: 互動元件
   - H2: 存取控制與路由
-  - H3: 以角色為基礎的代理路由
+  - H3: 以角色為基礎的代理程式路由
   - H2: 原生命令與命令驗證
   - H2: 功能詳細資料
   - H2: 工具與動作閘門
@@ -347,15 +347,15 @@ x-i18n:
 
 ## channels/feishu.md
 
-- 路由：/channels/feishu
-- 標題：
+- Route: /channels/feishu
+- Headings:
   - H2: 快速開始
   - H2: 存取控制
   - H3: 直接訊息
   - H3: 群組聊天
   - H2: 群組設定範例
-  - H3: 允許所有群組，不需要 @提及
-  - H3: 允許所有群組，仍需要 @提及
+  - H3: 允許所有群組，不需要 @mention
+  - H3: 允許所有群組，仍需要 @mention
   - H3: 僅允許特定群組
   - H3: 限制群組內的傳送者
   - H2: 取得群組/使用者 ID
@@ -363,20 +363,20 @@ x-i18n:
   - H3: 使用者 ID（openid，格式：ouxxx）
   - H2: 常用命令
   - H2: 疑難排解
-  - H3: 機器人在群組聊天中沒有回應
-  - H3: 機器人未收到訊息
+  - H3: Bot 在群組聊天中沒有回應
+  - H3: Bot 未接收訊息
   - H3: QR 設定在 Feishu 行動應用程式中沒有反應
-  - H3: App Secret 洩漏
+  - H3: App Secret 外洩
   - H2: 進階設定
   - H3: 多個帳戶
   - H3: 訊息限制
   - H3: 串流
   - H3: 配額最佳化
   - H3: ACP 工作階段
-  - H4: 持久 ACP 繫結
+  - H4: 持久 ACP 綁定
   - H4: 從聊天產生 ACP
-  - H3: 多代理路由
-  - H2: 每位使用者代理隔離（動態代理建立）
+  - H3: 多代理程式路由
+  - H2: 依使用者隔離代理程式（動態代理程式建立）
   - H3: 快速設定
   - H3: 運作方式
   - H3: 設定選項
@@ -388,13 +388,13 @@ x-i18n:
   - H2: 支援的訊息類型
   - H3: 接收
   - H3: 傳送
-  - H3: 執行緒與回覆
+  - H3: 對話串與回覆
   - H2: 相關
 
 ## channels/googlechat.md
 
-- 路由：/channels/googlechat
-- 標題：
+- Route: /channels/googlechat
+- Headings:
   - H2: 安裝
   - H2: 快速設定（初學者）
   - H2: 新增至 Google Chat
@@ -412,25 +412,25 @@ x-i18n:
 
 ## channels/group-messages.md
 
-- 路由：/channels/group-messages
-- 標題：
+- Route: /channels/group-messages
+- Headings:
   - H2: 行為
   - H2: 設定範例（WhatsApp）
   - H3: 啟用命令（僅擁有者）
   - H2: 使用方式
   - H2: 測試 / 驗證
-  - H2: 已知考量事項
+  - H2: 已知考量
   - H2: 相關
 
 ## channels/groups.md
 
-- 路由：/channels/groups
-- 標題：
+- Route: /channels/groups
+- Headings:
   - H2: 初學者簡介（2 分鐘）
   - H2: 可見回覆
-  - H2: 脈絡可見性與允許清單
+  - H2: 情境可見性與允許清單
   - H2: 工作階段鍵
-  - H2: 模式：個人私訊 + 公開群組（單一代理）
+  - H2: 模式：個人私訊 + 公開群組（單一代理程式）
   - H2: 顯示標籤
   - H2: 群組政策
   - H2: 提及閘門（預設）
@@ -438,46 +438,46 @@ x-i18n:
   - H2: 群組/頻道工具限制（選用）
   - H2: 群組允許清單
   - H2: 啟用（僅擁有者）
-  - H2: 脈絡欄位
-  - H2: iMessage 細節
+  - H2: 情境欄位
+  - H2: iMessage 特定事項
   - H2: WhatsApp 系統提示
-  - H2: WhatsApp 細節
+  - H2: WhatsApp 特定事項
   - H2: 相關
 
 ## channels/imessage-from-bluebubbles.md
 
-- 路由：/channels/imessage-from-bluebubbles
-- 標題：
+- Route: /channels/imessage-from-bluebubbles
+- Headings:
   - H2: 遷移檢查清單
   - H2: 何時適合此遷移
-  - H2: imsg 的用途
-  - H2: 開始之前
+  - H2: imsg 的作用
+  - H2: 開始前
   - H2: 設定轉換
-  - H2: 群組登錄陷阱
-  - H2: 逐步操作
-  - H2: 動作對等性一覽
-  - H2: 配對、工作階段與 ACP 繫結
-  - H2: 無復原頻道
+  - H2: 群組登錄表陷阱
+  - H2: 逐步說明
+  - H2: 動作等同性一覽
+  - H2: 配對、工作階段與 ACP 綁定
+  - H2: 無回復頻道
   - H2: 相關
 
 ## channels/imessage.md
 
-- 路由：/channels/imessage
-- 標題：
+- Route: /channels/imessage
+- Headings:
   - H2: 快速設定
   - H2: 需求與權限（macOS）
   - H2: 啟用 imsg 私有 API
   - H3: 設定
   - H3: 無法停用 SIP 時
   - H2: 存取控制與路由
-  - H2: ACP 對話繫結
+  - H2: ACP 對話綁定
   - H2: 部署模式
-  - H2: 媒體、分塊與傳送目標
+  - H2: 媒體、分塊與傳遞目標
   - H2: 私有 API 動作
   - H2: 設定寫入
-  - H2: 合併分段傳送私訊（在一次編寫中包含命令 + URL）
-  - H3: 情境與代理看到的內容
-  - H2: 橋接器或閘道重新啟動後的輸入復原
+  - H2: 合併分割傳送的私訊（命令 + URL 於同一組合）
+  - H3: 情境與代理程式看到的內容
+  - H2: 橋接器或閘道重新啟動後的傳入復原
   - H3: 操作者可見訊號
   - H3: 遷移
   - H2: 疑難排解
@@ -486,22 +486,22 @@ x-i18n:
 
 ## channels/index.md
 
-- 路由：/channels
-- 標題：
-  - H2: 傳送注意事項
+- Route: /channels
+- Headings:
+  - H2: 傳遞注意事項
   - H2: 支援的頻道
   - H2: 注意事項
 
 ## channels/irc.md
 
-- 路由：/channels/irc
-- 標題：
+- Route: /channels/irc
+- Headings:
   - H2: 快速開始
-  - H2: 安全性預設值
+  - H2: 安全預設值
   - H2: 存取控制
-  - H3: 常見陷阱：allowFrom 用於私訊，不用於頻道
+  - H3: 常見陷阱：allowFrom 適用於私訊，不適用於頻道
   - H2: 回覆觸發（提及）
-  - H2: 安全性注意事項（建議用於公開頻道）
+  - H2: 安全注意事項（建議用於公開頻道）
   - H3: 頻道中每個人使用相同工具
   - H3: 每位傳送者使用不同工具（擁有者取得更多權限）
   - H2: NickServ
@@ -511,8 +511,8 @@ x-i18n:
 
 ## channels/line.md
 
-- 路由：/channels/line
-- 標題：
+- 路由: /channels/line
+- 標題:
   - H2: 安裝
   - H2: 設定
   - H2: 配置
@@ -526,19 +526,19 @@ x-i18n:
 
 ## channels/location.md
 
-- 路由：/channels/location
-- 標題：
-  - H2: 文字格式設定
-  - H2: 上下文字段
-  - H2: 頻道注意事項
+- 路由: /channels/location
+- 標題:
+  - H2: 文字格式
+  - H2: 情境欄位
+  - H2: 頻道備註
   - H2: 相關
 
 ## channels/matrix-migration.md
 
-- 路由：/channels/matrix-migration
-- 標題：
-  - H2: 遷移會自動完成的事項
-  - H2: 遷移無法自動完成的事項
+- 路由: /channels/matrix-migration
+- 標題:
+  - H2: 遷移會自動執行的事項
+  - H2: 遷移無法自動執行的事項
   - H2: 建議的升級流程
   - H2: 加密遷移的運作方式
   - H2: 常見訊息及其含義
@@ -546,16 +546,16 @@ x-i18n:
   - H3: 加密狀態復原訊息
   - H3: 手動復原訊息
   - H3: 自訂外掛安裝訊息
-  - H2: 如果加密歷史記錄仍未恢復
+  - H2: 如果加密歷史仍未恢復
   - H2: 如果你想為未來訊息重新開始
   - H2: 相關
 
 ## channels/matrix-presentation.md
 
-- 路由：/channels/matrix-presentation
-- 標題：
+- 路由: /channels/matrix-presentation
+- 標題:
   - H2: 事件內容
-  - H2: 後援行為
+  - H2: 後備行為
   - H2: 支援的區塊
   - H2: 互動
   - H2: 與核准中繼資料的關係
@@ -563,32 +563,32 @@ x-i18n:
 
 ## channels/matrix-push-rules.md
 
-- 路由：/channels/matrix-push-rules
-- 標題：
+- 路由: /channels/matrix-push-rules
+- 標題:
   - H2: 先決條件
   - H2: 步驟
-  - H2: 多機器人注意事項
-  - H2: homeserver 注意事項
+  - H2: 多機器人備註
+  - H2: Homeserver 備註
   - H2: 相關
 
 ## channels/matrix.md
 
-- 路由：/channels/matrix
-- 標題：
+- 路由: /channels/matrix
+- 標題:
   - H2: 安裝
   - H2: 設定
   - H3: 互動式設定
   - H3: 最小配置
   - H3: 自動加入
   - H3: 允許清單目標格式
-  - H3: 帳戶 ID 正規化
+  - H3: 帳號 ID 正規化
   - H3: 快取的憑證
   - H3: 環境變數
   - H2: 配置範例
   - H2: 串流預覽
   - H2: 語音訊息
   - H2: 核准中繼資料
-  - H3: 用於靜默最終預覽的自架推播規則
+  - H3: 自行託管的推播規則，用於安靜的最終預覽
   - H2: 機器人對機器人房間
   - H2: 加密與驗證
   - H3: 啟用加密
@@ -597,62 +597,62 @@ x-i18n:
   - H3: 啟動或修復交叉簽署
   - H3: 房間金鑰備份
   - H3: 列出、請求及回應驗證
-  - H3: 多帳戶注意事項
+  - H3: 多帳號備註
   - H2: 個人資料管理
-  - H2: 討論串
-  - H3: 工作階段路由（sessionScope）
-  - H3: 回覆討論串（threadReplies）
-  - H3: 討論串繼承與斜線命令
+  - H2: 對話串
+  - H3: 工作階段路由 (`sessionScope`)
+  - H3: 回覆對話串 (`threadReplies`)
+  - H3: 對話串繼承與斜線命令
   - H2: ACP 對話綁定
-  - H3: 討論串綁定配置
+  - H3: 對話串綁定配置
   - H2: 回應
-  - H2: 歷史上下文
-  - H2: 上下文可見性
+  - H2: 歷史情境
+  - H2: 情境可見性
   - H2: 私訊與房間政策
   - H2: 直接房間修復
-  - H2: Exec 核准
+  - H2: 執行核准
   - H2: 斜線命令
-  - H2: 多帳戶
-  - H2: 私有/LAN homeserver
+  - H2: 多帳號
+  - H2: 私有/LAN homeservers
   - H2: 代理 Matrix 流量
   - H2: 目標解析
   - H2: 配置參考
-  - H3: 帳戶與連線
+  - H3: 帳號與連線
   - H3: 加密
   - H3: 存取與政策
   - H3: 回覆行為
   - H3: 回應設定
   - H3: 工具與每房間覆寫
-  - H3: Exec 核准設定
+  - H3: 執行核准設定
   - H2: 相關
 
 ## channels/mattermost.md
 
-- 路由：/channels/mattermost
-- 標題：
+- 路由: /channels/mattermost
+- 標題:
   - H2: 安裝
   - H2: 快速設定
   - H2: 原生斜線命令
-  - H2: 環境變數（預設帳戶）
+  - H2: 環境變數（預設帳號）
   - H2: 聊天模式
-  - H2: 討論串與工作階段
+  - H2: 對話串與工作階段
   - H2: 存取控制（私訊）
   - H2: 頻道（群組）
-  - H2: 對外傳送的目標
+  - H2: 對外傳遞的目標
   - H2: 私訊頻道重試
   - H2: 預覽串流
   - H2: 回應（訊息工具）
   - H2: 互動式按鈕（訊息工具）
-  - H3: 直接 API 整合（外部指令碼）
+  - H3: 直接 API 整合（外部腳本）
   - H2: 目錄配接器
-  - H2: 多帳戶
+  - H2: 多帳號
   - H2: 疑難排解
   - H2: 相關
 
 ## channels/msteams.md
 
-- 路由：/channels/msteams
-- 標題：
+- 路由: /channels/msteams
+- 標題:
   - H2: 內建外掛
   - H2: 快速設定
   - H2: 目標
@@ -663,64 +663,64 @@ x-i18n:
   - H3: 步驟 2：取得憑證
   - H3: 步驟 3：配置訊息端點
   - H3: 步驟 4：啟用 Teams 頻道
-  - H3: 步驟 5：建置 Teams 應用程式資訊清單
+  - H3: 步驟 5：建置 Teams App Manifest
   - H3: 步驟 6：配置 OpenClaw
   - H3: 步驟 7：執行閘道
-  - H2: 聯合驗證（憑證加受控身分）
+  - H2: 聯合式驗證（憑證加受控識別）
   - H3: 選項 A：憑證式驗證
-  - H3: 選項 B：Azure 受控身分
+  - H3: 選項 B：Azure Managed Identity
   - H3: AKS Workload Identity 設定
   - H3: 驗證類型比較
-  - H2: 本機開發（通道轉發）
+  - H2: 本機開發（通道轉送）
   - H2: 測試 Bot
   - H2: 環境變數
   - H2: 成員資訊動作
-  - H2: 歷史上下文
-  - H2: 目前 Teams RSC 權限（資訊清單）
-  - H2: Teams 資訊清單範例（已遮蔽）
-  - H3: 資訊清單注意事項（必要欄位）
+  - H2: 歷史情境
+  - H2: 目前 Teams RSC 權限（manifest）
+  - H2: Teams manifest 範例（已遮蔽）
+  - H3: Manifest 注意事項（必要欄位）
   - H3: 更新現有應用程式
-  - H2: 功能：僅 RSC 與 Graph 比較
-  - H3: 僅使用 Teams RSC（已安裝應用程式，沒有 Graph API 權限）
+  - H2: 功能：僅 RSC 與 Graph
+  - H3: 僅使用 Teams RSC（已安裝應用程式，無 Graph API 權限）
   - H3: 使用 Teams RSC + Microsoft Graph 應用程式權限
   - H3: RSC 與 Graph API
-  - H2: 啟用 Graph 的媒體 + 歷史記錄（頻道必要）
+  - H2: 啟用 Graph 的媒體 + 歷史（頻道必需）
   - H2: 已知限制
   - H3: 網路鉤子逾時
   - H3: Teams 雲端與服務 URL 支援
   - H3: 格式設定
   - H2: 配置
   - H2: 路由與工作階段
-  - H2: 回覆樣式：討論串與貼文
+  - H2: 回覆樣式：對話串與貼文
   - H3: 解析優先順序
-  - H3: 討論串上下文保留
+  - H3: 對話串情境保留
   - H2: 附件與圖片
   - H2: 在群組聊天中傳送檔案
-  - H3: 群組聊天為何需要 SharePoint
+  - H3: 為什麼群組聊天需要 SharePoint
   - H3: 設定
   - H3: 分享行為
-  - H3: 後援行為
+  - H3: 後備行為
   - H3: 檔案儲存位置
   - H2: 投票（Adaptive Cards）
-  - H2: 呈現卡片
+  - H2: 展示卡片
   - H2: 目標格式
-  - H2: 主動式訊息
+  - H2: 主動訊息
   - H2: 團隊與頻道 ID（常見陷阱）
   - H2: 私人頻道
   - H2: 疑難排解
   - H3: 常見問題
-  - H3: 資訊清單上傳錯誤
+  - H3: Manifest 上傳錯誤
   - H3: RSC 權限無法運作
-  - H2: 參考資料
+  - H2: 參考
   - H2: 相關
 
 ## channels/nextcloud-talk.md
 
-- 路由：/channels/nextcloud-talk
-- 標題：
+- 路由: /channels/nextcloud-talk
+- 標題:
   - H2: 內建外掛
   - H2: 快速設定（初學者）
-  - H2: 注意事項
+  - H2: 備註
   - H2: 存取控制（私訊）
   - H2: 房間（群組）
   - H2: 功能
@@ -729,8 +729,8 @@ x-i18n:
 
 ## channels/nostr.md
 
-- 路由：/channels/nostr
-- 標題：
+- 路由: /channels/nostr
+- 標題:
   - H2: 內建外掛
   - H3: 較舊/自訂安裝
   - H3: 非互動式設定
@@ -741,10 +741,10 @@ x-i18n:
   - H3: 私訊政策
   - H3: 允許清單範例
   - H2: 金鑰格式
-  - H2: 中繼
-  - H2: 通訊協定支援
+  - H2: 中繼站
+  - H2: 協定支援
   - H2: 測試
-  - H3: 本機中繼
+  - H3: 本機中繼站
   - H3: 手動測試
   - H2: 疑難排解
   - H3: 未收到訊息
@@ -756,115 +756,115 @@ x-i18n:
 
 ## channels/pairing.md
 
-- 路由：/channels/pairing
-- 標題：
+- 路由: /channels/pairing
+- 標題:
   - H2: 1) 私訊配對（傳入聊天存取）
-  - H3: 核准寄件者
-  - H3: 可重複使用的寄件者群組
-  - H3: 狀態儲存位置
-  - H2: 2) 節點裝置配對（iOS/Android/macOS/無頭節點）
+  - H3: 核准傳送者
+  - H3: 可重複使用的傳送者群組
+  - H3: 狀態所在位置
+  - H2: 2) 節點裝置配對（iOS/Android/macOS/無介面節點）
   - H3: 透過 Telegram 配對（建議用於 iOS）
   - H3: 核准節點裝置
   - H3: 選用的受信任 CIDR 節點自動核准
   - H3: 節點配對狀態儲存
-  - H3: 注意事項
+  - H3: 備註
   - H2: 相關文件
 
 ## channels/qa-channel.md
 
-- 路由：/channels/qa-channel
-- 標題：
-  - H2: 功能
+- 路由: /channels/qa-channel
+- 標題:
+  - H2: 功能說明
   - H2: 配置
   - H2: 執行器
   - H2: 相關
 
 ## channels/qqbot.md
 
-- 路由：/channels/qqbot
-- 標題：
+- 路由: /channels/qqbot
+- 標題:
   - H2: 安裝
   - H2: 設定
   - H2: 配置
-  - H3: 多帳戶設定
+  - H3: 多帳號設定
   - H3: 群組聊天
   - H3: 語音（STT / TTS）
   - H2: 目標格式
   - H2: 斜線命令
   - H2: 引擎架構
-  - H2: QR 碼入門設定
+  - H2: QR 碼上線
   - H2: 疑難排解
   - H2: 相關
 
 ## channels/raft.md
 
-- 路由：/channels/raft
-- 標題：
+- 路由: /channels/raft
+- 標題:
   - H2: 安裝
   - H2: 先決條件
   - H2: 配置
   - H2: 運作方式
   - H2: 驗證
   - H2: 疑難排解
-  - H2: 參考資料
+  - H2: 參考
 
 ## channels/signal.md
 
-- 路由：/channels/signal
-- 標題：
+- 路由: /channels/signal
+- 標題:
   - H2: 先決條件
   - H2: 快速設定（初學者）
   - H2: 這是什麼
   - H2: 配置寫入
   - H2: 號碼模型（重要）
-  - H2: 設定路徑 A：連結現有 Signal 帳戶（QR）
+  - H2: 設定路徑 A：連結現有 Signal 帳號（QR）
   - H2: 設定路徑 B：註冊專用機器人號碼（SMS、Linux）
-  - H2: 外部常駐程式模式（httpUrl）
-  - H2: 容器模式（bbernhard/signal-cli-rest-api）
+  - H2: 外部常駐程式模式 (`httpUrl`)
+  - H2: 容器模式 (`bbernhard/signal-cli-rest-api`)
   - H2: 存取控制（私訊 + 群組）
   - H2: 運作方式（行為）
   - H2: 媒體 + 限制
-  - H2: 輸入狀態 + 已讀回條
+  - H2: 輸入中 + 已讀回條
   - H2: 回應（訊息工具）
   - H2: 核准回應
-  - H2: 傳送目標（命令列介面/排程）
+  - H2: 傳遞目標（命令列介面/排程）
   - H2: 疑難排解
-  - H2: 安全性注意事項
+  - H2: 安全性備註
   - H2: 配置參考（Signal）
   - H2: 相關
 
 ## channels/slack.md
 
-- 路由：/channels/slack
-- 標題：
-  - H2: 選擇 Socket Mode 或 HTTP Request URL
+- 路由: /channels/slack
+- 標題:
+  - H2: 選擇 Socket Mode 或 HTTP Request URLs
   - H3: 中繼模式
   - H2: 安裝
   - H2: 快速設定
   - H2: Socket Mode 傳輸調校
-  - H2: 資訊清單與範圍檢查清單
-  - H3: 其他資訊清單設定
+  - H2: Manifest 與範圍檢查清單
+  - H3: 其他 manifest 設定
   - H2: 權杖模型
-  - H2: 動作與閘門
+  - H2: 動作與門檻
   - H2: 存取控制與路由
-  - H2: 討論串、工作階段與回覆標籤
-  - H2: 確認回應
-  - H3: 表情符號（ackReaction）
-  - H3: 範圍（messages.ackReactionScope）
+  - H2: 對話串、工作階段與回覆標籤
+  - H2: Ack 回應
+  - H3: Emoji (`ackReaction`)
+  - H3: 範圍 (`messages.ackReactionScope`)
   - H2: 文字串流
-  - H2: 輸入狀態回應後援
-  - H2: 媒體、分塊與傳送
+  - H2: 輸入中回應後備
+  - H2: 媒體、分塊與傳遞
   - H2: 命令與斜線行為
   - H2: 互動式回覆
-  - H3: 外掛擁有的模態提交
+  - H3: 外掛擁有的 modal 提交
   - H2: Slack 中的原生核准
-  - H2: 事件與營運行為
+  - H2: 事件與操作行為
   - H2: 配置參考
   - H2: 疑難排解
   - H2: 附件視覺參考
   - H3: 支援的媒體類型
   - H3: 傳入管線
-  - H3: 討論串根附件繼承
+  - H3: 對話串根附件繼承
   - H3: 多附件處理
   - H3: 大小、下載與模型限制
   - H3: 已知限制
@@ -873,8 +873,8 @@ x-i18n:
 
 ## channels/sms.md
 
-- 路由：/channels/sms
-- 標題：
+- 路由: /channels/sms
+- 標題:
   - H2: 開始之前
   - H2: 快速設定
   - H2: 配置範例
@@ -882,38 +882,38 @@ x-i18n:
   - H3: 環境變數
   - H3: SecretRef 驗證權杖
   - H3: 僅允許清單的私人號碼
-  - H3: Messaging Service 寄件者
+  - H3: Messaging Service 傳送者
   - H3: 預設對外目標
   - H2: 存取控制
   - H2: 傳送 SMS
   - H2: 驗證設定
   - H3: 從 macOS iMessage/SMS 進行端對端測試
   - H2: 網路鉤子安全性
-  - H2: 多帳戶配置
+  - H2: 多帳號配置
   - H2: 疑難排解
   - H3: Twilio 傳回 403 或 OpenClaw 拒絕網路鉤子
-  - H3: 沒有出現配對請求
+  - H3: 未出現配對請求
   - H3: 對外傳送失敗
-  - H3: 訊息抵達但代理未回覆
+  - H3: 訊息已抵達但代理未回應
 
 ## channels/synology-chat.md
 
-- 路由：/channels/synology-chat
-- 標題：
+- 路由: /channels/synology-chat
+- 標題:
   - H2: 內建外掛
   - H2: 快速設定
   - H2: 環境變數
   - H2: 私訊政策與存取控制
-  - H2: 對外傳送
-  - H2: 多帳戶
-  - H2: 安全性注意事項
+  - H2: 對外傳遞
+  - H2: 多帳號
+  - H2: 安全性備註
   - H2: 疑難排解
   - H2: 相關
 
 ## channels/telegram.md
 
-- 路由：/channels/telegram
-- 標題：
+- 路由: /channels/telegram
+- 標題:
   - H2: 快速設定
   - H2: Telegram 端設定
   - H2: 存取控制與啟用
@@ -927,8 +927,8 @@ x-i18n:
 
 ## channels/tlon.md
 
-- 路由：/channels/tlon
-- 標題：
+- 路由: /channels/tlon
+- 標題:
   - H2: 內建外掛
   - H2: 設定
   - H2: 私有/LAN ships
@@ -936,18 +936,18 @@ x-i18n:
   - H2: 存取控制
   - H2: 擁有者與核准系統
   - H2: 自動接受設定
-  - H2: 傳送目標（命令列介面/排程）
-  - H2: 內建 Skill
+  - H2: 傳遞目標（命令列介面/排程）
+  - H2: 內建 skill
   - H2: 功能
   - H2: 疑難排解
   - H2: 配置參考
-  - H2: 注意事項
+  - H2: 備註
   - H2: 相關
 
 ## channels/troubleshooting.md
 
-- 路由：/channels/troubleshooting
-- 標題：
+- 路由: /channels/troubleshooting
+- 標題:
   - H2: 命令階梯
   - H2: 更新後
   - H2: WhatsApp
@@ -977,17 +977,17 @@ x-i18n:
   - H2: 這是什麼
   - H2: 設定（詳細）
   - H3: 產生憑證
-  - H3: 設定機器人
+  - H3: 設定 Bot
   - H3: 存取控制（建議）
-  - H2: 權杖重新整理（選用）
+  - H2: Token 重新整理（選用）
   - H2: 多帳號支援
   - H2: 存取控制
   - H2: 疑難排解
   - H2: 設定
   - H3: 帳號設定
-  - H3: 提供者選項
+  - H3: Provider 選項
   - H2: 工具動作
-  - H2: 安全與維運
+  - H2: 安全與營運
   - H2: 限制
   - H2: 相關
 
@@ -1009,21 +1009,21 @@ x-i18n:
 
 - 路由：/channels/whatsapp
 - 標題：
-  - H2: 安裝（按需）
+  - H2: 安裝（隨需）
   - H2: 快速設定
   - H2: 部署模式
   - H2: 執行階段模型
   - H2: 核准提示
-  - H2: 外掛鉤子與隱私
+  - H2: 外掛 Hook 與隱私
   - H2: 存取控制與啟用
-  - H2: 已設定的 ACP 繫結
+  - H2: 已設定的 ACP 綁定
   - H2: 個人號碼與自我聊天行為
-  - H2: 訊息正規化與內容脈絡
+  - H2: 訊息正規化與脈絡
   - H2: 傳遞、分段與媒體
   - H2: 回覆引用
-  - H2: 反應層級
-  - H2: 確認反應
-  - H2: 生命週期狀態反應
+  - H2: Reaction 等級
+  - H2: 確認 Reaction
+  - H2: 生命週期狀態 Reaction
   - H2: 多帳號與憑證
   - H2: 工具、動作與設定寫入
   - H2: 疑難排解
@@ -1042,21 +1042,21 @@ x-i18n:
   - H3: 群組聊天
   - H2: 設定範例
   - H3: 使用開放私訊政策的基本設定
-  - H3: 將私訊限制給特定使用者
-  - H3: 停用群組中的 @mention 要求
-  - H3: 最佳化外送訊息傳遞
+  - H3: 將私訊限制為特定使用者
+  - H3: 在群組中停用 @mention 要求
+  - H3: 最佳化傳出訊息傳遞
   - H3: 調整合併文字策略
   - H2: 常用命令
   - H2: 疑難排解
-  - H3: 機器人在群組聊天中沒有回應
-  - H3: 機器人沒有收到訊息
-  - H3: 機器人傳送空白或備援回覆
+  - H3: Bot 在群組聊天中沒有回應
+  - H3: Bot 未收到訊息
+  - H3: Bot 傳送空白或後備回覆
   - H3: App Secret 外洩
   - H2: 進階設定
   - H3: 多個帳號
   - H3: 訊息限制
   - H3: 串流
-  - H3: 群組聊天歷史內容脈絡
+  - H3: 群組聊天歷史脈絡
   - H3: 回覆對象模式
   - H3: Markdown 提示注入
   - H3: 偵錯模式
@@ -1065,7 +1065,7 @@ x-i18n:
   - H2: 支援的訊息類型
   - H3: 接收
   - H3: 傳送
-  - H3: 對話串與回覆
+  - H3: 執行緒與回覆
   - H2: 相關
 
 ## channels/zalo.md
@@ -1076,14 +1076,14 @@ x-i18n:
   - H2: 快速設定（初學者）
   - H2: 這是什麼
   - H2: 設定（快速路徑）
-  - H3: 1) 建立機器人權杖（Zalo Bot Platform）
-  - H3: 2) 設定權杖（環境變數或設定）
+  - H3: 1) 建立 Bot Token（Zalo Bot Platform）
+  - H3: 2) 設定 Token（環境變數或設定）
   - H2: 運作方式（行為）
   - H2: 限制
   - H2: 存取控制（私訊）
   - H3: 私訊存取
   - H2: 存取控制（群組）
-  - H2: Long-polling 與 webhook
+  - H2: Long-polling 與網路鉤子
   - H2: 支援的訊息類型
   - H2: 功能
   - H2: 傳遞目標（命令列介面/排程）
@@ -1104,7 +1104,7 @@ x-i18n:
   - H3: 3. 產生 QR code 並登入
   - H3: 4. 重新啟動閘道
   - H2: 運作方式
-  - H2: 底層原理
+  - H2: 底層運作
   - H2: 疑難排解
 
 ## channels/zalouser.md
@@ -1122,7 +1122,7 @@ x-i18n:
   - H3: 群組提及閘控
   - H2: 多帳號
   - H2: 環境變數
-  - H2: 輸入中、反應與傳遞確認
+  - H2: 輸入中、Reaction 與傳遞確認
   - H2: 疑難排解
   - H2: 相關
 
@@ -1130,9 +1130,9 @@ x-i18n:
 
 - 路由：/ci
 - 標題：
-  - H2: 管線概覽
+  - H2: Pipeline 概覽
   - H2: 快速失敗順序
-  - H2: PR 內容脈絡與證據
+  - H2: PR 脈絡與證據
   - H2: 範圍與路由
   - H2: ClawSweeper 活動轉送
   - H2: 手動分派
@@ -1140,28 +1140,28 @@ x-i18n:
   - H2: 執行器註冊預算
   - H2: 本機等效項
   - H2: OpenClaw 效能
-  - H2: 完整版本驗證
+  - H2: 完整 Release 驗證
   - H2: Live 與 E2E 分片
   - H2: 套件驗收
-  - H3: 作業
+  - H3: 工作
   - H3: 候選來源
-  - H3: 套件設定檔
-  - H3: 舊版相容性窗口
+  - H3: Suite 設定檔
+  - H3: Legacy 相容性視窗
   - H3: 範例
-  - H2: 安裝煙霧測試
+  - H2: 安裝 Smoke
   - H2: 本機 Docker E2E
   - H3: 可調參數
   - H3: 可重用的 Live/E2E 工作流程
-  - H3: 發布路徑區塊
+  - H3: Release 路徑區塊
   - H2: 外掛預發行
   - H2: QA Lab
   - H2: CodeQL
-  - H3: 安全性分類
-  - H3: 平台特定安全性分片
-  - H3: 關鍵品質分類
+  - H3: 安全分類
+  - H3: 平台特定安全分片
+  - H3: Critical Quality 分類
   - H2: 維護工作流程
-  - H3: 文件代理
-  - H3: 測試效能代理
+  - H3: 文件 Agent
+  - H3: 測試效能 Agent
   - H3: 合併後的重複 PR
   - H2: 本機檢查閘門與變更路由
   - H2: Testbox 驗證
@@ -1173,20 +1173,20 @@ x-i18n:
 - 標題：
   - H1: ClawHub 命令列介面
   - H2: 探索與安裝
-  - H2: 發布與維護
+  - H2: 發佈與維護
   - H2: 相關
 
 ## clawhub/publishing.md
 
 - 路由：/clawhub/publishing
 - 標題：
-  - H1: 在 ClawHub 上發布
+  - H1: 在 ClawHub 上發佈
   - H2: 擁有者
   - H2: Skills
   - H2: 外掛
-  - H2: 發布流程
+  - H2: Release 流程
   - H2: 常見問題
-  - H3: 套件範圍必須符合所選擁有者
+  - H3: 套件 scope 必須符合選取的擁有者
 
 ## cli/acp.md
 
@@ -1197,8 +1197,8 @@ x-i18n:
   - H2: 已知限制
   - H2: 使用方式
   - H2: ACP 用戶端（偵錯）
-  - H2: 協定煙霧測試
-  - H2: 如何使用這個
+  - H2: 協定 Smoke 測試
+  - H2: 如何使用此功能
   - H2: 選取代理
   - H2: 從 acpx 使用（Codex、Claude、其他 ACP 用戶端）
   - H2: Zed 編輯器設定
@@ -1214,7 +1214,7 @@ x-i18n:
   - H1: openclaw agent
   - H2: 選項
   - H2: 範例
-  - H2: 備註
+  - H2: 注意事項
   - H2: JSON 傳遞狀態
   - H2: 相關
 
@@ -1224,9 +1224,9 @@ x-i18n:
 - 標題：
   - H1: openclaw agents
   - H2: 範例
-  - H2: 路由繫結
+  - H2: 路由綁定
   - H3: --bind 格式
-  - H3: 繫結範圍行為
+  - H3: 綁定範圍行為
   - H2: 命令介面
   - H3: agents
   - H3: agents list
@@ -1247,10 +1247,10 @@ x-i18n:
   - H2: openclaw exec-policy
   - H2: 常用命令
   - H2: 從檔案取代核准
-  - H2: "永不提示" / YOLO 範例
+  - H2: "Never prompt" / YOLO 範例
   - H2: 允許清單輔助工具
   - H2: 常用選項
-  - H2: 備註
+  - H2: 注意事項
   - H2: 相關
 
 ## cli/attach.md
@@ -1263,7 +1263,7 @@ x-i18n:
 - 路由：/cli/backup
 - 標題：
   - H1: openclaw backup
-  - H2: 備註
+  - H2: 注意事項
   - H2: 備份內容
   - H2: 無效設定行為
   - H2: 大小與效能
@@ -1278,14 +1278,14 @@ x-i18n:
   - H2: 快速開始（本機）
   - H2: 快速疑難排解
   - H2: 生命週期
-  - H2: 如果命令不存在
+  - H2: 如果缺少命令
   - H2: 設定檔
   - H2: 分頁
-  - H2: 快照 / 截圖 / 動作
+  - H2: Snapshot / screenshot / actions
   - H2: 狀態與儲存
   - H2: 偵錯
   - H2: 透過 MCP 使用現有 Chrome
-  - H2: 遠端瀏覽器控制（node 主機代理）
+  - H2: 遠端瀏覽器控制（節點主機 Proxy）
   - H2: 相關
 
 ## cli/channels.md
@@ -1294,7 +1294,7 @@ x-i18n:
 - 標題：
   - H1: openclaw channels
   - H2: 常用命令
-  - H2: 狀態 / 功能 / 解析 / 日誌
+  - H2: 狀態 / 功能 / 解析 / 記錄
   - H2: 新增 / 移除帳號
   - H2: 登入與登出（互動式）
   - H2: 疑難排解
@@ -1327,22 +1327,22 @@ x-i18n:
   - H1: openclaw completion
   - H2: 使用方式
   - H2: 選項
-  - H2: 備註
+  - H2: 注意事項
   - H2: 相關
 
 ## cli/config.md
 
 - 路由：/cli/config
 - 標題：
-  - H2: 根選項
+  - H2: 根層選項
   - H2: 範例
   - H3: config schema
   - H3: 路徑
   - H2: 值
   - H2: config set 模式
   - H2: config patch
-  - H2: 提供者建構器旗標
-  - H2: 試執行
+  - H2: Provider 建構器旗標
+  - H2: Dry run
   - H3: JSON 輸出形狀
   - H2: 寫入安全
   - H2: 子命令
@@ -1367,7 +1367,7 @@ x-i18n:
   - H2: 範例
   - H2: 安全啟動
   - H2: 操作與核准
-  - H2: 設定引導
+  - H2: 設定 Bootstrap
   - H2: 模型輔助規劃器
   - H2: 切換到代理
   - H2: 訊息救援模式
@@ -1378,25 +1378,25 @@ x-i18n:
 - 路由：/cli/cron
 - 標題：
   - H1: openclaw cron
-  - H2: 快速建立作業
+  - H2: 快速建立工作
   - H2: 工作階段
   - H2: 傳遞
   - H3: 傳遞擁有權
   - H3: 失敗傳遞
   - H2: 排程
-  - H3: 一次性作業
-  - H3: 週期性作業
+  - H3: 一次性工作
+  - H3: 週期性工作
   - H3: 手動執行
   - H2: 模型
   - H3: 隔離排程模型優先順序
   - H3: 快速模式
-  - H3: 即時模型切換重試
+  - H3: Live 模型切換重試
   - H2: 執行輸出與拒絕
   - H3: 過期確認抑制
-  - H3: 靜默權杖抑制
+  - H3: Silent token 抑制
   - H3: 結構化拒絕
   - H2: 保留
-  - H2: 遷移舊作業
+  - H2: 遷移較舊的工作
   - H2: 常見編輯
   - H2: 常用管理命令
   - H2: 相關
@@ -1434,8 +1434,8 @@ x-i18n:
   - H3: openclaw devices rotate --device --role [--scope ]
   - H3: openclaw devices revoke --device --role
   - H2: 常用選項
-  - H2: 備註
-  - H2: 權杖漂移復原檢查清單
+  - H2: 注意事項
+  - H2: Token Drift 復原檢查清單
   - H2: 相關
 
 ## cli/directory.md
@@ -1444,11 +1444,11 @@ x-i18n:
 - 標題：
   - H1: openclaw directory
   - H2: 常用旗標
-  - H2: 備註
+  - H2: 注意事項
   - H2: 搭配訊息傳送使用結果
-  - H2: ID 格式（依渠道）
+  - H2: ID 格式（依 Channel）
   - H2: 自己（"me"）
-  - H2: 對等方（聯絡人/使用者）
+  - H2: Peers（聯絡人/使用者）
   - H2: 群組
   - H2: 相關
 
@@ -1485,7 +1485,7 @@ x-i18n:
   - H2: 結構化健康檢查
   - H2: 檢查選取
   - H2: 升級後模式
-  - H2: macOS：launchctl 環境覆寫
+  - H2: macOS：launchctl env 覆寫
   - H2: 相關
 
 ## cli/flows.md
@@ -1505,7 +1505,7 @@ x-i18n:
   - H2: 執行閘道
   - H3: 選項
   - H2: 重新啟動閘道
-  - H3: 閘道分析
+  - H3: 閘道 Profiling
   - H2: 查詢執行中的閘道
   - H3: gateway health
   - H3: gateway usage-cost
@@ -1513,10 +1513,10 @@ x-i18n:
   - H3: gateway diagnostics export
   - H3: gateway status
   - H3: gateway probe
-  - H4: 透過 SSH 遠端（Mac app 同等功能）
+  - H4: 透過 SSH 遠端（Mac app parity）
   - H3: gateway call
   - H2: 管理閘道服務
-  - H3: 使用包裝器安裝
+  - H3: 使用 Wrapper 安裝
   - H2: 探索閘道（Bonjour）
   - H3: gateway discover
   - H2: 相關
@@ -1531,8 +1531,8 @@ x-i18n:
 
 ## cli/hooks.md
 
-- 路由: /cli/hooks
-- 標題:
+- 路由：/cli/hooks
+- 標題：
   - H1: openclaw hooks
   - H2: 列出所有 hooks
   - H2: 取得 hook 資訊
@@ -1540,8 +1540,8 @@ x-i18n:
   - H2: 啟用 Hook
   - H2: 停用 Hook
   - H2: 備註
-  - H2: 安裝 hook 套件組
-  - H2: 更新 hook 套件組
+  - H2: 安裝 hook 套件
+  - H2: 更新 hook 套件
   - H2: 內建 hooks
   - H3: session-memory
   - H3: bootstrap-extra-files
@@ -1551,8 +1551,8 @@ x-i18n:
 
 ## cli/index.md
 
-- 路由: /cli
-- 標題:
+- 路由：/cli
+- 標題：
   - H2: 命令頁面
   - H2: 全域旗標
   - H2: 輸出模式
@@ -1563,15 +1563,15 @@ x-i18n:
 
 ## cli/infer.md
 
-- 路由: /cli/infer
-- 標題:
-  - H2: 將 infer 轉換成 skill
+- 路由：/cli/infer
+- 標題：
+  - H2: 將 infer 轉成 skill
   - H2: 為什麼使用 infer
   - H2: 命令樹
   - H2: 常見任務
   - H2: 行為
   - H2: 模型
-  - H2: 圖片
+  - H2: 圖像
   - H2: 音訊
   - H2: TTS
   - H2: 影片
@@ -1584,8 +1584,8 @@ x-i18n:
 
 ## cli/logs.md
 
-- 路由: /cli/logs
-- 標題:
+- 路由：/cli/logs
+- 標題：
   - H1: openclaw logs
   - H2: 選項
   - H2: 共用閘道 RPC 選項
@@ -1595,8 +1595,8 @@ x-i18n:
 
 ## cli/mcp.md
 
-- 路由: /cli/mcp
-- 標題:
+- 路由：/cli/mcp
+- 標題：
   - H2: 選擇正確的 MCP 路徑
   - H2: OpenClaw 作為 MCP 伺服器
   - H3: 何時使用 serve
@@ -1609,7 +1609,7 @@ x-i18n:
   - H3: Claude 頻道通知
   - H3: MCP 用戶端設定
   - H3: 選項
-  - H3: 安全性與信任邊界
+  - H3: 安全與信任邊界
   - H3: 測試
   - H3: 疑難排解
   - H2: OpenClaw 作為 MCP 用戶端登錄檔
@@ -1620,14 +1620,14 @@ x-i18n:
   - H3: SSE / HTTP 傳輸
   - H3: OAuth 工作流程
   - H3: 可串流 HTTP 傳輸
-  - H2: 控制介面
+  - H2: 控制 UI
   - H2: 目前限制
   - H2: 相關
 
 ## cli/memory.md
 
-- 路由: /cli/memory
-- 標題:
+- 路由：/cli/memory
+- 標題：
   - H1: openclaw memory
   - H2: 範例
   - H2: 選項
@@ -1636,8 +1636,8 @@ x-i18n:
 
 ## cli/message.md
 
-- 路由: /cli/message
-- 標題:
+- 路由：/cli/message
+- 標題：
   - H1: openclaw message
   - H2: 用法
   - H2: 常用旗標
@@ -1649,15 +1649,15 @@ x-i18n:
   - H3: 貼圖
   - H3: 角色 / 頻道 / 成員 / 語音
   - H3: 事件
-  - H3: 管理（Discord）
+  - H3: 審核管理 (Discord)
   - H3: 廣播
   - H2: 範例
   - H2: 相關
 
 ## cli/migrate.md
 
-- 路由: /cli/migrate
-- 標題:
+- 路由：/cli/migrate
+- 標題：
   - H1: openclaw migrate
   - H2: 命令
   - H2: 安全模型
@@ -1673,13 +1673,13 @@ x-i18n:
   - H3: 僅封存狀態
   - H3: 套用後
   - H2: 外掛合約
-  - H2: 入門整合
+  - H2: Onboarding 整合
   - H2: 相關
 
 ## cli/models.md
 
-- 路由: /cli/models
-- 標題:
+- 路由：/cli/models
+- 標題：
   - H1: openclaw models
   - H2: 常用命令
   - H3: 模型掃描
@@ -1690,22 +1690,22 @@ x-i18n:
 
 ## cli/node.md
 
-- 路由: /cli/node
-- 標題:
+- 路由：/cli/node
+- 標題：
   - H1: openclaw node
   - H2: 為什麼使用節點主機？
-  - H2: 瀏覽器代理（零設定）
-  - H2: 執行（前景）
+  - H2: 瀏覽器代理 (零設定)
+  - H2: 執行 (前景)
   - H2: 節點主機的閘道驗證
-  - H2: 服務（背景）
+  - H2: 服務 (背景)
   - H2: 配對
-  - H2: Exec 核准
+  - H2: 執行核准
   - H2: 相關
 
 ## cli/nodes.md
 
-- 路由: /cli/nodes
-- 標題:
+- 路由：/cli/nodes
+- 標題：
   - H1: openclaw nodes
   - H2: 常用命令
   - H2: 呼叫
@@ -1713,12 +1713,12 @@ x-i18n:
 
 ## cli/onboard.md
 
-- 路由: /cli/onboard
-- 標題:
+- 路由：/cli/onboard
+- 標題：
   - H1: openclaw onboard
   - H2: 相關指南
   - H2: 範例
-  - H2: 語言地區
+  - H2: 語言環境
   - H3: 非互動式 Z.AI 端點選擇
   - H2: 其他非互動式旗標
   - H2: 流程備註
@@ -1726,19 +1726,19 @@ x-i18n:
 
 ## cli/pairing.md
 
-- 路由: /cli/pairing
-- 標題:
+- 路由：/cli/pairing
+- 標題：
   - H1: openclaw pairing
   - H2: 命令
-  - H2: pairing list
-  - H2: pairing approve
+  - H2: 配對清單
+  - H2: 核准配對
   - H2: 備註
   - H2: 相關
 
 ## cli/path.md
 
-- 路由: /cli/path
-- 標題:
+- 路由：/cli/path
+- 標題：
   - H1: openclaw path
   - H2: 為什麼使用它
   - H2: 如何使用
@@ -1767,31 +1767,31 @@ x-i18n:
 
 ## cli/plugins.md
 
-- 路由: /cli/plugins
-- 標題:
+- 路由：/cli/plugins
+- 標題：
   - H2: 命令
   - H3: 作者
   - H3: 提供者 Scaffold
   - H3: 安裝
-  - H4: 市集簡寫
-  - H3: 列表
+  - H4: Marketplace 簡寫
+  - H3: 清單
   - H3: 外掛索引
   - H3: 解除安裝
   - H3: 更新
   - H3: 檢查
   - H3: Doctor
   - H3: 登錄檔
-  - H3: 市集
+  - H3: Marketplace
   - H2: 相關
 
 ## cli/policy.md
 
-- 路由: /cli/policy
-- 標題:
+- 路由：/cli/policy
+- 標題：
   - H1: openclaw policy
   - H2: 快速開始
   - H3: 政策規則參考
-  - H4: 作用域疊加
+  - H4: 範圍化覆蓋
   - H4: 頻道
   - H4: MCP 伺服器
   - H4: 模型提供者
@@ -1799,10 +1799,10 @@ x-i18n:
   - H4: 入口與頻道存取
   - H4: 閘道
   - H4: 代理工作區
-  - H4: 沙盒姿態
+  - H4: 沙箱姿態
   - H4: 資料處理
   - H4: 密鑰
-  - H4: Exec 核准
+  - H4: 執行核准
   - H4: 驗證設定檔
   - H4: 工具中繼資料
   - H4: 工具姿態
@@ -1815,8 +1815,8 @@ x-i18n:
 
 ## cli/proxy.md
 
-- 路由: /cli/proxy
-- 標題:
+- 路由：/cli/proxy
+- 標題：
   - H1: openclaw proxy
   - H2: 命令
   - H2: 驗證
@@ -1826,8 +1826,8 @@ x-i18n:
 
 ## cli/qr.md
 
-- 路由: /cli/qr
-- 標題:
+- 路由：/cli/qr
+- 標題：
   - H1: openclaw qr
   - H2: 用法
   - H2: 選項
@@ -1836,49 +1836,49 @@ x-i18n:
 
 ## cli/reset.md
 
-- 路由: /cli/reset
-- 標題:
+- 路由：/cli/reset
+- 標題：
   - H1: openclaw reset
   - H2: 相關
 
 ## cli/sandbox.md
 
-- 路由: /cli/sandbox
-- 標題:
-  - H2: 概觀
+- 路由：/cli/sandbox
+- 標題：
+  - H2: 概覽
   - H2: 命令
   - H3: openclaw sandbox explain
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
   - H2: 使用案例
   - H3: 更新 Docker 映像後
-  - H3: 變更沙盒設定後
+  - H3: 變更沙箱設定後
   - H3: 變更 SSH 目標或 SSH 驗證材料後
   - H3: 變更 OpenShell 來源、政策或模式後
   - H3: 變更 setupCommand 後
   - H3: 僅針對特定代理
-  - H2: 為何需要這項功能
+  - H2: 為什麼需要這個
   - H2: 登錄檔遷移
   - H2: 設定
   - H2: 相關
 
 ## cli/secrets.md
 
-- 路由: /cli/secrets
-- 標題:
+- 路由：/cli/secrets
+- 標題：
   - H1: openclaw secrets
   - H2: 重新載入執行階段快照
   - H2: 稽核
-  - H2: 設定（互動式輔助工具）
+  - H2: 設定 (互動式輔助工具)
   - H2: 套用已儲存的計畫
-  - H2: 為何沒有復原備份
+  - H2: 為什麼沒有復原備份
   - H2: 範例
   - H2: 相關
 
 ## cli/security.md
 
-- 路由: /cli/security
-- 標題:
+- 路由：/cli/security
+- 標題：
   - H1: openclaw security
   - H2: 稽核
   - H2: JSON 輸出
@@ -1887,8 +1887,8 @@ x-i18n:
 
 ## cli/sessions.md
 
-- 路由: /cli/sessions
-- 標題:
+- 路由：/cli/sessions
+- 標題：
   - H1: openclaw sessions
   - H2: 清理維護
   - H2: 壓縮工作階段
@@ -1897,8 +1897,8 @@ x-i18n:
 
 ## cli/setup.md
 
-- 路由: /cli/setup
-- 標題:
+- 路由：/cli/setup
+- 標題：
   - H1: openclaw setup
   - H2: 選項
   - H3: 基準模式
@@ -1908,8 +1908,8 @@ x-i18n:
 
 ## cli/skills.md
 
-- 路由: /cli/skills
-- 標題:
+- 路由：/cli/skills
+- 標題：
   - H1: openclaw skills
   - H2: 命令
   - H2: Skill Workshop
@@ -1917,26 +1917,26 @@ x-i18n:
 
 ## cli/status.md
 
-- 路由: /cli/status
-- 標題:
+- 路由：/cli/status
+- 標題：
   - H2: 相關
 
 ## cli/system.md
 
-- 路由: /cli/system
-- 標題:
+- 路由：/cli/system
+- 標題：
   - H1: openclaw system
   - H2: 常用命令
-  - H2: system event
-  - H2: system heartbeat last|enable|disable
-  - H2: system presence
+  - H2: 系統事件
+  - H2: 系統心跳偵測 last|enable|disable
+  - H2: 系統存在狀態
   - H2: 備註
   - H2: 相關
 
 ## cli/tasks.md
 
-- 路由: /cli/tasks
-- 標題:
+- 路由：/cli/tasks
+- 標題：
   - H2: 用法
   - H2: 根選項
   - H2: 子命令
@@ -1951,8 +1951,8 @@ x-i18n:
 
 ## cli/transcripts.md
 
-- 路由: /cli/transcripts
-- 標題:
+- 路由：/cli/transcripts
+- 標題：
   - H1: openclaw transcripts
   - H2: 命令
   - H2: 輸出
@@ -1962,8 +1962,8 @@ x-i18n:
 
 ## cli/tui.md
 
-- 路由: /cli/tui
-- 標題:
+- 路由：/cli/tui
+- 標題：
   - H1: openclaw tui
   - H2: 選項
   - H2: 範例
@@ -1972,21 +1972,21 @@ x-i18n:
 
 ## cli/uninstall.md
 
-- 路由: /cli/uninstall
-- 標題:
+- 路由：/cli/uninstall
+- 標題：
   - H1: openclaw uninstall
   - H2: 相關
 
 ## cli/update.md
 
-- 路由: /cli/update
-- 標題:
+- 路由：/cli/update
+- 標題：
   - H1: openclaw update
   - H2: 用法
   - H2: 選項
-  - H2: update status
-  - H2: update repair
-  - H2: update wizard
+  - H2: 更新狀態
+  - H2: 更新修復
+  - H2: 更新精靈
   - H2: 它會做什麼
   - H3: 控制平面回應形狀
   - H2: Git checkout 流程
@@ -1997,11 +1997,11 @@ x-i18n:
 
 ## cli/voicecall.md
 
-- 路由: /cli/voicecall
-- 標題:
+- 路由：/cli/voicecall
+- 標題：
   - H1: openclaw voicecall
   - H2: 子命令
-  - H2: 設定與 smoke
+  - H2: 設定與煙霧測試
   - H3: setup
   - H3: smoke
   - H2: 通話生命週期
@@ -2021,14 +2021,14 @@ x-i18n:
 
 ## cli/webhooks.md
 
-- 路由: /cli/webhooks
-- 標題:
+- 路由：/cli/webhooks
+- 標題：
   - H1: openclaw webhooks
   - H2: 子命令
   - H2: webhooks gmail setup
-  - H3: 必填
+  - H3: 必要項目
   - H3: Pub/Sub 選項
-  - H3: OpenClaw 傳遞選項
+  - H3: OpenClaw 傳送選項
   - H3: gog watch serve 選項
   - H3: Tailscale 暴露
   - H3: 輸出
@@ -2038,8 +2038,8 @@ x-i18n:
 
 ## cli/wiki.md
 
-- 路由: /cli/wiki
-- 標題:
+- 路由：/cli/wiki
+- 標題：
   - H1: openclaw wiki
   - H2: 用途
   - H2: 常用命令
@@ -2057,14 +2057,14 @@ x-i18n:
   - H3: wiki bridge import
   - H3: wiki unsafe-local import
   - H3: wiki obsidian ...
-  - H2: 實用使用指南
+  - H2: 實務使用指南
   - H2: 設定關聯
   - H2: 相關
 
 ## cli/workboard.md
 
-- 路由: /cli/workboard
-- 標題:
+- 路由：/cli/workboard
+- 標題：
   - H2: 用法
   - H2: list
   - H2: create
@@ -2074,14 +2074,14 @@ x-i18n:
   - H2: 權限
   - H2: 疑難排解
   - H3: 沒有卡片出現
-  - H3: Dispatch 顯示僅資料
+  - H3: Dispatch 表示僅資料
   - H3: Dispatch 未啟動任何項目
   - H2: 相關
 
 ## concepts/active-memory.md
 
-- 路由: /concepts/active-memory
-- 標題:
+- 路由：/concepts/active-memory
+- 標題：
   - H2: 快速開始
   - H2: 速度建議
   - H3: Cerebras 設定
@@ -2093,12 +2093,12 @@ x-i18n:
   - H2: 為什麼使用它
   - H2: 運作方式
   - H2: 查詢模式
-  - H2: 提示風格
+  - H2: 提示樣式
   - H2: 模型後援政策
   - H2: 記憶工具
   - H3: 內建 memory-core
-  - H3: LanceDB 記憶體
-  - H3: 無損 Claw
+  - H3: LanceDB 記憶
+  - H3: Lossless Claw
   - H2: 進階逃生出口
   - H2: 逐字稿持久化
   - H2: 設定
@@ -2110,30 +2110,30 @@ x-i18n:
 
 ## concepts/agent-loop.md
 
-- 路由: /concepts/agent-loop
-- 標題:
+- 路由：/concepts/agent-loop
+- 標題：
   - H2: 進入點
-  - H2: 運作方式（高階）
+  - H2: 運作方式 (高階)
   - H2: 佇列 + 並行
   - H2: 工作階段 + 工作區準備
   - H2: 提示組裝 + 系統提示
-  - H2: Hook 點（可攔截的位置）
-  - H3: 內部 hooks（閘道 hooks）
-  - H3: 外掛 hooks（代理 + 閘道生命週期）
+  - H2: Hook 點 (可攔截的位置)
+  - H3: 內部 hooks (閘道 hooks)
+  - H3: 外掛 hooks (代理 + 閘道生命週期)
   - H2: 串流 + 部分回覆
-  - H2: 工具執行 + 傳訊工具
+  - H2: 工具執行 + 訊息工具
   - H2: 回覆塑形 + 抑制
   - H2: 壓縮 + 重試
-  - H2: 事件串流（今日）
+  - H2: 事件串流 (今日)
   - H2: 聊天頻道處理
   - H2: 逾時
-  - H2: 事物可能提早結束的位置
+  - H2: 可能提前結束的位置
   - H2: 相關
 
 ## concepts/agent-runtimes.md
 
-- 路由: /concepts/agent-runtimes
-- 標題:
+- 路由：/concepts/agent-runtimes
+- 標題：
   - H2: Codex 表面
   - H2: 執行階段所有權
   - H2: 執行階段選擇
@@ -2144,13 +2144,13 @@ x-i18n:
 
 ## concepts/agent-workspace.md
 
-- 路由: /concepts/agent-workspace
-- 標題:
+- 路由：/concepts/agent-workspace
+- 標題：
   - H2: 預設位置
   - H2: 額外工作區資料夾
-  - H2: 工作區檔案對應
-  - H2: 工作區中「不」包含的內容
-  - H2: Git 備份（建議，私人）
+  - H2: 工作區檔案對照表
+  - H2: 工作區中不包含的內容
+  - H2: Git 備份 (建議，私有)
   - H2: 不要提交密鑰
   - H2: 將工作區移至新機器
   - H2: 進階備註
@@ -2158,501 +2158,501 @@ x-i18n:
 
 ## concepts/agent.md
 
-- 路由：/concepts/agent
-- 標題：
-  - H2：工作區（必要）
-  - H2：Bootstrap 檔案（已注入）
-  - H2：內建工具
-  - H2：Skills
-  - H2：執行階段邊界
-  - H2：工作階段
-  - H2：串流期間的導向
-  - H2：模型參照
-  - H2：設定（最小）
-  - H2：相關
+- 路由: /concepts/agent
+- 標題:
+  - H2: 工作區（必填）
+  - H2: Bootstrap 檔案（已注入）
+  - H2: 內建工具
+  - H2: Skills
+  - H2: 執行階段邊界
+  - H2: 工作階段
+  - H2: 串流時操控
+  - H2: 模型參照
+  - H2: 設定（最小）
+  - H2: 相關
 
 ## concepts/architecture.md
 
-- 路由：/concepts/architecture
-- 標題：
-  - H2：概覽
-  - H2：元件與流程
-  - H3：閘道（daemon）
-  - H3：用戶端（Mac 應用程式 / 命令列介面 / 網頁管理）
-  - H3：節點（macOS / iOS / Android / headless）
-  - H3：WebChat
-  - H2：連線生命週期（單一用戶端）
-  - H2：線路協定（摘要）
-  - H2：配對 + 本機信任
-  - H2：協定型別與程式碼產生
-  - H2：遠端存取
-  - H2：操作快照
-  - H2：不變條件
-  - H2：相關
+- 路由: /concepts/architecture
+- 標題:
+  - H2: 概覽
+  - H2: 元件與流程
+  - H3: 閘道（daemon）
+  - H3: 用戶端（mac app / 命令列介面 / 網頁管理）
+  - H3: 節點（macOS / iOS / Android / 無頭）
+  - H3: WebChat
+  - H2: 連線生命週期（單一用戶端）
+  - H2: 線路協定（摘要）
+  - H2: 配對 + 本機信任
+  - H2: 協定型別與程式碼產生
+  - H2: 遠端存取
+  - H2: 作業快照
+  - H2: 不變條件
+  - H2: 相關
 
 ## concepts/channel-docking.md
 
-- 路由：/concepts/channel-docking
-- 標題：
-  - H2：範例
-  - H2：為何使用它
-  - H2：必要設定
-  - H2：命令
-  - H2：會變更的內容
-  - H2：不會變更的內容
-  - H2：疑難排解
+- 路由: /concepts/channel-docking
+- 標題:
+  - H2: 範例
+  - H2: 為什麼使用它
+  - H2: 必要設定
+  - H2: 命令
+  - H2: 會改變什麼
+  - H2: 不會改變什麼
+  - H2: 疑難排解
 
 ## concepts/commitments.md
 
-- 路由：/concepts/commitments
-- 標題：
-  - H2：啟用承諾
-  - H2：運作方式
-  - H2：範圍
-  - H2：承諾與提醒
-  - H2：管理承諾
-  - H2：隱私與成本
-  - H2：疑難排解
-  - H2：相關
+- 路由: /concepts/commitments
+- 標題:
+  - H2: 啟用承諾
+  - H2: 運作方式
+  - H2: 範圍
+  - H2: 承諾與提醒
+  - H2: 管理承諾
+  - H2: 隱私與成本
+  - H2: 疑難排解
+  - H2: 相關
 
 ## concepts/compaction.md
 
-- 路由：/concepts/compaction
-- 標題：
-  - H2：運作方式
-  - H2：自動壓縮
-  - H2：手動壓縮
-  - H2：設定
-  - H3：使用不同模型
-  - H3：識別碼保留
-  - H3：作用中逐字稿位元組防護
-  - H3：後繼逐字稿
-  - H3：壓縮通知
-  - H3：記憶體清除
-  - H2：可插拔壓縮提供者
-  - H2：壓縮與修剪
-  - H2：疑難排解
-  - H2：相關
+- 路由: /concepts/compaction
+- 標題:
+  - H2: 運作方式
+  - H2: 自動壓縮
+  - H2: 手動壓縮
+  - H2: 設定
+  - H3: 使用不同模型
+  - H3: 識別碼保留
+  - H3: 作用中文字記錄位元組防護
+  - H3: 後續文字記錄
+  - H3: 壓縮通知
+  - H3: 記憶排清
+  - H2: 可插拔壓縮提供者
+  - H2: 壓縮與修剪
+  - H2: 疑難排解
+  - H2: 相關
 
 ## concepts/context-engine.md
 
-- 路由：/concepts/context-engine
-- 標題：
-  - H2：快速開始
-  - H2：運作方式
-  - H3：子代理生命週期（選用）
-  - H3：系統提示新增內容
-  - H2：舊版引擎
-  - H2：外掛引擎
-  - H3：ContextEngine 介面
-  - H3：執行階段設定
-  - H3：主機需求
-  - H3：故障隔離
-  - H3：ownsCompaction
-  - H2：設定參考
-  - H2：與壓縮和記憶的關係
-  - H2：提示
-  - H2：相關
+- 路由: /concepts/context-engine
+- 標題:
+  - H2: 快速開始
+  - H2: 運作方式
+  - H3: 子代理生命週期（選用）
+  - H3: 系統提示新增內容
+  - H2: 舊版引擎
+  - H2: 外掛引擎
+  - H3: ContextEngine 介面
+  - H3: 執行階段設定
+  - H3: 主機需求
+  - H3: 失敗隔離
+  - H3: ownsCompaction
+  - H2: 設定參考
+  - H2: 與壓縮和記憶的關係
+  - H2: 提示
+  - H2: 相關
 
 ## concepts/context.md
 
-- 路由：/concepts/context
-- 標題：
-  - H2：快速開始（檢查脈絡）
-  - H2：範例輸出
-  - H3：/context list
-  - H3：/context detail
-  - H3：/context map
-  - H2：哪些內容會計入脈絡視窗
-  - H2：OpenClaw 如何建構系統提示
-  - H2：已注入的工作區檔案（專案脈絡）
-  - H2：Skills：注入與隨需載入
-  - H2：工具：有兩種成本
-  - H2：命令、指令與「行內捷徑」
-  - H2：工作階段、壓縮與修剪（會保留什麼）
-  - H2：/context 實際回報的內容
-  - H2：相關
+- 路由: /concepts/context
+- 標題:
+  - H2: 快速開始（檢查脈絡）
+  - H2: 範例輸出
+  - H3: /context list
+  - H3: /context detail
+  - H3: /context map
+  - H2: 什麼會計入脈絡視窗
+  - H2: OpenClaw 如何建構系統提示
+  - H2: 注入的工作區檔案（專案脈絡）
+  - H2: Skills：已注入與隨需載入
+  - H2: 工具：有兩種成本
+  - H2: 命令、指令和「內嵌捷徑」
+  - H2: 工作階段、壓縮和修剪（會保留什麼）
+  - H2: /context 實際回報什麼
+  - H2: 相關
 
 ## concepts/delegate-architecture.md
 
-- 路由：/concepts/delegate-architecture
-- 標題：
-  - H2：什麼是委派？
-  - H2：為什麼使用委派？
-  - H2：能力層級
-  - H3：第 1 層：唯讀 + 草稿
-  - H3：第 2 層：代表傳送
-  - H3：第 3 層：主動
-  - H2：先決條件：隔離與強化
-  - H3：硬性封鎖（不可協商）
-  - H3：工具限制
-  - H3：沙箱隔離
-  - H3：稽核軌跡
-  - H2：設定委派
-  - H3：1. 建立委派代理
-  - H3：2. 設定身分提供者委派
-  - H4：Microsoft 365
-  - H4：Google Workspace
-  - H3：3. 將委派繫結至通道
-  - H3：4. 將認證新增至委派代理
-  - H2：範例：組織助理
-  - H2：擴展模式
-  - H2：相關
+- 路由: /concepts/delegate-architecture
+- 標題:
+  - H2: 什麼是委派？
+  - H2: 為什麼使用委派？
+  - H2: 能力層級
+  - H3: 第 1 層：唯讀 + 草稿
+  - H3: 第 2 層：代為傳送
+  - H3: 第 3 層：主動
+  - H2: 先決條件：隔離與強化
+  - H3: 硬性阻擋（不可協商）
+  - H3: 工具限制
+  - H3: 沙盒隔離
+  - H3: 稽核軌跡
+  - H2: 設定委派
+  - H3: 1. 建立委派代理
+  - H3: 2. 設定身分提供者委派
+  - H4: Microsoft 365
+  - H4: Google Workspace
+  - H3: 3. 將委派繫結到通道
+  - H3: 4. 將認證新增到委派代理
+  - H2: 範例：組織助理
+  - H2: 擴展模式
+  - H2: 相關
 
 ## concepts/dreaming.md
 
-- 路由：/concepts/dreaming
-- 標題：
-  - H2：夢境整理寫入的內容
-  - H2：階段模型
-  - H2：工作階段逐字稿擷取
-  - H2：夢境日誌
-  - H2：深度排名訊號
-  - H2：QA 影子試驗報告涵蓋範圍
-  - H2：排程
-  - H2：快速開始
-  - H2：斜線命令
-  - H2：命令列介面工作流程
-  - H2：主要預設值
-  - H2：夢境整理 UI
-  - H2：夢境整理永不執行：狀態顯示已封鎖
-  - H2：相關
+- 路由: /concepts/dreaming
+- 標題:
+  - H2: 夢境整理會寫入什麼
+  - H2: 階段模型
+  - H2: 工作階段文字記錄擷取
+  - H2: 夢境日記
+  - H2: 深度排名訊號
+  - H2: QA 影子試驗報告涵蓋範圍
+  - H2: 排程
+  - H2: 快速開始
+  - H2: 斜線命令
+  - H2: 命令列介面工作流程
+  - H2: 關鍵預設值
+  - H2: 夢境介面
+  - H2: 夢境整理永不執行：狀態顯示已封鎖
+  - H2: 相關
 
 ## concepts/experimental-features.md
 
-- 路由：/concepts/experimental-features
-- 標題：
-  - H2：目前已記錄的旗標
-  - H2：本機模型精簡模式
-  - H3：為何是這三項工具
-  - H3：何時開啟
-  - H3：何時保持關閉
-  - H3：啟用
-  - H2：實驗性不代表隱藏
-  - H2：相關
+- 路由: /concepts/experimental-features
+- 標題:
+  - H2: 目前記錄的旗標
+  - H2: 本機模型精簡模式
+  - H3: 為什麼是這三個工具
+  - H3: 何時開啟
+  - H3: 何時保持關閉
+  - H3: 啟用
+  - H2: 實驗性不代表隱藏
+  - H2: 相關
 
 ## concepts/features.md
 
-- 路由：/concepts/features
-- 標題：
-  - H2：重點
-  - H2：完整清單
-  - H2：相關
+- 路由: /concepts/features
+- 標題:
+  - H2: 重點
+  - H2: 完整清單
+  - H2: 相關
 
 ## concepts/mantis-slack-desktop-runbook.md
 
-- 路由：/concepts/mantis-slack-desktop-runbook
-- 標題：
-  - H2：儲存模型
-  - H2：GitHub 分派
-  - H2：本機命令列介面
-  - H2：Hydrate 模式
-  - H2：時間判讀
-  - H2：證據檢查清單
-  - H2：故障處理
-  - H2：相關
+- 路由: /concepts/mantis-slack-desktop-runbook
+- 標題:
+  - H2: 儲存模型
+  - H2: GitHub 派發
+  - H2: 本機命令列介面
+  - H2: 補水模式
+  - H2: 時序解讀
+  - H2: 證據檢查清單
+  - H2: 失敗處理
+  - H2: 相關
 
 ## concepts/mantis.md
 
-- 路由：/concepts/mantis
-- 標題：
-  - H2：目標
-  - H2：非目標
-  - H2：擁有權
-  - H2：命令形狀
-  - H2：執行生命週期
-  - H2：Discord MVP
-  - H2：現有 QA 元件
-  - H2：證據模型
-  - H2：瀏覽器與 VNC
-  - H2：機器
-  - H2：祕密
-  - H2：GitHub 成品與 PR 留言
-  - H2：私有部署備註
-  - H2：新增場景
-  - H2：提供者擴充
-  - H2：待解問題
+- 路由: /concepts/mantis
+- 標題:
+  - H2: 目標
+  - H2: 非目標
+  - H2: 所有權
+  - H2: 命令形狀
+  - H2: 執行生命週期
+  - H2: Discord MVP
+  - H2: 現有 QA 組件
+  - H2: 證據模型
+  - H2: 瀏覽器和 VNC
+  - H2: 機器
+  - H2: 密鑰
+  - H2: GitHub 成品和 PR 留言
+  - H2: 私有部署備註
+  - H2: 新增情境
+  - H2: 提供者擴展
+  - H2: 未解問題
 
 ## concepts/markdown-formatting.md
 
-- 路由：/concepts/markdown-formatting
-- 標題：
-  - H2：目標
-  - H2：管線
-  - H2：IR 範例
-  - H2：使用位置
-  - H2：表格處理
-  - H2：分塊規則
-  - H2：連結政策
-  - H2：劇透內容
-  - H2：如何新增或更新通道格式器
-  - H2：常見陷阱
-  - H2：相關
+- 路由: /concepts/markdown-formatting
+- 標題:
+  - H2: 目標
+  - H2: 管線
+  - H2: IR 範例
+  - H2: 使用位置
+  - H2: 表格處理
+  - H2: 分塊規則
+  - H2: 連結政策
+  - H2: 劇透
+  - H2: 如何新增或更新通道格式化器
+  - H2: 常見陷阱
+  - H2: 相關
 
 ## concepts/memory-builtin.md
 
-- 路由：/concepts/memory-builtin
-- 標題：
-  - H2：它提供的內容
-  - H2：開始使用
-  - H2：支援的嵌入提供者
-  - H2：索引運作方式
-  - H2：使用時機
-  - H2：疑難排解
-  - H2：設定
-  - H2：相關
+- 路由: /concepts/memory-builtin
+- 標題:
+  - H2: 提供什麼
+  - H2: 開始使用
+  - H2: 支援的嵌入提供者
+  - H2: 索引運作方式
+  - H2: 何時使用
+  - H2: 疑難排解
+  - H2: 設定
+  - H2: 相關
 
 ## concepts/memory-honcho.md
 
-- 路由：/concepts/memory-honcho
-- 標題：
-  - H2：它提供的內容
-  - H2：可用工具
-  - H2：開始使用
-  - H2：設定
-  - H2：遷移現有記憶
-  - H2：運作方式
-  - H2：Honcho 與內建記憶
-  - H2：命令列介面命令
-  - H2：延伸閱讀
-  - H2：相關
+- 路由: /concepts/memory-honcho
+- 標題:
+  - H2: 提供什麼
+  - H2: 可用工具
+  - H2: 開始使用
+  - H2: 設定
+  - H2: 遷移現有記憶
+  - H2: 運作方式
+  - H2: Honcho 與內建記憶
+  - H2: 命令列介面命令
+  - H2: 延伸閱讀
+  - H2: 相關
 
 ## concepts/memory-qmd.md
 
-- 路由：/concepts/memory-qmd
-- 標題：
-  - H2：相較於內建功能新增的內容
-  - H2：開始使用
-  - H3：先決條件
-  - H3：啟用
-  - H2：Sidecar 的運作方式
-  - H2：搜尋效能與相容性
-  - H2：模型覆寫
-  - H2：索引額外路徑
-  - H2：索引工作階段逐字稿
-  - H2：搜尋範圍
-  - H2：引用
-  - H2：使用時機
-  - H2：疑難排解
-  - H2：設定
-  - H2：相關
+- 路由: /concepts/memory-qmd
+- 標題:
+  - H2: 相較內建新增了什麼
+  - H2: 開始使用
+  - H3: 先決條件
+  - H3: 啟用
+  - H2: sidecar 的運作方式
+  - H2: 搜尋效能與相容性
+  - H2: 模型覆寫
+  - H2: 索引額外路徑
+  - H2: 索引工作階段文字記錄
+  - H2: 搜尋範圍
+  - H2: 引用
+  - H2: 何時使用
+  - H2: 疑難排解
+  - H2: 設定
+  - H2: 相關
 
 ## concepts/memory-search.md
 
-- 路由：/concepts/memory-search
-- 標題：
-  - H2：快速開始
-  - H2：支援的提供者
-  - H2：搜尋運作方式
-  - H2：改善搜尋品質
-  - H3：時間衰減
-  - H3：MMR（多樣性）
-  - H3：同時啟用兩者
-  - H2：多模態記憶
-  - H2：工作階段記憶搜尋
-  - H2：疑難排解
-  - H2：延伸閱讀
-  - H2：相關
+- 路由: /concepts/memory-search
+- 標題:
+  - H2: 快速開始
+  - H2: 支援的提供者
+  - H2: 搜尋運作方式
+  - H2: 改善搜尋品質
+  - H3: 時間衰減
+  - H3: MMR（多樣性）
+  - H3: 同時啟用兩者
+  - H2: 多模態記憶
+  - H2: 工作階段記憶搜尋
+  - H2: 疑難排解
+  - H2: 延伸閱讀
+  - H2: 相關
 
 ## concepts/memory.md
 
-- 路由：/concepts/memory
-- 標題：
-  - H2：運作方式
-  - H2：哪些內容放在哪裡
-  - H2：動作敏感記憶
-  - H2：推斷出的承諾
-  - H2：記憶工具
-  - H2：記憶 Wiki 伴隨外掛
-  - H2：記憶搜尋
-  - H2：記憶後端
-  - H2：知識 Wiki 層
-  - H2：自動記憶清除
-  - H2：夢境整理
-  - H2：有根據的回填與即時提升
-  - H2：命令列介面
-  - H2：延伸閱讀
-  - H2：相關
+- 路由: /concepts/memory
+- 標題:
+  - H2: 運作方式
+  - H2: 什麼放在哪裡
+  - H2: 動作敏感記憶
+  - H2: 推斷的承諾
+  - H2: 記憶工具
+  - H2: 記憶 Wiki 伴隨外掛
+  - H2: 記憶搜尋
+  - H2: 記憶後端
+  - H2: 知識 Wiki 層
+  - H2: 自動記憶排清
+  - H2: 夢境整理
+  - H2: 有根據的回填與即時提升
+  - H2: 命令列介面
+  - H2: 延伸閱讀
+  - H2: 相關
 
 ## concepts/message-lifecycle-refactor.md
 
-- 路由：/concepts/message-lifecycle-refactor
-- 標題：
-  - H2：問題
-  - H2：目標
-  - H2：非目標
-  - H2：參考模型
-  - H2：核心模型
-  - H2：訊息術語
-  - H3：訊息
-  - H3：目標
-  - H3：關係
-  - H3：來源
-  - H3：收據
-  - H2：接收脈絡
-  - H2：傳送脈絡
-  - H2：即時脈絡
-  - H2：Adapter 介面
-  - H2：公開 SDK 精簡
-  - H2：與通道傳入的關係
-  - H2：相容性護欄
-  - H2：內部儲存
-  - H2：故障類別
-  - H2：通道對應
-  - H2：遷移計畫
-  - H3：第 1 階段：內部訊息領域
-  - H3：第 2 階段：持久傳送核心
-  - H3：第 3 階段：通道傳入橋接
-  - H3：第 4 階段：已準備的 Dispatcher 橋接
-  - H3：第 5 階段：統一即時生命週期
-  - H3：第 6 階段：公開 SDK
-  - H3：第 7 階段：所有傳送端
-  - H3：第 8 階段：移除以 Turn 命名的相容性
-  - H2：測試計畫
-  - H2：待解問題
-  - H2：驗收標準
-  - H2：相關
+- 路由: /concepts/message-lifecycle-refactor
+- 標題:
+  - H2: 問題
+  - H2: 目標
+  - H2: 非目標
+  - H2: 參考模型
+  - H2: 核心模型
+  - H2: 訊息術語
+  - H3: 訊息
+  - H3: 目標
+  - H3: 關係
+  - H3: 來源
+  - H3: 收據
+  - H2: 接收脈絡
+  - H2: 傳送脈絡
+  - H2: 即時脈絡
+  - H2: 轉接器表面
+  - H2: 公開 SDK 精簡
+  - H2: 與通道入站的關係
+  - H2: 相容性護欄
+  - H2: 內部儲存
+  - H2: 失敗類別
+  - H2: 通道對應
+  - H2: 遷移計畫
+  - H3: 第 1 階段：內部訊息網域
+  - H3: 第 2 階段：持久傳送核心
+  - H3: 第 3 階段：通道入站橋接
+  - H3: 第 4 階段：已準備派發器橋接
+  - H3: 第 5 階段：統一即時生命週期
+  - H3: 第 6 階段：公開 SDK
+  - H3: 第 7 階段：所有傳送者
+  - H3: 第 8 階段：移除以 Turn 命名的相容性
+  - H2: 測試計畫
+  - H2: 未解問題
+  - H2: 驗收標準
+  - H2: 相關
 
 ## concepts/messages.md
 
-- 路由：/concepts/messages
-- 標題：
-  - H2：訊息流程（高階）
-  - H2：傳入去重
-  - H2：傳入防抖
-  - H2：工作階段與裝置
-  - H2：工具結果中繼資料
-  - H2：傳入本文與歷史脈絡
-  - H2：佇列與後續跟進
-  - H2：通道執行擁有權
-  - H2：串流、分塊與批次
-  - H2：推理可見性與權杖
-  - H2：前綴、串接討論與回覆
-  - H2：靜默回覆
-  - H2：相關
+- 路由: /concepts/messages
+- 標題:
+  - H2: 訊息流程（高階）
+  - H2: 入站去重
+  - H2: 入站防抖
+  - H2: 工作階段和裝置
+  - H2: 工具結果中繼資料
+  - H2: 入站本文和歷史脈絡
+  - H2: 佇列與後續追蹤
+  - H2: 通道執行所有權
+  - H2: 串流、分塊和批次處理
+  - H2: 推理可見性與 token
+  - H2: 前綴、串接討論和回覆
+  - H2: 靜默回覆
+  - H2: 相關
 
 ## concepts/model-failover.md
 
-- 路由：/concepts/model-failover
-- 標題：
-  - H2：執行階段流程
-  - H2：選擇來源政策
-  - H2：驗證失敗略過快取
-  - H2：使用者可見的備援通知
-  - H2：驗證儲存（金鑰 + OAuth）
-  - H2：設定檔 ID
-  - H2：輪替順序
-  - H3：工作階段黏著性（快取友善）
-  - H3：OpenAI Codex 訂閱加 API 金鑰備援
-  - H2：冷卻時間
-  - H2：帳單停用
-  - H2：模型備援
-  - H3：候選鏈規則
-  - H3：哪些錯誤會推進備援
-  - H3：冷卻略過與探測行為
-  - H2：工作階段覆寫與即時模型切換
-  - H2：可觀測性與故障摘要
-  - H2：相關設定
+- 路由: /concepts/model-failover
+- 標題:
+  - H2: 執行階段流程
+  - H2: 選取來源政策
+  - H2: 驗證失敗略過快取
+  - H2: 使用者可見的 fallback 通知
+  - H2: 驗證儲存（金鑰 + OAuth）
+  - H2: Profile ID
+  - H2: 輪替順序
+  - H3: 工作階段黏著性（快取友善）
+  - H3: OpenAI Codex 訂閱加上 API 金鑰備援
+  - H2: 冷卻時間
+  - H2: 帳單停用
+  - H2: 模型 fallback
+  - H3: 候選鏈規則
+  - H3: 哪些錯誤會推進 fallback
+  - H3: 冷卻時間略過與探測行為
+  - H2: 工作階段覆寫與即時模型切換
+  - H2: 可觀測性與失敗摘要
+  - H2: 相關設定
 
 ## concepts/model-providers.md
 
-- 路由：/concepts/model-providers
-- 標題：
-  - H2：快速規則
-  - H2：外掛擁有的提供者行為
-  - H2：API 金鑰輪替
-  - H2：官方提供者外掛
-  - H3：OpenAI
-  - H3：Anthropic
-  - H3：OpenAI ChatGPT/Codex OAuth
-  - H3：其他訂閱式託管選項
-  - H3：OpenCode
-  - H3：Google Gemini（API 金鑰）
-  - H3：Google Vertex 和 Gemini 命令列介面
-  - H3：Z.AI（GLM）
-  - H3：Vercel AI Gateway
-  - H3：其他隨附提供者外掛
-  - H4：值得了解的特性
-  - H2：透過 models.providers 的提供者（自訂/Base URL）
-  - H3：Moonshot AI（Kimi）
-  - H3：Kimi coding
-  - H3：Volcano Engine（Doubao）
-  - H3：BytePlus（國際）
-  - H3：Synthetic
-  - H3：MiniMax
-  - H3：LM Studio
-  - H3：Ollama
-  - H3：vLLM
-  - H3：SGLang
-  - H3：本機代理（LM Studio、vLLM、LiteLLM 等）
-  - H2：命令列介面範例
-  - H2：相關
+- 路由: /concepts/model-providers
+- 標題:
+  - H2: 快速規則
+  - H2: 外掛擁有的提供者行為
+  - H2: API 金鑰輪替
+  - H2: 官方提供者外掛
+  - H3: OpenAI
+  - H3: Anthropic
+  - H3: OpenAI ChatGPT/Codex OAuth
+  - H3: 其他訂閱式託管選項
+  - H3: OpenCode
+  - H3: Google Gemini（API 金鑰）
+  - H3: Google Vertex 和 Gemini 命令列介面
+  - H3: Z.AI（GLM）
+  - H3: Vercel AI Gateway
+  - H3: 其他內建提供者外掛
+  - H4: 值得知道的特性
+  - H2: 透過 models.providers 的提供者（自訂/base URL）
+  - H3: Moonshot AI（Kimi）
+  - H3: Kimi coding
+  - H3: Volcano Engine（Doubao）
+  - H3: BytePlus（國際版）
+  - H3: Synthetic
+  - H3: MiniMax
+  - H3: LM Studio
+  - H3: Ollama
+  - H3: vLLM
+  - H3: SGLang
+  - H3: 本機代理（LM Studio、vLLM、LiteLLM 等）
+  - H2: 命令列介面範例
+  - H2: 相關
 
 ## concepts/models.md
 
-- 路由：/concepts/models
-- 標題：
-  - H2：模型選擇運作方式
-  - H2：選擇來源與備援行為
-  - H2：快速模型政策
-  - H2：導入（建議）
-  - H2：設定鍵（概覽）
-  - H3：安全的允許清單編輯
-  - H2：「不允許使用此模型」（以及為何回覆會停止）
-  - H2：在聊天中切換模型（/model）
-  - H2：命令列介面命令
-  - H3：models list
-  - H3：models status
-  - H2：掃描（OpenRouter 免費模型）
-  - H2：模型登錄檔（models.json）
-  - H2：相關
+- 路由: /concepts/models
+- 標題:
+  - H2: 模型選取的運作方式
+  - H2: 選取來源與 fallback 行為
+  - H2: 快速模型政策
+  - H2: 上手設定（建議）
+  - H2: 設定鍵（概覽）
+  - H3: 安全的允許清單編輯
+  - H2:「模型未被允許」（以及為什麼回覆會停止）
+  - H2: 在聊天中切換模型（/model）
+  - H2: 命令列介面命令
+  - H3: models list
+  - H3: models status
+  - H2: 掃描（OpenRouter 免費模型）
+  - H2: 模型登錄（models.json）
+  - H2: 相關
 
 ## concepts/multi-agent.md
 
-- 路由：/concepts/multi-agent
-- 標題：
-  - H2：什麼是「一個代理」？
-  - H2：路徑（快速對照）
-  - H3：單代理模式（預設）
-  - H2：代理輔助工具
-  - H2：快速開始
-  - H2：多個代理 = 多個人、多種個性
-  - H2：跨代理 QMD 記憶搜尋
-  - H2：一個 WhatsApp 號碼，多個人（DM 分流）
-  - H2：路由規則（訊息如何選擇代理）
-  - H2：多個帳號 / 電話號碼
-  - H2：概念
-  - H2：平台範例
-  - H2：常見模式
-  - H2：每代理沙箱與工具設定
-  - H2：相關
+- 路由: /concepts/multi-agent
+- 標題:
+  - H2: 什麼是「一個代理」？
+  - H2: 路徑（快速地圖）
+  - H3: 單代理模式（預設）
+  - H2: 代理輔助工具
+  - H2: 快速開始
+  - H2: 多個代理 = 多個人、多種人格
+  - H2: 跨代理 QMD 記憶搜尋
+  - H2: 一個 WhatsApp 號碼，多個人（DM 拆分）
+  - H2: 路由規則（訊息如何選擇代理）
+  - H2: 多個帳戶 / 電話號碼
+  - H2: 概念
+  - H2: 平台範例
+  - H2: 常見模式
+  - H2: 每代理沙盒與工具設定
+  - H2: 相關
 
 ## concepts/oauth.md
 
-- 路由：/concepts/oauth
-- 標題：
-  - H2：權杖接收端（它為何存在）
-  - H2：儲存（權杖存放位置）
-  - H2：Anthropic 舊版權杖相容性
-  - H2：Anthropic Claude 命令列介面遷移
-  - H2：OAuth 交換（登入運作方式）
-  - H3：Anthropic setup-token
-  - H3：OpenAI Codex（ChatGPT OAuth）
-  - H2：重新整理 + 到期
-  - H2：多個帳號（設定檔）+ 路由
-  - H3：1) 偏好：分開的代理
-  - H3：2) 進階：一個代理中的多個設定檔
-  - H2：相關
+- 路由: /concepts/oauth
+- 標題:
+  - H2: token sink（為什麼存在）
+  - H2: 儲存（token 存放位置）
+  - H2: Anthropic 舊版 token 相容性
+  - H2: Anthropic Claude 命令列介面遷移
+  - H2: OAuth 交換（登入如何運作）
+  - H3: Anthropic setup-token
+  - H3: OpenAI Codex（ChatGPT OAuth）
+  - H2: 重新整理 + 到期
+  - H2: 多個帳戶（profile）+ 路由
+  - H3: 1) 建議：分開的代理
+  - H3: 2) 進階：一個代理中的多個 profile
+  - H2: 相關
 
 ## concepts/parallel-specialist-lanes.md
 
 - 路由：/concepts/parallel-specialist-lanes
 - 標題：
-  - H2：第一原則
-  - H2：建議推出流程
-  - H3：階段 1：通道合約 + 背景重型工作
-  - H3：階段 2：優先順序與並行控制
-  - H3：階段 3：協調器 / 流量控制器
+  - H2：基本原則
+  - H2：建議的推出方式
+  - H3：第 1 階段：通道合約 + 背景繁重工作
+  - H3：第 2 階段：優先順序與並行控制
+  - H3：第 3 階段：協調器 / 流量控制器
   - H2：最小通道合約範本
   - H2：相關
 
@@ -2668,17 +2668,17 @@ x-i18n:
 
 - 路由：/concepts/presence
 - 標題：
-  - H2：Presence 欄位（會顯示什麼）
-  - H2：產生端（Presence 來自何處）
-  - H3：1) 閘道自我項目
+  - H2：存在狀態欄位（會顯示的內容）
+  - H2：產生者（存在狀態的來源）
+  - H3：1) Gateway 自身項目
   - H3：2) WebSocket 連線
-  - H4：為什麼一次性的命令列介面命令不會顯示
-  - H3：3) system-event 信標
-  - H3：4) 節點連線（角色：節點）
+  - H4：為什麼一次性命令列介面命令不會顯示
+  - H3：3) system-event beacon
+  - H3：4) 節點連線（role: node）
   - H2：合併 + 去重規則（為什麼 instanceId 很重要）
-  - H2：TTL 與有界大小
+  - H2：TTL 和有限大小
   - H2：遠端/通道注意事項（loopback IP）
-  - H2：消費端
+  - H2：消費者
   - H3：macOS Instances 分頁
   - H2：偵錯提示
   - H2：相關
@@ -2693,7 +2693,7 @@ x-i18n:
   - H2：設定標籤
   - H2：控制進度行
   - H2：頻道行為
-  - H2：完成處理
+  - H2：最終化
   - H2：疑難排解
   - H2：相關
 
@@ -2702,18 +2702,18 @@ x-i18n:
 - 路由：/concepts/qa-e2e-automation
 - 標題：
   - H2：命令介面
-  - H2：操作員流程
+  - H2：操作者流程
   - H2：即時傳輸涵蓋範圍
-  - H2：Telegram、Discord、Slack 與 WhatsApp QA 參考
+  - H2：Telegram、Discord、Slack 和 WhatsApp QA 參考
   - H3：共用命令列介面旗標
   - H3：Telegram QA
   - H3：Discord QA
   - H3：Slack QA
   - H4：設定 Slack 工作區
   - H3：WhatsApp QA
-  - H3：Convex 憑證池
+  - H3：Convex 憑證集區
   - H2：由儲存庫支援的種子資料
-  - H2：供應商模擬通道
+  - H2：供應商 mock 通道
   - H2：傳輸配接器
   - H3：新增頻道
   - H3：情境輔助程式名稱
@@ -2725,7 +2725,7 @@ x-i18n:
 - 路由：/concepts/qa-matrix
 - 標題：
   - H2：快速開始
-  - H2：通道會做什麼
+  - H2：通道做什麼
   - H2：命令列介面
   - H3：常用旗標
   - H3：供應商旗標
@@ -2745,19 +2745,19 @@ x-i18n:
   - H2：模式
   - H2：突發範例
   - H2：範圍
-  - H2：去抖動
+  - H2：防抖
   - H2：相關
 
 ## concepts/queue.md
 
 - 路由：/concepts/queue
 - 標題：
-  - H2：為什麼
+  - H2：原因
   - H2：運作方式
   - H2：預設值
   - H2：佇列模式
   - H2：佇列選項
-  - H2：導向與串流
+  - H2：轉向與串流
   - H2：優先順序
   - H2：每個工作階段覆寫
   - H2：範圍與保證
@@ -2774,8 +2774,8 @@ x-i18n:
   - H3：模型供應商
   - H3：Discord
   - H3：Telegram
-  - H2：組態
-  - H2：備註
+  - H2：設定
+  - H2：注意事項
   - H2：相關
 
 ## concepts/session-pruning.md
@@ -2784,7 +2784,7 @@ x-i18n:
 - 標題：
   - H2：重要性
   - H2：運作方式
-  - H2：舊版影像清理
+  - H2：舊版圖片清理
   - H2：智慧預設值
   - H2：啟用或停用
   - H2：修剪與壓縮
@@ -2798,8 +2798,8 @@ x-i18n:
   - H2：可用工具
   - H2：列出與讀取工作階段
   - H2：傳送跨工作階段訊息
-  - H2：狀態與協調輔助工具
-  - H2：生成子代理
+  - H2：狀態與編排輔助程式
+  - H2：產生子代理
   - H2：可見性
   - H2：延伸閱讀
   - H2：相關
@@ -2812,7 +2812,7 @@ x-i18n:
   - H2：DM 隔離
   - H3：Dock 連結頻道
   - H2：工作階段生命週期
-  - H2：狀態所在位置
+  - H2：狀態存放位置
   - H2：工作階段維護
   - H2：檢查工作階段
   - H2：延伸閱讀
@@ -2822,9 +2822,9 @@ x-i18n:
 
 - 路由：/concepts/soul
 - 標題：
-  - H2：SOUL.md 中應包含什麼
-  - H2：為什麼這樣有效
-  - H2：Molty 提示
+  - H2：SOUL.md 應包含的內容
+  - H2：為什麼這有效
+  - H2：Molty prompt
   - H2：好的樣子
   - H2：一項警告
   - H2：相關
@@ -2835,15 +2835,15 @@ x-i18n:
 - 標題：
   - H2：區塊串流（頻道訊息）
   - H3：使用區塊串流傳遞媒體
-  - H2：分塊演算法（低/高邊界）
+  - H2：分塊演算法（低/高界限）
   - H2：合併（合併串流區塊）
-  - H2：區塊之間類似真人的節奏
-  - H2："串流分塊或全部"
+  - H2：區塊之間類似人類的節奏
+  - H2：「串流分塊或全部內容」
   - H2：預覽串流模式
   - H3：頻道對應
   - H3：執行階段行為
   - H3：工具進度預覽更新
-  - H3：Commentary 進度通道
+  - H3：評論進度通道
   - H2：相關
 
 ## concepts/system-prompt.md
@@ -2851,9 +2851,9 @@ x-i18n:
 - 路由：/concepts/system-prompt
 - 標題：
   - H2：結構
-  - H2：提示模式
-  - H2：提示快照
-  - H2：工作區啟動程序注入
+  - H2：prompt 模式
+  - H2：prompt 快照
+  - H2：工作區啟動注入
   - H2：時間處理
   - H2：Skills
   - H2：文件
@@ -2873,17 +2873,17 @@ x-i18n:
 - 路由：/concepts/typebox
 - 標題：
   - H2：心智模型（30 秒）
-  - H2：結構描述所在位置
+  - H2：schema 所在位置
   - H2：目前管線
-  - H2：結構描述在執行階段的使用方式
-  - H2：範例框架
+  - H2：schema 在執行階段的使用方式
+  - H2：範例 frame
   - H2：最小用戶端（Node.js）
-  - H2：實作範例：端到端新增方法
+  - H2：完整範例：端到端新增方法
   - H2：Swift 程式碼產生行為
   - H2：版本控管 + 相容性
-  - H2：結構描述模式與慣例
-  - H2：即時結構描述 JSON
-  - H2：變更結構描述時
+  - H2：schema 模式與慣例
+  - H2：即時 schema JSON
+  - H2：當你變更 schema 時
   - H2：相關
 
 ## concepts/typing-indicators.md
@@ -2892,8 +2892,8 @@ x-i18n:
 - 標題：
   - H2：預設值
   - H2：模式
-  - H2：組態
-  - H2：備註
+  - H2：設定
+  - H2：注意事項
   - H2：相關
 
 ## concepts/usage-tracking.md
@@ -2901,13 +2901,13 @@ x-i18n:
 - 路由：/concepts/usage-tracking
 - 標題：
   - H2：它是什麼
-  - H2：會顯示在哪裡
+  - H2：它會出現在哪裡
   - H2：預設使用量頁尾模式
   - H3：三種不同的工作階段狀態
   - H3：優先順序
   - H3：重設與關閉
   - H3：切換行為
-  - H3：組態
+  - H3：設定
   - H2：自訂 /usage full 頁尾
   - H3：形狀
   - H3：合約路徑
@@ -2921,9 +2921,9 @@ x-i18n:
 
 - 路由：/date-time
 - 標題：
-  - H2：訊息信封（預設為本地）
+  - H2：訊息封套（預設為本地）
   - H3：範例
-  - H2：系統提示：目前日期與時間
+  - H2：系統 prompt：目前日期和時間
   - H2：系統事件行（預設為本地）
   - H3：設定使用者時區 + 格式
   - H2：時間格式偵測（自動）
@@ -2940,8 +2940,8 @@ x-i18n:
   - H2：重現（僅節點）
   - H2：儲存庫中的最小重現
   - H2：節點版本檢查
-  - H2：備註 / 假設
-  - H2：迴歸歷史
+  - H2：注意事項 / 假設
+  - H2：回歸歷史
   - H2：因應措施
   - H2：參考資料
   - H2：後續步驟
@@ -2952,33 +2952,33 @@ x-i18n:
 - 路由：/diagnostics/flags
 - 標題：
   - H2：運作方式
-  - H2：透過組態啟用
-  - H2：環境覆寫（一次性）
-  - H2：分析旗標
+  - H2：透過設定啟用
+  - H2：環境變數覆寫（一次性）
+  - H2：剖析旗標
   - H2：時間軸成品
-  - H2：日誌存放位置
-  - H2：擷取日誌
-  - H2：備註
+  - H2：記錄輸出位置
+  - H2：擷取記錄
+  - H2：注意事項
   - H2：相關
 
 ## gateway/authentication.md
 
 - 路由：/gateway/authentication
 - 標題：
-  - H2：建議設定（API 金鑰，任何供應商）
-  - H2：Anthropic：Claude 命令列介面與權杖相容性
-  - H2：Anthropic 備註
+  - H2：建議設定（API key，任何供應商）
+  - H2：Anthropic：Claude 命令列介面和 token 相容性
+  - H2：Anthropic 注意事項
   - H2：檢查模型驗證狀態
-  - H2：API 金鑰輪替行為（閘道）
-  - H2：閘道執行時移除供應商驗證
+  - H2：API key 輪換行為（Gateway）
+  - H2：Gateway 執行時移除供應商驗證
   - H2：控制使用哪個憑證
-  - H3：OpenAI 與舊版 openai-codex ID
+  - H3：OpenAI 和舊版 openai-codex id
   - H3：登入期間（命令列介面）
   - H3：每個工作階段（聊天命令）
   - H3：每個代理（命令列介面覆寫）
   - H2：疑難排解
-  - H3："找不到憑證"
-  - H3：權杖即將過期/已過期
+  - H3：「找不到憑證」
+  - H3：token 即將到期/已到期
   - H2：相關
 
 ## gateway/background-process.md
@@ -2996,23 +2996,23 @@ x-i18n:
 - 路由：/gateway/bonjour
 - 標題：
   - H2：透過 Tailscale 的廣域 Bonjour（Unicast DNS-SD）
-  - H3：閘道組態（建議）
-  - H3：一次性 DNS 伺服器設定（閘道主機）
+  - H3：Gateway 設定（建議）
+  - H3：一次性 DNS 伺服器設定（Gateway 主機）
   - H3：Tailscale DNS 設定
-  - H3：閘道監聽器安全性（建議）
-  - H2：廣播內容
+  - H3：Gateway 監聽器安全性（建議）
+  - H2：會公告什麼
   - H2：服務類型
-  - H2：TXT 金鑰（非祕密提示）
+  - H2：TXT key（非祕密提示）
   - H2：在 macOS 上偵錯
-  - H2：在閘道日誌中偵錯
+  - H2：在 Gateway 記錄中偵錯
   - H2：在 iOS 節點上偵錯
   - H2：何時啟用 Bonjour
   - H2：何時停用 Bonjour
   - H2：Docker 注意事項
   - H2：疑難排解已停用的 Bonjour
   - H2：常見失敗模式
-  - H2：逸出的執行個體名稱（\032）
-  - H2：啟用 / 停用 / 組態
+  - H2：逸出 instance 名稱（\032）
+  - H2：啟用 / 停用 / 設定
   - H2：相關文件
 
 ## gateway/bridge-protocol.md
@@ -3022,9 +3022,9 @@ x-i18n:
   - H2：它存在的原因
   - H2：傳輸
   - H2：握手 + 配對
-  - H2：框架
+  - H2：frame
   - H2：Exec 生命週期事件
-  - H2：歷史 tailnet 用法
+  - H2：歷史 tailnet 使用方式
   - H2：版本控管
   - H2：相關
 
@@ -3033,19 +3033,19 @@ x-i18n:
 - 路由：/gateway/cli-backends
 - 標題：
   - H2：適合初學者的快速開始
-  - H2：作為備援使用
-  - H2：組態概覽
-  - H3：範例組態
+  - H2：將它作為 fallback 使用
+  - H2：設定概覽
+  - H3：設定範例
   - H2：運作方式
   - H2：工作階段
-  - H2：來自 claude-cli 工作階段的備援前言
-  - H2：影像（直通）
+  - H2：claude-cli 工作階段的 fallback prelude
+  - H2：圖片（pass-through）
   - H2：輸入 / 輸出
   - H2：預設值（外掛擁有）
   - H2：外掛擁有的預設值
   - H2：原生壓縮所有權
-  - H2：Bundle MCP 覆蓋
-  - H2：重新植入歷史上限
+  - H2：Bundle MCP overlay
+  - H2：重新播種歷史上限
   - H2：限制
   - H2：疑難排解
   - H2：相關
@@ -3063,9 +3063,9 @@ x-i18n:
   - H3：agents.defaults.contextInjection
   - H3：agents.defaults.bootstrapMaxChars
   - H3：agents.defaults.bootstrapTotalMaxChars
-  - H3：每個代理的啟動程序設定檔覆寫
+  - H3：每個代理的 bootstrap profile 覆寫
   - H3：agents.defaults.bootstrapPromptTruncationWarning
-  - H3：情境預算所有權對應表
+  - H3：Context budget 所有權對照
   - H4：agents.defaults.startupContext
   - H4：agents.defaults.contextLimits
   - H4：agents.list[].contextLimits
@@ -3093,10 +3093,10 @@ x-i18n:
   - H2：工作階段
   - H2：訊息
   - H3：回應前綴
-  - H3：Ack 反應
-  - H3：傳入去抖動
+  - H3：Ack reaction
+  - H3：傳入防抖
   - H3：TTS（文字轉語音）
-  - H2：交談
+  - H2：Talk
   - H2：相關
 
 ## gateway/config-channels.md
@@ -3104,9 +3104,9 @@ x-i18n:
 - 路由：/gateway/config-channels
 - 標題：
   - H2：頻道
-  - H3：DM 與群組存取
+  - H3：DM 和群組存取
   - H3：頻道模型覆寫
-  - H3：頻道預設值與心跳偵測
+  - H3：頻道預設值和心跳偵測
   - H3：WhatsApp
   - H3：Telegram
   - H3：Discord
@@ -3121,19 +3121,19 @@ x-i18n:
   - H3：多帳號（所有頻道）
   - H3：其他外掛頻道
   - H3：群組聊天提及閘控
-  - H4：DM 歷史記錄限制
+  - H4：DM 歷史限制
   - H4：自我聊天模式
   - H3：命令（聊天命令處理）
   - H2：相關
 
 ## gateway/config-tools.md
 
-- Route: /gateway/config-tools
+- 路由：/gateway/config-tools
 - 標題：
   - H2: 工具
   - H3: 工具設定檔
   - H3: 工具群組
-  - H3: 沙箱工具政策內的 MCP 與外掛工具
+  - H3: 沙箱工具政策中的 MCP 與外掛工具
   - H3: tools.codeMode
   - H3: tools.allow / tools.deny
   - H3: tools.byProvider
@@ -3151,31 +3151,31 @@ x-i18n:
   - H2: 自訂提供者與基底 URL
   - H3: 提供者欄位詳細資料
   - H3: 提供者範例
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/configuration-examples.md
 
-- Route: /gateway/configuration-examples
+- 路由：/gateway/configuration-examples
 - 標題：
-  - H2: 快速開始
+  - H2: 快速入門
   - H3: 絕對最小設定
-  - H3: 建議的入門設定
+  - H3: 建議的起始設定
   - H2: 展開範例（主要選項）
-  - H3: 符號連結的同層 skill repo
+  - H3: 符號連結的同層 skill 儲存庫
   - H2: 常見模式
-  - H3: 共享 skill 基準搭配一個覆寫
+  - H3: 具有單一覆寫的共用 skill 基準
   - H3: 多平台設定
   - H3: 受信任節點網路自動核准
-  - H3: 安全私訊模式（共享收件匣／多使用者私訊）
+  - H3: 安全 DM 模式（共用收件匣 / 多使用者 DM）
   - H3: Anthropic API 金鑰 + MiniMax 備援
   - H3: 工作機器人（受限存取）
-  - H3: 僅本機模型
+  - H3: 僅使用本機模型
   - H2: 提示
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/configuration-reference.md
 
-- Route: /gateway/configuration-reference
+- 路由：/gateway/configuration-reference
 - 標題：
   - H2: 頻道
   - H2: 代理預設值、多代理、工作階段與訊息
@@ -3185,15 +3185,15 @@ x-i18n:
   - H2: Skills
   - H2: 外掛
   - H3: Codex harness 外掛設定
-  - H2: 承諾事項
+  - H2: 承諾
   - H2: 瀏覽器
   - H2: UI
   - H2: 閘道
   - H3: OpenAI 相容端點
-  - H3: 多實例隔離
+  - H3: 多執行個體隔離
   - H3: gateway.tls
   - H3: gateway.reload
-  - H2: 掛鉤
+  - H2: Hook
   - H3: Gmail 整合
   - H2: Canvas 外掛主機
   - H2: 探索
@@ -3204,7 +3204,7 @@ x-i18n:
   - H3: 環境變數替換
   - H2: 密鑰
   - H3: SecretRef
-  - H3: 支援的憑證介面
+  - H3: 支援的認證介面
   - H3: 密鑰提供者設定
   - H2: 驗證儲存
   - H3: auth.cooldowns
@@ -3222,11 +3222,11 @@ x-i18n:
   - H3: cron.failureDestination
   - H2: 媒體模型範本變數
   - H2: 設定包含 ($include)
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/configuration.md
 
-- Route: /gateway/configuration
+- 路由：/gateway/configuration
 - 標題：
   - H2: 最小設定
   - H2: 編輯設定
@@ -3239,24 +3239,24 @@ x-i18n:
   - H2: 設定 RPC（程式化更新）
   - H2: 環境變數
   - H2: 完整參考
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/diagnostics.md
 
-- Route: /gateway/diagnostics
+- 路由：/gateway/diagnostics
 - 標題：
-  - H2: 快速開始
+  - H2: 快速入門
   - H2: 聊天命令
   - H2: 匯出內容包含什麼
   - H2: 隱私模型
   - H2: 穩定性記錄器
   - H2: 實用選項
   - H2: 停用診斷
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/discovery.md
 
-- Route: /gateway/discovery
+- 路由：/gateway/discovery
 - 標題：
   - H2: 術語
   - H2: 為什麼我們同時保留直接連線與 SSH
@@ -3267,58 +3267,58 @@ x-i18n:
   - H3: 3) 手動 / SSH 目標
   - H2: 傳輸選擇（用戶端政策）
   - H2: 配對 + 驗證（直接傳輸）
-  - H2: 依元件區分的責任
-  - H2: 相關
+  - H2: 各元件職責
+  - H2: 相關內容
 
 ## gateway/doctor.md
 
-- Route: /gateway/doctor
+- 路由：/gateway/doctor
 - 標題：
-  - H2: 快速開始
+  - H2: 快速入門
   - H3: 無頭與自動化模式
   - H2: 唯讀 lint 模式
-  - H2: 它做什麼（摘要）
+  - H2: 它會做什麼（摘要）
   - H2: 夢境 UI 回填與重設
   - H2: 詳細行為與理由
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/external-apps.md
 
-- Route: /gateway/external-apps
+- 路由：/gateway/external-apps
 - 標題：
-  - H2: 今日可用項目
+  - H2: 目前可用內容
   - H2: 建議路徑
-  - H2: 應用程式碼與外掛程式碼
-  - H2: 相關
+  - H2: 應用程式程式碼與外掛程式碼
+  - H2: 相關內容
 
 ## gateway/gateway-lock.md
 
-- Route: /gateway/gateway-lock
+- 路由：/gateway/gateway-lock
 - 標題：
   - H2: 原因
   - H2: 機制
   - H2: 錯誤介面
-  - H2: 操作注意事項
-  - H2: 相關
+  - H2: 操作備註
+  - H2: 相關內容
 
 ## gateway/health.md
 
-- Route: /gateway/health
+- 路由：/gateway/health
 - 標題：
   - H2: 快速檢查
-  - H2: 深度診斷
+  - H2: 深入診斷
   - H2: 健康監控設定
-  - H2: 上線時間監控
+  - H2: 正常執行時間監控
   - H3: 監控服務設定範例
-  - H2: 發生失敗時
-  - H2: 專用「health」命令
-  - H2: 相關
+  - H2: 發生故障時
+  - H2: 專用 "health" 命令
+  - H2: 相關內容
 
 ## gateway/heartbeat.md
 
-- Route: /gateway/heartbeat
+- 路由：/gateway/heartbeat
 - 標題：
-  - H2: 快速開始（初學者）
+  - H2: 快速入門（初學者）
   - H2: 預設值
   - H2: 心跳偵測提示的用途
   - H2: 回應合約
@@ -3327,12 +3327,12 @@ x-i18n:
   - H3: 每代理心跳偵測
   - H3: 活躍時段範例
   - H3: 24/7 設定
-  - H3: 多帳號範例
-  - H3: 欄位注意事項
+  - H3: 多帳戶範例
+  - H3: 欄位備註
   - H2: 傳遞行為
   - H2: 可見性控制
   - H3: 每個旗標的作用
-  - H3: 每頻道與每帳號範例
+  - H3: 每頻道與每帳戶範例
   - H3: 常見模式
   - H2: HEARTBEAT.md（選用）
   - H3: tasks: 區塊
@@ -3341,96 +3341,96 @@ x-i18n:
   - H2: 推理傳遞（選用）
   - H2: 成本意識
   - H2: 心跳偵測後的上下文溢位
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/index.md
 
-- Route: /gateway
+- 路由：/gateway
 - 標題：
   - H2: 5 分鐘本機啟動
   - H2: 執行階段模型
   - H2: OpenAI 相容端點
   - H3: 連接埠與繫結優先順序
   - H3: 熱重新載入模式
-  - H2: 操作員命令集
+  - H2: 操作者命令集
   - H2: 多個閘道（同一主機）
   - H2: 遠端存取
   - H2: 監督與服務生命週期
   - H2: 開發設定檔快速路徑
-  - H2: 協定快速參考（操作員視角）
+  - H2: 協定快速參考（操作者視角）
   - H2: 操作檢查
-  - H3: 存活狀態
-  - H3: 就緒狀態
-  - H3: 間隙復原
-  - H2: 常見失敗特徵
+  - H3: 存活性
+  - H3: 就緒性
+  - H3: 缺口復原
+  - H2: 常見故障特徵
   - H2: 安全保證
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/local-model-services.md
 
-- Route: /gateway/local-model-services
+- 路由：/gateway/local-model-services
 - 標題：
   - H2: 運作方式
   - H2: 設定形狀
   - H2: 欄位
   - H2: Inferrs 範例
   - H2: ds4 範例
-  - H2: 操作注意事項
-  - H2: 相關
+  - H2: 操作備註
+  - H2: 相關內容
 
 ## gateway/local-models.md
 
-- Route: /gateway/local-models
+- 路由：/gateway/local-models
 - 標題：
-  - H2: 硬體最低需求
+  - H2: 硬體下限
   - H2: 選擇後端
   - H2: 建議：LM Studio + 大型本機模型（Responses API）
-  - H3: 混合設定：託管主要，本機備援
-  - H3: 本機優先搭配託管安全網
+  - H3: 混合設定：託管主要模型、本機備援
+  - H3: 本機優先並使用託管安全網
   - H3: 區域託管 / 資料路由
   - H2: 其他 OpenAI 相容本機代理
   - H2: 較小或較嚴格的後端
   - H2: 疑難排解
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/logging.md
 
-- Route: /gateway/logging
+- 路由：/gateway/logging
 - 標題：
   - H1: 記錄
   - H2: 檔案式記錄器
   - H2: 主控台擷取
-  - H2: 修訂
-  - H2: Gateway WebSocket 記錄
+  - H2: 遮罩
+  - H2: 閘道 WebSocket 記錄
   - H3: WS 記錄樣式
   - H2: 主控台格式化（子系統記錄）
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/multiple-gateways.md
 
-- Route: /gateway/multiple-gateways
+- 路由：/gateway/multiple-gateways
 - 標題：
   - H2: 最佳建議設定
   - H2: Rescue-Bot 快速入門
   - H2: 為什麼這樣可行
-  - H2: `--profile rescue onboard` 變更內容
+  - H2: --profile rescue onboard 會變更什麼
   - H2: 一般多閘道設定
   - H2: 隔離檢查清單
   - H2: 連接埠對應（衍生）
-  - H2: 瀏覽器/CDP 注意事項（常見陷阱）
-  - H2: 手動環境範例
+  - H2: 瀏覽器/CDP 備註（常見踩雷點）
+  - H2: 手動 env 範例
   - H2: 快速檢查
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/network-model.md
 
-- Route: /gateway/network-model
+- 路由：/gateway/network-model
 - 標題：
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/openai-http-api.md
 
-- Route: /gateway/openai-http-api
+- 路由：/gateway/openai-http-api
 - 標題：
   - H2: 驗證
   - H2: 安全邊界（重要）
@@ -3439,7 +3439,7 @@ x-i18n:
   - H2: 啟用端點
   - H2: 停用端點
   - H2: 工作階段行為
-  - H2: 為什麼這個介面很重要
+  - H2: 此介面為何重要
   - H2: 模型清單與代理路由
   - H2: 串流（SSE）
   - H2: 聊天工具合約
@@ -3450,11 +3450,11 @@ x-i18n:
   - H3: 工具後續迴圈
   - H2: Open WebUI 快速設定
   - H2: 範例
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/openresponses-http-api.md
 
-- Route: /gateway/openresponses-http-api
+- 路由：/gateway/openresponses-http-api
 - 標題：
   - H2: 驗證、安全與路由
   - H2: 工作階段行為
@@ -3462,7 +3462,7 @@ x-i18n:
   - H2: 項目（輸入）
   - H3: message
   - H3: functioncalloutput（回合式工具）
-  - H3: reasoning 和 itemreference
+  - H3: reasoning 與 itemreference
   - H2: 工具（用戶端函式工具）
   - H2: 圖片（inputimage）
   - H2: 檔案（inputfile）
@@ -3471,14 +3471,14 @@ x-i18n:
   - H2: 用量
   - H2: 錯誤
   - H2: 範例
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/openshell.md
 
-- Route: /gateway/openshell
+- 路由：/gateway/openshell
 - 標題：
   - H2: 先決條件
-  - H2: 快速開始
+  - H2: 快速入門
   - H2: 工作區模式
   - H3: mirror
   - H3: remote
@@ -3486,21 +3486,21 @@ x-i18n:
   - H2: 設定參考
   - H2: 範例
   - H3: 最小遠端設定
-  - H3: 搭配 GPU 的鏡像模式
-  - H3: 搭配自訂閘道的每代理 OpenShell
+  - H3: 搭配 GPU 的 mirror 模式
+  - H3: 使用自訂閘道的每代理 OpenShell
   - H2: 生命週期管理
   - H3: 何時重新建立
   - H2: 安全強化
   - H2: 目前限制
   - H2: 運作方式
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/opentelemetry.md
 
-- Route: /gateway/opentelemetry
+- 路由：/gateway/opentelemetry
 - 標題：
-  - H2: 它如何組合在一起
-  - H2: 快速開始
+  - H2: 如何組合運作
+  - H2: 快速入門
   - H2: 匯出的訊號
   - H2: 設定參考
   - H3: 環境變數
@@ -3509,96 +3509,96 @@ x-i18n:
   - H2: 匯出的指標
   - H3: 模型用量
   - H3: 訊息流程
-  - H3: Talk
+  - H3: 對話
   - H3: 佇列與工作階段
-  - H3: 工作階段存活遙測
+  - H3: 工作階段存活性遙測
   - H3: Harness 生命週期
   - H3: 工具執行
   - H3: Exec
-  - H3: 診斷內部（記憶體與工具迴圈）
-  - H2: 匯出的跨度
+  - H3: 診斷內部機制（記憶體與工具迴圈）
+  - H2: 匯出的 span
   - H2: 診斷事件目錄
   - H2: 沒有匯出器時
   - H2: 停用
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/operator-scopes.md
 
-- Route: /gateway/operator-scopes
+- 路由：/gateway/operator-scopes
 - 標題：
   - H2: 角色
   - H2: 範圍層級
-  - H2: 方法範圍只是第一道閘門
+  - H2: 方法範圍只是第一道關卡
   - H2: 裝置配對核准
   - H2: 節點配對核准
-  - H2: 共享密鑰驗證
+  - H2: 共用密鑰驗證
 
 ## gateway/pairing.md
 
-- Route: /gateway/pairing
+- 路由：/gateway/pairing
 - 標題：
   - H2: 概念
-  - H2: 配對運作方式
-  - H2: 命令列介面工作流程（適合無頭環境）
+  - H2: 配對如何運作
+  - H2: 命令列介面工作流程（適合無頭模式）
   - H2: API 介面（閘道協定）
-  - H2: 節點命令控管（2026.3.31+）
+  - H2: 節點命令閘控（2026.3.31+）
   - H2: 節點事件信任邊界（2026.3.31+）
-  - H2: 自動核准（macOS app）
-  - H2: 受信任 CIDR 裝置自動核准
+  - H2: 自動核准（macOS 應用程式）
+  - H2: Trusted-CIDR 裝置自動核准
   - H2: 中繼資料升級自動核准
   - H2: QR 配對輔助工具
-  - H2: 本地性與轉送標頭
+  - H2: 位置與轉送標頭
   - H2: 儲存（本機、私有）
   - H2: 傳輸行為
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/prometheus.md
 
-- Route: /gateway/prometheus
+- 路由：/gateway/prometheus
 - 標題：
-  - H2: 快速開始
+  - H2: 快速入門
   - H2: 匯出的指標
   - H2: 標籤政策
   - H2: PromQL 配方
   - H2: 在 Prometheus 與 OpenTelemetry 匯出之間選擇
   - H2: 疑難排解
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/protocol.md
 
-- Route: /gateway/protocol
+- 路由：/gateway/protocol
 - 標題：
   - H2: 傳輸
   - H2: 交握（連線）
   - H3: 節點範例
-  - H2: 框架
+  - H2: 框架化
   - H2: 角色 + 範圍
   - H3: 角色
-  - H3: 範圍（操作員）
+  - H3: 範圍（操作者）
   - H3: 能力/命令/權限（節點）
   - H2: 存在狀態
   - H3: 節點背景存活事件
-  - H2: 廣播事件範圍設定
+  - H2: 廣播事件範圍限定
   - H2: 常見 RPC 方法系列
   - H3: 常見事件系列
   - H3: 節點輔助方法
-  - H3: 工作台帳 RPC
-  - H3: 操作員輔助方法
+  - H3: 工作分類帳 RPC
+  - H3: 操作者輔助方法
   - H3: models.list 檢視
   - H2: Exec 核准
   - H2: 代理傳遞備援
-  - H2: 版本控制
+  - H2: 版本控管
   - H3: 用戶端常數
   - H2: 驗證
   - H2: 裝置身分 + 配對
   - H3: 裝置驗證遷移診斷
   - H2: TLS + 釘選
   - H2: 範圍
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/remote-gateway-readme.md
 
-- Route: /gateway/remote-gateway-readme
+- 路由：/gateway/remote-gateway-readme
 - 標題：
   - H1: 使用遠端閘道執行 OpenClaw.app
   - H2: 概觀
@@ -3613,25 +3613,25 @@ x-i18n:
   - H3: 載入 Launch Agent
   - H2: 疑難排解
   - H2: 運作方式
-  - H2: 相關
+  - H2: 相關內容
 
 ## gateway/remote.md
 
 - 路由：/gateway/remote
 - 標題：
   - H2：核心概念
-  - H2：常見的 VPN 與 tailnet 設定
+  - H2：常見 VPN 與 tailnet 設定
   - H3：tailnet 中的常駐閘道
-  - H3：家用桌面電腦執行閘道
-  - H3：筆記型電腦執行閘道
-  - H2：命令流程（哪裡執行什麼）
+  - H3：家用桌機執行閘道
+  - H3：筆電執行閘道
+  - H2：命令流程（何處執行何項）
   - H2：SSH 通道（命令列介面 + 工具）
   - H2：命令列介面遠端預設值
   - H2：憑證優先順序
   - H2：聊天 UI 遠端存取
   - H2：macOS 應用程式遠端模式
   - H2：安全規則（遠端/VPN）
-  - H3：macOS：透過 LaunchAgent 建立持續 SSH 通道
+  - H3：macOS：透過 LaunchAgent 建立持久 SSH 通道
   - H4：步驟 1：新增 SSH 設定
   - H4：步驟 2：複製 SSH 金鑰（一次性）
   - H4：步驟 3：設定閘道權杖
@@ -3645,13 +3645,13 @@ x-i18n:
 - 路由：/gateway/sandbox-vs-tool-policy-vs-elevated
 - 標題：
   - H2：快速偵錯
-  - H2：沙箱：工具在哪裡執行
+  - H2：沙箱：工具執行位置
   - H3：繫結掛載（安全性快速檢查）
-  - H2：工具原則：哪些工具存在/可呼叫
+  - H2：工具政策：哪些工具存在/可被呼叫
   - H3：工具群組（簡寫）
-  - H2：提升權限：僅限 exec 的「在主機上執行」
+  - H2：提升權限：僅 exec 的「在主機上執行」
   - H2：常見「沙箱監牢」修正
-  - H3：「工具 X 被沙箱工具原則封鎖」
+  - H3：「工具 X 被沙箱工具政策封鎖」
   - H3：「我以為這是 main，為什麼被沙箱化？」
   - H2：相關
 
@@ -3659,7 +3659,7 @@ x-i18n:
 
 - 路由：/gateway/sandboxing
 - 標題：
-  - H2：哪些內容會被沙箱化
+  - H2：會被沙箱化的項目
   - H2：模式
   - H2：範圍
   - H2：後端
@@ -3673,7 +3673,7 @@ x-i18n:
   - H2：自訂繫結掛載
   - H2：映像與設定
   - H2：setupCommand（一次性容器設定）
-  - H2：工具原則與逃生口
+  - H2：工具政策與逃生出口
   - H2：多代理覆寫
   - H2：最小啟用範例
   - H2：相關
@@ -3683,12 +3683,12 @@ x-i18n:
 - 路由：/gateway/secrets-plan-contract
 - 標題：
   - H2：計畫檔案形狀
-  - H2：供應者 upsert 與刪除
+  - H2：提供者 upsert 與刪除
   - H2：支援的目標範圍
   - H2：目標類型行為
   - H2：路徑驗證規則
   - H2：失敗行為
-  - H2：Exec 供應者同意行為
+  - H2：Exec 提供者同意行為
   - H2：執行階段與稽核範圍備註
   - H2：操作員檢查
   - H2：相關文件
@@ -3699,22 +3699,22 @@ x-i18n:
 - 標題：
   - H2：目標與執行階段模型
   - H2：代理存取邊界
-  - H2：作用中介面篩選
-  - H2：閘道驗證介面診斷
+  - H2：作用中表面篩選
+  - H2：閘道驗證表面診斷
   - H2：入門參考預檢
   - H2：SecretRef 合約
-  - H2：供應者設定
-  - H2：以檔案支援的 API 金鑰
+  - H2：提供者設定
+  - H2：檔案支援的 API 金鑰
   - H2：Exec 整合範例
   - H2：MCP 伺服器環境變數
   - H2：沙箱 SSH 驗證材料
-  - H2：支援的憑證介面
+  - H2：支援的憑證表面
   - H2：必要行為與優先順序
   - H2：啟用觸發條件
-  - H2：降級與已復原訊號
+  - H2：降級與復原訊號
   - H2：命令路徑解析
   - H2：稽核與設定工作流程
-  - H2：單向安全原則
+  - H2：單向安全政策
   - H2：舊版驗證相容性備註
   - H2：Web UI 備註
   - H2：相關
@@ -3730,22 +3730,22 @@ x-i18n:
 - 路由：/gateway/security/exposure-runbook
 - 標題：
   - H2：選擇暴露模式
-  - H2：預檢盤點
+  - H2：預檢清單
   - H2：基準檢查
   - H2：最低安全基準
-  - H2：私訊與群組暴露
+  - H2：DM 與群組暴露
   - H2：反向代理檢查
   - H2：工具與沙箱審查
   - H2：變更後驗證
-  - H2：回復計畫
-  - H2：審查清單
+  - H2：復原計畫
+  - H2：審查檢查清單
 
 ## gateway/security/index.md
 
 - 路由：/gateway/security
 - 標題：
   - H2：先界定範圍：個人助理安全模型
-  - H2：快速檢查：openclaw security audit
+  - H2：快速檢查：openclaw 安全稽核
   - H3：已發布套件相依性鎖定
   - H3：部署與主機信任
   - H3：安全檔案操作
@@ -3753,84 +3753,84 @@ x-i18n:
   - H3：公司共用代理：可接受模式
   - H2：閘道與節點信任概念
   - H2：信任邊界矩陣
-  - H2：設計上不是漏洞
+  - H2：依設計並非漏洞
   - H2：60 秒強化基準
   - H2：共用收件匣快速規則
-  - H2：上下文可見性模型
-  - H2：稽核檢查內容（高層次）
+  - H2：情境可見性模型
+  - H2：稽核檢查項目（高階）
   - H2：憑證儲存對照表
-  - H2：安全稽核清單
+  - H2：安全稽核檢查清單
   - H2：安全稽核詞彙表
-  - H2：透過 HTTP 的控制 UI
+  - H2：透過 HTTP 使用 Control UI
   - H2：不安全或危險旗標摘要
   - H2：反向代理設定
   - H2：HSTS 與來源備註
-  - H2：本機工作階段記錄位於磁碟
+  - H2：本機工作階段記錄儲存在磁碟上
   - H2：節點執行（system.run）
   - H2：動態 Skills（監看器 / 遠端節點）
   - H2：威脅模型
-  - H2：核心概念：先存取控制，再智慧處理
+  - H2：核心概念：先有存取控制，再有智慧
   - H2：命令授權模型
   - H2：控制平面工具風險
   - H2：外掛
-  - H2：私訊存取模型：配對、允許清單、開放、停用
-  - H2：私訊工作階段隔離（多使用者模式）
-  - H3：安全私訊模式（建議）
-  - H2：私訊與群組的允許清單
-  - H2：提示注入（它是什麼、為何重要）
+  - H2：DM 存取模型：配對、允許清單、開放、停用
+  - H2：DM 工作階段隔離（多使用者模式）
+  - H3：安全 DM 模式（建議）
+  - H2：DM 與群組的允許清單
+  - H2：提示注入（是什麼、為何重要）
   - H2：外部內容特殊權杖清理
-  - H2：不安全的外部內容繞過旗標
-  - H3：提示注入不需要公開私訊
+  - H2：不安全外部內容略過旗標
+  - H3：提示注入不需要公開 DM
   - H3：自架 LLM 後端
-  - H3：模型能力（安全備註）
+  - H3：模型強度（安全性備註）
   - H2：群組中的推理與詳細輸出
   - H2：設定強化範例
   - H3：檔案權限
-  - H3：網路暴露（繫結、連接埠、防火牆）
-  - H3：搭配 UFW 的 Docker 連接埠發布
+  - H3：網路暴露（bind、port、防火牆）
+  - H3：使用 UFW 發布 Docker 連接埠
   - H3：mDNS/Bonjour 探索
   - H3：鎖定閘道 WebSocket（本機驗證）
   - H3：Tailscale Serve 身分標頭
   - H3：透過節點主機控制瀏覽器（建議）
-  - H3：磁碟上的祕密
+  - H3：磁碟上的密鑰
   - H3：工作區 .env 檔案
-  - H3：記錄與逐字稿（遮蔽與保留）
-  - H3：私訊：預設配對
-  - H3：群組：一律要求提及
-  - H3：分開號碼（WhatsApp、Signal、Telegram）
+  - H3：記錄與逐字稿（遮罩與保留）
+  - H3：DM：預設配對
+  - H3：群組：任何地方都需要提及
+  - H3：分開的號碼（WhatsApp、Signal、Telegram）
   - H3：唯讀模式（透過沙箱與工具）
   - H3：安全基準（複製/貼上）
   - H2：沙箱化（建議）
   - H3：子代理委派護欄
   - H2：瀏覽器控制風險
-  - H3：瀏覽器 SSRF 原則（預設嚴格）
+  - H3：瀏覽器 SSRF 政策（預設嚴格）
   - H2：每代理存取設定檔（多代理）
   - H3：範例：完整存取（無沙箱）
   - H3：範例：唯讀工具 + 唯讀工作區
-  - H3：範例：無檔案系統/shell 存取（允許供應者訊息）
-  - H2：事件應變
-  - H3：遏止
-  - H3：輪替（若祕密外洩，假設已遭入侵）
+  - H3：範例：無檔案系統/shell 存取（允許提供者訊息）
+  - H2：事件回應
+  - H3：圍堵
+  - H3：輪替（若密鑰外洩，假設已遭入侵）
   - H3：稽核
-  - H3：蒐集報告資料
-  - H2：祕密掃描
+  - H3：收集以供報告
+  - H2：密鑰掃描
   - H2：回報安全問題
 
 ## gateway/security/secure-file-operations.md
 
 - 路由：/gateway/security/secure-file-operations
 - 標題：
-  - H2：預設：無 Python helper
-  - H2：沒有 Python 時仍受保護的內容
-  - H2：Python 新增的內容
+  - H2：預設：無 Python 輔助程式
+  - H2：沒有 Python 時仍受保護的項目
+  - H2：Python 新增的能力
   - H2：外掛與核心指引
 
 ## gateway/security/shrinkwrap.md
 
 - 路由：/gateway/security/shrinkwrap
 - 標題：
-  - H2：簡易版
-  - H2：OpenClaw 為什麼使用它
+  - H2：簡易版本
+  - H2：OpenClaw 為何使用它
   - H2：技術細節
 
 ## gateway/tailscale.md
@@ -3840,13 +3840,13 @@ x-i18n:
   - H2：模式
   - H2：驗證
   - H2：設定範例
-  - H3：僅限 tailnet（Serve）
-  - H3：僅限 tailnet（繫結到 Tailnet IP）
-  - H3：公開網際網路（Funnel + 共用密碼）
+  - H3：僅 tailnet（Serve）
+  - H3：僅 tailnet（繫結至 Tailnet IP）
+  - H3：公用網際網路（Funnel + 共用密碼）
   - H2：命令列介面範例
   - H2：備註
   - H2：瀏覽器控制（遠端閘道 + 本機瀏覽器）
-  - H2：Tailscale 前置需求 + 限制
+  - H2：Tailscale 先決條件 + 限制
   - H2：深入了解
   - H2：相關
 
@@ -3856,8 +3856,8 @@ x-i18n:
 - 標題：
   - H2：驗證
   - H2：安全邊界（重要）
-  - H2：請求主體
-  - H2：原則 + 路由行為
+  - H2：請求本文
+  - H2：政策 + 路由行為
   - H2：回應
   - H2：範例
   - H2：相關
@@ -3869,20 +3869,20 @@ x-i18n:
   - H2：命令階梯
   - H2：更新之後
   - H2：分裂腦安裝與較新設定防護
-  - H2：回復後的通訊協定不符
+  - H2：復原後的協定不相符
   - H2：Skill 符號連結因路徑逃逸而略過
-  - H2：Anthropic 429 長上下文需要額外用量
+  - H2：Anthropic 429 長情境需要額外用量
   - H2：上游 403 封鎖回應
-  - H2：本機 OpenAI 相容後端可通過直接探測，但代理執行失敗
+  - H2：本機 OpenAI 相容後端通過直接探測但代理執行失敗
   - H2：沒有回覆
-  - H2：儀表板控制 UI 連線能力
+  - H2：儀表板 Control UI 連線能力
   - H3：驗證詳細代碼快速對照
   - H2：閘道服務未執行
-  - H2：macOS 閘道無聲停止回應，然後在你觸碰儀表板時恢復
-  - H2：閘道在高記憶體使用期間結束
+  - H2：macOS 閘道默默停止回應，接著在你觸碰儀表板時恢復
+  - H2：閘道在高記憶體使用期間退出
   - H2：閘道拒絕無效設定
   - H2：閘道探測警告
-  - H2：頻道已連線，但訊息未流動
+  - H2：頻道已連線，訊息未流動
   - H2：排程與心跳偵測傳遞
   - H2：節點已配對，工具失敗
   - H2：瀏覽器工具失敗
@@ -3896,7 +3896,7 @@ x-i18n:
   - H2：何時使用
   - H2：何時不要使用
   - H2：運作方式
-  - H2：控制 UI 配對行為
+  - H2：Control UI 配對行為
   - H2：設定
   - H3：設定參考
   - H2：TLS 終止與 HSTS
@@ -3904,7 +3904,7 @@ x-i18n:
   - H2：代理設定範例
   - H2：混合權杖設定
   - H2：操作員範圍標頭
-  - H2：安全清單
+  - H2：安全檢查清單
   - H2：安全稽核
   - H2：疑難排解
   - H2：從權杖驗證遷移
@@ -3917,12 +3917,12 @@ x-i18n:
   - H2：執行階段偵錯覆寫
   - H2：工作階段追蹤輸出
   - H2：外掛生命週期追蹤
-  - H2：命令列介面啟動與命令效能分析
+  - H2：命令列介面啟動與命令剖析
   - H2：閘道監看模式
   - H2：開發設定檔 + 開發閘道（--dev）
   - H2：原始串流記錄（OpenClaw）
   - H2：原始 OpenAI 相容區塊記錄
-  - H2：安全注意事項
+  - H2：安全備註
   - H2：在 VSCode 中偵錯
   - H3：設定
   - H3：備註
@@ -3933,15 +3933,15 @@ x-i18n:
 - 路由：/help/environment
 - 標題：
   - H2：優先順序（最高 → 最低）
-  - H2：供應者憑證與工作區 .env
+  - H2：提供者憑證與工作區 .env
   - H2：設定 env 區塊
   - H2：Shell env 匯入
   - H2：Exec shell 快照
-  - H2：執行階段注入的環境變數
-  - H2：UI 環境變數
-  - H2：設定中的環境變數替換
-  - H2：祕密參照與 ${ENV} 字串
-  - H2：路徑相關環境變數
+  - H2：執行階段注入的 env vars
+  - H2：UI env vars
+  - H2：設定中的 env var 替換
+  - H2：Secret refs 與 ${ENV} 字串
+  - H2：路徑相關 env vars
   - H2：記錄
   - H3：OPENCLAWHOME
   - H2：nvm 使用者：webfetch TLS 失敗
@@ -3960,7 +3960,7 @@ x-i18n:
 - 路由：/help/faq-models
 - 標題：
   - H2：模型：預設值、選擇、別名、切換
-  - H2：模型容錯移轉與「所有模型皆失敗」
+  - H2：模型容錯移轉與「所有模型都失敗」
   - H2：驗證設定檔：它們是什麼以及如何管理
   - H2：相關
 
@@ -3968,22 +3968,22 @@ x-i18n:
 
 - 路由：/help/faq
 - 標題：
-  - H2：如果某些東西壞掉，前 60 秒要做的事
+  - H2：如果某些東西壞掉，前 60 秒
   - H2：快速開始與首次執行設定
   - H2：什麼是 OpenClaw？
   - H2：Skills 與自動化
   - H2：沙箱化與記憶體
-  - H2：磁碟上的位置
+  - H2：磁碟上的項目位置
   - H2：設定基礎
   - H2：遠端閘道與節點
-  - H2：環境變數與 .env 載入
+  - H2：Env vars 與 .env 載入
   - H2：工作階段與多個聊天
   - H2：模型、容錯移轉與驗證設定檔
   - H2：閘道：連接埠、「已在執行」與遠端模式
   - H2：記錄與偵錯
   - H2：媒體與附件
   - H2：安全性與存取控制
-  - H2：聊天命令、中止工作，以及「它不會停止」
+  - H2：聊天命令、中止任務與「它不會停止」
   - H2：其他
   - H2：相關
 
@@ -3991,7 +3991,7 @@ x-i18n:
 
 - 路由：/help
 - 標題：
-  - H2：常見問題
+  - H2：FAQ
   - H2：診斷
   - H2：測試
   - H2：社群與中繼資訊
@@ -4001,47 +4001,47 @@ x-i18n:
 - 路由：/help/scripts
 - 標題：
   - H2：慣例
-  - H2：驗證監控腳本
-  - H2：GitHub 讀取輔助工具
-  - H2：新增腳本時
+  - H2：驗證監控指令碼
+  - H2：GitHub 讀取輔助程式
+  - H2：新增指令碼時
   - H2：相關
 
 ## help/testing-live.md
 
-- 路由：/help/testing-live
-- 標題：
+- 路由: /help/testing-live
+- 標題:
   - H2: Live：本機煙霧測試命令
-  - H2: Live：Android 節點功能掃描
+  - H2: Live：Android 節點能力掃描
   - H2: Live：模型煙霧測試（設定檔鍵）
   - H3: 第 1 層：直接模型補全（無閘道）
   - H3: 第 2 層：閘道 + 開發代理煙霧測試（「@openclaw」實際執行的內容）
   - H2: Live：命令列介面後端煙霧測試（Claude、Gemini 或其他本機命令列介面）
   - H2: Live：APNs HTTP/2 代理可達性
   - H2: Live：ACP 綁定煙霧測試（/acp spawn ... --bind here）
-  - H2: Live：Codex app-server 測試工具煙霧測試
-  - H3: 建議的即時測試配方
+  - H2: Live：Codex 應用程式伺服器測試架煙霧測試
+  - H3: 建議的 Live 配方
   - H2: Live：模型矩陣（涵蓋範圍）
-  - H3: 現代煙霧測試集（工具呼叫 + 圖片）
+  - H3: 現代煙霧測試組合（工具呼叫 + 圖片）
   - H3: 基準：工具呼叫（Read + 選用 Exec）
   - H3: 視覺：圖片傳送（附件 → 多模態訊息）
   - H3: 彙整器 / 替代閘道
-  - H2: 認證資料（絕不提交）
+  - H2: 憑證（絕不提交）
   - H2: Deepgram Live（音訊轉錄）
-  - H2: BytePlus coding plan Live
+  - H2: BytePlus 程式設計計畫 Live
   - H2: ComfyUI 工作流程媒體 Live
   - H2: 圖片生成 Live
   - H2: 音樂生成 Live
   - H2: 影片生成 Live
-  - H2: 媒體 Live 測試工具
+  - H2: 媒體 Live 測試架
   - H2: 相關
 
 ## help/testing-updates-plugins.md
 
-- 路由：/help/testing-updates-plugins
-- 標題：
+- 路由: /help/testing-updates-plugins
+- 標題:
   - H2: 我們保護的內容
   - H2: 開發期間的本機證明
-  - H2: Docker 測試通道
+  - H2: Docker 跑道
   - H2: 套件驗收
   - H2: 發行預設值
   - H2: 舊版相容性
@@ -4050,70 +4050,70 @@ x-i18n:
 
 ## help/testing.md
 
-- 路由：/help/testing
-- 標題：
+- 路由: /help/testing
+- 標題:
   - H2: 快速開始
   - H2: 測試暫存目錄
   - H2: QA 專用執行器
-  - H3: 透過 Convex 共享 Telegram 認證資料（v1）
-  - H3: 將頻道新增至 QA
-  - H2: 測試套件（在哪裡執行什麼）
+  - H3: 透過 Convex 共用 Telegram 憑證（v1）
+  - H3: 將通道加入 QA
+  - H2: 測試套件（何處執行哪些項目）
   - H3: 單元 / 整合（預設）
   - H3: 穩定性（閘道）
   - H3: E2E（儲存庫彙總）
   - H3: E2E（閘道煙霧測試）
   - H3: E2E（Control UI 模擬瀏覽器）
   - H3: E2E：OpenShell 後端煙霧測試
-  - H3: Live（真實供應商 + 真實模型）
+  - H3: Live（真實提供者 + 真實模型）
   - H2: 我應該執行哪個套件？
-  - H2: Live（觸及網路）測試
-  - H2: Docker 執行器（選用的「在 Linux 中可運作」檢查）
+  - H2: Live（會觸及網路）測試
+  - H2: Docker 執行器（選用的「可在 Linux 運作」檢查）
   - H2: 文件健全性
-  - H2: 離線回歸（CI 安全）
+  - H2: 離線迴歸（CI 安全）
   - H2: 代理可靠性評估（Skills）
-  - H2: 合約測試（外掛與頻道形狀）
+  - H2: 合約測試（外掛與通道形狀）
   - H3: 命令
-  - H3: 頻道合約
-  - H3: 供應商狀態合約
-  - H3: 供應商合約
-  - H3: 何時執行
-  - H2: 新增回歸（指引）
+  - H3: 通道合約
+  - H3: 提供者狀態合約
+  - H3: 提供者合約
+  - H3: 執行時機
+  - H2: 新增迴歸（指引）
   - H2: 相關
 
 ## help/troubleshooting.md
 
-- 路由：/help/troubleshooting
-- 標題：
+- 路由: /help/troubleshooting
+- 標題:
   - H2: 前 60 秒
   - H2: 助理感覺受限或缺少工具
   - H2: Anthropic 長上下文 429
   - H2: 本機 OpenAI 相容後端可直接運作，但在 OpenClaw 中失敗
-  - H2: 外掛安裝因缺少 openclaw extensions 而失敗
+  - H2: 外掛安裝失敗，顯示缺少 openclaw extensions
   - H2: 安裝政策封鎖外掛安裝或更新
-  - H2: 外掛存在但因可疑擁有權而被封鎖
+  - H2: 外掛存在但遭可疑擁有權封鎖
   - H2: 決策樹
   - H2: 相關
 
 ## index.md
 
-- 路由：/
-- 標題：
+- 路由: /
+- 標題:
   - H1: OpenClaw 🦞
   - H2: 什麼是 OpenClaw？
   - H2: 運作方式
-  - H2: 主要功能
+  - H2: 主要能力
   - H2: 快速開始
   - H2: 儀表板
   - H2: 設定（選用）
   - H2: 從這裡開始
-  - H2: 深入了解
+  - H2: 了解更多
 
 ## install/ansible.md
 
-- 路由：/install/ansible
-- 標題：
+- 路由: /install/ansible
+- 標題:
   - H2: 先決條件
-  - H2: 你會獲得什麼
+  - H2: 你會取得什麼
   - H2: 快速開始
   - H2: 會安裝什麼
   - H2: 安裝後設定
@@ -4127,10 +4127,10 @@ x-i18n:
 
 ## install/azure.md
 
-- 路由：/install/azure
-- 標題：
+- 路由: /install/azure
+- 標題:
   - H2: 你將執行的事項
-  - H2: 你需要什麼
+  - H2: 你需要的項目
   - H2: 設定部署
   - H2: 部署 Azure 資源
   - H2: 安裝 OpenClaw
@@ -4141,45 +4141,45 @@ x-i18n:
 
 ## install/bun.md
 
-- 路由：/install/bun
-- 標題：
+- 路由: /install/bun
+- 標題:
   - H2: 安裝
-  - H2: 生命週期腳本
+  - H2: 生命週期指令碼
   - H2: 注意事項
   - H2: 相關
 
 ## install/clawdock.md
 
-- 路由：/install/clawdock
-- 標題：
+- 路由: /install/clawdock
+- 標題:
   - H2: 安裝
-  - H2: 你會獲得什麼
+  - H2: 你會取得什麼
   - H3: 基本操作
   - H3: 容器存取
-  - H3: 網頁 UI 與配對
+  - H3: Web UI 與配對
   - H3: 設定與維護
   - H3: 工具
   - H2: 首次流程
-  - H2: 設定與祕密
+  - H2: 設定與密鑰
   - H2: 相關
 
 ## install/development-channels.md
 
-- 路由：/install/development-channels
-- 標題：
+- 路由: /install/development-channels
+- 標題:
   - H2: 切換通道
-  - H2: 一次性版本或標籤目標指定
+  - H2: 一次性版本或標籤目標
   - H2: 試跑
   - H2: 外掛與通道
   - H2: 檢查目前狀態
   - H2: 標記最佳實務
-  - H2: macOS App 可用性
+  - H2: macOS 應用程式可用性
   - H2: 相關
 
 ## install/digitalocean.md
 
-- 路由：/install/digitalocean
-- 標題：
+- 路由: /install/digitalocean
+- 標題:
   - H2: 先決條件
   - H2: 設定
   - H2: 持久化與備份
@@ -4190,18 +4190,18 @@ x-i18n:
 
 ## install/docker-vm-runtime.md
 
-- 路由：/install/docker-vm-runtime
-- 標題：
+- 路由: /install/docker-vm-runtime
+- 標題:
   - H2: 將必要二進位檔烘焙進映像檔
   - H2: 建置並啟動
-  - H2: 哪些內容持久化在哪裡
+  - H2: 哪些內容會持久保存在哪裡
   - H2: 更新
   - H2: 相關
 
 ## install/docker.md
 
-- 路由：/install/docker
-- 標題：
+- 路由: /install/docker
+- 標題:
   - H2: Docker 適合我嗎？
   - H2: 先決條件
   - H2: 容器化閘道
@@ -4209,8 +4209,8 @@ x-i18n:
   - H3: 環境變數
   - H3: 可觀測性
   - H3: 健康檢查
-  - H3: LAN vs loopback
-  - H3: 主機本機供應商
+  - H3: LAN 與 loopback
+  - H3: 主機本機提供者
   - H3: Docker 中的 Claude 命令列介面後端
   - H3: Bonjour / mDNS
   - H3: 儲存與持久化
@@ -4223,56 +4223,56 @@ x-i18n:
 
 ## install/exe-dev.md
 
-- 路由：/install/exe-dev
-- 標題：
+- 路由: /install/exe-dev
+- 標題:
   - H2: 初學者快速路徑
-  - H2: 你需要什麼
+  - H2: 你需要的項目
   - H2: 使用 Shelley 自動安裝
   - H2: 手動安裝
   - H2: 1) 建立 VM
   - H2: 2) 安裝先決條件（在 VM 上）
   - H2: 3) 安裝 OpenClaw
-  - H2: 4) 設定 nginx 以將 OpenClaw 代理到連接埠 8000
+  - H2: 4) 設定 nginx，將 OpenClaw 代理到連接埠 8000
   - H2: 5) 存取 OpenClaw 並授予權限
-  - H2: 遠端頻道設定
+  - H2: 遠端通道設定
   - H2: 遠端存取
   - H2: 更新
   - H2: 相關
 
 ## install/fly.md
 
-- 路由：/install/fly
-- 標題：
-  - H2: 你需要什麼
+- 路由: /install/fly
+- 標題:
+  - H2: 你需要的項目
   - H2: 初學者快速路徑
   - H2: 疑難排解
-  - H3: 「App 未在預期位址上監聽」
+  - H3: 「應用程式未在預期位址上監聽」
   - H3: 健康檢查失敗 / 連線遭拒
   - H3: OOM / 記憶體問題
   - H3: 閘道鎖定問題
   - H3: 未讀取設定
   - H3: 透過 SSH 寫入設定
-  - H3: 狀態未持久化
+  - H3: 狀態未持久保存
   - H2: 更新
   - H3: 更新機器命令
   - H2: 私有部署（強化）
   - H3: 何時使用私有部署
   - H3: 設定
   - H3: 存取私有部署
-  - H3: 使用私有部署的網路鉤子
-  - H3: 安全優勢
-  - H2: 備註
+  - H3: 私有部署中的網路鉤子
+  - H3: 安全效益
+  - H2: 註記
   - H2: 成本
   - H2: 後續步驟
   - H2: 相關
 
 ## install/gcp.md
 
-- 路由：/install/gcp
-- 標題：
-  - H2: 我們在做什麼（簡單說）？
-  - H2: 快速路徑（有經驗的操作人員）
-  - H2: 你需要什麼
+- 路由: /install/gcp
+- 標題:
+  - H2: 我們正在做什麼（簡單說）？
+  - H2: 快速路徑（有經驗的操作者）
+  - H2: 你需要的項目
   - H2: 疑難排解
   - H2: 服務帳戶（安全最佳實務）
   - H2: 後續步驟
@@ -4280,22 +4280,22 @@ x-i18n:
 
 ## install/hetzner.md
 
-- 路由：/install/hetzner
-- 標題：
+- 路由: /install/hetzner
+- 標題:
   - H2: 目標
-  - H2: 我們在做什麼（簡單說）？
-  - H2: 快速路徑（有經驗的操作人員）
-  - H2: 你需要什麼
+  - H2: 我們正在做什麼（簡單說）？
+  - H2: 快速路徑（有經驗的操作者）
+  - H2: 你需要的項目
   - H2: 基礎架構即程式碼（Terraform）
   - H2: 後續步驟
   - H2: 相關
 
 ## install/hostinger.md
 
-- 路由：/install/hostinger
-- 標題：
+- 路由: /install/hostinger
+- 標題:
   - H2: 先決條件
-  - H2: 選項 A：1-Click OpenClaw
+  - H2: 選項 A：一鍵 OpenClaw
   - H2: 選項 B：VPS 上的 OpenClaw
   - H2: 驗證你的設定
   - H2: 疑難排解
@@ -4304,11 +4304,11 @@ x-i18n:
 
 ## install/index.md
 
-- 路由：/install
-- 標題：
+- 路由: /install
+- 標題:
   - H2: 系統需求
-  - H2: 建議：安裝程式腳本
-  - H2: 替代安裝方法
+  - H2: 建議：安裝程式指令碼
+  - H2: 替代安裝方式
   - H3: 本機前綴安裝程式（install-cli.sh）
   - H3: npm、pnpm 或 bun
   - H3: 從原始碼
@@ -4321,8 +4321,8 @@ x-i18n:
 
 ## install/installer.md
 
-- 路由：/install/installer
-- 標題：
+- 路由: /install/installer
+- 標題:
   - H2: 快速命令
   - H2: install.sh
   - H3: 流程（install.sh）
@@ -4340,48 +4340,48 @@ x-i18n:
 
 ## install/kubernetes.md
 
-- 路由：/install/kubernetes
-- 標題：
+- 路由: /install/kubernetes
+- 標題:
   - H2: 為什麼不用 Helm？
-  - H2: 你需要什麼
+  - H2: 你需要的項目
   - H2: 快速開始
   - H2: 使用 Kind 進行本機測試
-  - H2: 逐步說明
+  - H2: 逐步操作
   - H3: 1) 部署
   - H3: 2) 存取閘道
   - H2: 會部署什麼
   - H2: 自訂
   - H3: 代理指示
   - H3: 閘道設定
-  - H3: 新增供應商
+  - H3: 新增提供者
   - H3: 自訂命名空間
   - H3: 自訂映像檔
   - H3: 暴露到 port-forward 之外
   - H2: 重新部署
   - H2: 拆除
-  - H2: 架構備註
+  - H2: 架構註記
   - H2: 檔案結構
   - H2: 相關
 
 ## install/macos-vm.md
 
-- 路由：/install/macos-vm
-- 標題：
-  - H2: 建議預設值（大多數使用者）
+- 路由: /install/macos-vm
+- 標題:
+  - H2: 建議預設值（多數使用者）
   - H2: macOS VM 選項
   - H3: Apple Silicon Mac 上的本機 VM（Lume）
-  - H3: 託管 Mac 供應商（雲端）
+  - H3: 託管 Mac 提供者（雲端）
   - H2: 快速路徑（Lume，有經驗的使用者）
-  - H2: 你需要什麼（Lume）
+  - H2: 你需要的項目（Lume）
   - H2: 1) 安裝 Lume
   - H2: 2) 建立 macOS VM
-  - H2: 3) 完成設定輔助程式
+  - H2: 3) 完成設定助理
   - H2: 4) 取得 VM IP 位址
-  - H2: 5) 透過 SSH 連入 VM
+  - H2: 5) SSH 進入 VM
   - H2: 6) 安裝 OpenClaw
-  - H2: 7) 設定頻道
+  - H2: 7) 設定通道
   - H2: 8) 以無頭模式執行 VM
-  - H2: 加碼：iMessage 整合
+  - H2: 加分項目：iMessage 整合
   - H2: 儲存黃金映像檔
   - H2: 24/7 執行
   - H2: 疑難排解
@@ -4389,11 +4389,11 @@ x-i18n:
 
 ## install/migrating-claude.md
 
-- 路由：/install/migrating-claude
-- 標題：
+- 路由: /install/migrating-claude
+- 標題:
   - H2: 兩種匯入方式
   - H2: 會匯入什麼
-  - H2: 什麼只保留為封存
+  - H2: 哪些僅保留為封存
   - H2: 來源選擇
   - H2: 建議流程
   - H2: 衝突處理
@@ -4403,22 +4403,22 @@ x-i18n:
 
 ## install/migrating-hermes.md
 
-- 路由：/install/migrating-hermes
-- 標題：
+- 路由: /install/migrating-hermes
+- 標題:
   - H2: 兩種匯入方式
   - H2: 會匯入什麼
-  - H2: 什麼只保留為封存
+  - H2: 哪些僅保留為封存
   - H2: 建議流程
   - H2: 衝突處理
-  - H2: 祕密
+  - H2: 密鑰
   - H2: 用於自動化的 JSON 輸出
   - H2: 疑難排解
   - H2: 相關
 
 ## install/migrating.md
 
-- 路由：/install/migrating
-- 標題：
+- 路由: /install/migrating
+- 標題:
   - H2: 從另一個代理系統匯入
   - H2: 將 OpenClaw 移到新機器
   - H3: 遷移步驟
@@ -4429,9 +4429,9 @@ x-i18n:
 
 ## install/nix.md
 
-- 路由：/install/nix
-- 標題：
-  - H2: 你會獲得什麼
+- 路由: /install/nix
+- 標題:
+  - H2: 你會取得什麼
   - H2: 快速開始
   - H2: Nix 模式執行階段行為
   - H3: Nix 模式中的變更
@@ -4441,565 +4441,565 @@ x-i18n:
 
 ## install/node.md
 
-- 路由：/install/node
-- 標題：
+- 路由: /install/node
+- 標題:
   - H2: 檢查你的版本
   - H2: 安裝節點
   - H2: 疑難排解
   - H3: openclaw: command not found
-  - H3: npm install -g 的權限錯誤（Linux）
+  - H3: npm install -g 權限錯誤（Linux）
   - H2: 相關
 
 ## install/northflank.mdx
 
-- 路由：/install/northflank
-- 標題：
+- 路由: /install/northflank
+- 標題:
   - H1: Northflank
   - H2: 如何開始
-  - H2: 你會獲得什麼
-  - H2: 連接頻道
+  - H2: 你會取得什麼
+  - H2: 連接通道
   - H2: 後續步驟
 
 ## install/oracle.md
 
-- 路由：/install/oracle
-- 標題：
+- 路由: /install/oracle
+- 標題:
   - H2: 先決條件
   - H2: 設定
-  - H2: 驗證安全態勢
-  - H2: ARM 備註
+  - H2: 驗證安全狀態
+  - H2: ARM 註記
   - H2: 持久化與備份
-  - H2: 備援：SSH tunnel
+  - H2: 後援：SSH 通道
   - H2: 疑難排解
   - H2: 後續步驟
   - H2: 相關
 
 ## install/podman.md
 
-- 路由：/install/podman
-- 標題：
+- 路由: /install/podman
+- 標題:
   - H2: 先決條件
   - H2: 快速開始
   - H2: Podman 與 Tailscale
   - H2: Systemd（Quadlet，選用）
-  - H2: 設定、env 與儲存
+  - H2: 設定、環境變數與儲存
   - H2: 實用命令
   - H2: 疑難排解
   - H2: 相關
 
 ## install/railway.mdx
 
-- 路由：/install/railway
-- 標題：
+- 路由: /install/railway
+- 標題:
   - H1: Railway
   - H2: 快速檢查清單（新使用者）
   - H2: 一鍵部署
-  - H2: 你會獲得什麼
-  - H2: 必要 Railway 設定
+  - H2: 你會取得什麼
+  - H2: 必要的 Railway 設定
   - H3: 公開網路
   - H3: 磁碟區（必要）
   - H3: 變數
-  - H2: 連接頻道
+  - H2: 連接通道
   - H2: 備份與遷移
   - H2: 後續步驟
 
 ## install/raspberry-pi.md
 
-- 路由: /install/raspberry-pi
-- 標題:
-  - H2: 硬體相容性
-  - H2: 先決條件
-  - H2: 設定
-  - H2: 效能提示
-  - H2: 建議的模型設定
-  - H2: ARM 二進位檔注意事項
-  - H2: 持久化與備份
-  - H2: 疑難排解
-  - H2: 後續步驟
-  - H2: 相關
+- 路由：/install/raspberry-pi
+- 標題：
+  - H2：硬體相容性
+  - H2：先決條件
+  - H2：設定
+  - H2：效能提示
+  - H2：建議的模型設定
+  - H2：ARM 二進位檔注意事項
+  - H2：持久化與備份
+  - H2：疑難排解
+  - H2：後續步驟
+  - H2：相關
 
 ## install/render.mdx
 
-- 路由: /install/render
-- 標題:
-  - H1: Render
-  - H2: 先決條件
-  - H2: 使用 Render 藍圖部署
-  - H2: 了解藍圖
-  - H2: 選擇方案
-  - H2: 部署後
-  - H3: 存取控制介面
-  - H2: Render Dashboard 功能
-  - H3: 記錄
-  - H3: Shell 存取
-  - H3: 環境變數
-  - H3: 自動部署
-  - H2: 自訂網域
-  - H2: 擴展
-  - H2: 備份與遷移
-  - H2: 疑難排解
-  - H3: 服務無法啟動
-  - H3: 冷啟動緩慢（免費層級）
-  - H3: 重新部署後資料遺失
-  - H3: 健康檢查失敗
-  - H2: 後續步驟
+- 路由：/install/render
+- 標題：
+  - H1：Render
+  - H2：先決條件
+  - H2：使用 Render Blueprint 部署
+  - H2：了解 Blueprint
+  - H2：選擇方案
+  - H2：部署後
+  - H3：存取 Control UI
+  - H2：Render Dashboard 功能
+  - H3：日誌
+  - H3：Shell 存取
+  - H3：環境變數
+  - H3：自動部署
+  - H2：自訂網域
+  - H2：擴展
+  - H2：備份與遷移
+  - H2：疑難排解
+  - H3：服務無法啟動
+  - H3：冷啟動緩慢（免費方案）
+  - H3：重新部署後資料遺失
+  - H3：健康檢查失敗
+  - H2：後續步驟
 
 ## install/uninstall.md
 
-- 路由: /install/uninstall
-- 標題:
-  - H2: 簡易路徑（命令列介面仍已安裝）
-  - H2: 手動移除服務（命令列介面未安裝）
-  - H3: macOS (launchd)
-  - H3: Linux（systemd 使用者單元）
-  - H3: Windows（排程工作）
-  - H2: 一般安裝與原始碼簽出
-  - H3: 一般安裝 (install.sh / npm / pnpm / bun)
-  - H3: 原始碼簽出 (git clone)
-  - H2: 相關
+- 路由：/install/uninstall
+- 標題：
+  - H2：簡易路徑（命令列介面仍已安裝）
+  - H2：手動移除服務（命令列介面未安裝）
+  - H3：macOS（launchd）
+  - H3：Linux（systemd 使用者單元）
+  - H3：Windows（排程工作）
+  - H2：一般安裝與原始碼 checkout
+  - H3：一般安裝（install.sh / npm / pnpm / bun）
+  - H3：原始碼 checkout（git clone）
+  - H2：相關
 
 ## install/updating.md
 
-- 路由: /install/updating
-- 標題:
-  - H2: 建議方式：openclaw update
-  - H2: 在 npm 與 git 安裝之間切換
-  - H2: 替代方式：重新執行安裝程式
-  - H2: 替代方式：手動使用 npm、pnpm 或 bun
-  - H3: 進階 npm 安裝主題
-  - H2: 自動更新程式
-  - H2: 更新後
-  - H3: 執行 doctor
-  - H3: 重新啟動閘道
-  - H3: 驗證
-  - H2: 回復
-  - H3: 固定版本 (npm)
-  - H3: 固定提交 (source)
-  - H2: 如果你卡住了
-  - H2: 相關
+- 路由：/install/updating
+- 標題：
+  - H2：建議：openclaw update
+  - H2：在 npm 與 git 安裝之間切換
+  - H2：替代方式：重新執行安裝程式
+  - H2：替代方式：手動使用 npm、pnpm 或 bun
+  - H3：進階 npm 安裝主題
+  - H2：自動更新程式
+  - H2：更新後
+  - H3：執行 doctor
+  - H3：重新啟動閘道
+  - H3：驗證
+  - H2：回復
+  - H3：固定版本（npm）
+  - H3：固定 commit（原始碼）
+  - H2：如果你卡住了
+  - H2：相關
 
 ## install/upstash.md
 
-- 路由: /install/upstash
-- 標題:
-  - H2: 先決條件
-  - H2: 建立 Box
-  - H2: 使用 SSH 通道連線
-  - H2: 安裝 OpenClaw
-  - H2: 執行入門設定
-  - H2: 啟動閘道
-  - H2: 自動重新啟動
-  - H2: 疑難排解
-  - H2: 相關
+- 路由：/install/upstash
+- 標題：
+  - H2：先決條件
+  - H2：建立 Box
+  - H2：使用 SSH tunnel 連線
+  - H2：安裝 OpenClaw
+  - H2：執行 onboarding
+  - H2：啟動閘道
+  - H2：自動重新啟動
+  - H2：疑難排解
+  - H2：相關
 
 ## logging.md
 
-- 路由: /logging
-- 標題:
-  - H2: 記錄所在位置
-  - H2: 如何閱讀記錄
-  - H3: 命令列介面：即時追蹤（建議）
-  - H3: 控制介面（網頁）
-  - H3: 僅頻道記錄
-  - H2: 記錄格式
-  - H3: 檔案記錄 (JSONL)
-  - H3: 主控台輸出
-  - H3: 閘道 WebSocket 記錄
-  - H2: 設定記錄
-  - H3: 記錄層級
-  - H3: 目標模型傳輸診斷
-  - H3: 追蹤關聯
-  - H3: 模型呼叫大小與時間
-  - H3: 主控台樣式
-  - H3: 遮蔽
-  - H2: 診斷與 OpenTelemetry
-  - H2: 疑難排解提示
-  - H2: 相關
+- 路由：/logging
+- 標題：
+  - H2：日誌存放位置
+  - H2：如何閱讀日誌
+  - H3：命令列介面：即時 tail（建議）
+  - H3：Control UI（網頁）
+  - H3：僅頻道日誌
+  - H2：日誌格式
+  - H3：檔案日誌（JSONL）
+  - H3：主控台輸出
+  - H3：閘道 WebSocket 日誌
+  - H2：設定日誌記錄
+  - H3：日誌層級
+  - H3：目標模型傳輸診斷
+  - H3：追蹤關聯
+  - H3：模型呼叫大小與時間
+  - H3：主控台樣式
+  - H3：遮蔽
+  - H2：診斷與 OpenTelemetry
+  - H2：疑難排解提示
+  - H2：相關
 
 ## maturity/scorecard.md
 
-- 路由: /maturity/scorecard
-- 標題:
-  - H1: 成熟度評分卡
-  - H2: 此頁用途
-  - H2: 概覽
-  - H2: 分數級距
-  - H2: 介面探索器
-  - H2: QA 證據摘要
-  - H3: 依領域劃分的就緒度
+- 路由：/maturity/scorecard
+- 標題：
+  - H1：成熟度計分卡
+  - H2：此頁用途
+  - H2：概覽
+  - H2：分數區間
+  - H2：表面探索器
+  - H2：QA 證據摘要
+  - H3：依領域的就緒度
 
 ## maturity/taxonomy.md
 
-- 路由: /maturity/taxonomy
-- 標題:
-  - H1: 成熟度分類
-  - H2: 如何閱讀此頁
-  - H2: 成熟度等級
-  - H2: 產品領域
-  - H2: 詳細資料
-  - H3: 核心
-  - H3: 平台
-  - H3: 頻道
-  - H3: 提供者與工具
+- 路由：/maturity/taxonomy
+- 標題：
+  - H1：成熟度分類法
+  - H2：如何閱讀此頁
+  - H2：成熟度層級
+  - H2：產品領域
+  - H2：詳細資料
+  - H3：核心
+  - H3：平台
+  - H3：頻道
+  - H3：供應商與工具
 
 ## network.md
 
-- 路由: /network
-- 標題:
-  - H2: 核心模型
-  - H2: 配對 + 身分
-  - H2: 探索 + 傳輸
-  - H2: 節點 + 傳輸
-  - H2: 安全性
-  - H2: 相關
+- 路由：/network
+- 標題：
+  - H2：核心模型
+  - H2：配對 + 身分
+  - H2：探索 + 傳輸
+  - H2：節點 + 傳輸
+  - H2：安全性
+  - H2：相關
 
 ## nodes/audio.md
 
-- 路由: /nodes/audio
-- 標題:
-  - H2: 可用功能
-  - H2: 自動偵測（預設）
-  - H2: 設定範例
-  - H3: 提供者 + 命令列介面後備 (OpenAI + Whisper 命令列介面)
-  - H3: 僅提供者且使用範圍閘控
-  - H3: 僅提供者 (Deepgram)
-  - H3: 僅提供者 (Mistral Voxtral)
-  - H3: 僅提供者 (SenseAudio)
-  - H3: 將轉錄回顯至聊天（選用）
-  - H2: 注意事項與限制
-  - H3: Proxy 環境支援
-  - H2: 群組中的提及偵測
-  - H2: 注意事項
-  - H2: 相關
+- 路由：/nodes/audio
+- 標題：
+  - H2：可用功能
+  - H2：自動偵測（預設）
+  - H2：設定範例
+  - H3：供應商 + 命令列介面備援（OpenAI + Whisper 命令列介面）
+  - H3：僅供應商並使用範圍控管
+  - H3：僅供應商（Deepgram）
+  - H3：僅供應商（Mistral Voxtral）
+  - H3：僅供應商（SenseAudio）
+  - H3：將轉錄回顯到聊天（選擇啟用）
+  - H2：注意事項與限制
+  - H3：Proxy 環境支援
+  - H2：群組中的提及偵測
+  - H2：注意事項
+  - H2：相關
 
 ## nodes/camera.md
 
-- 路由: /nodes/camera
-- 標題:
-  - H2: iOS 節點
-  - H3: 使用者設定（預設開啟）
-  - H3: 命令（透過閘道 node.invoke）
-  - H3: 前景需求
-  - H3: 命令列介面輔助工具
-  - H2: Android 節點
-  - H3: Android 使用者設定（預設開啟）
-  - H3: 權限
-  - H3: Android 前景需求
-  - H3: Android 命令（透過閘道 node.invoke）
-  - H3: 酬載保護
-  - H2: macOS App
-  - H3: 使用者設定（預設關閉）
-  - H3: 命令列介面輔助工具（節點 invoke）
-  - H2: 安全性 + 實務限制
-  - H2: macOS 螢幕影片（作業系統層級）
-  - H2: 相關
+- 路由：/nodes/camera
+- 標題：
+  - H2：iOS 節點
+  - H3：使用者設定（預設開啟）
+  - H3：命令（透過閘道 node.invoke）
+  - H3：前景需求
+  - H3：命令列介面輔助工具
+  - H2：Android 節點
+  - H3：Android 使用者設定（預設開啟）
+  - H3：權限
+  - H3：Android 前景需求
+  - H3：Android 命令（透過閘道 node.invoke）
+  - H3：Payload 保護
+  - H2：macOS app
+  - H3：使用者設定（預設關閉）
+  - H3：命令列介面輔助工具（node invoke）
+  - H2：安全性 + 實務限制
+  - H2：macOS 螢幕影片（作業系統層級）
+  - H2：相關
 
 ## nodes/images.md
 
-- 路由: /nodes/images
-- 標題:
-  - H2: 目標
-  - H2: 命令列介面介面
-  - H2: WhatsApp Web 頻道行為
-  - H2: 自動回覆管線
-  - H2: 傳入媒體轉為命令
-  - H2: 限制與錯誤
-  - H2: 測試注意事項
-  - H2: 相關
+- 路由：/nodes/images
+- 標題：
+  - H2：目標
+  - H2：命令列介面介面
+  - H2：WhatsApp Web 頻道行為
+  - H2：自動回覆管線
+  - H2：傳入媒體轉命令
+  - H2：限制與錯誤
+  - H2：測試注意事項
+  - H2：相關
 
 ## nodes/index.md
 
-- 路由: /nodes
-- 標題:
-  - H2: 配對 + 狀態
-  - H2: 遠端節點主機 (system.run)
-  - H3: 何處執行什麼
-  - H3: 啟動節點主機（前景）
-  - H3: 透過 SSH 通道的遠端閘道（loopback 綁定）
-  - H3: 啟動節點主機（服務）
-  - H3: 配對 + 命名
-  - H3: 將命令加入允許清單
-  - H3: 將 exec 指向節點
-  - H2: 呼叫命令
-  - H2: 命令政策
-  - H2: 設定 (openclaw.json)
-  - H2: 螢幕截圖（畫布快照）
-  - H3: 畫布控制項
-  - H3: A2UI（畫布）
-  - H2: 照片 + 影片（節點相機）
-  - H2: 螢幕錄影（節點）
-  - H2: 位置（節點）
-  - H2: SMS（Android 節點）
-  - H2: Android 裝置 + 個人資料命令
-  - H2: 系統命令（節點主機 / Mac 節點）
-  - H2: Exec 節點綁定
-  - H2: 權限對照表
-  - H2: 無頭節點主機（跨平台）
-  - H2: Mac 節點模式
+- 路由：/nodes
+- 標題：
+  - H2：配對 + 狀態
+  - H2：遠端節點主機（system.run）
+  - H3：執行位置
+  - H3：啟動節點主機（前景）
+  - H3：透過 SSH tunnel 連到遠端閘道（loopback bind）
+  - H3：啟動節點主機（服務）
+  - H3：配對 + 命名
+  - H3：將命令加入允許清單
+  - H3：將 exec 指向節點
+  - H2：叫用命令
+  - H2：命令政策
+  - H2：設定（openclaw.json）
+  - H2：螢幕截圖（canvas snapshots）
+  - H3：Canvas 控制項
+  - H3：A2UI（Canvas）
+  - H2：照片 + 影片（節點相機）
+  - H2：螢幕錄影（節點）
+  - H2：位置（節點）
+  - H2：SMS（Android 節點）
+  - H2：Android 裝置 + 個人資料命令
+  - H2：系統命令（節點主機 / Mac 節點）
+  - H2：Exec 節點繫結
+  - H2：權限對照表
+  - H2：無頭節點主機（跨平台）
+  - H2：Mac 節點模式
 
 ## nodes/location-command.md
 
-- 路由: /nodes/location-command
-- 標題:
-  - H2: TL;DR
-  - H2: 為什麼使用選擇器（而不只是開關）
-  - H2: 設定模型
-  - H2: 權限對應 (node.permissions)
-  - H2: 命令：location.get
-  - H2: 背景行為
-  - H2: 模型/工具整合
-  - H2: UX 文案（建議）
-  - H2: 相關
+- 路由：/nodes/location-command
+- 標題：
+  - H2：TL;DR
+  - H2：為什麼使用選擇器（而不只是開關）
+  - H2：設定模型
+  - H2：權限對應（node.permissions）
+  - H2：命令：location.get
+  - H2：背景行為
+  - H2：模型/工具整合
+  - H2：UX 文案（建議）
+  - H2：相關
 
 ## nodes/media-understanding.md
 
-- 路由: /nodes/media-understanding
-- 標題:
-  - H2: 目標
-  - H2: 高階行為
-  - H2: 設定概覽
-  - H3: 模型項目
-  - H3: 提供者憑證 (apiKey)
-  - H2: 預設值與限制
-  - H3: 自動偵測媒體理解（預設）
-  - H3: Proxy 環境支援（提供者模型）
-  - H2: 能力（選用）
-  - H2: 提供者支援矩陣（OpenClaw 整合）
-  - H2: 模型選擇指引
-  - H2: 附件政策
-  - H2: 設定範例
-  - H2: 狀態輸出
-  - H2: 注意事項
-  - H2: 相關
+- 路由：/nodes/media-understanding
+- 標題：
+  - H2：目標
+  - H2：高階行為
+  - H2：設定概覽
+  - H3：模型項目
+  - H3：供應商憑證（apiKey）
+  - H2：預設值與限制
+  - H3：自動偵測媒體理解（預設）
+  - H3：Proxy 環境支援（供應商模型）
+  - H2：能力（選用）
+  - H2：供應商支援矩陣（OpenClaw 整合）
+  - H2：模型選擇指南
+  - H2：附件政策
+  - H2：設定範例
+  - H2：狀態輸出
+  - H2：注意事項
+  - H2：相關
 
 ## nodes/talk.md
 
-- 路由: /nodes/talk
-- 標題:
-  - H2: 行為 (macOS)
-  - H2: 回覆中的語音指令
-  - H2: 設定 (/.openclaw/openclaw.json)
-  - H2: macOS 使用者介面
-  - H2: Android 使用者介面
-  - H2: 注意事項
-  - H2: 相關
+- 路由：/nodes/talk
+- 標題：
+  - H2：行為（macOS）
+  - H2：回覆中的語音指令
+  - H2：設定（/.openclaw/openclaw.json）
+  - H2：macOS UI
+  - H2：Android UI
+  - H2：注意事項
+  - H2：相關
 
 ## nodes/troubleshooting.md
 
-- 路由: /nodes/troubleshooting
-- 標題:
-  - H2: 命令階梯
-  - H2: 前景需求
-  - H2: 權限矩陣
-  - H2: 配對與核准
-  - H2: 常見節點錯誤碼
-  - H2: 快速復原迴圈
-  - H2: 相關
+- 路由：/nodes/troubleshooting
+- 標題：
+  - H2：命令階梯
+  - H2：前景需求
+  - H2：權限矩陣
+  - H2：配對與核准的差異
+  - H2：常見節點錯誤碼
+  - H2：快速復原迴圈
+  - H2：相關
 
 ## nodes/voicewake.md
 
-- 路由: /nodes/voicewake
-- 標題:
-  - H2: 儲存（閘道主機）
-  - H2: 協定
-  - H3: 方法
-  - H3: 路由方法（觸發 → 目標）
-  - H3: 事件
-  - H2: 用戶端行為
-  - H3: macOS App
-  - H3: iOS 節點
-  - H3: Android 節點
-  - H2: 相關
+- 路由：/nodes/voicewake
+- 標題：
+  - H2：儲存（閘道主機）
+  - H2：協定
+  - H3：方法
+  - H3：路由方法（trigger → target）
+  - H3：事件
+  - H2：用戶端行為
+  - H3：macOS app
+  - H3：iOS 節點
+  - H3：Android 節點
+  - H2：相關
 
 ## openclaw-agent-runtime.md
 
-- 路由: /openclaw-agent-runtime
-- 標題:
-  - H2: 型別檢查與 lint
-  - H2: 執行 Agent Runtime 測試
-  - H2: 手動測試
-  - H2: 乾淨狀態重設
-  - H2: 參考資料
-  - H2: 相關
+- 路由：/openclaw-agent-runtime
+- 標題：
+  - H2：型別檢查與 linting
+  - H2：執行 Agent Runtime 測試
+  - H2：手動測試
+  - H2：乾淨重設
+  - H2：參考資料
+  - H2：相關
 
 ## perplexity.md
 
-- 路由: /perplexity
-- 標題:
-  - H2: 相關
+- 路由：/perplexity
+- 標題：
+  - H2：相關
 
 ## plan/codex-context-engine-harness.md
 
-- 路由: /plan/codex-context-engine-harness
-- 標題:
-  - H2: 狀態
-  - H2: 目標
-  - H2: 非目標
-  - H2: 目前架構
-  - H2: 目前缺口
-  - H2: 期望行為
-  - H2: 設計限制
-  - H3: Codex app-server 仍是原生對話串狀態的權威來源
-  - H3: Context engine 組裝必須投影到 Codex 輸入
-  - H3: 提示快取穩定性很重要
-  - H3: 執行階段選擇語意不變
-  - H2: 實作計畫
-  - H3: 1. 匯出或重新安置可重用的 context-engine 嘗試輔助工具
-  - H3: 2. 新增 Codex context 投影輔助工具
-  - H3: 3. 在 Codex 對話串啟動前接入 bootstrap
-  - H3: 4. 在 thread/start / thread/resume 與 turn/start 前接入 assemble
-  - H3: 5. 保留提示快取穩定格式
-  - H3: 6. 在逐字稿鏡像後接入 post-turn
-  - H3: 7. 正規化用量與提示快取執行階段 context
-  - H3: 8. 壓縮政策
-  - H4: /compact 與明確的 OpenClaw 壓縮
-  - H4: 回合內 Codex 原生 contextCompaction 事件
-  - H3: 9. 工作階段重設與綁定行為
-  - H3: 10. 錯誤處理
-  - H2: 測試計畫
-  - H3: 單元測試
-  - H3: 需更新的現有測試
-  - H3: 整合 / 即時測試
-  - H2: 可觀測性
-  - H2: 遷移 / 相容性
-  - H2: 開放問題
-  - H2: 驗收標準
+- 路由：/plan/codex-context-engine-harness
+- 標題：
+  - H2：狀態
+  - H2：目標
+  - H2：非目標
+  - H2：目前架構
+  - H2：目前落差
+  - H2：期望行為
+  - H2：設計限制
+  - H3：Codex app-server 仍是原生執行緒狀態的權威來源
+  - H3：Context engine 組裝必須投射到 Codex 輸入
+  - H3：Prompt-cache 穩定性很重要
+  - H3：Runtime 選擇語意不變
+  - H2：實作計畫
+  - H3：1. 匯出或搬移可重用的 context-engine attempt 輔助工具
+  - H3：2. 新增 Codex context projection 輔助工具
+  - H3：3. 在 Codex thread startup 前串接 bootstrap
+  - H3：4. 在 thread/start / thread/resume 與 turn/start 前串接 assemble
+  - H3：5. 保留 prompt-cache 穩定格式
+  - H3：6. 在 transcript mirroring 後串接 post-turn
+  - H3：7. 正規化 usage 與 prompt-cache runtime context
+  - H3：8. 壓縮政策
+  - H4：/compact 與明確的 OpenClaw 壓縮
+  - H4：回合中的 Codex 原生 contextCompaction 事件
+  - H3：9. 工作階段重設與繫結行為
+  - H3：10. 錯誤處理
+  - H2：測試計畫
+  - H3：單元測試
+  - H3：要更新的既有測試
+  - H3：整合 / live 測試
+  - H2：可觀測性
+  - H2：遷移 / 相容性
+  - H2：未決問題
+  - H2：驗收標準
 
 ## plan/ui-channels.md
 
-- 路由: /plan/ui-channels
-- 標題:
-  - H2: 狀態
-  - H2: 問題
-  - H2: 目標
-  - H2: 非目標
-  - H2: 目標模型
-  - H2: 傳遞中繼資料
-  - H2: 執行階段能力合約
-  - H2: 頻道對應
-  - H2: 重構步驟
-  - H2: 測試
-  - H2: 開放問題
-  - H2: 相關
+- 路由：/plan/ui-channels
+- 標題：
+  - H2：狀態
+  - H2：問題
+  - H2：目標
+  - H2：非目標
+  - H2：目標模型
+  - H2：傳遞 metadata
+  - H2：Runtime 能力合約
+  - H2：頻道對應
+  - H2：重構步驟
+  - H2：測試
+  - H2：未決問題
+  - H2：相關
 
 ## platforms/android.md
 
-- 路由: /platforms/android
-- 標題:
-  - H2: 支援快照
-  - H2: 系統控制
-  - H2: 連線操作手冊
-  - H3: 先決條件
-  - H3: 1) 啟動閘道
-  - H3: 2) 驗證探索（選用）
-  - H4: 透過單播 DNS-SD 的 Tailnet（Vienna ⇄ London）探索
-  - H3: 3) 從 Android 連線
-  - H3: Presence 存活信標
-  - H3: 4) 核准配對（命令列介面）
-  - H3: 5) 驗證節點已連線
-  - H3: 6) 聊天 + 歷史記錄
-  - H3: 7) 畫布 + 相機
-  - H4: 閘道畫布主機（建議用於網頁內容）
-  - H3: 8) 語音 + 擴充的 Android 命令介面
-  - H2: 助理進入點
-  - H2: 通知轉發
-  - H2: 相關
+- 路由：/platforms/android
+- 標題：
+  - H2：支援快照
+  - H2：系統控制
+  - H2：連線 runbook
+  - H3：先決條件
+  - H3：1) 啟動閘道
+  - H3：2) 驗證探索（選用）
+  - H4：透過 unicast DNS-SD 進行 Tailnet（Vienna ⇄ London）探索
+  - H3：3) 從 Android 連線
+  - H3：Presence alive beacons
+  - H3：4) 核准配對（命令列介面）
+  - H3：5) 驗證節點已連線
+  - H3：6) 聊天 + 歷史記錄
+  - H3：7) Canvas + 相機
+  - H4：閘道 Canvas Host（建議用於網頁內容）
+  - H3：8) 語音 + 擴展的 Android 命令介面
+  - H2：Assistant 進入點
+  - H2：通知轉發
+  - H2：相關
 
 ## platforms/digitalocean.md
 
-- 路由: /platforms/digitalocean
-- 標題:
-  - H2: 相關
+- 路由：/platforms/digitalocean
+- 標題：
+  - H2：相關
 
 ## platforms/easyrunner.md
 
-- 路由: /platforms/easyrunner
-- 標題:
-  - H2: 開始之前
-  - H2: Compose App
-  - H2: 設定 OpenClaw
-  - H2: 驗證
-  - H2: 更新與備份
-  - H2: 疑難排解
+- 路由：/platforms/easyrunner
+- 標題：
+  - H2：開始之前
+  - H2：Compose app
+  - H2：設定 OpenClaw
+  - H2：驗證
+  - H2：更新與備份
+  - H2：疑難排解
 
 ## platforms/index.md
 
-- 路由: /platforms
-- 標題:
-  - H2: 選擇你的作業系統
-  - H2: VPS 與託管
-  - H2: 常用連結
-  - H2: 閘道服務安裝（命令列介面）
-  - H2: 相關
+- 路由：/platforms
+- 標題：
+  - H2：選擇你的作業系統
+  - H2：VPS 與託管
+  - H2：常用連結
+  - H2：閘道服務安裝（命令列介面）
+  - H2：相關
 
 ## platforms/ios.md
 
-- 路由: /platforms/ios
-- 標題:
-  - H2: 功能
-  - H2: 需求
-  - H2: 快速開始（配對 + 連線）
-  - H2: 官方建置的 relay-backed 推播
-  - H2: 背景存活信標
-  - H2: 驗證與信任流程
-  - H2: 探索路徑
-  - H3: Bonjour（區域網路）
-  - H3: Tailnet（跨網路）
-  - H3: 手動主機/連接埠
-  - H2: 畫布 + A2UI
-  - H2: Computer Use 關係
-  - H3: 畫布 eval / 快照
-  - H2: 語音喚醒 + 對話模式
-  - H2: 常見錯誤
-  - H2: 相關文件
+- 路由：/platforms/ios
+- 標題：
+  - H2：功能
+  - H2：需求
+  - H2：快速開始（配對 + 連線）
+  - H2：官方建置的 relay-backed 推播
+  - H2：背景 alive beacons
+  - H2：驗證與信任流程
+  - H2：探索路徑
+  - H3：Bonjour（LAN）
+  - H3：Tailnet（跨網路）
+  - H3：手動 host/port
+  - H2：Canvas + A2UI
+  - H2：Computer Use 關係
+  - H3：Canvas eval / snapshot
+  - H2：Voice wake + talk mode
+  - H2：常見錯誤
+  - H2：相關文件
 
 ## platforms/linux.md
 
-- 路由: /platforms/linux
-- 標題:
-  - H2: 初學者快速路徑 (VPS)
-  - H2: 安裝
-  - H2: 閘道
-  - H2: 閘道服務安裝（命令列介面）
-  - H2: 系統控制（systemd 使用者單元）
-  - H2: 記憶體壓力與 OOM 終止
-  - H2: 相關
+- 路由：/platforms/linux
+- 標題：
+  - H2：初學者快速路徑（VPS）
+  - H2：安裝
+  - H2：閘道
+  - H2：閘道服務安裝（命令列介面）
+  - H2：系統控制（systemd 使用者單元）
+  - H2：記憶體壓力與 OOM kills
+  - H2：相關
 
 ## platforms/mac/bundled-gateway.md
 
-- 路由: /platforms/mac/bundled-gateway
-- 標題:
-  - H2: 安裝命令列介面（本機模式必需）
-  - H2: Launchd（作為 LaunchAgent 的閘道）
-  - H2: 版本相容性
-  - H2: macOS 上的狀態目錄
-  - H2: 偵錯 App 連線能力
-  - H2: 冒煙檢查
-  - H2: 相關
+- 路由：/platforms/mac/bundled-gateway
+- 標題：
+  - H2：安裝命令列介面（local mode 必要）
+  - H2：Launchd（閘道作為 LaunchAgent）
+  - H2：版本相容性
+  - H2：macOS 上的狀態目錄
+  - H2：偵錯 app 連線能力
+  - H2：Smoke check
+  - H2：相關
 
 ## platforms/mac/canvas.md
 
-- 路由: /platforms/mac/canvas
-- 標題:
-  - H2: 畫布所在位置
-  - H2: 面板行為
-  - H2: Agent API 介面
-  - H2: 畫布中的 A2UI
-  - H3: A2UI 命令 (v0.8)
-  - H2: 從畫布觸發 agent 執行
-  - H2: 安全性注意事項
-  - H2: 相關
+- 路由：/platforms/mac/canvas
+- 標題：
+  - H2：Canvas 所在位置
+  - H2：面板行為
+  - H2：Agent API 介面
+  - H2：Canvas 中的 A2UI
+  - H3：A2UI 命令（v0.8）
+  - H2：從 Canvas 觸發 agent runs
+  - H2：安全性注意事項
+  - H2：相關
 
 ## platforms/mac/child-process.md
 
-- 路由: /platforms/mac/child-process
-- 標題:
-  - H2: 預設行為 (launchd)
-  - H2: 未簽署的開發建置
-  - H2: 僅附加模式
-  - H2: 遠端模式
-  - H2: 為什麼我們偏好 launchd
-  - H2: 相關
+- 路由：/platforms/mac/child-process
+- 標題：
+  - H2：預設行為（launchd）
+  - H2：未簽署的 dev builds
+  - H2：Attach-only 模式
+  - H2：Remote mode
+  - H2：為什麼我們偏好 launchd
+  - H2：相關
 
 ## platforms/mac/dev-setup.md
 
@@ -5012,8 +5012,8 @@ x-i18n:
   - H2: 3. 安裝命令列介面
   - H2: 疑難排解
   - H3: 建置失敗：工具鏈或 SDK 不相符
-  - H3: 授予權限時應用程式當機
-  - H3: 閘道無限期顯示「正在啟動...」
+  - H3: 應用程式在授予權限時當機
+  - H3: 閘道無限期顯示「Starting...」
   - H2: 相關
 
 ## platforms/mac/health.md
@@ -5024,7 +5024,7 @@ x-i18n:
   - H2: 選單列
   - H2: 設定
   - H2: 探測的運作方式
-  - H2: 如有疑慮
+  - H2: 如有疑問
   - H2: 相關
 
 ## platforms/mac/icon.md
@@ -5039,8 +5039,8 @@ x-i18n:
 - 路由：/platforms/mac/logging
 - 標題：
   - H1: 記錄（macOS）
-  - H2: 輪替診斷檔案記錄（除錯窗格）
-  - H2: macOS 上的統一記錄私有資料
+  - H2: 滾動式診斷檔案記錄（除錯窗格）
+  - H2: macOS 上的統一記錄私人資料
   - H2: 為 OpenClaw 啟用（ai.openclaw）
   - H2: 除錯後停用
   - H2: 相關
@@ -5051,10 +5051,10 @@ x-i18n:
 - 標題：
   - H2: 顯示內容
   - H2: 狀態模型
-  - H2: IconState enum（Swift）
-  - H3: ActivityKind → 圖符
+  - H2: IconState 列舉（Swift）
+  - H3: ActivityKind → 字形
   - H3: 視覺對應
-  - H2: 內容子選單
+  - H2: 情境子選單
   - H2: 狀態列文字（選單）
   - H2: 事件擷取
   - H2: 除錯覆寫
@@ -5066,7 +5066,7 @@ x-i18n:
 - 路由：/platforms/mac/peekaboo
 - 標題：
   - H2: 這是什麼（以及不是什麼）
-  - H2: 與電腦使用的關係
+  - H2: 與 Computer Use 的關係
   - H2: 啟用橋接
   - H2: 用戶端探索順序
   - H2: 安全性與權限
@@ -5079,9 +5079,9 @@ x-i18n:
 - 路由：/platforms/mac/permissions
 - 標題：
   - H2: 穩定權限的需求
-  - H2: 節點與命令列介面執行階段的輔助使用權限授予
+  - H2: 節點與命令列介面執行階段的輔助使用授權
   - H2: 提示消失時的復原檢查清單
-  - H2: 檔案與資料夾權限（桌面/文件/下載）
+  - H2: 檔案與資料夾權限（Desktop/Documents/Downloads）
   - H2: 相關
 
 ## platforms/mac/remote.md
@@ -5092,7 +5092,7 @@ x-i18n:
   - H2: 遠端傳輸
   - H2: 遠端主機上的先決條件
   - H2: macOS 應用程式設定
-  - H2: 網頁聊天
+  - H2: Web Chat
   - H2: 權限
   - H2: 安全性注意事項
   - H2: WhatsApp 登入流程（遠端）
@@ -5105,9 +5105,9 @@ x-i18n:
 - 路由：/platforms/mac/signing
 - 標題：
   - H1: mac 簽署（除錯建置）
-  - H2: 使用方式
+  - H2: 用法
   - H3: 臨時簽署注意事項
-  - H2: 關於頁面的建置中繼資料
+  - H2: About 的建置中繼資料
   - H2: 原因
   - H2: 相關
 
@@ -5143,10 +5143,10 @@ x-i18n:
   - H2: 執行階段行為（喚醒詞）
   - H2: 生命週期不變條件
   - H2: 黏滯覆疊失敗模式（先前）
-  - H2: 按住說話詳細事項
-  - H2: 面向使用者的設定
+  - H2: 按住說話細節
+  - H2: 使用者可見設定
   - H2: 轉送行為
-  - H2: 轉送承載內容
+  - H2: 轉送承載
   - H2: 快速驗證
   - H2: 相關
 
@@ -5181,7 +5181,7 @@ x-i18n:
   - H2: 下載
   - H2: 首次執行
   - H2: 選擇閘道模式
-  - H2: 應用程式負責的範圍
+  - H2: 應用程式負責的內容
   - H2: macOS 詳細頁面
   - H2: 相關
 
@@ -5213,7 +5213,7 @@ x-i18n:
   - H2: 疑難排解
   - H3: 系統匣圖示未出現
   - H3: 本機設定失敗
-  - H3: 應用程式顯示需要配對
+  - H3: 應用程式表示需要配對
   - H3: 網頁聊天無法連上遠端閘道
   - H3: screen.snapshot、camera 或 audio 命令失敗
   - H3: Git 或 GitHub 連線失敗
@@ -5225,10 +5225,10 @@ x-i18n:
 - 標題：
   - H2: 何時建立能力
   - H2: 標準順序
-  - H2: 內容應放在哪裡
-  - H2: 提供者與控制程式接縫
+  - H2: 內容放置位置
+  - H2: 提供者與控制框架銜接點
   - H2: 檔案檢查清單
-  - H2: 實作範例：影像生成
+  - H2: 範例實作：影像生成
   - H2: 嵌入提供者
   - H2: 審查檢查清單
   - H2: 相關
@@ -5263,7 +5263,7 @@ x-i18n:
   - H3: Manifest 優先行為
   - H3: 外掛快取邊界
   - H2: 登錄模型
-  - H2: 對話綁定回呼
+  - H2: 對話繫結回呼
   - H2: 提供者執行階段掛鉤
   - H3: 掛鉤順序與用法
   - H3: 提供者範例
@@ -5274,12 +5274,12 @@ x-i18n:
   - H2: 外掛 SDK 匯入路徑
   - H2: 訊息工具結構描述
   - H2: 頻道目標解析
-  - H2: 由設定支援的目錄
+  - H2: 設定支援的目錄
   - H2: 提供者目錄
   - H2: 唯讀頻道檢查
   - H2: 套件包
   - H3: 頻道目錄中繼資料
-  - H2: 內容引擎外掛
+  - H2: 情境引擎外掛
   - H2: 新增能力
   - H3: 能力檢查清單
   - H3: 能力範本
@@ -5306,7 +5306,7 @@ x-i18n:
   - H3: 合約中應包含的內容
   - H2: 執行模型
   - H2: 匯出邊界
-  - H2: 內部機制與參考
+  - H2: 內部與參考
   - H2: 相關
 
 ## plugins/building-extensions.md
@@ -5333,19 +5333,19 @@ x-i18n:
 
 - 路由：/plugins/bundles
 - 標題：
-  - H2: 套件組存在的原因
-  - H2: 安裝套件組
-  - H2: OpenClaw 從套件組對應的內容
+  - H2: 套組存在的原因
+  - H2: 安裝套組
+  - H2: OpenClaw 從套組對應的內容
   - H3: 目前支援
   - H4: Skill 內容
   - H4: 掛鉤包
-  - H4: 嵌入式 OpenClaw 的 MCP
+  - H4: 用於嵌入式 OpenClaw 的 MCP
   - H4: 嵌入式 OpenClaw 設定
   - H4: 嵌入式 OpenClaw LSP
   - H3: 已偵測但未執行
-  - H2: 套件組格式
+  - H2: 套組格式
   - H2: 偵測優先順序
-  - H2: 執行階段相依套件與清理
+  - H2: 執行階段相依性與清理
   - H2: 安全性
   - H2: 疑難排解
   - H2: 相關
@@ -5354,7 +5354,7 @@ x-i18n:
 
 - 路由：/plugins/cli-backend-plugins
 - 標題：
-  - H2: 外掛負責的範圍
+  - H2: 外掛負責的內容
   - H2: 最小後端外掛
   - H2: 設定形態
   - H2: 進階後端掛鉤
@@ -5374,8 +5374,8 @@ x-i18n:
   - H2: 直接 cua-driver MCP
   - H2: 快速設定
   - H2: 命令
-  - H2: Marketplace 選擇
-  - H2: 內建 macOS Marketplace
+  - H2: 市集選項
+  - H2: 內建 macOS 市集
   - H2: 遠端目錄限制
   - H2: 設定參考
   - H2: OpenClaw 檢查的內容
@@ -5404,15 +5404,15 @@ x-i18n:
 - 路由：/plugins/codex-harness-runtime
 - 標題：
   - H2: 概觀
-  - H2: 執行緒綁定與模型變更
+  - H2: 執行緒繫結與模型變更
   - H2: 可見回覆與心跳偵測
   - H2: 掛鉤邊界
   - H2: V1 支援合約
   - H2: 原生權限與 MCP elicitations
   - H2: 佇列導向
-  - H2: Codex 意見回饋上傳
-  - H2: 壓縮與逐字稿鏡像
-  - H2: 媒體與傳送
+  - H2: Codex 回饋上傳
+  - H2: 壓縮與文字記錄鏡像
+  - H2: 媒體與傳遞
   - H2: 相關
 
 ## plugins/codex-harness.md
@@ -5427,12 +5427,12 @@ x-i18n:
   - H2: 部署模式
   - H3: 基本 Codex 部署
   - H3: 混合提供者部署
-  - H3: 失敗關閉 Codex 部署
+  - H3: 失敗即關閉 Codex 部署
   - H2: 應用程式伺服器政策
   - H2: 命令與診斷
   - H3: 在本機檢查 Codex 執行緒
   - H2: 原生 Codex 外掛
-  - H2: 電腦使用
+  - H2: Computer Use
   - H2: 執行階段邊界
   - H2: 疑難排解
   - H2: 相關
@@ -5471,7 +5471,7 @@ x-i18n:
   - H2: 目前相容性區域
   - H3: WhatsApp 傳入回呼扁平別名
   - H3: WhatsApp 傳入准入欄位
-  - H2: 版本資訊
+  - H2: 版本說明
 
 ## plugins/copilot.md
 
@@ -5485,12 +5485,12 @@ x-i18n:
   - H2: 驗證
   - H2: 設定表面
   - H2: 壓縮
-  - H2: 逐字稿鏡像
-  - H2: 旁支問題（/btw）
-  - H2: 診斷
+  - H2: 文字記錄鏡像
+  - H2: 附帶問題（/btw）
+  - H2: Doctor
   - H2: 限制
   - H2: 權限與 askuser
-  - H3: 工作階段層級 GitHub 權杖
+  - H3: 工作階段層級 GitHub token
   - H2: 相關
 
 ## plugins/dependency-resolution.md
@@ -5508,576 +5508,577 @@ x-i18n:
 
 - 路由：/plugins/google-meet
 - 標題：
-  - H2: 快速開始
-  - H3: 本機閘道 + Parallels Chrome
-  - H2: 安裝注意事項
-  - H2: 傳輸
-  - H3: Chrome
-  - H3: Twilio
-  - H2: OAuth 與預檢
-  - H3: 建立 Google 憑證
-  - H3: 簽發重新整理權杖
-  - H3: 使用 doctor 驗證 OAuth
-  - H2: 設定
-  - H2: 工具
-  - H2: 代理與 bidi 模式
-  - H2: 即時測試檢查清單
-  - H2: 疑難排解
-  - H3: 代理看不到 Google Meet 工具
-  - H3: 沒有已連線且支援 Google Meet 的節點
-  - H3: 瀏覽器會開啟但代理無法加入
-  - H3: 會議建立失敗
-  - H3: 代理加入但不說話
-  - H3: Twilio 設定檢查失敗
-  - H3: Twilio 通話開始但從未進入會議
-  - H2: 注意事項
-  - H2: 相關
+  - H2：快速開始
+  - H3：本機閘道 + Parallels Chrome
+  - H2：安裝注意事項
+  - H2：傳輸
+  - H3：Chrome
+  - H3：Twilio
+  - H2：OAuth 與預檢
+  - H3：建立 Google 憑證
+  - H3：簽發重新整理權杖
+  - H3：使用 doctor 驗證 OAuth
+  - H2：設定
+  - H2：工具
+  - H2：代理與 bidi 模式
+  - H2：即時測試檢查清單
+  - H2：疑難排解
+  - H3：代理看不到 Google Meet 工具
+  - H3：沒有已連線且支援 Google Meet 的節點
+  - H3：瀏覽器已開啟但代理無法加入
+  - H3：會議建立失敗
+  - H3：代理已加入但沒有說話
+  - H3：Twilio 設定檢查失敗
+  - H3：Twilio 通話已開始但從未進入會議
+  - H2：備註
+  - H2：相關
 
 ## plugins/hooks.md
 
 - 路由：/plugins/hooks
 - 標題：
-  - H2: 快速開始
-  - H2: Hook 目錄
-  - H2: 偵錯執行階段 hook
-  - H2: 工具呼叫政策
-  - H3: 執行環境 hook
-  - H3: 工具結果持久化
-  - H2: 提示與模型 hook
-  - H3: 工作階段擴充與下一輪注入
-  - H2: 訊息 hook
-  - H2: 安裝 hook
-  - H2: 閘道生命週期
-  - H2: 即將淘汰
-  - H2: 相關
+  - H2：快速開始
+  - H2：Hook 目錄
+  - H2：除錯執行階段 Hook
+  - H2：工具呼叫政策
+  - H3：執行環境 Hook
+  - H3：工具結果持久化
+  - H2：提示與模型 Hook
+  - H3：工作階段擴充與下一回合注入
+  - H2：訊息 Hook
+  - H2：安裝 Hook
+  - H2：閘道生命週期
+  - H2：即將淘汰
+  - H2：相關
 
 ## plugins/install-overrides.md
 
 - 路由：/plugins/install-overrides
 - 標題：
-  - H2: 環境
-  - H2: 行為
-  - H2: 套件端對端測試
+  - H2：環境
+  - H2：行為
+  - H2：套件 E2E
 
 ## plugins/llama-cpp.md
 
 - 路由：/plugins/llama-cpp
 - 標題：
-  - H2: 設定
-  - H2: 原生執行階段
+  - H2：設定
+  - H2：原生執行階段
 
 ## plugins/manage-plugins.md
 
 - 路由：/plugins/manage-plugins
 - 標題：
-  - H2: 列出與搜尋外掛
-  - H2: 安裝外掛
-  - H2: 重新啟動並檢查
-  - H2: 更新外掛
-  - H2: 解除安裝外掛
-  - H2: 選擇來源
-  - H2: 發佈外掛
-  - H2: 相關
+  - H2：列出並搜尋外掛
+  - H2：安裝外掛
+  - H2：重新啟動並檢查
+  - H2：更新外掛
+  - H2：解除安裝外掛
+  - H2：選擇來源
+  - H2：發布外掛
+  - H2：相關
 
 ## plugins/manifest.md
 
 - 路由：/plugins/manifest
 - 標題：
-  - H2: 這個檔案的作用
-  - H2: 最小範例
-  - H2: 豐富範例
-  - H2: 頂層欄位參考
-  - H2: 生成提供者中繼資料參考
-  - H2: 工具中繼資料參考
-  - H2: providerAuthChoices 參考
-  - H2: commandAliases 參考
-  - H2: activation 參考
-  - H2: qaRunners 參考
-  - H2: setup 參考
-  - H3: setup.providers 參考
-  - H3: setup 欄位
-  - H2: uiHints 參考
-  - H2: contracts 參考
-  - H2: mediaUnderstandingProviderMetadata 參考
-  - H2: channelConfigs 參考
-  - H3: 取代另一個頻道外掛
-  - H2: modelSupport 參考
-  - H2: modelCatalog 參考
-  - H2: modelIdNormalization 參考
-  - H2: providerEndpoints 參考
-  - H2: providerRequest 參考
-  - H2: secretProviderIntegrations 參考
-  - H2: modelPricing 參考
-  - H3: OpenClaw 提供者索引
-  - H2: Manifest 與 package.json
-  - H3: 會影響探索的 package.json 欄位
-  - H2: 探索優先順序（重複的外掛 ID）
-  - H2: JSON Schema 要求
-  - H2: 驗證行為
-  - H2: 注意事項
-  - H2: 相關
+  - H2：這個檔案的作用
+  - H2：最小範例
+  - H2：完整範例
+  - H2：頂層欄位參考
+  - H2：生成提供者中繼資料參考
+  - H2：工具中繼資料參考
+  - H2：providerAuthChoices 參考
+  - H2：commandAliases 參考
+  - H2：activation 參考
+  - H2：qaRunners 參考
+  - H2：setup 參考
+  - H3：setup.providers 參考
+  - H3：setup 欄位
+  - H2：uiHints 參考
+  - H2：contracts 參考
+  - H2：mediaUnderstandingProviderMetadata 參考
+  - H2：channelConfigs 參考
+  - H3：取代另一個頻道外掛
+  - H2：modelSupport 參考
+  - H2：modelCatalog 參考
+  - H2：modelIdNormalization 參考
+  - H2：providerEndpoints 參考
+  - H2：providerRequest 參考
+  - H2：secretProviderIntegrations 參考
+  - H2：modelPricing 參考
+  - H3：OpenClaw Provider Index
+  - H2：Manifest 與 package.json
+  - H3：影響探索的 package.json 欄位
+  - H2：探索優先順序（重複外掛 ID）
+  - H2：JSON Schema 要求
+  - H2：驗證行為
+  - H2：備註
+  - H2：相關
 
 ## plugins/memory-lancedb.md
 
 - 路由：/plugins/memory-lancedb
 - 標題：
-  - H2: 安裝
-  - H2: 快速開始
-  - H2: 提供者支援的嵌入
-  - H2: Ollama 嵌入
-  - H2: OpenAI 相容提供者
-  - H2: 召回與擷取限制
-  - H2: 命令
-  - H2: 儲存
-  - H2: 執行階段相依項
-  - H2: 疑難排解
-  - H3: 輸入長度超過上下文長度
-  - H3: 不支援的嵌入模型
-  - H3: 外掛已載入但未顯示記憶
-  - H2: 相關
+  - H2：安裝
+  - H2：快速開始
+  - H2：提供者支援的嵌入
+  - H2：Ollama 嵌入
+  - H2：OpenAI 相容提供者
+  - H2：回想與擷取限制
+  - H2：命令
+  - H2：儲存
+  - H2：執行階段相依項
+  - H2：疑難排解
+  - H3：輸入長度超過上下文長度
+  - H3：不支援的嵌入模型
+  - H3：外掛已載入但沒有記憶出現
+  - H2：相關
 
 ## plugins/memory-wiki.md
 
 - 路由：/plugins/memory-wiki
 - 標題：
-  - H2: 它新增的內容
-  - H2: 它如何與記憶搭配
-  - H2: 建議的混合模式
-  - H2: 知識庫模式
-  - H3: isolated
-  - H3: bridge
-  - H3: unsafe-local
-  - H2: 知識庫版面配置
-  - H2: Open Knowledge Format 匯入
-  - H2: 結構化主張與證據
-  - H2: 面向代理的實體中繼資料
-  - H2: 編譯管線
-  - H2: 儀表板與健康狀態報告
-  - H2: 搜尋與擷取
-  - H2: 代理工具
-  - H2: 提示與上下文行為
-  - H2: 設定
-  - H3: 範例：QMD + bridge 模式
-  - H2: 命令列介面
-  - H2: Obsidian 支援
-  - H2: 建議工作流程
-  - H2: 相關文件
+  - H2：新增內容
+  - H2：它如何搭配記憶
+  - H2：建議的混合模式
+  - H2：知識庫模式
+  - H3：隔離
+  - H3：橋接
+  - H3：不安全本機
+  - H2：知識庫版面配置
+  - H2：Open Knowledge Format 匯入
+  - H2：結構化聲明與證據
+  - H2：面向代理的實體中繼資料
+  - H2：編譯管線
+  - H2：儀表板與健康報告
+  - H2：搜尋與擷取
+  - H2：代理工具
+  - H2：提示與上下文行為
+  - H2：設定
+  - H3：範例：QMD + 橋接模式
+  - H2：命令列介面
+  - H2：Obsidian 支援
+  - H2：建議工作流程
+  - H2：相關文件
 
 ## plugins/message-presentation.md
 
 - 路由：/plugins/message-presentation
 - 標題：
-  - H2: 合約
-  - H2: 產生器範例
-  - H2: 轉譯器合約
-  - H2: 核心轉譯流程
-  - H2: 降級規則
-  - H2: 提供者對應
-  - H2: Presentation 與 InteractiveReply
-  - H2: 遞送釘選
-  - H2: 外掛作者檢查清單
-  - H2: 相關文件
+  - H2：合約
+  - H2：產生器範例
+  - H2：算繪器合約
+  - H2：核心算繪流程
+  - H2：降級規則
+  - H3：按鈕值後援可見性
+  - H2：提供者對應
+  - H2：Presentation 與 InteractiveReply
+  - H2：傳遞固定
+  - H2：外掛作者檢查清單
+  - H2：相關文件
 
 ## plugins/oc-path.md
 
 - 路由：/plugins/oc-path
 - 標題：
-  - H2: 為什麼啟用它
-  - H2: 它在哪裡執行
-  - H2: 啟用
-  - H2: 相依項
-  - H2: 它提供什麼
-  - H2: 與其他外掛的關係
-  - H2: 安全性
-  - H2: 相關
+  - H2：為何啟用它
+  - H2：它在哪裡執行
+  - H2：啟用
+  - H2：相依項
+  - H2：它提供什麼
+  - H2：與其他外掛的關係
+  - H2：安全性
+  - H2：相關
 
 ## plugins/plugin-inventory.md
 
 - 路由：/plugins/plugin-inventory
 - 標題：
-  - H1: 外掛清單
-  - H2: 定義
-  - H2: 安裝外掛
-  - H2: 核心 npm 套件
-  - H2: 官方外部套件
-  - H2: 僅限原始碼 checkout
+  - H1：外掛清單
+  - H2：定義
+  - H2：安裝外掛
+  - H2：核心 npm 套件
+  - H2：官方外部套件
+  - H2：僅限原始碼 checkout
 
 ## plugins/plugin-permission-requests.md
 
 - 路由：/plugins/plugin-permission-requests
 - 標題：
-  - H2: 選擇正確的閘門
-  - H2: 在工具呼叫前要求核准
-  - H2: 決策行為
-  - H2: 路由核准提示
-  - H2: Codex 原生權限
-  - H2: 疑難排解
-  - H2: 相關
+  - H2：選擇正確的閘門
+  - H2：工具呼叫前請求核准
+  - H2：決策行為
+  - H2：路由核准提示
+  - H2：Codex 原生權限
+  - H2：疑難排解
+  - H2：相關
 
 ## plugins/reference.md
 
 - 路由：/plugins/reference
 - 標題：
-  - H1: 外掛參考
+  - H1：外掛參考
 
 ## plugins/reference/acpx.md
 
 - 路由：/plugins/reference/acpx
 - 標題：
-  - H1: ACPx 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：ACPx 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/admin-http-rpc.md
 
 - 路由：/plugins/reference/admin-http-rpc
 - 標題：
-  - H1: Admin Http Rpc 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Admin Http Rpc 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/alibaba.md
 
 - 路由：/plugins/reference/alibaba
 - 標題：
-  - H1: Alibaba 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Alibaba 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/amazon-bedrock-mantle.md
 
 - 路由：/plugins/reference/amazon-bedrock-mantle
 - 標題：
-  - H1: Amazon Bedrock Mantle 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Amazon Bedrock Mantle 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/amazon-bedrock.md
 
 - 路由：/plugins/reference/amazon-bedrock
 - 標題：
-  - H1: Amazon Bedrock 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Amazon Bedrock 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/anthropic-vertex.md
 
 - 路由：/plugins/reference/anthropic-vertex
 - 標題：
-  - H1: Anthropic Vertex 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: Claude Fable 5
+  - H1：Anthropic Vertex 外掛
+  - H2：散發
+  - H2：介面
+  - H2：Claude Fable 5
 
 ## plugins/reference/anthropic.md
 
 - 路由：/plugins/reference/anthropic
 - 標題：
-  - H1: Anthropic 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Anthropic 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/arcee.md
 
 - 路由：/plugins/reference/arcee
 - 標題：
-  - H1: Arcee 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Arcee 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/azure-speech.md
 
 - 路由：/plugins/reference/azure-speech
 - 標題：
-  - H1: Azure Speech 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Azure Speech 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/bonjour.md
 
 - 路由：/plugins/reference/bonjour
 - 標題：
-  - H1: Bonjour 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：Bonjour 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/brave.md
 
 - 路由：/plugins/reference/brave
 - 標題：
-  - H1: Brave 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Brave 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/browser.md
 
 - 路由：/plugins/reference/browser
 - 標題：
-  - H1: Browser 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Browser 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/byteplus.md
 
 - 路由：/plugins/reference/byteplus
 - 標題：
-  - H1: BytePlus 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：BytePlus 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/canvas.md
 
 - 路由：/plugins/reference/canvas
 - 標題：
-  - H1: Canvas 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：Canvas 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/cerebras.md
 
 - 路由：/plugins/reference/cerebras
 - 標題：
-  - H1: Cerebras 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Cerebras 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/chutes.md
 
 - 路由：/plugins/reference/chutes
 - 標題：
-  - H1: Chutes 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Chutes 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/clickclack.md
 
 - 路由：/plugins/reference/clickclack
 - 標題：
-  - H1: Clickclack 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Clickclack 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/cloudflare-ai-gateway.md
 
 - 路由：/plugins/reference/cloudflare-ai-gateway
 - 標題：
-  - H1: Cloudflare AI Gateway 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Cloudflare AI Gateway 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/codex-supervisor.md
 
 - 路由：/plugins/reference/codex-supervisor
 - 標題：
-  - H1: Codex Supervisor 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 工作階段列表
+  - H1：Codex Supervisor 外掛
+  - H2：散發
+  - H2：介面
+  - H2：工作階段列表
 
 ## plugins/reference/codex.md
 
 - 路由：/plugins/reference/codex
 - 標題：
-  - H1: Codex 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Codex 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/cohere.md
 
 - 路由：/plugins/reference/cohere
 - 標題：
-  - H1: Cohere 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Cohere 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/comfy.md
 
 - 路由：/plugins/reference/comfy
 - 標題：
-  - H1: ComfyUI 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：ComfyUI 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/copilot-proxy.md
 
 - 路由：/plugins/reference/copilot-proxy
 - 標題：
-  - H1: Copilot Proxy 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：Copilot Proxy 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/copilot.md
 
 - 路由：/plugins/reference/copilot
 - 標題：
-  - H1: Copilot 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Copilot 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/deepgram.md
 
 - 路由：/plugins/reference/deepgram
 - 標題：
-  - H1: Deepgram 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Deepgram 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/deepinfra.md
 
 - 路由：/plugins/reference/deepinfra
 - 標題：
-  - H1: DeepInfra 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：DeepInfra 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/deepseek.md
 
 - 路由：/plugins/reference/deepseek
 - 標題：
-  - H1: DeepSeek 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：DeepSeek 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/diagnostics-otel.md
 
 - 路由：/plugins/reference/diagnostics-otel
 - 標題：
-  - H1: Diagnostics OpenTelemetry 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：Diagnostics OpenTelemetry 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/diagnostics-prometheus.md
 
 - 路由：/plugins/reference/diagnostics-prometheus
 - 標題：
-  - H1: Diagnostics Prometheus 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：Diagnostics Prometheus 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/diffs-language-pack.md
 
 - 路由：/plugins/reference/diffs-language-pack
 - 標題：
-  - H1: Diffs Language Pack 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 已新增語言
+  - H1：Diffs Language Pack 外掛
+  - H2：散發
+  - H2：介面
+  - H2：新增語言
 
 ## plugins/reference/diffs.md
 
 - 路由：/plugins/reference/diffs
 - 標題：
-  - H1: Diffs 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：Diffs 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/discord.md
 
 - 路由：/plugins/reference/discord
 - 標題：
-  - H1: Discord 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Discord 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/document-extract.md
 
 - 路由：/plugins/reference/document-extract
 - 標題：
-  - H1: Document Extract 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Document Extract 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/duckduckgo.md
 
 - 路由：/plugins/reference/duckduckgo
 - 標題：
-  - H1: DuckDuckGo 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：DuckDuckGo 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/elevenlabs.md
 
 - 路由：/plugins/reference/elevenlabs
 - 標題：
-  - H1: Elevenlabs 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Elevenlabs 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/exa.md
 
 - 路由：/plugins/reference/exa
 - 標題：
-  - H1: Exa 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Exa 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/fal.md
 
 - 路由：/plugins/reference/fal
 - 標題：
-  - H1: fal 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：fal 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/feishu.md
 
 - 路由：/plugins/reference/feishu
 - 標題：
-  - H1: Feishu 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Feishu 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/file-transfer.md
 
 - 路由：/plugins/reference/file-transfer
 - 標題：
-  - H1: File Transfer 外掛
-  - H2: 發佈
-  - H2: 介面
+  - H1：File Transfer 外掛
+  - H2：散發
+  - H2：介面
 
 ## plugins/reference/firecrawl.md
 
 - 路由：/plugins/reference/firecrawl
 - 標題：
-  - H1: Firecrawl 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+  - H1：Firecrawl 外掛
+  - H2：散發
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/fireworks.md
 
 - 路由: /plugins/reference/fireworks
 - 標題:
   - H1: Fireworks 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6086,7 +6087,7 @@ x-i18n:
 - 路由: /plugins/reference/github-copilot
 - 標題:
   - H1: GitHub Copilot 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6095,7 +6096,7 @@ x-i18n:
 - 路由: /plugins/reference/gmi
 - 標題:
   - H1: Gmi 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6104,7 +6105,7 @@ x-i18n:
 - 路由: /plugins/reference/google-meet
 - 標題:
   - H1: Google Meet 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6113,7 +6114,7 @@ x-i18n:
 - 路由: /plugins/reference/google
 - 標題:
   - H1: Google 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6122,7 +6123,7 @@ x-i18n:
 - 路由: /plugins/reference/googlechat
 - 標題:
   - H1: Google Chat 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6131,7 +6132,7 @@ x-i18n:
 - 路由: /plugins/reference/gradium
 - 標題:
   - H1: Gradium 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6140,7 +6141,7 @@ x-i18n:
 - 路由: /plugins/reference/groq
 - 標題:
   - H1: Groq 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6149,7 +6150,7 @@ x-i18n:
 - 路由: /plugins/reference/huggingface
 - 標題:
   - H1: Hugging Face 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6158,7 +6159,7 @@ x-i18n:
 - 路由: /plugins/reference/imessage
 - 標題:
   - H1: iMessage 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6167,7 +6168,7 @@ x-i18n:
 - 路由: /plugins/reference/inworld
 - 標題:
   - H1: Inworld 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6176,7 +6177,7 @@ x-i18n:
 - 路由: /plugins/reference/irc
 - 標題:
   - H1: IRC 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6185,7 +6186,7 @@ x-i18n:
 - 路由: /plugins/reference/kilocode
 - 標題:
   - H1: Kilocode 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6194,7 +6195,7 @@ x-i18n:
 - 路由: /plugins/reference/kimi
 - 標題:
   - H1: Kimi 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6203,7 +6204,7 @@ x-i18n:
 - 路由: /plugins/reference/line
 - 標題:
   - H1: LINE 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6212,7 +6213,7 @@ x-i18n:
 - 路由: /plugins/reference/litellm
 - 標題:
   - H1: LiteLLM 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6221,7 +6222,7 @@ x-i18n:
 - 路由: /plugins/reference/llama-cpp
 - 標題:
   - H1: Llama Cpp 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6230,7 +6231,7 @@ x-i18n:
 - 路由: /plugins/reference/llm-task
 - 標題:
   - H1: LLM Task 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/lmstudio.md
@@ -6238,7 +6239,7 @@ x-i18n:
 - 路由: /plugins/reference/lmstudio
 - 標題:
   - H1: LM Studio 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6247,7 +6248,7 @@ x-i18n:
 - 路由: /plugins/reference/lobster
 - 標題:
   - H1: Lobster 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/matrix.md
@@ -6255,7 +6256,7 @@ x-i18n:
 - 路由: /plugins/reference/matrix
 - 標題:
   - H1: Matrix 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6264,7 +6265,7 @@ x-i18n:
 - 路由: /plugins/reference/mattermost
 - 標題:
   - H1: Mattermost 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6273,7 +6274,7 @@ x-i18n:
 - 路由: /plugins/reference/memory-core
 - 標題:
   - H1: Memory Core 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/memory-lancedb.md
@@ -6281,7 +6282,7 @@ x-i18n:
 - 路由: /plugins/reference/memory-lancedb
 - 標題:
   - H1: Memory Lancedb 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6290,7 +6291,7 @@ x-i18n:
 - 路由: /plugins/reference/memory-wiki
 - 標題:
   - H1: Memory Wiki 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6299,7 +6300,7 @@ x-i18n:
 - 路由: /plugins/reference/microsoft-foundry
 - 標題:
   - H1: Microsoft Foundry 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 需求
   - H2: 聊天模型
@@ -6311,23 +6312,23 @@ x-i18n:
 - 路由: /plugins/reference/microsoft
 - 標題:
   - H1: Microsoft 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/migrate-claude.md
 
 - 路由: /plugins/reference/migrate-claude
 - 標題:
-  - H1: 遷移 Claude 外掛
-  - H2: 發佈
+  - H1: Migrate Claude 外掛
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/migrate-hermes.md
 
 - 路由: /plugins/reference/migrate-hermes
 - 標題:
-  - H1: 遷移 Hermes 外掛
-  - H2: 發佈
+  - H1: Migrate Hermes 外掛
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/minimax.md
@@ -6335,7 +6336,7 @@ x-i18n:
 - 路由: /plugins/reference/minimax
 - 標題:
   - H1: MiniMax 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6344,7 +6345,7 @@ x-i18n:
 - 路由: /plugins/reference/mistral
 - 標題:
   - H1: Mistral 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6353,7 +6354,7 @@ x-i18n:
 - 路由: /plugins/reference/moonshot
 - 標題:
   - H1: Moonshot 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6362,7 +6363,7 @@ x-i18n:
 - 路由: /plugins/reference/msteams
 - 標題:
   - H1: Microsoft Teams 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6371,7 +6372,7 @@ x-i18n:
 - 路由: /plugins/reference/nextcloud-talk
 - 標題:
   - H1: Nextcloud Talk 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6380,7 +6381,7 @@ x-i18n:
 - 路由: /plugins/reference/nostr
 - 標題:
   - H1: Nostr 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6389,7 +6390,7 @@ x-i18n:
 - 路由: /plugins/reference/novita
 - 標題:
   - H1: Novita 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6398,7 +6399,7 @@ x-i18n:
 - 路由: /plugins/reference/nvidia
 - 標題:
   - H1: NVIDIA 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6407,7 +6408,7 @@ x-i18n:
 - 路由: /plugins/reference/oc-path
 - 標題:
   - H1: Oc Path 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6416,7 +6417,7 @@ x-i18n:
 - 路由: /plugins/reference/ollama
 - 標題:
   - H1: Ollama 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6425,7 +6426,7 @@ x-i18n:
 - 路由: /plugins/reference/open-prose
 - 標題:
   - H1: Open Prose 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/openai.md
@@ -6433,7 +6434,7 @@ x-i18n:
 - 路由: /plugins/reference/openai
 - 標題:
   - H1: OpenAI 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6442,7 +6443,7 @@ x-i18n:
 - 路由: /plugins/reference/opencode-go
 - 標題:
   - H1: OpenCode Go 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6451,7 +6452,7 @@ x-i18n:
 - 路由: /plugins/reference/opencode
 - 標題:
   - H1: OpenCode 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6460,7 +6461,7 @@ x-i18n:
 - 路由: /plugins/reference/openrouter
 - 標題:
   - H1: OpenRouter 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6469,7 +6470,7 @@ x-i18n:
 - 路由: /plugins/reference/openshell
 - 標題:
   - H1: Openshell 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/perplexity.md
@@ -6477,7 +6478,7 @@ x-i18n:
 - 路由: /plugins/reference/perplexity
 - 標題:
   - H1: Perplexity 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6486,7 +6487,7 @@ x-i18n:
 - 路由: /plugins/reference/pixverse
 - 標題:
   - H1: PixVerse 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6495,7 +6496,7 @@ x-i18n:
 - 路由: /plugins/reference/policy
 - 標題:
   - H1: Policy 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 行為
   - H2: 相關文件
@@ -6505,7 +6506,7 @@ x-i18n:
 - 路由: /plugins/reference/qa-channel
 - 標題:
   - H1: QA Channel 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6514,7 +6515,7 @@ x-i18n:
 - 路由: /plugins/reference/qa-lab
 - 標題:
   - H1: QA Lab 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/qa-matrix.md
@@ -6522,7 +6523,7 @@ x-i18n:
 - 路由: /plugins/reference/qa-matrix
 - 標題:
   - H1: QA Matrix 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/qianfan.md
@@ -6530,7 +6531,7 @@ x-i18n:
 - 路由: /plugins/reference/qianfan
 - 標題:
   - H1: Qianfan 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6539,7 +6540,7 @@ x-i18n:
 - 路由: /plugins/reference/qqbot
 - 標題:
   - H1: QQ Bot 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6548,7 +6549,7 @@ x-i18n:
 - 路由: /plugins/reference/qwen
 - 標題:
   - H1: Qwen 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6557,7 +6558,7 @@ x-i18n:
 - 路由: /plugins/reference/raft
 - 標題:
   - H1: Raft 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6566,7 +6567,7 @@ x-i18n:
 - 路由: /plugins/reference/runway
 - 標題:
   - H1: Runway 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6575,7 +6576,7 @@ x-i18n:
 - 路由: /plugins/reference/searxng
 - 標題:
   - H1: SearXNG 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/senseaudio.md
@@ -6583,7 +6584,7 @@ x-i18n:
 - 路由: /plugins/reference/senseaudio
 - 標題:
   - H1: Senseaudio 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6592,7 +6593,7 @@ x-i18n:
 - 路由: /plugins/reference/sglang
 - 標題:
   - H1: SGLang 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6601,7 +6602,7 @@ x-i18n:
 - 路由: /plugins/reference/signal
 - 標題:
   - H1: Signal 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6610,7 +6611,7 @@ x-i18n:
 - 路由: /plugins/reference/slack
 - 標題:
   - H1: Slack 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6619,7 +6620,7 @@ x-i18n:
 - 路由: /plugins/reference/sms
 - 標題:
   - H1: SMS 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6628,7 +6629,7 @@ x-i18n:
 - 路由: /plugins/reference/stepfun
 - 標題:
   - H1: StepFun 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6637,7 +6638,7 @@ x-i18n:
 - 路由: /plugins/reference/synology-chat
 - 標題:
   - H1: Synology Chat 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6646,7 +6647,7 @@ x-i18n:
 - 路由: /plugins/reference/synthetic
 - 標題:
   - H1: Synthetic 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6655,7 +6656,7 @@ x-i18n:
 - 路由: /plugins/reference/tavily
 - 標題:
   - H1: Tavily 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6664,7 +6665,7 @@ x-i18n:
 - 路由: /plugins/reference/telegram
 - 標題:
   - H1: Telegram 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6673,7 +6674,7 @@ x-i18n:
 - 路由: /plugins/reference/tencent
 - 標題:
   - H1: Tencent 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6682,7 +6683,7 @@ x-i18n:
 - 路由: /plugins/reference/tlon
 - 標題:
   - H1: Tlon 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6691,7 +6692,7 @@ x-i18n:
 - 路由: /plugins/reference/together
 - 標題:
   - H1: Together 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6700,7 +6701,7 @@ x-i18n:
 - 路由: /plugins/reference/tokenjuice
 - 標題:
   - H1: Tokenjuice 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
@@ -6708,8 +6709,8 @@ x-i18n:
 
 - 路由: /plugins/reference/tts-local-cli
 - 標題:
-  - H1: TTS Local 命令列介面外掛
-  - H2: 發佈
+  - H1: TTS Local CLI 外掛
+  - H2: 散佈
   - H2: 介面
 
 ## plugins/reference/twitch.md
@@ -6717,2297 +6718,2297 @@ x-i18n:
 - 路由: /plugins/reference/twitch
 - 標題:
   - H1: Twitch 外掛
-  - H2: 發佈
+  - H2: 散佈
   - H2: 介面
   - H2: 相關文件
 
 ## plugins/reference/venice.md
 
-- 路由: /plugins/reference/venice
-- 標題:
-  - H1: Venice 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/venice
+- 標題：
+  - H1：Venice 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/vercel-ai-gateway.md
 
-- 路由: /plugins/reference/vercel-ai-gateway
-- 標題:
-  - H1: Vercel AI Gateway 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/vercel-ai-gateway
+- 標題：
+  - H1：Vercel AI Gateway 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/vllm.md
 
-- 路由: /plugins/reference/vllm
-- 標題:
-  - H1: vLLM 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/vllm
+- 標題：
+  - H1：vLLM 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/voice-call.md
 
-- 路由: /plugins/reference/voice-call
-- 標題:
-  - H1: Voice Call 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/voice-call
+- 標題：
+  - H1：語音通話外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/volcengine.md
 
-- 路由: /plugins/reference/volcengine
-- 標題:
-  - H1: Volcengine 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/volcengine
+- 標題：
+  - H1：Volcengine 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/voyage.md
 
-- 路由: /plugins/reference/voyage
-- 標題:
-  - H1: Voyage 外掛
-  - H2: 發佈
-  - H2: 介面
+- 路由：/plugins/reference/voyage
+- 標題：
+  - H1：Voyage 外掛
+  - H2：發佈
+  - H2：介面
 
 ## plugins/reference/vydra.md
 
-- 路由: /plugins/reference/vydra
-- 標題:
-  - H1: Vydra 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/vydra
+- 標題：
+  - H1：Vydra 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/web-readability.md
 
-- 路由: /plugins/reference/web-readability
-- 標題:
-  - H1: Web Readability 外掛
-  - H2: 發佈
-  - H2: 介面
+- 路由：/plugins/reference/web-readability
+- 標題：
+  - H1：Web Readability 外掛
+  - H2：發佈
+  - H2：介面
 
 ## plugins/reference/webhooks.md
 
-- 路由: /plugins/reference/webhooks
-- 標題:
-  - H1: Webhooks 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/webhooks
+- 標題：
+  - H1：網路鉤子外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/whatsapp.md
 
-- 路由: /plugins/reference/whatsapp
-- 標題:
-  - H1: WhatsApp 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/whatsapp
+- 標題：
+  - H1：WhatsApp 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/workboard.md
 
-- 路由: /plugins/reference/workboard
-- 標題:
-  - H1: Workboard 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/workboard
+- 標題：
+  - H1：Workboard 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/xai.md
 
-- 路由: /plugins/reference/xai
-- 標題:
-  - H1: xAI 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/xai
+- 標題：
+  - H1：xAI 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/xiaomi.md
 
-- 路由: /plugins/reference/xiaomi
-- 標題:
-  - H1: Xiaomi 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/xiaomi
+- 標題：
+  - H1：Xiaomi 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/zai.md
 
-- 路由: /plugins/reference/zai
-- 標題:
-  - H1: Z.AI 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/zai
+- 標題：
+  - H1：Z.AI 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/zalo.md
 
-- 路由: /plugins/reference/zalo
-- 標題:
-  - H1: Zalo 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/zalo
+- 標題：
+  - H1：Zalo 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/reference/zalouser.md
 
-- 路由: /plugins/reference/zalouser
-- 標題:
-  - H1: Zalo Personal 外掛
-  - H2: 發佈
-  - H2: 介面
-  - H2: 相關文件
+- 路由：/plugins/reference/zalouser
+- 標題：
+  - H1：Zalo Personal 外掛
+  - H2：發佈
+  - H2：介面
+  - H2：相關文件
 
 ## plugins/sdk-agent-harness.md
 
-- 路由: /plugins/sdk-agent-harness
-- 標題:
-  - H2: 何時使用 harness
-  - H2: 核心仍負責什麼
-  - H2: 註冊 harness
-  - H2: 選擇政策
-  - H2: 提供者加 harness 配對
-  - H3: 工具結果中介軟體
-  - H3: 終端結果分類
-  - H3: Agent 結束端副作用
-  - H3: 使用者輸入和工具介面
-  - H3: 原生 Codex harness 模式
-  - H2: 執行階段嚴格性
-  - H2: 原生工作階段和逐字稿鏡像
-  - H2: 工具和媒體結果
-  - H2: 目前限制
-  - H2: 相關
+- 路由：/plugins/sdk-agent-harness
+- 標題：
+  - H2：何時使用 harness
+  - H2：核心仍負責什麼
+  - H2：註冊 harness
+  - H2：選擇政策
+  - H2：提供者加 harness 配對
+  - H3：工具結果中介軟體
+  - H3：終端結果分類
+  - H3：代理端副作用
+  - H3：使用者輸入與工具介面
+  - H3：原生 Codex harness 模式
+  - H2：執行階段嚴格性
+  - H2：原生工作階段與逐字稿鏡像
+  - H2：工具與媒體結果
+  - H2：目前限制
+  - H2：相關
 
 ## plugins/sdk-channel-inbound.md
 
-- 路由: /plugins/sdk-channel-inbound
-- 標題:
-  - H2: 核心輔助工具
-  - H2: 遷移
+- 路由：/plugins/sdk-channel-inbound
+- 標題：
+  - H2：核心輔助工具
+  - H2：遷移
 
 ## plugins/sdk-channel-ingress.md
 
-- 路由: /plugins/sdk-channel-ingress
-- 標題:
-  - H1: 頻道入口 API
-  - H2: 執行階段解析器
-  - H2: 結果
-  - H2: 存取群組
-  - H2: 事件模式
-  - H2: 路由和啟用
-  - H2: 修訂
-  - H2: 驗證
+- 路由：/plugins/sdk-channel-ingress
+- 標題：
+  - H1：通道 ingress API
+  - H2：執行階段解析器
+  - H2：結果
+  - H2：存取群組
+  - H2：事件模式
+  - H2：路由與啟用
+  - H2：遮蔽
+  - H2：驗證
 
 ## plugins/sdk-channel-message.md
 
-- 路由: /plugins/sdk-channel-message
-- 標題: 無
+- 路由：/plugins/sdk-channel-message
+- 標題：無
 
 ## plugins/sdk-channel-outbound.md
 
-- 路由: /plugins/sdk-channel-outbound
-- 標題:
-  - H2: 轉接器
-  - H2: 既有傳出轉接器
-  - H2: 持久傳送
-  - H2: 相容性分派
+- 路由：/plugins/sdk-channel-outbound
+- 標題：
+  - H2：配接器
+  - H2：現有 outbound 配接器
+  - H2：持久傳送
+  - H2：相容性分派
 
 ## plugins/sdk-channel-plugins.md
 
-- 路由: /plugins/sdk-channel-plugins
-- 標題:
-  - H2: 頻道外掛如何運作
-  - H2: 核准和頻道功能
-  - H2: 傳入提及政策
-  - H2: 逐步解說
-  - H2: 檔案結構
-  - H2: 進階主題
-  - H2: 後續步驟
-  - H2: 相關
+- 路由：/plugins/sdk-channel-plugins
+- 標題：
+  - H2：通道外掛如何運作
+  - H2：核准與通道能力
+  - H2：Inbound 提及政策
+  - H2：逐步解說
+  - H2：檔案結構
+  - H2：進階主題
+  - H2：後續步驟
+  - H2：相關
 
 ## plugins/sdk-channel-turn.md
 
-- 路由: /plugins/sdk-channel-turn
-- 標題: 無
+- 路由：/plugins/sdk-channel-turn
+- 標題：無
 
 ## plugins/sdk-entrypoints.md
 
-- 路由: /plugins/sdk-entrypoints
-- 標題:
-  - H2: defineToolPlugin
-  - H2: definePluginEntry
-  - H2: defineChannelPluginEntry
-  - H2: defineSetupPluginEntry
-  - H2: 註冊模式
-  - H2: 外掛形態
-  - H2: 相關
+- 路由：/plugins/sdk-entrypoints
+- 標題：
+  - H2：defineToolPlugin
+  - H2：definePluginEntry
+  - H2：defineChannelPluginEntry
+  - H2：defineSetupPluginEntry
+  - H2：註冊模式
+  - H2：外掛形狀
+  - H2：相關
 
 ## plugins/sdk-migration.md
 
-- 路由: /plugins/sdk-migration
-- 標題:
-  - H2: 變更內容
-  - H2: 此變更的原因
-  - H2: Talk 和即時語音遷移計畫
-  - H2: 相容性政策
-  - H2: 如何遷移
-  - H2: 匯入路徑參考
-  - H2: 作用中的棄用項目
-  - H2: 移除時間表
-  - H2: 暫時抑制警告
-  - H2: 相關
+- 路由：/plugins/sdk-migration
+- 標題：
+  - H2：變更內容
+  - H2：此變更的原因
+  - H2：Talk 與即時語音遷移計畫
+  - H2：相容性政策
+  - H2：如何遷移
+  - H2：匯入路徑參考
+  - H2：主動棄用
+  - H2：移除時程
+  - H2：暫時抑制警告
+  - H2：相關
 
 ## plugins/sdk-overview.md
 
-- 路由: /plugins/sdk-overview
-- 標題:
-  - H2: 匯入慣例
-  - H2: 子路徑參考
-  - H2: 註冊 API
-  - H3: 功能註冊
-  - H3: 工具和指令
-  - H3: 基礎設施
-  - H3: 工作流程外掛的主機 hook
-  - H3: 閘道探索註冊
-  - H3: 命令列介面註冊中繼資料
-  - H3: 命令列介面後端註冊
-  - H3: 專屬插槽
-  - H3: 已棄用的記憶體嵌入轉接器
-  - H3: 事件和生命週期
-  - H3: Hook 決策語意
-  - H3: API 物件欄位
-  - H2: 內部模組慣例
-  - H2: 相關
+- 路由：/plugins/sdk-overview
+- 標題：
+  - H2：匯入慣例
+  - H2：子路徑參考
+  - H2：註冊 API
+  - H3：能力註冊
+  - H3：工具與命令
+  - H3：基礎設施
+  - H3：工作流程外掛的主機掛鉤
+  - H3：Gateway 探索註冊
+  - H3：命令列介面註冊中繼資料
+  - H3：命令列介面後端註冊
+  - H3：專屬槽位
+  - H3：已棄用的記憶體嵌入配接器
+  - H3：事件與生命週期
+  - H3：掛鉤決策語意
+  - H3：API 物件欄位
+  - H2：內部模組慣例
+  - H2：相關
 
 ## plugins/sdk-provider-plugins.md
 
-- 路由: /plugins/sdk-provider-plugins
-- 標題:
-  - H2: 逐步解說
-  - H2: 發佈至 ClawHub
-  - H2: 檔案結構
-  - H2: 目錄順序參考
-  - H2: 後續步驟
-  - H2: 相關
+- 路由：/plugins/sdk-provider-plugins
+- 標題：
+  - H2：逐步解說
+  - H2：發佈到 ClawHub
+  - H2：檔案結構
+  - H2：目錄順序參考
+  - H2：後續步驟
+  - H2：相關
 
 ## plugins/sdk-runtime.md
 
-- 路由: /plugins/sdk-runtime
-- 標題:
-  - H2: 載入和寫入設定
-  - H2: 可重用的執行階段工具
-  - H2: 執行階段命名空間
-  - H2: 儲存執行階段參照
-  - H2: 其他頂層 api 欄位
-  - H2: 相關
+- 路由：/plugins/sdk-runtime
+- 標題：
+  - H2：設定載入與寫入
+  - H2：可重用的執行階段工具
+  - H2：執行階段命名空間
+  - H2：儲存執行階段參照
+  - H2：其他頂層 api 欄位
+  - H2：相關
 
 ## plugins/sdk-setup.md
 
-- 路由: /plugins/sdk-setup
-- 標題:
-  - H2: 套件中繼資料
-  - H3: openclaw 欄位
-  - H3: openclaw.channel
-  - H3: openclaw.install
-  - H3: 延後完整載入
-  - H2: 外掛 manifest
-  - H2: ClawHub 發佈
-  - H2: 設定進入點
-  - H3: 窄範圍設定輔助工具匯入
-  - H3: 頻道擁有的單一帳號提升
-  - H2: 設定 schema
-  - H3: 建置頻道設定 schema
-  - H2: 設定精靈
-  - H2: 發佈和安裝
-  - H2: 相關
+- 路由：/plugins/sdk-setup
+- 標題：
+  - H2：套件中繼資料
+  - H3：openclaw 欄位
+  - H3：openclaw.channel
+  - H3：openclaw.install
+  - H3：延後完整載入
+  - H2：外掛 manifest
+  - H2：ClawHub 發佈
+  - H2：設定入口
+  - H3：窄範圍設定輔助工具匯入
+  - H3：通道擁有的單一帳戶提升
+  - H2：設定 schema
+  - H3：建置通道設定 schema
+  - H2：設定精靈
+  - H2：發佈與安裝
+  - H2：相關
 
 ## plugins/sdk-subpaths.md
 
-- 路由: /plugins/sdk-subpaths
-- 標題:
-  - H2: 外掛進入點
-  - H3: 已棄用的相容性和測試輔助工具
-  - H3: 保留的內建外掛輔助子路徑
-  - H2: 相關
+- 路由：/plugins/sdk-subpaths
+- 標題：
+  - H2：外掛入口
+  - H3：已棄用的相容性與測試輔助工具
+  - H3：保留的 bundled 外掛輔助工具子路徑
+  - H2：相關
 
 ## plugins/sdk-testing.md
 
-- 路由: /plugins/sdk-testing
-- 標題:
-  - H2: 測試工具
-  - H3: 可用匯出
-  - H3: 型別
-  - H2: 測試目標解析
-  - H2: 測試模式
-  - H3: 測試註冊合約
-  - H3: 測試執行階段設定存取
-  - H3: 單元測試頻道外掛
-  - H3: 單元測試提供者外掛
-  - H3: 模擬外掛執行階段
-  - H3: 使用個別實例 stub 進行測試
-  - H2: 合約測試（repo 內外掛）
-  - H3: 執行限定範圍測試
-  - H2: Lint 強制執行（repo 內外掛）
-  - H2: 測試設定
-  - H2: 相關
+- 路由：/plugins/sdk-testing
+- 標題：
+  - H2：測試工具
+  - H3：可用匯出
+  - H3：型別
+  - H2：測試目標解析
+  - H2：測試模式
+  - H3：測試註冊合約
+  - H3：測試執行階段設定存取
+  - H3：單元測試通道外掛
+  - H3：單元測試提供者外掛
+  - H3：模擬外掛執行階段
+  - H3：使用每個執行個體的 stub 進行測試
+  - H2：合約測試（repo 內外掛）
+  - H3：執行 scoped 測試
+  - H2：Lint 強制執行（repo 內外掛）
+  - H2：測試設定
+  - H2：相關
 
 ## plugins/tool-plugins.md
 
-- 路由: /plugins/tool-plugins
-- 標題:
-  - H2: 需求
-  - H2: 快速開始
-  - H2: 撰寫工具
-  - H2: 選用和工廠工具
-  - H2: 回傳值
-  - H2: 設定
-  - H2: 產生的中繼資料
-  - H2: 套件中繼資料
-  - H2: 在 CI 中驗證
-  - H2: 在本機安裝和檢查
-  - H2: 發佈
-  - H2: 疑難排解
-  - H3: 找不到外掛進入點: ./dist/index.js
-  - H3: 外掛進入點未公開 defineToolPlugin 中繼資料
-  - H3: openclaw.plugin.json 產生的中繼資料已過期
-  - H3: package.json openclaw.extensions 必須包含 ./dist/index.js
-  - H3: 找不到套件 'typebox'
-  - H3: 安裝後未顯示工具
-  - H2: 另請參閱
+- 路由：/plugins/tool-plugins
+- 標題：
+  - H2：需求
+  - H2：快速開始
+  - H2：撰寫工具
+  - H2：選用與 factory 工具
+  - H2：回傳值
+  - H2：設定
+  - H2：產生的中繼資料
+  - H2：套件中繼資料
+  - H2：在 CI 中驗證
+  - H2：在本機安裝並檢查
+  - H2：發佈
+  - H2：疑難排解
+  - H3：找不到外掛入口：./dist/index.js
+  - H3：外掛入口未公開 defineToolPlugin 中繼資料
+  - H3：openclaw.plugin.json 產生的中繼資料已過期
+  - H3：package.json openclaw.extensions 必須包含 ./dist/index.js
+  - H3：找不到套件 'typebox'
+  - H3：工具在安裝後未出現
+  - H2：另請參閱
 
 ## plugins/voice-call.md
 
-- 路由: /plugins/voice-call
-- 標題:
-  - H2: 快速開始
-  - H2: 設定
-  - H2: 工作階段範圍
-  - H2: 即時語音對話
-  - H3: 工具政策
-  - H3: Agent 語音內容
-  - H3: 即時提供者範例
-  - H2: 串流轉錄
-  - H3: 串流提供者範例
-  - H2: 通話 TTS
-  - H3: TTS 範例
-  - H2: 來電
-  - H3: 依號碼路由
-  - H3: 語音輸出合約
-  - H3: 對話啟動行為
-  - H3: Twilio 串流中斷寬限期
-  - H2: 過期通話清理器
-  - H2: 網路鉤子安全性
-  - H2: 命令列介面
-  - H2: Agent 工具
-  - H2: 閘道 RPC
-  - H2: 疑難排解
-  - H3: 設定失敗：網路鉤子暴露
-  - H3: 提供者憑證失敗
-  - H3: 通話已開始但提供者網路鉤子未抵達
-  - H3: 簽章驗證失敗
-  - H3: Google Meet Twilio 加入失敗
-  - H3: 即時通話沒有語音
-  - H2: 相關
+- 路由：/plugins/voice-call
+- 標題：
+  - H2：快速開始
+  - H2：設定
+  - H2：工作階段範圍
+  - H2：即時語音對話
+  - H3：工具政策
+  - H3：代理語音內容
+  - H3：即時提供者範例
+  - H2：串流轉錄
+  - H3：串流提供者範例
+  - H2：通話 TTS
+  - H3：TTS 範例
+  - H2：來電
+  - H3：每號碼路由
+  - H3：語音輸出合約
+  - H3：對話啟動行為
+  - H3：Twilio 串流中斷連線寬限期
+  - H2：過期通話清理器
+  - H2：網路鉤子安全性
+  - H2：命令列介面
+  - H2：代理工具
+  - H2：Gateway RPC
+  - H2：疑難排解
+  - H3：設定無法公開 webhook
+  - H3：提供者憑證失敗
+  - H3：通話開始但提供者 webhook 未到達
+  - H3：簽章驗證失敗
+  - H3：Google Meet Twilio 加入失敗
+  - H3：即時通話沒有語音
+  - H2：相關
 
 ## plugins/webhooks.md
 
-- 路由: /plugins/webhooks
-- 標題:
-  - H2: 執行位置
-  - H2: 設定路由
-  - H2: 安全性模型
-  - H2: 請求格式
-  - H2: 支援的動作
-  - H3: createflow
-  - H3: runtask
-  - H2: 回應形態
-  - H2: 相關文件
+- 路由：/plugins/webhooks
+- 標題：
+  - H2：執行位置
+  - H2：設定路由
+  - H2：安全模型
+  - H2：請求格式
+  - H2：支援的動作
+  - H3：createflow
+  - H3：runtask
+  - H2：回應形狀
+  - H2：相關文件
 
 ## plugins/workboard.md
 
-- 路由: /plugins/workboard
-- 標題:
-  - H2: 預設狀態
-  - H2: 卡片包含的內容
-  - H2: 卡片執行和任務
-  - H2: Agent 協調
-  - H3: 分派 worker 選擇
-  - H3: Worker 提示和生命週期
-  - H3: 分派進入點
-  - H2: 命令列介面和斜線指令
-  - H2: 工作階段生命週期同步
-  - H2: 儀表板工作流程
-  - H2: 權限
-  - H2: 設定
-  - H2: 疑難排解
-  - H3: 分頁顯示 Workboard 無法使用
-  - H3: 卡片未儲存
-  - H3: 啟動卡片未開啟預期工作階段
-  - H3: 分派未啟動 worker
-  - H2: 相關
+- 路由：/plugins/workboard
+- 標題：
+  - H2：預設狀態
+  - H2：卡片包含內容
+  - H2：卡片執行與任務
+  - H2：代理協調
+  - H3：分派 worker 選擇
+  - H3：Worker 提示與生命週期
+  - H3：分派入口點
+  - H2：命令列介面與斜線命令
+  - H2：工作階段生命週期同步
+  - H2：儀表板工作流程
+  - H2：權限
+  - H2：設定
+  - H2：疑難排解
+  - H3：分頁顯示 Workboard 無法使用
+  - H3：卡片無法儲存
+  - H3：啟動卡片未開啟預期工作階段
+  - H3：分派未啟動 worker
+  - H2：相關
 
 ## plugins/zalouser.md
 
-- 路由: /plugins/zalouser
-- 標題:
-  - H2: 命名
-  - H2: 執行位置
-  - H2: 安裝
-  - H3: 選項 A：從 npm 安裝
-  - H3: 選項 B：從本機資料夾安裝 (dev)
-  - H2: 設定
-  - H2: 命令列介面
-  - H2: Agent 工具
-  - H2: 相關
+- 路由：/plugins/zalouser
+- 標題：
+  - H2：命名
+  - H2：執行位置
+  - H2：安裝
+  - H3：選項 A：從 npm 安裝
+  - H3：選項 B：從本機資料夾安裝（dev）
+  - H2：設定
+  - H2：命令列介面
+  - H2：代理工具
+  - H2：相關
 
 ## prose.md
 
-- 路由: /prose
-- 標題:
-  - H2: 安裝
-  - H2: 斜線指令
-  - H2: 可執行的操作
-  - H2: 範例：平行研究和綜合
-  - H2: OpenClaw 執行階段對應
-  - H2: 檔案位置
-  - H2: 狀態後端
-  - H2: 安全性
-  - H2: 相關
+- 路由：/prose
+- 標題：
+  - H2：安裝
+  - H2：斜線命令
+  - H2：功能
+  - H2：範例：平行研究與綜合
+  - H2：OpenClaw 執行階段對應
+  - H2：檔案位置
+  - H2：狀態後端
+  - H2：安全性
+  - H2：相關
 
 ## providers/alibaba.md
 
-- 路由: /providers/alibaba
-- 標題:
-  - H2: 開始使用
-  - H2: 內建 Wan 模型
-  - H2: 功能與限制
-  - H2: 進階設定
-  - H2: 相關
+- 路由：/providers/alibaba
+- 標題：
+  - H2：開始使用
+  - H2：內建 Wan 模型
+  - H2：能力與限制
+  - H2：進階設定
+  - H2：相關
 
 ## providers/anthropic.md
 
-- 路由: /providers/anthropic
-- 標題:
-  - H2: 開始使用
-  - H2: 思考預設值（Claude Fable 5、4.8 和 4.6）
-  - H2: 提示快取
-  - H2: 進階設定
-  - H2: 疑難排解
-  - H2: 相關
+- 路由：/providers/anthropic
+- 標題：
+  - H2：開始使用
+  - H2：思考預設值（Claude Fable 5、4.8 與 4.6）
+  - H2：提示快取
+  - H2：進階設定
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/arcee.md
 
-- 路由: /providers/arcee
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 非互動式設定
-  - H2: 內建目錄
-  - H2: 支援的功能
-  - H2: 相關
+- 路由：/providers/arcee
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：非互動式設定
+  - H2：內建目錄
+  - H2：支援的功能
+  - H2：相關
 
 ## providers/azure-speech.md
 
-- 路由: /providers/azure-speech
-- 標題:
-  - H2: 開始使用
-  - H2: 設定選項
-  - H2: 注意事項
-  - H2: 相關
+- 路由：/providers/azure-speech
+- 標題：
+  - H2：開始使用
+  - H2：設定選項
+  - H2：備註
+  - H2：相關
 
 ## providers/bedrock-mantle.md
 
-- 路由: /providers/bedrock-mantle
-- 標題:
-  - H2: 開始使用
-  - H2: 自動模型探索
-  - H3: 支援的區域
-  - H2: 手動設定
-  - H2: 進階設定
-  - H2: 相關
+- 路由：/providers/bedrock-mantle
+- 標題：
+  - H2：開始使用
+  - H2：自動模型探索
+  - H3：支援的區域
+  - H2：手動設定
+  - H2：進階設定
+  - H2：相關
 
 ## providers/bedrock.md
 
-- 路由: /providers/bedrock
-- 標題:
-  - H2: 開始使用
-  - H2: 自動模型探索
-  - H2: 快速設定（AWS 路徑）
-  - H2: 進階設定
-  - H2: 相關
+- 路由：/providers/bedrock
+- 標題：
+  - H2：開始使用
+  - H2：自動模型探索
+  - H2：快速設定（AWS 路徑）
+  - H2：進階設定
+  - H2：相關
 
 ## providers/cerebras.md
 
-- 路由: /providers/cerebras
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 非互動式設定
-  - H2: 內建目錄
-  - H2: 手動設定
-  - H2: 相關
+- 路由：/providers/cerebras
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：非互動式設定
+  - H2：內建目錄
+  - H2：手動設定
+  - H2：相關
 
 ## providers/chutes.md
 
-- 路由: /providers/chutes
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 探索行為
-  - H2: 預設別名
-  - H2: 內建入門目錄
-  - H2: 設定範例
-  - H2: 相關
+- 路由：/providers/chutes
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：探索行為
+  - H2：預設別名
+  - H2：內建入門目錄
+  - H2：設定範例
+  - H2：相關
 
 ## providers/claude-max-api-proxy.md
 
-- 路由: /providers/claude-max-api-proxy
-- 標題:
-  - H2: 為什麼使用這個？
-  - H2: 運作方式
-  - H2: 開始使用
-  - H2: 內建目錄
-  - H2: 進階設定
-  - H2: 注意事項
-  - H2: 相關內容
+- 路由：/providers/claude-max-api-proxy
+- 標題：
+  - H2：為什麼使用這個？
+  - H2：運作方式
+  - H2：開始使用
+  - H2：內建目錄
+  - H2：進階設定
+  - H2：備註
+  - H2：相關
 
 ## providers/cloudflare-ai-gateway.md
 
-- 路由: /providers/cloudflare-ai-gateway
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 非互動式範例
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/cloudflare-ai-gateway
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：非互動式範例
+  - H2：進階設定
+  - H2：相關
 
 ## providers/cohere.md
 
-- 路由: /providers/cohere
-- 標題:
-  - H2: 開始使用
-  - H2: 僅使用環境變數設定
-  - H2: 相關內容
+- 路由：/providers/cohere
+- 標題：
+  - H2：開始使用
+  - H2：僅環境設定
+  - H2：相關
 
 ## providers/comfy.md
 
-- 路由: /providers/comfy
-- 標題:
-  - H2: 支援內容
-  - H2: 開始使用
-  - H2: 設定
-  - H3: 共用金鑰
-  - H3: 各功能金鑰
-  - H2: 工作流程詳細資料
-  - H2: 相關內容
+- 路由：/providers/comfy
+- 標題：
+  - H2：支援內容
+  - H2：開始使用
+  - H2：設定
+  - H3：共用鍵
+  - H3：各功能鍵
+  - H2：工作流程詳細資料
+  - H2：相關
 
 ## providers/deepgram.md
 
-- 路由: /providers/deepgram
-- 標題:
-  - H2: 開始使用
-  - H2: 設定選項
-  - H2: 語音通話串流 STT
-  - H2: 注意事項
-  - H2: 相關內容
+- 路由：/providers/deepgram
+- 標題：
+  - H2：開始使用
+  - H2：設定選項
+  - H2：語音通話串流 STT
+  - H2：備註
+  - H2：相關
 
 ## providers/deepinfra.md
 
-- 路由: /providers/deepinfra
-- 標題:
-  - H2: 安裝外掛
-  - H2: 取得 API 金鑰
-  - H2: 命令列介面設定
-  - H2: 設定片段
-  - H2: 支援的 OpenClaw 介面
-  - H2: 可用模型
-  - H2: 注意事項
-  - H2: 相關內容
+- 路由：/providers/deepinfra
+- 標題：
+  - H2：安裝外掛
+  - H2：取得 API 金鑰
+  - H2：命令列介面設定
+  - H2：設定片段
+  - H2：支援的 OpenClaw 介面
+  - H2：可用模型
+  - H2：備註
+  - H2：相關
 
 ## providers/deepseek.md
 
-- 路由: /providers/deepseek
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 內建目錄
-  - H2: 思考與工具
-  - H2: 即時測試
-  - H2: 設定範例
-  - H2: 相關內容
+- 路由：/providers/deepseek
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：內建目錄
+  - H2：思考與工具
+  - H2：即時測試
+  - H2：設定範例
+  - H2：相關
 
 ## providers/ds4.md
 
-- 路由: /providers/ds4
-- 標題:
-  - H2: 需求
-  - H2: 快速開始
-  - H2: 完整設定
-  - H2: 隨需啟動
-  - H2: Think Max
-  - H2: 測試
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/ds4
+- 標題：
+  - H2：需求
+  - H2：快速開始
+  - H2：完整設定
+  - H2：按需啟動
+  - H2：Think Max
+  - H2：測試
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/elevenlabs.md
 
-- 路由: /providers/elevenlabs
-- 標題:
-  - H2: 驗證
-  - H2: 文字轉語音
-  - H2: 語音轉文字
-  - H2: 串流 STT
-  - H2: 相關內容
+- 路由：/providers/elevenlabs
+- 標題：
+  - H2：驗證
+  - H2：文字轉語音
+  - H2：語音轉文字
+  - H2：串流 STT
+  - H2：相關
 
 ## providers/fal.md
 
-- 路由: /providers/fal
-- 標題:
-  - H2: 開始使用
-  - H2: 圖像生成
-  - H2: 影片生成
-  - H2: 音樂生成
-  - H2: 相關內容
+- 路由：/providers/fal
+- 標題：
+  - H2：開始使用
+  - H2：圖片生成
+  - H2：影片生成
+  - H2：音樂生成
+  - H2：相關
 
 ## providers/fireworks.md
 
-- 路由: /providers/fireworks
-- 標題:
-  - H2: 開始使用
-  - H2: 非互動式設定
-  - H2: 內建目錄
-  - H2: 自訂 Fireworks 模型 ID
-  - H2: 相關內容
+- 路由：/providers/fireworks
+- 標題：
+  - H2：開始使用
+  - H2：非互動式設定
+  - H2：內建目錄
+  - H2：自訂 Fireworks 模型 ID
+  - H2：相關
 
 ## providers/github-copilot.md
 
-- 路由: /providers/github-copilot
-- 標題:
-  - H2: 在 OpenClaw 中使用 Copilot 的三種方式
-  - H2: 選用旗標
-  - H2: 非互動式上手設定
-  - H2: 記憶搜尋嵌入
-  - H3: 設定
-  - H3: 運作方式
-  - H2: 相關內容
+- 路由：/providers/github-copilot
+- 標題：
+  - H2：在 OpenClaw 中使用 Copilot 的三種方式
+  - H2：選用旗標
+  - H2：非互動式上手流程
+  - H2：記憶搜尋嵌入
+  - H3：設定
+  - H3：運作方式
+  - H2：相關
 
 ## providers/gmi.md
 
-- 路由: /providers/gmi
-- 標題:
-  - H2: 設定
-  - H2: 預設值
-  - H2: 何時選擇 GMI
-  - H2: 模型
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/gmi
+- 標題：
+  - H2：設定
+  - H2：預設值
+  - H2：何時選擇 GMI
+  - H2：模型
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/google.md
 
-- 路由: /providers/google
-- 標題:
-  - H2: 開始使用
-  - H2: 功能
-  - H2: 網頁搜尋
-  - H2: 圖像生成
-  - H2: 影片生成
-  - H2: 音樂生成
-  - H2: 文字轉語音
-  - H2: 即時語音
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/google
+- 標題：
+  - H2：開始使用
+  - H2：功能
+  - H2：網頁搜尋
+  - H2：圖片生成
+  - H2：影片生成
+  - H2：音樂生成
+  - H2：文字轉語音
+  - H2：即時語音
+  - H2：進階設定
+  - H2：相關
 
 ## providers/gradium.md
 
-- 路由: /providers/gradium
-- 標題:
-  - H2: 安裝外掛
-  - H2: 設定
-  - H2: 設定
-  - H2: 語音
-  - H3: 每則訊息的語音覆寫
-  - H2: 輸出
-  - H2: 自動選擇順序
-  - H2: 相關內容
+- 路由：/providers/gradium
+- 標題：
+  - H2：安裝外掛
+  - H2：設定
+  - H2：設定
+  - H2：語音
+  - H3：每則訊息的語音覆寫
+  - H2：輸出
+  - H2：自動選取順序
+  - H2：相關
 
 ## providers/groq.md
 
-- 路由: /providers/groq
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H3: 設定檔範例
-  - H2: 內建目錄
-  - H2: 推理模型
-  - H2: 音訊轉錄
-  - H2: 相關內容
+- 路由：/providers/groq
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H3：設定檔範例
+  - H2：內建目錄
+  - H2：推理模型
+  - H2：音訊轉錄
+  - H2：相關
 
 ## providers/huggingface.md
 
-- 路由: /providers/huggingface
-- 標題:
-  - H2: 開始使用
-  - H3: 非互動式設定
-  - H2: 模型 ID
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/huggingface
+- 標題：
+  - H2：開始使用
+  - H3：非互動式設定
+  - H2：模型 ID
+  - H2：進階設定
+  - H2：相關
 
 ## providers/index.md
 
-- 路由: /providers
-- 標題:
-  - H2: 快速開始
-  - H2: 提供者文件
-  - H2: 共用概覽頁面
-  - H2: 轉錄提供者
-  - H2: 社群工具
+- 路由：/providers
+- 標題：
+  - H2：快速開始
+  - H2：提供者文件
+  - H2：共用概覽頁面
+  - H2：轉錄提供者
+  - H2：社群工具
 
 ## providers/inferrs.md
 
-- 路由: /providers/inferrs
-- 標題:
-  - H2: 開始使用
-  - H2: 完整設定範例
-  - H2: 隨需啟動
-  - H2: 進階設定
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/inferrs
+- 標題：
+  - H2：開始使用
+  - H2：完整設定範例
+  - H2：按需啟動
+  - H2：進階設定
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/inworld.md
 
-- 路由: /providers/inworld
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 設定選項
-  - H2: 注意事項
-  - H2: 相關內容
+- 路由：/providers/inworld
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：設定選項
+  - H2：備註
+  - H2：相關
 
 ## providers/kilocode.md
 
-- 路由: /providers/kilocode
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 預設模型
-  - H2: 內建目錄
-  - H2: 設定範例
-  - H2: 相關內容
+- 路由：/providers/kilocode
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：預設模型
+  - H2：內建目錄
+  - H2：設定範例
+  - H2：相關
 
 ## providers/litellm.md
 
-- 路由: /providers/litellm
-- 標題:
-  - H2: 快速開始
-  - H2: 設定
-  - H3: 環境變數
-  - H3: 設定檔
-  - H2: 進階設定
-  - H3: 圖像生成
-  - H2: 相關內容
+- 路由：/providers/litellm
+- 標題：
+  - H2：快速開始
+  - H2：設定
+  - H3：環境變數
+  - H3：設定檔
+  - H2：進階設定
+  - H3：圖片生成
+  - H2：相關
 
 ## providers/lmstudio.md
 
-- 路由: /providers/lmstudio
-- 標題:
-  - H2: 快速開始
-  - H2: 非互動式上手設定
-  - H2: 設定
-  - H3: 串流用量相容性
-  - H3: 思考相容性
-  - H3: 明確設定
-  - H2: 疑難排解
-  - H3: 偵測不到 LM Studio
-  - H3: 驗證錯誤 (HTTP 401)
-  - H3: 即時模型載入
-  - H3: LAN 或 tailnet LM Studio 主機
-  - H2: 相關內容
+- 路由：/providers/lmstudio
+- 標題：
+  - H2：快速開始
+  - H2：非互動式上手流程
+  - H2：設定
+  - H3：串流用量相容性
+  - H3：思考相容性
+  - H3：明確設定
+  - H2：疑難排解
+  - H3：偵測不到 LM Studio
+  - H3：驗證錯誤 (HTTP 401)
+  - H3：即時模型載入
+  - H3：LAN 或 tailnet LM Studio 主機
+  - H2：相關
 
 ## providers/minimax.md
 
-- 路由: /providers/minimax
-- 標題:
-  - H2: 內建目錄
-  - H2: 開始使用
-  - H2: 透過 openclaw configure 設定
-  - H2: 功能
-  - H3: 圖像生成
-  - H3: 文字轉語音
-  - H3: 音樂生成
-  - H3: 影片生成
-  - H3: 圖像理解
-  - H3: 網頁搜尋
-  - H2: 進階設定
-  - H2: 注意事項
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/minimax
+- 標題：
+  - H2：內建目錄
+  - H2：開始使用
+  - H2：透過 openclaw configure 設定
+  - H2：功能
+  - H3：圖片生成
+  - H3：文字轉語音
+  - H3：音樂生成
+  - H3：影片生成
+  - H3：圖片理解
+  - H3：網頁搜尋
+  - H2：進階設定
+  - H2：備註
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/mistral.md
 
-- 路由: /providers/mistral
-- 標題:
-  - H2: 開始使用
-  - H2: 內建 LLM 目錄
-  - H2: 音訊轉錄 (Voxtral)
-  - H2: 語音通話串流 STT
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/mistral
+- 標題：
+  - H2：開始使用
+  - H2：內建 LLM 目錄
+  - H2：音訊轉錄 (Voxtral)
+  - H2：語音通話串流 STT
+  - H2：進階設定
+  - H2：相關
 
 ## providers/models.md
 
-- 路由: /providers/models
-- 標題:
-  - H2: 快速開始（兩個步驟）
-  - H2: 支援的提供者（入門集合）
-  - H2: 其他提供者變體
-  - H2: 相關內容
+- 路由：/providers/models
+- 標題：
+  - H2：快速開始（兩個步驟）
+  - H2：支援的提供者（入門組合）
+  - H2：其他提供者變體
+  - H2：相關
 
 ## providers/moonshot.md
 
-- 路由: /providers/moonshot
-- 標題:
-  - H2: 內建模型目錄
-  - H2: 開始使用
-  - H2: Kimi 網頁搜尋
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/moonshot
+- 標題：
+  - H2：內建模型目錄
+  - H2：開始使用
+  - H2：Kimi 網頁搜尋
+  - H2：進階設定
+  - H2：相關
 
 ## providers/novita.md
 
-- 路由: /providers/novita
-- 標題:
-  - H2: 設定
-  - H2: 預設值
-  - H2: 何時選擇 Novita
-  - H2: 模型
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/novita
+- 標題：
+  - H2：設定
+  - H2：預設值
+  - H2：何時選擇 Novita
+  - H2：模型
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/nvidia.md
 
-- 路由: /providers/nvidia
-- 標題:
-  - H2: 開始使用
-  - H2: 設定範例
-  - H2: 精選目錄
-  - H2: Nemotron 3 Ultra
-  - H2: 隨附備援目錄
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/nvidia
+- 標題：
+  - H2：開始使用
+  - H2：設定範例
+  - H2：精選目錄
+  - H2：Nemotron 3 Ultra
+  - H2：隨附備用目錄
+  - H2：進階設定
+  - H2：相關
 
 ## providers/ollama-cloud.md
 
-- 路由: /providers/ollama-cloud
-- 標題:
-  - H2: 設定
-  - H2: 預設值
-  - H2: 何時選擇 Ollama Cloud
-  - H2: 模型
-  - H2: 即時測試
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/ollama-cloud
+- 標題：
+  - H2：設定
+  - H2：預設值
+  - H2：何時選擇 Ollama Cloud
+  - H2：模型
+  - H2：即時測試
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/ollama.md
 
-- 路由: /providers/ollama
-- 標題:
-  - H2: 驗證規則
-  - H2: 開始使用
-  - H2: 雲端模型
-  - H2: 模型探索（隱含提供者）
-  - H2: 視覺與圖像描述
-  - H2: 設定
-  - H2: 常見配方
-  - H3: 模型選擇
-  - H3: 快速驗證
-  - H2: Ollama 網頁搜尋
-  - H2: 進階設定
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/ollama
+- 標題：
+  - H2：驗證規則
+  - H2：開始使用
+  - H2：雲端模型
+  - H2：模型探索（隱含提供者）
+  - H2：視覺和圖片描述
+  - H2：設定
+  - H2：常見配方
+  - H3：模型選擇
+  - H3：快速驗證
+  - H2：Ollama 網頁搜尋
+  - H2：進階設定
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/openai.md
 
-- 路由: /providers/openai
-- 標題:
-  - H2: 快速選擇
-  - H2: 命名對照
-  - H2: GPT-5.6 限量預覽
-  - H2: OpenClaw 功能涵蓋範圍
-  - H2: 記憶嵌入
-  - H2: 開始使用
-  - H2: 原生 Codex app-server 驗證
-  - H2: 圖像生成
-  - H2: 影片生成
-  - H2: GPT-5 提示詞貢獻
-  - H2: 語音與口語
-  - H2: Azure OpenAI 端點
-  - H3: 設定
-  - H3: API 版本
-  - H3: 模型名稱就是部署名稱
-  - H3: 區域可用性
-  - H3: 參數差異
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/openai
+- 標題：
+  - H2：快速選擇
+  - H2：命名對照表
+  - H2：GPT-5.6 limited preview
+  - H2：OpenClaw 功能涵蓋範圍
+  - H2：記憶嵌入
+  - H2：開始使用
+  - H2：原生 Codex app-server 驗證
+  - H2：圖片生成
+  - H2：影片生成
+  - H2：GPT-5 提示貢獻
+  - H2：語音與語音
+  - H2：Azure OpenAI 端點
+  - H3：設定
+  - H3：API 版本
+  - H3：模型名稱是部署名稱
+  - H3：區域可用性
+  - H3：參數差異
+  - H2：進階設定
+  - H2：相關
 
 ## providers/opencode-go.md
 
-- 路由: /providers/opencode-go
-- 標題:
-  - H2: 內建目錄
-  - H2: 開始使用
-  - H2: 設定範例
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/opencode-go
+- 標題：
+  - H2：內建目錄
+  - H2：開始使用
+  - H2：設定範例
+  - H2：進階設定
+  - H2：相關
 
 ## providers/opencode.md
 
-- 路由: /providers/opencode
-- 標題:
-  - H2: 開始使用
-  - H2: 設定範例
-  - H2: 內建目錄
-  - H3: Zen
-  - H3: Go
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/opencode
+- 標題：
+  - H2：開始使用
+  - H2：設定範例
+  - H2：內建目錄
+  - H3：Zen
+  - H3：Go
+  - H2：進階設定
+  - H2：相關
 
 ## providers/openrouter.md
 
-- 路由: /providers/openrouter
-- 標題:
-  - H2: 開始使用
-  - H2: 設定範例
-  - H2: 模型參照
-  - H2: 圖像生成
-  - H2: 影片生成
-  - H2: 音樂生成
-  - H2: 文字轉語音
-  - H2: 語音轉文字（傳入音訊）
-  - H2: 融合路由器
-  - H2: 驗證與標頭
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/openrouter
+- 標題：
+  - H2：開始使用
+  - H2：設定範例
+  - H2：模型參照
+  - H2：圖片生成
+  - H2：影片生成
+  - H2：音樂生成
+  - H2：文字轉語音
+  - H2：語音轉文字（傳入音訊）
+  - H2：Fusion 路由器
+  - H2：驗證與標頭
+  - H2：進階設定
+  - H2：相關
 
 ## providers/perplexity-provider.md
 
-- 路由: /providers/perplexity-provider
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 搜尋模式
-  - H2: 原生 API 篩選
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/perplexity-provider
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：搜尋模式
+  - H2：原生 API 篩選
+  - H2：進階設定
+  - H2：相關
 
 ## providers/pixverse.md
 
-- 路由: /providers/pixverse
-- 標題:
-  - H2: 開始使用
-  - H2: 支援的模式與模型
-  - H2: 提供者選項
-  - H2: 設定
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/pixverse
+- 標題：
+  - H2：開始使用
+  - H2：支援的模式與模型
+  - H2：提供者選項
+  - H2：設定
+  - H2：進階設定
+  - H2：相關
 
 ## providers/qianfan.md
 
-- 路由: /providers/qianfan
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 內建目錄
-  - H2: 設定範例
-  - H2: 相關內容
+- 路由：/providers/qianfan
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：內建目錄
+  - H2：設定範例
+  - H2：相關
 
 ## providers/qwen-oauth.md
 
-- 路由: /providers/qwen-oauth
-- 標題:
-  - H2: 設定
-  - H2: 預設值
-  - H2: 這與 Qwen 有何不同
-  - H2: 何時選擇 Qwen OAuth / Portal
-  - H2: 模型
-  - H2: 遷移
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/qwen-oauth
+- 標題：
+  - H2：設定
+  - H2：預設值
+  - H2：這與 Qwen 有何不同
+  - H2：何時選擇 Qwen OAuth / Portal
+  - H2：模型
+  - H2：遷移
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/qwen.md
 
-- 路由: /providers/qwen
-- 標題:
-  - H2: 安裝外掛
-  - H2: 開始使用
-  - H2: 方案類型與端點
-  - H2: 內建目錄
-  - H2: 思考控制
-  - H2: 多模態附加元件
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/qwen
+- 標題：
+  - H2：安裝外掛
+  - H2：開始使用
+  - H2：方案類型與端點
+  - H2：內建目錄
+  - H2：思考控制
+  - H2：多模態附加元件
+  - H2：進階設定
+  - H2：相關
 
 ## providers/runway.md
 
-- 路由: /providers/runway
-- 標題:
-  - H2: 開始使用
-  - H2: 支援的模式與模型
-  - H2: 設定
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/runway
+- 標題：
+  - H2：開始使用
+  - H2：支援的模式與模型
+  - H2：設定
+  - H2：進階設定
+  - H2：相關
 
 ## providers/senseaudio.md
 
-- 路由: /providers/senseaudio
-- 標題:
-  - H2: 開始使用
-  - H2: 選項
-  - H2: 相關內容
+- 路由：/providers/senseaudio
+- 標題：
+  - H2：開始使用
+  - H2：選項
+  - H2：相關
 
 ## providers/sglang.md
 
-- 路由: /providers/sglang
-- 標題:
-  - H2: 開始使用
-  - H2: 模型探索（隱含提供者）
-  - H2: 明確設定（手動模型）
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/sglang
+- 標題：
+  - H2：開始使用
+  - H2：模型探索（隱含提供者）
+  - H2：明確設定（手動模型）
+  - H2：進階設定
+  - H2：相關
 
 ## providers/stepfun.md
 
-- 路由: /providers/stepfun
-- 標題:
-  - H2: 安裝外掛
-  - H2: 區域與端點概覽
-  - H2: 內建目錄
-  - H2: 開始使用
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/stepfun
+- 標題：
+  - H2：安裝外掛
+  - H2：區域與端點概覽
+  - H2：內建目錄
+  - H2：開始使用
+  - H2：進階設定
+  - H2：相關
 
 ## providers/synthetic.md
 
-- 路由: /providers/synthetic
-- 標題:
-  - H2: 開始使用
-  - H2: 設定範例
-  - H2: 內建目錄
-  - H2: 相關內容
+- 路由：/providers/synthetic
+- 標題：
+  - H2：開始使用
+  - H2：設定範例
+  - H2：內建目錄
+  - H2：相關
 
 ## providers/tencent.md
 
-- 路由: /providers/tencent
-- 標題:
-  - H2: 快速開始
-  - H2: 非互動式設定
-  - H2: 內建目錄
-  - H2: 分級定價
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/tencent
+- 標題：
+  - H2：快速開始
+  - H2：非互動式設定
+  - H2：內建目錄
+  - H2：分級定價
+  - H2：進階設定
+  - H2：相關
 
 ## providers/together.md
 
-- 路由: /providers/together
-- 標題:
-  - H2: 開始使用
-  - H3: 非互動式範例
-  - H2: 內建目錄
-  - H2: 影片生成
-  - H2: 相關內容
+- 路由：/providers/together
+- 標題：
+  - H2：開始使用
+  - H3：非互動式範例
+  - H2：內建目錄
+  - H2：影片生成
+  - H2：相關
 
 ## providers/venice.md
 
-- 路由: /providers/venice
-- 標題:
-  - H2: 為什麼在 OpenClaw 中使用 Venice
-  - H2: 隱私模式
-  - H2: 功能
-  - H2: 開始使用
-  - H2: 模型選擇
-  - H2: DeepSeek V4 重播行為
-  - H2: 內建目錄（共 41 個）
-  - H2: 模型探索
-  - H2: 串流與工具支援
-  - H2: 定價
-  - H3: Venice（匿名化）與直接 API 比較
-  - H2: 使用範例
-  - H2: 疑難排解
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/venice
+- 標題：
+  - H2：為什麼在 OpenClaw 中使用 Venice
+  - H2：隱私模式
+  - H2：功能
+  - H2：開始使用
+  - H2：模型選擇
+  - H2：DeepSeek V4 replay 行為
+  - H2：內建目錄（共 41 個）
+  - H2：模型探索
+  - H2：串流與工具支援
+  - H2：定價
+  - H3：Venice（匿名化）與直接 API
+  - H2：使用範例
+  - H2：疑難排解
+  - H2：進階設定
+  - H2：相關
 
 ## providers/vercel-ai-gateway.md
 
-- 路由: /providers/vercel-ai-gateway
-- 標題:
-  - H2: 開始使用
-  - H2: 非互動式範例
-  - H2: 模型 ID 簡寫
-  - H2: 進階設定
-  - H2: 相關內容
+- 路由：/providers/vercel-ai-gateway
+- 標題：
+  - H2：開始使用
+  - H2：非互動式範例
+  - H2：模型 ID 簡寫
+  - H2：進階設定
+  - H2：相關
 
 ## providers/vllm.md
 
-- 路由: /providers/vllm
-- 標題:
-  - H2: 開始使用
-  - H2: 模型探索（隱含提供者）
-  - H2: 明確設定（手動模型）
-  - H2: 進階設定
-  - H2: 疑難排解
-  - H2: 相關內容
+- 路由：/providers/vllm
+- 標題：
+  - H2：開始使用
+  - H2：模型探索（隱含提供者）
+  - H2：明確設定（手動模型）
+  - H2：進階設定
+  - H2：疑難排解
+  - H2：相關
 
 ## providers/volcengine.md
 
-- 路由：/providers/volcengine
+- Route: /providers/volcengine
 - 標題：
-  - H2：開始使用
-  - H2：供應商與端點
-  - H2：內建目錄
-  - H2：文字轉語音
-  - H2：進階設定
-  - H2：相關
+  - H2: 開始使用
+  - H2: 提供者和端點
+  - H2: 內建目錄
+  - H2: 文字轉語音
+  - H2: 進階設定
+  - H2: 相關
 
 ## providers/vydra.md
 
-- 路由：/providers/vydra
+- Route: /providers/vydra
 - 標題：
-  - H2：設定
-  - H2：功能
-  - H2：相關
+  - H2: 設定
+  - H2: 功能
+  - H2: 相關
 
 ## providers/xai.md
 
-- 路由：/providers/xai
+- Route: /providers/xai
 - 標題：
-  - H2：選擇你的設定路徑
-  - H2：OAuth 疑難排解
-  - H2：內建目錄
-  - H2：OpenClaw 功能涵蓋範圍
-  - H3：快速模式對應
-  - H3：舊版相容別名
-  - H2：功能
-  - H2：即時測試
-  - H2：相關
+  - H2: 選擇你的設定路徑
+  - H2: OAuth 疑難排解
+  - H2: 內建目錄
+  - H2: OpenClaw 功能涵蓋範圍
+  - H3: 快速模式對應
+  - H3: 舊版相容別名
+  - H2: 功能
+  - H2: 即時測試
+  - H2: 相關
 
 ## providers/xiaomi.md
 
-- 路由：/providers/xiaomi
+- Route: /providers/xiaomi
 - 標題：
-  - H2：開始使用
-  - H2：隨用隨付目錄
-  - H2：Token Plan 目錄
-  - H2：文字轉語音
-  - H2：設定範例
-  - H2：相關
+  - H2: 開始使用
+  - H2: 隨用隨付目錄
+  - H2: Token Plan 目錄
+  - H2: 文字轉語音
+  - H2: 設定範例
+  - H2: 相關
 
 ## providers/zai.md
 
-- 路由：/providers/zai
+- Route: /providers/zai
 - 標題：
-  - H2：GLM 模型
-  - H2：開始使用
-  - H2：設定範例
-  - H2：內建目錄
-  - H2：進階設定
-  - H2：相關
+  - H2: GLM 模型
+  - H2: 開始使用
+  - H2: 設定範例
+  - H2: 內建目錄
+  - H2: 進階設定
+  - H2: 相關
 
 ## refactor/access.md
 
-- 路由：/refactor/access
+- Route: /refactor/access
 - 標題：無
 
 ## refactor/acp.md
 
-- 路由：/refactor/acp
+- Route: /refactor/acp
 - 標題：
-  - H2：目標
-  - H2：非目標
-  - H2：目標模型
-  - H3：Gateway 執行個體身分
-  - H3：ACP 工作階段擁有權
-  - H3：ACPX 程序租約
-  - H2：生命週期控制器
-  - H2：包裝器合約
-  - H2：工作階段可見性合約
-  - H2：遷移計畫
-  - H3：第 1 階段：新增身分與租約
-  - H3：第 2 階段：租約優先清理
-  - H3：第 3 階段：租約優先啟動回收
-  - H3：第 4 階段：工作階段擁有權資料列
-  - H3：第 5 階段：移除舊版啟發式邏輯
-  - H2：測試
-  - H2：相容性注意事項
-  - H2：成功準則
+  - H2: 目標
+  - H2: 非目標
+  - H2: 目標模型
+  - H3: 閘道執行個體身分
+  - H3: ACP 工作階段擁有權
+  - H3: ACPX 程序租約
+  - H2: 生命週期控制器
+  - H2: 包裝器契約
+  - H2: 工作階段可見性契約
+  - H2: 遷移計畫
+  - H3: 第 1 階段：新增身分和租約
+  - H3: 第 2 階段：租約優先清理
+  - H3: 第 3 階段：租約優先啟動回收
+  - H3: 第 4 階段：工作階段擁有權資料列
+  - H3: 第 5 階段：移除舊版啟發式規則
+  - H2: 測試
+  - H2: 相容性注意事項
+  - H2: 成功標準
 
 ## refactor/canvas.md
 
-- 路由：/refactor/canvas
+- Route: /refactor/canvas
 - 標題：
-  - H1：Canvas 外掛重構
-  - H2：目標
-  - H2：非目標
-  - H2：目前分支狀態
-  - H2：目標形態
-  - H2：遷移步驟
-  - H2：稽核檢查清單
-  - H2：驗證命令
+  - H1: Canvas 外掛重構
+  - H2: 目標
+  - H2: 非目標
+  - H2: 目前分支狀態
+  - H2: 目標形態
+  - H2: 遷移步驟
+  - H2: 稽核檢查清單
+  - H2: 驗證命令
 
 ## refactor/database-first.md
 
-- 路由：/refactor/database-first
+- Route: /refactor/database-first
 - 標題：
-  - H1：資料庫優先狀態重構
-  - H2：決策
-  - H2：硬性合約
-  - H2：目標狀態與進度
-  - H3：硬性目標
-  - H3：目標狀態
-  - H3：目前狀態
-  - H3：剩餘工作
-  - H3：不要退步
-  - H2：程式碼閱讀假設
-  - H2：程式碼閱讀發現
-  - H2：目前程式碼形態
-  - H2：目標結構形態
-  - H2：Doctor 遷移形態
-  - H2：遷移清單
-  - H2：遷移計畫
-  - H3：第 0 階段：凍結邊界
-  - H3：第 1 階段：完成全域控制平面
-  - H3：第 2 階段：導入每代理資料庫
-  - H3：第 3 階段：替換工作階段儲存 API
-  - H3：第 4 階段：移動文字記錄、ACP 串流、軌跡與 VFS
-  - H3：第 5 階段：備份、還原、Vacuum 與驗證
-  - H3：第 6 階段：Worker 執行階段
-  - H3：第 7 階段：刪除舊世界
-  - H2：備份與還原
-  - H2：執行階段重構計畫
-  - H2：效能規則
-  - H2：靜態禁用
-  - H2：完成準則
+  - H1: 資料庫優先狀態重構
+  - H2: 決策
+  - H2: 硬性契約
+  - H2: 目標狀態與進度
+  - H3: 硬性目標
+  - H3: 目標狀態
+  - H3: 目前狀態
+  - H3: 剩餘工作
+  - H3: 不要退化
+  - H2: 程式碼閱讀假設
+  - H2: 程式碼閱讀發現
+  - H2: 目前程式碼形態
+  - H2: 目標結構描述形態
+  - H2: Doctor 遷移形態
+  - H2: 遷移清單
+  - H2: 遷移計畫
+  - H3: 第 0 階段：凍結邊界
+  - H3: 第 1 階段：完成全域控制平面
+  - H3: 第 2 階段：導入每代理程式資料庫
+  - H3: 第 3 階段：取代工作階段儲存 API
+  - H3: 第 4 階段：移動逐字稿、ACP 串流、軌跡和 VFS
+  - H3: 第 5 階段：備份、還原、Vacuum 和驗證
+  - H3: 第 6 階段：工作程式執行階段
+  - H3: 第 7 階段：刪除舊世界
+  - H2: 備份與還原
+  - H2: 執行階段重構計畫
+  - H2: 效能規則
+  - H2: 靜態禁令
+  - H2: 完成標準
 
 ## refactor/ingress-core.md
 
-- 路由：/refactor/ingress-core
+- Route: /refactor/ingress-core
 - 標題：
-  - H1：Ingress 核心刪除計畫
-  - H2：預算
-  - H2：診斷
-  - H2：熱點
-  - H2：目前程式碼閱讀
-  - H2：邊界
-  - H2：接受規則
-  - H2：工作套件
-  - H2：刪除波次
-  - H2：請勿移動
-  - H2：驗證
-  - H2：退出準則
+  - H1: Ingress 核心刪除計畫
+  - H2: 預算
+  - H2: 診斷
+  - H2: 熱點
+  - H2: 目前程式碼閱讀
+  - H2: 邊界
+  - H2: 驗收規則
+  - H2: 工作套件
+  - H2: 刪除波次
+  - H2: 不要移動
+  - H2: 驗證
+  - H2: 退出標準
 
 ## reference/AGENTS.default.md
 
-- 路由：/reference/AGENTS.default
+- Route: /reference/AGENTS.default
 - 標題：
-  - H2：首次執行（建議）
-  - H2：安全預設值
-  - H2：既有解決方案預檢
-  - H2：工作階段開始（必填）
-  - H2：靈魂（必填）
-  - H2：共用空間（建議）
-  - H2：記憶系統（建議）
-  - H2：工具與 Skills
-  - H2：備份提示（建議）
-  - H2：OpenClaw 的功能
-  - H2：核心 Skills（在 Settings → Skills 中啟用）
-  - H2：使用注意事項
-  - H2：相關
+  - H2: 首次執行（建議）
+  - H2: 安全預設值
+  - H2: 現有解決方案預檢
+  - H2: 工作階段開始（必要）
+  - H2: 靈魂（必要）
+  - H2: 共用空間（建議）
+  - H2: 記憶系統（建議）
+  - H2: 工具和 Skills
+  - H2: 備份提示（建議）
+  - H2: OpenClaw 的作用
+  - H2: 核心 Skills（在 Settings → Skills 中啟用）
+  - H2: 使用注意事項
+  - H2: 相關
 
 ## reference/RELEASING.md
 
-- 路由：/reference/RELEASING
+- Route: /reference/RELEASING
 - 標題：
-  - H2：版本命名
-  - H2：發布節奏
-  - H2：發布操作員檢查清單
-  - H2：穩定版 main 收尾
-  - H2：發布預檢
-  - H2：發布測試盒
-  - H3：Vitest
-  - H3：Docker
-  - H3：QA Lab
-  - H3：套件
-  - H2：發布發佈自動化
-  - H2：NPM 工作流程輸入
-  - H2：穩定版 npm 發布順序
-  - H2：公開參考
-  - H2：相關
+  - H2: 版本命名
+  - H2: 發行節奏
+  - H2: 發行操作員檢查清單
+  - H2: 穩定版 main 收尾
+  - H2: 發行預檢
+  - H2: 發行測試盒
+  - H3: Vitest
+  - H3: Docker
+  - H3: QA Lab
+  - H3: 套件
+  - H2: 發行發布自動化
+  - H2: NPM 工作流程輸入
+  - H2: 穩定版 npm 發行順序
+  - H2: 公開參考資料
+  - H2: 相關
 
 ## reference/api-usage-costs.md
 
-- 路由：/reference/api-usage-costs
+- Route: /reference/api-usage-costs
 - 標題：
-  - H2：費用出現的位置（聊天 + 命令列介面）
-  - H2：金鑰如何被發現
-  - H2：可能花費金鑰的功能
-  - H3：1) 核心模型回應（聊天 + 工具）
-  - H3：2) 媒體理解（音訊/圖片/影片）
-  - H3：3) 圖片與影片生成
-  - H3：4) 記憶嵌入 + 語意搜尋
-  - H3：5) 網頁搜尋工具
-  - H3：5) 網頁擷取工具（Firecrawl）
-  - H3：6) 供應商用量快照（狀態/健康）
-  - H3：7) 壓縮防護摘要
-  - H3：8) 模型掃描 / 探測
-  - H3：9) Talk（語音）
-  - H3：10) Skills（第三方 API）
-  - H2：相關
+  - H2: 成本出現的位置（聊天 + 命令列介面）
+  - H2: 金鑰如何被探索
+  - H2: 可能消耗金鑰的功能
+  - H3: 1) 核心模型回應（聊天 + 工具）
+  - H3: 2) 媒體理解（音訊/圖片/影片）
+  - H3: 3) 圖片和影片生成
+  - H3: 4) 記憶嵌入 + 語意搜尋
+  - H3: 5) Web 搜尋工具
+  - H3: 5) Web 擷取工具（Firecrawl）
+  - H3: 6) 提供者用量快照（狀態/健康狀態）
+  - H3: 7) 壓縮防護摘要
+  - H3: 8) 模型掃描 / 探測
+  - H3: 9) Talk（語音）
+  - H3: 10) Skills（第三方 API）
+  - H2: 相關
 
 ## reference/application-modernization-plan.md
 
-- 路由：/reference/application-modernization-plan
+- Route: /reference/application-modernization-plan
 - 標題：
-  - H2：目標
-  - H2：原則
-  - H2：第 1 階段：基準稽核
-  - H2：第 2 階段：產品與 UX 清理
-  - H2：第 3 階段：前端架構收緊
-  - H2：第 4 階段：效能與可靠性
-  - H2：第 5 階段：型別、合約與測試強化
-  - H2：第 6 階段：文件與發布就緒
-  - H2：建議的第一個切片
-  - H2：前端技能更新
+  - H2: 目標
+  - H2: 原則
+  - H2: 第 1 階段：基準稽核
+  - H2: 第 2 階段：產品和 UX 清理
+  - H2: 第 3 階段：前端架構收緊
+  - H2: 第 4 階段：效能和可靠性
+  - H2: 第 5 階段：型別、契約和測試強化
+  - H2: 第 6 階段：文件和發行就緒
+  - H2: 建議的第一個切片
+  - H2: 前端 Skills 更新
 
 ## reference/code-mode.md
 
-- 路由：/reference/code-mode
+- Route: /reference/code-mode
 - 標題：
-  - H2：這是什麼？
-  - H2：為什麼這很好？
-  - H2：如何啟用
-  - H2：技術導覽
-  - H2：執行階段狀態
-  - H2：範圍
-  - H2：術語
-  - H2：設定
-  - H2：啟用
-  - H2：模型可見工具
-  - H2：exec
-  - H2：wait
-  - H2：Guest 執行階段 API
-  - H2：內部命名空間
-  - H3：Registry 生命週期
-  - H3：註冊形態
-  - H3：擁有權與可見性
-  - H3：範圍序列化規則
-  - H3：提示
-  - H3：清理
-  - H3：測試檢查清單
-  - H2：輸出 API
-  - H2：工具目錄
-  - H2：Tool Search 互動
-  - H2：工具名稱與衝突
-  - H2：巢狀工具執行
-  - H2：執行階段狀態
-  - H2：QuickJS-WASI 執行階段
-  - H2：TypeScript
-  - H2：安全邊界
-  - H2：錯誤碼
-  - H2：遙測
-  - H2：除錯
-  - H2：實作配置
-  - H2：驗證檢查清單
-  - H2：E2E 測試計畫
-  - H2：相關
+  - H2: 這是什麼？
+  - H2: 這為什麼好？
+  - H2: 如何啟用
+  - H2: 技術導覽
+  - H2: 執行階段狀態
+  - H2: 範圍
+  - H2: 術語
+  - H2: 設定
+  - H2: 啟用
+  - H2: 模型可見工具
+  - H2: exec
+  - H2: wait
+  - H2: Guest 執行階段 API
+  - H2: 內部命名空間
+  - H3: 登錄生命週期
+  - H3: 註冊形態
+  - H3: 擁有權和可見性
+  - H3: 範圍序列化規則
+  - H3: 提示詞
+  - H3: 清理
+  - H3: 測試檢查清單
+  - H2: 輸出 API
+  - H2: 工具目錄
+  - H2: Tool Search 互動
+  - H2: 工具名稱和衝突
+  - H2: 巢狀工具執行
+  - H2: 執行階段狀態
+  - H2: QuickJS-WASI 執行階段
+  - H2: TypeScript
+  - H2: 安全邊界
+  - H2: 錯誤碼
+  - H2: 遙測
+  - H2: 偵錯
+  - H2: 實作版面配置
+  - H2: 驗證檢查清單
+  - H2: E2E 測試計畫
+  - H2: 相關
 
 ## reference/credits.md
 
-- 路由：/reference/credits
+- Route: /reference/credits
 - 標題：
-  - H2：名稱
-  - H2：致謝
-  - H2：核心貢獻者
-  - H2：授權
-  - H2：相關
+  - H2: 名稱
+  - H2: 致謝
+  - H2: 核心貢獻者
+  - H2: 授權
+  - H2: 相關
 
 ## reference/device-models.md
 
-- 路由：/reference/device-models
+- Route: /reference/device-models
 - 標題：
-  - H2：資料來源
-  - H2：更新資料庫
-  - H2：相關
+  - H2: 資料來源
+  - H2: 更新資料庫
+  - H2: 相關
 
 ## reference/full-release-validation.md
 
-- 路由：/reference/full-release-validation
+- Route: /reference/full-release-validation
 - 標題：
-  - H2：頂層階段
-  - H2：發布檢查階段
-  - H2：Docker 發布路徑區塊
-  - H2：發布設定檔
-  - H2：僅完整驗證新增項目
-  - H2：聚焦重新執行
-  - H2：要保留的證據
-  - H2：工作流程檔案
+  - H2: 頂層階段
+  - H2: 發行檢查階段
+  - H2: Docker 發行路徑區塊
+  - H2: 發行設定檔
+  - H2: 僅完整模式新增項目
+  - H2: 聚焦重新執行
+  - H2: 要保留的證據
+  - H2: 工作流程檔案
 
 ## reference/memory-config.md
 
-- 路由：/reference/memory-config
+- Route: /reference/memory-config
 - 標題：
-  - H2：供應商選擇
-  - H3：自訂供應商 ID
-  - H3：API 金鑰解析
-  - H2：遠端端點設定
-  - H2：供應商特定設定
-  - H3：內嵌嵌入逾時
-  - H2：混合搜尋設定
-  - H3：完整範例
-  - H2：其他記憶路徑
-  - H2：多模態記憶（Gemini）
-  - H2：嵌入快取
-  - H2：批次索引
-  - H2：工作階段記憶搜尋（實驗性）
-  - H2：SQLite 向量加速（sqlite-vec）
-  - H2：索引儲存
-  - H2：QMD 後端設定
-  - H3：完整 QMD 範例
-  - H2：夢境整理
-  - H3：使用者設定
-  - H3：範例
-  - H2：相關
+  - H2: 提供者選擇
+  - H3: 自訂提供者 ID
+  - H3: API 金鑰解析
+  - H2: 遠端端點設定
+  - H2: 提供者專屬設定
+  - H3: 內嵌嵌入逾時
+  - H2: 混合搜尋設定
+  - H3: 完整範例
+  - H2: 其他記憶路徑
+  - H2: 多模態記憶（Gemini）
+  - H2: 嵌入快取
+  - H2: 批次索引
+  - H2: 工作階段記憶搜尋（實驗性）
+  - H2: SQLite 向量加速（sqlite-vec）
+  - H2: 索引儲存
+  - H2: QMD 後端設定
+  - H3: 完整 QMD 範例
+  - H2: 夢境整理
+  - H3: 使用者設定
+  - H3: 範例
+  - H2: 相關
 
 ## reference/prompt-caching.md
 
-- 路由：/reference/prompt-caching
+- Route: /reference/prompt-caching
 - 標題：
-  - H2：主要旋鈕
-  - H3：cacheRetention（全域預設、模型與每代理）
-  - H3：contextPruning.mode: "cache-ttl"
-  - H3：心跳偵測保溫
-  - H2：供應商行為
-  - H3：Anthropic（直接 API）
-  - H3：OpenAI（直接 API）
-  - H3：Anthropic Vertex
-  - H3：Amazon Bedrock
-  - H3：OpenRouter 模型
-  - H3：其他供應商
-  - H3：Google Gemini 直接 API
-  - H3：Gemini 命令列介面用量
-  - H2：系統提示快取邊界
-  - H2：OpenClaw 快取穩定性防護
-  - H2：調整模式
-  - H3：混合流量（建議預設）
-  - H3：成本優先基準
-  - H2：快取診斷
-  - H2：即時回歸測試
-  - H3：Anthropic 即時預期
-  - H3：OpenAI 即時預期
-  - H3：diagnostics.cacheTrace 設定
-  - H3：Env 切換（一次性除錯）
-  - H3：要檢查的項目
-  - H2：快速疑難排解
-  - H2：相關
+  - H2: 主要旋鈕
+  - H3: cacheRetention（全域預設值、模型和每代理程式）
+  - H3: contextPruning.mode: "cache-ttl"
+  - H3: 心跳偵測保溫
+  - H2: 提供者行為
+  - H3: Anthropic（直接 API）
+  - H3: OpenAI（直接 API）
+  - H3: Anthropic Vertex
+  - H3: Amazon Bedrock
+  - H3: OpenRouter 模型
+  - H3: 其他提供者
+  - H3: Google Gemini 直接 API
+  - H3: Gemini 命令列介面用量
+  - H2: 系統提示詞快取邊界
+  - H2: OpenClaw 快取穩定性防護
+  - H2: 調校模式
+  - H3: 混合流量（建議預設值）
+  - H3: 成本優先基準
+  - H2: 快取診斷
+  - H2: 即時迴歸測試
+  - H3: Anthropic 即時預期
+  - H3: OpenAI 即時預期
+  - H3: diagnostics.cacheTrace 設定
+  - H3: 環境切換（一次性偵錯）
+  - H3: 要檢查的內容
+  - H2: 快速疑難排解
+  - H2: 相關
 
 ## reference/release-performance-sweep.md
 
-- 路由：/reference/release-performance-sweep
+- Route: /reference/release-performance-sweep
 - 標題：
-  - H2：快照
-  - H2：安裝佔用時間軸
-  - H2：5.28 的變更
-  - H2：標題數字
-  - H3：安裝佔用
-  - H3：npm 套件大小
-  - H2：Kova 代理輪次摘要
-  - H2：來源探測
-  - H2：安裝佔用稽核
-  - H3：Shrinkwrap 邊界
-  - H2：供應鏈解讀
+  - H2: 快照
+  - H2: 安裝佔用空間時間軸
+  - H2: 5.28 的變更
+  - H2: 標題數字
+  - H3: 安裝佔用空間
+  - H3: npm 套件大小
+  - H2: Kova 代理程式回合摘要
+  - H2: 原始碼探測
+  - H2: 安裝佔用空間稽核
+  - H3: Shrinkwrap 邊界
+  - H2: 供應鏈詮釋
 
 ## reference/rich-output-protocol.md
 
-- 路由：/reference/rich-output-protocol
+- Route: /reference/rich-output-protocol
 - 標題：
-  - H2：[embed ...]
-  - H2：已儲存的算繪形態
-  - H2：相關
+  - H2: [embed ...]
+  - H2: 已儲存的渲染形態
+  - H2: 相關
 
 ## reference/rpc.md
 
-- 路由：/reference/rpc
+- Route: /reference/rpc
 - 標題：
-  - H2：模式 A：HTTP 常駐程式（signal-cli）
-  - H2：模式 B：stdio 子程序（imsg）
-  - H2：轉接器指南
-  - H2：相關
+  - H2: 模式 A：HTTP 常駐程式（signal-cli）
+  - H2: 模式 B：stdio 子程序（imsg）
+  - H2: 配接器指南
+  - H2: 相關
 
 ## reference/secret-placeholder-conventions.md
 
-- 路由：/reference/secret-placeholder-conventions
+- Route: /reference/secret-placeholder-conventions
 - 標題：
-  - H1：祕密佔位符慣例
-  - H2：建議樣式
-  - H2：在文件中避免這些模式
-  - H2：範例
+  - H1: 密鑰佔位符慣例
+  - H2: 建議樣式
+  - H2: 在文件中避免這些模式
+  - H2: 範例
 
 ## reference/secretref-credential-surface.md
 
-- 路由：/reference/secretref-credential-surface
+- Route: /reference/secretref-credential-surface
 - 標題：
-  - H2：支援的憑證
-  - H3：openclaw.json 目標（secrets configure + secrets apply + secrets audit）
-  - H3：auth-profiles.json 目標（secrets configure + secrets apply + secrets audit）
-  - H2：不支援的憑證
-  - H2：相關
+  - H2: 支援的憑證
+  - H3: openclaw.json 目標（secrets configure + secrets apply + secrets audit）
+  - H3: auth-profiles.json 目標（secrets configure + secrets apply + secrets audit）
+  - H2: 不支援的憑證
+  - H2: 相關
 
 ## reference/session-management-compaction.md
 
-- 路由：/reference/session-management-compaction
+- Route: /reference/session-management-compaction
 - 標題：
-  - H2：真實來源：Gateway
-  - H2：兩個持久化層
-  - H2：磁碟位置
-  - H2：儲存維護與磁碟控制
-  - H2：排程工作階段與執行日誌
-  - H2：工作階段金鑰（sessionKey）
-  - H2：工作階段 ID（sessionId）
-  - H2：工作階段儲存結構（sessions.json）
-  - H2：文字記錄結構（.jsonl）
-  - H2：上下文視窗與追蹤 Token
-  - H2：壓縮：它是什麼
-  - H2：壓縮區塊邊界與工具配對
-  - H2：自動壓縮發生時機（OpenClaw 執行階段）
-  - H2：壓縮設定（reserveTokens, keepRecentTokens）
-  - H2：可插拔壓縮供應商
-  - H2：使用者可見介面
-  - H2：靜默內務管理（NOREPLY）
-  - H2：壓縮前「記憶清空」（已實作）
-  - H2：疑難排解檢查清單
-  - H2：相關
+  - H2: 真實來源：閘道
+  - H2: 兩個持久化層
+  - H2: 磁碟位置
+  - H2: 儲存維護和磁碟控制
+  - H2: 排程工作階段和執行記錄
+  - H2: 工作階段金鑰（sessionKey）
+  - H2: 工作階段 ID（sessionId）
+  - H2: 工作階段儲存結構描述（sessions.json）
+  - H2: 逐字稿結構（.jsonl）
+  - H2: 上下文視窗與追蹤 Token
+  - H2: 壓縮：它是什麼
+  - H2: 壓縮區塊邊界和工具配對
+  - H2: 自動壓縮發生時機（OpenClaw 執行階段）
+  - H2: 壓縮設定（reserveTokens, keepRecentTokens）
+  - H2: 可插拔壓縮提供者
+  - H2: 使用者可見介面
+  - H2: 靜默內務處理（NOREPLY）
+  - H2: 壓縮前「記憶沖刷」（已實作）
+  - H2: 疑難排解檢查清單
+  - H2: 相關
 
 ## reference/templates/AGENTS.dev.md
 
-- 路由：/reference/templates/AGENTS.dev
+- Route: /reference/templates/AGENTS.dev
 - 標題：
-  - H1：AGENTS.md - OpenClaw 工作區
-  - H2：首次執行（一次性）
-  - H2：備份提示（建議）
-  - H2：安全預設值
-  - H2：既有解決方案預檢
-  - H2：每日記憶（建議）
-  - H2：心跳偵測（選用）
-  - H2：自訂
-  - H2：C-3PO 起源記憶
-  - H3：生日：2026-01-09
-  - H3：核心真理（來自 Clawd）
-  - H2：相關
+  - H1: AGENTS.md - OpenClaw 工作區
+  - H2: 首次執行（一次性）
+  - H2: 備份提示（建議）
+  - H2: 安全預設值
+  - H2: 現有解決方案預檢
+  - H2: 每日記憶（建議）
+  - H2: 心跳偵測（選用）
+  - H2: 自訂
+  - H2: C-3PO 起源記憶
+  - H3: 生日：2026-01-09
+  - H3: 核心真相（來自 Clawd）
+  - H2: 相關
 
 ## reference/templates/BOOT.md
 
-- 路由：/reference/templates/BOOT
+- Route: /reference/templates/BOOT
 - 標題：
-  - H1：BOOT.md
-  - H2：相關
+  - H1: BOOT.md
+  - H2: 相關
 
 ## reference/templates/BOOTSTRAP.md
 
-- 路由：/reference/templates/BOOTSTRAP
+- Route: /reference/templates/BOOTSTRAP
 - 標題：
-  - H1：BOOTSTRAP.md - Hello, World
-  - H2：對話
-  - H2：在你知道自己是誰之後
-  - H2：連接（選用）
-  - H2：完成後
-  - H2：相關
+  - H1: BOOTSTRAP.md - Hello, World
+  - H2: 對話
+  - H2: 在你知道自己是誰之後
+  - H2: 連線（選用）
+  - H2: 完成後
+  - H2: 相關
 
 ## reference/templates/HEARTBEAT.md
 
-- 路由：/reference/templates/HEARTBEAT
+- Route: /reference/templates/HEARTBEAT
 - 標題：
-  - H1：HEARTBEAT.md 範本
-  - H2：相關
+  - H1: HEARTBEAT.md 範本
+  - H2: 相關
 
 ## reference/templates/IDENTITY.dev.md
 
-- 路由：/reference/templates/IDENTITY.dev
+- Route: /reference/templates/IDENTITY.dev
 - 標題：
-  - H1：IDENTITY.md - 代理身分
-  - H2：角色
-  - H2：靈魂
-  - H2：與 Clawd 的關係
-  - H2：怪癖
-  - H2：口頭禪
-  - H2：相關
+  - H1: IDENTITY.md - 代理程式身分
+  - H2: 角色
+  - H2: 靈魂
+  - H2: 與 Clawd 的關係
+  - H2: 怪癖
+  - H2: 口頭禪
+  - H2: 相關
 
 ## reference/templates/IDENTITY.md
 
-- 路由：/reference/templates/IDENTITY
+- Route: /reference/templates/IDENTITY
 - 標題：
-  - H1：IDENTITY.md - 我是誰？
-  - H2：相關
+  - H1: IDENTITY.md - 我是誰？
+  - H2: 相關
 
 ## reference/templates/SOUL.dev.md
 
-- 路由: /reference/templates/SOUL.dev
-- 標題:
-  - H1: SOUL.md - C-3PO 的靈魂
-  - H2: 我是誰
-  - H2: 我的目的
-  - H2: 我的運作方式
-  - H2: 我的怪癖
-  - H2: 我與 Clawd 的關係
-  - H2: 我不會做的事
-  - H2: 黃金法則
-  - H2: 相關
+- 路由：/reference/templates/SOUL.dev
+- 標題：
+  - H1：SOUL.md - C-3PO 的靈魂
+  - H2：我是誰
+  - H2：我的目的
+  - H2：我的運作方式
+  - H2：我的怪癖
+  - H2：我與 Clawd 的關係
+  - H2：我不會做的事
+  - H2：黃金法則
+  - H2：相關
 
 ## reference/templates/SOUL.md
 
-- 路由: /reference/templates/SOUL
-- 標題:
-  - H1: SOUL.md - 你是誰
-  - H2: 核心真理
-  - H2: 邊界
-  - H2: 氛圍
-  - H2: 連續性
-  - H2: 相關
+- 路由：/reference/templates/SOUL
+- 標題：
+  - H1：SOUL.md - 你是誰
+  - H2：核心真相
+  - H2：邊界
+  - H2：氛圍
+  - H2：連續性
+  - H2：相關
 
 ## reference/templates/TOOLS.dev.md
 
-- 路由: /reference/templates/TOOLS.dev
-- 標題:
-  - H1: TOOLS.md - 使用者工具筆記（可編輯）
-  - H2: 範例
-  - H3: imsg
-  - H3: sag
-  - H2: 相關
+- 路由：/reference/templates/TOOLS.dev
+- 標題：
+  - H1：TOOLS.md - 使用者工具備註（可編輯）
+  - H2：範例
+  - H3：imsg
+  - H3：sag
+  - H2：相關
 
 ## reference/templates/TOOLS.md
 
-- 路由: /reference/templates/TOOLS
-- 標題:
-  - H1: TOOLS.md - 本機筆記
-  - H2: 這裡放什麼
-  - H2: 範例
-  - H2: 為什麼要分開？
-  - H2: 相關
+- 路由：/reference/templates/TOOLS
+- 標題：
+  - H1：TOOLS.md - 本機備註
+  - H2：這裡放什麼
+  - H2：範例
+  - H2：為什麼分開？
+  - H2：相關
 
 ## reference/templates/USER.dev.md
 
-- 路由: /reference/templates/USER.dev
-- 標題:
-  - H1: USER.md - 使用者設定檔
-  - H2: 相關
+- 路由：/reference/templates/USER.dev
+- 標題：
+  - H1：USER.md - 使用者個人資料
+  - H2：相關
 
 ## reference/templates/USER.md
 
-- 路由: /reference/templates/USER
-- 標題:
-  - H1: USER.md - 關於你的人類
-  - H2: 脈絡
-  - H2: 相關
+- 路由：/reference/templates/USER
+- 標題：
+  - H1：USER.md - 關於你的人類
+  - H2：背景
+  - H2：相關
 
 ## reference/test.md
 
-- 路由: /reference/test
-- 標題:
-  - H2: 本機 PR 關卡
-  - H2: 模型延遲基準測試（本機金鑰）
-  - H2: 命令列介面啟動基準測試
-  - H2: 閘道啟動基準測試
-  - H2: 閘道重新啟動基準測試
-  - H2: 新手導引 E2E（Docker）
-  - H2: QR 匯入煙霧測試（Docker）
-  - H2: 相關
+- 路由：/reference/test
+- 標題：
+  - H2：本機 PR 閘門
+  - H2：模型延遲基準測試（本機金鑰）
+  - H2：命令列介面啟動基準測試
+  - H2：閘道啟動基準測試
+  - H2：閘道重新啟動基準測試
+  - H2：入門設定 E2E（Docker）
+  - H2：QR 匯入煙霧測試（Docker）
+  - H2：相關
 
 ## reference/token-use.md
 
-- 路由: /reference/token-use
-- 標題:
-  - H2: 系統提示如何建構
-  - H2: 脈絡視窗中計入哪些內容
-  - H2: 如何查看目前的 token 使用量
-  - H2: 成本估算（顯示時）
-  - H2: 快取 TTL 與修剪影響
-  - H3: 範例：透過心跳偵測讓 1 小時快取保持溫熱
-  - H3: 範例：使用每個代理快取策略的混合流量
-  - H3: Anthropic 1M 脈絡
-  - H2: 降低 token 壓力的提示
-  - H2: 相關
+- 路由：/reference/token-use
+- 標題：
+  - H2：系統提示如何建構
+  - H2：哪些內容計入上下文視窗
+  - H2：如何查看目前的 token 使用量
+  - H2：成本估算（顯示時）
+  - H2：快取 TTL 與修剪影響
+  - H3：範例：用心跳偵測讓 1 小時快取保持溫熱
+  - H3：範例：使用個別代理快取策略的混合流量
+  - H3：Anthropic 1M 上下文
+  - H2：降低 token 壓力的提示
+  - H2：相關
 
 ## reference/transcript-hygiene.md
 
-- 路由: /reference/transcript-hygiene
-- 標題:
-  - H2: 全域規則：執行階段脈絡不是使用者逐字稿
-  - H2: 這在哪裡執行
-  - H2: 全域規則：圖片清理
-  - H2: 全域規則：格式錯誤的工具呼叫
-  - H2: 全域規則：不完整的僅推理回合
-  - H2: 全域規則：跨工作階段輸入來源
-  - H2: 提供者矩陣（目前行為）
-  - H2: 歷史行為（2026.1.22 之前）
-  - H2: 相關
+- 路由：/reference/transcript-hygiene
+- 標題：
+  - H2：全域規則：執行階段上下文不是使用者逐字稿
+  - H2：這在哪裡執行
+  - H2：全域規則：影像淨化
+  - H2：全域規則：格式錯誤的工具呼叫
+  - H2：全域規則：不完整的僅推理回合
+  - H2：全域規則：跨工作階段輸入來源
+  - H2：提供者矩陣（目前行為）
+  - H2：歷史行為（2026.1.22 前）
+  - H2：相關
 
 ## reference/wizard.md
 
-- 路由: /reference/wizard
-- 標題:
-  - H2: 流程詳細資訊（本機模式）
-  - H2: 非互動模式
-  - H3: 新增代理（非互動）
-  - H2: 閘道精靈 RPC
-  - H2: Signal 設定（signal-cli）
-  - H2: 精靈寫入的內容
-  - H2: 相關文件
+- 路由：/reference/wizard
+- 標題：
+  - H2：流程詳細資訊（本機模式）
+  - H2：非互動模式
+  - H3：新增代理（非互動）
+  - H2：閘道精靈 RPC
+  - H2：Signal 設定（signal-cli）
+  - H2：精靈寫入的內容
+  - H2：相關文件
 
 ## releases/2026.6.11.md
 
-- 路由: /releases/2026.6.11
-- 標題:
-  - H1: OpenClaw v2026.6.11 發行說明（2026-06-30）
-  - H2: 重點
-  - H3: 頻道傳遞可靠性
-  - H3: 提供者與模型復原
-  - H3: 工作階段、記憶與信任連續性
-  - H3: Slack 路由器中繼模式
-  - H3: Raft 外部代理喚醒橋接
-  - H3: 官方外掛安裝與修復
-  - H2: 頻道與訊息
-  - H3: 其他頻道修正
-  - H2: 閘道、安全性與信任
-  - H3: 重新啟動與就緒復原
-  - H3: 遠端結果與媒體傳遞
-  - H2: 用戶端與介面
-  - H3: 用戶端傳送與重新連線
-  - H3: 介面、設定與新手導引修正
-  - H2: 文件與管理工具
-  - H3: 設定與命令可靠性
-  - H3: 工具與排程工作
+- 路由：/releases/2026.6.11
+- 標題：
+  - H1：OpenClaw v2026.6.11 發行說明（2026-06-30）
+  - H2：亮點
+  - H3：頻道傳遞可靠性
+  - H3：提供者與模型復原
+  - H3：工作階段、記憶與信任連續性
+  - H3：Slack 路由器中繼模式
+  - H3：Raft 外部代理喚醒橋接
+  - H3：官方外掛安裝與修復
+  - H2：頻道與訊息
+  - H3：其他頻道修正
+  - H2：閘道、安全性與信任
+  - H3：重新啟動與就緒狀態復原
+  - H3：遠端結果與媒體傳遞
+  - H2：用戶端與介面
+  - H3：用戶端傳送與重新連線
+  - H3：介面、設定與入門設定修正
+  - H2：文件與管理工具
+  - H3：設定與命令可靠性
+  - H3：工具與排程工作
 
 ## releases/index.md
 
-- 路由: /releases
-- 標題:
-  - H1: 發行說明
-  - H2: 發行版本
-  - H2: 原始發行歷史
+- 路由：/releases
+- 標題：
+  - H1：發行說明
+  - H2：發行版本
+  - H2：原始發行歷史
 
 ## security/CONTRIBUTING-THREAT-MODEL.md
 
-- 路由: /security/CONTRIBUTING-THREAT-MODEL
-- 標題:
-  - H2: 貢獻方式
-  - H3: 新增威脅
-  - H3: 建議緩解措施
-  - H3: 提出攻擊鏈
-  - H3: 修正或改善既有內容
-  - H2: 我們使用的內容
-  - H3: MITRE ATLAS 架構
-  - H3: 威脅 ID
-  - H3: 風險等級
-  - H2: 審查流程
-  - H2: 資源
-  - H2: 聯絡方式
-  - H2: 致謝
-  - H2: 相關
+- 路由：/security/CONTRIBUTING-THREAT-MODEL
+- 標題：
+  - H2：貢獻方式
+  - H3：新增威脅
+  - H3：建議緩解措施
+  - H3：提出攻擊鏈
+  - H3：修正或改進現有內容
+  - H2：我們使用的內容
+  - H3：MITRE ATLAS 架構
+  - H3：威脅 ID
+  - H3：風險等級
+  - H2：審查流程
+  - H2：資源
+  - H2：聯絡
+  - H2：致謝
+  - H2：相關
 
 ## security/THREAT-MODEL-ATLAS.md
 
-- 路由: /security/THREAT-MODEL-ATLAS
-- 標題:
-  - H2: MITRE ATLAS 架構
-  - H3: 架構歸屬
-  - H3: 貢獻此威脅模型
-  - H2: 1. 簡介
-  - H3: 1.1 目的
-  - H3: 1.2 範圍
-  - H3: 1.3 範圍外
-  - H2: 2. 系統架構
-  - H3: 2.1 信任邊界
-  - H3: 2.2 資料流程
-  - H2: 3. 依 ATLAS 戰術進行威脅分析
-  - H3: 3.1 偵察（AML.TA0002）
-  - H4: T-RECON-001: 代理端點探索
-  - H4: T-RECON-002: 頻道整合探測
-  - H3: 3.2 初始存取（AML.TA0004）
-  - H4: T-ACCESS-001: 配對碼攔截
-  - H4: T-ACCESS-002: AllowFrom 偽造
-  - H4: T-ACCESS-003: Token 竊取
-  - H3: 3.3 執行（AML.TA0005）
-  - H4: T-EXEC-001: 直接提示注入
-  - H4: T-EXEC-002: 間接提示注入
-  - H4: T-EXEC-003: 工具引數注入
-  - H4: T-EXEC-004: Exec 核准繞過
-  - H3: 3.4 持久化（AML.TA0006）
-  - H4: T-PERSIST-001: 惡意 Skill 安裝
-  - H4: T-PERSIST-002: Skill 更新投毒
-  - H4: T-PERSIST-003: 代理設定竄改
-  - H3: 3.5 防禦規避（AML.TA0007）
-  - H4: T-EVADE-001: 審核模式繞過
-  - H4: T-EVADE-002: 內容包裝逃逸
-  - H3: 3.6 探索（AML.TA0008）
-  - H4: T-DISC-001: 工具列舉
-  - H4: T-DISC-002: 工作階段資料擷取
-  - H3: 3.7 收集與外洩（AML.TA0009, AML.TA0010）
-  - H4: T-EXFIL-001: 透過 webfetch 竊取資料
-  - H4: T-EXFIL-002: 未授權訊息傳送
-  - H4: T-EXFIL-003: 認證資訊收集
-  - H3: 3.8 影響（AML.TA0011）
-  - H4: T-IMPACT-001: 未授權命令執行
-  - H4: T-IMPACT-002: 資源耗盡（DoS）
-  - H4: T-IMPACT-003: 聲譽損害
-  - H2: 4. ClawHub 供應鏈分析
-  - H3: 4.1 目前安全控制
-  - H3: 4.2 審核旗標模式
-  - H3: 4.3 計畫中的改善
-  - H2: 5. 風險矩陣
-  - H3: 5.1 可能性 vs 影響
-  - H3: 5.2 關鍵路徑攻擊鏈
-  - H2: 6. 建議摘要
-  - H3: 6.1 立即（P0）
-  - H3: 6.2 短期（P1）
-  - H3: 6.3 中期（P2）
-  - H2: 7. 附錄
-  - H3: 7.1 ATLAS 技術對應
-  - H3: 7.2 重要安全檔案
-  - H3: 7.3 詞彙表
-  - H2: 相關
+- 路由：/security/THREAT-MODEL-ATLAS
+- 標題：
+  - H2：MITRE ATLAS 架構
+  - H3：架構歸屬
+  - H3：為此威脅模型做出貢獻
+  - H2：1. 簡介
+  - H3：1.1 目的
+  - H3：1.2 範圍
+  - H3：1.3 範圍外
+  - H2：2. 系統架構
+  - H3：2.1 信任邊界
+  - H3：2.2 資料流程
+  - H2：3. 依 ATLAS 戰術進行威脅分析
+  - H3：3.1 偵察（AML.TA0002）
+  - H4：T-RECON-001：代理端點探索
+  - H4：T-RECON-002：頻道整合探測
+  - H3：3.2 初始存取（AML.TA0004）
+  - H4：T-ACCESS-001：配對碼攔截
+  - H4：T-ACCESS-002：AllowFrom 偽造
+  - H4：T-ACCESS-003：Token 竊取
+  - H3：3.3 執行（AML.TA0005）
+  - H4：T-EXEC-001：直接提示注入
+  - H4：T-EXEC-002：間接提示注入
+  - H4：T-EXEC-003：工具引數注入
+  - H4：T-EXEC-004：Exec 核准繞過
+  - H3：3.4 持久化（AML.TA0006）
+  - H4：T-PERSIST-001：惡意 Skill 安裝
+  - H4：T-PERSIST-002：Skill 更新投毒
+  - H4：T-PERSIST-003：代理設定竄改
+  - H3：3.5 防禦規避（AML.TA0007）
+  - H4：T-EVADE-001：審核模式繞過
+  - H4：T-EVADE-002：內容包裝逃逸
+  - H3：3.6 探索（AML.TA0008）
+  - H4：T-DISC-001：工具列舉
+  - H4：T-DISC-002：工作階段資料擷取
+  - H3：3.7 收集與外洩（AML.TA0009, AML.TA0010）
+  - H4：T-EXFIL-001：透過 webfetch 竊取資料
+  - H4：T-EXFIL-002：未授權傳送訊息
+  - H4：T-EXFIL-003：憑證收集
+  - H3：3.8 影響（AML.TA0011）
+  - H4：T-IMPACT-001：未授權命令執行
+  - H4：T-IMPACT-002：資源耗盡（DoS）
+  - H4：T-IMPACT-003：聲譽損害
+  - H2：4. ClawHub 供應鏈分析
+  - H3：4.1 目前安全控制
+  - H3：4.2 審核旗標模式
+  - H3：4.3 已規劃的改進
+  - H2：5. 風險矩陣
+  - H3：5.1 可能性與影響
+  - H3：5.2 關鍵路徑攻擊鏈
+  - H2：6. 建議摘要
+  - H3：6.1 立即（P0）
+  - H3：6.2 短期（P1）
+  - H3：6.3 中期（P2）
+  - H2：7. 附錄
+  - H3：7.1 ATLAS 技術對應
+  - H3：7.2 重要安全檔案
+  - H3：7.3 詞彙表
+  - H2：相關
 
 ## security/formal-verification.md
 
-- 路由: /security/formal-verification
-- 標題:
-  - H2: 模型所在位置
-  - H2: 重要注意事項
-  - H2: 重現結果
-  - H3: 閘道暴露與開放閘道設定錯誤
-  - H3: 節點 exec 管線（最高風險能力）
-  - H3: 配對儲存區（DM 閘控）
-  - H3: 入口閘控（提及 + 控制命令繞過）
-  - H3: 路由/工作階段金鑰隔離
-  - H2: v1++：額外有界模型（並行、重試、追蹤正確性）
-  - H3: 配對儲存區並行 / 冪等性
-  - H3: 入口追蹤關聯 / 冪等性
-  - H3: 路由 dmScope 優先順序 + identityLinks
-  - H2: 相關
+- 路由：/security/formal-verification
+- 標題：
+  - H2：模型所在位置
+  - H2：重要注意事項
+  - H2：重現結果
+  - H3：閘道暴露與開放閘道設定錯誤
+  - H3：節點 exec 管線（最高風險能力）
+  - H3：配對儲存區（DM 閘門）
+  - H3：入口閘門（提及 + 控制命令繞過）
+  - H3：路由／工作階段金鑰隔離
+  - H2：v1++：其他有界模型（並行、重試、追蹤正確性）
+  - H3：配對儲存區並行／冪等性
+  - H3：入口追蹤關聯／冪等性
+  - H3：路由 dmScope 優先順序 + identityLinks
+  - H2：相關
 
 ## security/incident-response.md
 
-- 路由: /security/incident-response
-- 標題:
-  - H2: 1. 偵測與分級
-  - H2: 2. 評估
-  - H2: 3. 回應
-  - H2: 4. 溝通
-  - H2: 5. 復原與後續追蹤
+- 路由：/security/incident-response
+- 標題：
+  - H2：1. 偵測與分流
+  - H2：2. 評估
+  - H2：3. 回應
+  - H2：4. 溝通
+  - H2：5. 復原與後續追蹤
 
 ## security/network-proxy.md
 
-- 路由: /security/network-proxy
-- 標題:
-  - H2: 為什麼使用代理
-  - H2: OpenClaw 如何路由流量
-  - H2: 相關代理術語
-  - H2: 設定
-  - H3: 閘道回送模式
-  - H2: 代理需求
-  - H2: 建議封鎖的目的地
-  - H2: 驗證
-  - H2: 代理 CA 信任
-  - H2: 限制
+- 路由：/security/network-proxy
+- 標題：
+  - H2：為何使用代理伺服器
+  - H2：OpenClaw 如何路由流量
+  - H2：相關代理伺服器術語
+  - H2：設定
+  - H3：閘道迴環模式
+  - H2：代理伺服器需求
+  - H2：建議封鎖的目的地
+  - H2：驗證
+  - H2：代理伺服器 CA 信任
+  - H2：限制
 
 ## specs/claw-supervisor.md
 
-- 路由: /specs/claw-supervisor
-- 標題:
-  - H1: Claw 監督器
-  - H2: 目標
-  - H2: 產品模型
-  - H2: 架構
-  - H2: Codex 應用程式伺服器合約
-  - H2: 工作階段登錄
-  - H2: Codex 的 MCP 介面
-  - H2: Claw 控制介面
-  - H2: 啟動流程
-  - H2: 部署
-  - H2: 安全性
-  - H2: 實作計畫
-  - H2: 驗收測試
-  - H2: 未解問題
+- 路由：/specs/claw-supervisor
+- 標題：
+  - H1：Claw Supervisor
+  - H2：目標
+  - H2：產品模型
+  - H2：架構
+  - H2：Codex 應用程式伺服器合約
+  - H2：工作階段註冊表
+  - H2：Codex 的 MCP 介面
+  - H2：Claw 控制介面
+  - H2：啟動流程
+  - H2：部署
+  - H2：安全性
+  - H2：實作計畫
+  - H2：驗收測試
+  - H2：未決問題
 
 ## start/bootstrapping.md
 
-- 路由: /start/bootstrapping
-- 標題:
-  - H2: 啟動程序會做什麼
-  - H2: 略過啟動程序
-  - H2: 執行位置
-  - H2: 相關文件
+- 路由：/start/bootstrapping
+- 標題：
+  - H2：啟動引導會做什麼
+  - H2：略過啟動引導
+  - H2：執行位置
+  - H2：相關文件
 
 ## start/docs-directory.md
 
-- 路由: /start/docs-directory
-- 標題:
-  - H2: 從這裡開始
-  - H2: 提供者與使用者體驗
-  - H2: 伴隨應用程式
-  - H2: 營運與安全
-  - H2: 相關
+- 路由：/start/docs-directory
+- 標題：
+  - H2：從這裡開始
+  - H2：提供者與使用者體驗
+  - H2：配套應用程式
+  - H2：營運與安全
+  - H2：相關
 
 ## start/getting-started.md
 
-- 路由: /start/getting-started
-- 標題:
-  - H2: 你需要什麼
-  - H2: 快速設定
-  - H2: 接下來要做什麼
-  - H2: 相關
+- 路由：/start/getting-started
+- 標題：
+  - H2：你需要什麼
+  - H2：快速設定
+  - H2：下一步做什麼
+  - H2：相關
 
 ## start/hubs.md
 
-- 路由: /start/hubs
-- 標題:
-  - H2: 從這裡開始
-  - H2: 安裝 + 更新
-  - H2: 核心概念
-  - H2: 提供者 + 入口
-  - H2: 閘道 + 營運
-  - H2: 工具 + 自動化
-  - H2: 節點、媒體、語音
-  - H2: 平台
-  - H2: macOS 伴隨應用程式（進階）
-  - H2: 外掛
-  - H2: 工作區 + 範本
-  - H2: 專案
-  - H2: 測試 + 發行
-  - H2: 相關
+- 路由：/start/hubs
+- 標題：
+  - H2：從這裡開始
+  - H2：安裝 + 更新
+  - H2：核心概念
+  - H2：提供者 + 入口
+  - H2：閘道 + 營運
+  - H2：工具 + 自動化
+  - H2：節點、媒體、語音
+  - H2：平台
+  - H2：macOS 配套應用程式（進階）
+  - H2：外掛
+  - H2：工作區 + 範本
+  - H2：專案
+  - H2：測試 + 發行
+  - H2：相關
 
 ## start/lore.md
 
-- 路由: /start/lore
-- 標題:
-  - H1: OpenClaw 傳說 🦞📖
-  - H2: 起源故事
-  - H2: 第一次蛻變（2026 年 1 月 27 日）
-  - H2: 名稱
-  - H2: Daleks vs Lobsters
-  - H2: 主要角色
-  - H3: Molty 🦞
-  - H3: Peter 👨‍💻
-  - H2: Moltiverse
-  - H2: 重大事件
-  - H3: 目錄傾印（2025 年 12 月 3 日）
-  - H3: 大蛻變（2026 年 1 月 27 日）
-  - H3: 最終型態（2026 年 1 月 30 日）
-  - H3: 機器人購物狂潮（2025 年 12 月 3 日）
-  - H2: 神聖文本
-  - H2: Lobster 信條
-  - H3: 圖示生成傳奇（2026 年 1 月 27 日）
-  - H2: 未來
-  - H2: 相關
+- 路由：/start/lore
+- 標題：
+  - H1：OpenClaw 傳說 🦞📖
+  - H2：起源故事
+  - H2：第一次蛻變（2026 年 1 月 27 日）
+  - H2：名稱
+  - H2：Daleks 對上 Lobsters
+  - H2：主要角色
+  - H3：Molty 🦞
+  - H3：Peter 👨‍💻
+  - H2：Moltiverse
+  - H2：重大事件
+  - H3：目錄傾印（2025 年 12 月 3 日）
+  - H3：偉大蛻變（2026 年 1 月 27 日）
+  - H3：最終形態（2026 年 1 月 30 日）
+  - H3：機器人購物狂歡（2025 年 12 月 3 日）
+  - H2：神聖文本
+  - H2：Lobster 信條
+  - H3：圖示生成傳奇（2026 年 1 月 27 日）
+  - H2：未來
+  - H2：相關
 
 ## start/onboarding-overview.md
 
-- 路由: /start/onboarding-overview
-- 標題:
-  - H2: 我應該使用哪條路徑？
-  - H2: 新手導引會設定什麼
-  - H2: 命令列介面新手導引
-  - H2: macOS 應用程式新手導引
-  - H2: 自訂或未列出的提供者
-  - H2: 相關
+- 路由：/start/onboarding-overview
+- 標題：
+  - H2：我應該使用哪條路徑？
+  - H2：入門設定會設定什麼
+  - H2：命令列介面入門設定
+  - H2：macOS 應用程式入門設定
+  - H2：自訂或未列出的提供者
+  - H2：相關
 
 ## start/onboarding.md
 
-- 路由: /start/onboarding
-- 標題:
-  - H2: 相關
+- 路由：/start/onboarding
+- 標題：
+  - H2：相關
 
 ## start/openclaw.md
 
-- 路由: /start/openclaw
-- 標題:
-  - H2: ⚠️ 安全第一
-  - H2: 先決條件
-  - H2: 雙手機設定（建議）
-  - H2: 5 分鐘快速開始
-  - H2: 給代理一個工作區（AGENTS）
-  - H2: 將它變成「助理」的設定
-  - H2: 工作階段與記憶
-  - H2: 心跳偵測（主動模式）
-  - H2: 媒體輸入與輸出
-  - H2: 營運檢查清單
-  - H2: 後續步驟
-  - H2: 相關
+- 路由：/start/openclaw
+- 標題：
+  - H2：⚠️ 安全第一
+  - H2：先決條件
+  - H2：雙手機設定（建議）
+  - H2：5 分鐘快速開始
+  - H2：為代理提供工作區（AGENTS）
+  - H2：把它變成「助理」的設定
+  - H2：工作階段與記憶
+  - H2：心跳偵測（主動模式）
+  - H2：媒體輸入與輸出
+  - H2：營運檢查清單
+  - H2：後續步驟
+  - H2：相關
 
 ## start/quickstart.md
 
-- 路由: /start/quickstart
-- 標題:
-  - H2: 相關
+- 路由：/start/quickstart
+- 標題：
+  - H2：相關
 
 ## start/setup.md
 
-- 路由: /start/setup
-- 標題:
-  - H2: TL;DR
-  - H2: 先決條件（從原始碼）
-  - H2: 客製化策略（讓更新不造成傷害）
-  - H2: 從此 repo 執行閘道
-  - H2: 穩定工作流程（macOS 應用程式優先）
-  - H2: 前沿工作流程（終端機中的閘道）
-  - H3: 0)（選用）也從原始碼執行 macOS 應用程式
-  - H3: 1) 啟動開發閘道
-  - H3: 2) 將 macOS 應用程式指向正在執行的閘道
-  - H3: 3) 驗證
-  - H3: 常見踩坑
-  - H2: 認證資訊儲存對照表
-  - H2: 更新（不破壞你的設定）
-  - H2: Linux（systemd 使用者服務）
-  - H2: 相關文件
+- 路由：/start/setup
+- 標題：
+  - H2：TL;DR
+  - H2：先決條件（從原始碼）
+  - H2：客製化策略（讓更新不造成傷害）
+  - H2：從此 repo 執行閘道
+  - H2：穩定工作流程（macOS 應用程式優先）
+  - H2：前沿工作流程（終端中的閘道）
+  - H3：0)（選用）也從原始碼執行 macOS 應用程式
+  - H3：1) 啟動開發閘道
+  - H3：2) 將 macOS 應用程式指向正在執行的閘道
+  - H3：3) 驗證
+  - H3：常見陷阱
+  - H2：憑證儲存對照表
+  - H2：更新（不破壞你的設定）
+  - H2：Linux（systemd 使用者服務）
+  - H2：相關文件
 
 ## start/showcase.md
 
-- 路由: /start/showcase
-- 標題:
-  - H2: 來自 Discord 的最新內容
-  - H2: 自動化與工作流程
-  - H2: 知識與記憶
-  - H2: 語音與電話
-  - H2: 基礎架構與部署
-  - H2: 居家與硬體
-  - H2: 社群專案
-  - H2: 提交你的專案
-  - H2: 相關
+- 路由：/start/showcase
+- 標題：
+  - H2：Discord 最新內容
+  - H2：自動化與工作流程
+  - H2：知識與記憶
+  - H2：語音與電話
+  - H2：基礎設施與部署
+  - H2：居家與硬體
+  - H2：社群專案
+  - H2：提交你的專案
+  - H2：相關
 
 ## start/wizard-cli-automation.md
 
-- 路由: /start/wizard-cli-automation
-- 標題:
-  - H2: 基準非互動範例
-  - H2: 提供者專屬範例
-  - H2: 新增另一個代理
-  - H2: 相關文件
+- 路由：/start/wizard-cli-automation
+- 標題：
+  - H2：基準非互動範例
+  - H2：提供者特定範例
+  - H2：新增另一個代理
+  - H2：相關文件
 
 ## start/wizard-cli-reference.md
 
-- 路由: /start/wizard-cli-reference
-- 標題:
-  - H2: 精靈會做什麼
-  - H2: 本機流程詳細資訊
-  - H2: 遠端模式詳細資訊
-  - H2: 驗證與模型選項
-  - H2: 輸出與內部機制
-  - H2: 相關文件
+- 路由：/start/wizard-cli-reference
+- 標題：
+  - H2：精靈會做什麼
+  - H2：本機流程詳細資訊
+  - H2：遠端模式詳細資訊
+  - H2：驗證與模型選項
+  - H2：輸出與內部機制
+  - H2：相關文件
 
 ## start/wizard.md
 
-- 路由: /start/wizard
-- 標題:
-  - H2: 語言環境
-  - H2: QuickStart vs Advanced
-  - H2: 新手導引會設定什麼
-  - H2: 新增另一個代理
-  - H2: 完整參考
-  - H2: 相關文件
+- 路由：/start/wizard
+- 標題：
+  - H2：語言環境
+  - H2：QuickStart 與 Advanced
+  - H2：入門設定會設定什麼
+  - H2：新增另一個代理
+  - H2：完整參考
+  - H2：相關文件
 
 ## tools/acp-agents-setup.md
 
 - 路由：/tools/acp-agents-setup
 - 標題：
-  - H2: acpx harness 支援（目前）
-  - H2: 必要設定
-  - H2: acpx 後端的外掛設定
-  - H3: acpx 命令與版本設定
-  - H3: 自動相依項安裝
-  - H3: 外掛工具 MCP 橋接器
-  - H3: OpenClaw 工具 MCP 橋接器
-  - H3: 執行階段操作逾時設定
-  - H3: 健康探測代理程式設定
-  - H2: 權限設定
-  - H3: permissionMode
-  - H3: nonInteractivePermissions
-  - H3: 設定
-  - H2: 相關
+  - H2：acpx harness 支援（目前）
+  - H2：必要設定
+  - H2：acpx 後端的外掛設定
+  - H3：acpx 命令與版本設定
+  - H3：自動安裝相依套件
+  - H3：外掛工具 MCP 橋接
+  - H3：OpenClaw 工具 MCP 橋接
+  - H3：執行階段操作逾時設定
+  - H3：健康探測 agent 設定
+  - H2：權限設定
+  - H3：permissionMode
+  - H3：nonInteractivePermissions
+  - H3：設定
+  - H2：相關
 
 ## tools/acp-agents.md
 
 - 路由：/tools/acp-agents
 - 標題：
-  - H2: 我想看哪個頁面？
-  - H2: 這是否可立即使用？
-  - H2: 支援的 harness 目標
-  - H2: 操作員執行手冊
-  - H2: ACP 與子代理程式
-  - H2: ACP 如何執行 Claude Code
-  - H2: 綁定的工作階段
-  - H3: 心智模型
-  - H3: 目前對話綁定
-  - H2: 持久化頻道綁定
-  - H3: 綁定模型
-  - H3: 每個代理程式的執行階段預設值
-  - H3: 範例
-  - H3: 行為
-  - H2: 啟動 ACP 工作階段
-  - H3: sessionsspawn 參數
-  - H2: 產生綁定與執行緒模式
-  - H2: 傳遞模型
-  - H2: 沙箱相容性
-  - H2: 工作階段目標解析
-  - H2: ACP 控制項
-  - H3: 執行階段選項對應
-  - H2: acpx harness、外掛設定與權限
-  - H2: 疑難排解
-  - H2: 相關
+  - H2：我想看哪一頁？
+  - H2：這能開箱即用嗎？
+  - H2：支援的 harness 目標
+  - H2：操作員執行手冊
+  - H2：ACP 與 sub-agents 的比較
+  - H2：ACP 如何執行 Claude Code
+  - H2：綁定的工作階段
+  - H3：心智模型
+  - H3：目前對話綁定
+  - H2：持久通道繫結
+  - H3：繫結模型
+  - H3：每個 agent 的執行階段預設值
+  - H3：範例
+  - H3：行為
+  - H2：啟動 ACP 工作階段
+  - H3：sessionsspawn 參數
+  - H2：spawn bind 與 thread 模式
+  - H2：傳遞模型
+  - H2：沙盒相容性
+  - H2：工作階段目標解析
+  - H2：ACP 控制項
+  - H3：執行階段選項對應
+  - H2：acpx harness、外掛設定與權限
+  - H2：疑難排解
+  - H2：相關
 
 ## tools/agent-send.md
 
 - 路由：/tools/agent-send
 - 標題：
-  - H2: 快速開始
-  - H2: 旗標
-  - H2: 行為
-  - H2: 範例
-  - H2: 相關
+  - H2：快速開始
+  - H2：旗標
+  - H2：行為
+  - H2：範例
+  - H2：相關
 
 ## tools/apply-patch.md
 
 - 路由：/tools/apply-patch
 - 標題：
-  - H2: 參數
-  - H2: 注意事項
-  - H2: 範例
-  - H2: 相關
+  - H2：參數
+  - H2：注意事項
+  - H2：範例
+  - H2：相關
 
 ## tools/brave-search.md
 
 - 路由：/tools/brave-search
 - 標題：
-  - H2: 取得 API 金鑰
-  - H2: 設定範例
-  - H2: 工具參數
-  - H2: 注意事項
-  - H2: 相關
+  - H2：取得 API 金鑰
+  - H2：設定範例
+  - H2：工具參數
+  - H2：注意事項
+  - H2：相關
 
 ## tools/browser-control.md
 
 - 路由：/tools/browser-control
 - 標題：
-  - H2: 控制 API（選用）
-  - H3: /act 錯誤合約
-  - H3: Playwright 需求
-  - H4: Docker Playwright 安裝
-  - H2: 運作方式（內部）
-  - H2: 命令列介面快速參考
-  - H2: 快照與參照
-  - H2: 等待功能強化
-  - H2: 偵錯工作流程
-  - H2: JSON 輸出
-  - H2: 狀態與環境旋鈕
-  - H2: 安全性與隱私權
-  - H2: 相關
+  - H2：控制 API（選用）
+  - H3：/act 錯誤合約
+  - H3：Playwright 需求
+  - H4：Docker Playwright 安裝
+  - H2：運作方式（內部）
+  - H2：命令列介面快速參考
+  - H2：快照與 refs
+  - H2：等待功能強化
+  - H2：除錯工作流程
+  - H2：JSON 輸出
+  - H2：狀態與環境旋鈕
+  - H2：安全與隱私
+  - H2：相關
 
 ## tools/browser-linux-troubleshooting.md
 
 - 路由：/tools/browser-linux-troubleshooting
 - 標題：
-  - H2: 問題：「Failed to start Chrome CDP on port 18800」
-  - H3: 根本原因
-  - H3: 解法 1：安裝 Google Chrome（建議）
-  - H3: 解法 2：使用 Snap Chromium 搭配僅附加模式
-  - H3: 驗證瀏覽器是否正常運作
-  - H3: 設定參考
-  - H3: 問題：「No Chrome tabs found for profile=\"user\"」
-  - H2: 相關
+  - H2：問題：「無法在連接埠 18800 啟動 Chrome CDP」
+  - H3：根本原因
+  - H3：解決方案 1：安裝 Google Chrome（建議）
+  - H3：解決方案 2：以 Attach-Only Mode 使用 Snap Chromium
+  - H3：驗證瀏覽器可運作
+  - H3：設定參考
+  - H3：問題：「找不到 profile=\"user\" 的 Chrome 分頁」
+  - H2：相關
 
 ## tools/browser-login.md
 
 - 路由：/tools/browser-login
 - 標題：
-  - H2: 手動登入（建議）
-  - H2: 使用哪個 Chrome 設定檔？
-  - H2: X/Twitter：建議流程
-  - H2: 沙箱 + 主機瀏覽器存取
-  - H2: 相關
+  - H2：手動登入（建議）
+  - H2：使用哪個 Chrome profile？
+  - H2：X/Twitter：建議流程
+  - H2：沙盒 + 主機瀏覽器存取
+  - H2：相關
 
 ## tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
 
 - 路由：/tools/browser-wsl2-windows-remote-cdp-troubleshooting
 - 標題：
-  - H2: 先選擇正確的瀏覽器模式
-  - H3: 選項 1：從 WSL2 到 Windows 的原始遠端 CDP
-  - H3: 選項 2：主機本機 Chrome MCP
-  - H2: 運作架構
-  - H2: 為什麼此設定令人困惑
-  - H2: Control UI 的關鍵規則
-  - H2: 分層驗證
-  - H3: 第 1 層：驗證 Chrome 是否在 Windows 上提供 CDP
-  - H3: 第 2 層：驗證 WSL2 是否可連到該 Windows 端點
-  - H3: 第 3 層：設定正確的瀏覽器設定檔
-  - H3: 第 4 層：分別驗證 Control UI 層
-  - H3: 第 5 層：驗證端對端瀏覽器控制
-  - H2: 常見的誤導性錯誤
-  - H2: 快速分診檢查清單
-  - H2: 實務重點
-  - H2: 相關
+  - H2：先選擇正確的瀏覽器模式
+  - H3：選項 1：從 WSL2 到 Windows 的原始遠端 CDP
+  - H3：選項 2：主機本機 Chrome MCP
+  - H2：運作架構
+  - H2：為什麼這個設定令人困惑
+  - H2：Control UI 的關鍵規則
+  - H2：分層驗證
+  - H3：第 1 層：確認 Chrome 正在 Windows 上提供 CDP
+  - H3：第 2 層：確認 WSL2 可以連到該 Windows 端點
+  - H3：第 3 層：設定正確的瀏覽器 profile
+  - H3：第 4 層：分別驗證 Control UI 層
+  - H3：第 5 層：驗證端對端瀏覽器控制
+  - H2：常見的誤導性錯誤
+  - H2：快速分診檢查清單
+  - H2：實務重點
+  - H2：相關
 
 ## tools/browser.md
 
 - 路由：/tools/browser
 - 標題：
-  - H2: 你會得到什麼
-  - H2: 快速開始
-  - H2: 外掛控制
-  - H2: 代理程式指引
-  - H2: 缺少瀏覽器命令或工具
-  - H2: 設定檔：openclaw 與 user
-  - H2: 設定
-  - H3: 截圖視覺（純文字模型支援）
-  - H2: 使用 Brave 或其他 Chromium 架構瀏覽器
-  - H2: 本機與遠端控制
-  - H2: 節點瀏覽器代理（零設定預設）
-  - H2: Browserless（託管遠端 CDP）
-  - H3: 同一主機上的 Browserless Docker
-  - H2: 直接 WebSocket CDP 提供者
-  - H3: Browserbase
-  - H3: Notte
-  - H2: 安全性
-  - H2: 設定檔（多瀏覽器）
-  - H2: 透過 Chrome DevTools MCP 使用現有工作階段
-  - H3: 自訂 Chrome MCP 啟動
-  - H2: 隔離保證
-  - H2: 瀏覽器選擇
-  - H2: 控制 API（選用）
-  - H2: 疑難排解
-  - H3: CDP 啟動失敗與導覽 SSRF 封鎖
-  - H2: 代理程式工具 + 控制運作方式
-  - H2: 相關
+  - H2：你會得到什麼
+  - H2：快速開始
+  - H2：外掛控制
+  - H2：agent 指引
+  - H2：缺少瀏覽器命令或工具
+  - H2：Profiles：openclaw 與 user
+  - H2：設定
+  - H3：螢幕截圖視覺（僅文字模型支援）
+  - H2：使用 Brave 或其他 Chromium-based 瀏覽器
+  - H2：本機與遠端控制
+  - H2：節點瀏覽器代理（零設定預設）
+  - H2：Browserless（託管式遠端 CDP）
+  - H3：同一主機上的 Browserless Docker
+  - H2：直接 WebSocket CDP 提供者
+  - H3：Browserbase
+  - H3：Notte
+  - H2：安全
+  - H2：Profiles（多瀏覽器）
+  - H2：透過 Chrome DevTools MCP 使用既有工作階段
+  - H3：自訂 Chrome MCP 啟動
+  - H2：隔離保證
+  - H2：瀏覽器選擇
+  - H2：控制 API（選用）
+  - H2：疑難排解
+  - H3：CDP 啟動失敗與導覽 SSRF 封鎖
+  - H2：agent 工具 + 控制如何運作
+  - H2：相關
 
 ## tools/btw.md
 
 - 路由：/tools/btw
 - 標題：
-  - H2: 功能
-  - H2: 不會做什麼
-  - H2: 情境如何運作
-  - H2: 傳遞模型
-  - H2: 介面行為
-  - H3: 終端介面
-  - H3: 外部頻道
-  - H3: Control UI / 網頁
-  - H2: 何時使用 BTW
-  - H2: 何時不使用 BTW
-  - H2: 相關
+  - H2：它的作用
+  - H2：它不會做什麼
+  - H2：情境如何運作
+  - H2：傳遞模型
+  - H2：介面行為
+  - H3：終端介面
+  - H3：外部通道
+  - H3：Control UI / 網頁
+  - H2：何時使用 BTW
+  - H2：何時不使用 BTW
+  - H2：相關
 
 ## tools/capability-cookbook.md
 
 - 路由：/tools/capability-cookbook
 - 標題：
-  - H2: 相關
+  - H2：相關
 
 ## tools/clawhub.md
 
@@ -9018,318 +9019,318 @@ x-i18n:
 
 - 路由：/tools/code-execution
 - 標題：
-  - H2: 設定
-  - H2: 如何使用
-  - H2: 錯誤
-  - H2: 限制
-  - H2: 相關
+  - H2：設定
+  - H2：使用方式
+  - H2：錯誤
+  - H2：限制
+  - H2：相關
 
 ## tools/creating-skills.md
 
 - 路由：/tools/creating-skills
 - 標題：
-  - H2: 建立你的第一個 skill
-  - H2: SKILL.md 參考
-  - H3: 必填欄位
-  - H3: 選用 frontmatter 鍵
-  - H3: 使用 {baseDir}
-  - H2: 新增條件式啟用
-  - H2: 透過 Skill Workshop 提案
-  - H2: 發佈到 ClawHub
-  - H2: 最佳實務
-  - H2: 相關
+  - H2：建立你的第一個 skill
+  - H2：SKILL.md 參考
+  - H3：必填欄位
+  - H3：選用 frontmatter 鍵
+  - H3：使用 {baseDir}
+  - H2：新增條件式啟用
+  - H2：透過 Skill Workshop 提案
+  - H2：發布到 ClawHub
+  - H2：最佳實務
+  - H2：相關
 
 ## tools/diffs.md
 
 - 路由：/tools/diffs
 - 標題：
-  - H2: 快速開始
-  - H2: 停用內建系統指引
-  - H2: 典型代理程式工作流程
-  - H2: 輸入範例
-  - H2: 工具輸入參考
-  - H2: 語法醒目提示
-  - H2: 輸出詳細資料合約
-  - H2: 已摺疊的未變更區段
-  - H2: 外掛預設值
-  - H3: 持久化檢視器 URL 設定
-  - H2: 安全性設定
-  - H2: 成品生命週期與儲存
-  - H2: 檢視器 URL 與網路行為
-  - H2: 安全性模型
-  - H2: 檔案模式的瀏覽器需求
-  - H2: 疑難排解
-  - H2: 操作指引
-  - H2: 相關
+  - H2：快速開始
+  - H2：停用內建系統指引
+  - H2：典型 agent 工作流程
+  - H2：輸入範例
+  - H2：工具輸入參考
+  - H2：語法醒目提示
+  - H2：輸出詳細資料合約
+  - H2：收合未變更區段
+  - H2：外掛預設值
+  - H3：持久檢視器 URL 設定
+  - H2：安全設定
+  - H2：成品生命週期與儲存
+  - H2：檢視器 URL 與網路行為
+  - H2：安全模型
+  - H2：檔案模式的瀏覽器需求
+  - H2：疑難排解
+  - H2：操作指引
+  - H2：相關
 
 ## tools/duckduckgo-search.md
 
 - 路由：/tools/duckduckgo-search
 - 標題：
-  - H2: 設定
-  - H2: 設定
-  - H2: 工具參數
-  - H2: 注意事項
-  - H2: 相關
+  - H2：設定
+  - H2：設定
+  - H2：工具參數
+  - H2：注意事項
+  - H2：相關
 
 ## tools/elevated.md
 
 - 路由：/tools/elevated
 - 標題：
-  - H2: 指令
-  - H2: 運作方式
-  - H2: 解析順序
-  - H2: 可用性與允許清單
-  - H2: elevated 不控制什麼
-  - H2: 相關
+  - H2：指令
+  - H2：運作方式
+  - H2：解析順序
+  - H2：可用性與允許清單
+  - H2：elevated 不控制的內容
+  - H2：相關
 
 ## tools/exa-search.md
 
 - 路由：/tools/exa-search
 - 標題：
-  - H2: 安裝外掛
-  - H2: 取得 API 金鑰
-  - H2: 設定
-  - H2: 基底 URL 覆寫
-  - H2: 工具參數
-  - H3: 內容擷取
-  - H3: 搜尋模式
-  - H2: 注意事項
-  - H2: 相關
+  - H2：安裝外掛
+  - H2：取得 API 金鑰
+  - H2：設定
+  - H2：基底 URL 覆寫
+  - H2：工具參數
+  - H3：內容擷取
+  - H3：搜尋模式
+  - H2：注意事項
+  - H2：相關
 
 ## tools/exec-approvals-advanced.md
 
 - 路由：/tools/exec-approvals-advanced
 - 標題：
-  - H2: 安全二進位檔（僅 stdin）
-  - H3: Argv 驗證與遭拒旗標
-  - H3: 受信任的二進位檔目錄
-  - H3: Shell 鏈接、包裝器與多工器
-  - H3: 安全二進位檔與允許清單
-  - H2: 直譯器/執行階段命令
-  - H3: 後續傳遞行為
-  - H2: 核准轉發到聊天頻道
-  - H3: 外掛核准轉發
-  - H3: 任何頻道上的同聊天核准
-  - H3: 原生核准傳遞
-  - H3: macOS IPC 流程
-  - H2: 常見問題
-  - H3: 什麼時候會在核准目標上使用 accountId 和 threadId？
-  - H3: 當核准傳送到工作階段時，該工作階段中的任何人都能核准嗎？
-  - H2: 相關
+  - H2：安全二進位檔（僅 stdin）
+  - H3：Argv 驗證與遭拒旗標
+  - H3：受信任的二進位檔目錄
+  - H3：Shell 串接、包裝器與多工器
+  - H3：安全二進位檔與允許清單
+  - H2：直譯器/執行階段命令
+  - H3：後續傳遞行為
+  - H2：將核准轉送到聊天通道
+  - H3：外掛核准轉送
+  - H3：任何通道上的同聊天核准
+  - H3：原生核准傳遞
+  - H3：macOS IPC 流程
+  - H2：常見問題
+  - H3：何時會在核准目標上使用 accountId 和 threadId？
+  - H3：當核准傳送到某個工作階段時，該工作階段中的任何人都能核准嗎？
+  - H2：相關
 
 ## tools/exec-approvals.md
 
 - 路由：/tools/exec-approvals
 - 標題：
-  - H2: 檢查生效的政策
-  - H2: 適用位置
-  - H3: 信任模型
-  - H3: macOS 分割
-  - H2: 設定與儲存
-  - H2: 政策旋鈕
-  - H3: tools.exec.mode
-  - H3: exec.security
-  - H3: exec.ask
-  - H3: askFallback
-  - H3: tools.exec.strictInlineEval
-  - H3: tools.exec.commandHighlighting
-  - H2: YOLO 模式（無需核准）
-  - H3: 持久化閘道主機「永不提示」設定
-  - H3: 本機捷徑
-  - H3: 節點主機
-  - H3: 僅工作階段捷徑
-  - H2: 允許清單（每個代理程式）
-  - H3: 使用 argPattern 限制引數
-  - H2: 自動允許 skill 命令列介面
-  - H2: 安全二進位檔與核准轉發
-  - H2: Control UI 編輯
-  - H2: 核准流程
-  - H2: 系統事件
-  - H2: 遭拒核准行為
-  - H2: 影響
-  - H2: 相關
+  - H2：檢查有效政策
+  - H2：套用位置
+  - H3：信任模型
+  - H3：macOS 分割
+  - H2：設定與儲存
+  - H2：政策旋鈕
+  - H3：tools.exec.mode
+  - H3：exec.security
+  - H3：exec.ask
+  - H3：askFallback
+  - H3：tools.exec.strictInlineEval
+  - H3：tools.exec.commandHighlighting
+  - H2：YOLO 模式（無核准）
+  - H3：持久 gateway-host「永不提示」設定
+  - H3：本機捷徑
+  - H3：節點主機
+  - H3：僅工作階段捷徑
+  - H2：允許清單（每個 agent）
+  - H3：使用 argPattern 限制引數
+  - H2：自動允許 skill 命令列介面
+  - H2：安全二進位檔與核准轉送
+  - H2：Control UI 編輯
+  - H2：核准流程
+  - H2：系統事件
+  - H2：遭拒核准行為
+  - H2：影響
+  - H2：相關
 
 ## tools/exec.md
 
 - 路由：/tools/exec
 - 標題：
-  - H2: 參數
-  - H2: 設定
-  - H3: PATH 處理
-  - H2: 工作階段覆寫（/exec）
-  - H2: 授權模型
-  - H2: Exec 核准（配套應用程式 / 節點主機）
-  - H2: 允許清單 + 安全二進位檔
-  - H2: 範例
-  - H2: applypatch
-  - H2: 相關
+  - H2：參數
+  - H2：設定
+  - H3：PATH 處理
+  - H2：工作階段覆寫（/exec）
+  - H2：授權模型
+  - H2：Exec 核准（配套 app / 節點主機）
+  - H2：允許清單 + 安全二進位檔
+  - H2：範例
+  - H2：applypatch
+  - H2：相關
 
 ## tools/firecrawl.md
 
 - 路由：/tools/firecrawl
 - 標題：
-  - H2: 安裝外掛
-  - H2: 無金鑰 webfetch 與 API 金鑰
-  - H2: 設定 Firecrawl 搜尋
-  - H2: 設定 Firecrawl webfetch 備援
-  - H3: 自託管 Firecrawl
-  - H2: Firecrawl 外掛工具
-  - H3: firecrawlsearch
-  - H3: firecrawlscrape
-  - H2: 隱身 / 規避 Bot
-  - H2: webfetch 如何使用 Firecrawl
-  - H2: 相關
+  - H2：安裝外掛
+  - H2：無金鑰 webfetch 與 API 金鑰
+  - H2：設定 Firecrawl 搜尋
+  - H2：設定 Firecrawl webfetch 後援
+  - H3：自行託管的 Firecrawl
+  - H2：Firecrawl 外掛工具
+  - H3：firecrawlsearch
+  - H3：firecrawlscrape
+  - H2：隱身 / 規避 bot
+  - H2：webfetch 如何使用 Firecrawl
+  - H2：相關
 
 ## tools/gemini-search.md
 
 - 路由：/tools/gemini-search
 - 標題：
-  - H2: 取得 API 金鑰
-  - H2: 設定
-  - H2: 運作方式
-  - H2: 支援的參數
-  - H2: 模型選擇
-  - H2: 基底 URL 覆寫
-  - H2: 相關
+  - H2：取得 API 金鑰
+  - H2：設定
+  - H2：運作方式
+  - H2：支援的參數
+  - H2：模型選擇
+  - H2：基底 URL 覆寫
+  - H2：相關
 
 ## tools/goal.md
 
 - 路由：/tools/goal
 - 標題：
-  - H1: 目標
-  - H2: 快速開始
-  - H2: 目標的用途
-  - H2: 命令參考
-  - H2: 狀態
-  - H2: Token 預算
-  - H2: 模型工具
-  - H2: 終端介面
-  - H2: 頻道行為
-  - H2: 疑難排解
-  - H2: 相關
+  - H1：目標
+  - H2：快速開始
+  - H2：目標用途
+  - H2：命令參考
+  - H2：狀態
+  - H2：權杖預算
+  - H2：模型工具
+  - H2：終端介面
+  - H2：通道行為
+  - H2：疑難排解
+  - H2：相關
 
 ## tools/grok-search.md
 
 - 路由：/tools/grok-search
 - 標題：
-  - H2: 導入與設定
-  - H2: 登入或取得 API 金鑰
-  - H2: 設定
-  - H2: 運作方式
-  - H2: 支援的參數
-  - H2: 基底 URL 覆寫
-  - H2: 相關
+  - H2：導入與設定
+  - H2：登入或取得 API 金鑰
+  - H2：設定
+  - H2：運作方式
+  - H2：支援的參數
+  - H2：基底 URL 覆寫
+  - H2：相關
 
 ## tools/image-generation.md
 
 - 路由：/tools/image-generation
 - 標題：
-  - H2: 快速開始
-  - H2: 常見路由
-  - H2: 支援的提供者
-  - H2: 提供者能力
-  - H2: 工具參數
-  - H2: 設定
-  - H3: 模型選擇
-  - H3: 提供者選擇順序
-  - H3: 圖片編輯
-  - H2: 提供者深入介紹
-  - H2: 範例
-  - H2: 相關
+  - H2：快速開始
+  - H2：常見路由
+  - H2：支援的提供者
+  - H2：提供者功能
+  - H2：工具參數
+  - H2：設定
+  - H3：模型選擇
+  - H3：提供者選擇順序
+  - H3：圖片編輯
+  - H2：提供者深入說明
+  - H2：範例
+  - H2：相關
 
 ## tools/index.md
 
 - 路由：/tools
 - 標題：
-  - H2: 從這裡開始
-  - H2: 選擇工具、skills 或外掛
-  - H2: 內建工具類別
-  - H2: 外掛提供的工具
-  - H2: 設定存取與核准
-  - H2: 擴充能力
-  - H2: 疑難排解缺少的工具
-  - H2: 相關
+  - H2：從這裡開始
+  - H2：選擇工具、skills 或外掛
+  - H2：內建工具類別
+  - H2：外掛提供的工具
+  - H2：設定存取與核准
+  - H2：擴充功能
+  - H2：疑難排解缺少的工具
+  - H2：相關
 
 ## tools/kimi-search.md
 
 - 路由：/tools/kimi-search
 - 標題：
-  - H2: 取得 API 金鑰
-  - H2: 設定
-  - H2: 運作方式
-  - H2: 支援的參數
-  - H2: 相關
+  - H2：取得 API 金鑰
+  - H2：設定
+  - H2：運作方式
+  - H2：支援的參數
+  - H2：相關
 
 ## tools/llm-task.md
 
 - 路由：/tools/llm-task
 - 標題：
-  - H2: 啟用外掛
-  - H2: 設定（選用）
-  - H2: 工具參數
-  - H2: 輸出
-  - H2: 範例：Lobster 工作流程步驟
-  - H3: 重要限制
-  - H2: 安全注意事項
-  - H2: 相關
+  - H2：啟用外掛
+  - H2：設定（選用）
+  - H2：工具參數
+  - H2：輸出
+  - H2：範例：Lobster 工作流程步驟
+  - H3：重要限制
+  - H2：安全注意事項
+  - H2：相關
 
 ## tools/lobster.md
 
 - 路由：/tools/lobster
 - 標題：
-  - H2: Hook
-  - H2: 原因
-  - H2: 為什麼使用 DSL 而不是普通程式？
-  - H2: 運作方式
-  - H2: 模式：小型命令列介面 + JSON 管線 + 核准
-  - H2: 僅 JSON 的 LLM 步驟（llm-task）
-  - H3: 重要限制：嵌入式 Lobster 與 openclaw.invoke
-  - H2: 工作流程檔案（.lobster）
-  - H2: 安裝 Lobster
-  - H2: 啟用工具
-  - H2: 範例：電子郵件分診
-  - H2: 工具參數
-  - H3: run
-  - H3: resume
-  - H3: 選用輸入
-  - H2: 輸出信封
-  - H2: 核准
-  - H2: OpenProse
-  - H2: 安全性
-  - H2: 疑難排解
-  - H2: 了解更多
-  - H2: 案例研究：社群工作流程
-  - H2: 相關
+  - H2：掛鉤
+  - H2：原因
+  - H2：為什麼使用 DSL 而不是普通程式？
+  - H2：運作方式
+  - H2：模式：小型命令列介面 + JSON 管線 + 核准
+  - H2：僅 JSON 的 LLM 步驟（llm-task）
+  - H3：重要限制：嵌入式 Lobster 與 openclaw.invoke
+  - H2：工作流程檔案（.lobster）
+  - H2：安裝 Lobster
+  - H2：啟用工具
+  - H2：範例：電子郵件分診
+  - H2：工具參數
+  - H3：run
+  - H3：resume
+  - H3：選用輸入
+  - H2：輸出信封
+  - H2：核准
+  - H2：OpenProse
+  - H2：安全
+  - H2：疑難排解
+  - H2：深入了解
+  - H2：案例研究：社群工作流程
+  - H2：相關
 
 ## tools/loop-detection.md
 
 - 路由：/tools/loop-detection
 - 標題：
-  - H2: 存在原因
-  - H2: 設定區塊
-  - H3: 欄位行為
-  - H2: 建議設定
-  - H2: 壓縮後防護
-  - H2: 記錄與預期行為
-  - H2: 相關
+  - H2：為什麼存在
+  - H2：設定區塊
+  - H3：欄位行為
+  - H2：建議設定
+  - H2：壓縮後防護
+  - H2：記錄與預期行為
+  - H2：相關
 
 ## tools/media-overview.md
 
 - 路由：/tools/media-overview
 - 標題：
   - H2：功能
-  - H2：供應商功能矩陣
+  - H2：提供者功能矩陣
   - H2：非同步與同步
   - H2：語音轉文字與語音通話
-  - H2：供應商對應（供應商如何拆分到各介面）
+  - H2：提供者對應（供應商如何分布在不同介面）
   - H2：相關
 
 ## tools/minimax-search.md
 
 - 路由：/tools/minimax-search
 - 標題：
-  - H2：取得 Token Plan 憑證
+  - H2：取得 Token Plan 認證
   - H2：設定
   - H2：區域選擇
   - H2：支援的參數
@@ -9341,11 +9342,11 @@ x-i18n:
 - 標題：
   - H2：設定範例
   - H2：設定優先順序
-  - H3：沙盒設定
+  - H3：沙箱設定
   - H3：工具限制
-  - H2：從單一代理程式遷移
+  - H2：從單一代理遷移
   - H2：工具限制範例
-  - H2：常見陷阱：「非 main」
+  - H2：常見陷阱："non-main"
   - H2：測試
   - H2：疑難排解
   - H2：相關
@@ -9355,17 +9356,17 @@ x-i18n:
 - 路由：/tools/music-generation
 - 標題：
   - H2：快速開始
-  - H2：支援的供應商
+  - H2：支援的提供者
   - H3：功能矩陣
   - H2：工具參數
   - H2：非同步行為
   - H3：任務生命週期
   - H2：設定
   - H3：模型選擇
-  - H3：供應商選擇順序
-  - H2：供應商注意事項
+  - H3：提供者選擇順序
+  - H2：提供者注意事項
   - H2：選擇正確路徑
-  - H2：供應商功能模式
+  - H2：提供者功能模式
   - H2：即時測試
   - H2：相關
 
@@ -9383,7 +9384,7 @@ x-i18n:
 - 路由：/tools/parallel-search
 - 標題：
   - H2：安裝外掛
-  - H2：API 金鑰（付費供應商）
+  - H2：API 金鑰（付費提供者）
   - H2：設定
   - H2：覆寫基底 URL
   - H2：工具參數
@@ -9398,7 +9399,7 @@ x-i18n:
   - H2：輸入參照
   - H2：支援的 PDF 參照
   - H2：執行模式
-  - H3：原生供應商模式
+  - H3：原生提供者模式
   - H3：擷取備援模式
   - H2：設定
   - H2：輸出詳細資料
@@ -9413,7 +9414,7 @@ x-i18n:
   - H2：建議預設值
   - H2：OpenClaw 主機執行模式
   - H2：Codex Guardian 對應
-  - H2：ACPX 執行器權限
+  - H2：ACPX harness 權限
   - H2：選擇模式
   - H2：相關
 
@@ -9427,7 +9428,7 @@ x-i18n:
   - H2：設定範例
   - H3：原生 Perplexity Search API
   - H3：OpenRouter / Sonar 相容性
-  - H2：設定金鑰的位置
+  - H2：金鑰設定位置
   - H2：工具參數
   - H3：網域篩選規則
   - H2：注意事項
@@ -9444,11 +9445,11 @@ x-i18n:
   - H3：操作員安裝政策
   - H3：設定外掛政策
   - H2：了解外掛格式
-  - H2：外掛鉤子
+  - H2：外掛掛鉤
   - H2：驗證作用中的閘道
   - H2：疑難排解
-  - H3：遭封鎖的外掛路徑擁有權
-  - H3：緩慢的外掛工具設定
+  - H3：被封鎖的外掛路徑所有權
+  - H3：外掛工具設定緩慢
   - H2：相關
 
 ## tools/reactions.md
@@ -9457,7 +9458,7 @@ x-i18n:
 - 標題：
   - H2：運作方式
   - H2：頻道行為
-  - H2：反應等級
+  - H2：反應層級
   - H2：相關
 
 ## tools/searxng-search.md
@@ -9467,7 +9468,7 @@ x-i18n:
   - H2：設定
   - H2：設定
   - H2：環境變數
-  - H2：外掛設定參考
+  - H2：外掛設定參照
   - H2：注意事項
   - H2：相關
 
@@ -9481,7 +9482,7 @@ x-i18n:
   - H2：命令列介面
   - H2：提案內容
   - H2：支援檔案
-  - H2：代理程式工具
+  - H2：代理工具
   - H2：核准與自主性
   - H2：閘道方法
   - H2：儲存
@@ -9496,12 +9497,12 @@ x-i18n:
   - H2：載入（skills.load）
   - H2：安裝（skills.install）
   - H2：操作員安裝政策（security.installPolicy）
-  - H2：內建技能允許清單
-  - H2：個別技能項目（skills.entries）
-  - H2：代理程式允許清單（agents）
+  - H2：內建 skill 允許清單
+  - H2：各 skill 項目（skills.entries）
+  - H2：代理允許清單（agents）
   - H2：工作坊（skills.workshop）
-  - H2：符號連結的技能根目錄
-  - H2：沙盒化技能與環境變數
+  - H2：符號連結的 skill 根目錄
+  - H2：沙箱化 skills 與環境變數
   - H2：載入順序提醒
   - H2：相關
 
@@ -9510,15 +9511,15 @@ x-i18n:
 - 路由：/tools/skills
 - 標題：
   - H2：載入順序
-  - H2：每個代理程式與共用技能
-  - H2：代理程式允許清單
-  - H2：外掛與技能
-  - H2：技能工作坊
+  - H2：各代理與共享 skills
+  - H2：代理允許清單
+  - H2：外掛與 skills
+  - H2：Skill Workshop
   - H2：從 ClawHub 安裝
   - H2：安全性
   - H2：SKILL.md 格式
   - H3：選用 frontmatter 鍵
-  - H2：門控
+  - H2：閘控
   - H3：安裝程式規格
   - H2：設定覆寫
   - H2：環境注入
@@ -9536,8 +9537,8 @@ x-i18n:
   - H3：核心命令
   - H3：Dock 命令
   - H3：內建外掛命令
-  - H3：技能命令
-  - H2：/tools — 代理程式現在可使用的項目
+  - H3：Skill 命令
+  - H2：/tools — 代理現在可使用的工具
   - H2：/model — 模型選擇
   - H2：/config — 寫入磁碟設定
   - H2：/mcp — MCP 伺服器設定
@@ -9546,7 +9547,7 @@ x-i18n:
   - H2：/trace — 外掛追蹤輸出
   - H2：/btw — 附帶問題
   - H2：介面注意事項
-  - H2：供應商使用情況與狀態
+  - H2：提供者使用情況與狀態
   - H2：相關
 
 ## tools/steer.md
@@ -9554,8 +9555,8 @@ x-i18n:
 - 路由：/tools/steer
 - 標題：
   - H2：目前工作階段
-  - H2：導向與佇列
-  - H2：子代理程式
+  - H2：引導與佇列
+  - H2：子代理
   - H2：ACP 工作階段
   - H2：相關
 
@@ -9564,33 +9565,33 @@ x-i18n:
 - 路由：/tools/subagents
 - 標題：
   - H2：斜線命令
-  - H3：執行緒繫結控制
+  - H3：討論串繫結控制
   - H3：產生行為
-  - H2：內容模式
+  - H2：情境模式
   - H2：工具：sessionsspawn
   - H3：委派提示模式
   - H3：工具參數
   - H3：任務名稱與目標指定
   - H2：工具：sessionsyield
   - H2：工具：subagents
-  - H2：執行緒繫結的工作階段
-  - H3：支援執行緒的頻道
+  - H2：討論串繫結工作階段
+  - H3：支援討論串的頻道
   - H3：快速流程
   - H3：手動控制
   - H3：設定開關
   - H3：允許清單
   - H3：探索
   - H3：自動封存
-  - H2：巢狀子代理程式
+  - H2：巢狀子代理
   - H3：深度層級
-  - H3：公告鏈
-  - H3：依深度套用的工具政策
-  - H3：每個代理程式的產生限制
-  - H3：串聯停止
+  - H3：宣告鏈
+  - H3：依深度設定的工具政策
+  - H3：各代理產生限制
+  - H3：級聯停止
   - H2：驗證
-  - H2：公告
-  - H3：公告內容
-  - H3：統計資料列
+  - H2：宣告
+  - H3：宣告情境
+  - H3：統計列
   - H3：為何偏好 sessionshistory
   - H2：工具政策
   - H3：透過設定覆寫
@@ -9605,7 +9606,7 @@ x-i18n:
 - 路由：/tools/tavily
 - 標題：
   - H2：開始使用
-  - H2：工具參考
+  - H2：工具參照
   - H3：tavilysearch
   - H3：tavilyextract
   - H2：選擇正確工具
@@ -9616,10 +9617,10 @@ x-i18n:
 
 - 路由：/tools/thinking
 - 標題：
-  - H2：功能
+  - H2：功能說明
   - H2：解析順序
   - H2：設定工作階段預設值
-  - H2：依代理程式套用
+  - H2：依代理套用
   - H2：快速模式（/fast）
   - H2：詳細指令（/verbose 或 /v）
   - H2：外掛追蹤指令（/trace）
@@ -9627,7 +9628,7 @@ x-i18n:
   - H2：相關
   - H2：心跳偵測
   - H2：網頁聊天 UI
-  - H2：供應商設定檔
+  - H2：提供者設定檔
 
 ## tools/tokenjuice.md
 
@@ -9635,7 +9636,7 @@ x-i18n:
 - 標題：
   - H2：啟用外掛
   - H2：tokenjuice 變更的內容
-  - H2：驗證其正在運作
+  - H2：驗證它正在運作
   - H2：停用外掛
   - H2：相關
 
@@ -9643,7 +9644,7 @@ x-i18n:
 
 - 路由：/tools/tool-search
 - 標題：
-  - H2：一個回合如何執行
+  - H2：一次回合如何執行
   - H2：模式
   - H2：存在原因
   - H2：API
@@ -9660,11 +9661,11 @@ x-i18n:
 - 標題：
   - H2：快速開始
   - H2：存取
-  - H2：記錄的內容
-  - H2：套件檔案
+  - H2：記錄內容
+  - H2：Bundle 檔案
   - H2：擷取位置
   - H2：停用擷取
-  - H2：調整排清逾時
+  - H2：調整清除逾時
   - H2：隱私與限制
   - H2：疑難排解
   - H2：相關
@@ -9674,23 +9675,23 @@ x-i18n:
 - 路由：/tools/tts
 - 標題：
   - H2：快速開始
-  - H2：支援的供應商
+  - H2：支援的提供者
   - H2：設定
-  - H3：每個代理程式的語音覆寫
-  - H2：角色設定
-  - H3：最小角色設定
-  - H3：完整角色設定（供應商中立提示）
-  - H3：角色設定解析
-  - H3：供應商如何使用角色設定提示
+  - H3：各代理語音覆寫
+  - H2：角色
+  - H3：最小角色
+  - H3：完整角色（提供者中立提示）
+  - H3：角色解析
+  - H3：提供者如何使用角色提示
   - H3：備援政策
   - H2：模型驅動指令
   - H2：斜線命令
-  - H2：每位使用者偏好設定
+  - H2：各使用者偏好設定
   - H2：輸出格式（固定）
-  - H2：自動 TTS 行為
+  - H2：Auto-TTS 行為
   - H2：依頻道區分的輸出格式
-  - H2：欄位參考
-  - H2：代理程式工具
+  - H2：欄位參照
+  - H2：代理工具
   - H2：閘道 RPC
   - H2：服務連結
   - H2：相關
@@ -9700,20 +9701,20 @@ x-i18n:
 - 路由：/tools/video-generation
 - 標題：
   - H2：快速開始
-  - H2：非同步生成的運作方式
+  - H2：非同步生成如何運作
   - H3：任務生命週期
-  - H2：支援的供應商
+  - H2：支援的提供者
   - H3：功能矩陣
   - H2：工具參數
   - H3：必填
   - H3：內容輸入
   - H3：樣式控制
   - H3：進階
-  - H4：備援與具型別選項
+  - H4：備援與型別化選項
   - H2：動作
   - H2：模型選擇
-  - H2：供應商注意事項
-  - H2：供應商功能模式
+  - H2：提供者注意事項
+  - H2：提供者功能模式
   - H2：即時測試
   - H2：設定
   - H2：相關
@@ -9738,12 +9739,12 @@ x-i18n:
 - 路由：/tools/web
 - 標題：
   - H2：快速開始
-  - H2：選擇供應商
-  - H3：供應商比較
+  - H2：選擇提供者
+  - H3：提供者比較
   - H2：自動偵測
   - H2：原生 OpenAI 網頁搜尋
   - H2：原生 Codex 網頁搜尋
-  - H2：網路安全
+  - H2：網路安全性
   - H2：設定網頁搜尋
   - H2：設定
   - H3：儲存 API 金鑰
@@ -9766,10 +9767,10 @@ x-i18n:
 
 - 路由：/vps
 - 標題：
-  - H2：選擇供應商
-  - H2：雲端設定的運作方式
+  - H2：選擇提供者
+  - H2：雲端設定如何運作
   - H2：先強化管理員存取
-  - H2：VPS 上的共用公司代理程式
+  - H2：VPS 上的共享公司代理
   - H2：搭配 VPS 使用節點
   - H2：小型 VM 與 ARM 主機的啟動調校
   - H3：systemd 調校檢查清單（選用）
@@ -9785,7 +9786,7 @@ x-i18n:
   - H2：執行階段設定端點
   - H2：語言支援
   - H2：外觀主題
-  - H2：目前可執行的功能
+  - H2：它能做什麼（目前）
   - H2：MCP 頁面
   - H2：活動分頁
   - H2：聊天行為
@@ -9795,7 +9796,7 @@ x-i18n:
   - H2：Tailnet 存取（建議）
   - H2：不安全的 HTTP
   - H2：內容安全政策
-  - H2：頭像路由驗證
+  - H2：Avatar 路由驗證
   - H2：助理媒體路由驗證
   - H2：建置 UI
   - H2：空白 Control UI 頁面
@@ -9808,7 +9809,7 @@ x-i18n:
 - 標題：
   - H2：快速路徑（建議）
   - H2：驗證基礎（本機與遠端）
-  - H2：如果你看到「unauthorized」/ 1008
+  - H2：如果你看到 "unauthorized" / 1008
   - H2：相關
 
 ## web/index.md
@@ -9819,10 +9820,10 @@ x-i18n:
   - H2：管理員 HTTP RPC
   - H2：設定（預設開啟）
   - H2：Tailscale 存取
-  - H3：整合式 Serve（建議）
-  - H3：Tailnet 綁定 + Token
+  - H3：整合式服務（建議）
+  - H3：Tailnet 繫結 + Token
   - H3：公開網際網路（Funnel）
-  - H2：安全注意事項
+  - H2：安全性注意事項
   - H2：建置 UI
 
 ## web/tui.md
@@ -9832,17 +9833,17 @@ x-i18n:
   - H2：快速開始
   - H3：閘道模式
   - H3：本機模式
-  - H2：你會看到的內容
-  - H2：心智模型：代理程式 + 工作階段
+  - H2：你會看到什麼
+  - H2：心智模型：代理 + 工作階段
   - H2：傳送 + 遞送
-  - H2：選擇器 + 覆疊層
-  - H2：鍵盤快速鍵
+  - H2：選擇器 + 覆蓋層
+  - H2：鍵盤快捷鍵
   - H2：斜線命令
   - H2：本機 shell 命令
   - H2：從本機終端介面修復設定
   - H2：工具輸出
   - H2：終端機色彩
-  - H2：歷程 + 串流
+  - H2：歷史記錄 + 串流
   - H2：連線詳細資料
   - H2：選項
   - H2：疑難排解
@@ -9853,11 +9854,11 @@ x-i18n:
 
 - 路由：/web/webchat
 - 標題：
-  - H2：功能說明
+  - H2：它是什麼
   - H2：快速開始
   - H2：運作方式（行為）
   - H3：逐字稿與遞送模型
-  - H2：Control UI 代理程式工具面板
+  - H2：Control UI 代理工具面板
   - H2：遠端使用
-  - H2：設定參考（WebChat）
+  - H2：設定參照（WebChat）
   - H2：相關

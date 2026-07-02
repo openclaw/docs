@@ -1,25 +1,24 @@
 ---
 read_when:
-    - Dodawanie lub modyfikowanie renderowania kart wiadomości, przycisków albo pól wyboru
-    - Budowanie Plugin kanału obsługującego zaawansowane wiadomości wychodzące
-    - Zmiana prezentacji narzędzia wiadomości lub możliwości dostarczania
+    - Dodawanie lub modyfikowanie renderowania kart wiadomości, przycisków lub list wyboru
+    - Tworzenie Pluginu kanału obsługującego rozbudowane wiadomości wychodzące
+    - Zmiana prezentacji narzędzi wiadomości lub możliwości dostarczania
     - Debugowanie regresji renderowania kart/bloków/komponentów specyficznych dla dostawcy
-summary: Semantyczne karty wiadomości, przyciski, listy wyboru, tekst zastępczy i wskazówki dotyczące dostarczania dla Pluginów kanałów
+summary: Semantyczne karty wiadomości, przyciski, listy wyboru, tekst rezerwowy i wskazówki dotyczące dostarczania dla pluginów kanałów
 title: Prezentacja wiadomości
 x-i18n:
-    generated_at: "2026-06-27T17:55:29Z"
+    generated_at: "2026-07-02T22:51:18Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9fc5eca9dfe637fbdd56dcb473a68540035f8b990eab8cf139a4e27711536f57
+    source_hash: 5acb03b2aabcfefe4935440a3f799876afb3e9ee8c166704987f93f3667e68dd
     source_path: plugins/message-presentation.md
     workflow: 16
 ---
 
-Prezentacja wiadomości to współdzielony kontrakt OpenClaw dla rozbudowanego wychodzącego interfejsu czatu.
+Prezentacja wiadomości to wspólny kontrakt OpenClaw dla rozbudowanego interfejsu czatu wychodzącego.
 Pozwala agentom, poleceniom CLI, przepływom zatwierdzania i pluginom opisać
-intencję wiadomości raz, podczas gdy każdy Plugin kanału renderuje najlepszą
-natywną postać, jaką potrafi.
+intencję wiadomości raz, a każdy plugin kanału renderuje najlepszą natywną postać, jaką potrafi.
 
 Używaj prezentacji dla przenośnego interfejsu wiadomości:
 
@@ -32,7 +31,7 @@ Używaj prezentacji dla przenośnego interfejsu wiadomości:
 
 Nie dodawaj nowych pól natywnych dla dostawcy, takich jak Discord `components`, Slack
 `blocks`, Telegram `buttons`, Teams `card` lub Feishu `card`, do współdzielonego
-narzędzia wiadomości. Są to wyniki renderowania, których właścicielem jest Plugin kanału.
+narzędzia wiadomości. To są wyniki renderera, których właścicielem jest plugin kanału.
 
 ## Kontrakt
 
@@ -102,39 +101,39 @@ Semantyka przycisków:
 
 - `action.type: "command"` uruchamia natywne polecenie z ukośnikiem przez ścieżkę
   poleceń rdzenia. Używaj tego dla wbudowanych przycisków poleceń i menu.
-- `action.type: "callback"` przenosi nieprzezroczyste dane Pluginu przez ścieżkę
-  interakcji kanału. Pluginy kanałów nie mogą reinterpretować danych callbacku jako
+- `action.type: "callback"` przenosi nieprzezroczyste dane pluginu przez ścieżkę
+  interakcji kanału. Pluginy kanałów nie mogą ponownie interpretować danych zwrotnych jako
   poleceń z ukośnikiem.
-- `value` to starsza nieprzezroczysta wartość callbacku. Nowe kontrolki powinny używać `action`,
-  aby Pluginy kanałów mogły mapować polecenia i callbacki bez zgadywania na podstawie tekstu.
+- `value` to starsza nieprzezroczysta wartość zwrotna. Nowe kontrolki powinny używać `action`,
+  aby pluginy kanałów mogły mapować polecenia i wywołania zwrotne bez zgadywania na podstawie tekstu.
 - `url` to przycisk linku. Może istnieć bez `value`.
 - `webApp` opisuje natywny dla kanału przycisk aplikacji webowej. Telegram renderuje go
-  jako `web_app` i obsługuje go tylko w czatach prywatnych. `web_app` jest nadal
-  akceptowane w luźnych ładunkach JSON ze względu na zgodność, ale producenci TypeScript
+  jako `web_app` i obsługuje tylko w czatach prywatnych. `web_app` nadal jest
+  akceptowane w luźnych ładunkach JSON dla kompatybilności, ale producenci TypeScript
   powinni używać `webApp`.
-- `label` jest wymagane i jest również używane w tekstowym wariancie awaryjnym.
-- `style` ma charakter doradczy. Renderery powinny mapować nieobsługiwane style na bezpieczną
+- `label` jest wymagane i jest również używane w rezerwowym tekście.
+- `style` jest wskazówką. Renderery powinny mapować nieobsługiwane style na bezpieczną
   wartość domyślną, a nie powodować niepowodzenie wysyłki.
-- `priority` jest opcjonalne. Gdy kanał ogłasza limity akcji i kontrolki
+- `priority` jest opcjonalne. Gdy kanał deklaruje limity akcji i kontrolki
   muszą zostać odrzucone, rdzeń zachowuje najpierw przyciski o wyższym priorytecie i zachowuje
   pierwotną kolejność wśród przycisków o równym priorytecie. Gdy wszystkie kontrolki się mieszczą,
   zachowywana jest kolejność autora.
-- `disabled` jest opcjonalne. Kanały muszą włączyć obsługę przez `supportsDisabled`; w przeciwnym razie
-  rdzeń degraduje wyłączoną kontrolkę do nieinteraktywnego tekstu awaryjnego.
-- `reusable` jest opcjonalne. Kanały obsługujące wielokrotnego użycia natywne callbacki mogą
-  pozostawić akcję dostępną po udanej interakcji. Używaj tego dla
+- `disabled` jest opcjonalne. Kanały muszą jawnie włączyć tę obsługę przez `supportsDisabled`; w przeciwnym razie
+  rdzeń degraduje wyłączoną kontrolkę do nieinteraktywnego tekstu rezerwowego.
+- `reusable` jest opcjonalne. Kanały obsługujące natywne wywołania zwrotne wielokrotnego użytku mogą
+  utrzymać akcję dostępną po udanej interakcji. Używaj go dla
   powtarzalnych lub idempotentnych akcji, takich jak odświeżenie, inspekcja lub więcej szczegółów;
   pozostaw nieustawione dla zwykłych jednorazowych zatwierdzeń i akcji destrukcyjnych.
 
 Semantyka wyboru:
 
-- `options[].action` ma takie samo znaczenie polecenia/callbacku jak przycisk `action`.
+- `options[].action` ma takie samo znaczenie polecenia/wywołania zwrotnego jak `action` przycisku.
 - `options[].value` to starsza wybrana wartość aplikacji.
-- `placeholder` ma charakter doradczy i może być ignorowany przez kanały bez natywnej
+- `placeholder` jest wskazówką i może być ignorowane przez kanały bez natywnej
   obsługi wyboru.
-- Jeśli kanał nie obsługuje wyborów, tekst awaryjny wypisuje etykiety.
+- Jeśli kanał nie obsługuje wyborów, tekst rezerwowy wyświetla etykiety.
 
-## Przykłady producentów
+## Przykłady producenta
 
 Prosta karta:
 
@@ -156,7 +155,7 @@ Prosta karta:
 }
 ```
 
-Przycisk linku zawierający tylko URL:
+Przycisk linku tylko z adresem URL:
 
 ```json
 {
@@ -210,7 +209,7 @@ openclaw message send --channel slack \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
-Dostarczenie z przypięciem:
+Przypięta dostawa:
 
 ```bash
 openclaw message send --channel telegram \
@@ -219,7 +218,7 @@ openclaw message send --channel telegram \
   --pin
 ```
 
-Dostarczenie z przypięciem z jawnym JSON:
+Przypięta dostawa z jawnym JSON:
 
 ```json
 {
@@ -279,7 +278,7 @@ const adapter: ChannelOutboundAdapter = {
 ```
 
 Wartości logiczne możliwości opisują, co renderer może uczynić interaktywnym. Opcjonalne
-`limits` opisują ogólną obwiednię, którą rdzeń może dostosować przed wywołaniem
+`limits` opisują ogólną otoczkę, którą rdzeń może dostosować przed wywołaniem
 renderera:
 
 ```ts
@@ -316,114 +315,121 @@ type ChannelPresentationCapabilities = {
 ```
 
 Rdzeń stosuje ogólne limity do semantycznych kontrolek przed renderowaniem. Renderery
-nadal odpowiadają za końcową walidację i przycinanie specyficzne dla dostawcy dla natywnej liczby
-bloków, rozmiaru karty, limitów URL i osobliwości dostawcy, których nie da się wyrazić w
+nadal odpowiadają za końcową walidację i przycinanie specyficzne dla dostawcy dla natywnej liczby bloków,
+rozmiaru karty, limitów URL oraz niuansów dostawcy, których nie da się wyrazić w
 ogólnym kontrakcie. Jeśli limity usuną każdą kontrolkę z bloku, rdzeń zachowuje
 etykiety jako nieinteraktywny tekst kontekstowy, aby dostarczona wiadomość nadal miała
-widoczny wariant awaryjny.
+widoczną wersję rezerwową.
 
-## Przepływ renderowania w rdzeniu
+## Przepływ renderowania rdzenia
 
 Gdy `ReplyPayload` lub akcja wiadomości zawiera `presentation`, rdzeń:
 
 1. Normalizuje ładunek prezentacji.
-2. Rozwiązuje adapter wychodzący docelowego kanału.
+2. Rozwiązuje adapter wychodzący kanału docelowego.
 3. Odczytuje `presentationCapabilities`.
 4. Stosuje ogólne limity możliwości, takie jak liczba akcji, długość etykiety i
-   liczba opcji wyboru, gdy adapter je ogłasza.
-5. Wywołuje `renderPresentation`, gdy adapter potrafi wyrenderować ładunek.
-6. Wraca do zachowawczego tekstu, gdy adapter jest nieobecny lub nie potrafi renderować.
-7. Wysyła wynikowy ładunek przez normalną ścieżkę dostarczania kanału.
-8. Stosuje metadane dostarczenia, takie jak `delivery.pin`, po pierwszej pomyślnie
+   liczba opcji wyboru, gdy adapter je deklaruje.
+5. Wywołuje `renderPresentation`, gdy adapter może wyrenderować ładunek.
+6. Przechodzi na zachowawczy tekst, gdy adapter jest nieobecny lub nie może renderować.
+7. Wysyła wynikowy ładunek zwykłą ścieżką dostarczania kanału.
+8. Stosuje metadane dostawy, takie jak `delivery.pin`, po pierwszej udanej
    wysłanej wiadomości.
 
-Rdzeń odpowiada za zachowanie awaryjne, aby producenci mogli pozostać niezależni od kanału. Pluginy
+Rdzeń odpowiada za zachowanie rezerwowe, aby producenci mogli pozostać niezależni od kanałów. Pluginy
 kanałów odpowiadają za natywne renderowanie i obsługę interakcji.
 
 ## Reguły degradacji
 
 Prezentacja musi być bezpieczna do wysłania na ograniczonych kanałach.
 
-Tekst awaryjny zawiera:
+Tekst rezerwowy zawiera:
 
-- `title` jako pierwszą linię
+- `title` jako pierwszy wiersz
 - bloki `text` jako zwykłe akapity
-- bloki `context` jako zwarte linie kontekstu
-- bloki `divider` jako separator wizualny
+- bloki `context` jako zwarte wiersze kontekstu
+- bloki `divider` jako wizualny separator
 - etykiety przycisków, w tym adresy URL dla przycisków linków
 - etykiety opcji wyboru
+
+### Widoczność rezerwowa wartości przycisku
+
+Gdy kanał nie może renderować interaktywnych kontrolek, wartości przycisków i wyboru
+przechodzą na zwykły tekst. Zachowanie rezerwowe zachowuje użyteczność, jednocześnie
+utrzymując nieprzezroczyste dane wywołań zwrotnych jako prywatne:
+
+- Akcje typu **`command`** renderują się jako `label: \`command\``, aby użytkownicy mogli
+  skopiować polecenie i uruchomić je ręcznie w polu wejściowym kanału.
+- Akcje typu **`callback`** i starsze pola **`value`** renderują się
+  tylko jako etykieta. Nieprzezroczysta wartość wywołania zwrotnego nie jest ujawniana w tekście rezerwowym.
+- Przyciski **`url` / `webApp`** renderują tekst URL obok etykiety
+  przycisku, ponieważ URL jest widoczny dla użytkownika.
+- **Opcje wyboru** renderują się tylko jako etykieta. Bazowa wartość opcji nie jest
+  ujawniana w tekście rezerwowym.
+
+Adaptery kanałów, które dodają wskazówki dotyczące ręcznych poleceń w swoim rezerwowym interfejsie (np.
+instrukcje komentarzy dokumentu Feishu), muszą wyprowadzać sprawdzenie obecności polecenia
+z tych samych bloków prezentacji, których używa renderer rezerwowy, aby tekst
+wskazówek pojawiał się tylko wtedy, gdy ręczne polecenie jest faktycznie pokazane.
 
 Nieobsługiwane natywne kontrolki powinny degradować się zamiast powodować niepowodzenie całej wysyłki.
 Przykłady:
 
-- Telegram z wyłączonymi przyciskami inline wysyła tekst awaryjny.
-- Kanał bez obsługi wyboru wypisuje opcje wyboru jako tekst.
-- Przycisk zawierający tylko URL staje się natywnym przyciskiem linku albo awaryjną linią URL.
+- Telegram z wyłączonymi przyciskami w treści wysyła tekst rezerwowy.
+- Kanał bez obsługi wyboru wyświetla opcje wyboru jako tekst.
+- Przycisk tylko z adresem URL staje się natywnym przyciskiem linku albo rezerwowym wierszem URL.
 - Opcjonalne niepowodzenia przypięcia nie powodują niepowodzenia dostarczonej wiadomości.
 
-Głównym wyjątkiem jest `delivery.pin.required: true`; jeśli przypięcie jest wymagane,
-a kanał nie może przypiąć wysłanej wiadomości, dostarczenie zgłasza niepowodzenie.
+Głównym wyjątkiem jest `delivery.pin.required: true`; jeśli przypięcie jest wymagane
+i kanał nie może przypiąć wysłanej wiadomości, dostawa zgłasza niepowodzenie.
 
 ## Mapowanie dostawców
 
 Obecne dołączone renderery:
 
-| Kanał           | Natywny cel renderowania            | Uwagi                                                                                                                                             |
-| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Komponenty i kontenery komponentów  | Zachowuje starsze `channelData.discord.components` dla istniejących producentów ładunków natywnych dla dostawcy, ale nowe współdzielone wysyłki powinny używać `presentation`. |
-| Slack           | Block Kit                           | Zachowuje starsze `channelData.slack.blocks` dla istniejących producentów ładunków natywnych dla dostawcy, ale nowe współdzielone wysyłki powinny używać `presentation`.       |
-| Telegram        | Tekst plus klawiatury inline        | Przyciski/wybory wymagają możliwości przycisku inline dla docelowej powierzchni; w przeciwnym razie używany jest tekst awaryjny.                  |
-| Mattermost      | Tekst plus interaktywne właściwości | Inne bloki degradują się do tekstu.                                                                                                               |
-| Microsoft Teams | Adaptive Cards                      | Zwykły tekst `message` jest dołączany do karty, gdy podano oba elementy.                                                                          |
-| Feishu          | Karty interaktywne                  | Nagłówek karty może używać `title`; treść unika duplikowania tego tytułu.                                                                         |
-| Zwykłe kanały   | Tekst awaryjny                      | Kanały bez renderera nadal otrzymują czytelne wyjście.                                                                                            |
+| Kanał           | Natywny cel renderowania             | Uwagi                                                                                                                                                 |
+| --------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Komponenty i kontenery komponentów   | Zachowuje starsze `channelData.discord.components` dla istniejących producentów ładunków natywnych dla providera, ale nowe współdzielone wysyłki powinny używać `presentation`. |
+| Slack           | Block Kit                            | Zachowuje starsze `channelData.slack.blocks` dla istniejących producentów ładunków natywnych dla providera, ale nowe współdzielone wysyłki powinny używać `presentation`.       |
+| Telegram        | Tekst oraz klawiatury inline         | Przyciski/listy wyboru wymagają funkcji przycisków inline dla docelowej powierzchni; w przeciwnym razie używany jest awaryjny tekst.                  |
+| Mattermost      | Tekst oraz interaktywne props        | Inne bloki degradują się do tekstu.                                                                                                                   |
+| Microsoft Teams | Adaptive Cards                       | Zwykły tekst `message` jest dołączany do karty, gdy podano oba elementy.                                                                              |
+| Feishu          | Karty interaktywne                   | Nagłówek karty może używać `title`; treść unika duplikowania tego tytułu.                                                                             |
+| Kanały zwykłe   | Awaryjny tekst                       | Kanały bez renderera nadal otrzymują czytelne wyjście.                                                                                                |
 
-Zgodność natywnych ładunków dostawcy to ułatwienie przejściowe dla istniejących
+Zgodność ładunków natywnych dla providera jest przejściowym udogodnieniem dla istniejących
 producentów odpowiedzi. Nie jest to powód, aby dodawać nowe współdzielone pola natywne.
 
-## Prezentacja kontra InteractiveReply
+## Presentation a InteractiveReply
 
-`InteractiveReply` to starszy wewnętrzny podzbiór używany przez helpery zatwierdzania
-i interakcji. Obsługuje:
+`InteractiveReply` to starszy wewnętrzny podzbiór używany przez pomocniki zatwierdzania i interakcji.
+Obsługuje:
 
 - tekst
 - przyciski
 - listy wyboru
 
-`MessagePresentation` to kanoniczny współdzielony kontrakt wysyłki. Dodaje:
+`MessagePresentation` to kanoniczny współdzielony kontrakt wysyłania. Dodaje:
 
 - tytuł
 - ton
 - kontekst
 - separator
-- przyciski tylko z URL
+- przyciski tylko z adresem URL
 - ogólne metadane dostarczania przez `ReplyPayload.delivery`
 
-Używaj helperów z `openclaw/plugin-sdk/interactive-runtime` podczas łączenia starszego
-kodu:
+Używaj pomocników z `openclaw/plugin-sdk/interactive-runtime` podczas łączenia ze starszym
+kodem:
+__OC_I18N_900011__
+Nowy kod powinien bezpośrednio akceptować lub tworzyć `MessagePresentation`. Istniejące
+ładunki `interactive` są przestarzałym podzbiorem `presentation`; obsługa środowiska uruchomieniowego
+pozostaje dla starszych producentów.
 
-```ts
-import {
-  adaptMessagePresentationForChannel,
-  applyPresentationActionLimits,
-  interactiveReplyToPresentation,
-  normalizeMessagePresentation,
-  presentationPageSize,
-  presentationToInteractiveControlsReply,
-  presentationToInteractiveReply,
-  renderMessagePresentationFallbackText,
-} from "openclaw/plugin-sdk/interactive-runtime";
-```
-
-Nowy kod powinien bezpośrednio przyjmować lub produkować `MessagePresentation`. Istniejące
-ładunki `interactive` są przestarzałym podzbiorem `presentation`; obsługa w środowisku
-wykonawczym pozostaje dla starszych producentów.
-
-Starsze typy `InteractiveReply*` i helpery konwersji są oznaczone jako
+Starsze typy `InteractiveReply*` i pomocniki konwersji są oznaczone
 `@deprecated` w SDK:
 
 - `InteractiveReply`, `InteractiveReplyBlock`, `InteractiveReplyButton`,
-  `InteractiveReplyOption`, `InteractiveReplySelectBlock` oraz
+  `InteractiveReplyOption`, `InteractiveReplySelectBlock` i
   `InteractiveReplyTextBlock`
 - `normalizeInteractiveReply(...)`
 - `hasInteractiveReplyBlocks(...)`
@@ -434,11 +440,11 @@ Starsze typy `InteractiveReply*` i helpery konwersji są oznaczone jako
 - `reduceInteractiveReply(...)`
 
 `presentationToInteractiveReply(...)` i
-`presentationToInteractiveControlsReply(...)` pozostają dostępne jako mosty rendererów
+`presentationToInteractiveControlsReply(...)` pozostają dostępne jako pomosty renderera
 dla starszych implementacji kanałów. Nowy kod producenta nie powinien ich wywoływać;
-wysyłaj `presentation` i pozwól, aby adaptacja w rdzeniu/kanale obsłużyła renderowanie.
+wysyłaj `presentation` i pozwól rdzeniowi/adaptacji kanału obsłużyć renderowanie.
 
-Helpery zatwierdzania mają również zamienniki z prezentacją jako pierwszym wyborem:
+Pomocniki zatwierdzania mają też zamienniki preferujące prezentację:
 
 - użyj `buildApprovalPresentationFromActionDescriptors(...)` zamiast
   `buildApprovalInteractiveReplyFromActionDescriptors(...)`
@@ -447,48 +453,49 @@ Helpery zatwierdzania mają również zamienniki z prezentacją jako pierwszym w
 - użyj `buildExecApprovalPresentation(...)` zamiast
   `buildExecApprovalInteractiveReply(...)`
 
-`renderMessagePresentationFallbackText(...)` zwraca pusty ciąg dla bloków prezentacji,
-które nie mają tekstu zastępczego, takich jak prezentacja zawierająca tylko separator.
-Transporty wymagające niepustej treści wysyłki mogą przekazać `emptyFallback`, aby włączyć
-minimalną treść bez zmiany domyślnego kontraktu tekstu zastępczego.
+`renderMessagePresentationFallbackText(...)` zwraca pusty ciąg dla
+bloków prezentacji, które nie mają awaryjnego tekstu, takich jak prezentacja
+zawierająca tylko separator. Transporty wymagające niepustej treści wysyłki mogą przekazać
+`emptyFallback`, aby włączyć minimalną treść bez zmiany domyślnego kontraktu awaryjnego.
 
-## Przypięcie dostarczenia
+## Przypięcie dostarczania
 
-Przypinanie jest zachowaniem dostarczania, a nie prezentacją. Użyj `delivery.pin` zamiast
-natywnych pól dostawcy, takich jak `channelData.telegram.pin`.
+Przypinanie jest zachowaniem dostarczania, a nie prezentacji. Używaj `delivery.pin` zamiast
+pól natywnych dla providera, takich jak `channelData.telegram.pin`.
 
 Semantyka:
 
 - `pin: true` przypina pierwszą pomyślnie dostarczoną wiadomość.
-- `pin.notify` ma domyślną wartość `false`.
-- `pin.required` ma domyślną wartość `false`.
-- Opcjonalne niepowodzenia przypięcia są łagodnie obsługiwane i pozostawiają wysłaną wiadomość bez zmian.
+- `pin.notify` domyślnie ma wartość `false`.
+- `pin.required` domyślnie ma wartość `false`.
+- Opcjonalne niepowodzenia przypięcia degradują się i pozostawiają wysłaną wiadomość bez zmian.
 - Wymagane niepowodzenia przypięcia powodują niepowodzenie dostarczenia.
-- Wiadomości dzielone na części przypinają pierwszą dostarczoną część, a nie ostatnią.
+- Wiadomości dzielone na fragmenty przypinają pierwszy dostarczony fragment, a nie końcowy fragment.
 
 Ręczne akcje wiadomości `pin`, `unpin` i `pins` nadal istnieją dla istniejących
-wiadomości, w przypadku których dostawca obsługuje te operacje.
+wiadomości, gdy provider obsługuje te operacje.
 
 ## Lista kontrolna autora Plugin
 
-- Deklaruj `presentation` z `describeMessageTool(...)`, gdy kanał może renderować
-  lub bezpiecznie degradować semantyczną prezentację.
-- Dodaj `presentationCapabilities` do adaptera wychodzącego środowiska wykonawczego.
-- Zaimplementuj `renderPresentation` w kodzie środowiska wykonawczego, nie w kodzie
-  konfiguracji Plugin płaszczyzny sterowania.
+- Zadeklaruj `presentation` z `describeMessageTool(...)`, gdy kanał może
+  renderować albo bezpiecznie degradować prezentację semantyczną.
+- Dodaj `presentationCapabilities` do adaptera wyjściowego środowiska uruchomieniowego.
+- Zaimplementuj `renderPresentation` w kodzie środowiska uruchomieniowego, a nie w kodzie
+  konfiguracji Plugin w płaszczyźnie sterowania.
 - Trzymaj natywne biblioteki UI poza gorącymi ścieżkami konfiguracji/katalogu.
-- Deklaruj ogólne limity możliwości w `presentationCapabilities.limits`, gdy są znane.
-- Zachowaj końcowe limity platformy w rendererze i testach.
-- Dodaj testy tekstu zastępczego dla nieobsługiwanych przycisków, list wyboru, przycisków URL,
-  duplikacji tytułu/tekstu oraz mieszanych wysyłek `message` plus `presentation`.
-- Dodaj obsługę przypięcia dostarczania przez `deliveryCapabilities.pin` i
-  `pinDeliveredMessage` tylko wtedy, gdy dostawca może przypiąć identyfikator wysłanej wiadomości.
-- Nie ujawniaj nowych natywnych pól kart/bloków/komponentów/przycisków dostawcy przez
+- Deklaruj ogólne limity funkcji w `presentationCapabilities.limits`, gdy
+  są znane.
+- Zachowuj końcowe limity platformy w rendererze i testach.
+- Dodaj testy awaryjne dla nieobsługiwanych przycisków, list wyboru, przycisków URL, duplikacji tytułu/tekstu
+  oraz mieszanych wysyłek `message` plus `presentation`.
+- Dodaj obsługę przypinania dostarczenia przez `deliveryCapabilities.pin` i
+  `pinDeliveredMessage` tylko wtedy, gdy provider może przypiąć identyfikator wysłanej wiadomości.
+- Nie ujawniaj nowych pól kart/bloków/komponentów/przycisków natywnych dla providera przez
   współdzielony schemat akcji wiadomości.
 
 ## Powiązana dokumentacja
 
-- [CLI wiadomości](/pl/cli/message)
-- [Przegląd SDK Plugin](/pl/plugins/sdk-overview)
+- [Komunikaty CLI](/pl/cli/message)
+- [Omówienie SDK Plugin](/pl/plugins/sdk-overview)
 - [Architektura Plugin](/pl/plugins/architecture-internals#message-tool-schemas)
 - [Plan refaktoryzacji prezentacji kanałów](/pl/plan/ui-channels)

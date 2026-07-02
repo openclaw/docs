@@ -1,51 +1,52 @@
 ---
 read_when:
     - Talk-modus implementeren op macOS/iOS/Android
-    - Spraak-/TTS-/onderbrekingsgedrag wijzigen
-summary: 'Praatmodus: doorlopende spraakgesprekken via lokale STT/TTS en realtime spraak'
-title: Praatmodus
+    - Gedrag voor stem/TTS/onderbrekingen wijzigen
+summary: 'Spraakmodus: continue spraakgesprekken via lokale STT/TTS en realtime spraak'
+title: Gespreksmodus
 x-i18n:
-    generated_at: "2026-06-27T17:45:37Z"
+    generated_at: "2026-07-02T22:39:56Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 47ae6c1abc763688ab5bbea1c23c9f4f27fe2f4b13cfade61917f5a1a912f057
+    source_hash: 696e9693cd6b4a18500221230db17c94ffd01fe6f9c7fcf271b74072bb035a82
     source_path: nodes/talk.md
     workflow: 16
 ---
 
-Talk-modus heeft twee runtime-vormen:
+De praatmodus heeft twee runtimevormen:
 
-- Native macOS/iOS/Android Talk gebruikt lokale spraakherkenning, Gateway-chat en `talk.speak` TTS. Nodes adverteren de `talk`-capaciteit en declareren de `talk.*`-opdrachten die ze ondersteunen.
-- Browser-Talk gebruikt `talk.client.create` voor door de client beheerde `webrtc`- en `provider-websocket`-sessies, of `talk.session.create` voor door de Gateway beheerde `gateway-relay`-sessies. `managed-room` is gereserveerd voor Gateway-overdracht en walkietalkiekamers.
-- Android Talk kan kiezen voor door de Gateway beheerde realtime relay-sessies met `talk.realtime.mode: "realtime"` en `talk.realtime.transport: "gateway-relay"`. Anders blijft het lokale spraakherkenning, Gateway-chat en `talk.speak` gebruiken.
-- Clients die alleen transcriberen gebruiken `talk.session.create({ mode: "transcription", transport: "gateway-relay", brain: "none" })`, daarna `talk.session.appendAudio`, `talk.session.cancelTurn` en `talk.session.close` wanneer ze ondertitels of dicteren nodig hebben zonder gesproken assistentantwoord.
+- Native praatmodus op macOS/iOS/Android gebruikt lokale spraakherkenning, Gateway-chat en `talk.speak` TTS. Nodes adverteren de `talk`-capability en declareren de `talk.*`-opdrachten die ze ondersteunen.
+- De praatmodus op iOS gebruikt WebRTC in beheer van de client voor OpenAI-realtimeconfiguraties die `webrtc` selecteren of de transportlaag weglaten. Expliciete `gateway-relay`-, `provider-websocket`- en niet-OpenAI-realtimeconfiguraties blijven op de relay in beheer van de Gateway; niet-realtimeconfiguraties gebruiken de native spraaklus.
+- De praatmodus in de browser gebruikt `talk.client.create` voor `webrtc`- en `provider-websocket`-sessies in beheer van de client, of `talk.session.create` voor `gateway-relay`-sessies in beheer van de Gateway. `managed-room` is gereserveerd voor Gateway-handoff en walkietalkie-ruimtes.
+- De praatmodus op Android kan kiezen voor realtime relay-sessies in beheer van de Gateway met `talk.realtime.mode: "realtime"` en `talk.realtime.transport: "gateway-relay"`. Anders blijft deze op native spraakherkenning, Gateway-chat en `talk.speak`.
+- Clients die alleen transcriptie gebruiken, gebruiken `talk.session.create({ mode: "transcription", transport: "gateway-relay", brain: "none" })`, en daarna `talk.session.appendAudio`, `talk.session.cancelTurn` en `talk.session.close` wanneer ze ondertiteling of dictatie nodig hebben zonder gesproken assistentantwoord.
 
-Native Talk is een doorlopende spraakgesprekslus:
+Native praatmodus is een doorlopende spraakconversatielus:
 
 1. Luister naar spraak
 2. Stuur het transcript via de actieve sessie naar het model
 3. Wacht op het antwoord
-4. Spreek het uit via de geconfigureerde Talk-provider (`talk.speak`)
+4. Spreek het uit via de geconfigureerde spraakprovider (`talk.speak`)
 
-Browser-realtime Talk stuurt provider-toolaanroepen door via `talk.client.toolCall`; browserclients roepen `chat.send` niet rechtstreeks aan voor realtime consulten.
-Terwijl een realtime consult actief is, kunnen Talk-clients `talk.client.steer` of
+Realtime praatmodus in beheer van de client stuurt provider-toolcalls door via `talk.client.toolCall`; die clients roepen `chat.send` niet rechtstreeks aan voor realtimeconsulten.
+Terwijl een realtimeconsult actief is, kunnen praatmodusclients `talk.client.steer` of
 `talk.session.steer` gebruiken om gesproken invoer te classificeren als `status`, `steer`, `cancel` of
-`followup`. Geaccepteerde sturing wordt in de actieve ingebedde run in de wachtrij gezet; geweigerde
+`followup`. Geaccepteerde sturing wordt in de actieve ingesloten run in de wachtrij gezet; geweigerde
 sturing retourneert een gestructureerde reden zoals `no_active_run`, `not_streaming`,
 of `compacting`.
 
-Talk met alleen transcriptie emit dezelfde algemene Talk-eventenvelope als realtime- en STT/TTS-sessies, maar gebruikt `mode: "transcription"` en `brain: "none"`. Het is bedoeld voor ondertitels, dicteren en alleen observerende spraakopname; eenmalig geüploade spraaknotities blijven het media-/audiopad gebruiken.
+Praatmodus met alleen transcriptie verstuurt dezelfde algemene praatmodus-eventenvelop als realtime- en STT/TTS-sessies, maar gebruikt `mode: "transcription"` en `brain: "none"`. Dit is bedoeld voor ondertiteling, dictatie en alleen observerende spraakopname; eenmalig geüploade spraaknotities blijven het media/audio-pad gebruiken.
 
 ## Gedrag (macOS)
 
-- **Altijd-zichtbare overlay** terwijl Talk-modus is ingeschakeld.
-- **Luisteren → Denken → Spreken** faseovergangen.
+- **Altijd-zichtbare overlay** zolang de praatmodus is ingeschakeld.
+- Faseovergangen **Luisteren → Denken → Spreken**.
 - Bij een **korte pauze** (stiltevenster) wordt het huidige transcript verzonden.
 - Antwoorden worden **naar WebChat geschreven** (hetzelfde als typen).
-- **Onderbreken bij spraak** (standaard aan): als de gebruiker begint te praten terwijl de assistent spreekt, stoppen we het afspelen en noteren we de onderbrekingstijdstempel voor de volgende prompt.
+- **Onderbreken bij spraak** (standaard aan): als de gebruiker begint te praten terwijl de assistent spreekt, stoppen we het afspelen en noteren we het onderbrekingstijdstip voor de volgende prompt.
 
-## Spraakdirectieven in antwoorden
+## Spraakinstructies in antwoorden
 
 De assistent kan zijn antwoord vooraf laten gaan door een **enkele JSON-regel** om spraak te sturen:
 
@@ -58,8 +59,8 @@ Regels:
 - Alleen de eerste niet-lege regel.
 - Onbekende sleutels worden genegeerd.
 - `once: true` geldt alleen voor het huidige antwoord.
-- Zonder `once` wordt de stem de nieuwe standaard voor Talk-modus.
-- De JSON-regel wordt verwijderd vóór TTS-afspelen.
+- Zonder `once` wordt de stem de nieuwe standaard voor de praatmodus.
+- De JSON-regel wordt vóór TTS-weergave verwijderd.
 
 Ondersteunde sleutels:
 
@@ -111,58 +112,58 @@ Ondersteunde sleutels:
 Standaarden:
 
 - `interruptOnSpeech`: true
-- `silenceTimeoutMs`: wanneer niet ingesteld, behoudt Talk het platformstandaard pauzevenster voordat het transcript wordt verzonden (`700 ms on macOS and Android, 900 ms on iOS`)
-- `provider`: selecteert de actieve Talk-provider. Gebruik `elevenlabs`, `mlx` of `system` voor de macOS-lokale afspeelpaden.
-- `providers.<provider>.voiceId`: valt terug op `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` voor ElevenLabs (of de eerste ElevenLabs-stem wanneer de API-sleutel beschikbaar is).
-- `providers.elevenlabs.modelId`: standaard `eleven_v3` wanneer niet ingesteld.
-- `providers.mlx.modelId`: standaard `mlx-community/Soprano-80M-bf16` wanneer niet ingesteld.
+- `silenceTimeoutMs`: wanneer niet ingesteld, behoudt de praatmodus het platformstandaard-pauzevenster voordat het transcript wordt verzonden (`700 ms on macOS and Android, 900 ms on iOS`)
+- `provider`: selecteert de actieve spraakprovider. Gebruik `elevenlabs`, `mlx` of `system` voor de macOS-lokale afspeelpaden.
+- `providers.<provider>.voiceId`: valt terug op `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` voor ElevenLabs (of de eerste ElevenLabs-stem wanneer een API-sleutel beschikbaar is).
+- `providers.elevenlabs.modelId`: gebruikt standaard `eleven_v3` wanneer niet ingesteld.
+- `providers.mlx.modelId`: gebruikt standaard `mlx-community/Soprano-80M-bf16` wanneer niet ingesteld.
 - `providers.elevenlabs.apiKey`: valt terug op `ELEVENLABS_API_KEY` (of het Gateway-shellprofiel indien beschikbaar).
 - `consultThinkingLevel`: optionele override voor denkniveau voor de volledige OpenClaw-agentrun achter realtime `openclaw_agent_consult`-aanroepen.
 - `consultFastMode`: optionele fast-mode-override voor realtime `openclaw_agent_consult`-aanroepen.
-- `realtime.provider`: selecteert de actieve browser-/server-realtime-spraakprovider. Gebruik `openai` voor WebRTC, `google` voor provider-WebSocket, of een alleen-bridge-provider via Gateway-relay.
-- `realtime.providers.<provider>` slaat realtime-configuratie op die eigendom is van de provider. De browser ontvangt alleen tijdelijke of beperkte sessiereferenties, nooit een standaard API-sleutel.
+- `realtime.provider`: selecteert de actieve realtime spraakprovider. Gebruik `openai` voor WebRTC, `google` voor provider-WebSocket, of een bridge-only-provider via Gateway-relay.
+- `realtime.providers.<provider>` slaat realtimeconfiguratie in beheer van de provider op. De browser ontvangt alleen tijdelijke of beperkte sessiereferenties, nooit een standaard API-sleutel.
 - `realtime.providers.openai.voice`: ingebouwde OpenAI Realtime-stem-id. Huidige `gpt-realtime-2`-stemmen zijn `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin` en `cedar`; `marin` en `cedar` worden aanbevolen voor de beste kwaliteit.
-- `realtime.transport`: `webrtc` en `provider-websocket` zijn browser-realtime-transports. Android gebruikt realtime relay alleen wanneer dit `gateway-relay` is; anders gebruikt Android Talk zijn native STT/TTS-lus.
-- `realtime.brain`: `agent-consult` routeert realtime-toolaanroepen via Gateway-beleid; `direct-tools` is verouderd compatibiliteitsgedrag voor directe tools; `none` is voor transcriptie of externe orkestratie.
+- `realtime.transport`: `webrtc` gebruikt OpenAI WebRTC in beheer van de client op iOS en in de browser. `provider-websocket` is in beheer van de browser, maar blijft op iOS op de Gateway-relay. `gateway-relay` houdt provideraudio op de Gateway; Android gebruikt realtime alleen voor deze transportlaag en behoudt anders de native STT/TTS-lus.
+- `realtime.brain`: `agent-consult` routeert realtime-toolcalls via Gateway-beleid; `direct-tools` is verouderd compatibiliteitsgedrag voor directe tools; `none` is bedoeld voor transcriptie of externe orkestratie.
 - `realtime.consultRouting`: `provider-direct` behoudt het directe antwoord van de provider wanneer deze `openclaw_agent_consult` overslaat; `force-agent-consult` laat Gateway-relay afgeronde gebruikerstranscripten in plaats daarvan via OpenClaw routeren.
-- `realtime.instructions`: voegt providergerichte systeeminstructies toe aan de ingebouwde realtime-prompt van OpenClaw. Gebruik dit voor stemstijl en toon; OpenClaw behoudt de standaardbegeleiding voor `openclaw_agent_consult`.
-- `talk.catalog` stelt de geldige modi, transports, brain-strategieën, realtime-audioformaten en capaciteitsvlaggen van elke provider beschikbaar, zodat first-party Talk-clients niet-ondersteunde combinaties kunnen vermijden.
-- Streaming-transcriptieproviders worden ontdekt via `talk.catalog.transcription`. De huidige Gateway-relay gebruikt de streaming-providerconfiguratie van Voice Call totdat het specifieke Talk-transcriptieconfiguratieoppervlak is toegevoegd.
-- `speechLocale`: optionele BCP 47-locale-id voor on-device Talk-spraakherkenning op iOS/macOS. Laat dit niet ingesteld om de apparaatstandaard te gebruiken.
-- `outputFormat`: standaard `pcm_44100` op macOS/iOS en `pcm_24000` op Android (stel `mp3_*` in om MP3-streaming af te dwingen)
+- `realtime.instructions`: voegt providergerichte systeeminstructies toe aan de ingebouwde realtimeprompt van OpenClaw. Gebruik dit voor spraakstijl en toon; OpenClaw behoudt de standaardrichtlijnen voor `openclaw_agent_consult`.
+- `talk.catalog` stelt de geldige modi, transportlagen, brain-strategieën, realtime-audioformaten en capabilityvlaggen van elke provider beschikbaar, zodat first-party praatmodusclients niet-ondersteunde combinaties kunnen vermijden.
+- Streaming-transcriptieproviders worden ontdekt via `talk.catalog.transcription`. De huidige Gateway-relay gebruikt de streamingproviderconfiguratie van Voice Call totdat het specifieke configuratieoppervlak voor praatmodus-transcriptie is toegevoegd.
+- `speechLocale`: optionele BCP 47-locale-id voor spraakherkenning op het apparaat in praatmodus op iOS/macOS. Laat dit leeg om de apparaatstandaard te gebruiken.
+- `outputFormat`: gebruikt standaard `pcm_44100` op macOS/iOS en `pcm_24000` op Android (stel `mp3_*` in om MP3-streaming te forceren)
 
 ## macOS-UI
 
-- Menubalkschakelaar: **Talk**
-- Configuratietabblad: groep **Talk Mode** (stem-id + onderbrekingsschakelaar)
+- Menubalkschakelaar: **Praten**
+- Configuratietabblad: groep **Praatmodus** (stem-id + onderbrekingsschakelaar)
 - Overlay:
   - **Luisteren**: wolk pulseert met microfoonniveau
   - **Denken**: zinkende animatie
   - **Spreken**: uitstralende ringen
-  - Klik op wolk: stoppen met spreken
-  - Klik op X: Talk-modus afsluiten
+  - Klik op wolk: stop met spreken
+  - Klik op X: sluit de praatmodus af
 
 ## Android-UI
 
-- Schakelaar op spraaktabblad: **Talk**
-- Handmatige **Mic** en **Talk** zijn runtime-opnamemodi die elkaar uitsluiten.
-- Handmatige Mic stopt wanneer de app de voorgrond verlaat of de gebruiker het spraaktabblad verlaat.
-- Talk Mode blijft draaien totdat deze wordt uitgeschakeld of de Android-node de verbinding verbreekt, en gebruikt Androids foreground-service-type voor de microfoon terwijl het actief is.
+- Schakelaar op spraaktabblad: **Praten**
+- Handmatige **Microfoon** en **Praten** zijn elkaar uitsluitende runtime-opnamemodi.
+- Handmatige microfoon stopt wanneer de app de voorgrond verlaat of de gebruiker het spraaktabblad verlaat.
+- Praatmodus blijft actief totdat deze wordt uitgeschakeld of de Android-node de verbinding verliest, en gebruikt het Android-microfoon-foreground-service-type zolang deze actief is.
 
-## Notities
+## Opmerkingen
 
-- Vereist spraak- en microfoonmachtigingen.
-- Native Talk gebruikt de actieve Gateway-sessie en valt alleen terug op geschiedenispolling wanneer antwoordevents niet beschikbaar zijn.
-- Browser-realtime Talk gebruikt `talk.client.toolCall` voor `openclaw_agent_consult` in plaats van `chat.send` bloot te stellen aan provider-beheerde browsersessies.
-- Talk met alleen transcriptie gebruikt `talk.session.create`, `talk.session.appendAudio`, `talk.session.cancelTurn` en `talk.session.close`; clients abonneren zich op `talk.event` voor gedeeltelijke/definitieve transcriptupdates.
-- De Gateway lost Talk-afspelen op via `talk.speak` met de actieve Talk-provider. Android valt alleen terug op lokale systeem-TTS wanneer die RPC niet beschikbaar is.
-- macOS-lokale MLX-weergave gebruikt de gebundelde `openclaw-mlx-tts`-helper wanneer aanwezig, of een uitvoerbaar bestand op `PATH`. Stel `OPENCLAW_MLX_TTS_BIN` in om tijdens ontwikkeling naar een aangepaste helper-binary te wijzen.
+- Vereist machtigingen voor spraak en microfoon.
+- Native praatmodus gebruikt de actieve Gateway-sessie en valt alleen terug op geschiedenis-polling wanneer response-events niet beschikbaar zijn.
+- Realtime praatmodus in beheer van de client gebruikt `talk.client.toolCall` voor `openclaw_agent_consult` in plaats van `chat.send` bloot te stellen aan sessies in beheer van de provider.
+- Praatmodus met alleen transcriptie gebruikt `talk.session.create`, `talk.session.appendAudio`, `talk.session.cancelTurn` en `talk.session.close`; clients abonneren zich op `talk.event` voor gedeeltelijke/definitieve transcriptupdates.
+- De gateway lost praatmodus-weergave op via `talk.speak` met de actieve spraakprovider. Android valt alleen terug op lokale systeem-TTS wanneer die RPC niet beschikbaar is.
+- macOS-lokale MLX-weergave gebruikt de gebundelde `openclaw-mlx-tts`-helper wanneer aanwezig, of een uitvoerbaar bestand op `PATH`. Stel `OPENCLAW_MLX_TTS_BIN` in om tijdens ontwikkeling naar een aangepaste helper-binary te verwijzen.
 - `stability` voor `eleven_v3` wordt gevalideerd op `0.0`, `0.5` of `1.0`; andere modellen accepteren `0..1`.
 - `latency_tier` wordt gevalideerd op `0..4` wanneer ingesteld.
-- Android ondersteunt `pcm_16000`, `pcm_22050`, `pcm_24000` en `pcm_44100`-uitvoerformaten voor AudioTrack-streaming met lage latentie.
+- Android ondersteunt `pcm_16000`-, `pcm_22050`-, `pcm_24000`- en `pcm_44100`-uitvoerformaten voor AudioTrack-streaming met lage latency.
 
 ## Gerelateerd
 
-- [Voice wake](/nl/nodes/voicewake)
-- [Audio- en spraaknotities](/nl/nodes/audio)
+- [Spraakactivering](/nl/nodes/voicewake)
+- [Audio en spraaknotities](/nl/nodes/audio)
 - [Mediabegrip](/nl/nodes/media-understanding)
