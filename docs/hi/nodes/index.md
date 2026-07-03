@@ -1,43 +1,43 @@
 ---
 read_when:
     - iOS/Android नोड्स को Gateway से पेयर करना
-    - एजेंट संदर्भ के लिए Node कैनवास/कैमरा का उपयोग करना
-    - नए node कमांड या CLI सहायक जोड़ना
-summary: 'नोड्स: कैनवास/कैमरा/स्क्रीन/डिवाइस/सूचनाओं/सिस्टम के लिए पेयरिंग, क्षमताएँ, अनुमतियाँ, और CLI सहायक'
-title: नोड्स
+    - एजेंट संदर्भ के लिए नोड कैनवास/कैमरा का उपयोग
+    - नए node कमांड या CLI हेल्पर जोड़ना
+summary: 'नोड्स: कैनवास/कैमरा/स्क्रीन/डिवाइस/सूचनाओं/सिस्टम के लिए पेयरिंग, क्षमताएं, अनुमतियां, और CLI हेल्पर'
+title: Node
 x-i18n:
-    generated_at: "2026-06-28T23:24:53Z"
+    generated_at: "2026-07-03T09:37:46Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e860f051faeeea2d7461d07d2119a7f11f80812aa87896882f11edee36667e4a
+    source_hash: 7096a2600063465ac0bfca359fa1551cb8ca2ab28b095e32a7893669448d36aa
     source_path: nodes/index.md
     workflow: 16
 ---
 
-एक **node** एक companion device (macOS/iOS/Android/headless) है जो Gateway **WebSocket** (operators वाले उसी port) से `role: "node"` के साथ जुड़ता है और `node.invoke` के माध्यम से command surface (जैसे `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) उजागर करता है। Protocol details: [Gateway protocol](/hi/gateway/protocol).
+एक **Node** एक companion डिवाइस (macOS/iOS/Android/headless) है जो `role: "node"` के साथ Gateway **WebSocket** (ऑपरेटरों वाले ही पोर्ट) से जुड़ता है और `node.invoke` के ज़रिए कमांड सतह (जैसे `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) उपलब्ध कराता है। प्रोटोकॉल विवरण: [Gateway प्रोटोकॉल](/hi/gateway/protocol).
 
-Legacy transport: [Bridge protocol](/hi/gateway/bridge-protocol) (TCP JSONL;
-वर्तमान nodes के लिए केवल ऐतिहासिक).
+पुराना ट्रांसपोर्ट: [Bridge प्रोटोकॉल](/hi/gateway/bridge-protocol) (TCP JSONL;
+मौजूदा Nodes के लिए केवल ऐतिहासिक).
 
-macOS **node mode** में भी चल सकता है: menubar app Gateway के
-WS server से जुड़ता है और अपने local canvas/camera commands को node के रूप में उजागर करता है (ताकि
-`openclaw nodes …` इस Mac के विरुद्ध काम करे)। remote gateway mode में, browser
-automation CLI node host (`openclaw node run` या
-installed node service) द्वारा संभाली जाती है, native app node द्वारा नहीं।
+macOS **Node मोड** में भी चल सकता है: menubar ऐप Gateway के
+WS सर्वर से जुड़ता है और अपने स्थानीय canvas/camera कमांड्स को Node के रूप में उपलब्ध कराता है (ताकि
+`openclaw nodes …` इस Mac के विरुद्ध काम करे)। रिमोट gateway मोड में, ब्राउज़र
+ऑटोमेशन CLI Node होस्ट (`openclaw node run` या
+इंस्टॉल की गई Node सर्विस) संभालता है, native ऐप Node नहीं।
 
 नोट्स:
 
-- Nodes **peripherals** हैं, gateways नहीं। वे gateway service नहीं चलाते।
-- Telegram/WhatsApp/etc. messages **gateway** पर आते हैं, nodes पर नहीं।
-- Troubleshooting runbook: [/nodes/troubleshooting](/hi/nodes/troubleshooting)
+- Nodes **peripherals** हैं, gateways नहीं। वे gateway सर्विस नहीं चलाते।
+- Telegram/WhatsApp/आदि संदेश **gateway** पर आते हैं, Nodes पर नहीं।
+- समस्या-निवारण runbook: [/nodes/troubleshooting](/hi/nodes/troubleshooting)
 
-## Pairing + status
+## Pairing + स्थिति
 
-**WS nodes device pairing का उपयोग करते हैं।** Nodes `connect` के दौरान device identity प्रस्तुत करते हैं; Gateway
-`role: node` के लिए device pairing request बनाता है। devices CLI (या UI) के माध्यम से approve करें।
+**WS Nodes डिवाइस pairing का उपयोग करते हैं।** Nodes `connect` के दौरान डिवाइस पहचान प्रस्तुत करते हैं; Gateway
+`role: node` के लिए डिवाइस pairing अनुरोध बनाता है। devices CLI (या UI) के ज़रिए मंज़ूरी दें।
 
-Quick CLI:
+त्वरित CLI:
 
 ```bash
 openclaw devices list
@@ -47,66 +47,67 @@ openclaw nodes status
 openclaw nodes describe --node <idOrNameOrIp>
 ```
 
-यदि कोई node बदले हुए auth details (role/scopes/public key) के साथ फिर से कोशिश करता है, तो पिछला
-pending request supersede हो जाता है और नया `requestId` बनाया जाता है। approve करने से पहले
-`openclaw devices list` फिर से चलाएं।
+यदि कोई Node बदले हुए auth विवरण (role/scopes/public key) के साथ दोबारा प्रयास करता है, तो पिछला
+pending अनुरोध प्रतिस्थापित हो जाता है और नया `requestId` बनाया जाता है। मंज़ूरी देने से पहले
+`openclaw devices list` फिर चलाएँ।
 
 नोट्स:
 
-- `nodes status` किसी node को **paired** के रूप में चिह्नित करता है जब उसकी device pairing role में `node` शामिल हो।
-- device pairing record टिकाऊ approved-role contract है। Token
-  rotation उसी contract के अंदर रहती है; यह किसी paired node को ऐसी
-  अलग role में upgrade नहीं कर सकती जिसे pairing approval ने कभी grant नहीं किया।
+- `nodes status` किसी Node को **paired** के रूप में चिह्नित करता है जब उसकी डिवाइस pairing role में `node` शामिल हो।
+- डिवाइस pairing रिकॉर्ड टिकाऊ approved-role अनुबंध है। Token
+  rotation उसी अनुबंध के अंदर रहता है; यह किसी paired Node को ऐसी
+  अलग role में अपग्रेड नहीं कर सकता जिसकी pairing मंज़ूरी कभी दी ही नहीं गई।
 - `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) एक अलग gateway-owned
-  node pairing store है; यह WS `connect` handshake को gate **नहीं** करता।
-- `openclaw nodes remove --node <id|name|ip>` किसी node pairing को हटाता है। किसी
-  device-backed node के लिए यह `devices/paired.json` में device की `node` role को revoke करता है
-  और उस device के node-role sessions को disconnect करता है — mixed-role device अपनी
-  row रखता है और केवल `node` role खोता है, जबकि node-only device row
-  delete हो जाती है। यह अलग gateway-owned node
-  pairing store से कोई matching entry भी clear करता है। `operator.pairing` non-operator node rows हटा सकता है; mixed-role device पर अपनी ही node role revoke करने वाले
-  device-token caller को अतिरिक्त रूप से `operator.admin` चाहिए।
-- Approval scope pending request के declared commands का पालन करता है:
-  - commandless request: `operator.pairing`
-  - non-exec node commands: `operator.pairing` + `operator.write`
+  Node pairing store है; यह WS `connect` handshake को gate **नहीं** करता।
+- `openclaw nodes remove --node <id|name|ip>` किसी Node pairing को हटाता है। किसी
+  device-backed Node के लिए यह `devices/paired.json` में डिवाइस की `node` role को रद्द करता है
+  और उस डिवाइस के node-role sessions को disconnect करता है — mixed-role डिवाइस अपनी
+  row रखता है और केवल `node` role खोता है, जबकि node-only डिवाइस row
+  हटा दी जाती है। यह अलग gateway-owned Node
+  pairing store से कोई मिलती-जुलती entry भी साफ़ करता है। `operator.pairing` non-operator Node rows हटा सकता है; किसी
+  mixed-role डिवाइस पर अपनी ही Node role रद्द करने वाले device-token caller को
+  अतिरिक्त रूप से `operator.admin` चाहिए।
+- Approval scope pending अनुरोध के घोषित commands का अनुसरण करता है:
+  - commandless अनुरोध: `operator.pairing`
+  - non-exec Node commands: `operator.pairing` + `operator.write`
   - `system.run` / `system.run.prepare` / `system.which`: `operator.pairing` + `operator.admin`
 
-## Remote node host (system.run)
+## रिमोट Node होस्ट (system.run)
 
-जब आपका Gateway एक machine पर चलता है और आप commands को
-दूसरी machine पर execute कराना चाहते हैं, तो **node host** का उपयोग करें। model अब भी **gateway** से बात करता है; जब `host=node` चुना जाता है, तो gateway
-`exec` calls को **node host** तक forward करता है।
+जब आपका Gateway एक मशीन पर चलता है और आप commands को
+दूसरी मशीन पर execute कराना चाहते हैं, तो **Node होस्ट** का उपयोग करें। मॉडल फिर भी **gateway** से बात करता है; `host=node` चुने जाने पर gateway
+`exec` calls को **Node होस्ट** पर forward करता है।
 
-### क्या कहां चलता है
+### क्या कहाँ चलता है
 
-- **Gateway host**: messages receive करता है, model चलाता है, tool calls route करता है।
-- **Node host**: node machine पर `system.run`/`system.which` execute करता है।
-- **Approvals**: node host पर `~/.openclaw/exec-approvals.json` के माध्यम से enforce किए जाते हैं।
+- **Gateway होस्ट**: संदेश प्राप्त करता है, मॉडल चलाता है, tool calls route करता है।
+- **Node होस्ट**: Node मशीन पर `system.run`/`system.which` execute करता है।
+- **Approvals**: Node होस्ट पर `~/.openclaw/exec-approvals.json` के ज़रिए लागू होते हैं।
 
-Approval note:
+Approval नोट:
 
-- Approval-backed node runs exact request context से bind होते हैं।
-- direct shell/runtime file executions के लिए, OpenClaw best-effort रूप से एक concrete local
-  file operand को भी bind करता है और यदि वह file execution से पहले बदलती है तो run deny करता है।
-- यदि OpenClaw interpreter/runtime command के लिए ठीक एक concrete local file पहचान नहीं सकता,
-  तो full runtime coverage का दिखावा करने के बजाय approval-backed execution deny कर दिया जाता है। व्यापक interpreter semantics के लिए sandboxing,
-  separate hosts, या explicit trusted allowlist/full workflow का उपयोग करें।
+- Approval-backed Node runs exact request context से bind होते हैं।
+- सीधे shell/runtime file executions के लिए, OpenClaw best-effort एक ठोस स्थानीय
+  file operand को भी bind करता है और execution से पहले वह file बदल जाए तो run deny कर देता है।
+- यदि OpenClaw किसी interpreter/runtime command के लिए ठीक एक ठोस स्थानीय file की पहचान नहीं कर सकता,
+  तो approval-backed execution को पूर्ण runtime coverage का दिखावा करने के बजाय deny किया जाता है। व्यापक interpreter semantics के लिए sandboxing,
+  अलग hosts, या explicit trusted allowlist/full workflow का उपयोग करें।
 
-### node host शुरू करें (foreground)
+### Node होस्ट शुरू करें (foreground)
 
-node machine पर:
+Node मशीन पर:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
 ```
 
-### SSH tunnel के माध्यम से remote gateway (loopback bind)
+### SSH tunnel के ज़रिए रिमोट gateway (loopback bind)
 
-यदि Gateway loopback (`gateway.bind=loopback`, local mode में default) पर bind करता है,
-तो remote node hosts सीधे connect नहीं कर सकते। SSH tunnel बनाएं और
-node host को tunnel के local end पर point करें।
+यदि Gateway loopback से bind होता है (`gateway.bind=loopback`, local mode में default),
+तो रिमोट Node hosts सीधे connect नहीं कर सकते। SSH tunnel बनाएँ और
+Node होस्ट को tunnel के local end की ओर point करें।
 
-Example (node host -> gateway host):
+उदाहरण (Node होस्ट -> gateway होस्ट):
 
 ```bash
 # Terminal A (keep running): forward local 18790 -> gateway 127.0.0.1:18789
@@ -119,15 +120,15 @@ openclaw node run --host 127.0.0.1 --port 18790 --display-name "Build Node"
 
 नोट्स:
 
-- `openclaw node run` token या password auth support करता है।
-- Env vars preferred हैं: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
+- `openclaw node run` token या password auth का समर्थन करता है।
+- Env vars को प्राथमिकता दी जाती है: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
 - Config fallback `gateway.auth.token` / `gateway.auth.password` है।
-- local mode में, node host जानबूझकर `gateway.remote.token` / `gateway.remote.password` ignore करता है।
+- local mode में, Node होस्ट जानबूझकर `gateway.remote.token` / `gateway.remote.password` को ignore करता है।
 - remote mode में, `gateway.remote.token` / `gateway.remote.password` remote precedence rules के अनुसार eligible हैं।
-- यदि active local `gateway.auth.*` SecretRefs configured हैं लेकिन unresolved हैं, तो node-host auth fails closed।
-- Node-host auth resolution केवल `OPENCLAW_GATEWAY_*` env vars का सम्मान करता है।
+- यदि active local `gateway.auth.*` SecretRefs configured लेकिन unresolved हैं, तो Node-host auth fails closed।
+- Node-host auth resolution केवल `OPENCLAW_GATEWAY_*` env vars को मानता है।
 
-### node host शुरू करें (service)
+### Node होस्ट शुरू करें (service)
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789 --display-name "Build Node"
@@ -135,9 +136,9 @@ openclaw node start
 openclaw node restart
 ```
 
-### Pair + name
+### Pair + नाम दें
 
-gateway host पर:
+Gateway होस्ट पर:
 
 ```bash
 openclaw devices list
@@ -145,28 +146,28 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-यदि node बदले हुए auth details के साथ retry करता है, तो `openclaw devices list` फिर से चलाएं
-और current `requestId` approve करें।
+यदि Node बदले हुए auth details के साथ दोबारा प्रयास करता है, तो `openclaw devices list` फिर चलाएँ
+और मौजूदा `requestId` को approve करें।
 
-Naming options:
+नामकरण विकल्प:
 
-- `openclaw node run` / `openclaw node install` पर `--display-name` (node पर `~/.openclaw/node.json` में persist होता है)।
+- `openclaw node run` / `openclaw node install` पर `--display-name` (Node पर `~/.openclaw/node.json` में persist होता है)।
 - `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (gateway override).
 
-### commands को allowlist करें
+### Commands को allowlist करें
 
-Exec approvals **per node host** होते हैं। gateway से allowlist entries जोड़ें:
+Exec approvals **प्रति Node होस्ट** होते हैं। Gateway से allowlist entries जोड़ें:
 
 ```bash
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/uname"
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/sw_vers"
 ```
 
-Approvals node host पर `~/.openclaw/exec-approvals.json` में रहते हैं।
+Approvals Node होस्ट पर `~/.openclaw/exec-approvals.json` में रहते हैं।
 
-### exec को node पर point करें
+### exec को Node की ओर point करें
 
-defaults configure करें (gateway config):
+Defaults configure करें (gateway config):
 
 ```bash
 openclaw config set tools.exec.host node
@@ -174,24 +175,29 @@ openclaw config set tools.exec.security allowlist
 openclaw config set tools.exec.node "<id-or-name>"
 ```
 
-या per session:
+या प्रति session:
 
 ```
 /exec host=node security=allowlist node=<id-or-name>
 ```
 
-एक बार set होने पर, `host=node` वाली कोई भी `exec` call node host पर चलती है (node
+Set होने के बाद, `host=node` वाला कोई भी `exec` call Node होस्ट पर चलता है (Node
 allowlist/approvals के अधीन)।
 
-`host=auto` अपने आप node को implicitly choose नहीं करेगा, लेकिन `auto` से explicit per-call `host=node` request allowed है। यदि आप session के लिए node exec को default बनाना चाहते हैं, तो `tools.exec.host=node` या `/exec host=node ...` explicitly set करें।
+`host=auto` अपने आप Node नहीं चुनेगा, लेकिन `auto` से explicit per-call `host=node` अनुरोध की अनुमति है। यदि आप session के लिए Node exec को default बनाना चाहते हैं, तो स्पष्ट रूप से `tools.exec.host=node` या `/exec host=node ...` set करें।
 
-Related:
+संबंधित:
 
-- [Node host CLI](/hi/cli/node)
+- [Node होस्ट CLI](/hi/cli/node)
 - [Exec tool](/hi/tools/exec)
 - [Exec approvals](/hi/tools/exec-approvals)
 
-## commands invoke करना
+### स्थानीय मॉडल inference
+
+कोई desktop या server Node उस Node पर चल रहे Ollama server से chat-capable models उपलब्ध करा सकता है। Agents installed models खोजने और remotely bounded prompt चलाने के लिए Ollama Plugin के `node_inference` tool का उपयोग करते हैं; Gateway को Ollama तक सीधे network access की आवश्यकता नहीं होती। Setup, model filtering, और direct verification commands के लिए [Ollama Node-local inference](/hi/providers/ollama#node-local-inference)
+देखें।
+
+## Commands invoke करना
 
 Low-level (raw RPC):
 
@@ -203,29 +209,29 @@ openclaw nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"ja
 
 ## Command policy
 
-Node commands invoke किए जाने से पहले दो gates पास करने चाहिए:
+Node commands invoke होने से पहले दो gates पास करने चाहिए:
 
-1. node को अपने WebSocket `connect.commands` list में command declare करना चाहिए।
-2. gateway की platform policy को declared command allow करना चाहिए।
+1. Node को अपने WebSocket `connect.commands` list में command declare करना चाहिए।
+2. Gateway की platform policy को declared command की अनुमति देनी चाहिए।
 
-Windows और macOS companion nodes default रूप से
-`canvas.*`, `camera.list`, `location.get`, और `screen.snapshot` जैसे safe declared commands allow करते हैं।
-Trusted nodes जो `talk` capability advertise करते हैं या `talk.*` commands declare करते हैं,
-वे declared push-to-talk commands (`talk.ptt.start`, `talk.ptt.stop`,
-`talk.ptt.cancel`, `talk.ptt.once`) को भी default रूप से allow करते हैं, platform label से independent।
+Windows और macOS companion Nodes default रूप से सुरक्षित declared commands जैसे
+`canvas.*`, `camera.list`, `location.get`, और `screen.snapshot` की अनुमति देते हैं।
+वे trusted Nodes जो `talk` capability advertise करते हैं या `talk.*` commands declare करते हैं,
+default रूप से declared push-to-talk commands (`talk.ptt.start`, `talk.ptt.stop`,
+`talk.ptt.cancel`, `talk.ptt.once`) की भी अनुमति देते हैं, platform label से स्वतंत्र।
 `camera.snap`, `camera.clip`, और
 `screen.record` जैसे dangerous या privacy-heavy commands को अब भी
 `gateway.nodes.allowCommands` के साथ explicit opt-in चाहिए। `gateway.nodes.denyCommands` हमेशा
-defaults और extra allowlist entries पर precedence लेता है।
+defaults और extra allowlist entries पर जीतता है।
 
-Plugin-owned node commands Gateway node-invoke policy जोड़ सकते हैं। वह policy
-allowlist check के बाद और node को forward करने से पहले चलती है, ताकि raw
-`node.invoke`, CLI helpers, और dedicated agent tools समान plugin
-permission boundary साझा करें। Dangerous plugin node commands को अब भी explicit
+Plugin-owned Node commands Gateway node-invoke policy जोड़ सकते हैं। वह policy
+allowlist check के बाद और Node को forward करने से पहले चलती है, इसलिए raw
+`node.invoke`, CLI helpers, और dedicated agent tools एक ही Plugin
+permission boundary साझा करते हैं। Dangerous Plugin Node commands को अब भी explicit
 `gateway.nodes.allowCommands` opt-in चाहिए।
 
-node द्वारा अपनी declared command list बदलने के बाद, पुराने device pairing को reject करें
-और new request approve करें ताकि gateway updated command snapshot store करे।
+Node द्वारा अपनी declared command list बदलने के बाद, पुरानी device pairing को reject करें
+और नए अनुरोध को approve करें ताकि gateway updated command snapshot store करे।
 
 ## Config (`openclaw.json`)
 
@@ -260,12 +266,12 @@ Node-related settings `gateway.nodes` और `tools.exec` के अंतर्
 }
 ```
 
-exact node command names का उपयोग करें। `denyCommands` किसी command को हटा देता है, भले ही
-platform default या `allowCommands` entry अन्यथा उसे allow करती। gateway node pairing और command-policy field details के लिए
+Exact Node command names का उपयोग करें। `denyCommands` किसी command को तब भी हटाता है जब
+platform default या `allowCommands` entry अन्यथा उसकी अनुमति देती। Gateway Node pairing और command-policy field details के लिए
 [Gateway configuration reference](/hi/gateway/configuration-reference#gateway-field-details)
 देखें।
 
-Per-agent exec node override:
+Per-agent exec Node override:
 
 ```json5
 {
@@ -282,7 +288,7 @@ Per-agent exec node override:
 
 ## Screenshots (canvas snapshots)
 
-यदि node Canvas (WebView) दिखा रहा है, तो `canvas.snapshot` `{ format, base64 }` return करता है।
+यदि Node Canvas (WebView) दिखा रहा है, तो `canvas.snapshot` `{ format, base64 }` लौटाता है।
 
 CLI helper (temp file में लिखता है और saved path print करता है):
 
@@ -302,8 +308,8 @@ openclaw nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 
 नोट्स:
 
-- `canvas present` URLs या local file paths (`--target`) accept करता है, साथ ही positioning के लिए optional `--x/--y/--width/--height`।
-- `canvas eval` inline JS (`--js`) या positional arg accept करता है।
+- `canvas present` URLs या local file paths (`--target`) स्वीकार करता है, साथ ही positioning के लिए optional `--x/--y/--width/--height`।
+- `canvas eval` inline JS (`--js`) या positional arg स्वीकार करता है।
 
 ### A2UI (Canvas)
 
@@ -315,13 +321,13 @@ openclaw nodes canvas a2ui reset --node <idOrNameOrIp>
 
 नोट्स:
 
-- Mobile nodes action-capable rendering के लिए bundled app-owned A2UI page का उपयोग करते हैं।
-- केवल A2UI v0.8 JSONL supported है (v0.9/createSurface rejected है)।
-- iOS और Android remote Gateway Canvas pages render करते हैं, लेकिन A2UI button actions केवल bundled app-owned A2UI page से dispatch होते हैं। Gateway-hosted HTTP/HTTPS A2UI pages उन mobile clients पर render-only हैं।
+- मोबाइल नोड action-capable rendering के लिए bundled app-owned A2UI पेज का उपयोग करते हैं।
+- केवल A2UI v0.8 JSONL समर्थित है (v0.9/createSurface अस्वीकार किया जाता है)।
+- iOS और Android remote Gateway Canvas पेज render करते हैं, लेकिन A2UI button actions केवल bundled app-owned A2UI पेज से dispatch किए जाते हैं। Gateway-hosted HTTP/HTTPS A2UI पेज उन मोबाइल clients पर केवल render-only हैं।
 
-## Photos + videos (node camera)
+## फ़ोटो + वीडियो (नोड कैमरा)
 
-Photos (`jpg`):
+फ़ोटो (`jpg`):
 
 ```bash
 openclaw nodes camera list --node <idOrNameOrIp>
@@ -336,31 +342,31 @@ openclaw nodes camera clip --node <idOrNameOrIp> --duration 10s
 openclaw nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
 ```
 
-नोट्स:
+टिप्पणियां:
 
-- `canvas.*` और `camera.*` के लिए नोड का **फ़ोरग्राउंड में होना** ज़रूरी है (बैकग्राउंड कॉल `NODE_BACKGROUND_UNAVAILABLE` लौटाते हैं)।
-- बहुत बड़े base64 payloads से बचने के लिए क्लिप अवधि सीमित की जाती है (वर्तमान में `<= 60s`)।
-- संभव होने पर Android `CAMERA`/`RECORD_AUDIO` अनुमतियों के लिए prompt करेगा; अस्वीकृत अनुमतियाँ `*_PERMISSION_REQUIRED` के साथ विफल होती हैं।
+- `canvas.*` और `camera.*` के लिए नोड **foreground** में होना चाहिए (background calls `NODE_BACKGROUND_UNAVAILABLE` लौटाते हैं)।
+- बहुत बड़े base64 payloads से बचने के लिए क्लिप अवधि clamp की जाती है (वर्तमान में `<= 60s`)।
+- Android संभव होने पर `CAMERA`/`RECORD_AUDIO` अनुमतियों के लिए prompt करेगा; अस्वीकृत अनुमतियां `*_PERMISSION_REQUIRED` के साथ विफल होती हैं।
 
 ## स्क्रीन रिकॉर्डिंग (नोड)
 
-समर्थित नोड `screen.record` (`mp4`) उपलब्ध कराते हैं। उदाहरण:
+समर्थित नोड `screen.record` (mp4) expose करते हैं। उदाहरण:
 
 ```bash
 openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10
 openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-audio
 ```
 
-नोट्स:
+टिप्पणियां:
 
-- `screen.record` की उपलब्धता नोड प्लेटफ़ॉर्म पर निर्भर करती है।
-- स्क्रीन रिकॉर्डिंग `<= 60s` तक सीमित की जाती हैं।
-- समर्थित प्लेटफ़ॉर्म पर `--no-audio` माइक्रोफ़ोन कैप्चर को अक्षम करता है।
-- कई स्क्रीन उपलब्ध होने पर डिस्प्ले चुनने के लिए `--screen <index>` का उपयोग करें।
+- `screen.record` की उपलब्धता नोड platform पर निर्भर करती है।
+- स्क्रीन रिकॉर्डिंग `<= 60s` तक clamp की जाती हैं।
+- `--no-audio` समर्थित platforms पर microphone capture बंद करता है।
+- कई स्क्रीन उपलब्ध होने पर display चुनने के लिए `--screen <index>` का उपयोग करें।
 
-## स्थान (नोड)
+## लोकेशन (नोड)
 
-जब settings में Location सक्षम हो, तब नोड `location.get` उपलब्ध कराते हैं।
+Settings में Location enabled होने पर नोड `location.get` expose करते हैं।
 
 CLI helper:
 
@@ -369,35 +375,35 @@ openclaw nodes location get --node <idOrNameOrIp>
 openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
 ```
 
-नोट्स:
+टिप्पणियां:
 
-- Location **डिफ़ॉल्ट रूप से बंद** है।
-- "Always" के लिए सिस्टम अनुमति आवश्यक है; बैकग्राउंड fetch best-effort है।
-- प्रतिक्रिया में lat/lon, accuracy (meters), और timestamp शामिल होते हैं।
+- Location **default रूप से बंद** है।
+- "Always" के लिए system permission आवश्यक है; background fetch best-effort है।
+- response में lat/lon, accuracy (meters), और timestamp शामिल हैं।
 
 ## SMS (Android नोड)
 
-जब उपयोगकर्ता **SMS** अनुमति देता है और डिवाइस telephony का समर्थन करता है, तब Android नोड `sms.send` उपलब्ध करा सकते हैं।
+जब user **SMS** permission देता है और device telephony support करता है, तब Android नोड `sms.send` expose कर सकते हैं।
 
-निम्न-स्तरीय invoke:
+Low-level invoke:
 
 ```bash
 openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from OpenClaw"}'
 ```
 
-नोट्स:
+टिप्पणियां:
 
-- capability विज्ञापित होने से पहले Android डिवाइस पर permission prompt स्वीकार किया जाना चाहिए।
-- telephony के बिना Wi-Fi-only डिवाइस `sms.send` विज्ञापित नहीं करेंगे।
+- capability advertise होने से पहले Android device पर permission prompt स्वीकार किया जाना चाहिए।
+- telephony के बिना Wi-Fi-only devices `sms.send` advertise नहीं करेंगे।
 
-## Android डिवाइस + निजी डेटा commands
+## Android device + personal data commands
 
-संबंधित capabilities सक्षम होने पर Android नोड अतिरिक्त command families विज्ञापित कर सकते हैं।
+संबंधित capabilities enabled होने पर Android नोड अतिरिक्त command families advertise कर सकते हैं।
 
 उपलब्ध families:
 
 - `device.status`, `device.info`, `device.permissions`, `device.health`
-- Android Settings में Installed Apps sharing सक्षम होने पर `device.apps`
+- Android Settings में Installed Apps sharing enabled होने पर `device.apps`
 - `notifications.list`, `notifications.actions`
 - `photos.latest`
 - `contacts.search`, `contacts.add`
@@ -406,7 +412,7 @@ openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"
 - `sms.search`
 - `motion.activity`, `motion.pedometer`
 
-उदाहरण invokes:
+Invoke उदाहरण:
 
 ```bash
 openclaw nodes invoke --node <idOrNameOrIp> --command device.status --params '{}'
@@ -415,15 +421,15 @@ openclaw nodes invoke --node <idOrNameOrIp> --command notifications.list --param
 openclaw nodes invoke --node <idOrNameOrIp> --command photos.latest --params '{"limit":1}'
 ```
 
-नोट्स:
+टिप्पणियां:
 
-- `device.apps` opt-in है और डिफ़ॉल्ट रूप से launcher-visible apps लौटाता है।
+- `device.apps` opt-in है और default रूप से launcher-visible apps लौटाता है।
 - Motion commands उपलब्ध sensors द्वारा capability-gated होते हैं।
 
-## सिस्टम commands (नोड host / mac नोड)
+## सिस्टम commands (नोड host / Mac नोड)
 
-macOS नोड `system.run`, `system.notify`, और `system.execApprovals.get/set` उपलब्ध कराता है।
-headless node host `system.run`, `system.which`, और `system.execApprovals.get/set` उपलब्ध कराता है।
+macOS नोड `system.run`, `system.notify`, और `system.execApprovals.get/set` expose करता है।
+headless नोड host `system.run`, `system.which`, और `system.execApprovals.get/set` expose करता है।
 
 उदाहरण:
 
@@ -432,30 +438,30 @@ openclaw nodes notify --node <idOrNameOrIp> --title "Ping" --body "Gateway ready
 openclaw nodes invoke --node <idOrNameOrIp> --command system.which --params '{"name":"git"}'
 ```
 
-नोट्स:
+टिप्पणियां:
 
 - `system.run` payload में stdout/stderr/exit code लौटाता है।
-- Shell execution अब `host=node` के साथ `exec` tool से होकर जाता है; स्पष्ट node commands के लिए `nodes` direct-RPC surface बना रहता है।
-- `nodes invoke` `system.run` या `system.run.prepare` उपलब्ध नहीं कराता; वे केवल exec path पर रहते हैं।
+- Shell execution अब `host=node` के साथ `exec` tool से होकर जाती है; explicit node commands के लिए `nodes` direct-RPC surface बना रहता है।
+- `nodes invoke` `system.run` या `system.run.prepare` expose नहीं करता; वे केवल exec path पर रहते हैं।
 - exec path approval से पहले canonical `systemRunPlan` तैयार करता है। एक बार
-  approval मिल जाने पर, gateway वही stored plan आगे भेजता है, बाद में caller द्वारा संपादित कोई
-  command/cwd/session fields नहीं।
+  approval मिल जाने पर, gateway वही stored plan forward करता है, बाद में
+  caller-edited command/cwd/session fields नहीं।
 - `system.notify` macOS app पर notification permission state का सम्मान करता है।
-- अपरिचित नोड `platform` / `deviceFamily` metadata एक conservative default allowlist का उपयोग करता है, जिसमें `system.run` और `system.which` शामिल नहीं होते। यदि आपको किसी unknown platform के लिए सचमुच उन commands की आवश्यकता है, तो उन्हें `gateway.nodes.allowCommands` के ज़रिये स्पष्ट रूप से जोड़ें।
-- `system.run` `--cwd`, `--env KEY=VAL`, `--command-timeout`, और `--needs-screen-recording` का समर्थन करता है।
-- shell wrappers (`bash|sh|zsh ... -c/-lc`) के लिए, request-scoped `--env` values को एक explicit allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`) तक घटाया जाता है।
-- allowlist mode में allow-always decisions के लिए, ज्ञात dispatch wrappers (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) wrapper paths के बजाय inner executable paths persist करते हैं। यदि unwrapping सुरक्षित नहीं है, तो कोई allowlist entry अपने-आप persist नहीं की जाती।
-- allowlist mode में Windows node hosts पर, `cmd.exe /c` के ज़रिये shell-wrapper runs को approval चाहिए (केवल allowlist entry wrapper form को auto-allow नहीं करती)।
-- `system.notify` `--priority <passive|active|timeSensitive>` और `--delivery <system|overlay|auto>` का समर्थन करता है।
-- Node hosts `PATH` overrides को ignore करते हैं और खतरनाक startup/shell keys (`DYLD_*`, `LD_*`, `BASHOPTS`, `FPATH`, `KSH_ENV`, `NODE_OPTIONS`, `NODE_REDIRECT_WARNINGS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_REPL_HISTORY`, `NODE_V8_COVERAGE`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`, `TCLLIBPATH`) हटाते हैं। यदि आपको अतिरिक्त PATH entries चाहिए, तो `--env` के ज़रिये `PATH` pass करने के बजाय node host service environment configure करें (या tools को standard locations में install करें)।
-- macOS node mode पर, `system.run` macOS app में exec approvals द्वारा gated होता है (Settings → Exec approvals)।
-  Ask/allowlist/full headless node host की तरह ही व्यवहार करते हैं; अस्वीकृत prompts `SYSTEM_RUN_DENIED` लौटाते हैं।
-- headless node host पर, `system.run` exec approvals (`~/.openclaw/exec-approvals.json`) द्वारा gated होता है।
+- अपरिचित नोड `platform` / `deviceFamily` metadata एक conservative default allowlist का उपयोग करता है जो `system.run` और `system.which` को exclude करता है। यदि आपको किसी unknown platform के लिए जानबूझकर वे commands चाहिए, तो उन्हें `gateway.nodes.allowCommands` के जरिए स्पष्ट रूप से जोड़ें।
+- `system.run` `--cwd`, `--env KEY=VAL`, `--command-timeout`, और `--needs-screen-recording` support करता है।
+- shell wrappers (`bash|sh|zsh ... -c/-lc`) के लिए, request-scoped `--env` values एक explicit allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`) तक घटा दी जाती हैं।
+- allowlist mode में allow-always decisions के लिए, known dispatch wrappers (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) wrapper paths के बजाय inner executable paths persist करते हैं। यदि unwrapping सुरक्षित नहीं है, तो कोई allowlist entry automatic रूप से persist नहीं की जाती।
+- allowlist mode में Windows नोड hosts पर, `cmd.exe /c` के जरिए shell-wrapper runs को approval चाहिए (केवल allowlist entry wrapper form को auto-allow नहीं करती)।
+- `system.notify` `--priority <passive|active|timeSensitive>` और `--delivery <system|overlay|auto>` support करता है।
+- नोड hosts `PATH` overrides ignore करते हैं और dangerous startup/shell keys (`DYLD_*`, `LD_*`, `BASHOPTS`, `FPATH`, `KSH_ENV`, `NODE_OPTIONS`, `NODE_REDIRECT_WARNINGS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_REPL_HISTORY`, `NODE_V8_COVERAGE`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`, `TCLLIBPATH`) strip करते हैं। यदि आपको अतिरिक्त PATH entries चाहिए, तो `--env` के जरिए `PATH` pass करने के बजाय नोड host service environment configure करें (या tools को standard locations में install करें)।
+- macOS नोड mode पर, `system.run` macOS app में exec approvals द्वारा gated है (Settings → Exec approvals)।
+  Ask/allowlist/full headless नोड host जैसा ही behave करते हैं; denied prompts `SYSTEM_RUN_DENIED` लौटाते हैं।
+- headless नोड host पर, `system.run` exec approvals (`~/.openclaw/exec-approvals.json`) द्वारा gated है।
 
 ## Exec नोड binding
 
-जब कई नोड उपलब्ध हों, तो आप exec को किसी विशिष्ट नोड से bind कर सकते हैं।
-यह `exec host=node` के लिए default node सेट करता है (और इसे per agent override किया जा सकता है)।
+जब कई नोड उपलब्ध हों, तो आप exec को किसी specific नोड से bind कर सकते हैं।
+यह `exec host=node` के लिए default नोड set करता है (और per agent override किया जा सकता है)।
 
 Global default:
 
@@ -479,32 +485,32 @@ openclaw config unset 'agents.list[0].tools.exec.node'
 
 ## अनुमतियों का map
 
-नोड `node.list` / `node.describe` में `permissions` map शामिल कर सकते हैं, जो permission name (जैसे `screenRecording`, `accessibility`) से keyed होता है और boolean values (`true` = granted) रखता है।
+नोड `node.list` / `node.describe` में permission name (जैसे `screenRecording`, `accessibility`) से keyed, boolean values (`true` = granted) वाला `permissions` map शामिल कर सकते हैं।
 
-## Headless node host (cross-platform)
+## Headless नोड host (cross-platform)
 
-OpenClaw एक **headless node host** (कोई UI नहीं) चला सकता है, जो Gateway
-WebSocket से connect करता है और `system.run` / `system.which` उपलब्ध कराता है। यह Linux/Windows पर
-या server के साथ minimal node चलाने के लिए उपयोगी है।
+OpenClaw एक **headless नोड host** (कोई UI नहीं) चला सकता है जो Gateway
+WebSocket से connect करता है और `system.run` / `system.which` expose करता है। यह Linux/Windows पर
+या server के साथ minimal नोड चलाने के लिए उपयोगी है।
 
-इसे शुरू करें:
+इसे start करें:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789
 ```
 
-नोट्स:
+टिप्पणियां:
 
-- Pairing अभी भी आवश्यक है (Gateway device pairing prompt दिखाएगा)।
-- node host अपना node id, token, display name, और gateway connection info `~/.openclaw/node.json` में store करता है।
-- Exec approvals स्थानीय रूप से `~/.openclaw/exec-approvals.json` के ज़रिये enforced होते हैं
+- Pairing अब भी आवश्यक है (Gateway device pairing prompt दिखाएगा)।
+- नोड host अपना node id, token, display name, और gateway connection info `~/.openclaw/node.json` में store करता है।
+- Exec approvals local रूप से `~/.openclaw/exec-approvals.json` के जरिए enforce किए जाते हैं
   ([Exec approvals](/hi/tools/exec-approvals) देखें)।
-- macOS पर, headless node host डिफ़ॉल्ट रूप से `system.run` को locally execute करता है। `system.run` को companion app exec host के ज़रिये route करने के लिए
-  `OPENCLAW_NODE_EXEC_HOST=app` सेट करें; app host को आवश्यक बनाने और उसके unavailable होने पर fail closed करने के लिए
+- macOS पर, headless नोड host default रूप से `system.run` local रूप से execute करता है। `system.run` को companion app exec host के जरिए route करने के लिए
+  `OPENCLAW_NODE_EXEC_HOST=app` set करें; app host को require करने और उसके unavailable होने पर fail closed करने के लिए
   `OPENCLAW_NODE_EXEC_FALLBACK=0` जोड़ें।
-- जब Gateway WS TLS का उपयोग करता हो, तब `--tls` / `--tls-fingerprint` जोड़ें।
+- जब Gateway WS TLS उपयोग करता है, तो `--tls` / `--tls-fingerprint` जोड़ें।
 
-## Mac node mode
+## Mac नोड mode
 
-- macOS menubar app Gateway WS server से नोड के रूप में connect करता है (इसलिए `openclaw nodes …` इस Mac के विरुद्ध काम करता है)।
+- macOS menubar app नोड के रूप में Gateway WS server से connect करता है (इसलिए `openclaw nodes …` इस Mac के विरुद्ध काम करता है)।
 - remote mode में, app Gateway port के लिए SSH tunnel खोलता है और `localhost` से connect करता है।

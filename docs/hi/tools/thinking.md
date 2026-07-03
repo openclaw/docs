@@ -1,151 +1,151 @@
 ---
 read_when:
-    - सोच, फ़ास्ट-मोड, या विस्तृत निर्देश पार्सिंग या डिफ़ॉल्ट को समायोजित करना
-summary: /think, /fast, /verbose, /trace, और reasoning visibility के लिए डायरेक्टिव सिंटैक्स
-title: सोच के स्तर
+    - सोच, फ़ास्ट-मोड, या वर्बोज़ निर्देश पार्सिंग या डिफ़ॉल्ट्स को समायोजित करना
+summary: /think, /fast, /verbose, /trace, और reasoning दृश्यता के लिए निर्देश सिंटैक्स
+title: सोचने के स्तर
 x-i18n:
-    generated_at: "2026-06-29T00:24:18Z"
+    generated_at: "2026-07-03T09:42:37Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cea488a92c6d2a5371dbe0488199f41a56b44616a2936b077644f8a8324e8129
+    source_hash: 6383ac18fbef0d06a97df5c204d57829ae4993b8287f8ef60aeae197ea711722
     source_path: tools/thinking.md
     workflow: 16
 ---
 
 ## यह क्या करता है
 
-- किसी भी इनबाउंड बॉडी में इनलाइन निर्देश: `/t <level>`, `/think:<level>`, या `/thinking <level>`।
-- स्तर (उपनाम): `off | minimal | low | medium | high | xhigh | adaptive | max`
+- किसी भी आने वाली body में inline directive: `/t <level>`, `/think:<level>`, या `/thinking <level>`।
+- स्तर (aliases): `off | minimal | low | medium | high | xhigh | adaptive | max`
   - minimal → "think"
   - low → "think hard"
   - medium → "think harder"
   - high → "ultrathink" (अधिकतम बजट)
-  - xhigh → "ultrathink+" (GPT-5.2+ और Codex मॉडल, साथ ही Anthropic Claude Opus 4.7+ effort)
-  - adaptive → प्रदाता-प्रबंधित अनुकूली सोच (Anthropic/Bedrock पर Claude 4.6, Anthropic Claude Opus 4.7+, और Google Gemini dynamic thinking के लिए समर्थित)
-  - max → प्रदाता का अधिकतम reasoning (Anthropic Claude Opus 4.7+; Ollama इसे अपने सर्वोच्च नेटिव `think` effort पर मैप करता है)
+  - xhigh → "ultrathink+" (GPT-5.2+ और Codex models, साथ ही Anthropic Claude Opus 4.7+ effort)
+  - adaptive → प्रदाता-प्रबंधित adaptive thinking (Anthropic/Bedrock पर Claude 4.6, Anthropic Claude Opus 4.7+, और Google Gemini dynamic thinking के लिए समर्थित)
+  - max → प्रदाता का अधिकतम reasoning (Anthropic Claude Opus 4.7+; Ollama इसे अपने सर्वोच्च native `think` effort पर मैप करता है)
   - `x-high`, `x_high`, `extra-high`, `extra high`, और `extra_high` `xhigh` पर मैप होते हैं।
   - `highest` `high` पर मैप होता है।
 - प्रदाता नोट्स:
-  - सोच मेनू और पिकर प्रदाता-प्रोफाइल से संचालित होते हैं। प्रदाता Plugin चुने गए मॉडल के लिए सटीक स्तर सेट घोषित करते हैं, जिसमें बाइनरी `on` जैसे लेबल शामिल हैं।
-  - `adaptive`, `xhigh`, और `max` केवल उन प्रदाता/मॉडल प्रोफाइल के लिए दिखाए जाते हैं जो उन्हें समर्थित करते हैं। असमर्थित स्तरों के लिए टाइप किए गए निर्देश उस मॉडल के मान्य विकल्पों के साथ अस्वीकार कर दिए जाते हैं।
-  - मौजूदा संग्रहीत असमर्थित स्तर प्रदाता प्रोफाइल रैंक के अनुसार रीमैप किए जाते हैं। गैर-अनुकूली मॉडलों पर `adaptive` `medium` पर वापस जाता है, जबकि `xhigh` और `max` चुने गए मॉडल के लिए सबसे बड़े समर्थित गैर-`off` स्तर पर वापस जाते हैं।
-  - Anthropic Claude 4.6 मॉडल तब डिफ़ॉल्ट रूप से `adaptive` पर रहते हैं जब कोई स्पष्ट सोच स्तर सेट नहीं होता।
-  - Anthropic Claude Opus 4.8 और Opus 4.7 सोच को बंद रखते हैं, जब तक आप स्पष्ट रूप से सोच स्तर सेट न करें। adaptive thinking सक्षम होने के बाद Opus 4.8 का प्रदाता-स्वामित्व वाला effort डिफ़ॉल्ट `high` है।
-  - Anthropic Claude Opus 4.7+ `/think xhigh` को adaptive thinking और `output_config.effort: "xhigh"` पर मैप करता है, क्योंकि `/think` एक सोच निर्देश है और `xhigh` Opus effort सेटिंग है।
-  - Anthropic Claude Opus 4.7+ `/think max` भी उपलब्ध कराता है; यह उसी प्रदाता-स्वामित्व वाले अधिकतम effort पथ पर मैप होता है।
-  - Direct DeepSeek V4 मॉडल `/think xhigh|max` उपलब्ध कराते हैं; दोनों DeepSeek `reasoning_effort: "max"` पर मैप होते हैं, जबकि निचले गैर-off स्तर `high` पर मैप होते हैं।
-  - OpenRouter-रूट किए गए DeepSeek V4 मॉडल `/think xhigh` उपलब्ध कराते हैं और OpenRouter-समर्थित `reasoning_effort` मान भेजते हैं। संग्रहीत `max` overrides `xhigh` पर वापस जाते हैं।
-  - Ollama के सोच-सक्षम मॉडल `/think low|medium|high|max` उपलब्ध कराते हैं; `max` नेटिव `think: "high"` पर मैप होता है क्योंकि Ollama की नेटिव API `low`, `medium`, और `high` effort स्ट्रिंग स्वीकार करती है।
-  - OpenAI GPT मॉडल `/think` को मॉडल-विशिष्ट Responses API effort समर्थन के माध्यम से मैप करते हैं। `/think off` केवल तब `reasoning.effort: "none"` भेजता है जब लक्ष्य मॉडल इसे समर्थित करता हो; अन्यथा OpenClaw असमर्थित मान भेजने के बजाय अक्षम reasoning payload को छोड़ देता है।
-  - कस्टम OpenAI-संगत कैटलॉग प्रविष्टियां `models.providers.<provider>.models[].compat.supportedReasoningEfforts` में `"xhigh"` शामिल करके `/think xhigh` में ऑप्ट इन कर सकती हैं। यह वही compat metadata उपयोग करता है जो आउटबाउंड OpenAI reasoning effort payloads को मैप करता है, इसलिए मेनू, सत्र सत्यापन, एजेंट CLI, और `llm-task` ट्रांसपोर्ट व्यवहार से सहमत रहते हैं।
-  - पुराने कॉन्फ़िगर किए गए OpenRouter Hunter Alpha refs proxy reasoning injection छोड़ देते हैं क्योंकि वह रिटायर्ड रूट reasoning fields के माध्यम से अंतिम उत्तर टेक्स्ट लौटा सकता था।
-  - Google Gemini `/think adaptive` को Gemini के प्रदाता-स्वामित्व वाले dynamic thinking पर मैप करता है। Gemini 3 अनुरोध कोई निश्चित `thinkingLevel` नहीं भेजते, जबकि Gemini 2.5 अनुरोध `thinkingBudget: -1` भेजते हैं; निश्चित स्तर फिर भी उस मॉडल परिवार के लिए सबसे निकट Gemini `thinkingLevel` या बजट पर मैप होते हैं।
-  - Anthropic-संगत streaming पथ पर MiniMax M2.x (`minimax/MiniMax-M2*`) डिफ़ॉल्ट रूप से `thinking: { type: "disabled" }` उपयोग करता है, जब तक आप मॉडल params या अनुरोध params में स्पष्ट रूप से thinking सेट न करें। इससे M2.x के गैर-नेटिव Anthropic stream format से लीक हुए `reasoning_content` deltas से बचा जाता है। MiniMax-M3 (और M3.x) इससे मुक्त है: M3 उचित Anthropic thinking blocks उत्सर्जित करता है और thinking अक्षम होने पर खाली content लौटाता है, इसलिए OpenClaw M3 को प्रदाता के omitted/adaptive thinking पथ पर रखता है।
-  - Z.AI (`zai/*`) अधिकतर GLM मॉडलों के लिए बाइनरी (`on`/`off`) है। GLM-5.2 अपवाद है: यह `/think off|low|high|max` उपलब्ध कराता है, `low` और `high` को Z.AI `reasoning_effort: "high"` पर मैप करता है, और `max` को `reasoning_effort: "max"` पर मैप करता है।
-  - Moonshot Kimi K2.7 Code (`moonshot/kimi-k2.7-code`) हमेशा सोचता है। इसका प्रोफाइल केवल `on` उपलब्ध कराता है, और OpenClaw Moonshot की आवश्यकता के अनुसार आउटबाउंड `thinking` field छोड़ देता है। अन्य `moonshot/*` मॉडल `/think off` को `thinking: { type: "disabled" }` पर और किसी भी गैर-`off` स्तर को `thinking: { type: "enabled" }` पर मैप करते हैं। जब thinking सक्षम होती है, Moonshot केवल `tool_choice` `auto|none` स्वीकार करता है; OpenClaw असंगत मानों को `auto` में सामान्यीकृत करता है।
+  - Thinking menus और pickers प्रदाता-profile संचालित होते हैं। Provider plugins चयनित model के लिए सटीक level set घोषित करते हैं, जिसमें binary `on` जैसे labels शामिल हैं।
+  - `adaptive`, `xhigh`, और `max` केवल उन provider/model profiles के लिए दिखाए जाते हैं जो उन्हें support करते हैं। Unsupported levels के लिए typed directives उस model के valid options के साथ reject किए जाते हैं।
+  - मौजूदा stored unsupported levels provider profile rank के अनुसार remap किए जाते हैं। non-adaptive models पर `adaptive` `medium` पर fallback करता है, जबकि `xhigh` और `max` चयनित model के लिए सबसे बड़े supported non-off level पर fallback करते हैं।
+  - Anthropic Claude 4.6 models में, जब कोई explicit thinking level set नहीं होता, default `adaptive` होता है।
+  - Anthropic Claude Opus 4.8 और Opus 4.7 में thinking off रहती है जब तक आप explicitly thinking level set नहीं करते। Adaptive thinking enabled होने के बाद Opus 4.8 का provider-owned effort default `high` है।
+  - Anthropic Claude Opus 4.7+ `/think xhigh` को adaptive thinking और `output_config.effort: "xhigh"` पर मैप करता है, क्योंकि `/think` एक thinking directive है और `xhigh` Opus effort setting है।
+  - Anthropic Claude Opus 4.7+ `/think max` भी expose करता है; यह उसी provider-owned max effort path पर मैप होता है।
+  - Direct DeepSeek V4 models `/think xhigh|max` expose करते हैं; दोनों DeepSeek `reasoning_effort: "max"` पर मैप होते हैं, जबकि lower non-off levels `high` पर मैप होते हैं।
+  - OpenRouter-routed DeepSeek V4 models `/think xhigh` expose करते हैं और DeepSeek-native top-level `reasoning_effort` के बजाय OpenRouter-supported `reasoning.effort` values भेजते हैं। Lower non-off levels `high` पर मैप होते हैं, और stored `max` overrides `xhigh` पर fallback करते हैं।
+  - Ollama thinking-capable models `/think low|medium|high|max` expose करते हैं; `max` native `think: "high"` पर मैप होता है क्योंकि Ollama की native API `low`, `medium`, और `high` effort strings स्वीकार करती है।
+  - OpenAI GPT models `/think` को model-specific Responses API effort support के जरिए मैप करते हैं। `/think off` केवल तब `reasoning.effort: "none"` भेजता है जब target model इसे support करता है; अन्यथा OpenClaw unsupported value भेजने के बजाय disabled reasoning payload छोड़ देता है।
+  - Custom OpenAI-compatible catalog entries `"xhigh"` शामिल करने के लिए `models.providers.<provider>.models[].compat.supportedReasoningEfforts` set करके `/think xhigh` में opt in कर सकते हैं। यह वही compat metadata इस्तेमाल करता है जो outbound OpenAI reasoning effort payloads को मैप करता है, इसलिए menus, session validation, agent CLI, और `llm-task` transport behavior से सहमत रहते हैं।
+  - Stale configured OpenRouter Hunter Alpha refs proxy reasoning injection छोड़ देते हैं क्योंकि वह retired route reasoning fields के जरिए final answer text लौटा सकता था।
+  - Google Gemini `/think adaptive` को Gemini के provider-owned dynamic thinking पर मैप करता है। Gemini 3 requests fixed `thinkingLevel` छोड़ते हैं, जबकि Gemini 2.5 requests `thinkingBudget: -1` भेजते हैं; fixed levels अब भी उस model family के लिए निकटतम Gemini `thinkingLevel` या budget पर मैप होते हैं।
+  - Anthropic-compatible streaming path पर MiniMax M2.x (`minimax/MiniMax-M2*`) default रूप से `thinking: { type: "disabled" }` रखता है, जब तक आप model params या request params में explicitly thinking set नहीं करते। इससे M2.x के non-native Anthropic stream format से leaked `reasoning_content` deltas बचते हैं। MiniMax-M3 (और M3.x) exempt है: M3 सही Anthropic thinking blocks emit करता है और thinking disabled होने पर empty content लौटाता है, इसलिए OpenClaw M3 को प्रदाता के omitted/adaptive thinking path पर रखता है।
+  - Z.AI (`zai/*`) अधिकतर GLM models के लिए binary (`on`/`off`) है। GLM-5.2 exception है: यह `/think off|low|high|max` expose करता है, `low` और `high` को Z.AI `reasoning_effort: "high"` पर मैप करता है, और `max` को `reasoning_effort: "max"` पर मैप करता है।
+  - Moonshot Kimi K2.7 Code (`moonshot/kimi-k2.7-code`) हमेशा सोचता है। इसकी profile केवल `on` expose करती है, और OpenClaw Moonshot की आवश्यकता के अनुसार outbound `thinking` field छोड़ देता है। अन्य `moonshot/*` models `/think off` को `thinking: { type: "disabled" }` पर और किसी भी non-`off` level को `thinking: { type: "enabled" }` पर मैप करते हैं। Thinking enabled होने पर, Moonshot केवल `tool_choice` `auto|none` स्वीकार करता है; OpenClaw incompatible values को `auto` में normalize करता है।
 
-## समाधान क्रम
+## Resolution order
 
-1. संदेश पर इनलाइन निर्देश (केवल उसी संदेश पर लागू होता है)।
-2. सत्र override (directive-only संदेश भेजकर सेट किया गया)।
-3. प्रति-एजेंट डिफ़ॉल्ट (config में `agents.list[].thinkingDefault`)।
-4. वैश्विक डिफ़ॉल्ट (config में `agents.defaults.thinkingDefault`)।
-5. Fallback: उपलब्ध होने पर प्रदाता-घोषित डिफ़ॉल्ट; अन्यथा reasoning-सक्षम मॉडल `medium` या उस मॉडल के लिए निकटतम समर्थित गैर-`off` स्तर पर resolve होते हैं, और गैर-reasoning मॉडल `off` रहते हैं।
+1. Message पर inline directive (केवल उस message पर लागू होता है)।
+2. Session override (directive-only message भेजकर set किया गया)।
+3. Per-agent default (config में `agents.list[].thinkingDefault`)।
+4. Global default (config में `agents.defaults.thinkingDefault`)।
+5. Fallback: उपलब्ध होने पर provider-declared default; अन्यथा reasoning-capable models `medium` या उस model के लिए निकटतम supported non-`off` level पर resolve होते हैं, और non-reasoning models `off` रहते हैं।
 
-## सत्र डिफ़ॉल्ट सेट करना
+## Session default set करना
 
-- ऐसा संदेश भेजें जो **केवल** निर्देश हो (whitespace अनुमत), जैसे `/think:medium` या `/t high`।
-- यह मौजूदा सत्र के लिए बना रहता है (डिफ़ॉल्ट रूप से प्रति-प्रेषक)। सत्र override साफ़ करने और कॉन्फ़िगर किए गए/प्रदाता डिफ़ॉल्ट को inherit करने के लिए `/think default` उपयोग करें; उपनामों में `inherit`, `clear`, `reset`, और `unpin` शामिल हैं।
-- `/think off` एक स्पष्ट off override संग्रहीत करता है। यह सोच को तब तक अक्षम करता है जब तक आप सत्र override बदलें या साफ़ न करें।
-- पुष्टि उत्तर भेजा जाता है (`Thinking level set to high.` / `Thinking disabled.`)। यदि स्तर अमान्य है (जैसे `/thinking big`), कमांड संकेत के साथ अस्वीकार कर दी जाती है और सत्र स्थिति अपरिवर्तित रहती है।
-- वर्तमान सोच स्तर देखने के लिए बिना argument के `/think` (या `/think:`) भेजें।
+- ऐसा message भेजें जो **केवल** directive हो (whitespace allowed), जैसे `/think:medium` या `/t high`।
+- यह current session के लिए टिकता है (default रूप से per-sender)। Session override clear करने और configured/provider default inherit करने के लिए `/think default` इस्तेमाल करें; aliases में `inherit`, `clear`, `reset`, और `unpin` शामिल हैं।
+- `/think off` explicit off override store करता है। यह thinking को तब तक disable रखता है जब तक आप session override बदलते या clear नहीं करते।
+- Confirmation reply भेजा जाता है (`Thinking level set to high.` / `Thinking disabled.`)। अगर level invalid है (जैसे `/thinking big`), command hint के साथ reject होता है और session state unchanged रहती है।
+- Current thinking level देखने के लिए बिना argument के `/think` (या `/think:`) भेजें।
 
-## एजेंट द्वारा अनुप्रयोग
+## Agent द्वारा application
 
-- **Embedded OpenClaw**: resolved स्तर in-process OpenClaw एजेंट runtime को पास किया जाता है।
-- **Claude CLI backend**: `claude-cli` उपयोग करते समय गैर-off स्तर Claude Code को `--effort` के रूप में पास किए जाते हैं; [CLI backends](/hi/gateway/cli-backends) देखें।
+- **Embedded OpenClaw**: resolved level in-process OpenClaw agent runtime को pass किया जाता है।
+- **Claude CLI backend**: `claude-cli` इस्तेमाल करते समय non-off levels Claude Code को `--effort` के रूप में pass किए जाते हैं; [CLI backends](/hi/gateway/cli-backends) देखें।
 
-## तेज़ मोड (/fast)
+## Fast mode (/fast)
 
 - स्तर: `auto|on|off|default`।
-- Directive-only संदेश सत्र fast-mode override को toggle करता है और `Fast mode set to auto.`, `Fast mode enabled.`, या `Fast mode disabled.` उत्तर देता है। सत्र override साफ़ करने और कॉन्फ़िगर किया गया डिफ़ॉल्ट inherit करने के लिए `/fast default` उपयोग करें; उपनामों में `inherit`, `clear`, `reset`, और `unpin` शामिल हैं।
-- वर्तमान प्रभावी fast-mode स्थिति देखने के लिए बिना mode के `/fast` (या `/fast status`) भेजें।
+- Directive-only message session fast-mode override toggle करता है और `Fast mode set to auto.`, `Fast mode enabled.`, या `Fast mode disabled.` reply करता है। Session override clear करने और configured default inherit करने के लिए `/fast default` इस्तेमाल करें; aliases में `inherit`, `clear`, `reset`, और `unpin` शामिल हैं।
+- Current effective fast-mode state देखने के लिए बिना mode के `/fast` (या `/fast status`) भेजें।
 - OpenClaw fast mode को इस क्रम में resolve करता है:
-  1. Inline/directive-only `/fast auto|on|off` override (`/fast default` इस परत को साफ़ करता है)
-  2. सत्र override
-  3. प्रति-एजेंट डिफ़ॉल्ट (`agents.list[].fastModeDefault`)
-  4. प्रति-मॉडल config: `agents.defaults.models["<provider>/<model>"].params.fastMode`
+  1. Inline/directive-only `/fast auto|on|off` override (`/fast default` इस layer को clear करता है)
+  2. Session override
+  3. Per-agent default (`agents.list[].fastModeDefault`)
+  4. Per-model config: `agents.defaults.models["<provider>/<model>"].params.fastMode`
   5. Fallback: `off`
-- `auto` सत्र/config mode को auto के रूप में रखता है लेकिन प्रत्येक नए मॉडल call को स्वतंत्र रूप से resolve करता है। auto cutoff से पहले शुरू होने वाली calls में fast mode सक्षम होता है; बाद की retry, fallback, tool-result, या continuation calls fast mode अक्षम के साथ शुरू होती हैं। cutoff डिफ़ॉल्ट रूप से 60 सेकंड है; इसे बदलने के लिए सक्रिय मॉडल पर `agents.defaults.models["<provider>/<model>"].params.fastAutoOnSeconds` सेट करें।
-- `openai/*` के लिए, fast mode समर्थित Responses अनुरोधों पर `service_tier=priority` भेजकर OpenAI priority processing पर मैप होता है।
-- Codex-backed `openai/*` / `openai-codex/*` मॉडलों के लिए, fast mode Codex Responses पर वही `service_tier=priority` flag भेजता है। Native Codex app-server turns को tier केवल `turn/start` या thread start/resume पर मिलता है, इसलिए `auto` पहले से चल रहे app-server turn को retier नहीं कर सकता; यह OpenClaw द्वारा शुरू किए गए अगले model turn पर लागू होता है।
-- OAuth-authenticated traffic सहित direct public `anthropic/*` अनुरोधों के लिए, जो `api.anthropic.com` को भेजे जाते हैं, fast mode Anthropic service tiers पर मैप होता है: `/fast on` `service_tier=auto` सेट करता है, `/fast off` `service_tier=standard_only` सेट करता है।
-- Anthropic-संगत path पर `minimax/*` के लिए, `/fast on` (या `params.fastMode: true`) `MiniMax-M2.7` को `MiniMax-M2.7-highspeed` में rewrite करता है।
-- जब दोनों सेट हों, स्पष्ट Anthropic `serviceTier` / `service_tier` model params fast-mode default को override करते हैं। OpenClaw फिर भी गैर-Anthropic proxy base URLs के लिए Anthropic service-tier injection छोड़ देता है।
-- `/status` fast mode सक्षम होने पर `Fast` दिखाता है और configured mode auto होने पर `Fast:auto` दिखाता है।
+- `auto` session/config mode को auto के रूप में रखता है लेकिन हर नए model call को independently resolve करता है। Auto cutoff से पहले शुरू होने वाले calls में fast mode enabled होता है; बाद के retry, fallback, tool-result, या continuation calls fast mode disabled के साथ शुरू होते हैं। Cutoff default रूप से 60 seconds है; इसे बदलने के लिए active model पर `agents.defaults.models["<provider>/<model>"].params.fastAutoOnSeconds` set करें।
+- `openai/*` के लिए, fast mode supported Responses requests पर `service_tier=priority` भेजकर OpenAI priority processing पर मैप होता है।
+- Codex-backed `openai/*` / `openai-codex/*` models के लिए, fast mode Codex Responses पर वही `service_tier=priority` flag भेजता है। Native Codex app-server turns को tier केवल `turn/start` या thread start/resume पर मिलता है, इसलिए `auto` पहले से running app-server turn को retier नहीं कर सकता; यह OpenClaw द्वारा शुरू किए जाने वाले अगले model turn पर लागू होता है।
+- OAuth-authenticated traffic सहित direct public `anthropic/*` requests के लिए, जो `api.anthropic.com` को भेजा जाता है, fast mode Anthropic service tiers पर मैप होता है: `/fast on` `service_tier=auto` set करता है, `/fast off` `service_tier=standard_only` set करता है।
+- Anthropic-compatible path पर `minimax/*` के लिए, `/fast on` (या `params.fastMode: true`) `MiniMax-M2.7` को `MiniMax-M2.7-highspeed` में rewrite करता है।
+- Explicit Anthropic `serviceTier` / `service_tier` model params दोनों set होने पर fast-mode default को override करते हैं। OpenClaw अब भी non-Anthropic proxy base URLs के लिए Anthropic service-tier injection skip करता है।
+- `/status` fast mode enabled होने पर `Fast` दिखाता है और configured mode auto होने पर `Fast:auto` दिखाता है।
 
-## Verbose निर्देश (/verbose या /v)
+## Verbose directives (/verbose or /v)
 
 - स्तर: `on` (minimal) | `full` | `off` (default)।
-- Directive-only संदेश session verbose को toggle करता है और `Verbose logging enabled.` / `Verbose logging disabled.` उत्तर देता है; अमान्य स्तर स्थिति बदले बिना संकेत लौटाते हैं।
-- `/verbose off` एक स्पष्ट session override संग्रहीत करता है; इसे Sessions UI में `inherit` चुनकर साफ़ करें।
-- अधिकृत external channel senders session verbose override को persist कर सकते हैं। Internal gateway/webchat clients को इसे persist करने के लिए `operator.admin` चाहिए।
-- Inline directive केवल उसी संदेश को प्रभावित करता है; अन्यथा session/global defaults लागू होते हैं।
-- वर्तमान verbose level देखने के लिए बिना argument के `/verbose` (या `/verbose:`) भेजें।
-- जब verbose on हो, structured tool results emit करने वाले agents प्रत्येक tool call को अपने metadata-only संदेश के रूप में वापस भेजते हैं, उपलब्ध होने पर `<emoji> <tool-name>: <arg>` prefix के साथ। ये tool summaries प्रत्येक tool शुरू होते ही भेजी जाती हैं (अलग bubbles), streaming deltas के रूप में नहीं।
-- Tool failure summaries सामान्य mode में दिखाई देती रहती हैं, लेकिन raw error detail suffixes तब तक छिपे रहते हैं जब तक verbose `full` न हो।
-- जब verbose `full` हो, tool outputs completion के बाद भी forward किए जाते हैं (अलग bubble, safe length तक truncated)। यदि आप run in-flight रहते हुए `/verbose on|full|off` toggle करते हैं, तो बाद की tool bubbles नई setting का पालन करती हैं।
-- `agents.defaults.toolProgressDetail` `/verbose` tool summaries और progress-draft tool lines का आकार नियंत्रित करता है। `🛠️ Exec: checking JS syntax` जैसे compact human labels के लिए `"explain"` (default) उपयोग करें; debugging के लिए raw command/detail भी appended चाहिए हो तो `"raw"` उपयोग करें। प्रति-एजेंट `agents.list[].toolProgressDetail` default को override करता है।
+- Directive-only message session verbose toggle करता है और `Verbose logging enabled.` / `Verbose logging disabled.` reply करता है; invalid levels state बदले बिना hint लौटाते हैं।
+- `/verbose off` explicit session override store करता है; Sessions UI में `inherit` चुनकर इसे clear करें।
+- Authorized external channel senders session verbose override persist कर सकते हैं। Internal gateway/webchat clients को इसे persist करने के लिए `operator.admin` चाहिए।
+- Inline directive केवल उस message को affect करता है; session/global defaults अन्यथा लागू होते हैं।
+- Current verbose level देखने के लिए बिना argument के `/verbose` (या `/verbose:`) भेजें।
+- Verbose on होने पर, structured tool results emit करने वाले agents हर tool call को अपने metadata-only message के रूप में वापस भेजते हैं, उपलब्ध होने पर `<emoji> <tool-name>: <arg>` prefix के साथ। ये tool summaries हर tool शुरू होते ही भेजे जाते हैं (अलग bubbles), streaming deltas के रूप में नहीं।
+- Tool failure summaries normal mode में visible रहती हैं, लेकिन raw error detail suffixes तब तक hidden रहते हैं जब तक verbose `full` न हो।
+- Verbose `full` होने पर, tool outputs completion के बाद भी forward किए जाते हैं (अलग bubble, safe length तक truncated)। अगर आप run in-flight होने के दौरान `/verbose on|full|off` toggle करते हैं, तो subsequent tool bubbles नई setting का सम्मान करते हैं।
+- `agents.defaults.toolProgressDetail` `/verbose` tool summaries और progress-draft tool lines की shape control करता है। `🛠️ Exec: checking JS syntax` जैसे compact human labels के लिए `"explain"` (default) इस्तेमाल करें; debugging के लिए raw command/detail appended भी चाहिए तो `"raw"` इस्तेमाल करें। Per-agent `agents.list[].toolProgressDetail` default को override करता है।
   - `explain`: `🛠️ Exec: check JS syntax for /tmp/app.js`
   - `raw`: `🛠️ Exec: check JS syntax for /tmp/app.js, node --check /tmp/app.js`
 
-## Plugin trace निर्देश (/trace)
+## Plugin trace directives (/trace)
 
 - स्तर: `on` | `off` (default)।
-- Directive-only संदेश session plugin trace output को toggle करता है और `Plugin trace enabled.` / `Plugin trace disabled.` उत्तर देता है।
-- Inline directive केवल उसी संदेश को प्रभावित करता है; अन्यथा session/global defaults लागू होते हैं।
-- वर्तमान trace level देखने के लिए बिना argument के `/trace` (या `/trace:`) भेजें।
-- `/trace`, `/verbose` से संकरा है: यह केवल Plugin-स्वामित्व वाली trace/debug lines उजागर करता है, जैसे Active Memory debug summaries।
-- Trace lines `/status` में और सामान्य assistant reply के बाद follow-up diagnostic message के रूप में दिखाई दे सकती हैं।
+- Directive-only message session plugin trace output toggle करता है और `Plugin trace enabled.` / `Plugin trace disabled.` reply करता है।
+- Inline directive केवल उस message को affect करता है; session/global defaults अन्यथा लागू होते हैं।
+- Current trace level देखने के लिए बिना argument के `/trace` (या `/trace:`) भेजें।
+- `/trace`, `/verbose` से narrower है: यह केवल plugin-owned trace/debug lines जैसे Active Memory debug summaries expose करता है।
+- Trace lines `/status` में और normal assistant reply के बाद follow-up diagnostic message के रूप में दिखाई दे सकती हैं।
 
-## Reasoning दृश्यता (/reasoning)
+## Reasoning visibility (/reasoning)
 
 - स्तर: `on|off|stream`।
-- Directive-only संदेश replies में thinking blocks दिखाए जाने हैं या नहीं, इसे toggle करता है।
-- सक्षम होने पर, reasoning को `Thinking` prefix वाले **अलग संदेश** के रूप में भेजा जाता है।
-- `stream`: जब active channel reasoning previews का समर्थन करता है, reply generate होते समय reasoning stream करता है, फिर reasoning के बिना अंतिम उत्तर भेजता है।
-- उपनाम: `/reason`।
-- वर्तमान reasoning level देखने के लिए बिना argument के `/reasoning` (या `/reasoning:`) भेजें।
-- समाधान क्रम: inline directive, फिर session override, फिर प्रति-एजेंट default (`agents.list[].reasoningDefault`), फिर global default (`agents.defaults.reasoningDefault`), फिर fallback (`off`)।
+- Directive-only message toggle करता है कि replies में thinking blocks दिखाए जाएं या नहीं।
+- Enabled होने पर, reasoning को `Thinking` prefix के साथ **अलग message** के रूप में भेजा जाता है।
+- `stream`: जब active channel reasoning previews support करता है, reply generate होते समय reasoning stream करता है, फिर final answer बिना reasoning भेजता है।
+- Alias: `/reason`।
+- Current reasoning level देखने के लिए बिना argument के `/reasoning` (या `/reasoning:`) भेजें।
+- Resolution order: inline directive, फिर session override, फिर per-agent default (`agents.list[].reasoningDefault`), फिर global default (`agents.defaults.reasoningDefault`), फिर fallback (`off`)।
 
-विकृत local-model तर्क टैग को सावधानीपूर्वक संभाला जाता है। बंद `<think>...</think>` ब्लॉक सामान्य उत्तरों में छिपे रहते हैं, और पहले से दिखाई दे चुके पाठ के बाद का अधूरा तर्क भी छिपा रहता है। यदि कोई उत्तर पूरी तरह एक अकेले अधूरे ओपनिंग टैग में लिपटा है और अन्यथा खाली पाठ के रूप में डिलीवर होता, तो OpenClaw विकृत ओपनिंग टैग को हटा देता है और शेष पाठ डिलीवर करता है।
+विकृत स्थानीय-मॉडल तर्क टैग को सावधानी से संभाला जाता है। बंद `<think>...</think>` ब्लॉक सामान्य उत्तरों में छिपे रहते हैं, और पहले से दिखाई दे रहे टेक्स्ट के बाद का अनबंद तर्क भी छिपाया जाता है। यदि कोई उत्तर पूरी तरह एक ही अनबंद ओपनिंग टैग में लिपटा हो और अन्यथा खाली टेक्स्ट के रूप में डिलीवर होता, तो OpenClaw विकृत ओपनिंग टैग हटा देता है और बचा हुआ टेक्स्ट डिलीवर करता है।
 
 ## संबंधित
 
-- उन्नत मोड के दस्तावेज़ [उन्नत मोड](/hi/tools/elevated) में हैं।
+- Elevated mode दस्तावेज़ [Elevated mode](/hi/tools/elevated) में हैं।
 
-## Heartbeats
+## Heartbeat
 
-- Heartbeat प्रोब बॉडी कॉन्फ़िगर किया गया heartbeat प्रॉम्प्ट है (डिफ़ॉल्ट: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`)। heartbeat संदेश में इनलाइन निर्देश सामान्य रूप से लागू होते हैं (लेकिन heartbeats से सत्र डिफ़ॉल्ट बदलने से बचें)।
-- Heartbeat डिलीवरी डिफ़ॉल्ट रूप से केवल अंतिम पेलोड होती है। अलग `Thinking` संदेश भी भेजने के लिए (जब उपलब्ध हो), `agents.defaults.heartbeat.includeReasoning: true` या प्रति-एजेंट `agents.list[].heartbeat.includeReasoning: true` सेट करें।
+- Heartbeat probe body कॉन्फ़िगर किया गया heartbeat prompt है (डिफ़ॉल्ट: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`)। Heartbeat संदेश में inline directives सामान्य रूप से लागू होते हैं (लेकिन heartbeats से session defaults बदलने से बचें)।
+- Heartbeat delivery डिफ़ॉल्ट रूप से केवल final payload पर सेट होती है। अलग `Thinking` संदेश भी भेजने के लिए (जब उपलब्ध हो), `agents.defaults.heartbeat.includeReasoning: true` या प्रति-agent `agents.list[].heartbeat.includeReasoning: true` सेट करें।
 
 ## वेब चैट UI
 
-- पेज लोड होने पर वेब चैट thinking चयनकर्ता इनबाउंड सत्र स्टोर/कॉन्फ़िग से सत्र के संग्रहीत स्तर को प्रतिबिंबित करता है।
-- कोई दूसरा स्तर चुनने पर `sessions.patch` के ज़रिए सत्र ओवरराइड तुरंत लिखा जाता है; यह अगले भेजने का इंतज़ार नहीं करता और यह एकबारगी `thinkingOnce` ओवरराइड नहीं है।
-- पहला विकल्प हमेशा ओवरराइड साफ़ करने का विकल्प होता है। यह `Inherited: <resolved level>` दिखाता है, जिसमें inherited thinking अक्षम होने पर `Inherited: Off` भी शामिल है।
-- स्पष्ट चयनकर्ता विकल्प अपने सीधे स्तर लेबल का उपयोग करते हैं और मौजूद होने पर प्रदाता लेबल को बनाए रखते हैं (उदाहरण के लिए प्रदाता-लेबल वाले `max` विकल्प के लिए `Maximum`)।
-- चयनकर्ता gateway सत्र पंक्ति/डिफ़ॉल्ट से लौटाए गए `thinkingLevels` का उपयोग करता है, और `thinkingOptions` को legacy लेबल सूची के रूप में रखा जाता है। ब्राउज़र UI अपनी प्रदाता regex सूची नहीं रखता; plugins model-विशिष्ट स्तर सेट के स्वामी होते हैं।
-- `/think:<level>` अभी भी काम करता है और उसी संग्रहीत सत्र स्तर को अपडेट करता है, इसलिए चैट निर्देश और चयनकर्ता सिंक में रहते हैं।
+- पेज लोड होने पर वेब चैट thinking selector inbound session store/config से session का संग्रहीत level प्रतिबिंबित करता है।
+- दूसरा level चुनने पर session override तुरंत `sessions.patch` के ज़रिए लिखा जाता है; यह अगले send का इंतज़ार नहीं करता और यह one-shot `thinkingOnce` override नहीं है।
+- पहला विकल्प हमेशा clear-override विकल्प होता है। यह `Inherited: <resolved level>` दिखाता है, जिसमें inherited thinking disabled होने पर `Inherited: Off` भी शामिल है।
+- स्पष्ट picker विकल्प अपने direct level labels का उपयोग करते हैं, जबकि provider labels मौजूद होने पर उन्हें संरक्षित रखते हैं (उदाहरण के लिए provider-labeled `max` विकल्प के लिए `Maximum`)।
+- picker gateway session row/defaults द्वारा लौटाए गए `thinkingLevels` का उपयोग करता है, और `thinkingOptions` को legacy label list के रूप में रखा जाता है। browser UI अपनी provider regex list नहीं रखता; plugins model-specific level sets के स्वामी होते हैं।
+- `/think:<level>` अब भी काम करता है और उसी stored session level को अपडेट करता है, इसलिए chat directives और picker sync में रहते हैं।
 
 ## प्रदाता प्रोफ़ाइल
 
-- प्रदाता plugins मॉडल के समर्थित स्तरों और डिफ़ॉल्ट को परिभाषित करने के लिए `resolveThinkingProfile(ctx)` एक्सपोज़ कर सकते हैं।
-- Claude मॉडल को प्रॉक्सी करने वाले प्रदाता plugins को `openclaw/plugin-sdk/provider-model-shared` से `resolveClaudeThinkingProfile(modelId)` का फिर से उपयोग करना चाहिए, ताकि सीधे Anthropic और प्रॉक्सी कैटलॉग संरेखित रहें।
-- प्रत्येक प्रोफ़ाइल स्तर में एक संग्रहीत canonical `id` (`off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `adaptive`, या `max`) होता है और इसमें display `label` शामिल हो सकता है। बाइनरी प्रदाता `{ id: "low", label: "on" }` का उपयोग करते हैं।
-- प्रोफ़ाइल hooks उपलब्ध होने पर merged catalog facts प्राप्त करते हैं, जिनमें `reasoning`, `compat.thinkingFormat`, और `compat.supportedReasoningEfforts` शामिल हैं। इन facts का उपयोग बाइनरी या custom प्रोफ़ाइल केवल तब एक्सपोज़ करने के लिए करें जब कॉन्फ़िगर किया गया request contract मेल खाते पेलोड का समर्थन करता हो।
-- जिन tool plugins को स्पष्ट thinking override validate करना है, उन्हें `api.runtime.agent.resolveThinkingPolicy({ provider, model })` और `api.runtime.agent.normalizeThinkingLevel(...)` का उपयोग करना चाहिए; उन्हें अपनी प्रदाता/model स्तर सूचियाँ नहीं रखनी चाहिए।
-- कॉन्फ़िगर किए गए custom model metadata तक पहुँच वाले tool plugins `resolveThinkingPolicy` में `catalog` पास कर सकते हैं, ताकि `compat.supportedReasoningEfforts` opt-ins plugin-side validation में प्रतिबिंबित हों।
-- प्रकाशित legacy hooks (`supportsXHighThinking`, `isBinaryThinking`, और `resolveDefaultThinkingLevel`) compatibility adapters के रूप में बने रहते हैं, लेकिन नए custom level sets को `resolveThinkingProfile` का उपयोग करना चाहिए।
-- Gateway पंक्तियाँ/डिफ़ॉल्ट `thinkingLevels`, `thinkingOptions`, और `thinkingDefault` एक्सपोज़ करते हैं, ताकि ACP/chat clients वही profile ids और labels render करें जिनका runtime validation उपयोग करता है।
+- Provider plugins model के supported levels और default को परिभाषित करने के लिए `resolveThinkingProfile(ctx)` expose कर सकते हैं।
+- Claude models को proxy करने वाले Provider plugins को `openclaw/plugin-sdk/provider-model-shared` से `resolveClaudeThinkingProfile(modelId)` reuse करना चाहिए ताकि direct Anthropic और proxy catalogs aligned रहें।
+- प्रत्येक profile level में stored canonical `id` (`off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `adaptive`, या `max`) होता है और इसमें display `label` शामिल हो सकता है। Binary providers `{ id: "low", label: "on" }` का उपयोग करते हैं।
+- Profile hooks उपलब्ध होने पर merged catalog facts प्राप्त करते हैं, जिनमें `reasoning`, `compat.thinkingFormat`, और `compat.supportedReasoningEfforts` शामिल हैं। इन facts का उपयोग binary या custom profiles को केवल तभी expose करने के लिए करें जब configured request contract matching payload को support करता हो।
+- जिन Tool plugins को explicit thinking override validate करना हो, उन्हें `api.runtime.agent.resolveThinkingPolicy({ provider, model })` और `api.runtime.agent.normalizeThinkingLevel(...)` का उपयोग करना चाहिए; उन्हें अपनी provider/model level lists नहीं रखनी चाहिए।
+- Configured custom model metadata तक access वाले Tool plugins `catalog` को `resolveThinkingPolicy` में pass कर सकते हैं ताकि `compat.supportedReasoningEfforts` opt-ins plugin-side validation में reflect हों।
+- Published legacy hooks (`supportsXHighThinking`, `isBinaryThinking`, और `resolveDefaultThinkingLevel`) compatibility adapters के रूप में बने रहते हैं, लेकिन नए custom level sets को `resolveThinkingProfile` का उपयोग करना चाहिए।
+- Gateway rows/defaults `thinkingLevels`, `thinkingOptions`, और `thinkingDefault` expose करते हैं ताकि ACP/chat clients वही profile ids और labels render करें जिनका runtime validation उपयोग करता है।

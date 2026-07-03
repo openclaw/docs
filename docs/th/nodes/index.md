@@ -1,39 +1,40 @@
 ---
 read_when:
     - การจับคู่โหนด iOS/Android กับ Gateway
-    - การใช้ Node canvas/camera สำหรับบริบทของเอเจนต์
-    - การเพิ่มคำสั่งโหนดใหม่หรือตัวช่วย CLI
+    - การใช้ Node แคนวาส/กล้องสำหรับบริบทของเอเจนต์
+    - การเพิ่มคำสั่ง Node ใหม่หรือ helper ของ CLI
 summary: 'Node: การจับคู่ ความสามารถ สิทธิ์ และตัวช่วย CLI สำหรับแคนวาส/กล้อง/หน้าจอ/อุปกรณ์/การแจ้งเตือน/ระบบ'
 title: Node
 x-i18n:
-    generated_at: "2026-06-27T17:47:24Z"
+    generated_at: "2026-07-03T10:05:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e860f051faeeea2d7461d07d2119a7f11f80812aa87896882f11edee36667e4a
+    source_hash: 7096a2600063465ac0bfca359fa1551cb8ca2ab28b095e32a7893669448d36aa
     source_path: nodes/index.md
     workflow: 16
 ---
 
-**Node** คืออุปกรณ์คู่ข้าง (macOS/iOS/Android/headless) ที่เชื่อมต่อกับ Gateway **WebSocket** (พอร์ตเดียวกับผู้ปฏิบัติการ) ด้วย `role: "node"` และเปิดเผยพื้นผิวคำสั่ง (เช่น `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) ผ่าน `node.invoke` รายละเอียดโปรโตคอล: [โปรโตคอล Gateway](/th/gateway/protocol).
+**โหนด** คืออุปกรณ์คู่ข้าง (macOS/iOS/Android/แบบไม่มีหน้าจอ) ที่เชื่อมต่อกับ **WebSocket** ของ Gateway (พอร์ตเดียวกับผู้ปฏิบัติการ) ด้วย `role: "node"` และเปิดเผยชุดคำสั่ง (เช่น `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) ผ่าน `node.invoke` รายละเอียดโปรโตคอล: [โปรโตคอล Gateway](/th/gateway/protocol).
 
-การส่งผ่านแบบเดิม: [โปรโตคอล Bridge](/th/gateway/bridge-protocol) (TCP JSONL;
-สำหรับประวัติเท่านั้นใน Node ปัจจุบัน).
+การขนส่งแบบเดิม: [โปรโตคอล Bridge](/th/gateway/bridge-protocol) (TCP JSONL;
+เป็นข้อมูลประวัติเท่านั้นสำหรับโหนดปัจจุบัน).
 
-macOS ยังสามารถทำงานใน **โหมด Node** ได้ด้วย: แอป menubar เชื่อมต่อกับเซิร์ฟเวอร์ WS ของ Gateway และเปิดเผยคำสั่ง canvas/camera ในเครื่องของตนเป็น Node (ดังนั้น `openclaw nodes …` จึงทำงานกับ Mac เครื่องนี้ได้) ในโหมด Gateway ระยะไกล การทำงานอัตโนมัติของเบราว์เซอร์จะถูกจัดการโดยโฮสต์ Node ของ CLI (`openclaw node run` หรือบริการ Node ที่ติดตั้งไว้) ไม่ใช่โดย Node ของแอปเนทีฟ
+macOS ยังสามารถทำงานใน **โหมดโหนด** ได้ด้วย: แอปแถบเมนูจะเชื่อมต่อกับเซิร์ฟเวอร์ WS ของ Gateway และเปิดเผยคำสั่ง canvas/camera ภายในเครื่องของตนเป็นโหนด (ดังนั้น
+`openclaw nodes …` จึงทำงานกับ Mac เครื่องนี้ได้) ในโหมด Gateway ระยะไกล การทำงานอัตโนมัติของเบราว์เซอร์จะถูกจัดการโดยโฮสต์โหนด CLI (`openclaw node run` หรือบริการโหนดที่ติดตั้งไว้) ไม่ใช่โดยโหนดของแอปเนทีฟ.
 
 หมายเหตุ:
 
-- Node เป็น **อุปกรณ์ต่อพ่วง** ไม่ใช่ Gateway และไม่รันบริการ Gateway
-- ข้อความ Telegram/WhatsApp/ฯลฯ จะไปถึง **Gateway** ไม่ใช่ Node
-- คู่มือแก้ปัญหา: [/nodes/troubleshooting](/th/nodes/troubleshooting)
+- โหนดเป็น **อุปกรณ์ต่อพ่วง** ไม่ใช่ Gateway โหนดไม่ได้เรียกใช้บริการ Gateway.
+- ข้อความ Telegram/WhatsApp/ฯลฯ จะเข้าสู่ **Gateway** ไม่ใช่โหนด.
+- คู่มือแก้ไขปัญหา: [/nodes/troubleshooting](/th/nodes/troubleshooting)
 
 ## การจับคู่ + สถานะ
 
-**Node แบบ WS ใช้การจับคู่อุปกรณ์** Node แสดงตัวตนอุปกรณ์ระหว่าง `connect`; Gateway
-สร้างคำขอจับคู่อุปกรณ์สำหรับ `role: node` อนุมัติผ่าน CLI ของอุปกรณ์ (หรือ UI)
+**โหนด WS ใช้การจับคู่อุปกรณ์** โหนดจะแสดงตัวตนอุปกรณ์ระหว่าง `connect`; Gateway
+จะสร้างคำขอจับคู่อุปกรณ์สำหรับ `role: node` อนุมัติผ่าน CLI อุปกรณ์ (หรือ UI).
 
-CLI แบบรวดเร็ว:
+CLI แบบเร็ว:
 
 ```bash
 openclaw devices list
@@ -43,52 +44,54 @@ openclaw nodes status
 openclaw nodes describe --node <idOrNameOrIp>
 ```
 
-หาก Node ลองใหม่ด้วยรายละเอียดการยืนยันตัวตนที่เปลี่ยนไป (role/scopes/public key) คำขอที่รออนุมัติก่อนหน้าจะถูกแทนที่ และจะสร้าง `requestId` ใหม่ ให้รัน
-`openclaw devices list` อีกครั้งก่อนอนุมัติ
+หากโหนดลองใหม่ด้วยรายละเอียดการยืนยันตัวตนที่เปลี่ยนไป (role/scopes/public key) คำขอที่รอดำเนินการก่อนหน้าจะถูกแทนที่ และจะมีการสร้าง `requestId` ใหม่ เรียกใช้
+`openclaw devices list` อีกครั้งก่อนอนุมัติ.
 
 หมายเหตุ:
 
-- `nodes status` ทำเครื่องหมาย Node เป็น **จับคู่แล้ว** เมื่อบทบาทการจับคู่อุปกรณ์มี `node`
-- เรคคอร์ดการจับคู่อุปกรณ์คือสัญญาบทบาทที่อนุมัติแบบคงทน การหมุนเวียนโทเค็นจะอยู่ภายในสัญญานั้น; ไม่สามารถยกระดับ Node ที่จับคู่แล้วไปเป็นบทบาทอื่นที่การอนุมัติการจับคู่ไม่เคยให้ไว้ได้
-- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) เป็นที่เก็บการจับคู่ Node แยกต่างหากที่ Gateway เป็นเจ้าของ; **ไม่ได้** ใช้กั้น handshake `connect` ของ WS
-- `openclaw nodes remove --node <id|name|ip>` ลบการจับคู่ Node สำหรับ Node ที่มีอุปกรณ์รองรับ คำสั่งนี้จะเพิกถอนบทบาท `node` ของอุปกรณ์ใน `devices/paired.json`
-  และตัดการเชื่อมต่อเซสชันบทบาท Node ของอุปกรณ์นั้น — อุปกรณ์ที่มีหลายบทบาทจะยังคงมีแถวของตนและเสียเฉพาะบทบาท `node` เท่านั้น ขณะที่แถวของอุปกรณ์ที่เป็น Node อย่างเดียวจะถูกลบ นอกจากนี้ยังล้างรายการที่ตรงกันจากที่เก็บการจับคู่ Node แยกต่างหากที่ Gateway เป็นเจ้าของด้วย `operator.pairing` อาจลบแถว Node ที่ไม่ใช่ผู้ปฏิบัติการได้; ผู้เรียกแบบโทเค็นอุปกรณ์ที่เพิกถอนบทบาท Node ของตนเองบนอุปกรณ์หลายบทบาทยังต้องมี `operator.admin` เพิ่มเติม
-- ขอบเขตการอนุมัติตามคำสั่งที่คำขอที่รออนุมัติประกาศไว้:
+- `nodes status` ทำเครื่องหมายโหนดเป็น **จับคู่แล้ว** เมื่อบทบาทการจับคู่อุปกรณ์ของโหนดมี `node`.
+- ระเบียนการจับคู่อุปกรณ์คือสัญญาบทบาทที่อนุมัติแบบคงทน การหมุนเวียนโทเค็นจะอยู่ภายในสัญญานั้น; ไม่สามารถยกระดับโหนดที่จับคู่แล้วให้เป็นบทบาทอื่นที่การอนุมัติการจับคู่ไม่เคยมอบให้.
+- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) เป็นที่เก็บการจับคู่โหนดแยกต่างหากที่ Gateway เป็นเจ้าของ; สิ่งนี้ **ไม่ได้** ควบคุม handshake ของ WS `connect`.
+- `openclaw nodes remove --node <id|name|ip>` ลบการจับคู่โหนด สำหรับโหนดที่มีอุปกรณ์รองรับ คำสั่งนี้จะเพิกถอนบทบาท `node` ของอุปกรณ์ใน `devices/paired.json`
+  และตัดการเชื่อมต่อเซสชันบทบาทโหนดของอุปกรณ์นั้น — อุปกรณ์แบบหลายบทบาทจะยังคงแถวของตนไว้และเสียเฉพาะบทบาท `node` ในขณะที่แถวของอุปกรณ์ที่เป็นโหนดอย่างเดียวจะถูกลบ นอกจากนี้ยังล้างรายการที่ตรงกันจากที่เก็บการจับคู่โหนดแยกต่างหากที่ Gateway เป็นเจ้าของ `operator.pairing` อาจลบแถวโหนดที่ไม่ใช่ผู้ปฏิบัติการได้; ผู้เรียกแบบ device-token ที่เพิกถอนบทบาทโหนดของตนเองบนอุปกรณ์แบบหลายบทบาทยังต้องมี `operator.admin` เพิ่มเติม.
+- ขอบเขตการอนุมัติเป็นไปตามคำสั่งที่คำขอที่รอดำเนินการประกาศ:
   - คำขอที่ไม่มีคำสั่ง: `operator.pairing`
-  - คำสั่ง Node ที่ไม่ใช่ exec: `operator.pairing` + `operator.write`
+  - คำสั่งโหนดที่ไม่ใช่ exec: `operator.pairing` + `operator.write`
   - `system.run` / `system.run.prepare` / `system.which`: `operator.pairing` + `operator.admin`
 
-## โฮสต์ Node ระยะไกล (system.run)
+## โฮสต์โหนดระยะไกล (system.run)
 
-ใช้ **โฮสต์ Node** เมื่อ Gateway ของคุณทำงานบนเครื่องหนึ่ง และคุณต้องการให้คำสั่งทำงานบนอีกเครื่องหนึ่ง โมเดลยังคุยกับ **Gateway**; Gateway
-ส่งต่อการเรียก `exec` ไปยัง **โฮสต์ Node** เมื่อเลือก `host=node`
+ใช้ **โฮสต์โหนด** เมื่อ Gateway ของคุณทำงานบนเครื่องหนึ่ง และคุณต้องการให้คำสั่งทำงานบนอีกเครื่องหนึ่ง โมเดลยังคงคุยกับ **Gateway**; Gateway
+จะส่งต่อการเรียก `exec` ไปยัง **โฮสต์โหนด** เมื่อเลือก `host=node`.
 
-### อะไรรันที่ไหน
+### สิ่งใดทำงานที่ใด
 
-- **โฮสต์ Gateway**: รับข้อความ รันโมเดล กำหนดเส้นทางการเรียกเครื่องมือ
-- **โฮสต์ Node**: รัน `system.run`/`system.which` บนเครื่อง Node
-- **การอนุมัติ**: บังคับใช้บนโฮสต์ Node ผ่าน `~/.openclaw/exec-approvals.json`
+- **โฮสต์ Gateway**: รับข้อความ เรียกใช้โมเดล และกำหนดเส้นทางการเรียกเครื่องมือ.
+- **โฮสต์โหนด**: เรียกใช้ `system.run`/`system.which` บนเครื่องโหนด.
+- **การอนุมัติ**: บังคับใช้บนโฮสต์โหนดผ่าน `~/.openclaw/exec-approvals.json`.
 
 หมายเหตุการอนุมัติ:
 
-- การรัน Node ที่มีการอนุมัติรองรับจะผูกกับบริบทคำขอที่แน่นอน
-- สำหรับการรันไฟล์โดยตรงผ่าน shell/runtime OpenClaw ยังพยายามอย่างดีที่สุดเพื่อผูก operand ไฟล์ในเครื่องที่เป็นรูปธรรมหนึ่งไฟล์ และปฏิเสธการรันหากไฟล์นั้นเปลี่ยนก่อนการรัน
-- หาก OpenClaw ไม่สามารถระบุไฟล์ในเครื่องที่เป็นรูปธรรมได้อย่างแน่นอนหนึ่งไฟล์สำหรับคำสั่ง interpreter/runtime การรันที่มีการอนุมัติรองรับจะถูกปฏิเสธแทนการแสร้งว่าครอบคลุม runtime ทั้งหมด ใช้ sandboxing, โฮสต์แยก, หรือรายการอนุญาต/เวิร์กโฟลว์เต็มรูปแบบที่เชื่อถือได้อย่างชัดเจนสำหรับความหมายของ interpreter ที่กว้างกว่า
+- การเรียกใช้โหนดที่มีการอนุมัติรองรับจะผูกกับบริบทคำขอที่แน่นอน.
+- สำหรับการเรียกใช้ไฟล์ shell/runtime โดยตรง OpenClaw ยังพยายามอย่างดีที่สุดเพื่อผูกโอเปอแรนด์ไฟล์ภายในเครื่องที่เป็นรูปธรรมหนึ่งไฟล์ และปฏิเสธการเรียกใช้หากไฟล์นั้นเปลี่ยนก่อนการดำเนินการ.
+- หาก OpenClaw ไม่สามารถระบุไฟล์ภายในเครื่องที่เป็นรูปธรรมได้แน่นอนหนึ่งไฟล์สำหรับคำสั่ง interpreter/runtime
+  การดำเนินการที่มีการอนุมัติรองรับจะถูกปฏิเสธแทนการแสร้งว่าครอบคลุม runtime ทั้งหมด ใช้ sandboxing,
+  โฮสต์แยกต่างหาก หรือรายการอนุญาต/เวิร์กโฟลว์เต็มที่เชื่อถือได้อย่างชัดเจนสำหรับ semantics ของ interpreter ที่กว้างขึ้น.
 
-### เริ่มโฮสต์ Node (foreground)
+### เริ่มโฮสต์โหนด (foreground)
 
-บนเครื่อง Node:
+บนเครื่องโหนด:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
 ```
 
-### Gateway ระยะไกลผ่าน SSH tunnel (bind แบบ loopback)
+### Gateway ระยะไกลผ่าน SSH tunnel (ผูกกับ loopback)
 
-หาก Gateway bind กับ loopback (`gateway.bind=loopback`, ค่าเริ่มต้นในโหมด local),
-โฮสต์ Node ระยะไกลจะเชื่อมต่อโดยตรงไม่ได้ ให้สร้าง SSH tunnel และชี้โฮสต์ Node ไปยังปลายทางในเครื่องของ tunnel
+หาก Gateway ผูกกับ loopback (`gateway.bind=loopback`, ค่าเริ่มต้นในโหมดภายในเครื่อง)
+โฮสต์โหนดระยะไกลจะเชื่อมต่อโดยตรงไม่ได้ ให้สร้าง SSH tunnel และชี้โฮสต์โหนดไปยังปลายทางภายในเครื่องของ tunnel.
 
-ตัวอย่าง (โฮสต์ Node -> โฮสต์ Gateway):
+ตัวอย่าง (โฮสต์โหนด -> โฮสต์ Gateway):
 
 ```bash
 # Terminal A (keep running): forward local 18790 -> gateway 127.0.0.1:18789
@@ -101,15 +104,15 @@ openclaw node run --host 127.0.0.1 --port 18790 --display-name "Build Node"
 
 หมายเหตุ:
 
-- `openclaw node run` รองรับการยืนยันตัวตนด้วยโทเค็นหรือรหัสผ่าน
-- แนะนำให้ใช้ตัวแปรสภาพแวดล้อม: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`
-- fallback ของคอนฟิกคือ `gateway.auth.token` / `gateway.auth.password`
-- ในโหมด local โฮสต์ Node จะตั้งใจละเว้น `gateway.remote.token` / `gateway.remote.password`
-- ในโหมด remote `gateway.remote.token` / `gateway.remote.password` มีสิทธิ์ใช้งานตามกฎลำดับความสำคัญของ remote
-- หากกำหนดค่า SecretRefs ของ `gateway.auth.*` แบบ local ที่ใช้งานอยู่แต่แก้ค่าไม่ได้ การยืนยันตัวตนของโฮสต์ Node จะ fail closed
-- การแก้ค่าการยืนยันตัวตนของโฮสต์ Node เคารพเฉพาะตัวแปรสภาพแวดล้อม `OPENCLAW_GATEWAY_*`
+- `openclaw node run` รองรับการยืนยันตัวตนด้วยโทเค็นหรือรหัสผ่าน.
+- แนะนำให้ใช้ตัวแปรสภาพแวดล้อม: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
+- fallback ของ config คือ `gateway.auth.token` / `gateway.auth.password`.
+- ในโหมดภายในเครื่อง โฮสต์โหนดจะจงใจละเว้น `gateway.remote.token` / `gateway.remote.password`.
+- ในโหมดระยะไกล `gateway.remote.token` / `gateway.remote.password` มีสิทธิ์ใช้ตามกฎลำดับความสำคัญระยะไกล.
+- หากมีการกำหนดค่า SecretRefs ของ `gateway.auth.*` ภายในเครื่องที่ใช้งานอยู่แต่แก้ค่าไม่ได้ การยืนยันตัวตนของโฮสต์โหนดจะ fail closed.
+- การแก้ค่าการยืนยันตัวตนของโฮสต์โหนดให้เกียรติเฉพาะตัวแปรสภาพแวดล้อม `OPENCLAW_GATEWAY_*`.
 
-### เริ่มโฮสต์ Node (บริการ)
+### เริ่มโฮสต์โหนด (บริการ)
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789 --display-name "Build Node"
@@ -127,28 +130,28 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-หาก Node ลองใหม่ด้วยรายละเอียดการยืนยันตัวตนที่เปลี่ยนไป ให้รัน `openclaw devices list` อีกครั้ง
-และอนุมัติ `requestId` ปัจจุบัน
+หากโหนดลองใหม่ด้วยรายละเอียดการยืนยันตัวตนที่เปลี่ยนไป ให้เรียกใช้ `openclaw devices list`
+อีกครั้งและอนุมัติ `requestId` ปัจจุบัน.
 
 ตัวเลือกการตั้งชื่อ:
 
-- `--display-name` บน `openclaw node run` / `openclaw node install` (คงอยู่ใน `~/.openclaw/node.json` บน Node)
-- `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (การแทนที่จาก Gateway)
+- `--display-name` บน `openclaw node run` / `openclaw node install` (คงอยู่ใน `~/.openclaw/node.json` บนโหนด).
+- `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (การแทนที่จาก Gateway).
 
-### เพิ่มคำสั่งเข้าในรายการอนุญาต
+### อนุญาตคำสั่ง
 
-การอนุมัติ Exec เป็นแบบ **ต่อโฮสต์ Node** เพิ่มรายการอนุญาตจาก Gateway:
+การอนุมัติ exec เป็นแบบ **ต่อโฮสต์โหนด** เพิ่มรายการอนุญาตจาก Gateway:
 
 ```bash
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/uname"
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/sw_vers"
 ```
 
-การอนุมัติอยู่บนโฮสต์ Node ที่ `~/.openclaw/exec-approvals.json`
+การอนุมัติอยู่บนโฮสต์โหนดที่ `~/.openclaw/exec-approvals.json`.
 
-### ชี้ exec ไปที่ Node
+### ชี้ exec ไปที่โหนด
 
-กำหนดค่าเริ่มต้น (คอนฟิก Gateway):
+กำหนดค่าเริ่มต้น (config ของ Gateway):
 
 ```bash
 openclaw config set tools.exec.host node
@@ -156,21 +159,27 @@ openclaw config set tools.exec.security allowlist
 openclaw config set tools.exec.node "<id-or-name>"
 ```
 
-หรือแบบต่อเซสชัน:
+หรือเฉพาะเซสชัน:
 
 ```
 /exec host=node security=allowlist node=<id-or-name>
 ```
 
-เมื่อตั้งค่าแล้ว การเรียก `exec` ใดๆ ที่มี `host=node` จะรันบนโฮสต์ Node (ขึ้นกับรายการอนุญาต/การอนุมัติของ Node)
+เมื่อกำหนดแล้ว การเรียก `exec` ใด ๆ ที่มี `host=node` จะทำงานบนโฮสต์โหนด (ขึ้นอยู่กับรายการอนุญาต/การอนุมัติของโหนด).
 
-`host=auto` จะไม่เลือก Node เองโดยปริยาย แต่อนุญาตคำขอแบบต่อการเรียกที่ระบุ `host=node` อย่างชัดเจนจาก `auto` หากคุณต้องการให้ exec บน Node เป็นค่าเริ่มต้นของเซสชัน ให้ตั้ง `tools.exec.host=node` หรือ `/exec host=node ...` อย่างชัดเจน
+`host=auto` จะไม่เลือกโหนดโดยอัตโนมัติด้วยตัวเอง แต่อนุญาตคำขอ `host=node` แบบต่อการเรียกที่ระบุชัดเจนจาก `auto` หากคุณต้องการให้ exec บนโหนดเป็นค่าเริ่มต้นสำหรับเซสชัน ให้ตั้งค่า `tools.exec.host=node` หรือ `/exec host=node ...` อย่างชัดเจน.
 
 ที่เกี่ยวข้อง:
 
-- [CLI โฮสต์ Node](/th/cli/node)
+- [CLI โฮสต์โหนด](/th/cli/node)
 - [เครื่องมือ Exec](/th/tools/exec)
 - [การอนุมัติ Exec](/th/tools/exec-approvals)
+
+### การอนุมานโมเดลภายในเครื่อง
+
+โหนดเดสก์ท็อปหรือเซิร์ฟเวอร์สามารถเปิดเผยโมเดลที่รองรับแชตจากเซิร์ฟเวอร์ Ollama
+ที่ทำงานบนโหนดนั้น Agent ใช้เครื่องมือ `node_inference` ของ Plugin Ollama เพื่อค้นหาโมเดลที่ติดตั้งและเรียกใช้พรอมป์ที่มีขอบเขตจากระยะไกล; Gateway ไม่จำเป็นต้องเข้าถึงเครือข่ายโดยตรงไปยัง Ollama ดู [การอนุมานภายในโหนดของ Ollama](/th/providers/ollama#node-local-inference)
+สำหรับการตั้งค่า การกรองโมเดล และคำสั่งตรวจสอบโดยตรง.
 
 ## การเรียกใช้คำสั่ง
 
@@ -180,32 +189,32 @@ openclaw config set tools.exec.node "<id-or-name>"
 openclaw nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"javaScript":"location.href"}'
 ```
 
-มี helper ระดับสูงสำหรับเวิร์กโฟลว์ทั่วไปแบบ "ให้เอเจนต์มีไฟล์แนบ MEDIA"
+มีตัวช่วยระดับสูงกว่าสำหรับเวิร์กโฟลว์ทั่วไปแบบ "ให้ไฟล์แนบ MEDIA แก่ Agent".
 
 ## นโยบายคำสั่ง
 
-คำสั่ง Node ต้องผ่านด่านสองชั้นก่อนจึงจะเรียกใช้ได้:
+คำสั่งโหนดต้องผ่านด่านสองชั้นก่อนจึงจะเรียกใช้ได้:
 
-1. Node ต้องประกาศคำสั่งในรายการ `connect.commands` ของ WebSocket
-2. นโยบายแพลตฟอร์มของ Gateway ต้องอนุญาตคำสั่งที่ประกาศไว้
+1. โหนดต้องประกาศคำสั่งในรายการ `connect.commands` ของ WebSocket.
+2. นโยบายแพลตฟอร์มของ Gateway ต้องอนุญาตคำสั่งที่ประกาศ.
 
-Node คู่ข้างบน Windows และ macOS อนุญาตคำสั่งที่ประกาศไว้อย่างปลอดภัย เช่น
-`canvas.*`, `camera.list`, `location.get`, และ `screen.snapshot` ตามค่าเริ่มต้น
-Node ที่เชื่อถือได้ซึ่งโฆษณาความสามารถ `talk` หรือประกาศคำสั่ง `talk.*`
-ยังอนุญาตคำสั่งกดเพื่อพูดที่ประกาศไว้ (`talk.ptt.start`, `talk.ptt.stop`,
-`talk.ptt.cancel`, `talk.ptt.once`) ตามค่าเริ่มต้น โดยไม่ขึ้นกับป้ายแพลตฟอร์ม
-คำสั่งที่อันตรายหรือมีผลต่อความเป็นส่วนตัวสูง เช่น `camera.snap`, `camera.clip`, และ
-`screen.record` ยังต้อง opt-in อย่างชัดเจนด้วย
-`gateway.nodes.allowCommands` `gateway.nodes.denyCommands` ชนะค่าเริ่มต้นและรายการอนุญาตเพิ่มเติมเสมอ
+โหนดคู่ข้างของ Windows และ macOS อนุญาตคำสั่งที่ประกาศแล้วและปลอดภัย เช่น
+`canvas.*`, `camera.list`, `location.get`, และ `screen.snapshot` ตามค่าเริ่มต้น.
+โหนดที่เชื่อถือได้ซึ่งโฆษณาความสามารถ `talk` หรือประกาศคำสั่ง `talk.*`
+ยังอนุญาตคำสั่งกดเพื่อพูดที่ประกาศแล้ว (`talk.ptt.start`, `talk.ptt.stop`,
+`talk.ptt.cancel`, `talk.ptt.once`) ตามค่าเริ่มต้น โดยไม่ขึ้นกับป้ายกำกับแพลตฟอร์ม.
+คำสั่งที่อันตรายหรือเกี่ยวข้องกับความเป็นส่วนตัวสูง เช่น `camera.snap`, `camera.clip`, และ
+`screen.record` ยังต้องเลือกใช้อย่างชัดเจนด้วย
+`gateway.nodes.allowCommands` `gateway.nodes.denyCommands` จะชนะค่าเริ่มต้นและรายการอนุญาตเพิ่มเติมเสมอ.
 
-คำสั่ง Node ที่ Plugin เป็นเจ้าของสามารถเพิ่มนโยบาย node-invoke ของ Gateway ได้ นโยบายนั้นทำงานหลังการตรวจรายการอนุญาตและก่อนส่งต่อไปยัง Node ดังนั้น `node.invoke` ดิบ, helper ของ CLI, และเครื่องมือเอเจนต์เฉพาะจะใช้ขอบเขตสิทธิ์ของ Plugin เดียวกัน คำสั่ง Node ของ Plugin ที่อันตรายยังต้องมีการ opt-in ด้วย `gateway.nodes.allowCommands` อย่างชัดเจน
+คำสั่งโหนดที่ Plugin เป็นเจ้าของสามารถเพิ่มนโยบาย Gateway node-invoke ได้ นโยบายดังกล่าวจะทำงานหลังการตรวจสอบรายการอนุญาตและก่อนส่งต่อไปยังโหนด ดังนั้น
+`node.invoke` ดิบ ตัวช่วย CLI และเครื่องมือ Agent เฉพาะทางจึงใช้ขอบเขตสิทธิ์ของ Plugin เดียวกัน คำสั่งโหนดของ Plugin ที่อันตรายยังต้องเลือกใช้ `gateway.nodes.allowCommands` อย่างชัดเจน.
 
-หลังจาก Node เปลี่ยนรายการคำสั่งที่ประกาศไว้ ให้ปฏิเสธการจับคู่อุปกรณ์เก่า
-และอนุมัติคำขอใหม่เพื่อให้ Gateway เก็บสแนปช็อตคำสั่งที่อัปเดตแล้ว
+หลังจากโหนดเปลี่ยนรายการคำสั่งที่ประกาศ ให้ปฏิเสธการจับคู่อุปกรณ์เก่าและอนุมัติคำขอใหม่ เพื่อให้ Gateway จัดเก็บ snapshot คำสั่งที่อัปเดตแล้ว.
 
-## คอนฟิก (`openclaw.json`)
+## Config (`openclaw.json`)
 
-การตั้งค่าที่เกี่ยวกับ Node อยู่ภายใต้ `gateway.nodes` และ `tools.exec`:
+การตั้งค่าที่เกี่ยวกับโหนดอยู่ภายใต้ `gateway.nodes` และ `tools.exec`:
 
 ```json5
 {
@@ -236,11 +245,12 @@ Node ที่เชื่อถือได้ซึ่งโฆษณาคว
 }
 ```
 
-ใช้ชื่อคำสั่ง Node แบบตรงตัว `denyCommands` ลบคำสั่งแม้ค่าเริ่มต้นของแพลตฟอร์มหรือรายการ `allowCommands` จะอนุญาตอยู่ก็ตาม ดู
-[ข้อมูลอ้างอิงคอนฟิก Gateway](/th/gateway/configuration-reference#gateway-field-details)
-สำหรับรายละเอียดฟิลด์การจับคู่ Node ของ Gateway และนโยบายคำสั่ง
+ใช้ชื่อคำสั่งโหนดแบบตรงตัว `denyCommands` จะลบคำสั่งแม้ว่า
+ค่าเริ่มต้นของแพลตฟอร์มหรือรายการ `allowCommands` จะอนุญาตอยู่ก็ตาม ดู
+[ข้อมูลอ้างอิงการกำหนดค่า Gateway](/th/gateway/configuration-reference#gateway-field-details)
+สำหรับรายละเอียดฟิลด์การจับคู่โหนดของ Gateway และนโยบายคำสั่ง.
 
-การแทนที่ Node สำหรับ exec แบบต่อเอเจนต์:
+การแทนที่โหนด exec ต่อ Agent:
 
 ```json5
 {
@@ -255,11 +265,11 @@ Node ที่เชื่อถือได้ซึ่งโฆษณาคว
 }
 ```
 
-## ภาพหน้าจอ (สแนปช็อต canvas)
+## ภาพหน้าจอ (snapshot ของ canvas)
 
-หาก Node กำลังแสดง Canvas (WebView), `canvas.snapshot` จะคืนค่า `{ format, base64 }`
+หากโหนดกำลังแสดง Canvas (WebView), `canvas.snapshot` จะคืนค่า `{ format, base64 }`.
 
-helper ของ CLI (เขียนไปยังไฟล์ชั่วคราวและพิมพ์พาธที่บันทึกไว้):
+ตัวช่วย CLI (เขียนไปยังไฟล์ชั่วคราวและพิมพ์พาธที่บันทึกไว้):
 
 ```bash
 openclaw nodes canvas snapshot --node <idOrNameOrIp> --format png
@@ -277,8 +287,8 @@ openclaw nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 
 หมายเหตุ:
 
-- `canvas present` รับ URL หรือพาธไฟล์ในเครื่อง (`--target`) พร้อม `--x/--y/--width/--height` ที่เลือกได้สำหรับการจัดตำแหน่ง
-- `canvas eval` รับ JS แบบ inline (`--js`) หรืออาร์กิวเมนต์แบบ positional
+- `canvas present` รับ URL หรือพาธไฟล์ภายในเครื่อง (`--target`) พร้อมตัวเลือก `--x/--y/--width/--height` สำหรับการจัดตำแหน่ง.
+- `canvas eval` รับ JS แบบ inline (`--js`) หรืออาร์กิวเมนต์ตำแหน่ง.
 
 ### A2UI (Canvas)
 
@@ -290,17 +300,17 @@ openclaw nodes canvas a2ui reset --node <idOrNameOrIp>
 
 หมายเหตุ:
 
-- Node มือถือใช้หน้า A2UI ที่รวมมากับแอปและแอปเป็นเจ้าของสำหรับการเรนเดอร์ที่ทำงานกับ action ได้
-- รองรับเฉพาะ A2UI v0.8 JSONL (v0.9/createSurface จะถูกปฏิเสธ)
-- iOS และ Android เรนเดอร์หน้า Canvas ของ Gateway ระยะไกล แต่ action ของปุ่ม A2UI จะถูก dispatch เฉพาะจากหน้า A2UI ที่รวมมากับแอปและแอปเป็นเจ้าของเท่านั้น หน้า A2UI แบบ HTTP/HTTPS ที่ Gateway โฮสต์เป็นแบบเรนเดอร์อย่างเดียวบนไคลเอนต์มือถือเหล่านั้น
+- โหนดมือถือใช้หน้า A2UI ที่บันเดิลและเป็นของแอปสำหรับการเรนเดอร์ที่รองรับการดำเนินการ
+- รองรับเฉพาะ A2UI v0.8 JSONL เท่านั้น (v0.9/createSurface จะถูกปฏิเสธ)
+- iOS และ Android เรนเดอร์หน้า Gateway Canvas ระยะไกล แต่การดำเนินการของปุ่ม A2UI จะถูก dispatch จากหน้า A2UI ที่บันเดิลและเป็นของแอปเท่านั้น หน้า A2UI แบบ HTTP/HTTPS ที่โฮสต์โดย Gateway เป็นแบบเรนเดอร์อย่างเดียวบนไคลเอนต์มือถือเหล่านั้น
 
-## รูปภาพ + วิดีโอ (กล้อง Node)
+## รูปภาพ + วิดีโอ (กล้องโหนด)
 
 รูปภาพ (`jpg`):
 
 ```bash
 openclaw nodes camera list --node <idOrNameOrIp>
-openclaw nodes camera snap --node <idOrNameOrIp>            # ค่าเริ่มต้น: ทั้งสองด้าน (2 บรรทัด MEDIA)
+openclaw nodes camera snap --node <idOrNameOrIp>            # default: both facings (2 MEDIA lines)
 openclaw nodes camera snap --node <idOrNameOrIp> --facing front
 ```
 
@@ -313,13 +323,13 @@ openclaw nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
 
 หมายเหตุ:
 
-- node ต้องอยู่ใน **foreground** สำหรับ `canvas.*` และ `camera.*` (การเรียกขณะอยู่เบื้องหลังจะคืนค่า `NODE_BACKGROUND_UNAVAILABLE`)
-- ระยะเวลาคลิปจะถูกจำกัดไว้ (ปัจจุบัน `<= 60s`) เพื่อหลีกเลี่ยง payload base64 ที่มีขนาดใหญ่เกินไป
+- โหนดต้องอยู่ใน **foreground** สำหรับ `canvas.*` และ `camera.*` (การเรียกใน background จะคืนค่า `NODE_BACKGROUND_UNAVAILABLE`)
+- ระยะเวลาคลิปจะถูกจำกัด (ปัจจุบัน `<= 60s`) เพื่อหลีกเลี่ยง payload base64 ที่มีขนาดใหญ่เกินไป
 - Android จะแจ้งขอสิทธิ์ `CAMERA`/`RECORD_AUDIO` เมื่อทำได้; สิทธิ์ที่ถูกปฏิเสธจะล้มเหลวด้วย `*_PERMISSION_REQUIRED`
 
-## การบันทึกหน้าจอ (nodes)
+## การบันทึกหน้าจอ (โหนด)
 
-nodes ที่รองรับจะแสดง `screen.record` (mp4) ตัวอย่าง:
+โหนดที่รองรับจะเปิดเผย `screen.record` (mp4) ตัวอย่าง:
 
 ```bash
 openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10
@@ -328,14 +338,14 @@ openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-
 
 หมายเหตุ:
 
-- ความพร้อมใช้งานของ `screen.record` ขึ้นอยู่กับแพลตฟอร์มของ node
-- การบันทึกหน้าจอจะถูกจำกัดไว้ที่ `<= 60s`
-- `--no-audio` ปิดการจับเสียงไมโครโฟนบนแพลตฟอร์มที่รองรับ
+- ความพร้อมใช้งานของ `screen.record` ขึ้นอยู่กับแพลตฟอร์มของโหนด
+- การบันทึกหน้าจอถูกจำกัดไว้ที่ `<= 60s`
+- `--no-audio` ปิดใช้งานการจับเสียงจากไมโครโฟนบนแพลตฟอร์มที่รองรับ
 - ใช้ `--screen <index>` เพื่อเลือกจอแสดงผลเมื่อมีหลายหน้าจอให้ใช้งาน
 
-## ตำแหน่งที่ตั้ง (nodes)
+## ตำแหน่งที่ตั้ง (โหนด)
 
-nodes จะแสดง `location.get` เมื่อเปิดใช้งาน Location ในการตั้งค่า
+โหนดเปิดเผย `location.get` เมื่อเปิดใช้งานตำแหน่งที่ตั้งในการตั้งค่า
 
 ตัวช่วย CLI:
 
@@ -346,13 +356,13 @@ openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 1
 
 หมายเหตุ:
 
-- Location **ปิดอยู่ตามค่าเริ่มต้น**
-- "Always" ต้องมีสิทธิ์จากระบบ; การดึงข้อมูลเบื้องหลังเป็นแบบพยายามให้ดีที่สุด
-- การตอบกลับมี lat/lon, ความแม่นยำ (เมตร), และเวลาประทับ
+- ตำแหน่งที่ตั้ง **ปิดโดยค่าเริ่มต้น**
+- "Always" ต้องใช้สิทธิ์จากระบบ; การดึงข้อมูลใน background เป็นแบบพยายามให้ดีที่สุด
+- การตอบกลับรวม lat/lon, ความแม่นยำ (เมตร), และ timestamp
 
-## SMS (Android nodes)
+## SMS (โหนด Android)
 
-Android nodes สามารถแสดง `sms.send` ได้เมื่อผู้ใช้ให้สิทธิ์ **SMS** และอุปกรณ์รองรับระบบโทรศัพท์
+โหนด Android สามารถเปิดเผย `sms.send` เมื่อผู้ใช้ให้สิทธิ์ **SMS** และอุปกรณ์รองรับโทรศัพท์
 
 การเรียกระดับต่ำ:
 
@@ -362,17 +372,17 @@ openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"
 
 หมายเหตุ:
 
-- ต้องยอมรับพรอมป์ขอสิทธิ์บนอุปกรณ์ Android ก่อนจึงจะประกาศ capability นี้
+- ต้องยอมรับพรอมต์สิทธิ์บนอุปกรณ์ Android ก่อน capability จะถูกประกาศ
 - อุปกรณ์ที่มีเฉพาะ Wi-Fi และไม่มีระบบโทรศัพท์จะไม่ประกาศ `sms.send`
 
-## คำสั่งอุปกรณ์ Android + ข้อมูลส่วนตัว
+## คำสั่งอุปกรณ์ Android + ข้อมูลส่วนบุคคล
 
-Android nodes สามารถประกาศตระกูลคำสั่งเพิ่มเติมได้เมื่อเปิดใช้งาน capabilities ที่เกี่ยวข้อง
+โหนด Android สามารถประกาศกลุ่มคำสั่งเพิ่มเติมเมื่อเปิดใช้งาน capability ที่เกี่ยวข้อง
 
-ตระกูลที่พร้อมใช้งาน:
+กลุ่มที่พร้อมใช้งาน:
 
 - `device.status`, `device.info`, `device.permissions`, `device.health`
-- `device.apps` เมื่อเปิดใช้งานการแชร์ Installed Apps ใน Android Settings
+- `device.apps` เมื่อเปิดใช้งานการแชร์แอปที่ติดตั้งใน Android Settings
 - `notifications.list`, `notifications.actions`
 - `photos.latest`
 - `contacts.search`, `contacts.add`
@@ -392,13 +402,13 @@ openclaw nodes invoke --node <idOrNameOrIp> --command photos.latest --params '{"
 
 หมายเหตุ:
 
-- `device.apps` เป็นแบบเลือกเปิดใช้ และจะส่งคืนแอปที่มองเห็นได้ใน launcher ตามค่าเริ่มต้น
-- คำสั่งการเคลื่อนไหวถูกจำกัดด้วยความสามารถตามเซ็นเซอร์ที่มีอยู่
+- `device.apps` เป็นแบบ opt-in และคืนค่าแอปที่มองเห็นได้จาก launcher โดยค่าเริ่มต้น
+- คำสั่ง motion ถูกควบคุมด้วย capability ตามเซ็นเซอร์ที่พร้อมใช้งาน
 
-## คำสั่งระบบ (โฮสต์โหนด / โหนด mac)
+## คำสั่งระบบ (โฮสต์โหนด / โหนด Mac)
 
-โหนด macOS เปิดเผย `system.run`, `system.notify` และ `system.execApprovals.get/set`
-โฮสต์โหนดแบบ headless เปิดเผย `system.run`, `system.which` และ `system.execApprovals.get/set`
+โหนด macOS เปิดเผย `system.run`, `system.notify`, และ `system.execApprovals.get/set`
+โฮสต์โหนดแบบ headless เปิดเผย `system.run`, `system.which`, และ `system.execApprovals.get/set`
 
 ตัวอย่าง:
 
@@ -409,36 +419,36 @@ openclaw nodes invoke --node <idOrNameOrIp> --command system.which --params '{"n
 
 หมายเหตุ:
 
-- `system.run` ส่งคืน stdout/stderr/รหัสออกใน payload
-- การเรียกใช้ shell ตอนนี้ผ่านเครื่องมือ `exec` ด้วย `host=node`; `nodes` ยังคงเป็นพื้นผิว direct-RPC สำหรับคำสั่งโหนดแบบระบุชัดเจน
+- `system.run` คืนค่า stdout/stderr/exit code ใน payload
+- ขณะนี้การรัน shell ผ่านเครื่องมือ `exec` พร้อม `host=node`; `nodes` ยังคงเป็นพื้นผิว direct-RPC สำหรับคำสั่งโหนดที่ระบุชัดเจน
 - `nodes invoke` ไม่เปิดเผย `system.run` หรือ `system.run.prepare`; รายการเหล่านั้นอยู่บนเส้นทาง exec เท่านั้น
-- เส้นทาง exec เตรียม `systemRunPlan` แบบมาตรฐานก่อนการอนุมัติ เมื่อมีการให้
-  การอนุมัติแล้ว gateway จะส่งต่อแผนที่เก็บไว้นั้น ไม่ใช่ฟิลด์ command/cwd/session
-  ที่ผู้เรียกแก้ไขภายหลัง
+- เส้นทาง exec เตรียม `systemRunPlan` แบบ canonical ก่อนการอนุมัติ เมื่อได้รับ
+  การอนุมัติแล้ว gateway จะส่งต่อแผนที่จัดเก็บไว้นั้น ไม่ใช่ฟิลด์ command/cwd/session
+  ที่ผู้เรียกแก้ไขในภายหลัง
 - `system.notify` เคารพสถานะสิทธิ์การแจ้งเตือนบนแอป macOS
-- เมทาดาทา `platform` / `deviceFamily` ของโหนดที่ไม่รู้จักจะใช้ allowlist ค่าเริ่มต้นแบบระมัดระวังซึ่งไม่รวม `system.run` และ `system.which` หากคุณต้องการคำสั่งเหล่านั้นสำหรับแพลตฟอร์มที่ไม่รู้จักโดยตั้งใจ ให้เพิ่มอย่างชัดเจนผ่าน `gateway.nodes.allowCommands`
-- `system.run` รองรับ `--cwd`, `--env KEY=VAL`, `--command-timeout` และ `--needs-screen-recording`
-- สำหรับตัวครอบ shell (`bash|sh|zsh ... -c/-lc`) ค่า `--env` ที่มีขอบเขตตามคำขอจะถูกลดให้เหลือ allowlist แบบระบุชัดเจน (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`)
-- สำหรับการตัดสินใจ allow-always ในโหมด allowlist ตัวครอบ dispatch ที่รู้จัก (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) จะบันทึกเส้นทาง executable ภายในแทนเส้นทางของตัวครอบ หากการคลายตัวครอบไม่ปลอดภัย จะไม่มีการบันทึกรายการ allowlist โดยอัตโนมัติ
-- บนโฮสต์โหนด Windows ในโหมด allowlist การรันตัวครอบ shell ผ่าน `cmd.exe /c` ต้องได้รับการอนุมัติ (รายการ allowlist เพียงอย่างเดียวไม่ได้อนุญาตรูปแบบตัวครอบโดยอัตโนมัติ)
+- metadata `platform` / `deviceFamily` ของโหนดที่ไม่รู้จักใช้ allowlist ค่าเริ่มต้นแบบระมัดระวังที่ไม่รวม `system.run` และ `system.which` หากคุณตั้งใจต้องใช้คำสั่งเหล่านั้นสำหรับแพลตฟอร์มที่ไม่รู้จัก ให้เพิ่มอย่างชัดเจนผ่าน `gateway.nodes.allowCommands`
+- `system.run` รองรับ `--cwd`, `--env KEY=VAL`, `--command-timeout`, และ `--needs-screen-recording`
+- สำหรับ shell wrappers (`bash|sh|zsh ... -c/-lc`) ค่า `--env` ที่มีขอบเขตตามคำขอจะถูกลดเหลือ allowlist ที่ระบุชัดเจน (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`)
+- สำหรับการตัดสินใจ allow-always ในโหมด allowlist, known dispatch wrappers (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) จะคง path ของ executable ภายในแทน path ของ wrapper หากการ unwrap ไม่ปลอดภัย จะไม่มีการคงรายการ allowlist โดยอัตโนมัติ
+- บนโฮสต์โหนด Windows ในโหมด allowlist การรัน shell-wrapper ผ่าน `cmd.exe /c` ต้องได้รับการอนุมัติ (รายการ allowlist เพียงอย่างเดียวไม่ได้อนุญาตรูปแบบ wrapper โดยอัตโนมัติ)
 - `system.notify` รองรับ `--priority <passive|active|timeSensitive>` และ `--delivery <system|overlay|auto>`
-- โฮสต์โหนดจะไม่สนใจการแทนที่ `PATH` และจะตัดคีย์ startup/shell ที่เป็นอันตรายออก (`DYLD_*`, `LD_*`, `BASHOPTS`, `FPATH`, `KSH_ENV`, `NODE_OPTIONS`, `NODE_REDIRECT_WARNINGS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_REPL_HISTORY`, `NODE_V8_COVERAGE`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`, `TCLLIBPATH`) หากคุณต้องการรายการ PATH เพิ่มเติม ให้กำหนดค่าสภาพแวดล้อมของบริการโฮสต์โหนด (หรือติดตั้งเครื่องมือในตำแหน่งมาตรฐาน) แทนการส่ง `PATH` ผ่าน `--env`
-- ในโหมดโหนด macOS, `system.run` ถูกจำกัดด้วยการอนุมัติ exec ในแอป macOS (การตั้งค่า → การอนุมัติ Exec)
-  Ask/allowlist/full ทำงานเหมือนกับโฮสต์โหนดแบบ headless; prompt ที่ถูกปฏิเสธจะส่งคืน `SYSTEM_RUN_DENIED`
-- บนโฮสต์โหนดแบบ headless, `system.run` ถูกจำกัดด้วยการอนุมัติ exec (`~/.openclaw/exec-approvals.json`)
+- โฮสต์โหนดจะไม่ใช้การ override `PATH` และลบคีย์ startup/shell ที่อันตราย (`DYLD_*`, `LD_*`, `BASHOPTS`, `FPATH`, `KSH_ENV`, `NODE_OPTIONS`, `NODE_REDIRECT_WARNINGS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_REPL_HISTORY`, `NODE_V8_COVERAGE`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`, `TCLLIBPATH`) หากคุณต้องการรายการ PATH เพิ่มเติม ให้กำหนดค่าสภาพแวดล้อมของบริการโฮสต์โหนด (หรือติดตั้งเครื่องมือในตำแหน่งมาตรฐาน) แทนการส่ง `PATH` ผ่าน `--env`
+- ในโหมดโหนด macOS, `system.run` ถูกควบคุมโดยการอนุมัติ exec ในแอป macOS (Settings → Exec approvals)
+  Ask/allowlist/full ทำงานเหมือนกับโฮสต์โหนดแบบ headless; พรอมต์ที่ถูกปฏิเสธจะคืนค่า `SYSTEM_RUN_DENIED`
+- บนโฮสต์โหนดแบบ headless, `system.run` ถูกควบคุมโดยการอนุมัติ exec (`~/.openclaw/exec-approvals.json`)
 
 ## การผูกโหนด Exec
 
-เมื่อมีหลายโหนดพร้อมใช้งาน คุณสามารถผูก exec กับโหนดเฉพาะได้
-สิ่งนี้ตั้งค่าโหนดเริ่มต้นสำหรับ `exec host=node` (และสามารถถูกแทนที่ต่อ agent ได้)
+เมื่อมีหลายโหนดให้ใช้งาน คุณสามารถผูก exec กับโหนดเฉพาะได้
+การตั้งค่านี้กำหนดโหนดค่าเริ่มต้นสำหรับ `exec host=node` (และสามารถ override ต่อ agent ได้)
 
-ค่าเริ่มต้นแบบ global:
+ค่าเริ่มต้นส่วนกลาง:
 
 ```bash
 openclaw config set tools.exec.node "node-id-or-name"
 ```
 
-การแทนที่ต่อ agent:
+Override ต่อ agent:
 
 ```bash
 openclaw config get agents.list
@@ -454,15 +464,15 @@ openclaw config unset 'agents.list[0].tools.exec.node'
 
 ## แผนที่สิทธิ์
 
-โหนดอาจมีแมป `permissions` ใน `node.list` / `node.describe` โดยใช้ชื่อสิทธิ์เป็นคีย์ (เช่น `screenRecording`, `accessibility`) พร้อมค่าบูลีน (`true` = ได้รับอนุญาตแล้ว)
+โหนดอาจมี map `permissions` ใน `node.list` / `node.describe` โดยใช้ชื่อสิทธิ์เป็นคีย์ (เช่น `screenRecording`, `accessibility`) พร้อมค่าบูลีน (`true` = ได้รับอนุญาตแล้ว)
 
-## โฮสต์โหนดแบบ headless (ข้ามแพลตฟอร์ม)
+## โฮสต์โหนดแบบ Headless (ข้ามแพลตฟอร์ม)
 
 OpenClaw สามารถรัน **โฮสต์โหนดแบบ headless** (ไม่มี UI) ที่เชื่อมต่อกับ Gateway
-WebSocket และเปิดเผย `system.run` / `system.which` ได้ สิ่งนี้มีประโยชน์บน Linux/Windows
+WebSocket และเปิดเผย `system.run` / `system.which` สิ่งนี้มีประโยชน์บน Linux/Windows
 หรือสำหรับการรันโหนดขนาดเล็กควบคู่กับเซิร์ฟเวอร์
 
-เริ่มต้นใช้งาน:
+เริ่มต้น:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789
@@ -470,13 +480,13 @@ openclaw node run --host <gateway-host> --port 18789
 
 หมายเหตุ:
 
-- ยังจำเป็นต้องจับคู่ (Gateway จะแสดง prompt การจับคู่อุปกรณ์)
-- โฮสต์โหนดจะเก็บ node id, token, display name และข้อมูลการเชื่อมต่อ gateway ไว้ใน `~/.openclaw/node.json`
-- การอนุมัติ exec ถูกบังคับใช้ภายในเครื่องผ่าน `~/.openclaw/exec-approvals.json`
+- ยังต้องมีการจับคู่ (Gateway จะแสดงพรอมต์จับคู่อุปกรณ์)
+- โฮสต์โหนดจัดเก็บ node id, token, display name, และข้อมูลการเชื่อมต่อ gateway ใน `~/.openclaw/node.json`
+- การอนุมัติ Exec จะถูกบังคับใช้ภายในเครื่องผ่าน `~/.openclaw/exec-approvals.json`
   (ดู [การอนุมัติ Exec](/th/tools/exec-approvals))
-- บน macOS โฮสต์โหนดแบบ headless จะเรียกใช้ `system.run` ภายในเครื่องตามค่าเริ่มต้น ตั้งค่า
-  `OPENCLAW_NODE_EXEC_HOST=app` เพื่อกำหนดเส้นทาง `system.run` ผ่าน exec host ของแอปคู่ขนาน; เพิ่ม
-  `OPENCLAW_NODE_EXEC_FALLBACK=0` เพื่อบังคับใช้ app host และ fail closed หากไม่พร้อมใช้งาน
+- บน macOS โฮสต์โหนดแบบ headless จะรัน `system.run` ภายในเครื่องโดยค่าเริ่มต้น ตั้งค่า
+  `OPENCLAW_NODE_EXEC_HOST=app` เพื่อ route `system.run` ผ่านโฮสต์ exec ของแอปคู่กัน; เพิ่ม
+  `OPENCLAW_NODE_EXEC_FALLBACK=0` เพื่อบังคับให้ใช้โฮสต์แอปและ fail closed หากไม่พร้อมใช้งาน
 - เพิ่ม `--tls` / `--tls-fingerprint` เมื่อ Gateway WS ใช้ TLS
 
 ## โหมดโหนด Mac

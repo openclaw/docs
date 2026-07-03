@@ -4,11 +4,11 @@ read_when:
     - Debug di installazione, aggiornamento o pubblicazione
 summary: 'Riferimento CLI: comandi, flag, configurazione e comportamento del lockfile.'
 x-i18n:
-    generated_at: "2026-07-02T17:37:50Z"
+    generated_at: "2026-07-03T09:39:34Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 57fee67174cf491721e8479a48a11b66e23260ce4899d2ee5437add05880748e
+    source_hash: b5bc3d499e78ba3c9861c2faf6a01cf8afd92d6b35c42658c5b702692b5c8746
     source_path: clawhub/cli.md
     workflow: 16
 ---
@@ -35,34 +35,34 @@ clawhub whoami
 
 ## Flag globali
 
-- `--workdir <dir>`: directory di lavoro (predefinita: cwd; ripiega sull'area di lavoro Clawdbot se configurata)
+- `--workdir <dir>`: directory di lavoro (predefinita: cwd; ripiega sul workspace Clawdbot se configurato)
 - `--dir <dir>`: directory di installazione sotto workdir (predefinita: `skills`)
-- `--site <url>`: URL di base per l'accesso dal browser (predefinito: `https://clawhub.ai`)
-- `--registry <url>`: URL di base dell'API (predefinito: individuato automaticamente, altrimenti `https://clawhub.ai`)
+- `--site <url>`: URL di base per il login nel browser (predefinito: `https://clawhub.ai`)
+- `--registry <url>`: URL di base dell'API (predefinito: rilevato, altrimenti `https://clawhub.ai`)
 - `--no-input`: disabilita i prompt
 
 Equivalenti env:
 
-- `CLAWHUB_SITE` (precedente `CLAWDHUB_SITE`)
-- `CLAWHUB_REGISTRY` (precedente `CLAWDHUB_REGISTRY`)
-- `CLAWHUB_WORKDIR` (precedente `CLAWDHUB_WORKDIR`)
+- `CLAWHUB_SITE` (legacy `CLAWDHUB_SITE`)
+- `CLAWHUB_REGISTRY` (legacy `CLAWDHUB_REGISTRY`)
+- `CLAWHUB_WORKDIR` (legacy `CLAWDHUB_WORKDIR`)
 
 ### Proxy HTTP
 
-La CLI rispetta le variabili d'ambiente proxy HTTP standard per sistemi dietro
-proxy aziendali o reti limitate:
+La CLI rispetta le variabili di ambiente standard per proxy HTTP nei sistemi dietro
+proxy aziendali o reti con restrizioni:
 
 - `HTTPS_PROXY` / `https_proxy`
 - `HTTP_PROXY` / `http_proxy`
 - `NO_PROXY` / `no_proxy`
 
-Quando una di queste variabili è impostata, la CLI instrada le richieste in uscita tramite
+Quando una di queste variabili è impostata, la CLI instrada le richieste in uscita attraverso
 il proxy specificato. `HTTPS_PROXY` viene usato per le richieste HTTPS, `HTTP_PROXY`
 per HTTP semplice. `NO_PROXY` / `no_proxy` viene rispettato per bypassare il proxy per
 host o domini specifici.
 
-Questo è richiesto sui sistemi in cui le connessioni dirette in uscita sono bloccate
-(ad esempio container Docker, VPS Hetzner con internet solo tramite proxy, firewall
+Questo è necessario sui sistemi in cui le connessioni dirette in uscita sono bloccate
+(ad es. container Docker, VPS Hetzner con internet solo tramite proxy, firewall
 aziendali).
 
 Esempio:
@@ -73,17 +73,17 @@ export NO_PROXY=localhost,127.0.0.1
 clawhub search "my query"
 ```
 
-Quando nessuna variabile proxy è impostata, il comportamento resta invariato (connessioni dirette).
+Quando non è impostata alcuna variabile proxy, il comportamento resta invariato (connessioni dirette).
 
 ## File di configurazione
 
-Memorizza il tuo token API + l'URL del registro in cache.
+Archivia il tuo token API + l'URL del registro memorizzato nella cache.
 
 - macOS: `~/Library/Application Support/clawhub/config.json`
-- Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` oppure `~/.config/clawhub/config.json`
+- Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` o `~/.config/clawhub/config.json`
 - Windows: `%APPDATA%\\clawhub\\config.json`
-- Ripiego precedente: se `clawhub/config.json` non esiste ancora ma `clawdhub/config.json` esiste, la CLI riutilizza il percorso precedente
-- override: `CLAWHUB_CONFIG_PATH` (precedente `CLAWDHUB_CONFIG_PATH`)
+- Fallback legacy: se `clawhub/config.json` non esiste ancora ma `clawdhub/config.json` esiste, la CLI riusa il percorso legacy
+- override: `CLAWHUB_CONFIG_PATH` (legacy `CLAWDHUB_CONFIG_PATH`)
 
 ## Comandi
 
@@ -95,80 +95,80 @@ Memorizza il tuo token API + l'URL del registro in cache.
 
 ### `whoami`
 
-- Verifica il token memorizzato tramite `/api/v1/whoami`.
+- Verifica il token archiviato tramite `/api/v1/whoami`.
 
 ### `token`
 
-- Stampa il token API memorizzato sullo standard output.
-- Utile per reindirizzare un token di accesso locale nei comandi di configurazione dei segreti CI.
+- Stampa il token API archiviato su stdout.
+- Utile per reindirizzare un token di login locale nei comandi di configurazione dei secret CI.
 
 ### `star <skill>` / `unstar <skill>`
 
-- Aggiunge/rimuove una skill dai tuoi elementi in evidenza.
+- Aggiunge/rimuove uno skill dai tuoi elementi in evidenza.
 - Chiama `POST /api/v1/stars/<slug>` e `DELETE /api/v1/stars/<slug>`.
 - `--yes` salta la conferma.
 
 ### `search <query...>`
 
 - Chiama `/api/v1/search?q=...`.
-- L'output include lo slug della skill, l'handle del proprietario, il nome visualizzato e il punteggio di pertinenza.
-- La ricerca favorisce le corrispondenze esatte dei token slug/nome prima della popolarità dei download. Un token slug autonomo come `map` corrisponde a `personal-map` più fortemente della sottostringa dentro `amap`.
-- La popolarità è un piccolo criterio di ranking preliminare, non una garanzia di posizionamento in cima.
-- Se una skill dovrebbe comparire ma non compare, esegui `clawhub inspect @owner/slug` mentre hai effettuato l'accesso per controllare la diagnostica di moderazione visibile al proprietario prima di rinominare i metadati.
+- L'output include lo slug dello skill, l'handle del proprietario, il nome visualizzato e il punteggio di rilevanza.
+- La ricerca privilegia le corrispondenze esatte dei token di slug/nome prima della popolarità dei download. Un token slug autonomo come `map` corrisponde a `personal-map` più fortemente della sottostringa dentro `amap`.
+- La popolarità è un piccolo prior di ranking, non una garanzia di posizionamento in cima.
+- Se uno skill dovrebbe apparire ma non appare, esegui `clawhub inspect @owner/slug` dopo aver effettuato l'accesso per controllare la diagnostica di moderazione visibile al proprietario prima di rinominare i metadati.
 
 ### `explore`
 
-- Elenca le skill più recenti tramite `/api/v1/skills?limit=...&sort=createdAt` (ordinate per `createdAt` decrescente).
+- Elenca gli skill più recenti tramite `/api/v1/skills?limit=...&sort=createdAt` (ordinati per `createdAt` discendente).
 - Flag:
   - `--limit <n>` (1-200, predefinito: 25)
-  - `--sort newest|updated|rating|downloads|trending` (predefinito: newest). Gli alias di ordinamento install precedenti funzionano ancora per compatibilità.
-  - `--json` (output leggibile dalla macchina)
+  - `--sort newest|updated|rating|downloads|trending` (predefinito: newest). Gli alias di ordinamento di installazione legacy funzionano ancora per compatibilità.
+  - `--json` (output leggibile da macchina)
 - Output: `<slug>  v<version>  <age>  <summary>` (riepilogo troncato a 50 caratteri).
 
 ### `inspect @owner/slug`
 
-- Recupera i metadati della skill e i file di versione senza installare.
+- Recupera i metadati dello skill e i file di versione senza installare.
 - `--version <version>`: ispeziona una versione specifica (predefinita: latest).
-- `--tag <tag>`: ispeziona una versione con tag (ad esempio `latest`).
+- `--tag <tag>`: ispeziona una versione con tag (ad es. `latest`).
 - `--versions`: elenca la cronologia delle versioni (prima pagina).
 - `--limit <n>`: numero massimo di versioni da elencare (1-200).
 - `--files`: elenca i file per la versione selezionata.
-- `--file <path>`: recupera il contenuto grezzo del file (solo file di testo; limite 200KB).
-- `--json`: output leggibile dalla macchina.
+- `--file <path>`: recupera il contenuto grezzo del file (solo file di testo; limite 200 KB).
+- `--json`: output leggibile da macchina.
 
 ### `install @owner/slug`
 
-- Risolve la versione più recente per il proprietario e la skill indicati.
+- Risolve la versione più recente per il proprietario e lo skill indicati.
 - Scarica lo zip tramite `/api/v1/download`.
 - Estrae in `<workdir>/<dir>/<slug>`.
-- Rifiuta di sovrascrivere le skill bloccate; esegui prima `clawhub unpin <skill>`.
+- Rifiuta di sovrascrivere skill bloccati; esegui prima `clawhub unpin <skill>`.
 - Scrive:
-  - `<workdir>/.clawhub/lock.json` (precedente `.clawdhub`)
-  - `<skill>/.clawhub/origin.json` (precedente `.clawdhub`)
+  - `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`)
+  - `<skill>/.clawhub/origin.json` (legacy `.clawdhub`)
 
 ### `uninstall <skill>`
 
 - Rimuove `<workdir>/<dir>/<slug>` ed elimina la voce del lockfile.
-- Invia telemetria best-effort mentre hai effettuato l'accesso, così i conteggi di installazione correnti possono essere
+- Invia telemetria best-effort quando hai effettuato l'accesso, così i conteggi di installazione correnti possono essere
   disattivati.
 - Interattivo: chiede conferma.
 - Non interattivo (`--no-input`): richiede `--yes`.
 
 ### `list`
 
-- Legge `<workdir>/.clawhub/lock.json` (precedente `.clawdhub`).
-- Mostra `pinned` accanto alle skill bloccate con `clawhub pin`, incluso il motivo opzionale.
+- Legge `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`).
+- Mostra `pinned` accanto agli skill congelati con `clawhub pin`, includendo il motivo opzionale.
 
 ### `pin <skill>`
 
-- Contrassegna una skill installata come bloccata nel lockfile.
-- `--reason <text>` registra perché la skill è bloccata.
-- Le skill bloccate vengono saltate da `update --all` e rifiutate da `update <skill>` diretto.
-- Le skill bloccate rifiutano anche `install --force`, così i byte locali non possono essere sostituiti accidentalmente.
+- Contrassegna uno skill installato come bloccato nel lockfile.
+- `--reason <text>` registra perché lo skill è congelato.
+- Gli skill bloccati vengono saltati da `update --all` e rifiutati da `update <skill>` diretto.
+- Gli skill bloccati rifiutano anche `install --force`, così i byte locali non possono essere sostituiti accidentalmente.
 
 ### `unpin <skill>`
 
-- Rimuove il blocco del lockfile da una skill installata, così gli aggiornamenti futuri possono modificarla.
+- Rimuove il pin del lockfile da uno skill installato, così gli aggiornamenti futuri possono modificarlo.
 
 ### `update [@owner/slug]` / `update --all`
 
@@ -176,30 +176,30 @@ Memorizza il tuo token API + l'URL del registro in cache.
 - Se il fingerprint corrisponde a una versione nota: nessun prompt.
 - Se il fingerprint non corrisponde:
   - rifiuta per impostazione predefinita
-  - sovrascrive con `--force` (o con prompt, se interattivo)
-- Le skill bloccate non vengono mai aggiornate da `--force`.
-- `update <skill>` fallisce rapidamente per le skill bloccate e ti dice di eseguire prima `clawhub unpin <skill>`.
-- `update --all` salta gli slug bloccati e stampa un riepilogo di ciò che è rimasto bloccato.
+  - sovrascrive con `--force` (o prompt, se interattivo)
+- Gli skill bloccati non vengono mai aggiornati da `--force`.
+- `update <skill>` fallisce subito per gli skill bloccati e ti dice di eseguire prima `clawhub unpin <skill>`.
+- `update --all` salta gli slug bloccati e stampa un riepilogo di ciò che è rimasto congelato.
 
 ### `skill publish <path>`
 
 - Confronta il fingerprint del bundle locale con ClawHub ed esce con successo quando
   il contenuto è già pubblicato.
-- Le nuove skill usano per impostazione predefinita `1.0.0`; le skill modificate usano per impostazione predefinita la versione
-  patch successiva.
+- I nuovi skill usano `1.0.0` come valore predefinito; gli skill modificati usano per impostazione predefinita la versione patch
+  successiva.
 - `--version <version>` seleziona esplicitamente una versione e pubblica anche quando il
   contenuto corrisponde a una versione esistente.
 - `--dry-run` risolve la pubblicazione senza caricare; `--json` stampa un
-  risultato leggibile dalla macchina.
-- `--owner <handle>` pubblica sotto l'handle di publisher di un'organizzazione/utente quando
-  l'attore dispone dell'accesso da publisher.
-- `--migrate-owner` sposta una skill esistente su `--owner` mentre pubblica una nuova
+  risultato leggibile da macchina.
+- `--owner <handle>` pubblica sotto l'handle di un publisher org/utente quando
+  l'attore ha accesso come publisher.
+- `--migrate-owner` sposta uno skill esistente su `--owner` mentre pubblica una nuova
   versione. Richiede accesso admin/proprietario su entrambi i publisher.
 - Il comportamento di proprietario e revisione è spiegato in `docs/publishing.md`.
-- Pubblicare una skill significa che viene rilasciata sotto `MIT-0` su ClawHub.
-- Le skill pubblicate sono libere da usare, modificare e ridistribuire senza attribuzione.
-- ClawHub non supporta skill a pagamento o prezzi per singola skill.
-- Alias precedente: `publish <path>`.
+- Pubblicare uno skill significa che viene rilasciato sotto `MIT-0` su ClawHub.
+- Gli skill pubblicati sono liberi da usare, modificare e redistribuire senza attribuzione.
+- ClawHub non supporta skill a pagamento o prezzi per singolo skill.
+- Alias legacy: `publish <path>`.
 
 ```bash
 clawhub skill publish ./my-skill --dry-run
@@ -209,32 +209,32 @@ clawhub skill publish ./my-skill --version 2.0.0
 
 #### GitHub Actions
 
-Il workflow riutilizzabile
+Il workflow riutilizzabile di ClawHub
 [`skill-publish.yml`](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml)
-di ClawHub chiama `skill publish` per un `skill_path`, oppure per ogni cartella skill immediata
-sotto `root` (predefinito: `skills`). Salta le skill non modificate e usa lo
+chiama `skill publish` per uno `skill_path`, o per ogni cartella skill immediata
+sotto `root` (predefinito: `skills`). Salta gli skill invariati e usa lo
 stesso comportamento automatico di versione patch.
 
 Imposta `dry_run: true` per visualizzare un'anteprima senza token. Le pubblicazioni reali richiedono il
-segreto `clawhub_token`.
+secret `clawhub_token`.
 
 ### `sync`
 
-- Scansiona la workdir corrente, la directory delle skill configurata e qualsiasi
-  cartella `--root <dir>` per trovare cartelle skill locali contenenti `SKILL.md` o
+- Scansiona il workdir corrente, la directory degli skill configurata e tutte le
+  cartelle `--root <dir>` alla ricerca di cartelle skill locali contenenti `SKILL.md` o
   `skill.md`.
-- Confronta ogni fingerprint di skill locale con ClawHub e pubblica solo skill nuove o
-  modificate.
-- Le nuove skill vengono pubblicate come `1.0.0`; le skill modificate pubblicano per impostazione predefinita la versione patch successiva
-  . Usa `--bump minor|major` per batch di aggiornamento che devono avanzare di un
-  passaggio semver più grande.
+- Confronta ogni fingerprint di skill locale con ClawHub e pubblica solo skill nuovi o
+  modificati.
+- I nuovi skill vengono pubblicati come `1.0.0`; gli skill modificati pubblicano la versione patch successiva
+  per impostazione predefinita. Usa `--bump minor|major` per batch di aggiornamento che devono avanzare di un
+  passo semver più grande.
 - `--dry-run` mostra il piano di pubblicazione senza caricare; `--json` stampa un
-  piano leggibile dalla macchina.
-- `--all` pubblica ogni skill nuova o modificata senza prompt. Senza
-  `--all`, i terminali interattivi ti permettono di selezionare le skill da pubblicare.
-- `--owner <handle>` pubblica sotto l'handle di publisher di un'organizzazione/utente quando
-  l'attore dispone dell'accesso da publisher.
-- `sync` è solo pubblicazione unidirezionale. Non installa, aggiorna, scarica o
+  piano leggibile da macchina.
+- `--all` pubblica ogni skill nuovo o modificato senza prompt. Senza
+  `--all`, i terminali interattivi ti consentono di selezionare gli skill da pubblicare.
+- `--owner <handle>` pubblica sotto l'handle di un publisher org/utente quando
+  l'attore ha accesso come publisher.
+- `sync` è solo una pubblicazione unidirezionale. Non installa, aggiorna, scarica né
   segnala telemetria di installazione/download.
 
 ```bash
@@ -246,13 +246,13 @@ clawhub sync --root ./skills --owner openclaw --bump minor
 ### `scan --slug <slug>`
 
 - Richiede `clawhub login`.
-- Esegue ClawHub ClawScan tramite `POST /api/v1/skills/-/scan`, poi esegue polling finché la scansione è terminale.
-- Le scansioni sono asincrone e possono richiedere tempo per completarsi. Mentre sono in coda, lo spinner del terminale mostra la posizione corrente nella coda di scansione con priorità e quante scansioni sono davanti.
+- Esegue ClawHub ClawScan tramite `POST /api/v1/skills/-/scan`, poi effettua polling finché la scansione è terminale.
+- Le scansioni sono asincrone e possono richiedere tempo per completarsi. Durante la coda, lo spinner del terminale mostra la posizione corrente nella scansione prioritaria e quante scansioni precedono.
 - Le scansioni pubblicate richiedono proprietà o accesso di gestione publisher. Moderatori/admin possono usare lo stesso backend tramite `clawhub-admin`.
-- `--update` è valido solo con `--slug`; scrive i risultati riusciti della scansione pubblicata nella versione selezionata.
+- `--update` è valido solo con `--slug`; scrive i risultati di scansione pubblicati riusciti sulla versione selezionata.
 - `--output <file.zip>` scarica l'archivio completo del report con `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json` e `README.md`.
-- `--json` stampa la risposta completa di polling per l'automazione.
-- Le scansioni di percorsi locali non sono più supportate. Carica una nuova versione, poi usa `scan download` per recuperare i risultati di scansione memorizzati per quella versione inviata.
+- `--json` stampa la risposta completa del polling per l'automazione.
+- Le scansioni di percorsi locali non sono più supportate. Carica una nuova versione, poi usa `scan download` per recuperare i risultati di scansione archiviati per quella versione inviata.
 
 ```bash
 clawhub scan --slug gifgrep
@@ -263,10 +263,10 @@ clawhub scan --slug gifgrep --update --output report.zip
 ### `scan download <name>`
 
 - Richiede `clawhub login`.
-- Scarica lo ZIP del report di scansione memorizzato per una versione di skill o Plugin inviata, incluse le versioni che sono state bloccate o nascoste dai controlli di sicurezza di ClawHub.
-- I download di skill usano lo slug della skill e usano per impostazione predefinita `--kind skill`.
-- I download di Plugin usano il nome del pacchetto e richiedono `--kind plugin`.
-- `--version` è richiesto affinché gli autori ispezionino l'esatta versione inviata che ClawHub ha bloccato.
+- Scarica lo ZIP del report di scansione archiviato per una versione di skill o plugin inviata, incluse le versioni bloccate o nascoste dai controlli di sicurezza ClawHub.
+- I download di skill usano lo slug dello skill e usano `--kind skill` come valore predefinito.
+- I download di plugin usano il nome del pacchetto e richiedono `--kind plugin`.
+- `--version` è richiesto affinché gli autori ispezionino la versione esatta inviata che ClawHub ha bloccato.
 - `--output <file.zip>` sceglie il percorso di destinazione.
 
 ```bash
@@ -276,9 +276,9 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 
 #### GitHub Actions
 
-ClawHub distribuisce un workflow ufficiale riutilizzabile in
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/a89bfaf61d1bb5e0bfa7a92cf35b76c7e404e1ca/.github/workflows/skill-publish.yml)
-per repository di skill e repository di catalogo.
+ClawHub fornisce un workflow riutilizzabile ufficiale in
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/a95f470a588ea9fe4c4b4c258c8c4ca5f02c2836/.github/workflows/skill-publish.yml)
+per repository di skill e repository catalogo.
 
 Configurazione tipica del catalogo:
 
@@ -309,62 +309,62 @@ jobs:
 
 Note:
 
-- `root` usa per impostazione predefinita `skills` per i repository di catalogo.
+- `root` usa `skills` come valore predefinito per i repository catalogo.
 - Passa `skill_path: skills/review-helper` per elaborare una cartella skill.
 - `owner` corrisponde al flag CLI `--owner`; omettilo per pubblicare come utente autenticato.
-- La pubblicazione skill V1 usa `clawhub_token`; la pubblicazione attendibile OIDC di GitHub per ora è solo per i pacchetti.
+- La pubblicazione skill V1 usa `clawhub_token`; la pubblicazione trusted con GitHub OIDC è per ora solo per pacchetti.
 
 ### `delete <skill>`
 
-- Senza `--version`, elimina in modo reversibile una skill (proprietario, moderatore o amministratore).
+- Senza `--version`, elimina in modo reversibile una competenza (proprietario, moderatore o amministratore).
 - Chiama `DELETE /api/v1/skills/{slug}`.
 - Le eliminazioni reversibili avviate dal proprietario riservano lo slug per 30 giorni; il comando stampa l'ora di scadenza.
 - `--version <version>` elimina definitivamente una versione posseduta non più recente tramite una route fail-closed
   specifica per versione.
   Le versioni eliminate non possono essere ripristinate o ripubblicate. Pubblica una sostituzione prima di eliminare la
-  versione più recente corrente. Lo staff della piattaforma non aggira la proprietà per questo flusso solo per versione.
-- `--reason <text>` registra una nota di moderazione su un'eliminazione reversibile dell'intera skill e nel log di audit.
+  versione attualmente più recente. Il personale della piattaforma non aggira la proprietà per questo flusso solo per versione.
+- `--reason <text>` registra una nota di moderazione su un'eliminazione reversibile dell'intera competenza e nel registro di controllo.
 - `--note <text>` è un alias per `--reason`.
 - `--yes` salta la conferma.
 
 ### `undelete <skill>`
 
-- Ripristina una skill nascosta (proprietario, moderatore o amministratore).
-- Non esiste il ripristino di una versione; le versioni eliminate definitivamente non possono essere ripristinate.
+- Ripristina una competenza nascosta (proprietario, moderatore o amministratore).
+- Non esiste un ripristino della versione; le versioni eliminate definitivamente non possono essere ripristinate.
 - Chiama `POST /api/v1/skills/{slug}/undelete`.
-- `--reason <text>` registra una nota di moderazione sulla skill e nel log di audit.
+- `--reason <text>` registra una nota di moderazione sulla competenza e nel registro di controllo.
 - `--note <text>` è un alias per `--reason`.
 - `--yes` salta la conferma.
 
 ### `hide <skill>`
 
-- Nasconde una skill (proprietario, moderatore o amministratore).
+- Nasconde una competenza (proprietario, moderatore o amministratore).
 - Alias per `delete`.
 
 ### `unhide <skill>`
 
-- Rende di nuovo visibile una skill (proprietario, moderatore o amministratore).
+- Rende nuovamente visibile una competenza (proprietario, moderatore o amministratore).
 - Alias per `undelete`.
 
 ### `skill rename <skill> <new-name>`
 
-- Rinomina una skill posseduta e mantiene lo slug precedente come alias di reindirizzamento.
+- Rinomina una competenza posseduta e mantiene lo slug precedente come alias di reindirizzamento.
 - Chiama `POST /api/v1/skills/{slug}/rename`.
 - `--yes` salta la conferma.
 
 ### `skill merge <source> <target>`
 
-- Unisce una skill posseduta in un'altra skill posseduta.
+- Unisce una competenza posseduta in un'altra competenza posseduta.
 - Lo slug di origine smette di essere elencato pubblicamente e diventa un alias di reindirizzamento verso la destinazione.
 - Chiama `POST /api/v1/skills/{sourceSlug}/merge`.
 - `--yes` salta la conferma.
 
 ### `transfer`
 
-- Flusso di lavoro per il trasferimento della proprietà.
+- Flusso di trasferimento della proprietà.
 - I trasferimenti verso handle utente creano una richiesta in sospeso che il destinatario accetta.
-- I trasferimenti verso handle di organizzazione/editore vengono applicati immediatamente solo quando l'attore dispone di
-  accesso amministrativo sia al proprietario corrente sia all'editore di destinazione.
+- I trasferimenti verso handle di organizzazioni/publisher vengono applicati immediatamente solo quando l'attore ha
+  accesso amministrativo sia al proprietario corrente sia al publisher di destinazione.
 - Sottocomandi:
   - `transfer request <skill> <handle> [--message "..."] [--yes]`
   - `transfer list [--outgoing]`
@@ -382,7 +382,7 @@ Note:
 ### `package explore [query...]`
 
 - Sfoglia o cerca nel catalogo unificato dei pacchetti tramite `GET /api/v1/packages` e `GET /api/v1/packages/search`.
-- Usa questo per Plugin e altre voci della famiglia di pacchetti; `search` di primo livello rimane la superficie di ricerca delle skill.
+- Usalo per i plugin e altre voci della famiglia di pacchetti; `search` di primo livello resta la superficie di ricerca delle competenze.
 - Flag:
   - `--family skill|code-plugin|bundle-plugin`
   - `--official`
@@ -409,13 +409,13 @@ clawhub package explore episodic-claw --family code-plugin
 ### `package inspect <name>`
 
 - Recupera i metadati del pacchetto senza installarlo.
-- Usa questo per metadati dei Plugin, compatibilità, verifica, origine e ispezione di versioni/file.
+- Usalo per metadati del plugin, compatibilità, verifica, origine e ispezione di versioni/file.
 - `--version <version>`: ispeziona una versione specifica (predefinito: più recente).
-- `--tag <tag>`: ispeziona una versione etichettata (ad esempio `latest`).
+- `--tag <tag>`: ispeziona una versione con tag (ad es. `latest`).
 - `--versions`: elenca la cronologia delle versioni (prima pagina).
 - `--limit <n>`: numero massimo di versioni da elencare (1-100).
 - `--files`: elenca i file per la versione selezionata.
-- `--file <path>`: recupera il contenuto grezzo del file (solo file di testo; limite 200 KB).
+- `--file <path>`: recupera il contenuto grezzo del file (solo file di testo; limite di 200 KB).
 - `--json`: output leggibile dalla macchina.
 
 ### `package download <name>`
@@ -425,11 +425,11 @@ clawhub package explore episodic-claw --family code-plugin
 - Scarica l'artefatto dal `downloadUrl` del resolver.
 - Verifica lo SHA-256 di ClawHub per tutti gli artefatti.
 - Per gli artefatti ClawPack npm-pack, verifica anche l'integrità npm `sha512`,
-  lo shasum npm e nome/versione del `package.json` del tarball.
+  lo shasum npm e nome/versione nel `package.json` del tarball.
 - Le versioni ZIP legacy vengono scaricate tramite la route ZIP legacy.
 - Flag:
   - `--version <version>`: scarica una versione specifica.
-  - `--tag <tag>`: scarica una versione etichettata (predefinito: `latest`).
+  - `--tag <tag>`: scarica una versione con tag (predefinito: `latest`).
   - `-o, --output <path>`: file o directory di output.
   - `--force`: sovrascrive un file di output esistente.
   - `--json`: output leggibile dalla macchina.
@@ -447,10 +447,10 @@ clawhub package download @openclaw/example-plugin --version 1.2.3 -o artifacts/
   artefatto locale.
 - Con `--package`, risolve i metadati attesi da ClawHub e confronta il
   file locale con i metadati dell'artefatto pubblicato.
-- Con flag digest diretti, verifica senza una ricerca di rete.
+- Con flag di digest diretti, verifica senza una ricerca di rete.
 - Flag:
   - `--package <name>`: nome del pacchetto per risolvere i metadati attesi dell'artefatto.
-  - `--version <version>` o `--tag <tag>`: versione attesa del pacchetto.
+  - `--version <version>` o `--tag <tag>`: versione del pacchetto attesa.
   - `--sha256 <hex>`: SHA-256 di ClawHub atteso.
   - `--npm-integrity <sri>`: integrità npm attesa.
   - `--npm-shasum <sha1>`: shasum npm atteso.
@@ -465,14 +465,14 @@ clawhub package verify ./example-plugin-1.2.3.tgz --sha256 <hex>
 
 ### `package validate <source>`
 
-- Esegue il Plugin Inspector incluso nella CLI ClawHub su una cartella di pacchetto plugin
-  locale.
-- Per impostazione predefinita usa la validazione offline/statica, senza individuare o importare un checkout
+- Esegue il Plugin Inspector incluso nella CLI di ClawHub su una cartella locale
+  di pacchetto plugin.
+- Per impostazione predefinita usa la convalida offline/statica, senza localizzare o importare un checkout
   locale di OpenClaw.
-- Gli errori gravi di compatibilità terminano con codice diverso da zero. I risultati solo di avviso vengono stampati ma
+- Gli errori di compatibilità bloccanti terminano con codice diverso da zero. I risultati solo di avviso vengono stampati ma
   terminano con zero.
 - Flag:
-  - `--out <dir>`: scrive i report del Plugin Inspector in questa directory.
+  - `--out <dir>`: scrive i report di Plugin Inspector in questa directory.
   - `--openclaw <path>`: ispeziona rispetto a un checkout locale esplicito di OpenClaw.
   - `--runtime`: abilita l'acquisizione runtime; importa il codice del plugin.
   - `--allow-execute`: consente l'acquisizione runtime in uno spazio di lavoro isolato.
@@ -485,8 +485,8 @@ Esempio:
 clawhub package validate ./example-plugin
 ```
 
-Se la validazione segnala un risultato relativo a pacchetto, manifest, importazione SDK o artefatto, consulta
-[Correzioni per la validazione dei Plugin](/clawhub/plugin-validation-fixes), quindi riesegui il comando.
+Se la convalida segnala un risultato relativo a pacchetto, manifesto, importazione SDK o artefatto, consulta
+[correzioni di convalida dei plugin](/clawhub/plugin-validation-fixes), quindi riesegui il comando.
 
 ### `package delete <name>`
 
@@ -494,9 +494,9 @@ Se la validazione segnala un risultato relativo a pacchetto, manifest, importazi
 - `--version <version>` elimina definitivamente una release posseduta non più recente tramite una route fail-closed
   specifica per versione.
   Le versioni eliminate non possono essere ripristinate o ripubblicate. Pubblica una sostituzione prima di eliminare la
-  versione più recente corrente. Questo flusso solo per versione richiede il proprietario del pacchetto o un amministratore
-  dell'editore dell'organizzazione; lo staff della piattaforma non aggira la proprietà del pacchetto.
-- L'eliminazione reversibile dell'intero pacchetto richiede il proprietario del pacchetto, un proprietario/amministratore dell'editore dell'organizzazione, un
+  versione attualmente più recente. Questo flusso solo per versione richiede il proprietario del pacchetto o un amministratore
+  del publisher dell'organizzazione; il personale della piattaforma non aggira la proprietà del pacchetto.
+- L'eliminazione reversibile dell'intero pacchetto richiede il proprietario del pacchetto, un proprietario/amministratore del publisher dell'organizzazione, un
   moderatore della piattaforma o un amministratore della piattaforma.
 - Flag:
   - `--version <version>`: elimina definitivamente una versione non più recente.
@@ -512,9 +512,9 @@ clawhub package delete @openclaw/example-plugin --version 1.2.3 --yes
 
 ### `package undelete <name>`
 
-- Ripristina un pacchetto eliminato in modo reversibile e le sue release.
-- Non esiste il ripristino di una versione; le versioni eliminate definitivamente non possono essere ripristinate.
-- Richiede il proprietario del pacchetto, un proprietario/amministratore dell'editore dell'organizzazione, un moderatore della piattaforma
+- Ripristina un pacchetto eliminato in modo reversibile e le release.
+- Non esiste un ripristino della versione; le versioni eliminate definitivamente non possono essere ripristinate.
+- Richiede il proprietario del pacchetto, un proprietario/amministratore del publisher dell'organizzazione, un moderatore della piattaforma
   o un amministratore della piattaforma.
 - Chiama `POST /api/v1/packages/{name}/undelete`.
 - Flag:
@@ -529,14 +529,14 @@ clawhub package undelete @openclaw/example-plugin --yes
 
 ### `package transfer <name>`
 
-- Trasferisce un pacchetto a un altro editore.
-- Richiede accesso amministrativo sia al proprietario corrente del pacchetto sia all'editore
-  di destinazione, a meno che non venga eseguito da un amministratore della piattaforma.
-- I nomi di pacchetti con scope devono essere trasferiti al proprietario dello scope corrispondente.
+- Trasferisce un pacchetto a un altro publisher.
+- Richiede accesso amministrativo sia al proprietario corrente del pacchetto sia al publisher di destinazione,
+  a meno che non venga eseguito da un amministratore della piattaforma.
+- I nomi di pacchetto con scope devono essere trasferiti al proprietario dello scope corrispondente.
 - Chiama `POST /api/v1/packages/{name}/transfer`.
 - Flag:
-  - `--to <owner>`: handle dell'editore di destinazione.
-  - `--reason <text>`: motivo di audit facoltativo.
+  - `--to <owner>`: handle del publisher di destinazione.
+  - `--reason <text>`: motivo di controllo facoltativo.
   - `--json`: output leggibile dalla macchina.
 
 Esempio:
@@ -549,26 +549,26 @@ clawhub package transfer @openclaw/example-plugin --to openclaw
 
 - Comando autenticato per segnalare un pacchetto ai moderatori.
 - Chiama `POST /api/v1/packages/{name}/report`.
-- Le segnalazioni sono a livello di pacchetto, possono facoltativamente essere legate a una versione e diventano visibili
+- Le segnalazioni sono a livello di pacchetto, facoltativamente associate a una versione, e diventano visibili
   ai moderatori per la revisione.
 - Le segnalazioni non nascondono automaticamente i pacchetti né bloccano i download da sole.
 - Flag:
-  - `--version <version>`: versione facoltativa del pacchetto da allegare alla segnalazione.
-  - `--reason <text>`: motivo obbligatorio della segnalazione.
+  - `--version <version>`: versione del pacchetto facoltativa da allegare alla segnalazione.
+  - `--reason <text>`: motivo della segnalazione obbligatorio.
   - `--json`: output leggibile dalla macchina.
 
 Esempio:
 
 ```bash
-clawhub package report @openclaw/example-plugin --version 1.2.3 --reason "payload nativo sospetto"
+clawhub package report @openclaw/example-plugin --version 1.2.3 --reason "suspicious native payload"
 ```
 
 ### `package moderation-status`
 
-- Comando del proprietario per controllare la visibilità di moderazione del pacchetto.
+- Comando per il proprietario per controllare la visibilità di moderazione del pacchetto.
 - Chiama `GET /api/v1/packages/{name}/moderation`.
-- Mostra lo stato di scansione corrente del pacchetto, il conteggio delle segnalazioni aperte, lo stato di moderazione manuale
-  della release più recente, lo stato del blocco dei download e i motivi di moderazione.
+- Mostra lo stato corrente della scansione del pacchetto, il conteggio delle segnalazioni aperte, lo stato di moderazione manuale
+  dell'ultima release, lo stato del blocco download e i motivi di moderazione.
 - Flag:
   - `--json`: output leggibile dalla macchina.
 
@@ -583,8 +583,8 @@ clawhub package moderation-status @openclaw/example-plugin
 - Controlla se un pacchetto è pronto per il consumo futuro da parte di OpenClaw.
 - Chiama `GET /api/v1/packages/{name}/readiness`.
 - Segnala blocchi per stato ufficiale, disponibilità ClawPack, digest dell'artefatto,
-  provenienza dell'origine, compatibilità OpenClaw, target host, metadati di ambiente
-  e stato di scansione.
+  provenienza dell'origine, compatibilità OpenClaw, destinazioni host, metadati dell'ambiente
+  e stato della scansione.
 - Flag:
   - `--json`: output leggibile dalla macchina.
 
@@ -596,10 +596,10 @@ clawhub package readiness @openclaw/example-plugin
 
 ### `package migration-status <name>`
 
-- Mostra lo stato di migrazione orientato agli operatori per un pacchetto che potrebbe sostituire un
+- Mostra lo stato di migrazione orientato all'operatore per un pacchetto che può sostituire un
   plugin OpenClaw incluso.
 - Chiama lo stesso endpoint di readiness calcolato di `package readiness`, ma stampa
-  stato focalizzato sulla migrazione, versione più recente, stato di pacchetto ufficiale, controlli e
+  stato orientato alla migrazione, versione più recente, stato di pacchetto ufficiale, controlli e
   blocchi.
 - Flag:
   - `--json`: output leggibile dalla macchina.
@@ -612,10 +612,10 @@ clawhub package migration-status @openclaw/example-plugin
 
 ### `publisher create <handle>`
 
-- Crea un editore di organizzazione posseduto dall'utente autenticato.
+- Crea un publisher dell'organizzazione posseduto dall'utente autenticato.
 - L'handle viene normalizzato in minuscolo e può essere passato con o senza `@`.
-- Gli editori di organizzazione appena creati non sono attendibili/ufficiali per impostazione predefinita.
-- Fallisce se l'handle è già usato da un editore, utente o route riservata esistente.
+- I publisher dell'organizzazione appena creati non sono attendibili/ufficiali per impostazione predefinita.
+- Fallisce se l'handle è già usato da un publisher esistente, da un utente o da una route riservata.
 
 ```bash
 clawhub publisher create opik --display-name "Opik"
@@ -627,28 +627,28 @@ clawhub publisher create opik --display-name "Opik"
 - `<source>` accetta:
   - Percorso di cartella locale: `./my-plugin`
   - Tarball npm-pack ClawPack locale: `./my-plugin-1.2.3.tgz`
-  - Repository GitHub: `owner/repo` o `owner/repo@ref`
+  - Repo GitHub: `owner/repo` o `owner/repo@ref`
   - URL GitHub: `https://github.com/owner/repo`
 - I metadati vengono rilevati automaticamente da `package.json`, `openclaw.plugin.json` e
-  marcatori bundle OpenClaw reali come `.codex-plugin/plugin.json`,
+  marcatori reali di bundle OpenClaw come `.codex-plugin/plugin.json`,
   `.claude-plugin/plugin.json` e `.cursor-plugin/plugin.json`.
-- Le sorgenti `.tgz` vengono trattate come ClawPack. La CLI carica i byte
-  npm-pack esatti e usa i contenuti `package/` estratti solo per la convalida e
+- Le sorgenti `.tgz` vengono trattate come ClawPack. La CLI carica i byte esatti
+  di npm-pack e usa i contenuti estratti di `package/` solo per la validazione e
   il precompilamento dei metadati.
-- Le cartelle dei Plugin di codice vengono impacchettate in un tarball npm ClawPack prima del caricamento, così
-  le installazioni OpenClaw possono verificare l’artefatto esatto. Le cartelle dei Plugin bundle continuano
-  a usare il percorso di pubblicazione da file estratti.
-- Per le sorgenti GitHub, l’attribuzione della sorgente viene popolata automaticamente dal repository, dal commit risolto, dal ref e dal sottopercorso.
-- Per le cartelle locali, l’attribuzione della sorgente viene rilevata automaticamente dal git locale quando il remote origin punta a GitHub.
-- I Plugin di codice esterni devono dichiarare `openclaw.compat.pluginApi` e
-  `openclaw.build.openclawVersion` esplicitamente.
-  `package.json.version` di primo livello non viene usato come fallback per la convalida della pubblicazione.
-- `--dry-run` mostra un’anteprima del payload di pubblicazione risolto senza caricarlo.
+- Le cartelle di Plugin di codice vengono pacchettizzate in un tarball npm ClawPack prima del caricamento, così
+  le installazioni di OpenClaw possono verificare l’artefatto esatto. Le cartelle di Plugin bundle continuano
+  a usare il percorso di pubblicazione dei file estratti.
+- Per le sorgenti GitHub, l’attribuzione della sorgente viene compilata automaticamente dal repo, dal commit risolto, dal ref e dal sottopercorso.
+- Per le cartelle locali, l’attribuzione della sorgente viene rilevata automaticamente da git locale quando il remote origin punta a GitHub.
+- I Plugin di codice esterni devono dichiarare esplicitamente `openclaw.compat.pluginApi` e
+  `openclaw.build.openclawVersion`.
+  Il `package.json.version` di primo livello non viene usato come fallback per la validazione della pubblicazione.
+- `--dry-run` mostra in anteprima il payload di pubblicazione risolto senza caricarlo.
 - `--json` emette output leggibile da macchina per la CI.
-- `--owner <handle>` pubblica sotto un handle editore utente o organizzazione quando l’attore ha accesso come editore.
-- I nomi di pacchetto scoped devono corrispondere al proprietario selezionato. Vedi `docs/publishing.md`.
+- `--owner <handle>` pubblica sotto l’handle di un publisher utente o organizzazione quando l’attore dispone dell’accesso da publisher.
+- I nomi dei pacchetti con scope devono corrispondere all’owner selezionato. Vedi `docs/publishing.md`.
 - I flag esistenti (`--family`, `--name`, `--version`, `--source-repo`, `--source-commit`, `--source-ref`, `--source-path`) continuano a funzionare come override.
-- I repository GitHub privati richiedono `GITHUB_TOKEN`.
+- I repo GitHub privati richiedono `GITHUB_TOKEN`.
 
 ```bash
 clawhub package publish ./plugin.tgz --owner openclaw
@@ -656,7 +656,7 @@ clawhub package publish ./plugin.tgz --owner openclaw
 
 #### Flusso locale consigliato
 
-Usa prima `--dry-run` per confermare i metadati del pacchetto risolti e
+Usa prima `--dry-run` così puoi confermare i metadati del pacchetto risolti e
 l’attribuzione della sorgente prima di creare una release live:
 
 ```bash
@@ -675,10 +675,10 @@ clawhub package publish ./my-plugin --family code-plugin --dry-run
 clawhub package publish ./my-plugin --family code-plugin
 ```
 
-#### `package.json` minimo per `--family code-plugin`
+#### `package.json` minimale per `--family code-plugin`
 
-I Plugin di codice esterni richiedono una piccola quantità di metadati OpenClaw in
-`package.json`. Questo manifest minimo è sufficiente per una pubblicazione riuscita:
+I Plugin di codice esterni hanno bisogno di una piccola quantità di metadati OpenClaw in
+`package.json`. Questo manifest minimale è sufficiente per una pubblicazione riuscita:
 
 ```json
 {
@@ -705,22 +705,22 @@ Campi obbligatori:
 Note:
 
 - `package.json.version` è la versione di release del tuo pacchetto, ma non viene usata come
-  fallback per la convalida di compatibilità/build di OpenClaw.
+  fallback per la validazione di compatibilità/build di OpenClaw.
 - `openclaw.hostTargets` e `openclaw.environment` sono metadati facoltativi.
-  ClawHub può mostrarli quando presenti, ma non sono richiesti per la pubblicazione.
+  ClawHub può mostrarli quando presenti, ma non sono necessari per la pubblicazione.
 - `openclaw.compat.minGatewayVersion` e
   `openclaw.build.pluginSdkVersion` sono extra facoltativi se vuoi pubblicare
   metadati di compatibilità più dettagliati.
-- Se stai usando una release precedente della CLI `clawhub`, aggiornala prima di pubblicare, così
-  i controlli preliminari locali vengono eseguiti prima del caricamento.
-- Se la convalida segnala un codice di correzione, vedi
-  [Correzioni della convalida dei Plugin](/clawhub/plugin-validation-fixes).
+- Se stai usando una release precedente della CLI `clawhub`, aggiornala prima di pubblicare in modo che
+  i controlli preliminari locali vengano eseguiti prima del caricamento.
+- Se la validazione segnala un codice di correzione, vedi
+  [Correzioni per la validazione dei Plugin](/clawhub/plugin-validation-fixes).
 
 #### GitHub Actions
 
-ClawHub distribuisce anche un workflow riutilizzabile ufficiale in
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/a89bfaf61d1bb5e0bfa7a92cf35b76c7e404e1ca/.github/workflows/package-publish.yml)
-per i repository di Plugin.
+ClawHub distribuisce anche un workflow riutilizzabile ufficiale su
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/a95f470a588ea9fe4c4b4c258c8c4ca5f02c2836/.github/workflows/package-publish.yml)
+per i repo dei Plugin.
 
 Configurazione tipica del chiamante:
 
@@ -755,21 +755,21 @@ jobs:
 
 Note:
 
-- Il workflow riutilizzabile imposta per impostazione predefinita `source` sul repository chiamante.
-- Per i monorepo, passa `source_path` così il workflow pubblica la cartella del pacchetto
-  Plugin, per esempio `source_path: extensions/codex`.
-- Fissa il workflow riutilizzabile a un tag stabile o a uno SHA di commit completo. Non eseguire la pubblicazione di release da `@main`.
-- `pull_request` deve usare `dry_run: true` così la CI resta non inquinante.
+- Il workflow riutilizzabile imposta `source` sul repository chiamante per impostazione predefinita.
+- Per i monorepo, passa `source_path` in modo che il workflow pubblichi la cartella
+  del pacchetto Plugin, ad esempio `source_path: extensions/codex`.
+- Fissa il workflow riutilizzabile a un tag stabile o a uno SHA di commit completo. Non eseguire la pubblicazione delle release da `@main`.
+- `pull_request` deve usare `dry_run: true` in modo che la CI non inquini lo stato.
 - Le pubblicazioni reali devono essere limitate a eventi attendibili come `workflow_dispatch` o push di tag.
 - La pubblicazione attendibile senza un segreto funziona solo su `workflow_dispatch`; i push di tag richiedono comunque `clawhub_token`.
-- Mantieni `clawhub_token` disponibile per la prima pubblicazione, pacchetti non attendibili o pubblicazioni di emergenza.
+- Mantieni `clawhub_token` disponibile per la prima pubblicazione, i pacchetti non attendibili o le pubblicazioni di emergenza.
 - Il workflow carica il risultato JSON come artefatto e lo espone come output del workflow.
 
 ### `package trusted-publisher get <name>`
 
-- Mostra la configurazione dell’editore attendibile GitHub Actions per un pacchetto.
+- Mostra la configurazione dell'editore attendibile GitHub Actions per un pacchetto.
 - Usalo dopo aver impostato la configurazione per confermare il repository, il nome file del workflow
-  e l’eventuale vincolo di ambiente facoltativo.
+  e l'eventuale vincolo dell'ambiente.
 - Flag:
   - `--json`: output leggibile da macchina.
 
@@ -781,25 +781,25 @@ clawhub package trusted-publisher get @openclaw/example-plugin
 
 ### `package trusted-publisher set <name>`
 
-- Associa o sostituisce la configurazione dell’editore attendibile GitHub Actions per un pacchetto
+- Collega o sostituisce la configurazione dell'editore attendibile GitHub Actions per un pacchetto
   esistente.
-- Il pacchetto deve essere prima creato tramite il normale
-  `clawhub package publish` manuale o autenticato con token.
-- Dopo che la configurazione è stata impostata, le future pubblicazioni GitHub Actions supportate possono usare
-  OIDC/pubblicazione attendibile senza un token ClawHub di lunga durata.
+- Il pacchetto deve prima essere creato tramite il normale
+  `clawhub package publish` manuale o autenticato tramite token.
+- Dopo aver impostato la configurazione, le future pubblicazioni GitHub Actions supportate possono usare
+  OIDC/pubblicazione attendibile senza un token ClawHub a lunga durata.
 - `--repository <repo>` deve essere `owner/repo`.
-- `--workflow-filename <file>` deve corrispondere al nome del file workflow in
+- `--workflow-filename <file>` deve corrispondere al nome del file del workflow in
   `.github/workflows/`.
-- `--environment <name>` è facoltativo. Quando configurato, l’ambiente GitHub Actions
-  nel claim OIDC deve corrispondere esattamente.
+- `--environment <name>` è facoltativo. Quando configurato, l'ambiente GitHub Actions
+  nell'attestazione OIDC deve corrispondere esattamente.
 - ClawHub verifica il repository GitHub configurato quando questo comando viene eseguito.
-  I repository pubblici possono essere verificati tramite metadati GitHub pubblici. I repository
-  privati richiedono che ClawHub abbia accesso GitHub a quel repository, per
-  esempio tramite una futura installazione della GitHub App di ClawHub o un’altra integrazione
+  I repository pubblici possono essere verificati tramite i metadati pubblici di GitHub. I repository privati
+  richiedono che ClawHub abbia accesso GitHub a quel repository, ad
+  esempio tramite una futura installazione della GitHub App di ClawHub o un'altra integrazione
   GitHub autorizzata.
 - Flag:
-  - `--repository <repo>`: repository GitHub, per esempio `openclaw/example-plugin`.
-  - `--workflow-filename <file>`: nome del file workflow, per esempio `package-publish.yml`.
+  - `--repository <repo>`: repository GitHub, ad esempio `openclaw/example-plugin`.
+  - `--workflow-filename <file>`: nome file del workflow, ad esempio `package-publish.yml`.
   - `--environment <name>`: ambiente GitHub Actions facoltativo con corrispondenza esatta.
   - `--json`: output leggibile da macchina.
 
@@ -814,9 +814,9 @@ clawhub package trusted-publisher set @openclaw/example-plugin \
 
 ### `package trusted-publisher delete <name>`
 
-- Rimuove la configurazione dell’editore attendibile da un pacchetto.
-- Usalo come rollback se il workflow, il repository o il vincolo di ambiente devono
-  essere disabilitati o ricreati.
+- Rimuove la configurazione dell'editore attendibile da un pacchetto.
+- Usalo come rollback se il workflow, il repository o il vincolo dell'ambiente devono essere
+  disabilitati o ricreati.
 - Le future pubblicazioni reali devono usare la normale pubblicazione autenticata finché la configurazione non viene
   impostata di nuovo.
 - Flag:
@@ -830,8 +830,8 @@ clawhub package trusted-publisher delete @openclaw/example-plugin
 
 ### Telemetria di installazione
 
-- Inviata dopo `clawhub install <slug>` quando l’accesso è stato eseguito, a meno che
+- Inviata dopo `clawhub install <slug>` quando l'accesso è stato effettuato, a meno che
   `CLAWHUB_DISABLE_TELEMETRY=1` non sia impostato.
-- La segnalazione è best-effort. I comandi di installazione non falliscono se la telemetria è
-  non disponibile.
+- La segnalazione è best-effort. I comandi di installazione non falliscono se la telemetria
+  non è disponibile.
 - Dettagli: `docs/telemetry.md`.
