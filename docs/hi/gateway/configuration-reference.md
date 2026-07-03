@@ -1,54 +1,54 @@
 ---
 read_when:
-    - आपको फ़ील्ड-स्तरीय कॉन्फ़िगरेशन के सटीक अर्थ या डिफ़ॉल्ट मान चाहिए
-    - आप चैनल, मॉडल, Gateway या टूल कॉन्फ़िगरेशन ब्लॉक सत्यापित कर रहे हैं
-summary: मुख्य OpenClaw कुंजियों, डिफ़ॉल्टों, और समर्पित सबसिस्टम संदर्भों के लिंक के लिए Gateway कॉन्फ़िग संदर्भ
+    - आपको सटीक फ़ील्ड-स्तरीय कॉन्फ़िगरेशन अर्थ या डिफ़ॉल्ट चाहिए
+    - आप चैनल, मॉडल, Gateway, या टूल कॉन्फ़िग ब्लॉकों को सत्यापित कर रहे हैं
+summary: मुख्य OpenClaw कुंजियों, डिफ़ॉल्ट्स और समर्पित उप-प्रणाली संदर्भों के लिंक के लिए Gateway कॉन्फ़िग संदर्भ
 title: कॉन्फ़िगरेशन संदर्भ
 x-i18n:
-    generated_at: "2026-07-02T08:17:42Z"
+    generated_at: "2026-07-03T23:33:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1d31c4c35f216480f4536a57bca50558a8d19dcf57dcf30be9033555c019d72
+    source_hash: 1365e40b17122e9a029e294baf12db2dd974b3c2686ed1f2e9cf2a46757fa356
     source_path: gateway/configuration-reference.md
     workflow: 16
 ---
 
-मुख्य config संदर्भ `~/.openclaw/openclaw.json` के लिए। कार्य-उन्मुख अवलोकन के लिए, [Configuration](/hi/gateway/configuration) देखें।
+Core config संदर्भ `~/.openclaw/openclaw.json` के लिए। कार्य-उन्मुख अवलोकन के लिए, [कॉन्फ़िगरेशन](/hi/gateway/configuration) देखें।
 
-मुख्य OpenClaw config सतहों को कवर करता है और जब किसी subsystem का अपना गहरा संदर्भ हो तो उससे लिंक करता है। Channel- और plugin-स्वामित्व वाले command catalog और गहरे memory/QMD knobs इस पेज के बजाय अपने अलग पेजों पर रहते हैं।
+मुख्य OpenClaw config सतहों को कवर करता है और जब किसी subsystem का अपना गहरा संदर्भ होता है तो उससे लिंक करता है। चैनल- और plugin-स्वामित्व वाले command catalogs और deep memory/QMD knobs इस पेज के बजाय अपने अलग पेजों पर रहते हैं।
 
-Code सत्य:
+कोड सत्य:
 
-- `openclaw config schema` validation और Control UI के लिए उपयोग किया जाने वाला live JSON Schema प्रिंट करता है, उपलब्ध होने पर bundled/plugin/channel metadata merged के साथ
+- `openclaw config schema` validation और Control UI के लिए उपयोग किया जाने वाला live JSON Schema प्रिंट करता है, उपलब्ध होने पर bundled/plugin/channel metadata मिलाकर
 - `config.schema.lookup` drill-down tooling के लिए एक path-scoped schema node लौटाता है
-- `pnpm config:docs:check` / `pnpm config:docs:gen` वर्तमान schema सतह के विरुद्ध config-doc baseline hash validate करते हैं
+- `pnpm config:docs:check` / `pnpm config:docs:gen` मौजूदा schema surface के विरुद्ध config-doc baseline hash validate करते हैं
 
-Agent lookup path: edits से पहले सटीक field-level docs और constraints के लिए
-`gateway` tool action `config.schema.lookup` का उपयोग करें। कार्य-उन्मुख guidance के लिए
-[Configuration](/hi/gateway/configuration) और व्यापक field map, defaults, तथा subsystem references के links के लिए यह पेज उपयोग करें।
+Agent lookup path: edits से पहले
+सटीक field-level docs और constraints के लिए `gateway` tool action `config.schema.lookup` का उपयोग करें। कार्य-उन्मुख मार्गदर्शन के लिए
+[कॉन्फ़िगरेशन](/hi/gateway/configuration) और विस्तृत field map, defaults, और subsystem references के लिंक के लिए यह पेज उपयोग करें।
 
 समर्पित गहरे संदर्भ:
 
 - `agents.defaults.memorySearch.*`, `memory.qmd.*`, `memory.citations`, और `plugins.entries.memory-core.config.dreaming` के अंतर्गत dreaming config के लिए [Memory configuration reference](/hi/reference/memory-config)
-- वर्तमान built-in + bundled command catalog के लिए [Slash commands](/hi/tools/slash-commands)
-- channel-specific command surfaces के लिए संबंधित स्वामित्व वाले channel/plugin पेज
+- मौजूदा built-in + bundled command catalog के लिए [Slash commands](/hi/tools/slash-commands)
+- channel-specific command surfaces के लिए स्वामित्व वाले channel/plugin पेज
 
-Config format **JSON5** है (comments + trailing commas allowed)। सभी fields optional हैं - omitted होने पर OpenClaw safe defaults उपयोग करता है।
+Config format **JSON5** है (comments + trailing commas अनुमत हैं)। सभी fields वैकल्पिक हैं - छूट जाने पर OpenClaw सुरक्षित defaults का उपयोग करता है।
 
 ---
 
-## Channels
+## चैनल
 
-Per-channel config keys एक dedicated page पर चले गए हैं - `channels.*` के लिए
+Per-channel config keys एक समर्पित पेज पर चले गए हैं - `channels.*` के लिए
 [Configuration - channels](/hi/gateway/config-channels) देखें,
 जिसमें Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, और अन्य
 bundled channels (auth, access control, multi-account, mention gating) शामिल हैं।
 
 ## Agent defaults, multi-agent, sessions, और messages
 
-एक dedicated page पर चले गए हैं - देखें
-[Configuration - agents](/hi/gateway/config-agents):
+एक समर्पित पेज पर ले जाया गया - इसके लिए
+[Configuration - agents](/hi/gateway/config-agents) देखें:
 
 - `agents.defaults.*` (workspace, model, thinking, heartbeat, memory, media, skills, sandbox)
 - `multiAgent.*` (multi-agent routing और bindings)
@@ -57,20 +57,20 @@ bundled channels (auth, access control, multi-account, mention gating) शाम
 - `talk.*` (Talk mode)
   - `talk.consultThinkingLevel`: Control UI Talk realtime consults के पीछे पूरे OpenClaw agent run के लिए thinking level override
   - `talk.consultFastMode`: Control UI Talk realtime consults के लिए one-shot fast-mode override
-  - `talk.speechLocale`: iOS/macOS पर Talk speech recognition के लिए optional BCP 47 locale id
-  - `talk.silenceTimeoutMs`: unset होने पर, Talk transcript भेजने से पहले platform default pause window रखता है (`700 ms on macOS and Android, 900 ms on iOS`)
-  - `talk.realtime.consultRouting`: finalized realtime Talk transcripts के लिए Gateway relay fallback जो `openclaw_agent_consult` skip करते हैं
+  - `talk.speechLocale`: iOS/macOS पर Talk speech recognition के लिए वैकल्पिक BCP 47 locale id
+  - `talk.silenceTimeoutMs`: unset होने पर, transcript भेजने से पहले Talk platform default pause window रखता है (`700 ms on macOS and Android, 900 ms on iOS`)
+  - `talk.realtime.consultRouting`: finalized realtime Talk transcripts के लिए Gateway relay fallback जो `openclaw_agent_consult` को skip करते हैं
 
 ## Tools और custom providers
 
 Tool policy, experimental toggles, provider-backed tool config, और custom
-provider / base-URL setup एक dedicated page पर चले गए हैं - देखें
+provider / base-URL setup एक समर्पित पेज पर चले गए हैं - देखें
 [Configuration - tools and custom providers](/hi/gateway/config-tools).
 
 ## Models
 
 Provider definitions, model allowlists, और custom provider setup
-[Configuration - tools and custom providers](/hi/gateway/config-tools#custom-providers-and-base-urls) में रहते हैं।
+[Configuration - tools and custom providers](/hi/gateway/config-tools#custom-providers-and-base-urls) में हैं।
 `models` root global model-catalog behavior का भी स्वामी है।
 
 ```json5
@@ -84,13 +84,13 @@ Provider definitions, model allowlists, और custom provider setup
 
 - `models.mode`: provider catalog behavior (`merge` या `replace`)।
 - `models.providers`: provider id से keyed custom provider map।
-- `models.providers.*.localService`: local model servers के लिए optional on-demand process manager। OpenClaw configured health endpoint को probe करता है, जरूरत पड़ने पर absolute `command` start करता है, readiness की प्रतीक्षा करता है, फिर model request भेजता है। देखें [Local model services](/hi/gateway/local-model-services)।
-- `models.pricing.enabled`: background pricing bootstrap को नियंत्रित करता है जो sidecars और channels के Gateway ready path तक पहुंचने के बाद start होता है। जब `false` हो, Gateway OpenRouter और LiteLLM pricing-catalog fetches skip करता है; configured `models.providers.*.models[].cost` values local cost estimates के लिए फिर भी काम करती हैं।
+- `models.providers.*.localService`: local model servers के लिए वैकल्पिक on-demand process manager। OpenClaw configured health endpoint probe करता है, जरूरत होने पर absolute `command` start करता है, readiness की प्रतीक्षा करता है, फिर model request भेजता है। [Local model services](/hi/gateway/local-model-services) देखें।
+- `models.pricing.enabled`: background pricing bootstrap नियंत्रित करता है जो sidecars और channels के Gateway ready path तक पहुंचने के बाद start होता है। जब `false` हो, Gateway OpenRouter और LiteLLM pricing-catalog fetches skip करता है; configured `models.providers.*.models[].cost` values local cost estimates के लिए फिर भी काम करती हैं।
 
 ## MCP
 
 OpenClaw-managed MCP server definitions `mcp.servers` के अंतर्गत रहती हैं और
-embedded OpenClaw तथा अन्य runtime adapters द्वारा consumed होती हैं। `openclaw mcp list`,
+embedded OpenClaw और अन्य runtime adapters द्वारा consume की जाती हैं। `openclaw mcp list`,
 `show`, `set`, और `unset` commands config edits के दौरान target server से connect किए बिना इस block को manage करते हैं।
 
 ```json5
@@ -134,36 +134,44 @@ embedded OpenClaw तथा अन्य runtime adapters द्वारा con
 }
 ```
 
-- `mcp.servers`: runtimes के लिए named stdio या remote MCP server definitions जो configured MCP tools expose करते हैं।
-  Remote entries `transport: "streamable-http"` या `transport: "sse"` उपयोग करती हैं;
+- `mcp.servers`: configured MCP tools expose करने वाले runtimes के लिए named stdio या remote MCP server definitions।
+  Remote entries `transport: "streamable-http"` या `transport: "sse"` का उपयोग करती हैं;
   `type: "http"` एक CLI-native alias है जिसे `openclaw mcp set` और
   `openclaw doctor --fix` canonical `transport` field में normalize करते हैं।
-- `mcp.servers.<name>.enabled`: saved server definition को रखते हुए उसे embedded OpenClaw MCP discovery और tool projection से exclude करने के लिए `false` set करें।
-- `mcp.servers.<name>.timeout` / `requestTimeoutMs`: per-server MCP request timeout seconds या milliseconds में।
-- `mcp.servers.<name>.connectTimeout` / `connectionTimeoutMs`: per-server connection timeout seconds या milliseconds में।
-- `mcp.servers.<name>.supportsParallelToolCalls`: adapters के लिए optional concurrency hint जो चुन सकते हैं कि parallel MCP tool calls issue करें या नहीं।
-- `mcp.servers.<name>.auth`: HTTP MCP servers के लिए `"oauth"` set करें जिन्हें OAuth चाहिए। OpenClaw state के अंतर्गत tokens store करने के लिए `openclaw mcp login <name>` चलाएं।
-- `mcp.servers.<name>.oauth`: optional OAuth scope, redirect URL, और client metadata URL overrides।
+- `mcp.servers.<name>.enabled`: saved server definition को बनाए रखते हुए
+  embedded OpenClaw MCP discovery और tool projection से exclude करने के लिए `false` set करें।
+- `mcp.servers.<name>.timeout` / `requestTimeoutMs`: per-server MCP request
+  timeout seconds या milliseconds में।
+- `mcp.servers.<name>.connectTimeout` / `connectionTimeoutMs`: per-server
+  connection timeout seconds या milliseconds में।
+- `mcp.servers.<name>.supportsParallelToolCalls`: adapters के लिए वैकल्पिक concurrency hint
+  जो चुन सकते हैं कि parallel MCP tool calls issue करने हैं या नहीं।
+- `mcp.servers.<name>.auth`: OAuth आवश्यक करने वाले HTTP MCP servers के लिए `"oauth"` set करें।
+  OpenClaw state के अंतर्गत tokens store करने के लिए `openclaw mcp login <name>` चलाएं।
+- `mcp.servers.<name>.oauth`: वैकल्पिक OAuth scope, redirect URL, और client
+  metadata URL overrides।
 - `mcp.servers.<name>.sslVerify`, `clientCert`, `clientKey`: private endpoints और mutual TLS के लिए HTTP TLS controls।
-- `mcp.servers.<name>.toolFilter`: optional per-server tool selection। `include`
+- `mcp.servers.<name>.toolFilter`: वैकल्पिक per-server tool selection। `include`
   discovered MCP tools को matching names तक सीमित करता है; `exclude` matching
   names छिपाता है। Entries exact MCP tool names या simple `*` globs हैं। Resources या prompts वाले servers utility tool names (`resources_list`,
-  `resources_read`, `prompts_list`, `prompts_get`) भी generate करते हैं, और वे names वही filter उपयोग करते हैं।
-- `mcp.servers.<name>.codex`: optional Codex app-server projection controls।
-  यह block केवल Codex app-server threads के लिए OpenClaw metadata है; यह ACP sessions, generic Codex harness config, या अन्य runtime adapters को affect नहीं करता।
+  `resources_read`, `prompts_list`, `prompts_get`) भी generate करते हैं, और वे names वही
+  filter उपयोग करते हैं।
+- `mcp.servers.<name>.codex`: वैकल्पिक Codex app-server projection controls।
+  यह block केवल Codex app-server threads के लिए OpenClaw metadata है; यह
+  ACP sessions, generic Codex harness config, या अन्य runtime adapters को प्रभावित नहीं करता।
   Non-empty `codex.agents` server को listed OpenClaw agent ids तक सीमित करता है।
-  Empty, blank, या invalid scoped agent lists config validation द्वारा reject किए जाते हैं और global बनने के बजाय runtime projection path द्वारा omit किए जाते हैं।
+  Empty, blank, या invalid scoped agent lists config validation द्वारा reject की जाती हैं
+  और global बनने के बजाय runtime projection path द्वारा omit की जाती हैं।
   `codex.defaultToolsApprovalMode` उस server के लिए Codex का native
   `default_tools_approval_mode` emit करता है। Native `mcp_servers` config Codex को pass करने से पहले OpenClaw `codex`
-  block strip कर देता है। Server को हर Codex app-server agent के लिए Codex के
-  default MCP approval behavior के साथ projected रखने के लिए block omit करें।
+  block हटा देता है। Server को Codex के default MCP approval behavior के साथ हर Codex app-server agent के लिए projected रखने के लिए block omit करें।
 - `mcp.sessionIdleTtlMs`: session-scoped bundled MCP runtimes के लिए idle TTL।
   One-shot embedded runs run-end cleanup request करते हैं; यह TTL long-lived sessions और future callers के लिए backstop है।
 - `mcp.*` के अंतर्गत changes cached session MCP runtimes dispose करके hot-apply होते हैं।
-  अगली tool discovery/use उन्हें new config से recreate करती है, इसलिए removed
-  `mcp.servers` entries idle TTL की प्रतीक्षा करने के बजाय तुरंत reaped हो जाती हैं।
-- Runtime discovery MCP tool-list change notifications का भी सम्मान करता है और
-  उस session के cached catalog को drop करता है। Resources या prompts advertise करने वाले servers resources list/read और prompts list/fetch करने के लिए utility tools पाते हैं। Repeated tool-call failures affected server को another call attempt होने से पहले थोड़ी देर pause करते हैं।
+  अगला tool discovery/use उन्हें नए config से recreate करता है, इसलिए removed
+  `mcp.servers` entries idle TTL की प्रतीक्षा करने के बजाय तुरंत reap हो जाती हैं।
+- Runtime discovery MCP tool-list change notifications को भी honor करता है और
+  उस session के cached catalog को drop कर देता है। Resources या prompts advertise करने वाले servers को resources list/read करने और prompts list/fetch करने के लिए utility tools मिलते हैं। Repeated tool-call failures किसी और call के attempt से पहले affected server को थोड़ी देर pause करते हैं।
 
 Runtime behavior के लिए [MCP](/hi/cli/mcp#openclaw-as-an-mcp-client-registry) और
 [CLI backends](/hi/gateway/cli-backends#bundle-mcp-overlays) देखें।
@@ -198,19 +206,23 @@ Runtime behavior के लिए [MCP](/hi/cli/mcp#openclaw-as-an-mcp-client-re
 }
 ```
 
-- `allowBundled`: केवल bundled skills के लिए optional allowlist (managed/workspace skills unaffected)।
-- `load.extraDirs`: extra shared skill roots (lowest precedence)।
+- `allowBundled`: केवल bundled skills के लिए वैकल्पिक allowlist (managed/workspace skills अप्रभावित)।
+- `load.extraDirs`: extra shared skill roots (सबसे कम precedence)।
 - `load.allowSymlinkTargets`: trusted real target roots जिनमें skill symlinks resolve हो सकते हैं जब link अपने configured source root के बाहर रहता है।
-- `workshop.allowSymlinkTargetWrites`: Skill Workshop apply को already-trusted symlink targets के through write करने की अनुमति देता है (default: false)।
-- `install.preferBrew`: true होने पर, `brew` available हो तो अन्य installer kinds पर fallback करने से पहले Homebrew installers prefer करें।
-- `install.nodeManager`: `metadata.openclaw.install` specs के लिए node installer preference (`npm` | `pnpm` | `yarn` | `bun`)।
-- `install.allowUploadedArchives`: trusted `operator.admin` Gateway clients को `skills.upload.*` के through staged private zip archives install करने दें (default: false)। यह केवल uploaded-archive path enable करता है; normal ClawHub installs को इसकी आवश्यकता नहीं होती।
-- `entries.<skillKey>.enabled: false` किसी skill को disable करता है, भले ही वह bundled/installed हो।
-- `entries.<skillKey>.apiKey`: primary env var declare करने वाली skills के लिए सुविधा (plaintext string या SecretRef object)।
+- `workshop.allowSymlinkTargetWrites`: Skill Workshop apply को पहले से trusted symlink targets के through write करने देता है (default: false)।
+- `install.preferBrew`: true होने पर, `brew` उपलब्ध होने पर अन्य installer kinds पर fallback करने से पहले Homebrew installers को prefer करें।
+- `install.nodeManager`: `metadata.openclaw.install` specs के लिए node installer preference
+  (`npm` | `pnpm` | `yarn` | `bun`)।
+- `install.allowUploadedArchives`: trusted `operator.admin` Gateway
+  clients को `skills.upload.*` के through staged private zip archives install करने की अनुमति देता है
+  (default: false)। यह केवल uploaded-archive path enable करता है; normal ClawHub
+  installs को इसकी जरूरत नहीं होती।
+- `entries.<skillKey>.enabled: false` bundled/installed होने पर भी skill disable करता है।
+- `entries.<skillKey>.apiKey`: primary env var declare करने वाले skills के लिए convenience (plaintext string या SecretRef object)।
 
 ---
 
-## Plugins
+## Plugin
 
 ```json5
 {
@@ -235,31 +247,31 @@ Runtime behavior के लिए [MCP](/hi/cli/mcp#openclaw-as-an-mcp-client-re
 ```
 
 - `~/.openclaw/extensions` और `<workspace>/.openclaw/extensions` के अंतर्गत package या bundle directories से, साथ ही `plugins.load.paths` में सूचीबद्ध files या directories से लोड किया गया।
-- standalone plugin files को `plugins.load.paths` में रखें; auto-discovered extension roots top-level `.js`, `.mjs`, और `.ts` files को अनदेखा करते हैं ताकि उन roots में helper scripts startup को block न करें।
+- standalone plugin files को `plugins.load.paths` में रखें; auto-discovered extension roots top-level `.js`, `.mjs`, और `.ts` files को अनदेखा करते हैं ताकि उन roots में helper scripts startup को ब्लॉक न करें।
 - Discovery native OpenClaw plugins के साथ compatible Codex bundles और Claude bundles स्वीकार करती है, जिसमें manifestless Claude default-layout bundles भी शामिल हैं।
 - **Config changes के लिए gateway restart आवश्यक है।**
-- `allow`: वैकल्पिक allowlist (सिर्फ listed plugins load होते हैं)। `deny` को प्राथमिकता मिलती है।
-- `plugins.entries.<id>.apiKey`: plugin-level API key सुविधा field (जब plugin द्वारा supported हो)।
+- `allow`: वैकल्पिक allowlist (केवल सूचीबद्ध plugins लोड होते हैं)। `deny` जीतता है।
+- `plugins.entries.<id>.apiKey`: plugin-level API key सुविधा field (जब plugin द्वारा समर्थित हो)।
 - `plugins.entries.<id>.env`: plugin-scoped env var map।
-- `plugins.entries.<id>.hooks.allowPromptInjection`: जब `false` हो, core `before_prompt_build` को block करता है और legacy `before_agent_start` से prompt-mutating fields को ignore करता है, जबकि legacy `modelOverride` और `providerOverride` को preserve करता है। native plugin hooks और supported bundle-provided hook directories पर लागू होता है।
+- `plugins.entries.<id>.hooks.allowPromptInjection`: जब `false` हो, core `before_prompt_build` को ब्लॉक करता है और legacy `before_agent_start` से prompt-mutating fields को अनदेखा करता है, जबकि legacy `modelOverride` और `providerOverride` को सुरक्षित रखता है। native plugin hooks और supported bundle-provided hook directories पर लागू होता है।
 - `plugins.entries.<id>.hooks.allowConversationAccess`: जब `true` हो, trusted non-bundled plugins raw conversation content को typed hooks जैसे `llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, और `agent_end` से पढ़ सकते हैं।
-- `plugins.entries.<id>.subagent.allowModelOverride`: background subagent runs के लिए per-run `provider` और `model` overrides request करने के लिए इस plugin पर स्पष्ट रूप से भरोसा करें।
-- `plugins.entries.<id>.subagent.allowedModels`: trusted subagent overrides के लिए canonical `provider/model` targets की वैकल्पिक allowlist। `"*"` का उपयोग केवल तब करें जब आप जानबूझकर किसी भी model को allow करना चाहते हों।
-- `plugins.entries.<id>.llm.allowModelOverride`: `api.runtime.llm.complete` के लिए model overrides request करने के लिए इस plugin पर स्पष्ट रूप से भरोसा करें।
-- `plugins.entries.<id>.llm.allowedModels`: trusted plugin LLM completion overrides के लिए canonical `provider/model` targets की वैकल्पिक allowlist। `"*"` का उपयोग केवल तब करें जब आप जानबूझकर किसी भी model को allow करना चाहते हों।
-- `plugins.entries.<id>.llm.allowAgentIdOverride`: non-default agent id के विरुद्ध `api.runtime.llm.complete` run करने के लिए इस plugin पर स्पष्ट रूप से भरोसा करें।
+- `plugins.entries.<id>.subagent.allowModelOverride`: इस plugin पर स्पष्ट रूप से भरोसा करें कि यह background subagent runs के लिए per-run `provider` और `model` overrides का अनुरोध कर सके।
+- `plugins.entries.<id>.subagent.allowedModels`: trusted subagent overrides के लिए canonical `provider/model` targets की वैकल्पिक allowlist। `"*"` का उपयोग केवल तब करें जब आप जानबूझकर किसी भी model को अनुमति देना चाहते हों।
+- `plugins.entries.<id>.llm.allowModelOverride`: इस plugin पर स्पष्ट रूप से भरोसा करें कि यह `api.runtime.llm.complete` के लिए model overrides का अनुरोध कर सके।
+- `plugins.entries.<id>.llm.allowedModels`: trusted plugin LLM completion overrides के लिए canonical `provider/model` targets की वैकल्पिक allowlist। `"*"` का उपयोग केवल तब करें जब आप जानबूझकर किसी भी model को अनुमति देना चाहते हों।
+- `plugins.entries.<id>.llm.allowAgentIdOverride`: इस plugin पर स्पष्ट रूप से भरोसा करें कि यह non-default agent id के विरुद्ध `api.runtime.llm.complete` चला सके।
 - `plugins.entries.<id>.config`: plugin-defined config object (उपलब्ध होने पर native OpenClaw plugin schema द्वारा validated)।
-- Channel plugin account/runtime settings `channels.<id>` के अंतर्गत रहते हैं और उन्हें owning plugin के manifest `channelConfigs` metadata द्वारा describe किया जाना चाहिए, किसी central OpenClaw option registry द्वारा नहीं।
+- Channel plugin account/runtime settings `channels.<id>` के अंतर्गत रहते हैं और उन्हें central OpenClaw option registry द्वारा नहीं, बल्कि owning plugin के manifest `channelConfigs` metadata द्वारा describe किया जाना चाहिए।
 
 ### Codex harness plugin config
 
-bundled `codex` plugin native Codex app-server harness settings का owner है, जो
-`plugins.entries.codex.config` के अंतर्गत हैं। पूरे config surface के लिए
-[Codex harness reference](/hi/plugins/codex-harness-reference) और runtime model के लिए
-[Codex harness](/hi/plugins/codex-harness) देखें।
+bundled `codex` plugin native Codex app-server harness settings का स्वामी है, जो
+`plugins.entries.codex.config` के अंतर्गत हैं। पूरे config
+surface के लिए [Codex harness reference](/hi/plugins/codex-harness-reference) और runtime model के लिए [Codex harness](/hi/plugins/codex-harness) देखें।
 
-`codexPlugins` केवल उन sessions पर लागू होता है जो native Codex harness select करते हैं।
-यह OpenClaw provider runs, ACP conversation bindings, या किसी भी non-Codex harness के लिए Codex plugins enable नहीं करता।
+`codexPlugins` केवल उन sessions पर लागू होता है जो native Codex harness चुनते हैं।
+यह OpenClaw provider runs, ACP
+conversation bindings, या किसी non-Codex harness के लिए Codex plugins enable नहीं करता।
 
 ```json5
 {
@@ -291,26 +303,27 @@ bundled `codex` plugin native Codex app-server harness settings का owner ह
   plugin/app support enable करता है। डिफ़ॉल्ट: `false`।
 - `plugins.entries.codex.config.codexPlugins.allow_destructive_actions`:
   migrated plugin app elicitations के लिए default destructive-action policy।
-  prompting के बिना safe Codex approval schemas accept करने के लिए `true`, उन्हें decline करने के लिए `false`,
-  Codex-required approvals को OpenClaw plugin approvals से route करने के लिए `"auto"`, या durable approval के बिना हर plugin write/destructive
-  action के लिए prompt करने के लिए `"ask"` का उपयोग करें। `"ask"` mode affected app के लिए durable Codex
+  prompting के बिना safe Codex approval schemas स्वीकार करने के लिए `true`, उन्हें अस्वीकार करने के लिए `false`,
+  Codex-required approvals को OpenClaw
+  plugin approvals के माध्यम से route करने के लिए `"auto"`, या durable approval के बिना हर plugin write/destructive
+  action के लिए prompt करने के लिए `"ask"` का उपयोग करें। `"ask"` mode प्रभावित app के लिए durable Codex
   per-tool approval overrides clear करता है और Codex thread शुरू होने से पहले उस app के लिए human
-  approvals reviewer select करता है।
+  approvals reviewer चुनता है।
   डिफ़ॉल्ट: `true`।
-- `plugins.entries.codex.config.codexPlugins.plugins.<key>.enabled`: जब global `codexPlugins.enabled` भी true हो, तो
+- `plugins.entries.codex.config.codexPlugins.plugins.<key>.enabled`: global `codexPlugins.enabled` भी true होने पर
   migrated plugin entry enable करता है।
   डिफ़ॉल्ट: explicit entries के लिए `true`।
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.marketplaceName`:
-  stable marketplace identity। V1 केवल `"openai-curated"` support करता है।
+  stable marketplace identity। V1 केवल `"openai-curated"` को support करता है।
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.pluginName`: migration से stable
   Codex plugin identity, उदाहरण के लिए `"google-calendar"`।
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.allow_destructive_actions`:
-  per-plugin destructive-action override। जब omitted हो, global
-  `allow_destructive_actions` value उपयोग की जाती है। per-plugin value वही
+  per-plugin destructive-action override। omit किए जाने पर global
+  `allow_destructive_actions` value उपयोग होती है। per-plugin value वही
   `true`, `false`, `"auto"`, या `"ask"` policies स्वीकार करती है।
 
-`"ask"` का उपयोग करने वाला हर admitted plugin app उस app के approval requests को
-human reviewer तक route करता है। अन्य apps और non-app thread approvals अपने
+`"ask"` का उपयोग करने वाला प्रत्येक admitted plugin app उस app के approval requests
+को human reviewer तक route करता है। अन्य apps और non-app thread approvals अपने
 configured reviewer को बनाए रखते हैं, इसलिए mixed plugin policies `"ask"` behavior inherit नहीं करतीं।
 
 `codexPlugins.enabled` global enablement directive है। migration द्वारा लिखी गई explicit plugin
@@ -319,34 +332,34 @@ entries durable install और repair eligibility set हैं।
 `marketplacePath` values जानबूझकर config fields नहीं हैं क्योंकि वे
 host-specific हैं।
 
-`app/list` readiness checks एक घंटे के लिए cached रहते हैं और stale होने पर
-asynchronously refresh किए जाते हैं। Codex thread app config Codex harness
-session establishment पर computed होता है, हर turn पर नहीं; native plugin config बदलने के बाद `/new`, `/reset`, या gateway
+`app/list` readiness checks एक घंटे के लिए cached होते हैं और stale होने पर
+asynchronously refresh होते हैं। Codex thread app config Codex harness
+session establishment पर compute होता है, हर turn पर नहीं; native plugin config बदलने के बाद `/new`, `/reset`, या gateway
 restart का उपयोग करें।
 
 - `plugins.entries.firecrawl.config.webFetch`: Firecrawl web-fetch provider settings।
-  - `apiKey`: higher limits के लिए वैकल्पिक Firecrawl API key (SecretRef स्वीकार करता है)। `plugins.entries.firecrawl.config.webSearch.apiKey`, legacy `tools.web.fetch.firecrawl.apiKey`, या `FIRECRAWL_API_KEY` env var पर fall back करता है।
+  - `apiKey`: higher limits के लिए वैकल्पिक Firecrawl API key (SecretRef स्वीकार करता है)। `plugins.entries.firecrawl.config.webSearch.apiKey`, legacy `tools.web.fetch.firecrawl.apiKey`, या `FIRECRAWL_API_KEY` env var पर fallback करता है।
   - `baseUrl`: Firecrawl API base URL (डिफ़ॉल्ट: `https://api.firecrawl.dev`; self-hosted overrides को private/internal endpoints target करने चाहिए)।
   - `onlyMainContent`: pages से केवल main content extract करें (डिफ़ॉल्ट: `true`)।
   - `maxAgeMs`: milliseconds में maximum cache age (डिफ़ॉल्ट: `172800000` / 2 days)।
   - `timeoutSeconds`: seconds में scrape request timeout (डिफ़ॉल्ट: `60`)।
 - `plugins.entries.xai.config.xSearch`: xAI X Search (Grok web search) settings।
   - `enabled`: X Search provider enable करें।
-  - `model`: search के लिए उपयोग किया जाने वाला Grok model (जैसे `"grok-4-1-fast"`)।
+  - `model`: search के लिए उपयोग होने वाला Grok model (उदा. `"grok-4-1-fast"`)।
 - `plugins.entries.memory-core.config.dreaming`: memory dreaming settings। phases और thresholds के लिए [Dreaming](/hi/concepts/dreaming) देखें।
   - `enabled`: master dreaming switch (डिफ़ॉल्ट `false`)।
-  - `frequency`: प्रत्येक full dreaming sweep के लिए cron cadence (डिफ़ॉल्ट रूप से `"0 3 * * *"`)।
+  - `frequency`: हर full dreaming sweep के लिए cron cadence (डिफ़ॉल्ट रूप से `"0 3 * * *"`)।
   - `model`: वैकल्पिक Dream Diary subagent model override। `plugins.entries.memory-core.subagent.allowModelOverride: true` आवश्यक है; targets restrict करने के लिए `allowedModels` के साथ pair करें। Model-unavailable errors session default model के साथ एक बार retry करते हैं; trust या allowlist failures silently fall back नहीं करते।
   - phase policy और thresholds implementation details हैं (user-facing config keys नहीं)।
-- पूरा memory config [Memory configuration reference](/hi/reference/memory-config) में रहता है:
+- पूरा memory config [Memory configuration reference](/hi/reference/memory-config) में है:
   - `agents.defaults.memorySearch.*`
   - `memory.backend`
   - `memory.citations`
   - `memory.qmd.*`
   - `plugins.entries.memory-core.config.dreaming`
-- Enabled Claude bundle plugins `settings.json` से embedded OpenClaw defaults भी contribute कर सकते हैं; OpenClaw इन्हें sanitized agent settings के रूप में apply करता है, raw OpenClaw config patches के रूप में नहीं।
+- Enabled Claude bundle plugins `settings.json` से embedded OpenClaw defaults भी contribute कर सकते हैं; OpenClaw उन्हें sanitized agent settings के रूप में apply करता है, raw OpenClaw config patches के रूप में नहीं।
 - `plugins.slots.memory`: active memory plugin id चुनें, या memory plugins disable करने के लिए `"none"`।
-- `plugins.slots.contextEngine`: active context engine plugin id चुनें; जब तक आप कोई दूसरा engine install और select नहीं करते, डिफ़ॉल्ट `"legacy"` है।
+- `plugins.slots.contextEngine`: active context engine plugin id चुनें; जब तक आप कोई दूसरा engine install और select नहीं करते, default `"legacy"` है।
 
 [Plugins](/hi/tools/plugin) देखें।
 
@@ -357,7 +370,7 @@ restart का उपयोग करें।
 `commitments` inferred follow-up memory को control करता है: OpenClaw conversation turns से check-ins detect कर सकता है और उन्हें heartbeat runs के माध्यम से deliver कर सकता है।
 
 - `commitments.enabled`: inferred follow-up commitments के लिए hidden LLM extraction, storage, और heartbeat delivery enable करें। डिफ़ॉल्ट: `false`।
-- `commitments.maxPerDay`: rolling day में per agent session deliver किए गए maximum inferred follow-up commitments। डिफ़ॉल्ट: `3`।
+- `commitments.maxPerDay`: rolling day में प्रति agent session deliver किए जाने वाले maximum inferred follow-up commitments। डिफ़ॉल्ट: `3`।
 
 [Inferred commitments](/hi/concepts/commitments) देखें।
 
@@ -410,44 +423,32 @@ restart का उपयोग करें।
 ```
 
 - `evaluateEnabled: false` `act:evaluate` और `wait --fn` को अक्षम करता है।
-- `tabCleanup` निष्क्रिय समय के बाद या किसी सत्र के अपनी सीमा पार करने पर ट्रैक किए गए प्राथमिक-एजेंट टैब पुनः प्राप्त करता है। उन अलग-अलग cleanup modes को अक्षम करने के लिए `idleMinutes: 0` या `maxTabsPerSession: 0` सेट करें।
-- `ssrfPolicy.dangerouslyAllowPrivateNetwork` सेट न होने पर अक्षम रहता है, इसलिए browser navigation डिफ़ॉल्ट रूप से strict रहता है।
-- `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` केवल तब सेट करें जब आप जानबूझकर private-network browser navigation पर भरोसा करते हों।
-- strict mode में, remote CDP profile endpoints (`profiles.*.cdpUrl`) reachability/discovery checks के दौरान उसी private-network blocking के अधीन होते हैं।
+- `tabCleanup` निष्क्रिय समय के बाद या जब कोई सत्र अपनी सीमा से अधिक हो जाता है, ट्रैक किए गए प्राथमिक-एजेंट टैब वापस प्राप्त करता है। उन अलग-अलग क्लीनअप मोड को अक्षम करने के लिए `idleMinutes: 0` या `maxTabsPerSession: 0` सेट करें।
+- `ssrfPolicy.dangerouslyAllowPrivateNetwork` सेट न होने पर अक्षम रहता है, इसलिए ब्राउज़र नेविगेशन डिफ़ॉल्ट रूप से सख्त रहता है।
+- `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` केवल तब सेट करें जब आप जानबूझकर निजी-नेटवर्क ब्राउज़र नेविगेशन पर भरोसा करते हों।
+- सख्त मोड में, रिमोट CDP प्रोफ़ाइल एंडपॉइंट (`profiles.*.cdpUrl`) पहुंच-योग्यता/डिस्कवरी जांचों के दौरान उसी निजी-नेटवर्क ब्लॉकिंग के अधीन होते हैं।
 - `ssrfPolicy.allowPrivateNetwork` legacy alias के रूप में समर्थित रहता है।
-- strict mode में, स्पष्ट exceptions के लिए `ssrfPolicy.hostnameAllowlist` और `ssrfPolicy.allowedHostnames` का उपयोग करें।
-- Remote profiles केवल attach-only होते हैं (start/stop/reset अक्षम)।
+- सख्त मोड में, स्पष्ट अपवादों के लिए `ssrfPolicy.hostnameAllowlist` और `ssrfPolicy.allowedHostnames` का उपयोग करें।
+- रिमोट प्रोफ़ाइल केवल अटैच हैं (start/stop/reset अक्षम)।
 - `profiles.*.cdpUrl` `http://`, `https://`, `ws://`, और `wss://` स्वीकार करता है।
-  जब आप चाहते हैं कि OpenClaw `/json/version` discover करे, तो HTTP(S) का उपयोग करें; जब आपका provider आपको direct DevTools WebSocket URL देता है, तो WS(S) का उपयोग करें।
-- `remoteCdpTimeoutMs` और `remoteCdpHandshakeTimeoutMs` remote और
-  `attachOnly` CDP reachability के साथ-साथ tab-opening requests पर लागू होते हैं। Managed loopback
-  profiles local CDP defaults बनाए रखते हैं।
-- यदि कोई externally managed CDP service loopback के माध्यम से reachable है, तो उस
-  profile का `attachOnly: true` सेट करें; अन्यथा OpenClaw loopback port को
-  local managed browser profile मानेगा और local port ownership errors रिपोर्ट कर सकता है।
-- `existing-session` profiles CDP के बजाय Chrome MCP का उपयोग करते हैं और selected host पर या connected browser node के माध्यम से attach कर सकते हैं।
-- `existing-session` profiles Brave या Edge जैसे किसी specific
-  Chromium-based browser profile को target करने के लिए `userDataDir` सेट कर सकते हैं।
-- `existing-session` profiles `cdpUrl` सेट कर सकते हैं जब Chrome पहले से किसी DevTools HTTP(S) discovery endpoint या direct WS(S) endpoint के पीछे चल रहा हो। उस mode में OpenClaw auto-connect का उपयोग करने के बजाय endpoint को Chrome MCP को पास करता है;
-  Chrome MCP launch arguments के लिए `userDataDir` अनदेखा किया जाता है।
-- `existing-session` profiles current Chrome MCP route limits रखते हैं:
-  CSS-selector targeting के बजाय snapshot/ref-driven actions, one-file upload
-  hooks, कोई dialog timeout overrides नहीं, कोई `wait --load networkidle` नहीं, और कोई
-  `responsebody`, PDF export, download interception, या batch actions नहीं।
-- Local managed `openclaw` profiles `cdpPort` और `cdpUrl` auto-assign करते हैं; `cdpUrl` स्पष्ट रूप से केवल remote CDP profiles या existing-session endpoint
-  attach के लिए सेट करें।
-- Local managed profiles उस profile के लिए global
-  `browser.executablePath` को override करने हेतु `executablePath` सेट कर सकते हैं। इसका उपयोग एक profile को
-  Chrome में और दूसरे को Brave में चलाने के लिए करें।
-- Local managed profiles process start के बाद Chrome CDP HTTP
-  discovery के लिए `browser.localLaunchTimeoutMs` और post-launch CDP websocket readiness के लिए `browser.localCdpReadyTimeoutMs` का उपयोग करते हैं। धीमे hosts पर इन्हें बढ़ाएं जहाँ Chrome सफलतापूर्वक शुरू होता है लेकिन readiness checks startup से race करते हैं। दोनों values `120000` ms तक positive integers होनी चाहिए; invalid config values reject की जाती हैं।
-- Auto-detect order: default browser यदि Chromium-based हो → Chrome → Brave → Edge → Chromium → Chrome Canary।
-- `browser.executablePath` और `browser.profiles.<name>.executablePath` दोनों
-  Chromium launch से पहले आपके OS home directory के लिए `~` और `~/...` स्वीकार करते हैं।
-  `existing-session` profiles पर per-profile `userDataDir` भी tilde-expanded होता है।
-- Control service: केवल loopback (port `gateway.port` से derived, default `18791`)।
-- `extraArgs` local Chromium startup में अतिरिक्त launch flags जोड़ता है (उदाहरण के लिए
-  `--disable-gpu`, window sizing, या debug flags)।
+  जब आप चाहते हैं कि OpenClaw `/json/version` खोजे, तब HTTP(S) का उपयोग करें; जब आपका प्रदाता आपको सीधा DevTools WebSocket URL देता है, तब WS(S) का उपयोग करें।
+- `remoteCdpTimeoutMs` और `remoteCdpHandshakeTimeoutMs` रिमोट और
+  `attachOnly` CDP पहुंच-योग्यता के साथ-साथ टैब-खोलने के अनुरोधों पर लागू होते हैं। प्रबंधित लूपबैक प्रोफ़ाइल स्थानीय CDP डिफ़ॉल्ट बनाए रखते हैं।
+- यदि कोई बाहरी रूप से प्रबंधित CDP सेवा लूपबैक के जरिए पहुंच-योग्य है, तो उस प्रोफ़ाइल का `attachOnly: true` सेट करें; अन्यथा OpenClaw लूपबैक पोर्ट को स्थानीय प्रबंधित ब्राउज़र प्रोफ़ाइल मानेगा और स्थानीय पोर्ट स्वामित्व त्रुटियां रिपोर्ट कर सकता है।
+- `existing-session` प्रोफ़ाइल CDP के बजाय Chrome MCP का उपयोग करती हैं और चुने गए होस्ट पर या कनेक्टेड ब्राउज़र नोड के जरिए अटैच हो सकती हैं।
+- `existing-session` प्रोफ़ाइल Brave या Edge जैसे किसी विशिष्ट Chromium-आधारित ब्राउज़र प्रोफ़ाइल को लक्षित करने के लिए `userDataDir` सेट कर सकती हैं।
+- `existing-session` प्रोफ़ाइल `cdpUrl` सेट कर सकती हैं जब Chrome पहले से किसी DevTools HTTP(S) डिस्कवरी एंडपॉइंट या सीधे WS(S) एंडपॉइंट के पीछे चल रहा हो। उस मोड में OpenClaw auto-connect का उपयोग करने के बजाय एंडपॉइंट को Chrome MCP को पास करता है; Chrome MCP लॉन्च आर्ग्युमेंट के लिए `userDataDir` अनदेखा किया जाता है।
+- `existing-session` प्रोफ़ाइल मौजूदा Chrome MCP रूट सीमाएं बनाए रखती हैं:
+  CSS-selector लक्ष्यीकरण के बजाय snapshot/ref-चालित क्रियाएं, एक-फ़ाइल अपलोड हुक, कोई डायलॉग टाइमआउट ओवरराइड नहीं, कोई `wait --load networkidle` नहीं, और कोई `responsebody`, PDF निर्यात, डाउनलोड इंटरसेप्शन, या बैच क्रियाएं नहीं।
+- स्थानीय प्रबंधित `openclaw` प्रोफ़ाइल `cdpPort` और `cdpUrl` अपने-आप असाइन करती हैं; `cdpUrl` को स्पष्ट रूप से केवल रिमोट CDP प्रोफ़ाइल या existing-session एंडपॉइंट अटैच के लिए सेट करें।
+- स्थानीय प्रबंधित प्रोफ़ाइल उस प्रोफ़ाइल के लिए वैश्विक `browser.executablePath` को ओवरराइड करने के लिए `executablePath` सेट कर सकती हैं। इसका उपयोग एक प्रोफ़ाइल Chrome में और दूसरी Brave में चलाने के लिए करें।
+- स्थानीय प्रबंधित प्रोफ़ाइल प्रक्रिया शुरू होने के बाद Chrome CDP HTTP डिस्कवरी के लिए `browser.localLaunchTimeoutMs` और लॉन्च के बाद CDP websocket readiness के लिए `browser.localCdpReadyTimeoutMs` का उपयोग करती हैं। उन्हें धीमे होस्ट पर बढ़ाएं, जहां Chrome सफलतापूर्वक शुरू होता है लेकिन readiness जांच startup से race करती हैं। दोनों मान `120000` ms तक के धनात्मक पूर्णांक होने चाहिए; अमान्य कॉन्फ़िग मान अस्वीकार किए जाते हैं।
+- ऑटो-डिटेक्ट क्रम: डिफ़ॉल्ट ब्राउज़र यदि Chromium-आधारित हो → Chrome → Brave → Edge → Chromium → Chrome Canary।
+- `browser.executablePath` और `browser.profiles.<name>.executablePath` दोनों Chromium लॉन्च से पहले आपके OS होम डायरेक्टरी के लिए `~` और `~/...` स्वीकार करते हैं।
+  `existing-session` प्रोफ़ाइल पर प्रति-प्रोफ़ाइल `userDataDir` भी tilde-expanded होता है।
+- नियंत्रण सेवा: केवल लूपबैक (पोर्ट `gateway.port` से निकला, डिफ़ॉल्ट `18791`)।
+- `extraArgs` स्थानीय Chromium startup में अतिरिक्त लॉन्च फ्लैग जोड़ता है (उदाहरण के लिए
+  `--disable-gpu`, विंडो आकार, या डीबग फ्लैग)।
 
 ---
 
@@ -466,7 +467,7 @@ restart का उपयोग करें।
 ```
 
 - `seamColor`: native app UI chrome के लिए accent color (Talk Mode bubble tint, आदि)।
-- `assistant`: Control UI identity override। active agent identity पर fallback करता है।
+- `assistant`: Control UI identity override। सक्रिय agent identity पर fallback करता है।
 
 ---
 
@@ -542,83 +543,81 @@ restart का उपयोग करें।
 }
 ```
 
-<Accordion title="Gateway फ़ील्ड विवरण">
+<Accordion title="Gateway field details">
 
-- `mode`: `local` (Gateway चलाएँ) या `remote` (दूरस्थ Gateway से कनेक्ट करें)। Gateway तब तक शुरू होने से इनकार करता है जब तक यह `local` न हो।
-- `port`: WS + HTTP के लिए एकल मल्टीप्लेक्स्ड पोर्ट। प्राथमिकता: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`।
-- `bind`: `auto`, `loopback` (डिफ़ॉल्ट), `lan` (`0.0.0.0`), `tailnet` (केवल Tailscale IP), या `custom`।
-- **विरासत bind alias**: `gateway.bind` में bind मोड मानों (`auto`, `loopback`, `lan`, `tailnet`, `custom`) का उपयोग करें, host alias (`0.0.0.0`, `127.0.0.1`, `localhost`, `::`, `::1`) का नहीं।
-- **Docker नोट**: डिफ़ॉल्ट `loopback` bind कंटेनर के अंदर `127.0.0.1` पर सुनता है। Docker bridge networking (`-p 18789:18789`) के साथ, ट्रैफ़िक `eth0` पर आता है, इसलिए Gateway पहुँच योग्य नहीं रहता। सभी इंटरफ़ेस पर सुनने के लिए `--network host` का उपयोग करें, या `bind: "lan"` सेट करें (या `customBindHost: "0.0.0.0"` के साथ `bind: "custom"`)।
-- **Auth**: डिफ़ॉल्ट रूप से आवश्यक। Non-loopback binds को Gateway auth चाहिए। व्यवहार में इसका अर्थ shared token/password या `gateway.auth.mode: "trusted-proxy"` वाला identity-aware reverse proxy है। Onboarding wizard डिफ़ॉल्ट रूप से token बनाता है।
-- यदि `gateway.auth.token` और `gateway.auth.password` दोनों कॉन्फ़िगर हैं (SecretRefs सहित), तो `gateway.auth.mode` को स्पष्ट रूप से `token` या `password` पर सेट करें। दोनों कॉन्फ़िगर होने और mode unset रहने पर startup और service install/repair flows fail होते हैं।
-- `gateway.auth.mode: "none"`: स्पष्ट no-auth मोड। केवल trusted local loopback setups के लिए उपयोग करें; यह जानबूझकर onboarding prompts में नहीं दिया जाता।
-- `gateway.auth.mode: "trusted-proxy"`: browser/user auth को identity-aware reverse proxy को delegate करें और `gateway.trustedProxies` से identity headers पर trust करें ([Trusted Proxy Auth](/hi/gateway/trusted-proxy-auth) देखें)। यह mode डिफ़ॉल्ट रूप से **non-loopback** proxy source की अपेक्षा करता है; same-host loopback reverse proxies के लिए स्पष्ट `gateway.auth.trustedProxy.allowLoopback = true` आवश्यक है। Internal same-host callers local direct fallback के रूप में `gateway.auth.password` का उपयोग कर सकते हैं; `gateway.auth.token` trusted-proxy mode के साथ mutually exclusive रहता है।
-- `gateway.auth.allowTailscale`: जब `true` हो, Tailscale Serve identity headers Control UI/WebSocket auth को satisfy कर सकते हैं (`tailscale whois` के माध्यम से verified)। HTTP API endpoints उस Tailscale header auth का उपयोग **नहीं** करते; इसके बजाय वे Gateway के normal HTTP auth mode का पालन करते हैं। यह tokenless flow मानता है कि Gateway host trusted है। जब `tailscale.mode = "serve"` हो, तो default `true` है।
-- `gateway.auth.rateLimit`: optional failed-auth limiter। प्रति client IP और प्रति auth scope लागू होता है (shared-secret और device-token स्वतंत्र रूप से track होते हैं)। Blocked attempts `429` + `Retry-After` लौटाते हैं।
-  - async Tailscale Serve Control UI path पर, उसी `{scope, clientIp}` के failed attempts failure write से पहले serialize किए जाते हैं। इसलिए उसी client से concurrent bad attempts दोनों plain mismatches की तरह race करने के बजाय दूसरे request पर limiter trip कर सकते हैं।
-  - `gateway.auth.rateLimit.exemptLoopback` का default `true` है; जब आप जानबूझकर localhost traffic को भी rate-limit करना चाहते हैं (test setups या strict proxy deployments के लिए), तो `false` सेट करें।
-- Browser-origin WS auth attempts हमेशा loopback exemption disabled के साथ throttled होते हैं (browser-based localhost brute force के विरुद्ध defense-in-depth)।
-- loopback पर, वे browser-origin lockouts normalized `Origin`
-  value के अनुसार isolated होते हैं, इसलिए एक localhost origin से repeated failures अपने आप
-  किसी दूसरे origin को lock out नहीं करते।
-- `tailscale.mode`: `serve` (केवल tailnet, loopback bind) या `funnel` (public, auth आवश्यक)।
-- `tailscale.serviceName`: Serve mode के लिए optional Tailscale Service नाम, जैसे
-  `svc:openclaw`। सेट होने पर, OpenClaw इसे `tailscale serve
---service` को पास करता है ताकि Control UI को device hostname के बजाय
-  named Service के माध्यम से expose किया जा सके। मान को Tailscale के `svc:<dns-label>`
-  Service name format का उपयोग करना चाहिए; startup derived Service URL report करता है।
+- `mode`: `local` (Gateway चलाएं) या `remote` (दूरस्थ Gateway से कनेक्ट करें). Gateway तब तक शुरू होने से इनकार करता है जब तक `local` न हो.
+- `port`: WS + HTTP के लिए एकल multiplexed पोर्ट. प्राथमिकता: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
+- `bind`: `auto`, `loopback` (डिफ़ॉल्ट), `lan` (`0.0.0.0`), `tailnet` (केवल Tailscale IP), या `custom`.
+- **Legacy bind aliases**: `gateway.bind` में bind मोड मान (`auto`, `loopback`, `lan`, `tailnet`, `custom`) उपयोग करें, host aliases (`0.0.0.0`, `127.0.0.1`, `localhost`, `::`, `::1`) नहीं.
+- **Docker नोट**: डिफ़ॉल्ट `loopback` bind कंटेनर के अंदर `127.0.0.1` पर सुनता है. Docker bridge networking (`-p 18789:18789`) के साथ, ट्रैफ़िक `eth0` पर आता है, इसलिए Gateway पहुंच योग्य नहीं रहता. सभी interfaces पर सुनने के लिए `--network host` उपयोग करें, या `bind: "lan"` (या `customBindHost: "0.0.0.0"` के साथ `bind: "custom"`) सेट करें.
+- **Auth**: डिफ़ॉल्ट रूप से आवश्यक. non-loopback binds के लिए Gateway auth आवश्यक है. व्यवहार में इसका अर्थ साझा token/password या `gateway.auth.mode: "trusted-proxy"` के साथ identity-aware reverse proxy है. Onboarding wizard डिफ़ॉल्ट रूप से token जनरेट करता है.
+- यदि `gateway.auth.token` और `gateway.auth.password` दोनों कॉन्फ़िगर हैं (SecretRefs सहित), तो `gateway.auth.mode` को स्पष्ट रूप से `token` या `password` पर सेट करें. दोनों कॉन्फ़िगर होने और mode unset होने पर startup और service install/repair flows विफल हो जाते हैं.
+- `gateway.auth.mode: "none"`: स्पष्ट no-auth मोड. केवल विश्वसनीय local loopback setups के लिए उपयोग करें; इसे onboarding prompts में जानबूझकर पेश नहीं किया जाता.
+- `gateway.auth.mode: "trusted-proxy"`: browser/user auth को identity-aware reverse proxy को delegate करें और `gateway.trustedProxies` से identity headers पर भरोसा करें ([Trusted Proxy Auth](/hi/gateway/trusted-proxy-auth) देखें). यह मोड डिफ़ॉल्ट रूप से **non-loopback** proxy source की अपेक्षा करता है; same-host loopback reverse proxies के लिए स्पष्ट `gateway.auth.trustedProxy.allowLoopback = true` आवश्यक है. Internal same-host callers local direct fallback के रूप में `gateway.auth.password` उपयोग कर सकते हैं; `gateway.auth.token` trusted-proxy mode के साथ mutually exclusive रहता है.
+- `gateway.auth.allowTailscale`: `true` होने पर, Tailscale Serve identity headers Control UI/WebSocket auth को संतुष्ट कर सकते हैं (`tailscale whois` के माध्यम से सत्यापित). HTTP API endpoints उस Tailscale header auth का उपयोग **नहीं** करते; वे इसके बजाय Gateway के सामान्य HTTP auth mode का पालन करते हैं. यह tokenless flow मानता है कि Gateway host विश्वसनीय है. जब `tailscale.mode = "serve"` हो तो डिफ़ॉल्ट `true` है.
+- `gateway.auth.rateLimit`: वैकल्पिक failed-auth limiter. प्रति client IP और प्रति auth scope लागू होता है (shared-secret और device-token स्वतंत्र रूप से ट्रैक किए जाते हैं). Blocked attempts `429` + `Retry-After` लौटाते हैं.
+  - async Tailscale Serve Control UI path पर, उसी `{scope, clientIp}` के लिए failed attempts को failure write से पहले serialized किया जाता है. इसलिए उसी client से concurrent bad attempts plain mismatches की तरह दोनों race through होने के बजाय दूसरे request पर limiter trip कर सकते हैं.
+  - `gateway.auth.rateLimit.exemptLoopback` का डिफ़ॉल्ट `true` है; जब आप जानबूझकर localhost traffic को भी rate-limited करना चाहते हैं (test setups या strict proxy deployments के लिए) तो `false` सेट करें.
+- Browser-origin WS auth attempts हमेशा loopback exemption disabled के साथ throttled होते हैं (browser-based localhost brute force के विरुद्ध defense-in-depth).
+- loopback पर, वे browser-origin lockouts प्रति normalized `Origin`
+  value अलग-थलग होते हैं, इसलिए एक localhost origin से repeated failures अपने आप
+  किसी अलग origin को lock out नहीं करते.
+- `tailscale.mode`: `serve` (केवल tailnet, loopback bind) या `funnel` (public, auth आवश्यक).
+- `tailscale.serviceName`: Serve mode के लिए वैकल्पिक Tailscale Service name, जैसे
+  `svc:openclaw`. सेट होने पर, OpenClaw इसे `tailscale serve
+--service` को पास करता है ताकि Control UI device hostname के बजाय named Service के ज़रिए expose किया जा सके. मान को Tailscale के `svc:<dns-label>`
+  Service name format का उपयोग करना चाहिए; startup derived Service URL report करता है.
 - `tailscale.preserveFunnel`: जब `true` हो और `tailscale.mode = "serve"` हो, OpenClaw
-  startup पर Serve दोबारा apply करने से पहले `tailscale funnel status` जाँचता है और
-  यदि externally configured Funnel route पहले से Gateway port cover करता है तो इसे skip करता है।
-  Default `false`।
-- `controlUi.allowedOrigins`: Gateway WebSocket connects के लिए explicit browser-origin allowlist। Public non-loopback browser origins के लिए आवश्यक। Loopback, RFC1918/link-local, `.local`, `.ts.net`, या Tailscale CGNAT hosts से private same-origin LAN/Tailnet UI loads Host-header fallback enable किए बिना accepted हैं।
-- `controlUi.chatMessageMaxWidth`: grouped Control UI chat messages के लिए optional max-width। `960px`, `82%`, `min(1280px, 82%)`, और `calc(100% - 2rem)` जैसे constrained CSS width values स्वीकार करता है।
-- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: dangerous mode जो उन deployments के लिए Host-header origin fallback enable करता है जो जानबूझकर Host-header origin policy पर rely करते हैं।
-- `remote.transport`: `ssh` (डिफ़ॉल्ट) या `direct` (ws/wss)। `direct` के लिए, public hosts पर `remote.url` को `wss://` होना चाहिए; plaintext `ws://` केवल loopback, LAN, link-local, `.local`, `.ts.net`, और Tailscale CGNAT hosts के लिए accepted है।
-- `remote.remotePort`: remote SSH host पर Gateway port। Default `18789`; इसका उपयोग तब करें जब local tunnel port remote Gateway port से अलग हो।
-- `gateway.remote.token` / `.password` remote-client credential fields हैं। वे अपने आप Gateway auth configure नहीं करते।
-- `gateway.push.apns.relay.baseUrl`: relay-backed iOS builds द्वारा Gateway पर registrations publish करने के बाद उपयोग किए जाने वाले external APNs relay के लिए base HTTPS URL। Public App Store builds hosted OpenClaw relay का उपयोग करते हैं। Custom relay URLs को जानबूझकर अलग iOS build/deployment path से match करना चाहिए जिसका relay URL उस relay की ओर point करता हो।
-- `gateway.push.apns.relay.timeoutMs`: Gateway-to-relay send timeout milliseconds में। Default `10000`।
-- Relay-backed registrations एक specific Gateway identity को delegated होते हैं। Paired iOS app `gateway.identity.get` fetch करता है, relay registration में वह identity शामिल करता है, और registration-scoped send grant को Gateway को forward करता है। दूसरा Gateway उस stored registration का reuse नहीं कर सकता।
-- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: ऊपर के relay config के लिए temporary env overrides।
-- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: loopback HTTP relay URLs के लिए development-only escape hatch। Production relay URLs HTTPS पर ही रहने चाहिए।
-- `gateway.handshakeTimeoutMs`: pre-auth Gateway WebSocket handshake timeout milliseconds में। Default: `15000`। सेट होने पर `OPENCLAW_HANDSHAKE_TIMEOUT_MS` precedence लेता है। इसे loaded या low-powered hosts पर बढ़ाएँ जहाँ local clients startup warmup settle होने के दौरान connect कर सकते हैं।
-- `gateway.channelHealthCheckMinutes`: channel health-monitor interval minutes में। health-monitor restarts को globally disable करने के लिए `0` सेट करें। Default: `5`।
-- `gateway.channelStaleEventThresholdMinutes`: stale-socket threshold minutes में। इसे `gateway.channelHealthCheckMinutes` से greater than or equal रखें। Default: `30`।
-- `gateway.channelMaxRestartsPerHour`: rolling hour में प्रति channel/account अधिकतम health-monitor restarts। Default: `10`।
-- `channels.<provider>.healthMonitor.enabled`: global monitor enabled रखते हुए health-monitor restarts के लिए per-channel opt-out।
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: multi-account channels के लिए per-account override। सेट होने पर, यह channel-level override पर precedence लेता है।
-- Local Gateway call paths `gateway.auth.*` unset होने पर ही `gateway.remote.*` को fallback के रूप में उपयोग कर सकते हैं।
-- यदि `gateway.auth.token` / `gateway.auth.password` को SecretRef के माध्यम से explicitly configured किया गया है और unresolved है, तो resolution fail closed होता है (कोई remote fallback masking नहीं)।
-- `trustedProxies`: reverse proxy IPs जो TLS terminate करते हैं या forwarded-client headers inject करते हैं। केवल उन proxies को list करें जिन्हें आप control करते हैं। Loopback entries same-host proxy/local-detection setups (उदाहरण के लिए Tailscale Serve या local reverse proxy) के लिए अब भी valid हैं, लेकिन वे loopback requests को `gateway.auth.mode: "trusted-proxy"` के लिए eligible **नहीं** बनाते।
-- `allowRealIpFallback`: जब `true` हो, Gateway `X-Forwarded-For` missing होने पर `X-Real-IP` स्वीकार करता है। fail-closed behavior के लिए default `false`।
-- `gateway.nodes.pairing.autoApproveCidrs`: बिना requested scopes के first-time node device pairing को auto-approve करने के लिए optional CIDR/IP allowlist। unset होने पर यह disabled है। यह operator/browser/Control UI/WebChat pairing को auto-approve नहीं करता, और role, scope, metadata, या public-key upgrades को auto-approve नहीं करता।
-- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: pairing और platform allowlist evaluation के बाद declared node commands के लिए global allow/deny shaping। `camera.snap`, `camera.clip`, और `screen.record` जैसे dangerous node commands में opt in करने के लिए `allowCommands` का उपयोग करें; `denyCommands` किसी command को हटा देता है, भले ही platform default या explicit allow उसे अन्यथा include करता। Node द्वारा अपनी declared command list बदलने के बाद, उस device pairing को reject और re-approve करें ताकि Gateway updated command snapshot store करे।
-- `gateway.tools.deny`: HTTP `POST /tools/invoke` के लिए blocked extra tool names (default deny list को extend करता है)।
-- `gateway.tools.allow`: owner/admin callers के लिए default HTTP deny list से tool names हटाएँ।
-  यह identity-bearing `operator.write`
-  callers को owner/admin access में upgrade नहीं करता; allowlisted होने पर भी `cron`, `gateway`, और `nodes`
-  non-owner callers के लिए unavailable रहते हैं।
+  startup पर Serve को फिर से apply करने से पहले `tailscale funnel status` जांचता है और यदि कोई externally configured Funnel route पहले से Gateway port को cover करता है तो
+  उसे छोड़ देता है. डिफ़ॉल्ट `false`.
+- `controlUi.allowedOrigins`: Gateway WebSocket connects के लिए स्पष्ट browser-origin allowlist. public non-loopback browser origins के लिए आवश्यक. loopback, RFC1918/link-local, `.local`, `.ts.net`, या Tailscale CGNAT hosts से private same-origin LAN/Tailnet UI loads Host-header fallback सक्षम किए बिना स्वीकार किए जाते हैं.
+- `controlUi.chatMessageMaxWidth`: grouped Control UI chat messages के लिए वैकल्पिक max-width. `960px`, `82%`, `min(1280px, 82%)`, और `calc(100% - 2rem)` जैसे constrained CSS width values स्वीकार करता है.
+- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: खतरनाक मोड जो उन deployments के लिए Host-header origin fallback सक्षम करता है जो जानबूझकर Host-header origin policy पर निर्भर करते हैं.
+- `remote.transport`: `ssh` (डिफ़ॉल्ट) या `direct` (ws/wss). `direct` के लिए, public hosts के लिए `remote.url` `wss://` होना चाहिए; plaintext `ws://` केवल loopback, LAN, link-local, `.local`, `.ts.net`, और Tailscale CGNAT hosts के लिए स्वीकार किया जाता है.
+- `remote.remotePort`: remote SSH host पर Gateway port. डिफ़ॉल्ट `18789`; इसे तब उपयोग करें जब local tunnel port remote Gateway port से अलग हो.
+- `remote.sshHostKeyPolicy`: macOS SSH tunnel host-key policy. `strict` डिफ़ॉल्ट है और पहले से trusted key की आवश्यकता होती है. `openssh` managed aliases के लिए प्रभावी OpenSSH configuration में स्पष्ट opt-in है; इसे उपयोग करने से पहले matching user और system SSH settings की समीक्षा करें. macOS app और `configure-remote` targets बदलते समय इस policy को `strict` पर reset करते हैं, जब तक फिर से स्पष्ट opt-in न किया गया हो.
+- `gateway.remote.token` / `.password` remote-client credential fields हैं. वे अपने आप Gateway auth कॉन्फ़िगर नहीं करते.
+- `gateway.push.apns.relay.baseUrl`: relay-backed iOS builds द्वारा Gateway पर registrations publish करने के बाद उपयोग होने वाले external APNs relay के लिए base HTTPS URL. Public App Store builds hosted OpenClaw relay उपयोग करते हैं. Custom relay URLs को जानबूझकर अलग iOS build/deployment path से मेल खाना चाहिए जिसका relay URL उस relay की ओर इंगित करता हो.
+- `gateway.push.apns.relay.timeoutMs`: Gateway-to-relay send timeout milliseconds में. डिफ़ॉल्ट `10000`.
+- Relay-backed registrations किसी specific Gateway identity को delegated होते हैं. paired iOS app `gateway.identity.get` fetch करता है, relay registration में उस identity को शामिल करता है, और registration-scoped send grant को Gateway को forward करता है. दूसरा Gateway उस stored registration का reuse नहीं कर सकता.
+- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: ऊपर relay config के लिए temporary env overrides.
+- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: loopback HTTP relay URLs के लिए development-only escape hatch. Production relay URLs HTTPS पर ही रहने चाहिए.
+- `gateway.handshakeTimeoutMs`: pre-auth Gateway WebSocket handshake timeout milliseconds में. डिफ़ॉल्ट: `15000`. सेट होने पर `OPENCLAW_HANDSHAKE_TIMEOUT_MS` को प्राथमिकता मिलती है. इसे loaded या low-powered hosts पर बढ़ाएं जहां local clients startup warmup के अभी settle हो रहे होने पर भी connect कर सकते हैं.
+- `gateway.channelHealthCheckMinutes`: channel health-monitor interval minutes में. health-monitor restarts को global रूप से disable करने के लिए `0` सेट करें. डिफ़ॉल्ट: `5`.
+- `gateway.channelStaleEventThresholdMinutes`: stale-socket threshold minutes में. इसे `gateway.channelHealthCheckMinutes` से greater than or equal रखें. डिफ़ॉल्ट: `30`.
+- `gateway.channelMaxRestartsPerHour`: rolling hour में प्रति channel/account अधिकतम health-monitor restarts. डिफ़ॉल्ट: `10`.
+- `channels.<provider>.healthMonitor.enabled`: global monitor enabled रखते हुए health-monitor restarts के लिए per-channel opt-out.
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: multi-account channels के लिए per-account override. सेट होने पर, यह channel-level override पर precedence लेता है.
+- Local Gateway call paths `gateway.remote.*` को fallback के रूप में केवल तब उपयोग कर सकते हैं जब `gateway.auth.*` unset हो.
+- यदि `gateway.auth.token` / `gateway.auth.password` SecretRef के माध्यम से explicit रूप से configured और unresolved है, तो resolution fail closed होता है (कोई remote fallback masking नहीं).
+- `trustedProxies`: reverse proxy IPs जो TLS terminate करते हैं या forwarded-client headers inject करते हैं. केवल उन्हीं proxies को सूचीबद्ध करें जिन्हें आप control करते हैं. Loopback entries same-host proxy/local-detection setups (उदाहरण के लिए Tailscale Serve या local reverse proxy) के लिए अभी भी valid हैं, लेकिन वे loopback requests को `gateway.auth.mode: "trusted-proxy"` के लिए eligible **नहीं** बनाते.
+- `allowRealIpFallback`: `true` होने पर, Gateway `X-Real-IP` स्वीकार करता है यदि `X-Forwarded-For` missing हो. fail-closed behavior के लिए डिफ़ॉल्ट `false`.
+- `gateway.nodes.pairing.autoApproveCidrs`: no requested scopes के साथ first-time node device pairing को auto-approve करने के लिए वैकल्पिक CIDR/IP allowlist. unset होने पर यह disabled रहता है. यह operator/browser/Control UI/WebChat pairing को auto-approve नहीं करता, और role, scope, metadata, या public-key upgrades को auto-approve नहीं करता.
+- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: pairing और platform allowlist evaluation के बाद declared node commands के लिए global allow/deny shaping. `camera.snap`, `camera.clip`, और `screen.record` जैसे dangerous node commands में opt in करने के लिए `allowCommands` उपयोग करें; `denyCommands` किसी command को हटाता है भले ही platform default या explicit allow उसे अन्यथा include करता. node द्वारा अपनी declared command list बदलने के बाद, उस device pairing को reject और re-approve करें ताकि Gateway updated command snapshot store करे.
+- `gateway.tools.deny`: HTTP `POST /tools/invoke` के लिए blocked extra tool names (default deny list को extend करता है).
+- `gateway.tools.allow`: owner/admin callers के लिए default HTTP deny list से tool names हटाएं. यह identity-bearing `operator.write`
+  callers को owner/admin access में upgrade नहीं करता; `cron`, `gateway`, और `nodes` allowlisted होने पर भी
+  non-owner callers के लिए unavailable रहते हैं.
 
 </Accordion>
 
-### OpenAI-संगत endpoints
+### OpenAI-compatible endpoints
 
-- Admin HTTP RPC: `admin-http-rpc` Plugin के रूप में default off। `POST /api/v1/admin/rpc` register करने के लिए Plugin enable करें। [Admin HTTP RPC](/hi/plugins/admin-http-rpc) देखें।
-- Chat Completions: default disabled। `gateway.http.endpoints.chatCompletions.enabled: true` से enable करें।
-- Responses API: `gateway.http.endpoints.responses.enabled`।
+- Admin HTTP RPC: `admin-http-rpc` Plugin के रूप में डिफ़ॉल्ट रूप से off. `POST /api/v1/admin/rpc` register करने के लिए Plugin सक्षम करें. [Admin HTTP RPC](/hi/plugins/admin-http-rpc) देखें.
+- Chat Completions: डिफ़ॉल्ट रूप से disabled. `gateway.http.endpoints.chatCompletions.enabled: true` के साथ सक्षम करें.
+- Responses API: `gateway.http.endpoints.responses.enabled`.
 - Responses URL-input hardening:
   - `gateway.http.endpoints.responses.maxUrlParts`
   - `gateway.http.endpoints.responses.files.urlAllowlist`
   - `gateway.http.endpoints.responses.images.urlAllowlist`
     Empty allowlists को unset माना जाता है; URL fetching disable करने के लिए `gateway.http.endpoints.responses.files.allowUrl=false`
-    और/या `gateway.http.endpoints.responses.images.allowUrl=false` का उपयोग करें।
-- Optional response hardening header:
-  - `gateway.http.securityHeaders.strictTransportSecurity` (केवल आपके द्वारा control किए गए HTTPS origins के लिए सेट करें; [Trusted Proxy Auth](/hi/gateway/trusted-proxy-auth#tls-termination-and-hsts) देखें)
+    और/या `gateway.http.endpoints.responses.images.allowUrl=false` उपयोग करें.
+- वैकल्पिक response hardening header:
+  - `gateway.http.securityHeaders.strictTransportSecurity` (केवल उन HTTPS origins के लिए सेट करें जिन्हें आप control करते हैं; [Trusted Proxy Auth](/hi/gateway/trusted-proxy-auth#tls-termination-and-hsts) देखें)
 
-### बहु-instance isolation
+### Multi-instance isolation
 
-एक host पर unique ports और state dirs के साथ multiple gateways चलाएँ:
+unique ports और state dirs के साथ एक host पर कई Gateways चलाएं:
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
@@ -626,9 +625,9 @@ OPENCLAW_STATE_DIR=~/.openclaw-a \
 openclaw gateway --port 19001
 ```
 
-Convenience flags: `--dev` (`~/.openclaw-dev` + port `19001` का उपयोग करता है), `--profile <name>` (`~/.openclaw-<name>` का उपयोग करता है)।
+सुविधा फ़्लैग: `--dev` (`~/.openclaw-dev` + पोर्ट `19001` का उपयोग करता है), `--profile <name>` (`~/.openclaw-<name>` का उपयोग करता है).
 
-[Multiple Gateways](/hi/gateway/multiple-gateways) देखें।
+[एकाधिक Gateway](/hi/gateway/multiple-gateways) देखें.
 
 ### `gateway.tls`
 
@@ -646,11 +645,11 @@ Convenience flags: `--dev` (`~/.openclaw-dev` + port `19001` का उपयो
 }
 ```
 
-- `enabled`: Gateway listener (HTTPS/WSS) पर TLS termination enable करता है (default: `false`)।
-- `autoGenerate`: explicit files configured न होने पर local self-signed cert/key pair auto-generate करता है; केवल local/dev उपयोग के लिए।
-- `certPath`: TLS certificate file का filesystem path।
-- `keyPath`: TLS private key file का filesystem path; permission-restricted रखें।
-- `caPath`: client verification या custom trust chains के लिए optional CA bundle path।
+- `enabled`: Gateway लिस्नर (HTTPS/WSS) पर TLS टर्मिनेशन सक्षम करता है (डिफ़ॉल्ट: `false`).
+- `autoGenerate`: जब स्पष्ट फ़ाइलें कॉन्फ़िगर नहीं की गई हों, तब स्थानीय स्व-हस्ताक्षरित प्रमाणपत्र/कुंजी जोड़ी अपने आप जनरेट करता है; केवल स्थानीय/डेवलपमेंट उपयोग के लिए.
+- `certPath`: TLS प्रमाणपत्र फ़ाइल का फ़ाइल सिस्टम पथ.
+- `keyPath`: TLS निजी कुंजी फ़ाइल का फ़ाइल सिस्टम पथ; अनुमतियों को प्रतिबंधित रखें.
+- `caPath`: क्लाइंट सत्यापन या कस्टम ट्रस्ट चेन के लिए वैकल्पिक CA बंडल पथ.
 
 ### `gateway.reload`
 
@@ -666,17 +665,17 @@ Convenience flags: `--dev` (`~/.openclaw-dev` + port `19001` का उपयो
 }
 ```
 
-- `mode`: रनटाइम पर config edits कैसे लागू किए जाते हैं, इसे नियंत्रित करता है।
-  - `"off"`: live edits को अनदेखा करें; बदलावों के लिए स्पष्ट restart आवश्यक है।
-  - `"restart"`: config बदलने पर gateway process को हमेशा restart करें।
-  - `"hot"`: restart किए बिना in-process बदलाव लागू करें।
-  - `"hybrid"` (डिफ़ॉल्ट): पहले hot reload आज़माएँ; आवश्यकता होने पर restart पर वापस जाएँ।
-- `debounceMs`: config बदलाव लागू होने से पहले ms में debounce window (non-negative integer)।
-- `deferralTimeoutMs`: restart या channel hot reload को बाध्य करने से पहले in-flight operations की प्रतीक्षा करने का वैकल्पिक अधिकतम समय, ms में। डिफ़ॉल्ट bounded wait (`300000`) इस्तेमाल करने के लिए इसे छोड़ दें; अनिश्चितकाल तक प्रतीक्षा करने और समय-समय पर still-pending warnings log करने के लिए `0` सेट करें।
+- `mode`: नियंत्रित करता है कि रनटाइम पर कॉन्फ़िग संपादन कैसे लागू किए जाते हैं।
+  - `"off"`: लाइव संपादनों को अनदेखा करें; बदलावों के लिए स्पष्ट रीस्टार्ट आवश्यक है।
+  - `"restart"`: कॉन्फ़िग बदलाव पर Gateway प्रक्रिया को हमेशा रीस्टार्ट करें।
+  - `"hot"`: रीस्टार्ट किए बिना उसी प्रक्रिया में बदलाव लागू करें।
+  - `"hybrid"` (डिफ़ॉल्ट): पहले हॉट रीलोड आज़माएँ; आवश्यकता होने पर रीस्टार्ट पर वापस जाएँ।
+- `debounceMs`: कॉन्फ़िग बदलाव लागू होने से पहले ms में डिबाउंस विंडो (गैर-ऋणात्मक पूर्णांक)।
+- `deferralTimeoutMs`: रीस्टार्ट या चैनल हॉट रीलोड बाध्य करने से पहले चल रहे ऑपरेशनों की प्रतीक्षा करने का वैकल्पिक अधिकतम समय ms में। डिफ़ॉल्ट सीमित प्रतीक्षा (`300000`) का उपयोग करने के लिए इसे छोड़ दें; अनिश्चितकाल तक प्रतीक्षा करने और समय-समय पर अभी भी लंबित चेतावनियाँ लॉग करने के लिए `0` सेट करें।
 
 ---
 
-## हुक्स
+## हुक
 
 ```json5
 {
@@ -709,49 +708,49 @@ Convenience flags: `--dev` (`~/.openclaw-dev` + port `19001` का उपयो
 }
 ```
 
-Auth: `Authorization: Bearer <token>` या `x-openclaw-token: <token>`।
-Query-string hook tokens अस्वीकार किए जाते हैं।
+प्रमाणीकरण: `Authorization: Bearer <token>` या `x-openclaw-token: <token>`।
+क्वेरी-स्ट्रिंग हुक टोकन अस्वीकार किए जाते हैं।
 
-Validation और safety notes:
+सत्यापन और सुरक्षा नोट्स:
 
-- `hooks.enabled=true` के लिए non-empty `hooks.token` आवश्यक है।
-- `hooks.token` active Gateway shared-secret auth (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` या `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`) से अलग होना चाहिए; reuse पता चलने पर startup एक non-fatal security warning log करता है।
-- `openclaw security audit` hook/Gateway auth reuse को critical finding के रूप में flag करता है, जिसमें केवल audit time पर दिया गया Gateway password auth (`--auth password --password <password>`) भी शामिल है। Persisted reused `hooks.token` को rotate करने के लिए `openclaw doctor --fix` चलाएँ, फिर external hook senders को नया hook token इस्तेमाल करने के लिए update करें।
-- `hooks.path` `/` नहीं हो सकता; `/hooks` जैसा dedicated subpath इस्तेमाल करें।
-- यदि `hooks.allowRequestSessionKey=true` है, तो `hooks.allowedSessionKeyPrefixes` को constrain करें (उदाहरण के लिए `["hook:"]`)।
-- यदि कोई mapping या preset templated `sessionKey` इस्तेमाल करता है, तो `hooks.allowedSessionKeyPrefixes` और `hooks.allowRequestSessionKey=true` सेट करें। Static mapping keys को उस opt-in की आवश्यकता नहीं होती।
+- `hooks.enabled=true` के लिए गैर-रिक्त `hooks.token` आवश्यक है।
+- `hooks.token` सक्रिय Gateway साझा-सीक्रेट प्रमाणीकरण (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` या `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`) से अलग होना चाहिए; पुन: उपयोग का पता चलने पर स्टार्टअप गैर-घातक सुरक्षा चेतावनी लॉग करता है।
+- `openclaw security audit` हुक/Gateway प्रमाणीकरण पुन: उपयोग को गंभीर निष्कर्ष के रूप में फ़्लैग करता है, जिसमें केवल ऑडिट समय पर दिया गया Gateway पासवर्ड प्रमाणीकरण (`--auth password --password <password>`) भी शामिल है। स्थायी रूप से सहेजे गए पुन: उपयोग किए गए `hooks.token` को रोटेट करने के लिए `openclaw doctor --fix` चलाएँ, फिर बाहरी हुक भेजने वालों को नया हुक टोकन उपयोग करने के लिए अपडेट करें।
+- `hooks.path` `/` नहीं हो सकता; `/hooks` जैसा समर्पित उप-पथ उपयोग करें।
+- यदि `hooks.allowRequestSessionKey=true` है, तो `hooks.allowedSessionKeyPrefixes` को सीमित करें (उदाहरण के लिए `["hook:"]`)।
+- यदि कोई मैपिंग या प्रीसेट टेम्पलेटेड `sessionKey` उपयोग करता है, तो `hooks.allowedSessionKeyPrefixes` और `hooks.allowRequestSessionKey=true` सेट करें। स्थिर मैपिंग कुंजियों को इस ऑप्ट-इन की आवश्यकता नहीं होती।
 
-**Endpoints:**
+**एंडपॉइंट:**
 
 - `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
 - `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
-  - request payload से `sessionKey` केवल तब स्वीकार किया जाता है जब `hooks.allowRequestSessionKey=true` हो (डिफ़ॉल्ट: `false`)।
-- `POST /hooks/<name>` → `hooks.mappings` के माध्यम से resolved
-  - Template-rendered mapping `sessionKey` values को externally supplied माना जाता है और इनके लिए भी `hooks.allowRequestSessionKey=true` आवश्यक है।
+  - अनुरोध पेलोड से `sessionKey` केवल तभी स्वीकार किया जाता है जब `hooks.allowRequestSessionKey=true` हो (डिफ़ॉल्ट: `false`)।
+- `POST /hooks/<name>` → `hooks.mappings` के माध्यम से रिज़ॉल्व किया गया
+  - टेम्पलेट-रेंडर किए गए मैपिंग `sessionKey` मानों को बाहरी रूप से दिए गए माना जाता है और उनके लिए भी `hooks.allowRequestSessionKey=true` आवश्यक है।
 
-<Accordion title="Mapping विवरण">
+<Accordion title="मैपिंग विवरण">
 
-- `match.path` `/hooks` के बाद sub-path से match करता है (जैसे `/hooks/gmail` → `gmail`)।
-- `match.source` generic paths के लिए payload field से match करता है।
-- `{{messages[0].subject}}` जैसे templates payload से पढ़ते हैं।
-- `transform` hook action लौटाने वाले JS/TS module की ओर point कर सकता है।
-  - `transform.module` relative path होना चाहिए और `hooks.transformsDir` के भीतर रहता है (absolute paths और traversal अस्वीकार किए जाते हैं)।
-  - `hooks.transformsDir` को `~/.openclaw/hooks/transforms` के अंतर्गत रखें; workspace skill directories अस्वीकार की जाती हैं। यदि `openclaw doctor` इस path को invalid report करता है, तो transform module को hooks transforms directory में move करें या `hooks.transformsDir` हटाएँ।
-- `agentId` किसी specific agent तक route करता है; unknown IDs default agent पर fall back करते हैं।
-- `allowedAgentIds`: effective agent routing को restrict करता है, जिसमें `agentId` omit होने पर default-agent path भी शामिल है (`*` या omitted = सभी को allow, `[]` = सभी को deny)।
-- `defaultSessionKey`: explicit `sessionKey` के बिना hook agent runs के लिए optional fixed session key।
-- `allowRequestSessionKey`: `/hooks/agent` callers और template-driven mapping session keys को `sessionKey` सेट करने की अनुमति दें (डिफ़ॉल्ट: `false`)।
-- `allowedSessionKeyPrefixes`: explicit `sessionKey` values (request + mapping) के लिए optional prefix allowlist, जैसे `["hook:"]`। जब कोई mapping या preset templated `sessionKey` इस्तेमाल करता है, तब यह required हो जाता है।
-- `deliver: true` final reply को channel पर भेजता है; `channel` का डिफ़ॉल्ट `last` है।
-- `model` इस hook run के लिए LLM को override करता है (model catalog सेट होने पर allowed होना चाहिए)।
+- `match.path` `/hooks` के बाद उप-पथ से मेल खाता है (जैसे `/hooks/gmail` → `gmail`)।
+- `match.source` सामान्य पथों के लिए पेलोड फ़ील्ड से मेल खाता है।
+- `{{messages[0].subject}}` जैसे टेम्पलेट पेलोड से पढ़ते हैं।
+- `transform` किसी हुक एक्शन लौटाने वाले JS/TS मॉड्यूल की ओर संकेत कर सकता है।
+  - `transform.module` सापेक्ष पथ होना चाहिए और `hooks.transformsDir` के भीतर ही रहता है (निरपेक्ष पथ और ट्रैवर्सल अस्वीकार किए जाते हैं)।
+  - `hooks.transformsDir` को `~/.openclaw/hooks/transforms` के अंतर्गत रखें; वर्कस्पेस Skills डायरेक्टरियाँ अस्वीकार की जाती हैं। यदि `openclaw doctor` इस पथ को अमान्य बताता है, तो ट्रांसफ़ॉर्म मॉड्यूल को हुक ट्रांसफ़ॉर्म डायरेक्टरी में ले जाएँ या `hooks.transformsDir` हटा दें।
+- `agentId` किसी विशिष्ट एजेंट तक रूट करता है; अज्ञात ID डिफ़ॉल्ट एजेंट पर वापस जाते हैं।
+- `allowedAgentIds`: प्रभावी एजेंट रूटिंग को सीमित करता है, जिसमें `agentId` छोड़े जाने पर डिफ़ॉल्ट-एजेंट पथ भी शामिल है (`*` या छोड़ा गया = सभी की अनुमति, `[]` = सभी अस्वीकार)।
+- `defaultSessionKey`: स्पष्ट `sessionKey` के बिना हुक एजेंट रन के लिए वैकल्पिक स्थिर सेशन कुंजी।
+- `allowRequestSessionKey`: `/hooks/agent` कॉलर्स और टेम्पलेट-चालित मैपिंग सेशन कुंजियों को `sessionKey` सेट करने दें (डिफ़ॉल्ट: `false`)।
+- `allowedSessionKeyPrefixes`: स्पष्ट `sessionKey` मानों (अनुरोध + मैपिंग) के लिए वैकल्पिक प्रीफ़िक्स अनुमत-सूची, जैसे `["hook:"]`। जब कोई भी मैपिंग या प्रीसेट टेम्पलेटेड `sessionKey` उपयोग करता है, तो यह आवश्यक हो जाता है।
+- `deliver: true` अंतिम उत्तर को चैनल पर भेजता है; `channel` डिफ़ॉल्ट रूप से `last` होता है।
+- `model` इस हुक रन के लिए LLM को ओवरराइड करता है (यदि मॉडल कैटलॉग सेट है तो अनुमति होनी चाहिए)।
 
 </Accordion>
 
-### Gmail integration
+### Gmail इंटीग्रेशन
 
-- Built-in Gmail preset `sessionKey: "hook:gmail:{{messages[0].id}}"` इस्तेमाल करता है।
-- यदि आप वह per-message routing रखते हैं, तो `hooks.allowRequestSessionKey: true` सेट करें और `hooks.allowedSessionKeyPrefixes` को Gmail namespace से match करने के लिए constrain करें, उदाहरण के लिए `["hook:", "hook:gmail:"]`।
-- यदि आपको `hooks.allowRequestSessionKey: false` चाहिए, तो templated default के बजाय static `sessionKey` से preset को override करें।
+- बिल्ट-इन Gmail प्रीसेट `sessionKey: "hook:gmail:{{messages[0].id}}"` उपयोग करता है।
+- यदि आप वह प्रति-संदेश रूटिंग रखते हैं, तो `hooks.allowRequestSessionKey: true` सेट करें और `hooks.allowedSessionKeyPrefixes` को Gmail नेमस्पेस से मेल खाने तक सीमित करें, उदाहरण के लिए `["hook:", "hook:gmail:"]`।
+- यदि आपको `hooks.allowRequestSessionKey: false` चाहिए, तो टेम्पलेटेड डिफ़ॉल्ट के बजाय स्थिर `sessionKey` से प्रीसेट को ओवरराइड करें।
 
 ```json5
 {
@@ -774,12 +773,12 @@ Validation और safety notes:
 }
 ```
 
-- Gateway configured होने पर boot पर `gog gmail watch serve` को auto-start करता है। Disable करने के लिए `OPENCLAW_SKIP_GMAIL_WATCHER=1` सेट करें।
-- Gateway के साथ अलग से `gog gmail watch serve` न चलाएँ।
+- कॉन्फ़िगर होने पर Gateway बूट पर `gog gmail watch serve` अपने-आप शुरू करता है। अक्षम करने के लिए `OPENCLAW_SKIP_GMAIL_WATCHER=1` सेट करें।
+- Gateway के साथ अलग `gog gmail watch serve` न चलाएँ।
 
 ---
 
-## Canvas Plugin host
+## Canvas Plugin होस्ट
 
 ```json5
 {
@@ -799,22 +798,22 @@ Validation और safety notes:
 }
 ```
 
-- Gateway port के अंतर्गत HTTP पर agent-editable HTML/CSS/JS और A2UI serve करता है:
+- Gateway पोर्ट के अंतर्गत HTTP पर एजेंट-संपादन योग्य HTML/CSS/JS और A2UI सर्व करता है:
   - `http://<gateway-host>:<gateway.port>/__openclaw__/canvas/`
   - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
-- Local-only: `gateway.bind: "loopback"` (डिफ़ॉल्ट) रखें।
-- Non-loopback binds: canvas routes को अन्य Gateway HTTP surfaces की तरह Gateway auth (token/password/trusted-proxy) चाहिए।
-- Node WebViews आम तौर पर auth headers नहीं भेजते; node paired और connected होने के बाद, Gateway canvas/A2UI access के लिए node-scoped capability URLs advertise करता है।
-- Capability URLs active node WS session से bound होते हैं और जल्दी expire हो जाते हैं। IP-based fallback इस्तेमाल नहीं होता।
-- Served HTML में live-reload client inject करता है।
-- खाली होने पर starter `index.html` auto-create करता है।
-- A2UI को `/__openclaw__/a2ui/` पर भी serve करता है।
-- बदलावों के लिए gateway restart आवश्यक है।
-- बड़ी directories या `EMFILE` errors के लिए live reload disable करें।
+- केवल-स्थानीय: `gateway.bind: "loopback"` रखें (डिफ़ॉल्ट)।
+- गैर-`loopback` बाइंड: canvas रूटों को अन्य Gateway HTTP सतहों की तरह Gateway प्रमाणीकरण (टोकन/पासवर्ड/विश्वसनीय-प्रॉक्सी) चाहिए।
+- Node WebViews आम तौर पर प्रमाणीकरण हेडर नहीं भेजते; किसी Node के पेयर और कनेक्ट हो जाने के बाद, Gateway canvas/A2UI एक्सेस के लिए Node-स्कोप्ड कैपेबिलिटी URL विज्ञापित करता है।
+- कैपेबिलिटी URL सक्रिय Node WS सेशन से बंधे होते हैं और जल्दी समाप्त हो जाते हैं। IP-आधारित फ़ॉलबैक उपयोग नहीं किया जाता।
+- सर्व किए गए HTML में लाइव-रीलोड क्लाइंट इंजेक्ट करता है।
+- खाली होने पर स्टार्टर `index.html` अपने-आप बनाता है।
+- A2UI को `/__openclaw__/a2ui/` पर भी सर्व करता है।
+- बदलावों के लिए Gateway रीस्टार्ट आवश्यक है।
+- बड़ी डायरेक्टरियों या `EMFILE` त्रुटियों के लिए लाइव रीलोड अक्षम करें।
 
 ---
 
-## खोज
+## डिस्कवरी
 
 ### mDNS (Bonjour)
 
@@ -828,13 +827,13 @@ Validation और safety notes:
 }
 ```
 
-- `minimal` (जब bundled `bonjour` Plugin enabled हो तो डिफ़ॉल्ट): TXT records से `cliPath` + `sshPort` omit करें।
-- `full`: `cliPath` + `sshPort` शामिल करें; LAN multicast advertising के लिए फिर भी bundled `bonjour` Plugin enabled होना आवश्यक है।
-- `off`: Plugin enablement बदले बिना LAN multicast advertising suppress करें।
-- Bundled `bonjour` Plugin macOS hosts पर auto-start होता है और Linux, Windows, तथा containerized Gateway deployments पर opt-in है।
-- Hostname का डिफ़ॉल्ट system hostname होता है जब वह valid DNS label हो, अन्यथा `openclaw` पर fall back करता है। `OPENCLAW_MDNS_HOSTNAME` से override करें।
+- `minimal` (जब बंडल किया गया `bonjour` Plugin सक्षम हो तो डिफ़ॉल्ट): TXT रिकॉर्ड से `cliPath` + `sshPort` हटाएँ।
+- `full`: `cliPath` + `sshPort` शामिल करें; LAN मल्टीकास्ट विज्ञापन के लिए फिर भी बंडल किया गया `bonjour` Plugin सक्षम होना आवश्यक है।
+- `off`: Plugin सक्षमकरण बदले बिना LAN मल्टीकास्ट विज्ञापन दबाएँ।
+- बंडल किया गया `bonjour` Plugin macOS होस्टों पर अपने-आप शुरू होता है और Linux, Windows, तथा कंटेनराइज़्ड Gateway डिप्लॉयमेंट पर ऑप्ट-इन है।
+- होस्टनेम डिफ़ॉल्ट रूप से सिस्टम होस्टनेम होता है जब वह मान्य DNS लेबल हो, अन्यथा `openclaw` पर वापस जाता है। `OPENCLAW_MDNS_HOSTNAME` से ओवरराइड करें।
 
-### Wide-area (DNS-SD)
+### वाइड-एरिया (DNS-SD)
 
 ```json5
 {
@@ -844,15 +843,15 @@ Validation और safety notes:
 }
 ```
 
-`~/.openclaw/dns/` के अंतर्गत एक यूनिकास्ट DNS-SD zone लिखता है। अंतर-नेटवर्क खोज के लिए, इसे DNS server (CoreDNS अनुशंसित) + Tailscale split DNS के साथ उपयोग करें।
+`~/.openclaw/dns/` के अंतर्गत यूनिकास्ट DNS-SD ज़ोन लिखता है। क्रॉस-नेटवर्क डिस्कवरी के लिए, इसे DNS सर्वर (CoreDNS अनुशंसित) + Tailscale स्प्लिट DNS के साथ पेयर करें।
 
-सेटअप: `openclaw dns setup --apply`.
+सेटअप: `openclaw dns setup --apply`।
 
 ---
 
-## पर्यावरण
+## एनवायरनमेंट
 
-### `env` (इनलाइन पर्यावरण वेरिएबल)
+### `env` (इनलाइन env vars)
 
 ```json5
 {
@@ -869,14 +868,14 @@ Validation और safety notes:
 }
 ```
 
-- इनलाइन पर्यावरण वेरिएबल केवल तभी लागू होते हैं जब प्रक्रिया env में कुंजी मौजूद न हो।
-- `.env` फ़ाइलें: CWD `.env` + `~/.openclaw/.env` (कोई भी मौजूदा वेरिएबल को ओवरराइड नहीं करती)।
-- `shellEnv`: आपके लॉगिन shell profile से गुम अपेक्षित कुंजियां आयात करता है।
-- पूरी प्राथमिकता के लिए [पर्यावरण](/hi/help/environment) देखें।
+- इनलाइन env vars केवल तभी लागू होते हैं जब प्रक्रिया env में कुंजी मौजूद न हो।
+- `.env` फ़ाइलें: CWD `.env` + `~/.openclaw/.env` (कोई भी मौजूदा vars को ओवरराइड नहीं करती)।
+- `shellEnv`: आपके लॉगिन shell प्रोफ़ाइल से अपेक्षित अनुपस्थित कुंजियाँ इम्पोर्ट करता है।
+- पूर्ण प्राथमिकता क्रम के लिए [एनवायरनमेंट](/hi/help/environment) देखें।
 
-### पर्यावरण वेरिएबल प्रतिस्थापन
+### Env var प्रतिस्थापन
 
-किसी भी config string में `${VAR_NAME}` के साथ पर्यावरण वेरिएबल का संदर्भ दें:
+किसी भी कॉन्फ़िग स्ट्रिंग में `${VAR_NAME}` से env vars संदर्भित करें:
 
 ```json5
 {
@@ -886,20 +885,20 @@ Validation और safety notes:
 }
 ```
 
-- केवल बड़े अक्षरों वाले नाम मिलाए जाते हैं: `[A-Z_][A-Z0-9_]*`.
-- गुम/खाली वेरिएबल config load पर त्रुटि फेंकते हैं।
-- literal `${VAR}` के लिए `$${VAR}` से escape करें।
+- केवल अपरकेस नाम मेल खाते हैं: `[A-Z_][A-Z0-9_]*`।
+- अनुपस्थित/रिक्त vars कॉन्फ़िग लोड पर त्रुटि देते हैं।
+- शाब्दिक `${VAR}` के लिए `$${VAR}` से एस्केप करें।
 - `$include` के साथ काम करता है।
 
 ---
 
-## सीक्रेट
+## सीक्रेट्स
 
-सीक्रेट संदर्भ additive होते हैं: plaintext values अब भी काम करती हैं।
+Secret refs योगात्मक हैं: प्लेनटेक्स्ट मान अभी भी काम करते हैं।
 
 ### `SecretRef`
 
-एक object shape का उपयोग करें:
+एक ऑब्जेक्ट आकार उपयोग करें:
 
 ```json5
 { source: "env" | "file" | "exec", provider: "default", id: "..." }
@@ -907,19 +906,19 @@ Validation और safety notes:
 
 सत्यापन:
 
-- `provider` pattern: `^[a-z][a-z0-9_-]{0,63}$`
-- `source: "env"` id pattern: `^[A-Z][A-Z0-9_]{0,127}$`
-- `source: "file"` id: absolute JSON pointer (उदाहरण के लिए `"/providers/openai/apiKey"`)
-- `source: "exec"` id pattern: `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` (AWS-शैली `secret#json_key` selectors का समर्थन करता है)
-- `source: "exec"` ids में `.` या `..` slash-delimited path segments नहीं होने चाहिए (उदाहरण के लिए `a/../b` अस्वीकार किया जाता है)
+- `provider` पैटर्न: `^[a-z][a-z0-9_-]{0,63}$`
+- `source: "env"` id पैटर्न: `^[A-Z][A-Z0-9_]{0,127}$`
+- `source: "file"` id: निरपेक्ष JSON पॉइंटर (उदाहरण के लिए `"/providers/openai/apiKey"`)
+- `source: "exec"` id पैटर्न: `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` (AWS-शैली `secret#json_key` सेलेक्टरों का समर्थन करता है)
+- `source: "exec"` ids में `.` या `..` स्लैश-सीमांकित पथ सेगमेंट नहीं होने चाहिए (उदाहरण के लिए `a/../b` अस्वीकार किया जाता है)
 
 ### समर्थित क्रेडेंशियल सतह
 
-- Canonical matrix: [SecretRef क्रेडेंशियल सतह](/hi/reference/secretref-credential-surface)
-- `secrets apply` समर्थित `openclaw.json` credential paths को target करता है।
-- `auth-profiles.json` refs runtime resolution और audit coverage में शामिल हैं।
+- कैनॉनिकल मैट्रिक्स: [SecretRef क्रेडेंशियल सतह](/hi/reference/secretref-credential-surface)
+- `secrets apply` समर्थित `openclaw.json` क्रेडेंशियल पथों को लक्षित करता है।
+- `auth-profiles.json` refs रनटाइम रिज़ॉल्यूशन और ऑडिट कवरेज में शामिल हैं।
 
-### सीक्रेट providers config
+### सीक्रेट प्रोवाइडर कॉन्फ़िग
 
 ```json5
 {
@@ -949,14 +948,14 @@ Validation और safety notes:
 
 नोट्स:
 
-- `file` provider `mode: "json"` और `mode: "singleValue"` का समर्थन करता है (`singleValue` mode में `id` `"value"` होना चाहिए)।
-- Windows ACL verification उपलब्ध न होने पर file और exec provider paths fail closed करते हैं। `allowInsecurePath: true` केवल उन trusted paths के लिए सेट करें जिन्हें सत्यापित नहीं किया जा सकता।
-- `exec` provider को absolute `command` path चाहिए और stdin/stdout पर protocol payloads का उपयोग करता है।
-- डिफ़ॉल्ट रूप से, symlink command paths अस्वीकार किए जाते हैं। resolved target path को validate करते हुए symlink paths की अनुमति देने के लिए `allowSymlinkCommand: true` सेट करें।
-- यदि `trustedDirs` configured है, तो trusted-dir check resolved target path पर लागू होता है।
-- `exec` child environment डिफ़ॉल्ट रूप से minimal होता है; आवश्यक वेरिएबल को `passEnv` के साथ स्पष्ट रूप से pass करें।
-- सीक्रेट संदर्भ activation time पर in-memory snapshot में resolve किए जाते हैं, फिर request paths केवल snapshot पढ़ते हैं।
-- Active-surface filtering activation के दौरान लागू होती है: enabled surfaces पर unresolved refs startup/reload को fail करते हैं, जबकि inactive surfaces diagnostics के साथ skip की जाती हैं।
+- `file` प्रोवाइडर `mode: "json"` और `mode: "singleValue"` का समर्थन करता है (`singleValue` मोड में `id` `"value"` होना चाहिए)।
+- Windows ACL सत्यापन उपलब्ध न होने पर फ़ाइल और exec प्रोवाइडर पथ fail closed होते हैं। `allowInsecurePath: true` केवल उन विश्वसनीय पथों के लिए सेट करें जिन्हें सत्यापित नहीं किया जा सकता।
+- `exec` प्रोवाइडर को निरपेक्ष `command` पथ चाहिए और stdin/stdout पर प्रोटोकॉल पेलोड उपयोग करता है।
+- डिफ़ॉल्ट रूप से, symlink कमांड पथ अस्वीकार किए जाते हैं। रिज़ॉल्व किए गए लक्ष्य पथ को सत्यापित करते हुए symlink पथों की अनुमति देने के लिए `allowSymlinkCommand: true` सेट करें।
+- यदि `trustedDirs` कॉन्फ़िगर किया गया है, तो trusted-dir जाँच रिज़ॉल्व किए गए लक्ष्य पथ पर लागू होती है।
+- `exec` child एनवायरनमेंट डिफ़ॉल्ट रूप से न्यूनतम होता है; आवश्यक variables को `passEnv` के साथ स्पष्ट रूप से पास करें।
+- Secret refs सक्रियण समय पर इन-मेमोरी स्नैपशॉट में रिज़ॉल्व किए जाते हैं, फिर अनुरोध पथ केवल स्नैपशॉट पढ़ते हैं।
+- सक्रिय-सतह फ़िल्टरिंग सक्रियण के दौरान लागू होती है: सक्षम सतहों पर अनरिज़ॉल्व्ड refs स्टार्टअप/रीलोड विफल करते हैं, जबकि निष्क्रिय सतहें डायग्नोस्टिक्स के साथ छोड़ी जाती हैं।
 
 ---
 
@@ -978,14 +977,14 @@ Validation और safety notes:
 }
 ```
 
-- प्रति-एजेंट प्रोफाइल `<agentDir>/auth-profiles.json` पर संग्रहीत होती हैं।
-- `auth-profiles.json` स्थिर क्रेडेंशियल मोड के लिए value-level refs (`api_key` के लिए `keyRef`, `token` के लिए `tokenRef`) का समर्थन करता है।
-- पुराने फ्लैट `auth-profiles.json` मैप, जैसे `{ "provider": { "apiKey": "..." } }`, रनटाइम फॉर्मेट नहीं हैं; `openclaw doctor --fix` उन्हें `.legacy-flat.*.bak` बैकअप के साथ कैनॉनिकल `provider:default` API-key प्रोफाइल में फिर से लिखता है।
-- OAuth-मोड प्रोफाइल (`auth.profiles.<id>.mode = "oauth"`) SecretRef-समर्थित auth-profile क्रेडेंशियल का समर्थन नहीं करतीं।
-- स्थिर रनटाइम क्रेडेंशियल इन-मेमरी resolved snapshots से आते हैं; पुराने स्थिर `auth.json` एंट्री मिलने पर साफ कर दिए जाते हैं।
-- पुराना OAuth `~/.openclaw/credentials/oauth.json` से आयात करता है।
+- प्रति-एजेंट प्रोफ़ाइल `<agentDir>/auth-profiles.json` पर संग्रहीत होती हैं।
+- `auth-profiles.json` स्थिर क्रेडेंशियल मोड के लिए वैल्यू-लेवल refs (`api_key` के लिए `keyRef`, `token` के लिए `tokenRef`) का समर्थन करता है।
+- पुराने फ्लैट `auth-profiles.json` मैप जैसे `{ "provider": { "apiKey": "..." } }` रनटाइम फ़ॉर्मैट नहीं हैं; `openclaw doctor --fix` उन्हें `.legacy-flat.*.bak` बैकअप के साथ कैननिकल `provider:default` API-key प्रोफ़ाइल में फिर से लिखता है।
+- OAuth-मोड प्रोफ़ाइल (`auth.profiles.<id>.mode = "oauth"`) SecretRef-आधारित auth-profile क्रेडेंशियल का समर्थन नहीं करतीं।
+- स्थिर रनटाइम क्रेडेंशियल इन-मेमोरी resolved snapshots से आते हैं; पुराने स्थिर `auth.json` एंट्री मिलने पर साफ़ कर दी जाती हैं।
+- पुराने OAuth imports `~/.openclaw/credentials/oauth.json` से होते हैं।
 - [OAuth](/hi/concepts/oauth) देखें।
-- Secrets रनटाइम व्यवहार और `audit/configure/apply` टूलिंग: [Secrets Management](/hi/gateway/secrets)।
+- Secrets रनटाइम व्यवहार और `audit/configure/apply` टूलिंग: [Secrets Management](/hi/gateway/secrets).
 
 ### `auth.cooldowns`
 
@@ -1007,21 +1006,20 @@ Validation और safety notes:
 }
 ```
 
-- `billingBackoffHours`: जब कोई प्रोफाइल वास्तविक
-  billing/insufficient-credit त्रुटियों के कारण विफल होती है, तब घंटों में आधार backoff (डिफॉल्ट: `5`)। स्पष्ट billing टेक्स्ट
-  `401`/`403` प्रतिक्रियाओं पर भी यहां आ सकता है, लेकिन प्रदाता-विशिष्ट टेक्स्ट
-  matchers उसी प्रदाता तक सीमित रहते हैं जिसके वे स्वामी हैं (उदाहरण के लिए OpenRouter
+- `billingBackoffHours`: जब कोई प्रोफ़ाइल वास्तविक
+  बिलिंग/अपर्याप्त-क्रेडिट त्रुटियों के कारण विफल होती है, तब घंटों में आधार backoff (डिफ़ॉल्ट: `5`)। स्पष्ट बिलिंग टेक्स्ट
+  `401`/`403` responses पर भी यहाँ आ सकता है, लेकिन प्रदाता-विशिष्ट टेक्स्ट
+  matchers उसी प्रदाता तक सीमित रहते हैं जिसका वे हिस्सा हैं (उदाहरण के लिए OpenRouter
   `Key limit exceeded`)। Retryable HTTP `402` usage-window या
-  organization/workspace spend-limit संदेश इसके बजाय
-  `rate_limit` पथ में रहते हैं।
-- `billingBackoffHoursByProvider`: billing backoff घंटों के लिए वैकल्पिक प्रति-प्रदाता overrides।
-- `billingMaxHours`: billing backoff की exponential growth के लिए घंटों में सीमा (डिफॉल्ट: `24`)।
-- `authPermanentBackoffMinutes`: high-confidence `auth_permanent` विफलताओं के लिए मिनटों में आधार backoff (डिफॉल्ट: `10`)।
-- `authPermanentMaxMinutes`: `auth_permanent` backoff growth के लिए मिनटों में सीमा (डिफॉल्ट: `60`)।
-- `failureWindowHours`: backoff counters के लिए उपयोग की जाने वाली घंटों में rolling window (डिफॉल्ट: `24`)।
-- `overloadedProfileRotations`: model fallback पर स्विच करने से पहले overloaded त्रुटियों के लिए अधिकतम same-provider auth-profile rotations (डिफॉल्ट: `1`)। `ModelNotReadyException` जैसे provider-busy shapes यहां आते हैं।
-- `overloadedBackoffMs`: overloaded provider/profile rotation को फिर से आजमाने से पहले fixed delay (डिफॉल्ट: `0`)।
-- `rateLimitedProfileRotations`: model fallback पर स्विच करने से पहले rate-limit त्रुटियों के लिए अधिकतम same-provider auth-profile rotations (डिफॉल्ट: `1`)। उस rate-limit bucket में `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, और `resource exhausted` जैसे provider-shaped टेक्स्ट शामिल हैं।
+  organization/workspace spend-limit संदेश इसके बजाय `rate_limit` path में रहते हैं।
+- `billingBackoffHoursByProvider`: बिलिंग backoff घंटों के लिए वैकल्पिक प्रति-प्रदाता overrides।
+- `billingMaxHours`: बिलिंग backoff exponential growth के लिए घंटों में सीमा (डिफ़ॉल्ट: `24`)।
+- `authPermanentBackoffMinutes`: उच्च-विश्वास `auth_permanent` विफलताओं के लिए मिनटों में आधार backoff (डिफ़ॉल्ट: `10`)।
+- `authPermanentMaxMinutes`: `auth_permanent` backoff growth के लिए मिनटों में सीमा (डिफ़ॉल्ट: `60`)।
+- `failureWindowHours`: backoff counters के लिए उपयोग की जाने वाली घंटों में rolling window (डिफ़ॉल्ट: `24`)।
+- `overloadedProfileRotations`: model fallback पर जाने से पहले overloaded errors के लिए अधिकतम same-provider auth-profile rotations (डिफ़ॉल्ट: `1`)। `ModelNotReadyException` जैसे provider-busy shapes यहाँ आते हैं।
+- `overloadedBackoffMs`: overloaded provider/profile rotation को फिर से आज़माने से पहले fixed delay (डिफ़ॉल्ट: `0`)।
+- `rateLimitedProfileRotations`: model fallback पर जाने से पहले rate-limit errors के लिए अधिकतम same-provider auth-profile rotations (डिफ़ॉल्ट: `1`)। उस rate-limit bucket में `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, और `resource exhausted` जैसे provider-shaped text शामिल हैं।
 
 ---
 
@@ -1040,15 +1038,15 @@ Validation और safety notes:
 }
 ```
 
-- डिफॉल्ट log file: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`।
+- डिफ़ॉल्ट log file: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`.
 - स्थिर path के लिए `logging.file` सेट करें।
 - `--verbose` होने पर `consoleLevel` `debug` तक बढ़ जाता है।
-- `maxFileBytes`: rotation से पहले active log file का अधिकतम आकार bytes में (positive integer; डिफॉल्ट: `104857600` = 100 MB)। OpenClaw active file के पास अधिकतम पांच numbered archives रखता है।
-- `redactSensitive` / `redactPatterns`: console output, file logs, OTLP log records, और persisted session transcript text के लिए best-effort masking। `redactSensitive: "off"` केवल इस सामान्य log/transcript policy को बंद करता है; UI/tool/diagnostic safety surfaces emission से पहले अब भी secrets को redact करते हैं।
+- `maxFileBytes`: rotation से पहले active log file का अधिकतम आकार bytes में (positive integer; डिफ़ॉल्ट: `104857600` = 100 MB)। OpenClaw active file के पास पाँच तक numbered archives रखता है।
+- `redactSensitive` / `redactPatterns`: console output, file logs, OTLP log records, और persisted session transcript text के लिए best-effort masking। `redactSensitive: "off"` केवल इस सामान्य log/transcript policy को disable करता है; UI/tool/diagnostic safety surfaces अभी भी emission से पहले secrets redact करते हैं।
 
 ---
 
-## निदान
+## डायग्नॉस्टिक्स
 
 ```json5
 {
@@ -1096,28 +1094,28 @@ Validation और safety notes:
 }
 ```
 
-- `enabled`: instrumentation output के लिए master toggle (डिफॉल्ट: `true`)।
-- `flags`: लक्षित log output सक्षम करने वाली flag strings की array (wildcards जैसे `"telegram.*"` या `"*"` समर्थित)।
-- `stuckSessionWarnMs`: लंबे समय तक चलने वाले processing sessions को `session.long_running`, `session.stalled`, या `session.stuck` के रूप में वर्गीकृत करने के लिए ms में no-progress age threshold। Reply, tool, status, block, और ACP progress timer को reset करते हैं; दोहराए गए `session.stuck` diagnostics अपरिवर्तित रहने पर back off करते हैं।
-- `stuckSessionAbortMs`: recovery के लिए eligible stalled active work को abort-drain किए जाने से पहले ms में no-progress age threshold। unset होने पर, OpenClaw कम से कम 5 मिनट और 3x `stuckSessionWarnMs` की अधिक सुरक्षित extended embedded-run window का उपयोग करता है।
-- `memoryPressureSnapshot`: memory pressure `critical` तक पहुंचने पर redacted pre-OOM stability snapshot कैप्चर करता है (डिफॉल्ट: `false`)। सामान्य memory pressure events को रखते हुए stability bundle file scan/write जोड़ने के लिए `true` सेट करें।
-- `otel.enabled`: OpenTelemetry export pipeline सक्षम करता है (डिफॉल्ट: `false`)। पूर्ण configuration, signal catalog, और privacy model के लिए [OpenTelemetry export](/hi/gateway/opentelemetry) देखें।
+- `enabled`: instrumentation output के लिए master toggle (डिफ़ॉल्ट: `true`)।
+- `flags`: लक्षित log output सक्षम करने वाली flag strings की array (wildcards जैसे `"telegram.*"` या `"*"` का समर्थन करती है)।
+- `stuckSessionWarnMs`: long-running processing sessions को `session.long_running`, `session.stalled`, या `session.stuck` के रूप में classify करने के लिए no-progress age threshold ms में। Reply, tool, status, block, और ACP progress timer reset करते हैं; दोहराए गए `session.stuck` diagnostics unchanged रहते हुए back off करते हैं।
+- `stuckSessionAbortMs`: recovery के लिए eligible stalled active work को abort-drain करने से पहले no-progress age threshold ms में। unset होने पर, OpenClaw कम से कम 5 मिनट और 3x `stuckSessionWarnMs` वाली सुरक्षित extended embedded-run window उपयोग करता है।
+- `memoryPressureSnapshot`: memory pressure `critical` पहुँचने पर redacted pre-OOM stability snapshot capture करता है (डिफ़ॉल्ट: `false`)। normal memory pressure events रखते हुए stability bundle file scan/write जोड़ने के लिए `true` सेट करें।
+- `otel.enabled`: OpenTelemetry export pipeline सक्षम करता है (डिफ़ॉल्ट: `false`)। पूरी configuration, signal catalog, और privacy model के लिए [OpenTelemetry export](/hi/gateway/opentelemetry) देखें।
 - `otel.endpoint`: OTel export के लिए collector URL।
 - `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: वैकल्पिक signal-specific OTLP endpoints। सेट होने पर, वे केवल उस signal के लिए `otel.endpoint` को override करते हैं।
-- `otel.protocol`: `"http/protobuf"` (डिफॉल्ट) या `"grpc"`।
-- `otel.headers`: OTel export requests के साथ भेजे गए अतिरिक्त HTTP/gRPC metadata headers।
+- `otel.protocol`: `"http/protobuf"` (डिफ़ॉल्ट) या `"grpc"`।
+- `otel.headers`: OTel export requests के साथ भेजे गए extra HTTP/gRPC metadata headers।
 - `otel.serviceName`: resource attributes के लिए service name।
 - `otel.traces` / `otel.metrics` / `otel.logs`: trace, metrics, या log export सक्षम करें।
-- `otel.logsExporter`: log export sink: `"otlp"` (डिफॉल्ट), प्रति stdout line एक JSON object के लिए `"stdout"`, या `"both"`।
+- `otel.logsExporter`: log export sink: `"otlp"` (डिफ़ॉल्ट), प्रति stdout line एक JSON object के लिए `"stdout"`, या `"both"`।
 - `otel.sampleRate`: trace sampling rate `0`-`1`।
-- `otel.flushIntervalMs`: ms में periodic telemetry flush interval।
-- `otel.captureContent`: OTEL span attributes के लिए opt-in raw content capture। डिफॉल्ट बंद है। Boolean `true` non-system message/tool content कैप्चर करता है; object form आपको `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs`, `systemPrompt`, और `toolDefinitions` स्पष्ट रूप से सक्षम करने देता है।
-- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: नवीनतम experimental GenAI inference span shape के लिए environment toggle, जिसमें `{gen_ai.operation.name} {gen_ai.request.model}` span names, `CLIENT` span kind, और legacy `gen_ai.system` के बजाय `gen_ai.provider.name` शामिल हैं। डिफॉल्ट रूप से spans compatibility के लिए `openclaw.model.call` और `gen_ai.system` रखते हैं; GenAI metrics bounded semantic attributes का उपयोग करते हैं।
-- `OPENCLAW_OTEL_PRELOADED=1`: उन hosts के लिए environment toggle जिन्होंने पहले ही global OpenTelemetry SDK registered किया है। तब OpenClaw diagnostic listeners को active रखते हुए plugin-owned SDK startup/shutdown छोड़ देता है।
-- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`, और `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: matching config key unset होने पर उपयोग किए जाने वाले signal-specific endpoint env vars।
-- `cacheTrace.enabled`: embedded runs के लिए cache trace snapshots log करें (डिफॉल्ट: `false`)।
-- `cacheTrace.filePath`: cache trace JSONL के लिए output path (डिफॉल्ट: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`)।
-- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: cache trace output में क्या शामिल है, नियंत्रित करें (सभी का डिफॉल्ट: `true`)।
+- `otel.flushIntervalMs`: periodic telemetry flush interval ms में।
+- `otel.captureContent`: OTEL span attributes के लिए opt-in raw content capture। डिफ़ॉल्ट off है। Boolean `true` non-system message/tool content capture करता है; object form से आप `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs`, `systemPrompt`, और `toolDefinitions` को स्पष्ट रूप से सक्षम कर सकते हैं।
+- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: latest experimental GenAI inference span shape के लिए environment toggle, जिसमें `{gen_ai.operation.name} {gen_ai.request.model}` span names, `CLIENT` span kind, और legacy `gen_ai.system` के बजाय `gen_ai.provider.name` शामिल हैं। डिफ़ॉल्ट रूप से spans compatibility के लिए `openclaw.model.call` और `gen_ai.system` रखते हैं; GenAI metrics bounded semantic attributes का उपयोग करते हैं।
+- `OPENCLAW_OTEL_PRELOADED=1`: उन hosts के लिए environment toggle जिन्होंने पहले से global OpenTelemetry SDK register किया है। तब OpenClaw diagnostic listeners active रखते हुए plugin-owned SDK startup/shutdown skip करता है।
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`, और `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: matching config key unset होने पर उपयोग होने वाले signal-specific endpoint env vars।
+- `cacheTrace.enabled`: embedded runs के लिए cache trace snapshots log करें (डिफ़ॉल्ट: `false`)।
+- `cacheTrace.filePath`: cache trace JSONL के लिए output path (डिफ़ॉल्ट: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`)।
+- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: cache trace output में क्या शामिल है, इसे नियंत्रित करें (सभी डिफ़ॉल्ट: `true`)।
 
 ---
 
@@ -1140,11 +1138,11 @@ Validation और safety notes:
 ```
 
 - `channel`: npm/git installs के लिए release channel - `"stable"`, `"beta"`, या `"dev"`।
-- `checkOnStart`: gateway शुरू होने पर npm updates की जांच करें (डिफॉल्ट: `true`)।
-- `auto.enabled`: package installs के लिए background auto-update सक्षम करें (डिफॉल्ट: `false`)।
-- `auto.stableDelayHours`: stable-channel auto-apply से पहले घंटों में न्यूनतम delay (डिफॉल्ट: `6`; अधिकतम: `168`)।
-- `auto.stableJitterHours`: घंटों में अतिरिक्त stable-channel rollout spread window (डिफॉल्ट: `12`; अधिकतम: `168`)।
-- `auto.betaCheckIntervalHours`: beta-channel checks कितनी बार घंटों में चलें (डिफॉल्ट: `1`; अधिकतम: `24`)।
+- `checkOnStart`: Gateway start होने पर npm updates के लिए check करें (डिफ़ॉल्ट: `true`)।
+- `auto.enabled`: package installs के लिए background auto-update सक्षम करें (डिफ़ॉल्ट: `false`)।
+- `auto.stableDelayHours`: stable-channel auto-apply से पहले घंटों में न्यूनतम delay (डिफ़ॉल्ट: `6`; अधिकतम: `168`)।
+- `auto.stableJitterHours`: घंटों में extra stable-channel rollout spread window (डिफ़ॉल्ट: `12`; अधिकतम: `168`)।
+- `auto.betaCheckIntervalHours`: beta-channel checks कितनी बार घंटों में चलें (डिफ़ॉल्ट: `1`; अधिकतम: `24`)।
 
 ---
 
@@ -1177,23 +1175,23 @@ Validation और safety notes:
 }
 ```
 
-- `enabled`: global ACP feature gate (डिफॉल्ट: `true`; ACP dispatch और spawn affordances छिपाने के लिए `false` सेट करें)।
-- `dispatch.enabled`: ACP session turn dispatch के लिए independent gate (डिफॉल्ट: `true`)। execution को block रखते हुए ACP commands उपलब्ध रखने के लिए `false` सेट करें।
-- `backend`: डिफॉल्ट ACP runtime backend id (registered ACP runtime plugin से match होना चाहिए)।
+- `enabled`: global ACP feature gate (डिफ़ॉल्ट: `true`; ACP dispatch और spawn affordances छिपाने के लिए `false` सेट करें)।
+- `dispatch.enabled`: ACP session turn dispatch के लिए स्वतंत्र gate (डिफ़ॉल्ट: `true`)। execution block करते हुए ACP commands उपलब्ध रखने के लिए `false` सेट करें।
+- `backend`: डिफ़ॉल्ट ACP runtime backend id (registered ACP runtime plugin से match करना चाहिए)।
   पहले backend plugin install करें, और यदि `plugins.allow` सेट है, तो backend plugin id (उदाहरण के लिए `acpx`) शामिल करें, वरना ACP backend load नहीं होगा।
-- `defaultAgent`: जब spawns कोई explicit target specify नहीं करते, तब fallback ACP target agent id।
-- `allowedAgents`: ACP runtime sessions के लिए permitted agent ids की allowlist; खाली का अर्थ है कोई अतिरिक्त restriction नहीं।
-- `maxConcurrentSessions`: ACP sessions की अधिकतम concurrently active संख्या।
-- `stream.coalesceIdleMs`: streamed text के लिए ms में idle flush window।
-- `stream.maxChunkChars`: streamed block projection split करने से पहले अधिकतम chunk size।
-- `stream.repeatSuppression`: प्रति turn दोहराई गई status/tool lines दबाएं (डिफॉल्ट: `true`)।
-- `stream.deliveryMode`: `"live"` incremental रूप से stream करता है; `"final_only"` turn terminal events तक buffer करता है।
-- `stream.hiddenBoundarySeparator`: hidden tool events के बाद visible text से पहले separator (डिफॉल्ट: `"paragraph"`)।
+- `defaultAgent`: spawns में explicit target न होने पर fallback ACP target agent id।
+- `allowedAgents`: ACP runtime sessions के लिए अनुमत agent ids की allowlist; empty का अर्थ है कोई अतिरिक्त restriction नहीं।
+- `maxConcurrentSessions`: एक साथ active ACP sessions की अधिकतम संख्या।
+- `stream.coalesceIdleMs`: streamed text के लिए idle flush window ms में।
+- `stream.maxChunkChars`: streamed block projection split करने से पहले maximum chunk size।
+- `stream.repeatSuppression`: प्रति turn दोहराई गई status/tool lines suppress करें (डिफ़ॉल्ट: `true`)।
+- `stream.deliveryMode`: `"live"` incrementally stream करता है; `"final_only"` turn terminal events तक buffer करता है।
+- `stream.hiddenBoundarySeparator`: hidden tool events के बाद visible text से पहले separator (डिफ़ॉल्ट: `"paragraph"`)।
 - `stream.maxOutputChars`: प्रति ACP turn projected assistant output characters की अधिकतम संख्या।
-- `stream.maxSessionUpdateChars`: projected ACP status/update lines के लिए अधिकतम characters।
+- `stream.maxSessionUpdateChars`: projected ACP status/update lines के लिए maximum characters।
 - `stream.tagVisibility`: streamed events के लिए tag names से boolean visibility overrides का record।
-- `runtime.ttlMinutes`: eligible cleanup से पहले ACP session workers के लिए मिनटों में idle TTL।
-- `runtime.installCommand`: ACP runtime environment bootstrapping करते समय चलाने के लिए वैकल्पिक install command।
+- `runtime.ttlMinutes`: eligible cleanup से पहले ACP session workers के लिए idle TTL मिनटों में।
+- `runtime.installCommand`: ACP runtime environment bootstrap करते समय चलाने के लिए वैकल्पिक install command।
 
 ---
 
@@ -1210,16 +1208,16 @@ Validation और safety notes:
 ```
 
 - `cli.banner.taglineMode` बैनर टैगलाइन शैली नियंत्रित करता है:
-  - `"random"` (डिफ़ॉल्ट): घूमती हुई मज़ेदार/मौसमी टैगलाइन।
+  - `"random"` (डिफ़ॉल्ट): बदलती हुई मज़ेदार/मौसमी टैगलाइन्स।
   - `"default"`: स्थिर तटस्थ टैगलाइन (`All your chats, one OpenClaw.`)।
-  - `"off"`: कोई टैगलाइन टेक्स्ट नहीं (बैनर शीर्षक/संस्करण फिर भी दिखाया जाता है)।
-- पूरे बैनर को छिपाने के लिए (सिर्फ़ टैगलाइन नहीं), env `OPENCLAW_HIDE_BANNER=1` सेट करें।
+  - `"off"`: कोई टैगलाइन टेक्स्ट नहीं (बैनर शीर्षक/वर्ज़न फिर भी दिखते हैं)।
+- पूरे बैनर को छिपाने के लिए (सिर्फ टैगलाइन्स नहीं), env `OPENCLAW_HIDE_BANNER=1` सेट करें।
 
 ---
 
-## विज़ार्ड
+## विज़र्ड
 
-CLI निर्देशित सेटअप फ्लो (`onboard`, `configure`, `doctor`) द्वारा लिखा गया मेटाडेटा:
+CLI निर्देशित सेटअप फ़्लो (`onboard`, `configure`, `doctor`) द्वारा लिखा गया मेटाडेटा:
 
 ```json5
 {
@@ -1238,15 +1236,15 @@ CLI निर्देशित सेटअप फ्लो (`onboard`, `config
 
 ## पहचान
 
-[Agent डिफ़ॉल्ट](/hi/gateway/config-agents#agent-defaults) के अंतर्गत `agents.list` पहचान फ़ील्ड देखें।
+[एजेंट डिफ़ॉल्ट](/hi/gateway/config-agents#agent-defaults) के अंतर्गत `agents.list` पहचान फ़ील्ड देखें।
 
 ---
 
-## Bridge (विरासत, हटाया गया)
+## ब्रिज (लीगेसी, हटाया गया)
 
-मौजूदा बिल्ड में अब TCP ब्रिज शामिल नहीं है। Nodes Gateway WebSocket पर कनेक्ट करते हैं। `bridge.*` कुंजियाँ अब कॉन्फ़िग स्कीमा का हिस्सा नहीं हैं (हटाए जाने तक वैलिडेशन विफल रहता है; `openclaw doctor --fix` अज्ञात कुंजियाँ हटा सकता है)।
+मौजूदा बिल्ड में अब TCP ब्रिज शामिल नहीं है। Nodes Gateway WebSocket के माध्यम से कनेक्ट होते हैं। `bridge.*` कुंजियां अब कॉन्फ़िगरेशन स्कीमा का हिस्सा नहीं हैं (हटाए जाने तक वैलिडेशन विफल होता है; `openclaw doctor --fix` अज्ञात कुंजियां हटा सकता है)।
 
-<Accordion title="विरासत ब्रिज कॉन्फ़िग (ऐतिहासिक संदर्भ)">
+<Accordion title="लीगेसी ब्रिज कॉन्फ़िगरेशन (ऐतिहासिक संदर्भ)">
 
 ```json
 {
@@ -1284,11 +1282,11 @@ CLI निर्देशित सेटअप फ्लो (`onboard`, `config
 }
 ```
 
-- `sessionRetention`: `sessions.json` से हटाने से पहले पूर्ण हो चुके अलग-थलग cron रन सेशन कितने समय तक रखें। संग्रहित हटाए गए cron ट्रांसक्रिप्ट की सफ़ाई को भी नियंत्रित करता है। डिफ़ॉल्ट: `24h`; अक्षम करने के लिए `false` सेट करें।
-- `runLog.maxBytes`: पुराने फ़ाइल-समर्थित cron रन लॉग के साथ संगतता के लिए स्वीकार किया जाता है। डिफ़ॉल्ट: `2_000_000` बाइट।
-- `runLog.keepLines`: प्रति जॉब रखी जाने वाली नवीनतम SQLite रन-इतिहास पंक्तियाँ। डिफ़ॉल्ट: `2000`।
-- `webhookToken`: cron webhook POST डिलीवरी (`delivery.mode = "webhook"`) के लिए उपयोग किया जाने वाला bearer token; यदि छोड़ा गया हो तो कोई auth हेडर नहीं भेजा जाता।
-- `webhook`: अप्रचलित विरासत फ़ॉलबैक webhook URL (http/https), जिसका उपयोग `openclaw doctor --fix` उन संग्रहीत जॉब को माइग्रेट करने के लिए करता है जिनमें अब भी `notify: true` है; रनटाइम डिलीवरी प्रति-जॉब `delivery.mode="webhook"` और `delivery.to`, या अनाउंस डिलीवरी संरक्षित रखते समय `delivery.completionDestination` का उपयोग करती है।
+- `sessionRetention`: पूर्ण हो चुके अलग-थलग Cron रन सेशनों को `sessions.json` से हटाने से पहले कितनी देर रखना है। यह संग्रहित हटाए गए Cron ट्रांसक्रिप्ट की सफाई भी नियंत्रित करता है। डिफ़ॉल्ट: `24h`; अक्षम करने के लिए `false` सेट करें।
+- `runLog.maxBytes`: पुराने फ़ाइल-आधारित Cron रन लॉग के साथ संगतता के लिए स्वीकार किया जाता है। डिफ़ॉल्ट: `2_000_000` बाइट।
+- `runLog.keepLines`: प्रति जॉब रखी जाने वाली नवीनतम SQLite रन-इतिहास पंक्तियां। डिफ़ॉल्ट: `2000`।
+- `webhookToken`: Cron Webhook POST डिलीवरी (`delivery.mode = "webhook"`) के लिए उपयोग किया जाने वाला बेयरर टोकन; छोड़े जाने पर कोई auth हेडर नहीं भेजा जाता।
+- `webhook`: अप्रचलित लीगेसी fallback Webhook URL (http/https), जिसका उपयोग `openclaw doctor --fix` उन संग्रहित जॉब को माइग्रेट करने के लिए करता है जिनमें अभी भी `notify: true` है; रनटाइम डिलीवरी प्रति-जॉब `delivery.mode="webhook"` और `delivery.to`, या announce डिलीवरी सुरक्षित रखते समय `delivery.completionDestination` का उपयोग करती है।
 
 ### `cron.retry`
 
@@ -1304,11 +1302,11 @@ CLI निर्देशित सेटअप फ्लो (`onboard`, `config
 }
 ```
 
-- `maxAttempts`: अस्थायी त्रुटियों पर cron जॉब के लिए अधिकतम पुनःप्रयास (डिफ़ॉल्ट: `3`; सीमा: `0`-`10`)।
-- `backoffMs`: प्रत्येक पुनःप्रयास के लिए ms में बैकऑफ़ विलंबों की सरणी (डिफ़ॉल्ट: `[30000, 60000, 300000]`; 1-10 प्रविष्टियाँ)।
-- `retryOn`: त्रुटि प्रकार जो पुनःप्रयास ट्रिगर करते हैं - `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"`। सभी अस्थायी प्रकारों के लिए पुनःप्रयास करने हेतु इसे छोड़ दें।
+- `maxAttempts`: अस्थायी त्रुटियों पर Cron जॉब के लिए अधिकतम रीट्राई (डिफ़ॉल्ट: `3`; रेंज: `0`-`10`)।
+- `backoffMs`: हर रीट्राई प्रयास के लिए ms में बैकऑफ़ विलंबों की सरणी (डिफ़ॉल्ट: `[30000, 60000, 300000]`; 1-10 प्रविष्टियां)।
+- `retryOn`: रीट्राई ट्रिगर करने वाली त्रुटि प्रकार - `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"`। सभी अस्थायी प्रकारों पर रीट्राई करने के लिए इसे छोड़ दें।
 
-वन-शॉट जॉब तब तक सक्षम रहते हैं जब तक retry प्रयास समाप्त नहीं हो जाते, फिर अंतिम error state को रखते हुए disable हो जाते हैं। Recurring jobs उसी transient retry policy का उपयोग करते हैं ताकि backoff के बाद अपने अगले निर्धारित slot से पहले फिर से run हो सकें; permanent errors या समाप्त transient retries error backoff के साथ सामान्य recurring schedule पर वापस चले जाते हैं।
+वन-शॉट जॉब रीट्राई प्रयास समाप्त होने तक सक्षम रहते हैं, फिर अंतिम त्रुटि स्थिति रखते हुए अक्षम हो जाते हैं। आवर्ती जॉब अपनी अगली निर्धारित स्लॉट से पहले बैकऑफ़ के बाद फिर चलने के लिए वही अस्थायी रीट्राई नीति उपयोग करते हैं; स्थायी त्रुटियां या समाप्त अस्थायी रीट्राई त्रुटि बैकऑफ़ के साथ सामान्य आवर्ती शेड्यूल पर वापस चले जाते हैं।
 
 ### `cron.failureAlert`
 
@@ -1327,12 +1325,12 @@ CLI निर्देशित सेटअप फ्लो (`onboard`, `config
 }
 ```
 
-- `enabled`: Cron jobs के लिए failure alerts सक्षम करें (default: `false`)।
-- `after`: alert fire होने से पहले लगातार failures (positive integer, min: `1`)।
-- `cooldownMs`: एक ही job के लिए repeated alerts के बीच न्यूनतम milliseconds (non-negative integer)।
-- `includeSkipped`: consecutive skipped runs को alert threshold में गिनें (default: `false`)। Skipped runs अलग से track किए जाते हैं और execution-error backoff को प्रभावित नहीं करते।
-- `mode`: delivery mode - `"announce"` channel message के माध्यम से भेजता है; `"webhook"` configured Webhook पर post करता है।
-- `accountId`: alert delivery को scope करने के लिए वैकल्पिक account या channel id।
+- `enabled`: Cron जॉब के लिए विफलता अलर्ट सक्षम करें (डिफ़ॉल्ट: `false`)।
+- `after`: अलर्ट फायर होने से पहले लगातार विफलताओं की संख्या (धनात्मक पूर्णांक, न्यूनतम: `1`)।
+- `cooldownMs`: उसी जॉब के लिए दोहराए गए अलर्ट के बीच न्यूनतम मिलीसेकंड (गैर-ऋणात्मक पूर्णांक)।
+- `includeSkipped`: लगातार छोड़े गए रन को अलर्ट थ्रेशोल्ड में गिनें (डिफ़ॉल्ट: `false`)। छोड़े गए रन अलग से ट्रैक होते हैं और execution-error बैकऑफ़ को प्रभावित नहीं करते।
+- `mode`: डिलीवरी मोड - `"announce"` चैनल संदेश के माध्यम से भेजता है; `"webhook"` कॉन्फ़िगर किए गए Webhook पर पोस्ट करता है।
+- `accountId`: अलर्ट डिलीवरी को स्कोप करने के लिए वैकल्पिक अकाउंट या चैनल id।
 
 ### `cron.failureDestination`
 
@@ -1349,51 +1347,51 @@ CLI निर्देशित सेटअप फ्लो (`onboard`, `config
 }
 ```
 
-- सभी jobs में Cron failure notifications के लिए default destination।
-- `mode`: `"announce"` या `"webhook"`; पर्याप्त target data मौजूद होने पर default `"announce"` होता है।
-- `channel`: announce delivery के लिए channel override। `"last"` last known delivery channel का फिर से उपयोग करता है।
-- `to`: explicit announce target या Webhook URL। Webhook mode के लिए आवश्यक।
-- `accountId`: delivery के लिए वैकल्पिक account override।
-- Per-job `delivery.failureDestination` इस global default को override करता है।
-- जब न global और न per-job failure destination set हो, तो जो jobs पहले से `announce` के माध्यम से deliver करते हैं, failure पर उसी primary announce target पर fallback करते हैं।
-- `delivery.failureDestination` केवल `sessionTarget="isolated"` jobs के लिए supported है, जब तक job का primary `delivery.mode` `"webhook"` न हो।
+- सभी जॉब में Cron विफलता सूचनाओं के लिए डिफ़ॉल्ट गंतव्य।
+- `mode`: `"announce"` या `"webhook"`; पर्याप्त लक्ष्य डेटा मौजूद होने पर डिफ़ॉल्ट `"announce"` होता है।
+- `channel`: announce डिलीवरी के लिए चैनल override। `"last"` अंतिम ज्ञात डिलीवरी चैनल का पुन: उपयोग करता है।
+- `to`: स्पष्ट announce लक्ष्य या Webhook URL। Webhook मोड के लिए आवश्यक।
+- `accountId`: डिलीवरी के लिए वैकल्पिक अकाउंट override।
+- प्रति-जॉब `delivery.failureDestination` इस वैश्विक डिफ़ॉल्ट को override करता है।
+- जब न तो वैश्विक और न ही प्रति-जॉब विफलता गंतव्य सेट हो, तो वे जॉब जो पहले से `announce` के माध्यम से डिलीवर करते हैं, विफलता पर उसी प्राथमिक announce लक्ष्य पर वापस जाते हैं।
+- `delivery.failureDestination` केवल `sessionTarget="isolated"` जॉब के लिए समर्थित है, जब तक जॉब का प्राथमिक `delivery.mode` `"webhook"` न हो।
 
-[Cron Jobs](/hi/automation/cron-jobs) देखें। Isolated Cron executions को [background tasks](/hi/automation/tasks) के रूप में track किया जाता है।
+[Cron जॉब](/hi/automation/cron-jobs) देखें। अलग-थलग Cron निष्पादन [बैकग्राउंड टास्क](/hi/automation/tasks) के रूप में ट्रैक किए जाते हैं।
 
 ---
 
-## Media model template variables
+## मीडिया मॉडल टेम्पलेट वैरिएबल
 
-`tools.media.models[].args` में expanded template placeholders:
+`tools.media.models[].args` में विस्तारित टेम्पलेट placeholders:
 
-| Variable           | Description                                       |
+| वैरिएबल           | विवरण                                       |
 | ------------------ | ------------------------------------------------- |
-| `{{Body}}`         | पूरा inbound message body                         |
-| `{{RawBody}}`      | raw body (कोई history/sender wrappers नहीं)       |
-| `{{BodyStripped}}` | group mentions हटाया हुआ body                    |
-| `{{From}}`         | sender identifier                                 |
-| `{{To}}`           | destination identifier                            |
-| `{{MessageSid}}`   | channel message id                                |
-| `{{SessionId}}`    | current session UUID                              |
-| `{{IsNewSession}}` | new session created होने पर `"true"`              |
-| `{{MediaUrl}}`     | inbound media pseudo-URL                          |
-| `{{MediaPath}}`    | local media path                                  |
-| `{{MediaType}}`    | media type (image/audio/document/…)               |
-| `{{Transcript}}`   | audio transcript                                  |
-| `{{Prompt}}`       | CLI entries के लिए resolved media prompt          |
-| `{{MaxChars}}`     | CLI entries के लिए resolved max output chars      |
+| `{{Body}}`         | पूरा इनबाउंड संदेश बॉडी                         |
+| `{{RawBody}}`      | कच्चा बॉडी (कोई history/sender wrappers नहीं)             |
+| `{{BodyStripped}}` | समूह mentions हटाया हुआ बॉडी                 |
+| `{{From}}`         | प्रेषक पहचानकर्ता                                 |
+| `{{To}}`           | गंतव्य पहचानकर्ता                            |
+| `{{MessageSid}}`   | चैनल संदेश id                                |
+| `{{SessionId}}`    | मौजूदा सेशन UUID                              |
+| `{{IsNewSession}}` | नया सेशन बनने पर `"true"`                 |
+| `{{MediaUrl}}`     | इनबाउंड मीडिया pseudo-URL                          |
+| `{{MediaPath}}`    | स्थानीय मीडिया पाथ                                  |
+| `{{MediaType}}`    | मीडिया प्रकार (image/audio/document/…)               |
+| `{{Transcript}}`   | ऑडियो ट्रांसक्रिप्ट                                  |
+| `{{Prompt}}`       | CLI प्रविष्टियों के लिए resolved मीडिया prompt             |
+| `{{MaxChars}}`     | CLI प्रविष्टियों के लिए resolved अधिकतम आउटपुट chars         |
 | `{{ChatType}}`     | `"direct"` या `"group"`                           |
-| `{{GroupSubject}}` | group subject (best effort)                       |
-| `{{GroupMembers}}` | group members preview (best effort)               |
-| `{{SenderName}}`   | sender display name (best effort)                 |
-| `{{SenderE164}}`   | sender phone number (best effort)                 |
-| `{{Provider}}`     | provider hint (whatsapp, telegram, discord, etc.) |
+| `{{GroupSubject}}` | समूह विषय (सर्वोत्तम प्रयास)                       |
+| `{{GroupMembers}}` | समूह सदस्यों का पूर्वावलोकन (सर्वोत्तम प्रयास)               |
+| `{{SenderName}}`   | प्रेषक प्रदर्शन नाम (सर्वोत्तम प्रयास)                 |
+| `{{SenderE164}}`   | प्रेषक फ़ोन नंबर (सर्वोत्तम प्रयास)                 |
+| `{{Provider}}`     | Provider संकेत (whatsapp, telegram, discord, आदि) |
 
 ---
 
-## Config includes (`$include`)
+## कॉन्फ़िगरेशन includes (`$include`)
 
-config को multiple files में split करें:
+कॉन्फ़िगरेशन को कई फ़ाइलों में विभाजित करें:
 
 ```json5
 // ~/.openclaw/openclaw.json
@@ -1406,22 +1404,22 @@ config को multiple files में split करें:
 }
 ```
 
-**Merge behavior:**
+**मर्ज व्यवहार:**
 
-- Single file: containing object को replace करती है।
-- Array of files: order में deep-merged होती हैं (बाद वाली पहले वाली को override करती है)।
-- Sibling keys: includes के बाद merged होती हैं (included values को override करती हैं)।
-- Nested includes: 10 levels deep तक।
-- Paths: including file के relative resolve होते हैं, लेकिन top-level config directory (`openclaw.json` का `dirname`) के अंदर ही रहने चाहिए। Absolute/`../` forms केवल तभी allowed हैं जब वे फिर भी उस boundary के अंदर resolve हों। Paths में null bytes नहीं होने चाहिए और resolution से पहले और बाद में strictly 4096 characters से छोटे होने चाहिए।
-- OpenClaw-owned writes जो single-file include से backed केवल एक top-level section बदलते हैं, उस included file में write through करते हैं। उदाहरण के लिए, `plugins install` `plugins: { $include: "./plugins.json5" }` को `plugins.json5` में update करता है और `openclaw.json` को intact छोड़ता है।
-- Root includes, include arrays, और sibling overrides वाले includes OpenClaw-owned writes के लिए read-only हैं; वे writes config को flatten करने के बजाय fail closed होते हैं।
-- Errors: missing files, parse errors, circular includes, invalid path format, और excessive length के लिए clear messages।
+- एकल फ़ाइल: रखने वाले ऑब्जेक्ट को प्रतिस्थापित करती है।
+- फ़ाइलों की सरणी: क्रम में deep-merged (बाद वाली पहले वाली को override करती है)।
+- Sibling कुंजियां: includes के बाद मर्ज होती हैं (included values को override करती हैं)।
+- Nested includes: 10 स्तर गहराई तक।
+- पाथ: शामिल करने वाली फ़ाइल के सापेक्ष resolved होते हैं, लेकिन शीर्ष-स्तरीय कॉन्फ़िगरेशन डायरेक्टरी (`openclaw.json` का `dirname`) के अंदर ही रहने चाहिए। Absolute/`../` forms केवल तब अनुमत हैं जब वे फिर भी उस boundary के अंदर resolve हों। पाथ में null bytes नहीं होने चाहिए और resolution से पहले और बाद में 4096 वर्णों से सख्ती से छोटे होने चाहिए।
+- OpenClaw-owned writes जो single-file include द्वारा समर्थित केवल एक top-level section बदलते हैं, उसी included file में write through करते हैं। उदाहरण के लिए, `plugins install` `plugins.json5` में `plugins: { $include: "./plugins.json5" }` अपडेट करता है और `openclaw.json` को जस का तस छोड़ता है।
+- Root includes, include arrays, और sibling overrides वाले includes OpenClaw-owned writes के लिए read-only हैं; वे writes कॉन्फ़िगरेशन को flatten करने के बजाय fail closed होते हैं।
+- त्रुटियां: missing files, parse errors, circular includes, invalid path format, और excessive length के लिए स्पष्ट संदेश।
 
 ---
 
-_संबंधित: [Configuration](/hi/gateway/configuration) · [Configuration Examples](/hi/gateway/configuration-examples) · [Doctor](/hi/gateway/doctor)_
+_संबंधित: [कॉन्फ़िगरेशन](/hi/gateway/configuration) · [कॉन्फ़िगरेशन उदाहरण](/hi/gateway/configuration-examples) · [Doctor](/hi/gateway/doctor)_
 
 ## संबंधित
 
-- [Configuration](/hi/gateway/configuration)
-- [Configuration examples](/hi/gateway/configuration-examples)
+- [कॉन्फ़िगरेशन](/hi/gateway/configuration)
+- [कॉन्फ़िगरेशन उदाहरण](/hi/gateway/configuration-examples)

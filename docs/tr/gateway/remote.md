@@ -1,80 +1,80 @@
 ---
 read_when:
-    - Uzak gateway kurulumlarını çalıştırma veya sorun giderme
-summary: Gateway WS, SSH tünelleri ve tailnet’ler kullanarak uzaktan erişim
+    - Uzak gateway kurulumlarını çalıştırma veya sorunlarını giderme
+summary: Gateway WS, SSH tünelleri ve tailnet'ler kullanarak uzaktan erişim
 title: Uzaktan erişim
 x-i18n:
-    generated_at: "2026-06-28T00:37:47Z"
+    generated_at: "2026-07-03T23:40:38Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f5f885026fe76acb46f49955c6e485e08714a5cc5e90c165d20e25cea1acf864
+    source_hash: cb6fd38698480f1dff93a6e4819082711e8e4395556a2fd85a8eb772ef6fbe31
     source_path: gateway/remote.md
     workflow: 16
 ---
 
-Bu repo, ayrılmış bir ana makinede (masaüstü/sunucu) tek bir Gateway'i (ana) çalışır durumda tutup istemcileri ona bağlayarak uzak gateway erişimini destekler.
+Bu repo, ayrılmış bir ana makinede (masaüstü/sunucu) tek bir Gateway'i (master) çalışır durumda tutarak ve istemcileri ona bağlayarak uzaktan Gateway erişimini destekler.
 
-- **operatörler (siz / macOS uygulaması)** için: Gateway erişilebilir olduğunda doğrudan LAN/Tailnet WebSocket en basit seçenektir; SSH tünelleme evrensel yedektir.
-- **düğümler (iOS/Android ve gelecekteki cihazlar)** için: Gerektiğinde LAN/tailnet veya SSH tüneli üzerinden Gateway **WebSocket**'ine bağlanın.
+- **Operatörler (siz / macOS uygulaması)** için: Gateway erişilebilirse doğrudan LAN/Tailnet WebSocket en basit seçenektir; SSH tünelleme evrensel yedektir.
+- **Düğümler (iOS/Android ve gelecekteki cihazlar)** için: Gateway **WebSocket**'ine bağlanın (gerektiğinde LAN/tailnet veya SSH tüneli).
 
 ## Temel fikir
 
-- Gateway WebSocket genellikle yapılandırdığınız bağlantı noktasında **loopback**'e bağlanır (varsayılan 18789).
-- Uzak kullanım için bunu Tailscale Serve veya güvenilen bir LAN/Tailnet bağlaması üzerinden açın ya da loopback bağlantı noktasını SSH üzerinden iletin.
+- Gateway WebSocket genellikle yapılandırılmış bağlantı noktanızda **local loopback**'e bağlanır (varsayılan 18789).
+- Uzaktan kullanım için bunu Tailscale Serve veya güvenilir bir LAN/Tailnet bağlaması üzerinden açın ya da local loopback bağlantı noktasını SSH üzerinden iletin.
 
 ## Yaygın VPN ve tailnet kurulumları
 
-**Gateway ana makinesini**, ajanın yaşadığı yer olarak düşünün. Oturumların, kimlik doğrulama profillerinin, kanalların ve durumun sahibi odur. Dizüstü bilgisayarınız, masaüstünüz ve düğümleriniz bu ana makineye bağlanır.
+**Gateway ana makinesini**, ajanın yaşadığı yer olarak düşünün. Oturumlara, kimlik doğrulama profillerine, kanallara ve duruma o sahip olur. Dizüstü bilgisayarınız, masaüstünüz ve düğümleriniz bu ana makineye bağlanır.
 
-### Tailnet'inizde sürekli açık Gateway
+### Tailnet'inizde her zaman açık Gateway
 
-Gateway'i kalıcı bir ana makinede (VPS veya ev sunucusu) çalıştırın ve ona **Tailscale** veya SSH üzerinden erişin.
+Gateway'i kalıcı bir ana makinede (VPS veya ev sunucusu) çalıştırın ve ona **Tailscale** veya SSH ile ulaşın.
 
-- **En iyi kullanıcı deneyimi:** `gateway.bind: "loopback"` değerini koruyun ve Control UI için **Tailscale Serve** kullanın.
-- **Güvenilen LAN/Tailnet:** Gateway'i özel bir arayüze bağlayın ve `gateway.remote.transport: "direct"` ile doğrudan bağlanın.
-- **Yedek:** loopback'i koruyun ve erişim gereken herhangi bir makineden SSH tüneli kullanın.
-- **Örnekler:** [exe.dev](/tr/install/exe-dev) (kolay VM) veya [Hetzner](/tr/install/hetzner) (üretim VPS).
+- **En iyi UX:** `gateway.bind: "loopback"` değerini koruyun ve Control UI için **Tailscale Serve** kullanın.
+- **Güvenilir LAN/Tailnet:** Gateway'i özel bir arayüze bağlayın ve `gateway.remote.transport: "direct"` ile doğrudan bağlanın.
+- **Yedek:** loopback'i koruyun ve erişim gerektiren herhangi bir makineden SSH tüneli kullanın.
+- **Örnekler:** [exe.dev](/tr/install/exe-dev) (kolay VM) veya [Hetzner](/tr/install/hetzner) (üretim VPS'i).
 
-Dizüstü bilgisayarınız sık sık uykuya geçiyor ancak ajanın her zaman açık olmasını istiyorsanız idealdir.
+Dizüstü bilgisayarınız sık sık uyku moduna geçiyor ama ajanın her zaman açık kalmasını istiyorsanız idealdir.
 
-### Gateway ev masaüstünde çalışır
+### Home desktop Gateway'i çalıştırır
 
-Dizüstü bilgisayar ajanı **çalıştırmaz**. Uzak olarak bağlanır:
+Dizüstü bilgisayar ajanı çalıştırmaz. Uzaktan bağlanır:
 
-- macOS uygulamasının uzak modunu kullanın (Ayarlar → Genel → OpenClaw çalışır).
-- Uygulama, Gateway LAN/Tailnet üzerinde erişilebilir olduğunda doğrudan bağlanır veya SSH'yi seçtiğinizde bir SSH tüneli açıp yönetir.
+- macOS uygulamasının uzak modunu kullanın (Settings → General → OpenClaw runs).
+- Gateway LAN/Tailnet üzerinde erişilebilir olduğunda uygulama doğrudan bağlanır veya SSH'yi seçtiğinizde bir SSH tüneli açar ve yönetir.
 
-Çalıştırma kılavuzu: [macOS uzak erişim](/tr/platforms/mac/remote).
+Runbook: [macOS uzaktan erişim](/tr/platforms/mac/remote).
 
-### Gateway dizüstü bilgisayarda çalışır
+### Laptop Gateway'i çalıştırır
 
-Gateway'i yerel tutun ancak güvenli şekilde açın:
+Gateway'i yerel tutun ama güvenli şekilde açın:
 
-- Diğer makinelerden dizüstü bilgisayara SSH tüneli açın veya
+- Diğer makinelerden dizüstü bilgisayara SSH tüneli kurun veya
 - Control UI'yi Tailscale Serve ile sunun ve Gateway'i yalnızca loopback'te tutun.
 
-Kılavuzlar: [Tailscale](/tr/gateway/tailscale) ve [Web genel bakış](/tr/web).
+Kılavuzlar: [Tailscale](/tr/gateway/tailscale) ve [Web'e genel bakış](/tr/web).
 
-## Komut akışı (nerede ne çalışır)
+## Komut akışı (ne nerede çalışır)
 
-Tek bir gateway hizmeti durumun + kanalların sahibidir. Düğümler çevresel bileşenlerdir.
+Tek bir Gateway hizmeti durum + kanallara sahip olur. Düğümler çevre birimleridir.
 
 Akış örneği (Telegram → düğüm):
 
-- Telegram mesajı **Gateway**'e ulaşır.
+- Telegram mesajı **Gateway**'e gelir.
 - Gateway **ajanı** çalıştırır ve bir düğüm aracını çağırıp çağırmayacağına karar verir.
 - Gateway, Gateway WebSocket üzerinden **düğümü** çağırır (`node.*` RPC).
 - Düğüm sonucu döndürür; Gateway yanıtı Telegram'a geri gönderir.
 
 Notlar:
 
-- **Düğümler gateway hizmetini çalıştırmaz.** İzole profilleri bilinçli olarak çalıştırmadığınız sürece ana makine başına yalnızca bir gateway çalışmalıdır (bkz. [Birden fazla gateway](/tr/gateway/multiple-gateways)).
-- macOS uygulaması "düğüm modu", Gateway WebSocket üzerinden çalışan yalnızca bir düğüm istemcisidir.
+- **Düğümler Gateway hizmetini çalıştırmaz.** Bilerek yalıtılmış profiller çalıştırmıyorsanız ana makine başına yalnızca bir Gateway çalışmalıdır (bkz. [Birden çok Gateway](/tr/gateway/multiple-gateways)).
+- macOS uygulaması "düğüm modu", Gateway WebSocket üzerinden çalışan bir düğüm istemcisinden ibarettir.
 
 ## SSH tüneli (CLI + araçlar)
 
-Uzak Gateway WS'ye yerel tünel oluşturun:
+Uzak Gateway WS'ye yerel bir tünel oluşturun:
 
 ```bash
 ssh -N -L 18789:127.0.0.1:18789 user@host
@@ -82,15 +82,15 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 
 Tünel açıkken:
 
-- `openclaw health` ve `openclaw status --deep` artık uzak gateway'e `ws://127.0.0.1:18789` üzerinden ulaşır.
-- `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe` ve `openclaw gateway call` gerektiğinde iletilmiş URL'yi `--url` ile hedefleyebilir.
+- `openclaw health` ve `openclaw status --deep` artık `ws://127.0.0.1:18789` üzerinden uzak Gateway'e ulaşır.
+- `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe` ve `openclaw gateway call` gerektiğinde `--url` ile iletilen URL'yi de hedefleyebilir.
 
 <Note>
-`18789` değerini yapılandırdığınız `gateway.port` (veya `--port` ya da `OPENCLAW_GATEWAY_PORT`) ile değiştirin.
+`18789` değerini yapılandırılmış `gateway.port` değerinizle (veya `--port` ya da `OPENCLAW_GATEWAY_PORT`) değiştirin.
 </Note>
 
 <Warning>
-`--url` verdiğinizde CLI yapılandırmaya veya ortam kimlik bilgilerine geri dönmez. `--token` veya `--password` değerini açıkça ekleyin. Açık kimlik bilgilerinin eksik olması hatadır.
+`--url` geçirdiğinizde CLI yapılandırmaya veya ortam kimlik bilgilerine geri dönmez. `--token` veya `--password` değerini açıkça ekleyin. Açık kimlik bilgilerinin eksik olması hatadır.
 </Warning>
 
 ## CLI uzak varsayılanları
@@ -109,12 +109,15 @@ CLI komutlarının varsayılan olarak kullanması için uzak hedefi kalıcı hal
 }
 ```
 
-Gateway yalnızca loopback'teyken URL'yi `ws://127.0.0.1:18789` olarak tutun ve önce SSH tünelini açın.
-macOS uygulamasının SSH tüneli taşımasında keşfedilen gateway ana makine adları
+Gateway yalnızca loopback olduğunda URL'yi `ws://127.0.0.1:18789` olarak tutun ve önce SSH tünelini açın.
+macOS uygulamasının SSH tüneli taşımasında, keşfedilen Gateway ana makine adları
 `gateway.remote.sshTarget` içine aittir; `gateway.remote.url` yerel tünel URL'si olarak kalır.
-Bu bağlantı noktaları farklıysa `gateway.remote.remotePort` değerini SSH ana makinesindeki gateway bağlantı noktasına ayarlayın.
+Bu bağlantı noktaları farklıysa, `gateway.remote.remotePort` değerini SSH ana makinesindeki Gateway bağlantı noktasına ayarlayın.
+Ana makine anahtarı doğrulaması varsayılan olarak katıdır. Yönetilen takma adlar
+`gateway.remote.sshHostKeyPolicy: "openssh"` ile etkin OpenSSH güven ilkesini açıkça kullanabilir; bunu etkinleştirmeden önce eşleşen kullanıcı ve sistem
+SSH ayarlarını gözden geçirin.
 
-Güvenilen LAN veya Tailnet üzerinde zaten erişilebilir olan bir gateway için doğrudan modu kullanın:
+Güvenilir bir LAN veya Tailnet üzerinde zaten erişilebilir olan Gateway için doğrudan modu kullanın:
 
 ```json5
 {
@@ -131,7 +134,7 @@ Güvenilen LAN veya Tailnet üzerinde zaten erişilebilir olan bir gateway için
 
 ## Kimlik bilgisi önceliği
 
-Gateway kimlik bilgisi çözümleme, çağrı/probe/durum yolları ve Discord exec-onay izleme genelinde ortak bir sözleşmeyi izler. Node-host aynı temel sözleşmeyi tek bir yerel mod istisnasıyla kullanır (`gateway.remote.*` değerlerini bilinçli olarak yok sayar):
+Gateway kimlik bilgisi çözümlemesi çağrı/probe/durum yolları ve Discord exec-onayı izleme genelinde tek bir ortak sözleşmeyi izler. Node-host, bir yerel mod istisnasıyla aynı temel sözleşmeyi kullanır (`gateway.remote.*` değerlerini bilerek yok sayar):
 
 - Açık kimlik bilgileri (`--token`, `--password` veya araç `gatewayToken`), açık kimlik doğrulamayı kabul eden çağrı yollarında her zaman kazanır.
 - URL geçersiz kılma güvenliği:
@@ -144,49 +147,49 @@ Gateway kimlik bilgisi çözümleme, çağrı/probe/durum yolları ve Discord ex
   - token: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
   - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
 - Node-host yerel mod istisnası: `gateway.remote.token` / `gateway.remote.password` yok sayılır.
-- Uzak probe/durum token kontrolleri varsayılan olarak katıdır: uzak modu hedeflerken yalnızca `gateway.remote.token` kullanırlar (yerel token yedeği yoktur).
+- Uzak probe/durum token denetimleri varsayılan olarak katıdır: uzak modu hedeflerken yalnızca `gateway.remote.token` kullanırlar (yerel token yedeği yoktur).
 - Gateway ortam geçersiz kılmaları yalnızca `OPENCLAW_GATEWAY_*` kullanır.
 
-## Chat UI uzak erişimi
+## Chat UI uzaktan erişim
 
-WebChat artık ayrı bir HTTP bağlantı noktası kullanmaz. SwiftUI sohbet arayüzü doğrudan Gateway WebSocket'e bağlanır.
+WebChat artık ayrı bir HTTP bağlantı noktası kullanmaz. SwiftUI sohbet UI'si doğrudan Gateway WebSocket'e bağlanır.
 
 - `18789` değerini SSH üzerinden iletin (yukarıya bakın), ardından istemcileri `ws://127.0.0.1:18789` adresine bağlayın.
 - LAN/Tailnet doğrudan modu için istemcileri yapılandırılmış özel `ws://` veya güvenli `wss://` URL'sine bağlayın.
-- macOS'ta, seçilen taşımayı otomatik olarak yöneten uygulamanın uzak modunu tercih edin.
+- macOS'te, seçilen taşımayı otomatik olarak yöneten uygulamanın uzak modunu tercih edin.
 
 ## macOS uygulaması uzak modu
 
-macOS menü çubuğu uygulaması aynı kurulumu uçtan uca yürütebilir (uzak durum kontrolleri, WebChat ve Voice Wake iletimi).
+macOS menü çubuğu uygulaması aynı kurulumu baştan sona yönetebilir (uzak durum denetimleri, WebChat ve Voice Wake iletme).
 
-Çalıştırma kılavuzu: [macOS uzak erişim](/tr/platforms/mac/remote).
+Runbook: [macOS uzaktan erişim](/tr/platforms/mac/remote).
 
 ## Güvenlik kuralları (uzak/VPN)
 
-Kısa sürüm: Bir bağlamaya ihtiyacınız olduğundan emin değilseniz **Gateway'i yalnızca loopback'te tutun**.
+Kısa sürüm: Gerektiğinden emin değilseniz **Gateway'i yalnızca loopback'te tutun**.
 
-- **Loopback + SSH/Tailscale Serve** en güvenli varsayılandır (genel erişim yok).
+- **Loopback + SSH/Tailscale Serve** en güvenli varsayılandır (genel açılım yok).
 - Düz metin `ws://`; loopback, LAN, link-local, `.local`, `.ts.net` ve Tailscale CGNAT ana makineleri için kabul edilir. Genel uzak ana makineler `wss://` kullanmalıdır.
-- **Loopback dışı bağlamalar** (`lan`/`tailnet`/`custom` veya loopback kullanılamadığında `auto`) gateway kimlik doğrulaması kullanmalıdır: token, password veya `gateway.auth.mode: "trusted-proxy"` ile kimlik farkındalığı olan bir ters proxy.
-- `gateway.remote.token` / `.password` istemci kimlik bilgisi kaynaklarıdır. Tek başlarına sunucu kimlik doğrulamasını yapılandırmazlar.
+- **Loopback dışı bağlamalar** (`lan`/`tailnet`/`custom` veya loopback kullanılamadığında `auto`) Gateway kimlik doğrulaması kullanmalıdır: token, password veya `gateway.auth.mode: "trusted-proxy"` içeren kimlik farkındalıklı ters proxy.
+- `gateway.remote.token` / `.password` istemci kimlik bilgisi kaynaklarıdır. Bunlar sunucu kimlik doğrulamasını tek başlarına yapılandırmaz.
 - Yerel çağrı yolları, yalnızca `gateway.auth.*` ayarlanmamışsa `gateway.remote.*` değerlerini yedek olarak kullanabilir.
-- `gateway.auth.token` / `gateway.auth.password` SecretRef üzerinden açıkça yapılandırılmış ve çözümlenmemişse çözümleme kapalı başarısız olur (uzak yedek maskelemesi yok).
-- `gateway.remote.tlsFingerprint`, macOS doğrudan modu dahil `wss://` kullanılırken uzak TLS sertifikasını sabitler. Yapılandırılmış veya daha önce saklanmış bir sabit yoksa macOS yalnızca normal sistem güveni geçtikten sonra ilk kullanım sertifikasını sabitler; macOS'un zaten güvenmediği self-signed veya özel CA gateway'leri açık bir fingerprint ya da SSH üzerinden Uzak gerektirir.
-- **Tailscale Serve**, `gateway.auth.allowTailscale: true` olduğunda Control UI/WebSocket trafiğini kimlik
-  başlıkları üzerinden doğrulayabilir; HTTP API uç noktaları bu Tailscale başlık kimlik doğrulamasını
-  kullanmaz ve bunun yerine gateway'in normal HTTP kimlik doğrulama modunu izler. Bu tokensız akış gateway ana makinesinin güvenilir olduğunu varsayar. Her yerde paylaşılan gizli kimlik doğrulaması istiyorsanız bunu
+- `gateway.auth.token` / `gateway.auth.password` SecretRef üzerinden açıkça yapılandırılmış ve çözümlenmemişse, çözümleme kapalı hata verir (uzak yedek maskelemesi yok).
+- `gateway.remote.tlsFingerprint`, macOS doğrudan modu dahil `wss://` kullanırken uzak TLS sertifikasını sabitler. Yapılandırılmış veya daha önce saklanmış bir pin olmadan macOS, yalnızca normal sistem güveni geçtikten sonra ilk kullanım sertifikasını pinler; macOS'in zaten güvenmediği kendinden imzalı veya özel CA Gateway'leri açık bir fingerprint ya da SSH üzerinden Remote gerektirir.
+- **Tailscale Serve**, `gateway.auth.allowTailscale: true` olduğunda Control UI/WebSocket trafiğinin kimliğini kimlik
+  başlıklarıyla doğrulayabilir; HTTP API uç noktaları bu Tailscale başlık kimlik doğrulamasını
+  kullanmaz ve bunun yerine Gateway'in normal HTTP kimlik doğrulama modunu izler. Bu tokensız akış Gateway ana makinesinin güvenilir olduğunu varsayar. Her yerde paylaşılan gizli anahtar kimlik doğrulaması istiyorsanız bunu
   `false` olarak ayarlayın.
-- **Trusted-proxy** kimlik doğrulaması varsayılan olarak loopback dışı kimlik farkındalığı olan proxy kurulumları bekler.
+- **Trusted-proxy** kimlik doğrulaması varsayılan olarak loopback dışı kimlik farkındalıklı proxy kurulumları bekler.
   Aynı ana makinedeki loopback ters proxy'leri açıkça `gateway.auth.trustedProxy.allowLoopback = true` gerektirir.
-- Tarayıcı kontrolünü operatör erişimi gibi ele alın: yalnızca tailnet + bilinçli düğüm eşleştirme.
+- Tarayıcı denetimini operatör erişimi gibi ele alın: yalnızca tailnet + bilinçli düğüm eşleştirme.
 
-Derin inceleme: [Güvenlik](/tr/gateway/security).
+Derinlemesine inceleme: [Güvenlik](/tr/gateway/security).
 
 ### macOS: LaunchAgent ile kalıcı SSH tüneli
 
-Uzak bir gateway'e bağlanan macOS istemcileri için en kolay kalıcı kurulum, SSH `LocalForward` yapılandırma girdisi ve tüneli yeniden başlatmalar ile çökmeler boyunca canlı tutan bir LaunchAgent kullanır.
+Uzak Gateway'e bağlanan macOS istemcileri için en kolay kalıcı kurulum, yeniden başlatmalar ve çökmeler arasında tüneli canlı tutmak üzere bir SSH `LocalForward` yapılandırma girdisi ve bir LaunchAgent kullanır.
 
-#### 1. adım: SSH yapılandırması ekleyin
+#### Adım 1: SSH yapılandırması ekleyin
 
 `~/.ssh/config` dosyasını düzenleyin:
 
@@ -200,13 +203,13 @@ Host remote-gateway
 
 `<REMOTE_IP>` ve `<REMOTE_USER>` değerlerini kendi değerlerinizle değiştirin.
 
-#### 2. adım: SSH anahtarını kopyalayın (tek seferlik)
+#### Adım 2: SSH anahtarını kopyalayın (bir kez)
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-#### 3. adım: gateway token'ını yapılandırın
+#### Adım 3: Gateway token'ını yapılandırın
 
 Token'ı yapılandırmada saklayın, böylece yeniden başlatmalar arasında kalıcı olur:
 
@@ -214,7 +217,7 @@ Token'ı yapılandırmada saklayın, böylece yeniden başlatmalar arasında kal
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-#### 4. adım: LaunchAgent oluşturun
+#### Adım 4: LaunchAgent oluşturun
 
 Bunu `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` olarak kaydedin:
 
@@ -239,16 +242,16 @@ Bunu `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` olarak kaydedin:
 </plist>
 ```
 
-#### 5. adım: LaunchAgent'ı yükleyin
+#### Adım 5: LaunchAgent'ı yükleyin
 
 ```bash
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-Tünel oturum açıldığında otomatik olarak başlar, çökme durumunda yeniden başlar ve iletilen bağlantı noktasını canlı tutar.
+Tünel girişte otomatik olarak başlayacak, çökmede yeniden başlayacak ve iletilen bağlantı noktasını canlı tutacaktır.
 
 <Note>
-Eski bir kurulumdan kalma `com.openclaw.ssh-tunnel` LaunchAgent'ınız varsa onu kaldırın ve silin.
+Eski bir kurulumdan kalma `com.openclaw.ssh-tunnel` LaunchAgent'ınız varsa onu unload edip silin.
 </Note>
 
 #### Sorun giderme
@@ -272,15 +275,15 @@ Tüneli durdurun:
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-| Yapılandırma girdisi                 | Ne yapar                                                           |
-| ------------------------------------ | ------------------------------------------------------------------ |
+| Yapılandırma girdisi                 | Ne yapar                                                     |
+| ------------------------------------ | ------------------------------------------------------------ |
 | `LocalForward 18789 127.0.0.1:18789` | Yerel bağlantı noktası 18789'u uzak bağlantı noktası 18789'a iletir |
-| `ssh -N`                             | Uzak komut çalıştırmadan SSH (yalnızca bağlantı noktası iletme)     |
-| `KeepAlive`                          | Tünel çökerse otomatik olarak yeniden başlatır                     |
-| `RunAtLoad`                          | LaunchAgent oturum açılışında yüklendiğinde tüneli başlatır        |
+| `ssh -N`                             | Uzak komut yürütmeden SSH (yalnızca bağlantı noktası iletme) |
+| `KeepAlive`                          | Çökerse tüneli otomatik olarak yeniden başlatır              |
+| `RunAtLoad`                          | LaunchAgent girişte yüklendiğinde tüneli başlatır            |
 
 ## İlgili
 
 - [Tailscale](/tr/gateway/tailscale)
 - [Kimlik doğrulama](/tr/gateway/authentication)
-- [Uzak gateway kurulumu](/tr/gateway/remote-gateway-readme)
+- [Uzak Gateway kurulumu](/tr/gateway/remote-gateway-readme)

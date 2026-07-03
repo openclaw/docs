@@ -1,96 +1,96 @@
 ---
 read_when:
-    - Chạy hoặc khắc phục sự cố các thiết lập Gateway từ xa
+    - Chạy hoặc khắc phục sự cố các thiết lập gateway từ xa
 summary: Truy cập từ xa bằng Gateway WS, đường hầm SSH và tailnet
 title: Truy cập từ xa
 x-i18n:
-    generated_at: "2026-06-27T17:31:48Z"
+    generated_at: "2026-07-03T23:35:46Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f5f885026fe76acb46f49955c6e485e08714a5cc5e90c165d20e25cea1acf864
+    source_hash: cb6fd38698480f1dff93a6e4819082711e8e4395556a2fd85a8eb772ef6fbe31
     source_path: gateway/remote.md
     workflow: 16
 ---
 
-Repo này hỗ trợ truy cập gateway từ xa bằng cách giữ một Gateway duy nhất (master) chạy trên một máy chủ chuyên dụng (desktop/server) và kết nối các client tới nó.
+Repo này hỗ trợ truy cập gateway từ xa bằng cách duy trì một Gateway duy nhất (master) chạy trên một máy chủ chuyên dụng (máy tính để bàn/máy chủ) và kết nối các client tới đó.
 
-- Với **operator (bạn / ứng dụng macOS)**: WebSocket trực tiếp qua LAN/Tailnet là đơn giản nhất khi gateway có thể truy cập được; đường hầm SSH là phương án dự phòng phổ quát.
-- Với **node (iOS/Android và các thiết bị trong tương lai)**: kết nối tới **WebSocket** của Gateway (LAN/tailnet hoặc đường hầm SSH khi cần).
+- Với **người vận hành (bạn / ứng dụng macOS)**: WebSocket trực tiếp qua LAN/Tailnet là đơn giản nhất khi gateway có thể truy cập được; SSH tunneling là phương án dự phòng phổ quát.
+- Với **các nút (iOS/Android và thiết bị tương lai)**: kết nối tới Gateway **WebSocket** (LAN/tailnet hoặc SSH tunnel khi cần).
 
 ## Ý tưởng cốt lõi
 
-- WebSocket của Gateway thường bind vào **loopback** trên cổng bạn cấu hình (mặc định là 18789).
-- Để dùng từ xa, hãy expose nó qua Tailscale Serve hoặc một bind LAN/Tailnet đáng tin cậy, hoặc forward cổng loopback qua SSH.
+- Gateway WebSocket thường bind vào **loopback** trên cổng bạn cấu hình (mặc định là 18789).
+- Để dùng từ xa, hãy phơi nó qua Tailscale Serve hoặc một bind LAN/Tailnet tin cậy, hoặc chuyển tiếp cổng loopback qua SSH.
 
 ## Các thiết lập VPN và tailnet phổ biến
 
-Hãy nghĩ **máy chủ Gateway** là nơi agent chạy. Nó sở hữu session, auth profile, channel và trạng thái. Laptop, desktop và node của bạn kết nối tới máy chủ đó.
+Hãy xem **máy chủ Gateway** là nơi agent chạy. Nó sở hữu các phiên, hồ sơ xác thực, kênh và trạng thái. Laptop, máy tính để bàn và các nút của bạn kết nối tới máy chủ đó.
 
 ### Gateway luôn bật trong tailnet của bạn
 
-Chạy Gateway trên một máy chủ bền vững (VPS hoặc home server) và truy cập qua **Tailscale** hoặc SSH.
+Chạy Gateway trên một máy chủ bền vững (VPS hoặc máy chủ tại nhà) và truy cập qua **Tailscale** hoặc SSH.
 
 - **UX tốt nhất:** giữ `gateway.bind: "loopback"` và dùng **Tailscale Serve** cho Control UI.
-- **LAN/Tailnet đáng tin cậy:** bind gateway vào một interface riêng tư và kết nối trực tiếp bằng `gateway.remote.transport: "direct"`.
-- **Dự phòng:** giữ loopback cộng với đường hầm SSH từ bất kỳ máy nào cần truy cập.
+- **LAN/Tailnet tin cậy:** bind gateway vào một giao diện riêng tư và kết nối trực tiếp với `gateway.remote.transport: "direct"`.
+- **Dự phòng:** giữ loopback cùng SSH tunnel từ bất kỳ máy nào cần truy cập.
 - **Ví dụ:** [exe.dev](/vi/install/exe-dev) (VM dễ dùng) hoặc [Hetzner](/vi/install/hetzner) (VPS production).
 
-Lý tưởng khi laptop của bạn thường ngủ nhưng bạn muốn agent luôn bật.
+Lý tưởng khi laptop của bạn thường xuyên ngủ nhưng bạn muốn agent luôn bật.
 
-### Home desktop chạy Gateway
+### Máy tính để bàn tại nhà chạy Gateway
 
 Laptop **không** chạy agent. Nó kết nối từ xa:
 
 - Dùng chế độ từ xa của ứng dụng macOS (Settings → General → OpenClaw runs).
-- Ứng dụng kết nối trực tiếp khi gateway có thể truy cập trên LAN/Tailnet, hoặc mở và quản lý một đường hầm SSH khi bạn chọn SSH.
+- Ứng dụng kết nối trực tiếp khi gateway có thể truy cập trên LAN/Tailnet, hoặc mở và quản lý SSH tunnel khi bạn chọn SSH.
 
 Runbook: [truy cập từ xa trên macOS](/vi/platforms/mac/remote).
 
 ### Laptop chạy Gateway
 
-Giữ Gateway cục bộ nhưng expose an toàn:
+Giữ Gateway cục bộ nhưng phơi nó một cách an toàn:
 
-- Đường hầm SSH tới laptop từ các máy khác, hoặc
-- Tailscale Serve Control UI và giữ Gateway chỉ dùng loopback.
+- SSH tunnel tới laptop từ các máy khác, hoặc
+- Dùng Tailscale Serve cho Control UI và giữ Gateway chỉ loopback.
 
 Hướng dẫn: [Tailscale](/vi/gateway/tailscale) và [tổng quan Web](/vi/web).
 
-## Luồng lệnh (chạy ở đâu)
+## Luồng lệnh (cái gì chạy ở đâu)
 
-Một dịch vụ gateway sở hữu trạng thái + channel. Node là các thiết bị ngoại vi.
+Một dịch vụ gateway sở hữu trạng thái + kênh. Các nút là ngoại vi.
 
-Ví dụ luồng (Telegram → node):
+Ví dụ luồng (Telegram → nút):
 
 - Tin nhắn Telegram đến **Gateway**.
-- Gateway chạy **agent** và quyết định có gọi công cụ node hay không.
-- Gateway gọi **node** qua WebSocket của Gateway (`node.*` RPC).
-- Node trả về kết quả; Gateway phản hồi lại ra Telegram.
+- Gateway chạy **agent** và quyết định có gọi một công cụ nút hay không.
+- Gateway gọi **nút** qua Gateway WebSocket (`node.*` RPC).
+- Nút trả về kết quả; Gateway trả lời ngược lại ra Telegram.
 
 Ghi chú:
 
-- **Node không chạy dịch vụ gateway.** Chỉ nên chạy một gateway trên mỗi máy chủ, trừ khi bạn cố ý chạy các profile cô lập (xem [Nhiều gateway](/vi/gateway/multiple-gateways)).
-- "node mode" của ứng dụng macOS chỉ là một client node qua WebSocket của Gateway.
+- **Các nút không chạy dịch vụ gateway.** Chỉ nên chạy một gateway trên mỗi máy chủ, trừ khi bạn cố ý chạy các hồ sơ tách biệt (xem [Nhiều gateway](/vi/gateway/multiple-gateways)).
+- "Chế độ nút" của ứng dụng macOS chỉ là một client nút qua Gateway WebSocket.
 
-## Đường hầm SSH (CLI + công cụ)
+## SSH tunnel (CLI + công cụ)
 
-Tạo một đường hầm cục bộ tới Gateway WS từ xa:
+Tạo một tunnel cục bộ tới Gateway WS từ xa:
 
 ```bash
 ssh -N -L 18789:127.0.0.1:18789 user@host
 ```
 
-Khi đường hầm đang hoạt động:
+Khi tunnel đã chạy:
 
-- `openclaw health` và `openclaw status --deep` giờ truy cập gateway từ xa qua `ws://127.0.0.1:18789`.
-- `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe` và `openclaw gateway call` cũng có thể nhắm tới URL đã forward qua `--url` khi cần.
+- `openclaw health` và `openclaw status --deep` giờ sẽ truy cập gateway từ xa qua `ws://127.0.0.1:18789`.
+- `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe` và `openclaw gateway call` cũng có thể nhắm tới URL đã chuyển tiếp qua `--url` khi cần.
 
 <Note>
-Thay `18789` bằng `gateway.port` bạn đã cấu hình (hoặc `--port` hoặc `OPENCLAW_GATEWAY_PORT`).
+Thay `18789` bằng `gateway.port` đã cấu hình của bạn (hoặc `--port` hoặc `OPENCLAW_GATEWAY_PORT`).
 </Note>
 
 <Warning>
-Khi bạn truyền `--url`, CLI không fallback về config hoặc thông tin xác thực môi trường. Hãy đưa `--token` hoặc `--password` rõ ràng. Thiếu thông tin xác thực rõ ràng là lỗi.
+Khi bạn truyền `--url`, CLI không fallback về thông tin xác thực trong cấu hình hoặc môi trường. Hãy đưa vào `--token` hoặc `--password` một cách tường minh. Thiếu thông tin xác thực tường minh là lỗi.
 </Warning>
 
 ## Mặc định từ xa của CLI
@@ -109,13 +109,17 @@ Bạn có thể lưu một đích từ xa để các lệnh CLI dùng nó theo m
 }
 ```
 
-Khi gateway chỉ dùng loopback, giữ URL là `ws://127.0.0.1:18789` và mở đường hầm SSH trước.
-Trong transport đường hầm SSH của ứng dụng macOS, hostname gateway được phát hiện thuộc về
-`gateway.remote.sshTarget`; `gateway.remote.url` vẫn là URL đường hầm cục bộ.
+Khi gateway chỉ dùng loopback, giữ URL là `ws://127.0.0.1:18789` và mở SSH tunnel trước.
+Trong transport SSH tunnel của ứng dụng macOS, các hostname gateway được phát hiện thuộc về
+`gateway.remote.sshTarget`; `gateway.remote.url` vẫn là URL tunnel cục bộ.
 Nếu các cổng đó khác nhau, đặt `gateway.remote.remotePort` thành cổng gateway trên
 máy chủ SSH.
+Xác minh host-key mặc định là nghiêm ngặt. Các alias được quản lý có thể dùng tường minh
+chính sách tin cậy OpenSSH hiệu lực của chúng với
+`gateway.remote.sshHostKeyPolicy: "openssh"`; hãy rà soát các thiết lập SSH của người dùng và hệ thống
+tương ứng trước khi bật.
 
-Với gateway đã có thể truy cập trên LAN hoặc Tailnet đáng tin cậy, dùng chế độ trực tiếp:
+Với gateway đã có thể truy cập trên LAN hoặc Tailnet tin cậy, dùng chế độ trực tiếp:
 
 ```json5
 {
@@ -132,61 +136,65 @@ Với gateway đã có thể truy cập trên LAN hoặc Tailnet đáng tin cậ
 
 ## Thứ tự ưu tiên thông tin xác thực
 
-Việc phân giải thông tin xác thực Gateway tuân theo một contract chung trên các đường dẫn call/probe/status và giám sát exec-approval của Discord. Node-host dùng cùng contract cơ sở với một ngoại lệ local-mode (nó cố ý bỏ qua `gateway.remote.*`):
+Cách phân giải thông tin xác thực Gateway tuân theo một contract chung trên các đường dẫn call/probe/status và giám sát exec-approval của Discord. Node-host dùng cùng contract cơ sở với một ngoại lệ ở chế độ cục bộ (nó cố ý bỏ qua `gateway.remote.*`):
 
-- Thông tin xác thực rõ ràng (`--token`, `--password` hoặc công cụ `gatewayToken`) luôn thắng trên các đường dẫn call chấp nhận auth rõ ràng.
+- Thông tin xác thực tường minh (`--token`, `--password`, hoặc `gatewayToken` của công cụ) luôn thắng trên các đường dẫn call chấp nhận xác thực tường minh.
 - An toàn khi ghi đè URL:
-  - Ghi đè URL trong CLI (`--url`) không bao giờ tái dùng thông tin xác thực ngầm định từ config/env.
-  - Ghi đè URL bằng env (`OPENCLAW_GATEWAY_URL`) chỉ có thể dùng thông tin xác thực từ env (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
-- Mặc định local mode:
-  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (fallback từ xa chỉ áp dụng khi input token auth cục bộ chưa được đặt)
-  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (fallback từ xa chỉ áp dụng khi input password auth cục bộ chưa được đặt)
-- Mặc định remote mode:
+  - Các ghi đè URL của CLI (`--url`) không bao giờ tái sử dụng thông tin xác thực ngầm định từ config/env.
+  - Các ghi đè URL từ env (`OPENCLAW_GATEWAY_URL`) chỉ có thể dùng thông tin xác thực env (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
+- Mặc định chế độ cục bộ:
+  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (fallback từ xa chỉ áp dụng khi đầu vào token xác thực cục bộ chưa được đặt)
+  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (fallback từ xa chỉ áp dụng khi đầu vào mật khẩu xác thực cục bộ chưa được đặt)
+- Mặc định chế độ từ xa:
   - token: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
   - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
-- Ngoại lệ local-mode của Node-host: `gateway.remote.token` / `gateway.remote.password` bị bỏ qua.
-- Kiểm tra token cho probe/status từ xa mặc định là nghiêm ngặt: chúng chỉ dùng `gateway.remote.token` (không fallback token cục bộ) khi nhắm tới remote mode.
+- Ngoại lệ chế độ cục bộ của Node-host: `gateway.remote.token` / `gateway.remote.password` bị bỏ qua.
+- Kiểm tra token probe/status từ xa mặc định là nghiêm ngặt: chúng chỉ dùng `gateway.remote.token` (không fallback sang token cục bộ) khi nhắm tới chế độ từ xa.
 - Ghi đè env của Gateway chỉ dùng `OPENCLAW_GATEWAY_*`.
 
-## Truy cập Chat UI từ xa
+## Truy cập từ xa Chat UI
 
-WebChat không còn dùng một cổng HTTP riêng. Chat UI SwiftUI kết nối trực tiếp tới WebSocket của Gateway.
+WebChat không còn dùng một cổng HTTP riêng. Chat UI SwiftUI kết nối trực tiếp tới Gateway WebSocket.
 
-- Forward `18789` qua SSH (xem ở trên), rồi kết nối client tới `ws://127.0.0.1:18789`.
-- Với chế độ trực tiếp LAN/Tailnet, kết nối client tới URL `ws://` riêng tư đã cấu hình hoặc URL bảo mật `wss://`.
+- Chuyển tiếp `18789` qua SSH (xem ở trên), rồi kết nối client tới `ws://127.0.0.1:18789`.
+- Với chế độ trực tiếp LAN/Tailnet, kết nối client tới URL riêng tư `ws://` hoặc bảo mật `wss://` đã cấu hình.
 - Trên macOS, ưu tiên chế độ từ xa của ứng dụng, chế độ này tự động quản lý transport đã chọn.
 
 ## Chế độ từ xa của ứng dụng macOS
 
-Ứng dụng thanh menu macOS có thể điều khiển cùng thiết lập từ đầu đến cuối (kiểm tra trạng thái từ xa, WebChat và forward Voice Wake).
+Ứng dụng thanh menu macOS có thể điều khiển cùng thiết lập từ đầu đến cuối (kiểm tra trạng thái từ xa, WebChat và chuyển tiếp Voice Wake).
 
 Runbook: [truy cập từ xa trên macOS](/vi/platforms/mac/remote).
 
 ## Quy tắc bảo mật (remote/VPN)
 
-Phiên bản ngắn: **giữ Gateway chỉ dùng loopback** trừ khi bạn chắc chắn cần bind.
+Phiên bản ngắn: **giữ Gateway chỉ loopback** trừ khi bạn chắc chắn cần bind.
 
-- **Loopback + SSH/Tailscale Serve** là mặc định an toàn nhất (không expose công khai).
+- **Loopback + SSH/Tailscale Serve** là mặc định an toàn nhất (không phơi công khai).
 - Plaintext `ws://` được chấp nhận cho loopback, LAN, link-local, `.local`, `.ts.net` và các máy chủ Tailscale CGNAT. Máy chủ từ xa công khai phải dùng `wss://`.
-- **Bind không phải loopback** (`lan`/`tailnet`/`custom`, hoặc `auto` khi loopback không khả dụng) phải dùng auth gateway: token, password, hoặc reverse proxy nhận biết danh tính với `gateway.auth.mode: "trusted-proxy"`.
-- `gateway.remote.token` / `.password` là nguồn thông tin xác thực client. Bản thân chúng **không** cấu hình auth server.
+- **Bind không phải loopback** (`lan`/`tailnet`/`custom`, hoặc `auto` khi loopback không khả dụng) phải dùng xác thực gateway: token, mật khẩu, hoặc reverse proxy nhận biết danh tính với `gateway.auth.mode: "trusted-proxy"`.
+- `gateway.remote.token` / `.password` là nguồn thông tin xác thực client. Tự chúng **không** cấu hình xác thực máy chủ.
 - Các đường dẫn call cục bộ chỉ có thể dùng `gateway.remote.*` làm fallback khi `gateway.auth.*` chưa được đặt.
-- Nếu `gateway.auth.token` / `gateway.auth.password` được cấu hình rõ ràng qua SecretRef và không phân giải được, quá trình phân giải sẽ fail closed (không có fallback từ xa để che lỗi).
-- `gateway.remote.tlsFingerprint` ghim chứng chỉ TLS từ xa khi dùng `wss://`, bao gồm chế độ trực tiếp trên macOS. Nếu không có pin đã cấu hình hoặc đã lưu trước đó, macOS chỉ ghim chứng chỉ dùng lần đầu sau khi vượt qua trust hệ thống bình thường; gateway tự ký hoặc private-CA mà macOS chưa tin cậy cần fingerprint rõ ràng hoặc Remote qua SSH.
-- **Tailscale Serve** có thể xác thực lưu lượng Control UI/WebSocket qua header danh tính khi `gateway.auth.allowTailscale: true`; endpoint HTTP API không dùng auth header Tailscale đó mà tuân theo chế độ auth HTTP bình thường của gateway. Luồng không token này giả định máy chủ gateway là đáng tin cậy. Đặt thành `false` nếu bạn muốn auth bằng shared-secret ở mọi nơi.
-- Auth **trusted-proxy** mặc định kỳ vọng các thiết lập proxy nhận biết danh tính không phải loopback.
-  Reverse proxy loopback cùng máy chủ yêu cầu đặt rõ ràng `gateway.auth.trustedProxy.allowLoopback = true`.
-- Đối xử với điều khiển qua trình duyệt như quyền truy cập operator: chỉ tailnet + ghép cặp node có chủ đích.
+- Nếu `gateway.auth.token` / `gateway.auth.password` được cấu hình tường minh qua SecretRef và không phân giải được, việc phân giải sẽ fail-closed (không bị fallback từ xa che khuất).
+- `gateway.remote.tlsFingerprint` ghim chứng chỉ TLS từ xa khi dùng `wss://`, bao gồm cả chế độ trực tiếp macOS. Nếu không có pin đã cấu hình hoặc đã lưu trước đó, macOS chỉ ghim chứng chỉ lần đầu sử dụng sau khi vượt qua kiểm tra tin cậy hệ thống bình thường; các gateway tự ký hoặc private-CA mà macOS chưa tin cậy cần fingerprint tường minh hoặc Remote over SSH.
+- **Tailscale Serve** có thể xác thực lưu lượng Control UI/WebSocket qua các header danh tính
+  khi `gateway.auth.allowTailscale: true`; các endpoint HTTP API không
+  dùng xác thực header Tailscale đó và thay vào đó tuân theo chế độ xác thực HTTP thông thường
+  của gateway. Luồng không token này giả định máy chủ gateway là tin cậy. Đặt thành
+  `false` nếu bạn muốn xác thực bằng shared-secret ở mọi nơi.
+- Xác thực **Trusted-proxy** mặc định kỳ vọng các thiết lập proxy nhận biết danh tính không phải loopback.
+  Reverse proxy loopback cùng máy chủ yêu cầu `gateway.auth.trustedProxy.allowLoopback = true` tường minh.
+- Đối xử với quyền điều khiển qua trình duyệt như quyền truy cập của người vận hành: chỉ tailnet + ghép cặp nút có chủ đích.
 
 Đọc sâu: [Bảo mật](/vi/gateway/security).
 
-### macOS: đường hầm SSH bền vững qua LaunchAgent
+### macOS: SSH tunnel bền vững qua LaunchAgent
 
-Với client macOS kết nối tới gateway từ xa, thiết lập bền vững dễ nhất dùng một mục cấu hình SSH `LocalForward` cộng với LaunchAgent để giữ đường hầm sống qua reboot và crash.
+Với client macOS kết nối tới gateway từ xa, thiết lập bền vững dễ nhất dùng một mục cấu hình SSH `LocalForward` cộng với LaunchAgent để giữ tunnel sống qua khởi động lại và sự cố.
 
 #### Bước 1: thêm cấu hình SSH
 
-Chỉnh sửa `~/.ssh/config`:
+Sửa `~/.ssh/config`:
 
 ```ssh
 Host remote-gateway
@@ -206,7 +214,7 @@ ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 
 #### Bước 3: cấu hình token gateway
 
-Lưu token trong config để nó tồn tại qua các lần restart:
+Lưu token trong cấu hình để nó tồn tại qua các lần khởi động lại:
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
@@ -214,7 +222,7 @@ openclaw config set gateway.remote.token "<your-token>"
 
 #### Bước 4: tạo LaunchAgent
 
-Lưu nội dung này thành `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
+Lưu nội dung này dưới dạng `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -237,13 +245,13 @@ Lưu nội dung này thành `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 </plist>
 ```
 
-#### Bước 5: load LaunchAgent
+#### Bước 5: tải LaunchAgent
 
 ```bash
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-Đường hầm sẽ tự động khởi động khi đăng nhập, restart khi crash và giữ cổng đã forward hoạt động.
+Tunnel sẽ tự động khởi động khi đăng nhập, khởi động lại khi gặp sự cố và giữ cổng được chuyển tiếp hoạt động.
 
 <Note>
 Nếu bạn còn LaunchAgent `com.openclaw.ssh-tunnel` từ một thiết lập cũ, hãy unload và xóa nó.
@@ -251,20 +259,20 @@ Nếu bạn còn LaunchAgent `com.openclaw.ssh-tunnel` từ một thiết lập 
 
 #### Khắc phục sự cố
 
-Kiểm tra đường hầm có đang chạy không:
+Kiểm tra tunnel có đang chạy hay không:
 
 ```bash
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
 ```
 
-Restart đường hầm:
+Khởi động lại tunnel:
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-Dừng đường hầm:
+Dừng tunnel:
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
@@ -272,10 +280,10 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 | Mục cấu hình                         | Tác dụng                                                     |
 | ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | Forward cổng cục bộ 18789 tới cổng từ xa 18789               |
-| `ssh -N`                             | SSH không thực thi lệnh từ xa (chỉ port-forwarding)          |
-| `KeepAlive`                          | Tự động restart đường hầm nếu nó crash                       |
-| `RunAtLoad`                          | Khởi động đường hầm khi LaunchAgent load lúc đăng nhập       |
+| `LocalForward 18789 127.0.0.1:18789` | Chuyển tiếp cổng cục bộ 18789 tới cổng từ xa 18789           |
+| `ssh -N`                             | SSH mà không thực thi lệnh từ xa (chỉ port-forwarding)       |
+| `KeepAlive`                          | Tự động khởi động lại tunnel nếu nó gặp sự cố                |
+| `RunAtLoad`                          | Khởi động tunnel khi LaunchAgent được tải lúc đăng nhập      |
 
 ## Liên quan
 
