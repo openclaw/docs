@@ -2,15 +2,15 @@
 read_when:
     - 設定私訊存取控制
     - 配對新的 iOS/Android 節點
-    - 檢視 OpenClaw 安全態勢
-summary: 配對概覽：核准誰可以私訊你 + 哪些節點可以加入
+    - 檢閱 OpenClaw 安全態勢
+summary: 配對概覽：核准誰可以傳私訊給你 + 哪些節點可以加入
 title: 配對
 x-i18n:
-    generated_at: "2026-06-27T18:57:48Z"
+    generated_at: "2026-07-03T13:15:00Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 92870489b62aeec710f49ec92908f4b83c7d9ee2ce34174b42e283839748e549
+    source_hash: c62f42116b71467576b2c1e005fa2e606a3d0f40cbf7b92fc4a7dd47c8f0568e
     source_path: channels/pairing.md
     workflow: 16
 ---
@@ -18,29 +18,29 @@ x-i18n:
 「配對」是 OpenClaw 明確的存取核准步驟。
 它用於兩個地方：
 
-1. **DM 配對**（誰可以與機器人交談）
-2. **節點配對**（哪些裝置/節點可以加入閘道網路）
+1. **DM 配對**（允許誰與 bot 對話）
+2. **節點配對**（允許哪些裝置/節點加入閘道網路）
 
 安全性背景：[安全性](/zh-TW/gateway/security)
 
 ## 1) DM 配對（傳入聊天存取）
 
-當頻道設定為 DM 政策 `pairing` 時，未知傳送者會收到一組短代碼，且在你核准前，他們的訊息**不會被處理**。
+當通道設定為 DM 政策 `pairing` 時，未知寄件者會取得短代碼，且其訊息在你核准前**不會被處理**。
 
 預設 DM 政策記錄於：[安全性](/zh-TW/gateway/security)
 
-只有在有效的 DM 允許清單包含 `"*"` 時，`dmPolicy: "open"` 才是公開的。
-設定與驗證會要求公開開放設定使用該萬用字元。如果現有
-狀態包含 `open` 搭配具體的 `allowFrom` 項目，執行階段仍只允許
-那些傳送者，且配對儲存區的核准不會擴大 `open` 存取權。
+`dmPolicy: "open"` 只有在有效的 DM 允許清單包含 `"*"` 時才是公開的。
+設定與驗證要求公開開放設定使用該萬用字元。如果現有狀態包含
+帶有具體 `allowFrom` 項目的 `open`，執行階段仍只允許
+那些寄件者，且配對儲存核准不會擴大 `open` 存取權。
 
 配對代碼：
 
 - 8 個字元、大寫、沒有易混淆字元（`0O1I`）。
-- **1 小時後過期**。機器人只會在建立新請求時傳送配對訊息（大約每位傳送者每小時一次）。
-- 待處理的 DM 配對請求預設上限為**每個頻道 3 個**；額外請求會被忽略，直到其中一個過期或被核准。
+- **1 小時後到期**。bot 只會在建立新請求時傳送配對訊息（每位寄件者大約每小時一次）。
+- 擱置中的 DM 配對請求預設每個通道上限為 **3 個**；額外請求會被忽略，直到其中一個到期或被核准。
 
-### 核准傳送者
+### 核准寄件者
 
 ```bash
 openclaw pairing list telegram
@@ -48,18 +48,18 @@ openclaw pairing approve telegram <CODE>
 ```
 
 如果尚未設定命令擁有者，核准 DM 配對代碼也會將
-`commands.ownerAllowFrom` 初始化為已核准的傳送者，例如 `telegram:123456789`。
-這會讓首次設定取得一個明確的擁有者，用於特權命令與 exec
+`commands.ownerAllowFrom` 啟動設定為已核准的寄件者，例如 `telegram:123456789`。
+這會為首次設定提供一個明確的擁有者，用於具權限的命令和 exec
 核准提示。擁有者存在後，後續配對核准只會授予 DM
-存取權；它們不會新增更多擁有者。
+存取權；它們不會加入更多擁有者。
 
-支援的頻道：`discord`、`feishu`、`googlechat`、`imessage`、`irc`、`line`、`matrix`、`mattermost`、`msteams`、`nextcloud-talk`、`nostr`、`openclaw-weixin`、`signal`、`slack`、`synology-chat`、`telegram`、`twitch`、`whatsapp`、`zalo`、`zalouser`。
+支援的通道：`discord`、`feishu`、`googlechat`、`imessage`、`irc`、`line`、`matrix`、`mattermost`、`msteams`、`nextcloud-talk`、`nostr`、`openclaw-weixin`、`signal`、`slack`、`synology-chat`、`telegram`、`twitch`、`whatsapp`、`zalo`、`zalouser`。
 
-### 可重複使用的傳送者群組
+### 可重複使用的寄件者群組
 
-當同一組受信任傳送者應套用到多個訊息頻道，或同時套用到 DM 與群組允許清單時，請使用頂層 `accessGroups`。
+當同一組受信任的寄件者集合應套用到多個訊息通道，或同時套用到 DM 與群組允許清單時，請使用頂層 `accessGroups`。
 
-靜態群組使用 `type: "message.senders"`，並在頻道允許清單中以
+靜態群組使用 `type: "message.senders"`，並從通道允許清單以
 `accessGroup:<name>` 參照：
 
 ```json5
@@ -81,33 +81,34 @@ openclaw pairing approve telegram <CODE>
 }
 ```
 
-存取群組的詳細文件在此：[存取群組](/zh-TW/channels/access-groups)
+存取群組在此有詳細文件：[存取群組](/zh-TW/channels/access-groups)
 
 ### 狀態存放位置
 
-儲存在 `~/.openclaw/credentials/` 下：
+儲存在 `~/.openclaw/credentials/` 底下：
 
-- 待處理請求：`<channel>-pairing.json`
-- 已核准允許清單儲存區：
+- 擱置中請求：`<channel>-pairing.json`
+- 已核准允許清單儲存：
   - 預設帳號：`<channel>-allowFrom.json`
   - 非預設帳號：`<channel>-<accountId>-allowFrom.json`
 
 帳號範圍行為：
 
-- 非預設帳號只會讀寫其範圍內的允許清單檔案。
-- 預設帳號使用頻道範圍的未限定允許清單檔案。
+- 非預設帳號只讀寫其範圍內的允許清單檔案。
+- 預設帳號使用通道範圍的無範圍允許清單檔案。
 
-請將這些視為敏感資料（它們會管控對你助理的存取）。
+請將這些視為敏感資料（它們會控制對你助理的存取）。
 
 <Note>
-配對允許清單儲存區用於 DM 存取。群組授權是分開的。
-核准 DM 配對代碼不會自動允許該傳送者在群組中執行
-命令或控制機器人。第一位擁有者初始化是 `commands.ownerAllowFrom` 中的獨立設定
-狀態，而群組聊天傳送仍遵循該頻道的群組允許清單（例如 `groupAllowFrom`、`groups`，或依頻道而定的個別群組
-或個別主題覆寫）。
+配對允許清單儲存用於 DM 存取。群組授權是分開的。
+核准 DM 配對代碼不會自動允許該寄件者執行群組
+命令或在群組中控制 bot。首次擁有者啟動是 `commands.ownerAllowFrom`
+中的獨立設定狀態，而群組聊天傳遞仍遵循
+通道的群組允許清單（例如 `groupAllowFrom`、`groups`，或依通道而定的每群組
+或每主題覆寫）。
 </Note>
 
-## 2) 節點裝置配對（iOS/Android/macOS/無介面節點）
+## 2) 節點裝置配對（iOS/Android/macOS/無頭節點）
 
 節點會以 `role: node` 的**裝置**身分連線到閘道。閘道
 會建立必須核准的裝置配對請求。
@@ -116,36 +117,36 @@ openclaw pairing approve telegram <CODE>
 
 如果你使用 `device-pair` 外掛，可以完全從 Telegram 完成首次裝置配對：
 
-1. 在 Telegram 中傳訊給你的機器人：`/pair`
-2. 機器人會回覆兩則訊息：一則操作說明訊息，以及一則獨立的**設定代碼**訊息（方便在 Telegram 中複製/貼上）。
-3. 在手機上開啟 OpenClaw iOS app → Settings → Gateway。
+1. 在 Telegram 中傳訊息給你的 bot：`/pair`
+2. bot 會回覆兩則訊息：一則指示訊息，以及一則獨立的**設定代碼**訊息（在 Telegram 中容易複製/貼上）。
+3. 在手機上開啟 OpenClaw iOS app → 設定 → 閘道。
 4. 掃描 QR code 或貼上設定代碼並連線。
-5. 回到 Telegram：`/pair pending`（檢視請求 ID、角色與範圍），然後核准。
+5. 回到 Telegram：`/pair pending`（檢視請求 ID、角色和範圍），然後核准。
 
 設定代碼是 base64 編碼的 JSON 承載，其中包含：
 
 - `url`：閘道 WebSocket URL（`ws://...` 或 `wss://...`）
-- `bootstrapToken`：用於初始配對交握的短效單一裝置初始化權杖
+- `bootstrapToken`：用於初始配對握手的短效單一裝置啟動權杖
 
-該初始化權杖帶有內建的配對初始化設定檔：
+該啟動權杖帶有內建配對啟動設定檔：
 
-- 內建設定檔只允許全新的 QR/設定代碼基準：
-  `node` 加上受限的 `operator` 交接
+- 內建設定設定檔只允許全新的 QR/設定代碼基準：
+  `node` 加上有限的 `operator` 交接
 - 交接後的 `node` 權杖維持 `scopes: []`
-- 交接後的 `operator` 權杖僅限於 `operator.approvals`、
-  `operator.read` 與 `operator.write`
-- QR/設定代碼初始化不會授予 `operator.admin` 與 `operator.pairing`；
-  它們需要獨立核准的操作員配對或權杖流程
-- 後續權杖輪替/撤銷仍同時受限於裝置已核准的
-  角色合約，以及呼叫者工作階段的操作員範圍
+- 交接後的 `operator` 權杖限制為 `operator.approvals`、
+  `operator.read`、`operator.talk.secrets` 和 `operator.write`
+- QR/設定代碼啟動不會授予 `operator.admin`；它需要
+  另一個已核准的操作員配對或權杖流程
+- 後續權杖輪替/撤銷仍受裝置已核准的
+  角色合約與呼叫者工作階段的操作員範圍共同限制
 
-在設定代碼有效期間，請將它視為密碼。
+設定代碼有效期間，請像密碼一樣對待它。
 
-對於 Tailscale、公開或其他遠端行動裝置配對，請使用 Tailscale Serve/Funnel
-或其他 `wss://` 閘道 URL。明文 `ws://` 設定代碼只接受
-local loopback、私人 LAN 位址、`.local` Bonjour 主機，以及 Android
-模擬器主機。Tailnet CGNAT 位址、`.ts.net` 名稱與公開主機仍會
-在發行 QR/設定代碼前封閉失敗。
+對於 Tailscale、公開或其他遠端行動配對，請使用 Tailscale Serve/Funnel
+或另一個 `wss://` 閘道 URL。明文 `ws://` 設定代碼只接受
+local loopback、私有 LAN 位址、`.local` Bonjour 主機，以及 Android
+模擬器主機。Tailnet CGNAT 位址、`.ts.net` 名稱和公開主機仍會
+在發出 QR/設定代碼前封閉失敗。
 
 ### 核准節點裝置
 
@@ -155,25 +156,25 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-當明確核准被拒絕，原因是進行核准的已配對裝置工作階段
-是以僅限配對的範圍開啟時，命令列介面會使用
-`operator.admin` 重試同一個請求。這讓現有具備管理員能力的已配對裝置可以恢復新的
-Control UI/瀏覽器配對，而不必手動編輯 `devices/paired.json`。
-閘道仍會驗證重試的連線；無法以 `operator.admin`
-驗證的權杖仍會被封鎖。
+當明確核准因核准用的已配對裝置工作階段
+以僅限配對範圍開啟而遭拒時，命令列介面會使用
+`operator.admin` 重試同一請求。這讓既有具管理員能力的已配對裝置能復原新的
+Control UI/瀏覽器配對，而不必手動編輯 `devices/paired.json`。閘道
+仍會驗證重試的連線；無法以 `operator.admin` 驗證的權杖
+仍會被封鎖。
 
-如果同一裝置以不同驗證細節重試（例如不同的
-角色/範圍/公開金鑰），先前的待處理請求會被取代，並建立新的
+如果同一裝置以不同驗證詳細資料重試（例如不同的
+角色/範圍/公開金鑰），先前的擱置請求會被取代，並建立新的
 `requestId`。
 
 <Note>
-已配對的裝置不會在未告知的情況下取得更廣泛的存取權。如果它重新連線並要求更多範圍或更廣泛的角色，OpenClaw 會保留現有核准不變，並建立新的待處理升級請求。核准前，請使用 `openclaw devices list` 比較目前已核准的存取權與新請求的存取權。
+已配對的裝置不會悄悄取得更廣的存取權。如果它重新連線並要求更多範圍或更廣的角色，OpenClaw 會保持現有核准不變，並建立新的擱置升級請求。請使用 `openclaw devices list`，在核准前比較目前已核准的存取權與新請求的存取權。
 </Note>
 
-### 選用的受信任 CIDR 節點自動核准
+### 可選的受信任 CIDR 節點自動核准
 
-裝置配對預設仍需手動處理。對於嚴格控管的節點網路，
-你可以選擇使用明確 CIDR 或精確 IP，對首次節點進行自動核准：
+裝置配對預設仍為手動。對於嚴格控制的節點網路，
+你可以選擇使用明確 CIDR 或精確 IP 來自動核准首次節點：
 
 ```json5
 {
@@ -187,31 +188,31 @@ Control UI/瀏覽器配對，而不必手動編輯 `devices/paired.json`。
 }
 ```
 
-這只適用於沒有請求
-範圍的全新 `role: node` 配對請求。操作員、瀏覽器、Control UI 與 WebChat 用戶端仍需要手動
-核准。角色、範圍、中繼資料與公開金鑰變更仍需要手動
+這只適用於沒有請求範圍的全新 `role: node` 配對請求。
+操作員、瀏覽器、Control UI 和 WebChat 用戶端仍需要手動
+核准。角色、範圍、中繼資料和公開金鑰變更仍需要手動
 核准。
 
 ### 節點配對狀態儲存
 
-儲存在 `~/.openclaw/devices/` 下：
+儲存在 `~/.openclaw/devices/` 底下：
 
-- `pending.json`（短效；待處理請求會過期）
+- `pending.json`（短效；擱置請求會到期）
 - `paired.json`（已配對裝置 + 權杖）
 
 ### 注意事項
 
 - 舊版 `node.pair.*` API（命令列介面：`openclaw nodes pending|approve|reject|remove|rename`）是
-  獨立的閘道所屬配對儲存區。WS 節點仍需要裝置配對。
-- 配對記錄是已核准角色的持久事實來源。作用中
-  裝置權杖仍受限於該已核准角色集合；已核准角色之外的零散權杖項目
+  獨立的閘道擁有配對儲存。WS 節點仍需要裝置配對。
+- 配對記錄是已核准角色的持久真實來源。作用中的
+  裝置權杖仍受限於該已核准角色集合；已核准角色外的零散權杖項目
   不會建立新的存取權。
 
 ## 相關文件
 
 - 安全性模型 + 提示注入：[安全性](/zh-TW/gateway/security)
 - 安全更新（執行 doctor）：[更新](/zh-TW/install/updating)
-- 頻道設定：
+- 通道設定：
   - Telegram：[Telegram](/zh-TW/channels/telegram)
   - WhatsApp：[WhatsApp](/zh-TW/channels/whatsapp)
   - Signal：[Signal](/zh-TW/channels/signal)
