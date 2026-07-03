@@ -1,14 +1,14 @@
 ---
 read_when:
-    - De ClawHub CLI gebruiken
+    - De ClawHub-CLI gebruiken
     - Installatie, update of publicatie debuggen
 summary: 'CLI-referentie: opdrachten, vlaggen, configuratie en lockfile-gedrag.'
 x-i18n:
-    generated_at: "2026-07-03T09:44:29Z"
+    generated_at: "2026-07-03T17:28:43Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b5bc3d499e78ba3c9861c2faf6a01cf8afd92d6b35c42658c5b702692b5c8746
+    source_hash: 23065775d74e7b52ed250051b8724b780c28dfdfc0adf9b8f115f7133fbdd77b
     source_path: clawhub/cli.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ npm i -g clawhub
 pnpm add -g clawhub
 ```
 
-Controleer het daarna:
+Verifieer het daarna:
 
 ```bash
 clawhub --help
@@ -35,8 +35,8 @@ clawhub whoami
 
 ## Globale flags
 
-- `--workdir <dir>`: werkmap (standaard: cwd; valt terug op Clawdbot-werkruimte indien geconfigureerd)
-- `--dir <dir>`: installatiemap onder workdir (standaard: `skills`)
+- `--workdir <dir>`: werkdirectory (standaard: cwd; valt terug op de Clawdbot-werkruimte als die is geconfigureerd)
+- `--dir <dir>`: installatiedirectory onder workdir (standaard: `skills`)
 - `--site <url>`: basis-URL voor browserlogin (standaard: `https://clawhub.ai`)
 - `--registry <url>`: API-basis-URL (standaard: gedetecteerd, anders `https://clawhub.ai`)
 - `--no-input`: prompts uitschakelen
@@ -61,7 +61,7 @@ de opgegeven proxy. `HTTPS_PROXY` wordt gebruikt voor HTTPS-verzoeken, `HTTP_PRO
 voor gewone HTTP. `NO_PROXY` / `no_proxy` wordt gerespecteerd om de proxy te omzeilen voor
 specifieke hosts of domeinen.
 
-Dit is vereist op systemen waar directe uitgaande verbindingen worden geblokkeerd
+Dit is vereist op systemen waar directe uitgaande verbindingen zijn geblokkeerd
 (bijv. Docker-containers, Hetzner VPS met alleen proxy-internet, bedrijfsfirewalls).
 
 Voorbeeld:
@@ -72,34 +72,34 @@ export NO_PROXY=localhost,127.0.0.1
 clawhub search "my query"
 ```
 
-Wanneer geen proxyvariabele is ingesteld, blijft het gedrag ongewijzigd (directe verbindingen).
+Wanneer er geen proxyvariabele is ingesteld, blijft het gedrag ongewijzigd (directe verbindingen).
 
 ## Configuratiebestand
 
-Slaat je API-token en gecachete registry-URL op.
+Slaat je API-token + gecachete registry-URL op.
 
 - macOS: `~/Library/Application Support/clawhub/config.json`
 - Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` of `~/.config/clawhub/config.json`
 - Windows: `%APPDATA%\\clawhub\\config.json`
-- Legacy fallback: als `clawhub/config.json` nog niet bestaat maar `clawdhub/config.json` wel, hergebruikt de CLI het legacy-pad
+- Legacy fallback: als `clawhub/config.json` nog niet bestaat maar `clawdhub/config.json` wel, hergebruikt de CLI het legacy pad
 - override: `CLAWHUB_CONFIG_PATH` (legacy `CLAWDHUB_CONFIG_PATH`)
 
-## Opdrachten
+## Commando's
 
 ### `login` / `auth login`
 
-- Standaard: opent browser naar `<site>/cli/auth` en voltooit via loopback-callback.
+- Standaard: opent de browser naar `<site>/cli/auth` en voltooit via een loopback-callback.
 - Headless: `clawhub login --token clh_...`
-- Remote/headless interactief: `clawhub login --device` drukt een code af en wacht terwijl je deze autoriseert op `<site>/cli/device`.
+- Remote/headless interactief: `clawhub login --device` print een code en wacht terwijl je deze autoriseert op `<site>/cli/device`.
 
 ### `whoami`
 
-- Controleert het opgeslagen token via `/api/v1/whoami`.
+- Verifieert het opgeslagen token via `/api/v1/whoami`.
 
 ### `token`
 
-- Drukt het opgeslagen API-token af naar stdout.
-- Handig om een lokaal login-token door te sluizen naar opdrachten voor CI-secretconfiguratie.
+- Print het opgeslagen API-token naar stdout.
+- Handig om een lokaal logintoken door te sturen naar CI-secretconfiguratiecommando's.
 
 ### `star <skill>` / `unstar <skill>`
 
@@ -111,23 +111,23 @@ Slaat je API-token en gecachete registry-URL op.
 
 - Roept `/api/v1/search?q=...` aan.
 - Uitvoer bevat de skill-slug, owner-handle, weergavenaam en relevantiescore.
-- Zoeken geeft voorrang aan exacte slug-/naam-tokenmatches boven downloadpopulariteit. Een zelfstandig slug-token zoals `map` matcht sterker met `personal-map` dan met de substring binnen `amap`.
-- Populariteit is een kleine rangschikkingsprior, geen garantie op de hoogste positie.
+- Zoeken geeft de voorkeur aan exacte slug-/naamtokenmatches boven downloadpopulariteit. Een zelfstandig slug-token zoals `map` matcht sterker met `personal-map` dan met de substring binnen `amap`.
+- Populariteit is een kleine rankingprior, geen garantie op toppositie.
 - Als een skill zou moeten verschijnen maar dat niet doet, voer dan `clawhub inspect @owner/slug` uit terwijl je bent ingelogd om owner-zichtbare moderatiediagnostiek te controleren voordat je metadata hernoemt.
 
 ### `explore`
 
-- Toont de nieuwste skills via `/api/v1/skills?limit=...&sort=createdAt` (gesorteerd op `createdAt` aflopend).
+- Toont nieuwste skills via `/api/v1/skills?limit=...&sort=createdAt` (gesorteerd op `createdAt` aflopend).
 - Flags:
   - `--limit <n>` (1-200, standaard: 25)
-  - `--sort newest|updated|rating|downloads|trending` (standaard: newest). Legacy installatiesorteeraliassen blijven werken voor compatibiliteit.
+  - `--sort newest|updated|rating|downloads|trending` (standaard: newest). Legacy install-sortaliases blijven werken voor compatibiliteit.
   - `--json` (machineleesbare uitvoer)
 - Uitvoer: `<slug>  v<version>  <age>  <summary>` (samenvatting afgekapt tot 50 tekens).
 
 ### `inspect @owner/slug`
 
 - Haalt skillmetadata en versiebestanden op zonder te installeren.
-- `--version <version>`: inspecteer een specifieke versie (standaard: nieuwste).
+- `--version <version>`: inspecteer een specifieke versie (standaard: laatste).
 - `--tag <tag>`: inspecteer een getagde versie (bijv. `latest`).
 - `--versions`: toon versiegeschiedenis (eerste pagina).
 - `--limit <n>`: maximaal aantal te tonen versies (1-200).
@@ -137,10 +137,10 @@ Slaat je API-token en gecachete registry-URL op.
 
 ### `install @owner/slug`
 
-- Lost de nieuwste versie op voor de genoemde owner en skill.
+- Bepaalt de laatste versie voor de genoemde owner en skill.
 - Downloadt zip via `/api/v1/download`.
 - Pakt uit naar `<workdir>/<dir>/<slug>`.
-- Weigert vastgepinde skills te overschrijven; voer eerst `clawhub unpin <skill>` uit.
+- Weigert vastgezette skills te overschrijven; voer eerst `clawhub unpin <skill>` uit.
 - Schrijft:
   - `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`)
   - `<skill>/.clawhub/origin.json` (legacy `.clawdhub`)
@@ -156,48 +156,48 @@ Slaat je API-token en gecachete registry-URL op.
 ### `list`
 
 - Leest `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`).
-- Toont `pinned` naast skills die met `clawhub pin` zijn bevroren, inclusief de optionele reden.
+- Toont `pinned` naast skills die zijn bevroren met `clawhub pin`, inclusief de optionele reden.
 
 ### `pin <skill>`
 
-- Markeert een geïnstalleerde skill als vastgepind in de lockfile.
-- `--reason <text>` legt vast waarom de skill is bevroren.
-- Vastgepinde skills worden overgeslagen door `update --all` en geweigerd door directe `update <skill>`.
-- Vastgepinde skills weigeren ook `install --force`, zodat de lokale bytes niet per ongeluk kunnen worden vervangen.
+- Markeert een geïnstalleerde skill als vastgezet in de lockfile.
+- `--reason <text>` registreert waarom de skill is bevroren.
+- Vastgezette skills worden overgeslagen door `update --all` en geweigerd door directe `update <skill>`.
+- Vastgezette skills weigeren ook `install --force`, zodat de lokale bytes niet per ongeluk kunnen worden vervangen.
 
 ### `unpin <skill>`
 
-- Verwijdert de lockfile-pin van een geïnstalleerde skill, zodat toekomstige updates deze kunnen wijzigen.
+- Verwijdert de lockfile-pin van een geïnstalleerde skill zodat toekomstige updates deze kunnen wijzigen.
 
 ### `update [@owner/slug]` / `update --all`
 
-- Berekent fingerprint uit lokale bestanden.
+- Berekent de fingerprint uit lokale bestanden.
 - Als de fingerprint overeenkomt met een bekende versie: geen prompt.
 - Als de fingerprint niet overeenkomt:
   - weigert standaard
   - overschrijft met `--force` (of prompt, indien interactief)
-- Vastgepinde skills worden nooit bijgewerkt door `--force`.
-- `update <skill>` faalt snel voor vastgepinde skills en vertelt je eerst `clawhub unpin <skill>` uit te voeren.
-- `update --all` slaat vastgepinde slugs over en drukt een samenvatting af van wat bevroren bleef.
+- Vastgezette skills worden nooit bijgewerkt door `--force`.
+- `update <skill>` faalt snel voor vastgezette skills en zegt dat je eerst `clawhub unpin <skill>` moet uitvoeren.
+- `update --all` slaat vastgezette slugs over en print een samenvatting van wat bevroren bleef.
 
 ### `skill publish <path>`
 
-- Vergelijkt de lokale bundel-fingerprint met ClawHub en sluit succesvol af wanneer
+- Vergelijkt de lokale bundelfingerprint met ClawHub en sluit succesvol af wanneer
   de inhoud al is gepubliceerd.
 - Nieuwe skills gebruiken standaard `1.0.0`; gewijzigde skills gebruiken standaard de volgende patchversie.
 - `--version <version>` selecteert expliciet een versie en publiceert zelfs wanneer de
   inhoud overeenkomt met een bestaande versie.
-- `--dry-run` lost de publicatie op zonder te uploaden; `--json` drukt een
-  machineleesbaar resultaat af.
-- `--owner <handle>` publiceert onder een org-/gebruikerspublisher-handle wanneer de
+- `--dry-run` lost de publicatie op zonder te uploaden; `--json` print een
+  machineleesbaar resultaat.
+- `--owner <handle>` publiceert onder een org-/user-publisherhandle wanneer de
   actor publishertoegang heeft.
 - `--migrate-owner` verplaatst een bestaande skill naar `--owner` terwijl een nieuwe
-  versie wordt gepubliceerd. Vereist admin-/ownertoegang op beide publishers.
+  versie wordt gepubliceerd. Vereist admin-/ownertoegang bij beide publishers.
 - Owner- en reviewgedrag wordt uitgelegd in `docs/publishing.md`.
-- Een skill publiceren betekent dat deze op ClawHub wordt uitgebracht onder `MIT-0`.
-- Gepubliceerde skills mogen vrij worden gebruikt, gewijzigd en herverdeeld zonder naamsvermelding.
-- ClawHub ondersteunt geen betaalde skills of prijsstelling per skill.
-- Legacy-alias: `publish <path>`.
+- Een skill publiceren betekent dat deze onder `MIT-0` wordt uitgebracht op ClawHub.
+- Gepubliceerde skills zijn vrij te gebruiken, te wijzigen en opnieuw te distribueren zonder naamsvermelding.
+- ClawHub ondersteunt geen betaalde skills of prijzen per skill.
+- Legacy alias: `publish <path>`.
 
 ```bash
 clawhub skill publish ./my-skill --dry-run
@@ -207,32 +207,31 @@ clawhub skill publish ./my-skill --version 2.0.0
 
 #### GitHub Actions
 
-De herbruikbare
+ClawHub's herbruikbare
 [`skill-publish.yml`](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml)
-workflow van ClawHub roept `skill publish` aan voor één `skill_path`, of voor elke directe skillmap
-onder `root` (standaard: `skills`). Deze slaat ongewijzigde skills over en gebruikt hetzelfde
+workflow roept `skill publish` aan voor één `skill_path`, of voor elke directe skillmap
+onder `root` (standaard: `skills`). Het slaat ongewijzigde skills over en gebruikt hetzelfde
 automatische patchversiegedrag.
 
-Stel `dry_run: true` in om zonder token te previewen. Echte publicaties vereisen de
-secret `clawhub_token`.
+Stel `dry_run: true` in om zonder token een preview te bekijken. Echte publicaties vereisen de
+`clawhub_token` secret.
 
 ### `sync`
 
-- Scant de huidige workdir, de geconfigureerde skills-map en eventuele
+- Scant de huidige workdir, de geconfigureerde skills-directory en eventuele
   `--root <dir>`-mappen op lokale skillmappen die `SKILL.md` of
   `skill.md` bevatten.
-- Vergelijkt elke lokale skill-fingerprint met ClawHub en publiceert alleen nieuwe of
+- Vergelijkt elke lokale skillfingerprint met ClawHub en publiceert alleen nieuwe of
   gewijzigde skills.
-- Nieuwe skills publiceren als `1.0.0`; gewijzigde skills publiceren standaard de volgende patchversie.
-  Gebruik `--bump minor|major` voor updatebatches die met een
+- Nieuwe skills worden gepubliceerd als `1.0.0`; gewijzigde skills publiceren standaard de volgende patchversie. Gebruik `--bump minor|major` voor updatebatches die met een
   grotere semver-stap moeten opschuiven.
-- `--dry-run` toont het publicatieplan zonder te uploaden; `--json` drukt een
-  machineleesbaar plan af.
+- `--dry-run` toont het publicatieplan zonder te uploaden; `--json` print een
+  machineleesbaar plan.
 - `--all` publiceert elke nieuwe of gewijzigde skill zonder prompt. Zonder
   `--all` laten interactieve terminals je de te publiceren skills selecteren.
-- `--owner <handle>` publiceert onder een org-/gebruikerspublisher-handle wanneer de
+- `--owner <handle>` publiceert onder een org-/user-publisherhandle wanneer de
   actor publishertoegang heeft.
-- `sync` is alleen eenrichtingspublicatie. Het installeert, werkt bij, downloadt niet en
+- `sync` is alleen eenrichtingspublicatie. Het installeert, werkt bij, downloadt of
   rapporteert geen installatie-/downloadtelemetrie.
 
 ```bash
@@ -246,11 +245,11 @@ clawhub sync --root ./skills --owner openclaw --bump minor
 - Vereist `clawhub login`.
 - Voert ClawHub ClawScan uit via `POST /api/v1/skills/-/scan` en pollt daarna totdat de scan terminaal is.
 - Scans zijn asynchroon en kunnen tijd kosten om te voltooien. Terwijl ze in de wachtrij staan, toont de terminalspinner de huidige geprioriteerde scanpositie en hoeveel scans ervoor staan.
-- Gepubliceerde scans vereisen ownership of publisher-beheertoegang. Moderators/admins kunnen dezelfde backend gebruiken via `clawhub-admin`.
-- `--update` is alleen geldig met `--slug`; het schrijft geslaagde gepubliceerde scanresultaten terug naar de geselecteerde versie.
+- Gepubliceerde scans vereisen ownership of publisherbeheertoegang. Moderators/admins kunnen dezelfde backend gebruiken via `clawhub-admin`.
+- `--update` is alleen geldig met `--slug`; het schrijft succesvolle gepubliceerde scanresultaten terug naar de geselecteerde versie.
 - `--output <file.zip>` downloadt het volledige rapportarchief met `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json` en `README.md`.
-- `--json` drukt de volledige pollrespons af voor automatisering.
-- Lokale padscans worden niet langer ondersteund. Upload een nieuwe versie en gebruik daarna `scan download` om de opgeslagen scanresultaten voor die ingediende versie op te halen.
+- `--json` print de volledige pollrespons voor automatisering.
+- Lokale padscans worden niet meer ondersteund. Upload een nieuwe versie en gebruik daarna `scan download` om de opgeslagen scanresultaten voor die ingediende versie op te halen.
 
 ```bash
 clawhub scan --slug gifgrep
@@ -265,7 +264,7 @@ clawhub scan --slug gifgrep --update --output report.zip
 - Skilldownloads gebruiken de skill-slug en gebruiken standaard `--kind skill`.
 - Plugindownloads gebruiken de pakketnaam en vereisen `--kind plugin`.
 - `--version` is vereist zodat auteurs de exacte ingediende versie inspecteren die ClawHub heeft geblokkeerd.
-- `--output <file.zip>` kiest het bestemmingspad.
+- `--output <file.zip>` kiest het doelpad.
 
 ```bash
 clawhub scan download gifgrep --version 1.2.3
@@ -275,8 +274,8 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub levert een officiële herbruikbare workflow op
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/a95f470a588ea9fe4c4b4c258c8c4ca5f02c2836/.github/workflows/skill-publish.yml)
-voor skill-repo's en catalogusrepo's.
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/76b4f36bb0f7409ed7cb9c6fd6f1ccf81396ee88/.github/workflows/skill-publish.yml)
+voor skillrepo's en catalogusrepo's.
 
 Typische catalogusconfiguratie:
 
@@ -307,52 +306,52 @@ jobs:
 
 Opmerkingen:
 
-- `root` is standaard `skills` voor catalogusrepo's.
+- `root` gebruikt standaard `skills` voor catalogusrepo's.
 - Geef `skill_path: skills/review-helper` door om één skillmap te verwerken.
-- `owner` komt overeen met de CLI-flag `--owner`; laat dit weg om als de geauthenticeerde gebruiker te publiceren.
+- `owner` komt overeen met de CLI-flag `--owner`; laat deze weg om als de geauthenticeerde gebruiker te publiceren.
 - V1-skillpublicatie gebruikt `clawhub_token`; GitHub OIDC trusted publishing is voorlopig alleen voor pakketten.
 
 ### `delete <skill>`
 
-- Zonder `--version`: verwijder een vaardigheid zacht (eigenaar, moderator of beheerder).
+- Zonder `--version`: markeer een skill als zacht verwijderd (eigenaar, moderator of admin).
 - Roept `DELETE /api/v1/skills/{slug}` aan.
-- Door de eigenaar geïnitieerde zachte verwijderingen reserveren de slug 30 dagen; de opdracht toont de vervaltijd.
-- `--version <version>` verwijdert permanent één eigen niet-nieuwste versie via een fail-closed,
+- Door de eigenaar gestarte zachte verwijderingen reserveren de slug 30 dagen; de opdracht drukt de vervaltijd af.
+- `--version <version>` verwijdert permanent één eigen niet-nieuwste versie via een bij fouten gesloten,
   versiespecifieke route.
-  Verwijderde versies kunnen niet worden hersteld of opnieuw gepubliceerd. Publiceer een vervanging voordat u de
-  huidige nieuwste versie verwijdert. Platformmedewerkers omzeilen het eigenaarschap niet voor deze alleen-op-versies gerichte flow.
-- `--reason <text>` registreert een moderatienotitie bij een zachte verwijdering van een volledige vaardigheid en in het auditlogboek.
+  Verwijderde versies kunnen niet worden hersteld of opnieuw gepubliceerd. Publiceer een vervanging voordat je de
+  huidige nieuwste versie verwijdert. Platformmedewerkers omzeilen eigendom niet voor deze versie-only flow.
+- `--reason <text>` registreert een moderatienotitie bij een zachte verwijdering van de hele skill en in het auditlog.
 - `--note <text>` is een alias voor `--reason`.
 - `--yes` slaat bevestiging over.
 
 ### `undelete <skill>`
 
-- Herstel een verborgen vaardigheid (eigenaar, moderator of beheerder).
-- Er is geen herstelactie voor versies; permanent verwijderde versies kunnen niet worden hersteld.
+- Herstel een verborgen skill (eigenaar, moderator of admin).
+- Er is geen versieherstel; permanent verwijderde versies kunnen niet worden hersteld.
 - Roept `POST /api/v1/skills/{slug}/undelete` aan.
-- `--reason <text>` registreert een moderatienotitie bij de vaardigheid en in het auditlogboek.
+- `--reason <text>` registreert een moderatienotitie bij de skill en in het auditlog.
 - `--note <text>` is een alias voor `--reason`.
 - `--yes` slaat bevestiging over.
 
 ### `hide <skill>`
 
-- Verberg een vaardigheid (eigenaar, moderator of beheerder).
+- Verberg een skill (eigenaar, moderator of admin).
 - Alias voor `delete`.
 
 ### `unhide <skill>`
 
-- Maak een vaardigheid weer zichtbaar (eigenaar, moderator of beheerder).
+- Maak een skill weer zichtbaar (eigenaar, moderator of admin).
 - Alias voor `undelete`.
 
 ### `skill rename <skill> <new-name>`
 
-- Hernoem een eigen vaardigheid en behoud de vorige slug als omleidingsalias.
+- Hernoem een eigen skill en behoud de vorige slug als omleidingsalias.
 - Roept `POST /api/v1/skills/{slug}/rename` aan.
 - `--yes` slaat bevestiging over.
 
 ### `skill merge <source> <target>`
 
-- Voeg één eigen vaardigheid samen met een andere eigen vaardigheid.
+- Voeg één eigen skill samen met een andere eigen skill.
 - De bronslug wordt niet meer publiek vermeld en wordt een omleidingsalias naar het doel.
 - Roept `POST /api/v1/skills/{sourceSlug}/merge` aan.
 - `--yes` slaat bevestiging over.
@@ -360,16 +359,16 @@ Opmerkingen:
 ### `transfer`
 
 - Workflow voor eigendomsoverdracht.
-- Overdrachten naar gebruikershandles maken een openstaand verzoek dat de ontvanger accepteert.
-- Overdrachten naar organisatie-/publisherhandles worden alleen direct toegepast wanneer de actor
-  beheerderstoegang heeft tot zowel de huidige eigenaar als de doelpublisher.
-- Subcommando's:
+- Overdrachten naar gebruikershandles maken een openstaand verzoek aan dat de ontvanger accepteert.
+- Overdrachten naar org-/publisherhandles worden alleen direct toegepast wanneer de actor
+  admin-toegang heeft tot zowel de huidige eigenaar als de doelpublisher.
+- Subopdrachten:
   - `transfer request <skill> <handle> [--message "..."] [--yes]`
   - `transfer list [--outgoing]`
   - `transfer accept <skill> [--yes]`
   - `transfer reject <skill> [--yes]`
   - `transfer cancel <skill> [--yes]`
-- Eindpunten:
+- Endpoints:
   - `POST /api/v1/skills/{slug}/transfer`
   - `POST /api/v1/skills/{slug}/transfer/accept`
   - `POST /api/v1/skills/{slug}/transfer/reject`
@@ -380,7 +379,7 @@ Opmerkingen:
 ### `package explore [query...]`
 
 - Bladert door of zoekt in de uniforme pakketcatalogus via `GET /api/v1/packages` en `GET /api/v1/packages/search`.
-- Gebruik dit voor Plugins en andere vermeldingen in pakketfamilies; `search` op het hoogste niveau blijft het zoekoppervlak voor vaardigheden.
+- Gebruik dit voor plugins en andere vermeldingen uit pakketfamilies; `search` op topniveau blijft het zoekoppervlak voor skills.
 - Vlaggen:
   - `--family skill|code-plugin|bundle-plugin`
   - `--official`
@@ -407,7 +406,7 @@ clawhub package explore episodic-claw --family code-plugin
 ### `package inspect <name>`
 
 - Haalt pakketmetadata op zonder te installeren.
-- Gebruik dit voor Plugin-metadata, compatibiliteit, verificatie, bron en versie-/bestandsinspectie.
+- Gebruik dit voor pluginmetadata, compatibiliteit, verificatie, bron en versie-/bestandsinspectie.
 - `--version <version>`: inspecteer een specifieke versie (standaard: nieuwste).
 - `--tag <tag>`: inspecteer een getagde versie (bijv. `latest`).
 - `--versions`: vermeld versiegeschiedenis (eerste pagina).
@@ -420,10 +419,10 @@ clawhub package explore episodic-claw --family code-plugin
 
 - Lost een pakketversie op via
   `GET /api/v1/packages/{name}/versions/{version}/artifact`.
-- Downloadt het artifact vanaf de `downloadUrl` van de resolver.
-- Verifieert ClawHub SHA-256 voor alle artifacts.
-- Voor ClawPack npm-pack-artifacts wordt ook de npm `sha512`-integriteit,
-  npm-shasum en de naam/versie in `package.json` van de tarball geverifieerd.
+- Downloadt het artefact vanaf de `downloadUrl` van de resolver.
+- Verifieert ClawHub SHA-256 voor alle artefacten.
+- Voor ClawPack npm-pack-artefacten verifieert dit ook npm `sha512`-integriteit,
+  npm shasum en de naam/versie in `package.json` van de tarball.
 - Legacy ZIP-versies worden gedownload via de legacy ZIP-route.
 - Vlaggen:
   - `--version <version>`: download een specifieke versie.
@@ -441,17 +440,17 @@ clawhub package download @openclaw/example-plugin --version 1.2.3 -o artifacts/
 
 ### `package verify <file>`
 
-- Berekent ClawHub SHA-256, npm `sha512`-integriteit en npm-shasum voor een lokaal
-  artifact.
-- Met `--package` wordt verwachte metadata vanuit ClawHub opgelost en wordt het
-  lokale bestand vergeleken met de gepubliceerde artifactmetadata.
-- Met directe digest-vlaggen wordt geverifieerd zonder netwerklookup.
+- Berekent ClawHub SHA-256, npm `sha512`-integriteit en npm shasum voor een lokaal
+  artefact.
+- Met `--package` wordt verwachte metadata uit ClawHub opgelost en wordt het
+  lokale bestand vergeleken met de gepubliceerde artefactmetadata.
+- Met directe digestvlaggen wordt geverifieerd zonder netwerkopzoeking.
 - Vlaggen:
-  - `--package <name>`: pakketnaam om verwachte artifactmetadata op te lossen.
+  - `--package <name>`: pakketnaam om verwachte artefactmetadata op te lossen.
   - `--version <version>` of `--tag <tag>`: verwachte pakketversie.
   - `--sha256 <hex>`: verwachte ClawHub SHA-256.
   - `--npm-integrity <sri>`: verwachte npm-integriteit.
-  - `--npm-shasum <sha1>`: verwachte npm-shasum.
+  - `--npm-shasum <sha1>`: verwachte npm shasum.
   - `--json`: machineleesbare uitvoer.
 
 Voorbeelden:
@@ -463,17 +462,17 @@ clawhub package verify ./example-plugin-1.2.3.tgz --sha256 <hex>
 
 ### `package validate <source>`
 
-- Voert de gebundelde Plugin Inspector van de ClawHub CLI uit tegen een lokale Plugin-pakketmap.
-- Standaard wordt offline/statische validatie gebruikt, zonder een lokale
-  OpenClaw-checkout te lokaliseren of te importeren.
-- Harde compatibiliteitsfouten sluiten af met een niet-nulstatus. Bevindingen met alleen waarschuwingen worden afgedrukt maar
-  sluiten af met nul.
+- Voert de gebundelde Plugin Inspector van de ClawHub CLI uit op een lokale pluginpakketmap.
+- Standaard wordt offline/statische validatie uitgevoerd, zonder een lokale
+  OpenClaw-checkout te lokaliseren of importeren.
+- Harde compatibiliteitsfouten eindigen met een niet-nulstatus. Bevindingen met alleen waarschuwingen worden afgedrukt maar
+  eindigen met nul.
 - Vlaggen:
   - `--out <dir>`: schrijf Plugin Inspector-rapporten naar deze map.
   - `--openclaw <path>`: inspecteer tegen een expliciete lokale OpenClaw-checkout.
-  - `--runtime`: schakel runtime-opname in; importeert Plugin-code.
-  - `--allow-execute`: sta runtime-opname toe in een geïsoleerde werkruimte.
-  - `--no-mock-sdk`: schakel de gemockte OpenClaw SDK uit tijdens runtime-opname.
+  - `--runtime`: schakel runtime-vastlegging in; importeert plugincode.
+  - `--allow-execute`: sta runtime-vastlegging toe in een geïsoleerde werkruimte.
+  - `--no-mock-sdk`: schakel de gemockte OpenClaw SDK uit tijdens runtime-vastlegging.
   - `--json`: machineleesbare uitvoer.
 
 Voorbeeld:
@@ -482,19 +481,20 @@ Voorbeeld:
 clawhub package validate ./example-plugin
 ```
 
-Als validatie een bevinding over een pakket, manifest, SDK-import of artifact meldt, zie
-[Oplossingen voor Plugin-validatie](/clawhub/plugin-validation-fixes) en voer daarna de opdracht opnieuw uit.
+Als validatie een bevinding over een pakket, manifest, SDK-import of artefact rapporteert, zie
+[Oplossingen voor pluginvalidatie](/clawhub/plugin-validation-fixes) en voer daarna de opdracht opnieuw uit.
 
 ### `package delete <name>`
 
-- Zonder `--version`: verwijdert een pakket en alle releases zacht.
-- `--version <version>` verwijdert permanent één eigen niet-nieuwste release via een fail-closed,
+- Zonder `--version`: markeert een pakket en alle releases als zacht verwijderd.
+- `--version <version>` verwijdert permanent één eigen niet-nieuwste release via een bij fouten gesloten,
   versiespecifieke route.
-  Verwijderde versies kunnen niet worden hersteld of opnieuw gepubliceerd. Publiceer een vervanging voordat u de
-  huidige nieuwste versie verwijdert. Deze alleen-op-versies gerichte flow vereist de pakketeigenaar of een beheerder van een organisatiepublisher; platformmedewerkers omzeilen pakketeigendom niet.
-- Zachte verwijdering van een volledig pakket vereist de pakketeigenaar, een eigenaar/beheerder van een organisatiepublisher, platformmoderator of platformbeheerder.
+  Verwijderde versies kunnen niet worden hersteld of opnieuw gepubliceerd. Publiceer een vervanging voordat je de
+  huidige nieuwste versie verwijdert. Deze versie-only flow vereist de pakketeigenaar of een
+  admin van een org-publisher; platformmedewerkers omzeilen pakketeigendom niet.
+- Zachte verwijdering van het hele pakket vereist de pakketeigenaar, een eigenaar/admin van een org-publisher, platformmoderator of platformadmin.
 - Vlaggen:
-  - `--version <version>`: verwijder één niet-nieuwste versie permanent.
+  - `--version <version>`: verwijder permanent één niet-nieuwste versie.
   - `--yes`: sla bevestiging over.
   - `--json`: machineleesbare uitvoer.
 
@@ -508,9 +508,9 @@ clawhub package delete @openclaw/example-plugin --version 1.2.3 --yes
 ### `package undelete <name>`
 
 - Herstelt een zacht verwijderd pakket en releases.
-- Er is geen herstelactie voor versies; permanent verwijderde versies kunnen niet worden hersteld.
-- Vereist de pakketeigenaar, een eigenaar/beheerder van een organisatiepublisher, platformmoderator
-  of platformbeheerder.
+- Er is geen versieherstel; permanent verwijderde versies kunnen niet worden hersteld.
+- Vereist de pakketeigenaar, een eigenaar/admin van een org-publisher, platformmoderator
+  of platformadmin.
 - Roept `POST /api/v1/packages/{name}/undelete` aan.
 - Vlaggen:
   - `--yes`: sla bevestiging over.
@@ -525,9 +525,9 @@ clawhub package undelete @openclaw/example-plugin --yes
 ### `package transfer <name>`
 
 - Draagt een pakket over aan een andere publisher.
-- Vereist beheerderstoegang tot zowel de huidige pakketeigenaar als de doelpublisher,
-  tenzij uitgevoerd door een platformbeheerder.
-- Scoped pakketnamen moeten worden overgedragen aan de eigenaar van de overeenkomende scope.
+- Vereist admin-toegang tot zowel de huidige pakketeigenaar als de doelpublisher,
+  tenzij uitgevoerd door een platformadmin.
+- Scoped pakketnamen moeten worden overgedragen aan de overeenkomende scope-eigenaar.
 - Roept `POST /api/v1/packages/{name}/transfer` aan.
 - Vlaggen:
   - `--to <owner>`: handle van de doelpublisher.
@@ -542,14 +542,14 @@ clawhub package transfer @openclaw/example-plugin --to openclaw
 
 ### `package report`
 
-- Geauthenticeerde opdracht om een pakket aan moderators te rapporteren.
+- Geauthenticeerde opdracht om een pakket aan moderators te melden.
 - Roept `POST /api/v1/packages/{name}/report` aan.
-- Rapporten gelden op pakketniveau, kunnen optioneel aan een versie zijn gekoppeld en worden zichtbaar
-  voor moderators ter beoordeling.
-- Rapporten verbergen pakketten niet automatisch en blokkeren op zichzelf geen downloads.
+- Meldingen zijn op pakketniveau, optioneel gekoppeld aan een versie, en worden zichtbaar
+  voor moderators voor beoordeling.
+- Meldingen verbergen pakketten niet automatisch en blokkeren downloads niet op zichzelf.
 - Vlaggen:
-  - `--version <version>`: optionele pakketversie om aan het rapport te koppelen.
-  - `--reason <text>`: verplichte rapportreden.
+  - `--version <version>`: optionele pakketversie om aan de melding te koppelen.
+  - `--reason <text>`: vereiste meldingsreden.
   - `--json`: machineleesbare uitvoer.
 
 Voorbeeld:
@@ -560,9 +560,9 @@ clawhub package report @openclaw/example-plugin --version 1.2.3 --reason "suspic
 
 ### `package moderation-status`
 
-- Eigenaarsopdracht om de moderatiezichtbaarheid van pakketten te controleren.
+- Eigenaaropdracht om de moderatiezichtbaarheid van een pakket te controleren.
 - Roept `GET /api/v1/packages/{name}/moderation` aan.
-- Toont de huidige scansstatus van het pakket, het aantal open rapporten, de handmatige
+- Toont de huidige scansstatus van het pakket, het aantal open meldingen, de handmatige
   moderatiestatus van de nieuwste release, de downloadblokkeringsstatus en moderatieredenen.
 - Vlaggen:
   - `--json`: machineleesbare uitvoer.
@@ -575,10 +575,10 @@ clawhub package moderation-status @openclaw/example-plugin
 
 ### `package readiness <name>`
 
-- Controleert of een pakket gereed is voor toekomstig gebruik door OpenClaw.
+- Controleert of een pakket klaar is voor toekomstig gebruik door OpenClaw.
 - Roept `GET /api/v1/packages/{name}/readiness` aan.
-- Rapporteert blokkades voor officiële status, ClawPack-beschikbaarheid, artifactdigest,
-  bronherkomst, OpenClaw-compatibiliteit, hosttargets, omgevingsmetadata
+- Rapporteert blokkers voor officiële status, ClawPack-beschikbaarheid, artefactdigest,
+  bronherkomst, OpenClaw-compatibiliteit, hostdoelen, omgevingsmetadata
   en scansstatus.
 - Vlaggen:
   - `--json`: machineleesbare uitvoer.
@@ -591,11 +591,11 @@ clawhub package readiness @openclaw/example-plugin
 
 ### `package migration-status <name>`
 
-- Toont operatorgerichte migratiestatus voor een pakket dat mogelijk een
-  gebundelde OpenClaw Plugin vervangt.
-- Roept hetzelfde berekende gereedheidseindpunt aan als `package readiness`, maar drukt
+- Toont operatorgerichte migratiestatus voor een pakket dat een
+  gebundelde OpenClaw-plugin kan vervangen.
+- Roept hetzelfde berekende readiness-endpoint aan als `package readiness`, maar drukt
   migratiegerichte status, nieuwste versie, officiële-pakketstatus, controles en
-  blokkades af.
+  blokkers af.
 - Vlaggen:
   - `--json`: machineleesbare uitvoer.
 
@@ -607,9 +607,9 @@ clawhub package migration-status @openclaw/example-plugin
 
 ### `publisher create <handle>`
 
-- Maakt een organisatiepublisher aan die eigendom is van de geauthenticeerde gebruiker.
+- Maakt een org-publisher aan die eigendom is van de geauthenticeerde gebruiker.
 - De handle wordt genormaliseerd naar kleine letters en kan met of zonder `@` worden doorgegeven.
-- Nieuw aangemaakte organisatiepublishers zijn standaard niet vertrouwd/officieel.
+- Nieuw aangemaakte org-publishers zijn standaard niet vertrouwd/officieel.
 - Mislukt als de handle al wordt gebruikt door een bestaande publisher, gebruiker of gereserveerde route.
 
 ```bash
@@ -618,31 +618,31 @@ clawhub publisher create opik --display-name "Opik"
 
 ### `package publish <source>`
 
-- Publiceert een code-Plugin of bundle-Plugin via `POST /api/v1/packages`.
+- Publiceert een codeplugin of bundelplugin via `POST /api/v1/packages`.
 - `<source>` accepteert:
   - Lokaal mappad: `./my-plugin`
   - Lokale ClawPack npm-pack-tarball: `./my-plugin-1.2.3.tgz`
   - GitHub-repo: `owner/repo` of `owner/repo@ref`
   - GitHub-URL: `https://github.com/owner/repo`
 - Metadata wordt automatisch gedetecteerd uit `package.json`, `openclaw.plugin.json` en
-  echte OpenClaw-bundlemarkeringen zoals `.codex-plugin/plugin.json`,
+  echte OpenClaw-bundelmarkeringen zoals `.codex-plugin/plugin.json`,
   `.claude-plugin/plugin.json` en `.cursor-plugin/plugin.json`.
 - `.tgz`-bronnen worden behandeld als ClawPack. De CLI uploadt de exacte npm-pack-
   bytes en gebruikt de uitgepakte `package/`-inhoud alleen voor validatie en
   het vooraf invullen van metadata.
-- Code-Plugin-mappen worden vóór upload verpakt in een ClawPack npm-tarball, zodat
-  OpenClaw-installaties het exacte artifact kunnen verifiëren. Bundle-Plugin-mappen blijven
+- Codepluginmappen worden vóór upload verpakt in een ClawPack npm-tarball zodat
+  OpenClaw-installaties het exacte artifact kunnen verifiëren. Bundelpluginmappen blijven
   het publicatiepad met uitgepakte bestanden gebruiken.
 - Voor GitHub-bronnen wordt bronattributie automatisch ingevuld vanuit de repo, opgeloste commit, ref en subpad.
-- Voor lokale mappen wordt bronattributie automatisch gedetecteerd vanuit lokale git wanneer de origin-remote naar GitHub wijst.
-- Externe code-plugins moeten `openclaw.compat.pluginApi` en
+- Voor lokale mappen wordt bronattributie automatisch gedetecteerd uit lokale git wanneer de origin-remote naar GitHub wijst.
+- Externe codeplugins moeten `openclaw.compat.pluginApi` en
   `openclaw.build.openclawVersion` expliciet declareren.
   `package.json.version` op topniveau wordt niet gebruikt als fallback voor publicatievalidatie.
-- `--dry-run` toont vooraf de opgeloste publicatiepayload zonder te uploaden.
+- `--dry-run` toont een voorbeeld van de opgeloste publicatiepayload zonder te uploaden.
 - `--json` geeft machineleesbare uitvoer voor CI.
-- `--owner <handle>` publiceert onder een gebruikers- of organisatie-uitgevershandle wanneer de actor uitgeverstoegang heeft.
+- `--owner <handle>` publiceert onder een gebruikers- of organisatiepublisher-handle wanneer de actor publishertoegang heeft.
 - Scoped pakketnamen moeten overeenkomen met de geselecteerde eigenaar. Zie `docs/publishing.md`.
-- Bestaande flags (`--family`, `--name`, `--version`, `--source-repo`, `--source-commit`, `--source-ref`, `--source-path`) blijven werken als overrides.
+- Bestaande flags (`--family`, `--name`, `--version`, `--source-repo`, `--source-commit`, `--source-ref`, `--source-path`) blijven werken als overschrijvingen.
 - Privé-GitHub-repo's vereisen `GITHUB_TOKEN`.
 
 ```bash
@@ -651,8 +651,8 @@ clawhub package publish ./plugin.tgz --owner openclaw
 
 #### Aanbevolen lokale flow
 
-Gebruik eerst `--dry-run`, zodat je de opgeloste pakketmetadata en
-bronattributie kunt controleren voordat je een live release maakt:
+Gebruik eerst `--dry-run` zodat je de opgeloste pakketmetadata en
+bronattributie kunt bevestigen voordat je een live release maakt:
 
 ```bash
 npm pack
@@ -662,7 +662,7 @@ clawhub package publish ./my-plugin-1.2.3.tgz --family code-plugin
 
 #### Lokale mapflow
 
-Voor code-plugins bouwt en uploadt mappublicatie een ClawPack-artifact vanuit
+Voor codeplugins bouwt en uploadt publiceren vanuit een map een ClawPack-artifact uit
 de pakketmap:
 
 ```bash
@@ -672,7 +672,7 @@ clawhub package publish ./my-plugin --family code-plugin
 
 #### Minimale `package.json` voor `--family code-plugin`
 
-Externe code-plugins hebben een kleine hoeveelheid OpenClaw-metadata nodig in
+Externe codeplugins hebben een kleine hoeveelheid OpenClaw-metadata nodig in
 `package.json`. Dit minimale manifest is genoeg voor een succesvolle publicatie:
 
 ```json
@@ -705,19 +705,19 @@ Opmerkingen:
   ClawHub kan ze tonen wanneer ze aanwezig zijn, maar ze zijn niet vereist voor publicatie.
 - `openclaw.compat.minGatewayVersion` en
   `openclaw.build.pluginSdkVersion` zijn optionele extra's als je
-  gedetailleerdere compatibiliteitsmetadata wilt publiceren.
+  meer gedetailleerde compatibiliteitsmetadata wilt publiceren.
 - Als je een oudere `clawhub` CLI-release gebruikt, upgrade dan vóór publicatie zodat
-  de lokale preflight-controles vóór upload worden uitgevoerd.
-- Als validatie een herstelcode meldt, zie
-  [Plugin-validatiefixes](/clawhub/plugin-validation-fixes).
+  de lokale preflightcontroles vóór upload worden uitgevoerd.
+- Als validatie een herstelcode rapporteert, zie
+  [Pluginvalidatiefixes](/clawhub/plugin-validation-fixes).
 
 #### GitHub Actions
 
 ClawHub levert ook een officiële herbruikbare workflow op
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/a95f470a588ea9fe4c4b4c258c8c4ca5f02c2836/.github/workflows/package-publish.yml)
-voor Plugin-repo's.
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/76b4f36bb0f7409ed7cb9c6fd6f1ccf81396ee88/.github/workflows/package-publish.yml)
+voor pluginrepo's.
 
-Typische callerconfiguratie:
+Typische caller-configuratie:
 
 ```yaml
 name: Package Publish
@@ -751,20 +751,20 @@ jobs:
 Opmerkingen:
 
 - De herbruikbare workflow stelt `source` standaard in op de caller-repo.
-- Geef voor monorepo's `source_path` door, zodat de workflow de Plugin-
+- Geef voor monorepo's `source_path` mee zodat de workflow de plugin-
   pakketmap publiceert, bijvoorbeeld `source_path: extensions/codex`.
 - Pin de herbruikbare workflow op een stabiele tag of volledige commit-SHA. Voer releasepublicatie niet uit vanaf `@main`.
-- `pull_request` moet `dry_run: true` gebruiken, zodat CI geen vervuiling veroorzaakt.
-- Echte publicaties moeten worden beperkt tot vertrouwde events zoals `workflow_dispatch` of tag-pushes.
-- Vertrouwde publicatie zonder secret werkt alleen op `workflow_dispatch`; tag-pushes hebben nog steeds `clawhub_token` nodig.
-- Houd `clawhub_token` beschikbaar voor eerste publicatie, niet-vertrouwde pakketten of noodpublicaties.
+- `pull_request` moet `dry_run: true` gebruiken zodat CI niet-vervuilend blijft.
+- Echte publicaties moeten beperkt blijven tot vertrouwde events zoals `workflow_dispatch` of tag-pushes.
+- Vertrouwd publiceren zonder secret werkt alleen op `workflow_dispatch`; tag-pushes hebben nog steeds `clawhub_token` nodig.
+- Houd `clawhub_token` beschikbaar voor eerste publicatie, niet-vertrouwde pakketten of break-glass-publicaties.
 - De workflow uploadt het JSON-resultaat als artifact en stelt het beschikbaar als workflow-uitvoer.
 
 ### `package trusted-publisher get <name>`
 
-- Toont de GitHub Actions-configuratie voor vertrouwde uitgevers voor een pakket.
-- Gebruik dit nadat je de configuratie hebt ingesteld om de repository, workflowbestandsnaam
-  en optionele omgevingspin te bevestigen.
+- Toont de GitHub Actions-configuratie voor trusted publisher voor een pakket.
+- Gebruik dit na het instellen van de configuratie om de repository, workflowbestandsnaam
+  en optionele omgevingpin te bevestigen.
 - Flags:
   - `--json`: machineleesbare uitvoer.
 
@@ -776,26 +776,26 @@ clawhub package trusted-publisher get @openclaw/example-plugin
 
 ### `package trusted-publisher set <name>`
 
-- Koppelt of vervangt de GitHub Actions-configuratie voor vertrouwde uitgevers voor een bestaand
+- Koppelt of vervangt GitHub Actions-configuratie voor trusted publisher voor een bestaand
   pakket.
 - Het pakket moet eerst worden aangemaakt via normale handmatige of token-geauthenticeerde
   `clawhub package publish`.
 - Nadat de configuratie is ingesteld, kunnen toekomstige ondersteunde GitHub Actions-publicaties
-  OIDC/vertrouwde publicatie gebruiken zonder langlevend ClawHub-token.
+  OIDC/trusted publishing gebruiken zonder langlevende ClawHub-token.
 - `--repository <repo>` moet `owner/repo` zijn.
 - `--workflow-filename <file>` moet overeenkomen met de workflowbestandsnaam in
   `.github/workflows/`.
-- `--environment <name>` is optioneel. Wanneer geconfigureerd, moet de GitHub Actions-
+- `--environment <name>` is optioneel. Wanneer geconfigureerd moet de GitHub Actions-
   omgeving in de OIDC-claim exact overeenkomen.
 - ClawHub verifieert de geconfigureerde GitHub-repository wanneer deze opdracht wordt uitgevoerd.
-  Openbare repositories kunnen worden geverifieerd via openbare GitHub-metadata. Privé-
+  Publieke repositories kunnen worden geverifieerd via publieke GitHub-metadata. Privé-
   repositories vereisen dat ClawHub GitHub-toegang tot die repository heeft, bijvoorbeeld
   via een toekomstige ClawHub GitHub App-installatie of een andere geautoriseerde
   GitHub-integratie.
 - Flags:
   - `--repository <repo>`: GitHub-repository, bijvoorbeeld `openclaw/example-plugin`.
   - `--workflow-filename <file>`: workflowbestandsnaam, bijvoorbeeld `package-publish.yml`.
-  - `--environment <name>`: optionele GitHub Actions-omgeving met exacte overeenkomst.
+  - `--environment <name>`: optionele exact-overeenkomende GitHub Actions-omgeving.
   - `--json`: machineleesbare uitvoer.
 
 Voorbeeld:
@@ -809,8 +809,8 @@ clawhub package trusted-publisher set @openclaw/example-plugin \
 
 ### `package trusted-publisher delete <name>`
 
-- Verwijdert de configuratie voor vertrouwde uitgevers uit een pakket.
-- Gebruik dit als rollback als de workflow-, repository- of omgevingspin moet worden
+- Verwijdert trusted publisher-configuratie uit een pakket.
+- Gebruik dit als rollback als de workflow, repository of omgevingpin moet worden
   uitgeschakeld of opnieuw aangemaakt.
 - Toekomstige echte publicaties moeten normale geauthenticeerde publicatie gebruiken totdat de configuratie
   opnieuw is ingesteld.
@@ -827,6 +827,6 @@ clawhub package trusted-publisher delete @openclaw/example-plugin
 
 - Verzonden na `clawhub install <slug>` wanneer je bent ingelogd, tenzij
   `CLAWHUB_DISABLE_TELEMETRY=1` is ingesteld.
-- Rapportage is best-effort. Installatieopdrachten falen niet als telemetrie
+- Rapportage is best-effort. Installatieopdrachten mislukken niet als telemetrie
   niet beschikbaar is.
 - Details: `docs/telemetry.md`.

@@ -3,27 +3,27 @@ read_when: Finding which docs page covers a topic before reading the page
 summary: OpenClaw doküman sayfaları için oluşturulan başlık haritası
 title: Belgeler haritası
 x-i18n:
-    generated_at: "2026-07-03T09:53:06Z"
+    generated_at: "2026-07-03T17:40:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16e7696bd821215e0b7ed3ddfad3ac400d9de78fdb685aad3eb25771e581b0b6
+    source_hash: 2e7c4fa1df5ef7a3d2a921765c1647a40093ac3aa775d1e3055d54433658d067
     source_path: docs_map.md
     workflow: 16
 ---
 
-# OpenClaw doküman haritası
+# OpenClaw dokümantasyon haritası
 
-Bu dosya, aracıların dokümantasyon ağacında gezinmesine yardımcı olmak için `docs/**/*.md` ve `docs/**/*.mdx` başlıklarından oluşturulur.
-Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
+Bu dosya, ajanların dokümantasyon ağacında gezinmesine yardımcı olmak için `docs/**/*.md` ve `docs/**/*.mdx` başlıklarından oluşturulur.
+Elle düzenlemeyin; `pnpm docs:map:gen` komutunu çalıştırın.
 
 ## agent-runtime-architecture.md
 
 - Rota: /agent-runtime-architecture
 - Başlıklar:
-  - H2: Çalışma Zamanı Düzeni
+  - H2: Çalışma Zamanı Yerleşimi
   - H2: Sınırlar
-  - H2: Manifestler
+  - H2: Bildirim Dosyaları
   - H2: Çalışma Zamanı Seçimi
   - H2: İlgili
 
@@ -33,7 +33,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: BlueBubbles'ın kaldırılması ve imsg iMessage yolu
   - H2: Ne değişti
-  - H2: Ne yapılmalı
+  - H2: Ne yapmalı
   - H2: Geçiş notları
   - H2: Ayrıca bkz.
 
@@ -41,7 +41,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /auth-credential-semantics
 - Başlıklar:
-  - H2: Kararlı yoklama neden kodları
+  - H2: Kararlı yoklama nedeni kodları
   - H2: Belirteç kimlik bilgileri
   - H3: Uygunluk kuralları
   - H3: Çözümleme kuralları
@@ -50,8 +50,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Açık kimlik doğrulama sırası filtreleme
   - H2: Yoklama hedefi çözümlemesi
   - H2: Harici CLI kimlik bilgisi keşfi
-  - H2: OAuth SecretRef İlke Koruması
-  - H2: Eskiyle Uyumlu Mesajlaşma
+  - H2: OAuth SecretRef İlkesi Koruması
+  - H2: Eski Sistemle Uyumlu Mesajlaşma
   - H2: İlgili
 
 ## automation/auth-monitoring.md
@@ -85,7 +85,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Gmail PubSub entegrasyonu
   - H3: Sihirbaz kurulumu (önerilir)
   - H3: Gateway otomatik başlatma
-  - H3: Manuel tek seferlik kurulum
+  - H3: Tek seferlik manuel kurulum
   - H3: Gmail model geçersiz kılma
   - H2: İşleri yönetme
   - H2: Yapılandırma
@@ -119,13 +119,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Olay bağlamı öne çıkanları
   - H2: Hook keşfi
   - H3: Hook paketleri
-  - H2: Birlikte gelen hook'lar
+  - H2: Paketlenmiş Hook'lar
   - H3: session-memory ayrıntıları
   - H3: bootstrap-extra-files yapılandırması
   - H3: command-logger ayrıntıları
   - H3: compaction-notifier ayrıntıları
   - H3: boot-md ayrıntıları
-  - H2: Plugin hook'ları
+  - H2: Plugin Hook'ları
   - H2: Yapılandırma
   - H2: CLI başvurusu
   - H2: En iyi uygulamalar
@@ -140,13 +140,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /automation
 - Başlıklar:
   - H2: Hızlı karar kılavuzu
-  - H3: Zamanlanmış Görevler (Cron) ve Heartbeat
+  - H3: Zamanlanmış Görevler (Cron) ve Heartbeat karşılaştırması
   - H2: Temel kavramlar
   - H3: Zamanlanmış görevler (cron)
   - H3: Görevler
   - H3: Çıkarılan taahhütler
   - H3: Task Flow
-  - H3: Kalıcı talimatlar
+  - H3: Sürekli talimatlar
   - H3: Hook'lar
   - H3: Heartbeat
   - H2: Birlikte nasıl çalışırlar
@@ -162,10 +162,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /automation/standing-orders
 - Başlıklar:
-  - H2: Kalıcı talimatlar neden gerekli
+  - H2: Sürekli talimatlar neden kullanılır
   - H2: Nasıl çalışırlar
-  - H2: Kalıcı talimatın anatomisi
-  - H2: Kalıcı talimatlar ve cron işleri
+  - H2: Sürekli talimatın anatomisi
+  - H2: Sürekli talimatlar artı cron işleri
   - H2: Örnekler
   - H3: Örnek 1: içerik ve sosyal medya (haftalık döngü)
   - H3: Örnek 2: finans operasyonları (olay tetiklemeli)
@@ -173,7 +173,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yürüt-doğrula-raporla deseni
   - H2: Çok programlı mimari
   - H2: En iyi uygulamalar
-  - H3: Yapılacaklar
+  - H3: Yapın
   - H3: Kaçının
   - H2: İlgili
 
@@ -186,7 +186,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Eşitleme modları
   - H3: Yönetilen mod
   - H3: Yansıtılmış mod
-  - H2: Kalıcı durum ve revizyon takibi
+  - H2: Dayanıklı durum ve revizyon takibi
   - H2: İptal davranışı
   - H2: CLI komutları
   - H2: Akışların görevlerle ilişkisi
@@ -198,7 +198,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: TL;DR
   - H2: Hızlı başlangıç
-  - H2: Bir görevi ne oluşturur
+  - H2: Görevi ne oluşturur
   - H2: Görev yaşam döngüsü
   - H2: Teslim ve bildirimler
   - H3: Bildirim ilkeleri
@@ -236,7 +236,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Statik mesaj gönderen grupları
   - H2: İzin listelerinden başvuru grupları
   - H2: Desteklenen mesaj kanalı yolları
-  - H2: Plugin tanıları
+  - H2: Plugin tanılamaları
   - H2: Discord kanal kitleleri
   - H2: Güvenlik notları
   - H2: Sorun giderme
@@ -246,11 +246,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/ambient-room-events
 - Başlıklar:
   - H2: Önerilen kurulum
-  - H2: Neler değişir
+  - H2: Ne değişir
   - H2: Discord örneği
   - H2: Slack örneği
   - H2: Telegram örneği
-  - H2: Ajana özgü ilke
+  - H2: Ajana özel ilke
   - H2: Görünür yanıt modları
   - H2: Geçmiş
   - H2: Sorun giderme
@@ -271,7 +271,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/broadcast-groups
 - Başlıklar:
   - H2: Genel bakış
-  - H2: Kullanım durumları
+  - H2: Kullanım alanları
   - H2: Yapılandırma
   - H3: Temel kurulum
   - H3: İşleme stratejisi
@@ -297,14 +297,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /channels/channel-routing
 - Başlıklar:
-  - H1: Kanallar ve yönlendirme
+  - H1: Kanallar &amp; yönlendirme
   - H2: Temel terimler
   - H2: Giden hedef önekleri
-  - H2: Oturum anahtarı biçimleri (örnekler)
-  - H2: Ana DM rota sabitleme
+  - H2: Oturum anahtarı şekilleri (örnekler)
+  - H2: Ana DM rotası sabitleme
   - H2: Korumalı gelen kayıt
-  - H2: Yönlendirme kuralları (bir ajan nasıl seçilir)
-  - H2: Yayın grupları (birden çok ajan çalıştırma)
+  - H2: Yönlendirme kuralları (bir ajanın nasıl seçildiği)
+  - H2: Yayın grupları (birden fazla ajan çalıştır)
   - H2: Yapılandırmaya genel bakış
   - H2: Oturum depolama
   - H2: WebChat davranışı
@@ -316,7 +316,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/clickclack
 - Başlıklar:
   - H2: Hızlı kurulum
-  - H2: Birden çok bot
+  - H2: Birden fazla bot
   - H2: Hedefler
   - H2: İzinler
   - H2: Sorun giderme
@@ -335,7 +335,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yerel komutlar ve komut kimlik doğrulaması
   - H2: Özellik ayrıntıları
   - H2: Araçlar ve eylem kapıları
-  - H2: Components v2 UI
+  - H2: Components v2 kullanıcı arayüzü
   - H2: Ses
   - H3: Ses kanalları
   - H3: Kullanıcıları seste takip et
@@ -357,23 +357,23 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Tüm gruplara izin ver, @mention gerekmez
   - H3: Tüm gruplara izin ver, yine de @mention gerektir
   - H3: Yalnızca belirli gruplara izin ver
-  - H3: Grup içindeki gönderenleri kısıtla
-  - H2: Grup/kullanıcı kimliklerini al
-  - H3: Grup kimlikleri (chatid, biçim: ocxxx)
-  - H3: Kullanıcı kimlikleri (openid, biçim: ouxxx)
+  - H3: Bir grup içinde gönderenleri kısıtla
+  - H2: Grup/kullanıcı ID'lerini alma
+  - H3: Grup ID'leri (chatid, biçim: ocxxx)
+  - H3: Kullanıcı ID'leri (openid, biçim: ouxxx)
   - H2: Yaygın komutlar
   - H2: Sorun giderme
   - H3: Bot grup sohbetlerinde yanıt vermiyor
   - H3: Bot mesaj almıyor
   - H3: QR kurulumu Feishu mobil uygulamasında tepki vermiyor
-  - H3: App Secret sızdırıldı
+  - H3: App Secret sızdı
   - H2: Gelişmiş yapılandırma
-  - H3: Birden çok hesap
+  - H3: Birden fazla hesap
   - H3: Mesaj sınırları
   - H3: Akış
   - H3: Kota optimizasyonu
   - H3: ACP oturumları
-  - H4: Kalıcı ACP bağlaması
+  - H4: Kalıcı ACP bağlama
   - H4: Sohbetten ACP oluşturma
   - H3: Çok ajanlı yönlendirme
   - H2: Kullanıcı başına ajan yalıtımı (Dinamik Ajan Oluşturma)
@@ -388,19 +388,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Desteklenen mesaj türleri
   - H3: Alma
   - H3: Gönderme
-  - H3: Konular ve yanıtlar
+  - H3: Diziler ve yanıtlar
   - H2: İlgili
 
 ## channels/googlechat.md
 
 - Rota: /channels/googlechat
 - Başlıklar:
-  - H2: Yükleme
-  - H2: Hızlı kurulum (başlangıç düzeyi)
-  - H2: Google Chat'e ekleme
+  - H2: Yükle
+  - H2: Hızlı kurulum (başlangıç)
+  - H2: Google Chat'e ekle
   - H2: Genel URL (yalnızca Webhook)
-  - H3: Seçenek A: Tailscale Funnel (Önerilen)
-  - H3: Seçenek B: Ters Proxy (Caddy)
+  - H3: Seçenek A: Tailscale Funnel (Önerilir)
+  - H3: Seçenek B: Reverse Proxy (Caddy)
   - H3: Seçenek C: Cloudflare Tunnel
   - H2: Nasıl çalışır
   - H2: Hedefler
@@ -431,17 +431,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Bağlam görünürlüğü ve izin listeleri
   - H2: Oturum anahtarları
   - H2: Desen: kişisel DM'ler + herkese açık gruplar (tek ajan)
-  - H2: Görüntüleme etiketleri
+  - H2: Görüntü etiketleri
   - H2: Grup ilkesi
-  - H2: Mention geçidi (varsayılan)
-  - H2: Yapılandırılmış mention desenlerini kapsamlandırma
+  - H2: Mention kapısı (varsayılan)
+  - H2: Yapılandırılmış mention desenlerinin kapsamı
   - H2: Grup/kanal araç kısıtlamaları (isteğe bağlı)
   - H2: Grup izin listeleri
   - H2: Etkinleştirme (yalnızca sahip)
   - H2: Bağlam alanları
-  - H2: iMessage'a özgü noktalar
+  - H2: iMessage'a özgü ayrıntılar
   - H2: WhatsApp sistem istemleri
-  - H2: WhatsApp'a özgü noktalar
+  - H2: WhatsApp'a özgü ayrıntılar
   - H2: İlgili
 
 ## channels/imessage-from-bluebubbles.md
@@ -474,10 +474,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Dağıtım desenleri
   - H2: Medya, parçalama ve teslim hedefleri
   - H2: Özel API eylemleri
-  - H2: Yapılandırma yazımları
-  - H2: Bölünmüş gönderilen DM'leri birleştirme (tek bileşimde komut + URL)
+  - H2: Yapılandırma yazmaları
+  - H2: Bölünmüş gönderimli DM'leri birleştirme (tek kompozisyonda komut + URL)
   - H3: Senaryolar ve ajanın gördükleri
-  - H2: Köprü veya Gateway yeniden başlatıldıktan sonra gelenleri kurtarma
+  - H2: Bridge veya Gateway yeniden başlatıldıktan sonra gelen kurtarma
   - H3: Operatöre görünür sinyal
   - H3: Geçiş
   - H2: Sorun giderme
@@ -503,7 +503,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yanıt tetikleme (mention'lar)
   - H2: Güvenlik notu (herkese açık kanallar için önerilir)
   - H3: Kanaldaki herkes için aynı araçlar
-  - H3: Gönderen başına farklı araçlar (sahip daha fazla yetkiye sahip olur)
+  - H3: Gönderen başına farklı araçlar (sahip daha fazla yetki alır)
   - H2: NickServ
   - H2: Ortam değişkenleri
   - H2: Sorun giderme
@@ -537,17 +537,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /channels/matrix-migration
 - Başlıklar:
-  - H2: Geçişin otomatik olarak yaptıkları
-  - H2: Geçişin otomatik olarak yapamadıkları
+  - H2: Taşımanın otomatik olarak yaptıkları
+  - H2: Taşımanın otomatik olarak yapamayacakları
   - H2: Önerilen yükseltme akışı
-  - H2: Şifrelenmiş geçiş nasıl çalışır?
+  - H2: Şifreli taşımanın nasıl çalıştığı
   - H2: Yaygın mesajlar ve anlamları
   - H3: Yükseltme ve algılama mesajları
-  - H3: Şifrelenmiş durum kurtarma mesajları
+  - H3: Şifreli durum kurtarma mesajları
   - H3: Elle kurtarma mesajları
   - H3: Özel Plugin yükleme mesajları
-  - H2: Şifrelenmiş geçmiş hâlâ geri gelmiyorsa
-  - H2: Gelecekteki mesajlar için baştan başlamak istiyorsanız
+  - H2: Şifreli geçmiş hâlâ geri gelmiyorsa
+  - H2: Gelecek mesajlar için baştan başlamak istiyorsanız
   - H2: İlgili
 
 ## channels/matrix-presentation.md
@@ -555,7 +555,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/matrix-presentation
 - Başlıklar:
   - H2: Olay içeriği
-  - H2: Yedek davranış
+  - H2: Geri dönüş davranışı
   - H2: Desteklenen bloklar
   - H2: Etkileşimler
   - H2: Onay meta verileriyle ilişki
@@ -565,10 +565,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /channels/matrix-push-rules
 - Başlıklar:
-  - H2: Ön koşullar
+  - H2: Önkoşullar
   - H2: Adımlar
   - H2: Çoklu bot notları
-  - H2: Ev sunucusu notları
+  - H2: Homeserver notları
   - H2: İlgili
 
 ## channels/matrix.md
@@ -578,9 +578,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yükleme
   - H2: Kurulum
   - H3: Etkileşimli kurulum
-  - H3: En küçük yapılandırma
+  - H3: Minimal yapılandırma
   - H3: Otomatik katılma
-  - H3: İzin verilenler listesi hedef biçimleri
+  - H3: İzin listesi hedef biçimleri
   - H3: Hesap kimliği normalleştirme
   - H3: Önbelleğe alınmış kimlik bilgileri
   - H3: Ortam değişkenleri
@@ -588,23 +588,23 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Akış önizlemeleri
   - H2: Sesli mesajlar
   - H2: Onay meta verileri
-  - H3: Sessiz kesinleşmiş önizlemeler için kendi barındırılan anlık bildirim kuralları
+  - H3: Sessiz tamamlanmış önizlemeler için kendi barındırdığınız anlık bildirim kuralları
   - H2: Botlar arası odalar
   - H2: Şifreleme ve doğrulama
   - H3: Şifrelemeyi etkinleştirme
   - H3: Durum ve güven sinyalleri
-  - H3: Bu cihazı bir kurtarma anahtarıyla doğrulama
+  - H3: Bu cihazı kurtarma anahtarıyla doğrulama
   - H3: Çapraz imzalamayı başlatma veya onarma
-  - H3: Oda anahtarı yedekleme
+  - H3: Oda anahtarı yedeği
   - H3: Doğrulamaları listeleme, isteme ve yanıtlama
   - H3: Çoklu hesap notları
   - H2: Profil yönetimi
-  - H2: İş parçacıkları
+  - H2: Konular
   - H3: Oturum yönlendirme (sessionScope)
-  - H3: Yanıt iş parçacığı oluşturma (threadReplies)
-  - H3: İş parçacığı kalıtımı ve eğik çizgi komutları
+  - H3: Yanıt konu zinciri (threadReplies)
+  - H3: Konu kalıtımı ve eğik çizgi komutları
   - H2: ACP konuşma bağlamaları
-  - H3: İş parçacığı bağlama yapılandırması
+  - H3: Konu bağlama yapılandırması
   - H2: Tepkiler
   - H2: Geçmiş bağlamı
   - H2: Bağlam görünürlüğü
@@ -613,17 +613,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Exec onayları
   - H2: Eğik çizgi komutları
   - H2: Çoklu hesap
-  - H2: Özel/LAN ev sunucuları
+  - H2: Özel/LAN homeserver'lar
   - H2: Matrix trafiğini proxy üzerinden geçirme
   - H2: Hedef çözümleme
-  - H2: Yapılandırma referansı
+  - H2: Yapılandırma başvurusu
   - H3: Hesap ve bağlantı
   - H3: Şifreleme
   - H3: Erişim ve ilke
   - H3: Yanıt davranışı
   - H3: Tepki ayarları
-  - H3: Araç kullanımı ve oda bazında geçersiz kılmalar
-  - H3: Exec onay ayarları
+  - H3: Araçlar ve oda bazlı geçersiz kılmalar
+  - H3: Exec onayı ayarları
   - H2: İlgili
 
 ## channels/mattermost.md
@@ -635,10 +635,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yerel eğik çizgi komutları
   - H2: Ortam değişkenleri (varsayılan hesap)
   - H2: Sohbet modları
-  - H2: İş parçacıkları ve oturumlar
+  - H2: Konu zinciri ve oturumlar
   - H2: Erişim denetimi (DM'ler)
   - H2: Kanallar (gruplar)
-  - H2: Giden teslim için hedefler
+  - H2: Giden teslimat hedefleri
   - H2: DM kanalı yeniden denemesi
   - H2: Önizleme akışı
   - H2: Tepkiler (mesaj aracı)
@@ -653,53 +653,53 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /channels/msteams
 - Başlıklar:
-  - H2: Paketle gelen Plugin
+  - H2: Paketlenmiş Plugin
   - H2: Hızlı kurulum
   - H2: Hedefler
   - H2: Yapılandırma yazmaları
   - H2: Erişim denetimi (DM'ler + gruplar)
-  - H3: Nasıl çalışır?
-  - H3: Adım 1: Azure Bot oluşturma
-  - H3: Adım 2: Kimlik bilgilerini alma
-  - H3: Adım 3: Mesajlaşma uç noktasını yapılandırma
-  - H3: Adım 4: Teams kanalını etkinleştirme
-  - H3: Adım 5: Teams uygulama manifestini oluşturma
-  - H3: Adım 6: OpenClaw'ı yapılandırma
-  - H3: Adım 7: Gateway'i çalıştırma
-  - H2: Birleşik kimlik doğrulama (sertifika artı yönetilen kimlik)
+  - H3: Nasıl çalışır
+  - H3: 1. Adım: Azure Bot oluşturma
+  - H3: 2. Adım: Kimlik bilgilerini alma
+  - H3: 3. Adım: Mesajlaşma uç noktasını yapılandırma
+  - H3: 4. Adım: Teams Kanalını etkinleştirme
+  - H3: 5. Adım: Teams Uygulama Bildirimini oluşturma
+  - H3: 6. Adım: OpenClaw'ı yapılandırma
+  - H3: 7. Adım: Gateway'i çalıştırma
+  - H2: Federasyonlu kimlik doğrulama (sertifika artı yönetilen kimlik)
   - H3: Seçenek A: Sertifika tabanlı kimlik doğrulama
-  - H3: Seçenek B: Azure Yönetilen Kimliği
-  - H3: AKS İş Yükü Kimliği Kurulumu
+  - H3: Seçenek B: Azure Yönetilen Kimlik
+  - H3: AKS Workload Identity Kurulumu
   - H3: Kimlik doğrulama türü karşılaştırması
   - H2: Yerel geliştirme (tünelleme)
   - H2: Botu test etme
   - H2: Ortam değişkenleri
   - H2: Üye bilgisi eylemi
   - H2: Geçmiş bağlamı
-  - H2: Geçerli Teams RSC izinleri (manifest)
-  - H2: Örnek Teams manifesti (redakte edilmiş)
-  - H3: Manifest uyarıları (olmazsa olmaz alanlar)
+  - H2: Geçerli Teams RSC izinleri (bildirim)
+  - H2: Örnek Teams bildirimi (düzeltilmiş)
+  - H3: Bildirim uyarıları (zorunlu alanlar)
   - H3: Mevcut bir uygulamayı güncelleme
-  - H2: Yetenekler: yalnızca RSC ve Graph karşılaştırması
+  - H2: Yetenekler: yalnızca RSC ve Graph
   - H3: Yalnızca Teams RSC ile (uygulama yüklü, Graph API izinleri yok)
-  - H3: Teams RSC + Microsoft Graph Uygulama izinleri ile
-  - H3: RSC ve Graph API karşılaştırması
+  - H3: Teams RSC + Microsoft Graph Uygulama izinleriyle
+  - H3: RSC ve Graph API
   - H2: Graph etkin medya + geçmiş (kanallar için gerekli)
   - H2: Bilinen sınırlamalar
   - H3: Webhook zaman aşımları
-  - H3: Teams bulutu ve hizmet URL desteği
+  - H3: Teams bulutu ve hizmet URL'si desteği
   - H3: Biçimlendirme
   - H2: Yapılandırma
   - H2: Yönlendirme ve oturumlar
-  - H2: Yanıt stili: iş parçacıkları ve gönderiler
+  - H2: Yanıt stili: konular ve gönderiler
   - H3: Çözümleme önceliği
-  - H3: İş parçacığı bağlamını koruma
+  - H3: Konu bağlamını koruma
   - H2: Ekler ve görseller
   - H2: Grup sohbetlerinde dosya gönderme
-  - H3: Grup sohbetleri neden SharePoint gerektirir?
+  - H3: Grup sohbetlerinin neden SharePoint'e ihtiyaç duyduğu
   - H3: Kurulum
   - H3: Paylaşım davranışı
-  - H3: Yedek davranış
+  - H3: Geri dönüş davranışı
   - H3: Dosyaların depolandığı konum
   - H2: Anketler (Uyarlanabilir Kartlar)
   - H2: Sunum kartları
@@ -709,41 +709,41 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Özel kanallar
   - H2: Sorun giderme
   - H3: Yaygın sorunlar
-  - H3: Manifest yükleme hataları
+  - H3: Bildirim yükleme hataları
   - H3: RSC izinleri çalışmıyor
-  - H2: Referanslar
+  - H2: Başvurular
   - H2: İlgili
 
 ## channels/nextcloud-talk.md
 
 - Rota: /channels/nextcloud-talk
 - Başlıklar:
-  - H2: Paketle gelen Plugin
+  - H2: Paketlenmiş Plugin
   - H2: Hızlı kurulum (başlangıç)
   - H2: Notlar
   - H2: Erişim denetimi (DM'ler)
   - H2: Odalar (gruplar)
   - H2: Yetenekler
-  - H2: Yapılandırma referansı (Nextcloud Talk)
+  - H2: Yapılandırma başvurusu (Nextcloud Talk)
   - H2: İlgili
 
 ## channels/nostr.md
 
 - Rota: /channels/nostr
 - Başlıklar:
-  - H2: Paketle gelen Plugin
-  - H3: Eski/özel yüklemeler
+  - H2: Paketlenmiş Plugin
+  - H3: Daha eski/özel yüklemeler
   - H3: Etkileşimsiz kurulum
   - H2: Hızlı kurulum
-  - H2: Yapılandırma referansı
+  - H2: Yapılandırma başvurusu
   - H2: Profil meta verileri
   - H2: Erişim denetimi
   - H3: DM ilkeleri
-  - H3: İzin verilenler listesi örneği
+  - H3: İzin listesi örneği
   - H2: Anahtar biçimleri
   - H2: Aktarıcılar
   - H2: Protokol desteği
-  - H2: Test
+  - H2: Test etme
   - H3: Yerel aktarıcı
   - H3: Elle test
   - H2: Sorun giderme
@@ -765,7 +765,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: 2) Node cihaz eşleştirme (iOS/Android/macOS/başsız düğümler)
   - H3: Telegram üzerinden eşleştirme (iOS için önerilir)
   - H3: Bir Node cihazını onaylama
-  - H3: İsteğe bağlı güvenilen CIDR Node otomatik onayı
+  - H3: İsteğe bağlı güvenilir CIDR Node otomatik onayı
   - H3: Node eşleştirme durum depolaması
   - H3: Notlar
   - H2: İlgili belgeler
@@ -774,7 +774,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /channels/qa-channel
 - Başlıklar:
-  - H2: Ne yapar?
+  - H2: Ne yapar
   - H2: Yapılandırma
   - H2: Çalıştırıcılar
   - H2: İlgili
@@ -792,7 +792,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hedef biçimleri
   - H2: Eğik çizgi komutları
   - H2: Motor mimarisi
-  - H2: QR koduyla başlangıç
+  - H2: QR kodla katılım
   - H2: Sorun giderme
   - H2: İlgili
 
@@ -801,70 +801,72 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/raft
 - Başlıklar:
   - H2: Yükleme
-  - H2: Ön koşullar
+  - H2: Önkoşullar
   - H2: Yapılandırma
-  - H2: Nasıl Çalışır?
+  - H2: Nasıl Çalışır
   - H2: Doğrulama
   - H2: Sorun giderme
-  - H2: Referanslar
+  - H2: Başvurular
 
 ## channels/signal.md
 
 - Rota: /channels/signal
 - Başlıklar:
-  - H2: Ön koşullar
+  - H2: Önkoşullar
   - H2: Hızlı kurulum (başlangıç)
-  - H2: Nedir?
+  - H2: Nedir
   - H2: Yapılandırma yazmaları
   - H2: Numara modeli (önemli)
   - H2: Kurulum yolu A: mevcut Signal hesabını bağlama (QR)
-  - H2: Kurulum yolu B: ayrılmış bot numarası kaydetme (SMS, Linux)
+  - H2: Kurulum yolu B: özel bot numarası kaydetme (SMS, Linux)
   - H2: Harici daemon modu (httpUrl)
   - H2: Kapsayıcı modu (bbernhard/signal-cli-rest-api)
   - H2: Erişim denetimi (DM'ler + gruplar)
-  - H2: Nasıl çalışır? (davranış)
+  - H2: Nasıl çalışır (davranış)
   - H2: Medya + sınırlar
-  - H2: Yazıyor göstergesi + okundu bilgileri
+  - H2: Yazıyor + okundu bilgileri
+  - H2: Yaşam döngüsü durum tepkileri
   - H2: Tepkiler (mesaj aracı)
   - H2: Onay tepkileri
-  - H2: Teslim hedefleri (CLI/Cron)
+  - H2: Teslimat hedefleri (CLI/Cron)
+  - H2: Takma adlar
   - H2: Sorun giderme
   - H2: Güvenlik notları
-  - H2: Yapılandırma referansı (Signal)
+  - H2: Yapılandırma başvurusu (Signal)
   - H2: İlgili
 
 ## channels/slack.md
 
 - Rota: /channels/slack
 - Başlıklar:
-  - H2: Socket Mode veya HTTP İstek URL'leri seçimi
-  - H3: Aktarma modu
+  - H2: Socket Mode veya HTTP İstek URL'lerini seçme
+  - H3: Aktarıcı modu
   - H2: Yükleme
   - H2: Hızlı kurulum
-  - H2: Socket Mode aktarım ayarlaması
-  - H2: Manifest ve kapsam kontrol listesi
-  - H3: Ek manifest ayarları
-  - H2: Belirteç modeli
+  - H2: Socket Mode taşıma ayarı
+  - H2: Bildirim ve kapsam kontrol listesi
+  - H3: Ek bildirim ayarları
+  - H2: Token modeli
   - H2: Eylemler ve geçitler
   - H2: Erişim denetimi ve yönlendirme
-  - H2: İş parçacıkları, oturumlar ve yanıt etiketleri
-  - H2: Onay tepkileri
+  - H2: Konu zinciri, oturumlar ve yanıt etiketleri
+  - H2: Ack tepkileri
   - H3: Emoji (ackReaction)
   - H3: Kapsam (messages.ackReactionScope)
   - H2: Metin akışı
-  - H2: Yazıyor tepkisi yedeği
-  - H2: Medya, parçalara ayırma ve teslim
+  - H2: Yazıyor tepkisi geri dönüşü
+  - H2: Medya, parçalama ve teslimat
   - H2: Komutlar ve eğik çizgi davranışı
   - H2: Etkileşimli yanıtlar
-  - H3: Plugin tarafından sahiplenilen modal gönderimleri
-  - H2: Slack'te yerel onaylar
+  - H3: Plugin'e ait modal gönderimleri
+  - H2: Slack içinde yerel onaylar
   - H2: Olaylar ve operasyonel davranış
-  - H2: Yapılandırma referansı
+  - H2: Yapılandırma başvurusu
   - H2: Sorun giderme
-  - H2: Ek görsel algılama referansı
+  - H2: Ek görüntü başvurusu
   - H3: Desteklenen medya türleri
-  - H3: Gelen iş hattı
-  - H3: İş parçacığı kök eki kalıtımı
+  - H3: Gelen işlem hattı
+  - H3: Konu kökü ek kalıtımı
   - H3: Çoklu ek işleme
   - H3: Boyut, indirme ve model sınırları
   - H3: Bilinen sınırlar
@@ -880,9 +882,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yapılandırma Örnekleri
   - H3: Yapılandırma dosyası
   - H3: Ortam değişkenleri
-  - H3: SecretRef kimlik doğrulama belirteci
-  - H3: Yalnızca izin verilenler listesine açık özel numara
-  - H3: Mesajlaşma Hizmeti göndericisi
+  - H3: SecretRef kimlik doğrulama token'ı
+  - H3: Yalnızca izin listesine açık özel numara
+  - H3: Messaging Service göndericisi
   - H3: Varsayılan giden hedef
   - H2: Erişim denetimi
   - H2: SMS gönderme
@@ -891,20 +893,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Webhook güvenliği
   - H2: Çoklu hesap yapılandırması
   - H2: Sorun giderme
-  - H3: Twilio 403 döndürür veya OpenClaw Webhook'u reddeder
+  - H3: Twilio 403 döndürüyor veya OpenClaw Webhook'u reddediyor
   - H3: Eşleştirme isteği görünmüyor
   - H3: Giden gönderimler başarısız oluyor
-  - H3: Mesajlar geliyor ancak agent yanıt vermiyor
+  - H3: Mesajlar geliyor ancak aracı yanıt vermiyor
 
 ## channels/synology-chat.md
 
 - Rota: /channels/synology-chat
 - Başlıklar:
-  - H2: Paketle gelen Plugin
+  - H2: Paketlenmiş Plugin
   - H2: Hızlı kurulum
   - H2: Ortam değişkenleri
   - H2: DM ilkesi ve erişim denetimi
-  - H2: Giden teslim
+  - H2: Giden teslimat
   - H2: Çoklu hesap
   - H2: Güvenlik notları
   - H2: Sorun giderme
@@ -915,32 +917,32 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/telegram
 - Başlıklar:
   - H2: Hızlı kurulum
-  - H2: Telegram tarafı ayarları
+  - H2: Telegram tarafı ayarlar
   - H2: Erişim denetimi ve etkinleştirme
   - H3: Grup bot kimliği
   - H2: Çalışma zamanı davranışı
-  - H2: Özellik referansı
-  - H2: Hata yanıtı kontrolleri
+  - H2: Özellik başvurusu
+  - H2: Hata yanıtı denetimleri
   - H2: Sorun giderme
-  - H2: Yapılandırma referansı
+  - H2: Yapılandırma başvurusu
   - H2: İlgili
 
 ## channels/tlon.md
 
 - Rota: /channels/tlon
 - Başlıklar:
-  - H2: Paketle gelen Plugin
+  - H2: Paketlenmiş Plugin
   - H2: Kurulum
   - H2: Özel/LAN gemileri
   - H2: Grup kanalları
   - H2: Erişim denetimi
   - H2: Sahip ve onay sistemi
   - H2: Otomatik kabul ayarları
-  - H2: Teslim hedefleri (CLI/Cron)
-  - H2: Paketle gelen skill
+  - H2: Teslimat hedefleri (CLI/Cron)
+  - H2: Paketlenmiş skill
   - H2: Yetenekler
   - H2: Sorun giderme
-  - H2: Yapılandırma referansı
+  - H2: Yapılandırma başvurusu
   - H2: Notlar
   - H2: İlgili
 
@@ -976,11 +978,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hızlı kurulum (başlangıç)
   - H2: Nedir
   - H2: Kurulum (ayrıntılı)
-  - H3: Kimlik bilgileri oluşturma
-  - H3: Botu yapılandırma
+  - H3: Kimlik bilgileri oluştur
+  - H3: Botu yapılandır
   - H3: Erişim denetimi (önerilir)
   - H2: Token yenileme (isteğe bağlı)
-  - H2: Çok hesap desteği
+  - H2: Çoklu hesap desteği
   - H2: Erişim denetimi
   - H2: Sorun giderme
   - H2: Yapılandırma
@@ -997,21 +999,21 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Adlandırma
   - H2: Nasıl çalışır
-  - H2: Kurulum
+  - H2: Yükle
   - H2: Oturum açma
   - H2: Erişim denetimi
   - H2: Uyumluluk
-  - H2: Sidecar süreci
+  - H2: Yan süreç
   - H2: Sorun giderme
-  - H2: İlgili dokümanlar
+  - H2: İlgili belgeler
 
 ## channels/whatsapp.md
 
 - Rota: /channels/whatsapp
 - Başlıklar:
-  - H2: Kurulum (isteğe bağlı)
+  - H2: Yükle (isteğe bağlı)
   - H2: Hızlı kurulum
-  - H2: Dağıtım kalıpları
+  - H2: Dağıtım desenleri
   - H2: Çalışma zamanı modeli
   - H2: Onay istemleri
   - H2: Plugin kancaları ve gizlilik
@@ -1019,16 +1021,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yapılandırılmış ACP bağlamaları
   - H2: Kişisel numara ve kendiyle sohbet davranışı
   - H2: İleti normalleştirme ve bağlam
-  - H2: Teslimat, parçalama ve medya
+  - H2: Teslimat, parçalara ayırma ve medya
   - H2: Yanıt alıntılama
   - H2: Tepki düzeyi
-  - H2: Onay tepkileri
-  - H2: Yaşam döngüsü durumu tepkileri
-  - H2: Çok hesap ve kimlik bilgileri
-  - H2: Araçlar, eylemler ve yapılandırma yazımları
+  - H2: Alındı tepkileri
+  - H2: Yaşam döngüsü durum tepkileri
+  - H2: Çoklu hesap ve kimlik bilgileri
+  - H2: Araçlar, eylemler ve yapılandırma yazmaları
   - H2: Sorun giderme
   - H2: Sistem istemleri
-  - H2: Yapılandırma başvurusu işaretçileri
+  - H2: Yapılandırma referansı işaretçileri
   - H2: İlgili
 
 ## channels/yuanbao.md
@@ -1042,30 +1044,30 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Grup sohbetleri
   - H2: Yapılandırma örnekleri
   - H3: Açık DM ilkesiyle temel kurulum
-  - H3: DM’leri belirli kullanıcılarla sınırlandırma
-  - H3: Gruplarda @mention gereksinimini devre dışı bırakma
-  - H3: Giden ileti teslimatını optimize etme
-  - H3: Metin birleştirme stratejisini ayarlama
+  - H3: DM'leri belirli kullanıcılarla sınırla
+  - H3: Gruplarda @mention gereksinimini devre dışı bırak
+  - H3: Giden ileti teslimatını optimize et
+  - H3: Metin birleştirme stratejisini ayarla
   - H2: Yaygın komutlar
   - H2: Sorun giderme
   - H3: Bot grup sohbetlerinde yanıt vermiyor
-  - H3: Bot ileti almıyor
+  - H3: Bot iletileri almıyor
   - H3: Bot boş veya yedek yanıtlar gönderiyor
-  - H3: App Secret sızdı
+  - H3: App Secret sızdırıldı
   - H2: Gelişmiş yapılandırma
   - H3: Birden çok hesap
   - H3: İleti sınırları
   - H3: Akış
-  - H3: Grup sohbet geçmişi bağlamı
-  - H3: Yanıtla modu
+  - H3: Grup sohbeti geçmişi bağlamı
+  - H3: Yanıtlama modu
   - H3: Markdown ipucu enjeksiyonu
   - H3: Hata ayıklama modu
-  - H3: Çok aracılı yönlendirme
-  - H2: Yapılandırma başvurusu
+  - H3: Çoklu ajan yönlendirme
+  - H2: Yapılandırma referansı
   - H2: Desteklenen ileti türleri
   - H3: Alma
   - H3: Gönderme
-  - H3: İş parçacıkları ve yanıtlar
+  - H3: Konular ve yanıtlar
   - H2: İlgili
 
 ## channels/zalo.md
@@ -1076,19 +1078,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hızlı kurulum (başlangıç)
   - H2: Nedir
   - H2: Kurulum (hızlı yol)
-  - H3: 1) Bot token’ı oluşturma (Zalo Bot Platform)
-  - H3: 2) Token’ı yapılandırma (ortam veya yapılandırma)
+  - H3: 1) Bir bot token'ı oluştur (Zalo Bot Platform)
+  - H3: 2) Token'ı yapılandır (env veya config)
   - H2: Nasıl çalışır (davranış)
   - H2: Sınırlar
-  - H2: Erişim denetimi (DM’ler)
+  - H2: Erişim denetimi (DM'ler)
   - H3: DM erişimi
   - H2: Erişim denetimi (Gruplar)
-  - H2: Long-polling ve Webhook
+  - H2: Uzun yoklama ve Webhook karşılaştırması
   - H2: Desteklenen ileti türleri
   - H2: Yetenekler
-  - H2: Teslimat hedefleri (CLI/Cron)
+  - H2: Teslimat hedefleri (CLI/cron)
   - H2: Sorun giderme
-  - H2: Yapılandırma başvurusu (Zalo)
+  - H2: Yapılandırma referansı (Zalo)
   - H2: İlgili
 
 ## channels/zaloclawbot.md
@@ -1096,15 +1098,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /channels/zaloclawbot
 - Başlıklar:
   - H2: Uyumluluk
-  - H2: Ön koşullar
-  - H2: onboard ile kurulum (önerilir)
-  - H2: Elle Kurulum
-  - H3: 1. Plugin’i kurma
-  - H3: 2. Plugin’i yapılandırmada etkinleştirme
-  - H3: 3. QR kodu oluşturma ve oturum açma
-  - H3: 4. Gateway’i yeniden başlatma
+  - H2: Önkoşullar
+  - H2: Onboard ile yükle (önerilir)
+  - H2: Manuel Kurulum
+  - H3: 1. Plugin'i yükle
+  - H3: 2. Plugin'i config içinde etkinleştir
+  - H3: 3. QR kodu oluştur ve oturum aç
+  - H3: 4. gateway'i yeniden başlat
   - H2: Nasıl Çalışır
-  - H2: İç Yapı
+  - H2: Kaputun Altında
   - H2: Sorun giderme
 
 ## channels/zalouser.md
@@ -1115,14 +1117,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hızlı kurulum (başlangıç)
   - H2: Nedir
   - H2: Adlandırma
-  - H2: Kimlikleri bulma (dizin)
+  - H2: ID'leri bulma (dizin)
   - H2: Sınırlar
-  - H2: Erişim denetimi (DM’ler)
+  - H2: Erişim denetimi (DM'ler)
   - H2: Grup erişimi (isteğe bağlı)
-  - H3: Grup mention geçidi
-  - H2: Çok hesap
+  - H3: Grup mention kapısı
+  - H2: Çoklu hesap
   - H2: Ortam değişkenleri
-  - H2: Yazıyor göstergesi, tepkiler ve teslimat onayları
+  - H2: Yazıyor göstergesi, tepkiler ve teslimat alındıları
   - H2: Sorun giderme
   - H2: İlgili
 
@@ -1130,40 +1132,40 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /ci
 - Başlıklar:
-  - H2: Pipeline genel bakışı
-  - H2: Hızlı başarısızlık sırası
+  - H2: İşlem hattı genel bakışı
+  - H2: Hızlı başarısız olma sırası
   - H2: PR bağlamı ve kanıt
   - H2: Kapsam ve yönlendirme
   - H2: ClawSweeper etkinlik iletimi
-  - H2: Elle tetiklemeler
+  - H2: Manuel çalıştırmalar
   - H2: Çalıştırıcılar
   - H2: Çalıştırıcı kayıt bütçesi
   - H2: Yerel eşdeğerler
   - H2: OpenClaw Performansı
   - H2: Tam Sürüm Doğrulaması
-  - H2: Canlı ve E2E shard’ları
+  - H2: Canlı ve E2E shard'ları
   - H2: Paket Kabulü
   - H3: İşler
-  - H3: Aday kaynaklar
-  - H3: Paket profilleri
+  - H3: Aday kaynakları
+  - H3: Süit profilleri
   - H3: Eski uyumluluk pencereleri
   - H3: Örnekler
   - H2: Kurulum smoke testi
   - H2: Yerel Docker E2E
   - H3: Ayarlanabilirler
-  - H3: Yeniden kullanılabilir canlı/E2E workflow’u
+  - H3: Yeniden kullanılabilir canlı/E2E iş akışı
   - H3: Sürüm yolu parçaları
   - H2: Plugin Ön Sürümü
   - H2: QA Lab
   - H2: CodeQL
   - H3: Güvenlik kategorileri
-  - H3: Platforma özel güvenlik shard’ları
+  - H3: Platforma özgü güvenlik shard'ları
   - H3: Kritik Kalite kategorileri
-  - H2: Bakım workflow’ları
+  - H2: Bakım iş akışları
   - H3: Docs Agent
-  - H3: Test Performance Agent
-  - H3: Birleştirmeden Sonra Yinelenen PR’ler
-  - H2: Yerel denetim kapıları ve değişiklik yönlendirme
+  - H3: Test Performans Ajanı
+  - H3: Birleştirmeden Sonra Yinelenen PR'ler
+  - H2: Yerel kontrol kapıları ve değişiklik yönlendirmesi
   - H2: Testbox doğrulaması
   - H2: İlgili
 
@@ -1172,18 +1174,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /clawhub/cli
 - Başlıklar:
   - H1: ClawHub CLI
-  - H2: Keşfetme ve kurma
-  - H2: Yayımlama ve bakımını yapma
+  - H2: Keşfet ve yükle
+  - H2: Yayımla ve bakımını yap
   - H2: İlgili
 
 ## clawhub/publishing.md
 
 - Rota: /clawhub/publishing
 - Başlıklar:
-  - H1: ClawHub’da yayımlama
+  - H1: ClawHub'da yayımlama
   - H2: Sahipler
   - H2: Skills
-  - H2: Plugin’ler
+  - H2: Plugin'ler
   - H2: Sürüm Akışı
   - H2: SSS
   - H3: Paket kapsamı seçilen sahiple eşleşmelidir
@@ -1198,13 +1200,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Kullanım
   - H2: ACP istemcisi (hata ayıklama)
   - H2: Protokol smoke testi
-  - H2: Bu nasıl kullanılır
-  - H2: Aracı seçme
-  - H2: acpx’ten kullanım (Codex, Claude, diğer ACP istemcileri)
+  - H2: Bunu nasıl kullanırsınız
+  - H2: Ajanları seçme
+  - H2: acpx'ten kullanma (Codex, Claude, diğer ACP istemcileri)
   - H2: Zed düzenleyici kurulumu
-  - H2: Oturum eşleme
+  - H2: Oturum eşlemesi
   - H2: Seçenekler
-  - H3: acp istemcisi seçenekleri
+  - H3: acp istemci seçenekleri
   - H2: İlgili
 
 ## cli/agent.md
@@ -1234,9 +1236,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: agents bindings
   - H3: agents bind
   - H3: agents unbind
-  - H3: agents delete
+  - H3: agents delete &lt;id&gt;
   - H2: Kimlik dosyaları
-  - H2: Kimlik ayarlama
+  - H2: Kimliği ayarla
   - H2: İlgili
 
 ## cli/approvals.md
@@ -1246,7 +1248,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: openclaw approvals
   - H2: openclaw exec-policy
   - H2: Yaygın komutlar
-  - H2: Onayları bir dosyadan değiştirme
+  - H2: Bir dosyadan onayları değiştir
   - H2: "Asla sorma" / YOLO örneği
   - H2: İzin listesi yardımcıları
   - H2: Yaygın seçenekler
@@ -1285,7 +1287,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Durum ve depolama
   - H2: Hata ayıklama
   - H2: MCP üzerinden mevcut Chrome
-  - H2: Uzak tarayıcı denetimi (Node ana makine proxy’si)
+  - H2: Uzak tarayıcı denetimi (node host proxy)
   - H2: İlgili
 
 ## cli/channels.md
@@ -1295,11 +1297,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: openclaw channels
   - H2: Yaygın komutlar
   - H2: Durum / yetenekler / çözümleme / günlükler
-  - H2: Hesap ekleme / kaldırma
+  - H2: Hesap ekle / kaldır
   - H2: Oturum açma ve kapatma (etkileşimli)
   - H2: Sorun giderme
   - H2: Yetenek yoklaması
-  - H2: Adları kimliklere çözümleme
+  - H2: Adları ID'lere çözümle
   - H2: İlgili
 
 ## cli/clawbot.md
@@ -1307,7 +1309,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /cli/clawbot
 - Başlıklar:
   - H1: openclaw clawbot
-  - H2: Geçiş
+  - H2: Migrasyon
   - H2: İlgili
 
 ## cli/commitments.md
@@ -1342,11 +1344,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: config set modları
   - H2: config patch
   - H2: Sağlayıcı oluşturucu bayrakları
-  - H2: Dry run
+  - H2: Kuru çalışma
   - H3: JSON çıktı şekli
   - H2: Yazma güvenliği
   - H2: Alt komutlar
-  - H2: Doğrulama
+  - H2: Doğrula
   - H2: İlgili
 
 ## cli/configure.md
@@ -1363,13 +1365,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /cli/crestodian
 - Başlıklar:
   - H1: openclaw crestodian
-  - H2: Crestodian’ın gösterdikleri
+  - H2: Crestodian'ın gösterdikleri
   - H2: Örnekler
   - H2: Güvenli başlatma
   - H2: Operasyonlar ve onay
-  - H2: Kurulum bootstrap’i
+  - H2: Kurulum başlangıcı
   - H2: Model Destekli Planlayıcı
-  - H2: Bir aracıya geçme
+  - H2: Bir ajana geçiş
   - H2: İleti kurtarma modu
   - H2: İlgili
 
@@ -1378,7 +1380,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /cli/cron
 - Başlıklar:
   - H1: openclaw cron
-  - H2: İşleri hızlıca oluşturma
+  - H2: Hızlı iş oluştur
   - H2: Oturumlar
   - H2: Teslimat
   - H3: Teslimat sahipliği
@@ -1386,17 +1388,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Zamanlama
   - H3: Tek seferlik işler
   - H3: Yinelenen işler
-  - H3: Elle çalıştırmalar
+  - H3: Manuel çalıştırmalar
   - H2: Modeller
-  - H3: Yalıtılmış Cron modeli önceliği
+  - H3: İzole cron modeli önceliği
   - H3: Hızlı mod
   - H3: Canlı model değiştirme yeniden denemeleri
-  - H2: Çalıştırma çıktısı ve reddetmeler
-  - H3: Eski onay bastırma
+  - H2: Çalıştırma çıktısı ve retler
+  - H3: Bayat alındı bastırma
   - H3: Sessiz token bastırma
-  - H3: Yapılandırılmış reddetmeler
+  - H3: Yapılandırılmış retler
   - H2: Saklama
-  - H2: Eski işleri geçirme
+  - H2: Eski işleri taşıma
   - H2: Yaygın düzenlemeler
   - H2: Yaygın yönetici komutları
   - H2: İlgili
@@ -1426,13 +1428,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: openclaw devices
   - H2: Komutlar
   - H3: openclaw devices list
-  - H3: openclaw devices remove
+  - H3: openclaw devices remove &lt;deviceId&gt;
   - H3: openclaw devices clear --yes [--pending]
   - H3: openclaw devices approve [requestId] [--latest]
   - H2: Paperclip / openclawgateway ilk çalıştırma onayı
-  - H3: openclaw devices reject
-  - H3: openclaw devices rotate --device --role [--scope ]
-  - H3: openclaw devices revoke --device --role
+  - H3: openclaw devices reject &lt;requestId&gt;
+  - H3: openclaw devices rotate --device &lt;id&gt; --role &lt;role&gt; [--scope &lt;scope...&gt;]
+  - H3: openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt;
   - H2: Yaygın seçenekler
   - H2: Notlar
   - H2: Token sapması kurtarma kontrol listesi
@@ -1446,7 +1448,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yaygın bayraklar
   - H2: Notlar
   - H2: Sonuçları ileti göndermeyle kullanma
-  - H2: Kimlik biçimleri (kanala göre)
+  - H2: ID biçimleri (kanala göre)
   - H2: Kendisi ("me")
   - H2: Eşler (kişiler/kullanıcılar)
   - H2: Gruplar
@@ -1482,9 +1484,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Örnekler
   - H2: Seçenekler
   - H2: Lint modu
-  - H2: Yapılandırılmış Sağlık Denetimleri
-  - H2: Denetim Seçimi
-  - H2: Yükseltme sonrası mod
+  - H2: Yapılandırılmış Sağlık Kontrolleri
+  - H2: Kontrol Seçimi
+  - H2: Yükseltme sonrası modu
   - H2: macOS: launchctl env geçersiz kılmaları
   - H2: İlgili
 
@@ -1502,22 +1504,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /cli/gateway
 - Başlıklar:
-  - H2: Gateway’i çalıştırma
+  - H2: Gateway'i çalıştır
   - H3: Seçenekler
-  - H2: Gateway’i yeniden başlatma
-  - H3: Gateway profilleme
-  - H2: Çalışan Gateway’i sorgulama
+  - H2: Gateway'i yeniden başlat
+  - H3: Gateway profil oluşturma
+  - H2: Çalışan bir Gateway'i sorgula
   - H3: gateway health
   - H3: gateway usage-cost
   - H3: gateway stability
   - H3: gateway diagnostics export
   - H3: gateway status
   - H3: gateway probe
-  - H4: SSH üzerinden uzak (Mac uygulaması eşliği)
-  - H3: gateway call
-  - H2: Gateway hizmetini yönetme
-  - H3: Sarmalayıcıyla kurulum
-  - H2: Gateway’leri keşfetme (Bonjour)
+  - H4: SSH üzerinden uzak (Mac uygulaması paritesi)
+  - H3: gateway call &lt;method&gt;
+  - H2: Gateway hizmetini yönet
+  - H3: Bir sarmalayıcıyla yükle
+  - H2: Gateway'leri keşfet (Bonjour)
   - H3: gateway discover
   - H2: İlgili
 
@@ -1540,9 +1542,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Bir Hook'u etkinleştir
   - H2: Bir Hook'u devre dışı bırak
   - H2: Notlar
-  - H2: Hook paketlerini yükle
+  - H2: Hook paketlerini kur
   - H2: Hook paketlerini güncelle
-  - H2: Paketle gelen hook'lar
+  - H2: Birlikte gelen hook'lar
   - H3: session-memory
   - H3: bootstrap-extra-files
   - H3: command-logger
@@ -1557,15 +1559,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Genel bayraklar
   - H2: Çıktı modları
   - H2: Komut ağacı
-  - H2: Sohbet eğik çizgi komutları
-  - H2: Kullanım takibi
+  - H2: Sohbet slash komutları
+  - H2: Kullanım izleme
   - H2: İlgili
 
 ## cli/infer.md
 
 - Rota: /cli/infer
 - Başlıklar:
-  - H2: infer'ı bir skill'e dönüştür
+  - H2: infer'i bir skill'e dönüştür
   - H2: Neden infer kullanılır
   - H2: Komut ağacı
   - H2: Yaygın görevler
@@ -1578,7 +1580,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Web
   - H2: Embedding
   - H2: JSON çıktısı
-  - H2: Yaygın sorunlar
+  - H2: Yaygın hatalar
   - H2: Notlar
   - H2: İlgili
 
@@ -1597,11 +1599,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /cli/mcp
 - Başlıklar:
-  - H2: Doğru MCP yolunu seçin
+  - H2: Doğru MCP yolunu seç
   - H2: MCP sunucusu olarak OpenClaw
   - H3: serve ne zaman kullanılır
   - H3: Nasıl çalışır
-  - H3: Bir istemci modu seçin
+  - H3: Bir istemci modu seç
   - H3: serve neleri sunar
   - H3: Kullanım
   - H3: Köprü araçları
@@ -1610,16 +1612,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: MCP istemci yapılandırması
   - H3: Seçenekler
   - H3: Güvenlik ve güven sınırı
-  - H3: Test
+  - H3: Test etme
   - H3: Sorun giderme
   - H2: MCP istemci kayıt defteri olarak OpenClaw
-  - H3: Kaydedilmiş MCP sunucu tanımları
+  - H3: Kaydedilmiş MCP sunucusu tanımları
   - H3: Yaygın sunucu tarifleri
   - H3: JSON çıktı biçimleri
-  - H3: Stdio aktarımı
-  - H3: SSE / HTTP aktarımı
+  - H3: Stdio taşıması
+  - H3: SSE / HTTP taşıması
   - H3: OAuth iş akışı
-  - H3: Akış yapılabilir HTTP aktarımı
+  - H3: Akış destekli HTTP taşıması
   - H2: Control UI
   - H2: Geçerli sınırlar
   - H2: İlgili
@@ -1673,7 +1675,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Yalnızca arşiv durumu
   - H3: Uyguladıktan sonra
   - H2: Plugin sözleşmesi
-  - H2: İlk katılım entegrasyonu
+  - H2: Onboarding entegrasyonu
   - H2: İlgili
 
 ## cli/models.md
@@ -1684,8 +1686,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yaygın komutlar
   - H3: Model taraması
   - H3: Model durumu
-  - H2: Takma adlar + yedekler
-  - H2: Auth profilleri
+  - H2: Takma adlar + geri dönüşler
+  - H2: Kimlik doğrulama profilleri
   - H2: İlgili
 
 ## cli/node.md
@@ -1693,11 +1695,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /cli/node
 - Başlıklar:
   - H1: openclaw node
-  - H2: Neden bir Node ana makinesi kullanılır?
+  - H2: Neden bir node ana makinesi kullanılır?
   - H2: Tarayıcı proxy'si (sıfır yapılandırma)
-  - H2: Çalıştır (ön plan)
+  - H2: Çalıştır (ön planda)
   - H2: Node ana makinesi için Gateway kimlik doğrulaması
-  - H2: Hizmet (arka plan)
+  - H2: Hizmet (arka planda)
   - H2: Eşleştirme
   - H2: Exec onayları
   - H2: İlgili
@@ -1719,7 +1721,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: İlgili kılavuzlar
   - H2: Örnekler
   - H2: Yerel ayar
-  - H3: Etkileşimsiz Z.AI uç nokta seçimleri
+  - H3: Etkileşimsiz Z.AI uç noktası seçimleri
   - H2: Ek etkileşimsiz bayraklar
   - H2: Akış notları
   - H2: Yaygın takip komutları
@@ -1745,7 +1747,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır
   - H2: Alt komutlar
   - H2: Genel bayraklar
-  - H2: oc:// söz dizimi
+  - H2: oc:// sözdizimi
   - H2: Dosya türüne göre adresleme
   - H2: Mutasyon sözleşmesi
   - H2: Örnekler
@@ -1755,11 +1757,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: JSONL
   - H3: YAML
   - H2: Alt komut başvurusu
-  - H3: resolve
-  - H3: find
-  - H3: set
-  - H3: validate
-  - H3: emit
+  - H3: resolve &lt;oc-path&gt;
+  - H3: find &lt;pattern&gt;
+  - H3: set &lt;oc-path&gt; &lt;value&gt;
+  - H3: validate &lt;oc-path&gt;
+  - H3: emit &lt;file&gt;
   - H2: Çıkış kodları
   - H2: Çıktı modu
   - H2: Notlar
@@ -1772,7 +1774,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Komutlar
   - H3: Yazar
   - H3: Sağlayıcı iskelesi
-  - H3: Yükle
+  - H3: Kur
   - H4: Marketplace kısaltması
   - H3: Listele
   - H3: Plugin dizini
@@ -1791,25 +1793,25 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: openclaw policy
   - H2: Hızlı başlangıç
   - H3: İlke kuralı başvurusu
-  - H4: Kapsamlı bindirmeler
+  - H4: Kapsamlı katmanlar
   - H4: Kanallar
   - H4: MCP sunucuları
   - H4: Model sağlayıcıları
   - H4: Ağ
   - H4: Giriş ve kanal erişimi
   - H4: Gateway
-  - H4: Aracı çalışma alanı
+  - H4: Ajan çalışma alanı
   - H4: Sandbox duruşu
   - H4: Veri İşleme
   - H4: Gizli bilgiler
   - H4: Exec onayları
-  - H4: Auth profilleri
+  - H4: Kimlik doğrulama profilleri
   - H4: Araç meta verileri
   - H4: Araç duruşu
   - H2: İlkeyi yapılandır
   - H2: İlke durumunu kabul et
   - H2: Bulgular
-  - H2: Onar
+  - H2: Onarım
   - H2: Çıkış kodları
   - H2: İlgili
 
@@ -1851,13 +1853,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
   - H2: Kullanım durumları
-  - H3: Bir Docker görüntüsünü güncelledikten sonra
+  - H3: Bir Docker imajını güncelledikten sonra
   - H3: Sandbox yapılandırmasını değiştirdikten sonra
   - H3: SSH hedefini veya SSH kimlik doğrulama materyalini değiştirdikten sonra
   - H3: OpenShell kaynağını, ilkesini veya modunu değiştirdikten sonra
-  - H3: setupCommand değiştirdikten sonra
-  - H3: Yalnızca belirli bir aracı için
-  - H2: Neden bu gereklidir
+  - H3: setupCommand değiştirildikten sonra
+  - H3: Yalnızca belirli bir ajan için
+  - H2: Bu neden gerekli
   - H2: Kayıt defteri geçişi
   - H2: Yapılandırma
   - H2: İlgili
@@ -1912,7 +1914,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: openclaw skills
   - H2: Komutlar
-  - H2: Skill Workshop
+  - H2: Skill Atölyesi
   - H2: İlgili
 
 ## cli/status.md
@@ -1938,7 +1940,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /cli/tasks
 - Başlıklar:
   - H2: Kullanım
-  - H2: Kök seçenekleri
+  - H2: Kök Seçenekleri
   - H2: Alt komutlar
   - H3: list
   - H3: show
@@ -1956,7 +1958,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: openclaw transcripts
   - H2: Komutlar
   - H2: Çıktı
-  - H2: Günde birçok toplantı
+  - H2: Günde çok sayıda toplantı
   - H2: Eksik özetler
   - H2: Yapılandırma
 
@@ -1988,7 +1990,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: update repair
   - H2: update wizard
   - H2: Ne yapar
-  - H3: Denetim düzlemi yanıt biçimi
+  - H3: Control-plane yanıt biçimi
   - H2: Git checkout akışı
   - H3: Kanal seçimi
   - H3: Güncelleme adımları
@@ -2001,7 +2003,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: openclaw voicecall
   - H2: Alt komutlar
-  - H2: Kurulum ve smoke testi
+  - H2: Kurulum ve smoke
   - H3: setup
   - H3: smoke
   - H2: Çağrı yaşam döngüsü
@@ -2030,7 +2032,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Pub/Sub seçenekleri
   - H3: OpenClaw teslim seçenekleri
   - H3: gog watch serve seçenekleri
-  - H3: Tailscale dışa açımı
+  - H3: Tailscale maruziyeti
   - H3: Çıktı
   - H2: webhooks gmail run
   - H2: Uçtan uca akış
@@ -2047,12 +2049,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: wiki status
   - H3: wiki doctor
   - H3: wiki init
-  - H3: wiki ingest
-  - H3: wiki okf import
+  - H3: wiki ingest &lt;path-or-url&gt;
+  - H3: wiki okf import &lt;path&gt;
   - H3: wiki compile
   - H3: wiki lint
-  - H3: wiki search
-  - H3: wiki get
+  - H3: wiki search &lt;query&gt;
+  - H3: wiki get &lt;lookup&gt;
   - H3: wiki apply
   - H3: wiki bridge import
   - H3: wiki unsafe-local import
@@ -2070,12 +2072,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: create
   - H2: show
   - H2: dispatch
-  - H2: Slash komutu eşliği
+  - H2: Slash Komutu Denkliği
   - H2: İzinler
   - H2: Sorun giderme
-  - H3: Kart görünmüyor
-  - H3: Dispatch yalnızca veri diyor
-  - H3: Dispatch hiçbir şey başlatmıyor
+  - H3: Kart Görünmüyor
+  - H3: Dispatch Yalnızca Veri Diyor
+  - H3: Dispatch Hiçbir Şey Başlatmıyor
   - H2: İlgili
 
 ## concepts/active-memory.md
@@ -2086,7 +2088,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hız önerileri
   - H3: Cerebras kurulumu
   - H2: Nasıl görülür
-  - H2: Oturum açma/kapatma
+  - H2: Oturum geçişi
   - H2: Ne zaman çalışır
   - H2: Oturum türleri
   - H2: Nerede çalışır
@@ -2094,11 +2096,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır
   - H2: Sorgu modları
   - H2: Prompt stilleri
-  - H2: Model yedekleme ilkesi
+  - H2: Model geri dönüş ilkesi
   - H2: Bellek araçları
   - H3: Yerleşik memory-core
   - H3: LanceDB belleği
-  - H3: Lossless Claw
+  - H3: Kayıpsız Claw
   - H2: Gelişmiş kaçış yolları
   - H2: Transkript kalıcılığı
   - H2: Yapılandırma
@@ -2116,10 +2118,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır (üst düzey)
   - H2: Kuyruğa alma + eşzamanlılık
   - H2: Oturum + çalışma alanı hazırlığı
-  - H2: Prompt derleme + sistem prompt'u
-  - H2: Hook noktaları (müdahale edebileceğiniz yerler)
+  - H2: Prompt birleştirme + sistem prompt'u
+  - H2: Hook noktaları (nerede araya girebilirsiniz)
   - H3: Dahili hook'lar (Gateway hook'ları)
-  - H3: Plugin hook'ları (aracı + gateway yaşam döngüsü)
+  - H3: Plugin hook'ları (ajan + gateway yaşam döngüsü)
   - H2: Akış + kısmi yanıtlar
   - H2: Araç yürütme + mesajlaşma araçları
   - H2: Yanıt biçimlendirme + bastırma
@@ -2137,20 +2139,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Codex yüzeyleri
   - H2: Çalışma zamanı sahipliği
   - H2: Çalışma zamanı seçimi
-  - H2: GitHub Copilot aracı çalışma zamanı
+  - H2: GitHub Copilot ajan çalışma zamanı
   - H2: Uyumluluk sözleşmesi
   - H2: Durum etiketleri
   - H2: İlgili
 
 ## concepts/agent-workspace.md
 
-- Rota: /concepts/agent-workspace
+- Route: /concepts/agent-workspace
 - Başlıklar:
   - H2: Varsayılan konum
   - H2: Ek çalışma alanı klasörleri
   - H2: Çalışma alanı dosya haritası
   - H2: Çalışma alanında OLMAYANLAR
-  - H2: Git yedeklemesi (önerilir, özel)
+  - H2: Git yedeği (önerilir, özel)
   - H2: Gizli bilgileri commit etmeyin
   - H2: Çalışma alanını yeni bir makineye taşıma
   - H2: Gelişmiş notlar
@@ -2158,44 +2160,44 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/agent.md
 
-- Rota: /concepts/agent
+- Route: /concepts/agent
 - Başlıklar:
   - H2: Çalışma alanı (gerekli)
-  - H2: Bootstrap dosyaları (enjekte edildi)
+  - H2: Bootstrap dosyaları (enjekte edilir)
   - H2: Yerleşik araçlar
   - H2: Skills
   - H2: Çalışma zamanı sınırları
   - H2: Oturumlar
   - H2: Akış sırasında yönlendirme
-  - H2: Model başvuruları
+  - H2: Model referansları
   - H2: Yapılandırma (minimal)
   - H2: İlgili
 
 ## concepts/architecture.md
 
-- Rota: /concepts/architecture
+- Route: /concepts/architecture
 - Başlıklar:
   - H2: Genel bakış
   - H2: Bileşenler ve akışlar
   - H3: Gateway (daemon)
-  - H3: İstemciler (mac uygulaması / CLI / web yöneticisi)
-  - H3: Düğümler (macOS / iOS / Android / headless)
+  - H3: İstemciler (Mac uygulaması / CLI / web yöneticisi)
+  - H3: Düğümler (macOS / iOS / Android / başsız)
   - H3: WebChat
   - H2: Bağlantı yaşam döngüsü (tek istemci)
-  - H2: İletim protokolü (özet)
-  - H2: Eşleştirme + yerel güven
+  - H2: Kablo protokolü (özet)
+  - H2: Eşleme + yerel güven
   - H2: Protokol tiplemesi ve kod üretimi
   - H2: Uzaktan erişim
-  - H2: Operasyon anlık görüntüsü
+  - H2: Operasyonlar özeti
   - H2: Değişmezler
   - H2: İlgili
 
 ## concepts/channel-docking.md
 
-- Rota: /concepts/channel-docking
+- Route: /concepts/channel-docking
 - Başlıklar:
   - H2: Örnek
-  - H2: Neden kullanılır
+  - H2: Neden kullanılmalı
   - H2: Gerekli yapılandırma
   - H2: Komutlar
   - H2: Neler değişir
@@ -2204,7 +2206,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/commitments.md
 
-- Rota: /concepts/commitments
+- Route: /concepts/commitments
 - Başlıklar:
   - H2: Taahhütleri etkinleştirme
   - H2: Nasıl çalışır
@@ -2217,7 +2219,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/compaction.md
 
-- Rota: /concepts/compaction
+- Route: /concepts/compaction
 - Başlıklar:
   - H2: Nasıl çalışır
   - H2: Otomatik Compaction
@@ -2225,8 +2227,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yapılandırma
   - H3: Farklı bir model kullanma
   - H3: Tanımlayıcı koruma
-  - H3: Etkin döküm bayt koruması
-  - H3: Ardıl dökümler
+  - H3: Etkin transkript bayt koruması
+  - H3: Ardıl transkriptler
   - H3: Compaction bildirimleri
   - H3: Bellek boşaltma
   - H2: Takılabilir Compaction sağlayıcıları
@@ -2236,7 +2238,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/context-engine.md
 
-- Rota: /concepts/context-engine
+- Route: /concepts/context-engine
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Nasıl çalışır
@@ -2249,14 +2251,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Ana makine gereksinimleri
   - H3: Hata yalıtımı
   - H3: ownsCompaction
-  - H2: Yapılandırma başvurusu
-  - H2: Compaction ve bellekle ilişki
+  - H2: Yapılandırma referansı
+  - H2: Compaction ve bellekle ilişkisi
   - H2: İpuçları
   - H2: İlgili
 
 ## concepts/context.md
 
-- Rota: /concepts/context
+- Route: /concepts/context
 - Başlıklar:
   - H2: Hızlı başlangıç (bağlamı incele)
   - H2: Örnek çıktı
@@ -2266,74 +2268,74 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Bağlam penceresine neler dahil edilir
   - H2: OpenClaw sistem istemini nasıl oluşturur
   - H2: Enjekte edilen çalışma alanı dosyaları (Proje Bağlamı)
-  - H2: Skills: enjekte edilen ve isteğe bağlı yüklenen
+  - H2: Skills: enjekte edilenler ve isteğe bağlı yüklenenler
   - H2: Araçlar: iki maliyet vardır
   - H2: Komutlar, yönergeler ve "satır içi kısayollar"
-  - H2: Oturumlar, Compaction ve budama (neler kalıcıdır)
+  - H2: Oturumlar, Compaction ve budama (neler kalıcı olur)
   - H2: /context gerçekte ne raporlar
   - H2: İlgili
 
 ## concepts/delegate-architecture.md
 
-- Rota: /concepts/delegate-architecture
+- Route: /concepts/delegate-architecture
 - Başlıklar:
   - H2: Temsilci nedir?
   - H2: Neden temsilciler?
   - H2: Yetenek katmanları
   - H3: Katman 1: Salt Okunur + Taslak
-  - H3: Katman 2: Adına Gönderme
+  - H3: Katman 2: Adına Gönder
   - H3: Katman 3: Proaktif
-  - H2: Ön koşullar: yalıtım ve sıkılaştırma
-  - H3: Kesin engeller (pazarlığa kapalı)
+  - H2: Önkoşullar: yalıtım ve sağlamlaştırma
+  - H3: Sert engeller (pazarlık edilemez)
   - H3: Araç kısıtlamaları
   - H3: Sandbox yalıtımı
   - H3: Denetim izi
-  - H2: Temsilci ayarlama
+  - H2: Temsilci kurma
   - H3: 1. Temsilci ajanı oluşturma
-  - H3: 2. Kimlik sağlayıcı delegasyonunu yapılandırma
+  - H3: 2. Kimlik sağlayıcı yetkilendirmesini yapılandırma
   - H4: Microsoft 365
   - H4: Google Workspace
   - H3: 3. Temsilciyi kanallara bağlama
   - H3: 4. Temsilci ajana kimlik bilgileri ekleme
   - H2: Örnek: kurumsal asistan
-  - H2: Ölçekleme deseni
+  - H2: Ölçekleme kalıbı
   - H2: İlgili
 
 ## concepts/dreaming.md
 
-- Rota: /concepts/dreaming
+- Route: /concepts/dreaming
 - Başlıklar:
   - H2: Dreaming neleri yazar
   - H2: Aşama modeli
-  - H2: Oturum dökümü alımı
-  - H2: Rüya Günlüğü
+  - H2: Oturum transkripti alımı
+  - H2: Dream Diary
   - H2: Derin sıralama sinyalleri
   - H2: QA gölge deneme raporu kapsamı
   - H2: Zamanlama
   - H2: Hızlı başlangıç
-  - H2: Eğik çizgi komutu
+  - H2: Slash komutu
   - H2: CLI iş akışı
   - H2: Temel varsayılanlar
-  - H2: Rüyalar kullanıcı arayüzü
-  - H2: Dreaming hiç çalışmıyor: durum engellendi gösteriyor
+  - H2: Dreams kullanıcı arayüzü
+  - H2: Dreaming hiç çalışmıyor: durum engellendi olarak gösteriliyor
   - H2: İlgili
 
 ## concepts/experimental-features.md
 
-- Rota: /concepts/experimental-features
+- Route: /concepts/experimental-features
 - Başlıklar:
-  - H2: Şu anda belgelenen bayraklar
+  - H2: Şu anda belgelenmiş bayraklar
   - H2: Yerel model yalın modu
   - H3: Neden bu üç araç
   - H3: Ne zaman açılmalı
   - H3: Ne zaman kapalı bırakılmalı
   - H3: Etkinleştir
-  - H2: Deneysel, gizli anlamına gelmez
+  - H2: Deneysel gizli anlamına gelmez
   - H2: İlgili
 
 ## concepts/features.md
 
-- Rota: /concepts/features
+- Route: /concepts/features
 - Başlıklar:
   - H2: Öne çıkanlar
   - H2: Tam liste
@@ -2341,12 +2343,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/mantis-slack-desktop-runbook.md
 
-- Rota: /concepts/mantis-slack-desktop-runbook
+- Route: /concepts/mantis-slack-desktop-runbook
 - Başlıklar:
   - H2: Depolama modeli
   - H2: GitHub dispatch
   - H2: Yerel CLI
-  - H2: Hidrasyon modları
+  - H2: Hydrate modları
   - H2: Zamanlama yorumu
   - H2: Kanıt kontrol listesi
   - H2: Hata işleme
@@ -2354,7 +2356,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/mantis.md
 
-- Rota: /concepts/mantis
+- Route: /concepts/mantis
 - Başlıklar:
   - H2: Hedefler
   - H2: Hedef olmayanlar
@@ -2375,10 +2377,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/markdown-formatting.md
 
-- Rota: /concepts/markdown-formatting
+- Route: /concepts/markdown-formatting
 - Başlıklar:
   - H2: Hedefler
-  - H2: İş hattı
+  - H2: İşlem hattı
   - H2: IR örneği
   - H2: Nerede kullanılır
   - H2: Tablo işleme
@@ -2386,16 +2388,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Bağlantı politikası
   - H2: Spoilerlar
   - H2: Kanal biçimlendirici ekleme veya güncelleme
-  - H2: Yaygın püf noktaları
+  - H2: Yaygın tuzaklar
   - H2: İlgili
 
 ## concepts/memory-builtin.md
 
-- Rota: /concepts/memory-builtin
+- Route: /concepts/memory-builtin
 - Başlıklar:
   - H2: Ne sağlar
   - H2: Başlarken
-  - H2: Desteklenen gömme sağlayıcıları
+  - H2: Desteklenen embedding sağlayıcıları
   - H2: İndeksleme nasıl çalışır
   - H2: Ne zaman kullanılmalı
   - H2: Sorun giderme
@@ -2404,7 +2406,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/memory-honcho.md
 
-- Rota: /concepts/memory-honcho
+- Route: /concepts/memory-honcho
 - Başlıklar:
   - H2: Ne sağlar
   - H2: Kullanılabilir araçlar
@@ -2414,22 +2416,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır
   - H2: Honcho ve yerleşik bellek
   - H2: CLI komutları
-  - H2: Daha fazla okuma
+  - H2: Ek okuma
   - H2: İlgili
 
 ## concepts/memory-qmd.md
 
-- Rota: /concepts/memory-qmd
+- Route: /concepts/memory-qmd
 - Başlıklar:
-  - H2: Yerleşik olana göre neler ekler
+  - H2: Yerleşik olana göre ne ekler
   - H2: Başlarken
-  - H3: Ön koşullar
+  - H3: Önkoşullar
   - H3: Etkinleştir
   - H2: Sidecar nasıl çalışır
   - H2: Arama performansı ve uyumluluk
   - H2: Model geçersiz kılmaları
   - H2: Ek yolları indeksleme
-  - H2: Oturum dökümlerini indeksleme
+  - H2: Oturum transkriptlerini indeksleme
   - H2: Arama kapsamı
   - H2: Alıntılar
   - H2: Ne zaman kullanılmalı
@@ -2439,27 +2441,27 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/memory-search.md
 
-- Rota: /concepts/memory-search
+- Route: /concepts/memory-search
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Desteklenen sağlayıcılar
   - H2: Arama nasıl çalışır
   - H2: Arama kalitesini iyileştirme
-  - H3: Zamansal azalma
+  - H3: Zamansal zayıflama
   - H3: MMR (çeşitlilik)
   - H3: İkisini de etkinleştir
   - H2: Çok modlu bellek
   - H2: Oturum belleği araması
   - H2: Sorun giderme
-  - H2: Daha fazla okuma
+  - H2: Ek okuma
   - H2: İlgili
 
 ## concepts/memory.md
 
-- Rota: /concepts/memory
+- Route: /concepts/memory
 - Başlıklar:
   - H2: Nasıl çalışır
-  - H2: Nereye ne gider
+  - H2: Ne nereye gider
   - H2: Eyleme duyarlı anılar
   - H2: Çıkarılan taahhütler
   - H2: Bellek araçları
@@ -2469,14 +2471,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Bilgi wiki katmanı
   - H2: Otomatik bellek boşaltma
   - H2: Dreaming
-  - H2: Dayanaklı geriye dönük doldurma ve canlı yükseltme
+  - H2: Temellendirilmiş geri doldurma ve canlı yükseltme
   - H2: CLI
-  - H2: Daha fazla okuma
+  - H2: Ek okuma
   - H2: İlgili
 
 ## concepts/message-lifecycle-refactor.md
 
-- Rota: /concepts/message-lifecycle-refactor
+- Route: /concepts/message-lifecycle-refactor
 - Başlıklar:
   - H2: Sorunlar
   - H2: Hedefler
@@ -2492,22 +2494,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Alma bağlamı
   - H2: Gönderme bağlamı
   - H2: Canlı bağlam
-  - H2: Bağdaştırıcı yüzeyi
+  - H2: Adaptör yüzeyi
   - H2: Genel SDK azaltımı
-  - H2: Kanal girişiyle ilişki
-  - H2: Uyumluluk korkulukları
+  - H2: Kanal geleniyle ilişki
+  - H2: Uyumluluk koruma rayları
   - H2: Dahili depolama
   - H2: Hata sınıfları
-  - H2: Kanal eşleme
-  - H2: Geçiş planı
-  - H3: Aşama 1: Dahili Mesaj Alanı
-  - H3: Aşama 2: Kalıcı Gönderme Çekirdeği
-  - H3: Aşama 3: Kanal Girişi Köprüsü
+  - H2: Kanal eşlemesi
+  - H2: Taşıma planı
+  - H3: Aşama 1: Dahili Mesaj Etki Alanı
+  - H3: Aşama 2: Dayanıklı Gönderme Çekirdeği
+  - H3: Aşama 3: Kanal Gelen Köprüsü
   - H3: Aşama 4: Hazırlanmış Dağıtıcı Köprüsü
   - H3: Aşama 5: Birleşik Canlı Yaşam Döngüsü
   - H3: Aşama 6: Genel SDK
   - H3: Aşama 7: Tüm Göndericiler
-  - H3: Aşama 8: Turn Adlı Uyumluluğu Kaldırma
+  - H3: Aşama 8: Turn Adlandırmalı Uyumluluğu Kaldır
   - H2: Test planı
   - H2: Açık sorular
   - H2: Kabul ölçütleri
@@ -2515,52 +2517,52 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/messages.md
 
-- Rota: /concepts/messages
+- Route: /concepts/messages
 - Başlıklar:
   - H2: Mesaj akışı (üst düzey)
-  - H2: Gelen tekilleştirme
-  - H2: Gelen debounce
+  - H2: Gelen yinelemeyi önleme
+  - H2: Gelen debounce işlemi
   - H2: Oturumlar ve cihazlar
   - H2: Araç sonucu meta verileri
-  - H2: Gelen gövdeler ve geçmiş bağlamı
+  - H2: Gelen gövdeleri ve geçmiş bağlamı
   - H2: Kuyruğa alma ve takipler
   - H2: Kanal çalıştırma sahipliği
   - H2: Akış, parçalama ve toplu işleme
-  - H2: Akıl yürütme görünürlüğü ve tokenlar
+  - H2: Akıl yürütme görünürlüğü ve token'lar
   - H2: Önekler, iş parçacıkları ve yanıtlar
   - H2: Sessiz yanıtlar
   - H2: İlgili
 
 ## concepts/model-failover.md
 
-- Rota: /concepts/model-failover
+- Route: /concepts/model-failover
 - Başlıklar:
   - H2: Çalışma zamanı akışı
   - H2: Seçim kaynağı politikası
   - H2: Kimlik doğrulama hatası atlama önbelleği
-  - H2: Kullanıcıya görünür yedek bildirimleri
+  - H2: Kullanıcıya görünen fallback bildirimleri
   - H2: Kimlik doğrulama depolaması (anahtarlar + OAuth)
   - H2: Profil kimlikleri
-  - H2: Döndürme sırası
+  - H2: Rotasyon sırası
   - H3: Oturum yapışkanlığı (önbellek dostu)
   - H3: OpenAI Codex aboneliği artı API anahtarı yedeği
-  - H2: Bekleme süreleri
+  - H2: Cooldown'lar
   - H2: Faturalandırma devre dışı bırakmaları
-  - H2: Model yedeği
+  - H2: Model fallback'i
   - H3: Aday zinciri kuralları
-  - H3: Hangi hatalar yedeği ilerletir
-  - H3: Bekleme süresi atlama ve yoklama davranışı
+  - H3: Hangi hatalar fallback'i ilerletir
+  - H3: Cooldown atlama ve probe davranışı
   - H2: Oturum geçersiz kılmaları ve canlı model değiştirme
   - H2: Gözlemlenebilirlik ve hata özetleri
   - H2: İlgili yapılandırma
 
 ## concepts/model-providers.md
 
-- Rota: /concepts/model-providers
+- Route: /concepts/model-providers
 - Başlıklar:
   - H2: Hızlı kurallar
-  - H2: Plugin sahipli sağlayıcı davranışı
-  - H2: API anahtarı döndürme
+  - H2: Plugin'e ait sağlayıcı davranışı
+  - H2: API anahtarı rotasyonu
   - H2: Resmi sağlayıcı Plugin'leri
   - H3: OpenAI
   - H3: Anthropic
@@ -2571,7 +2573,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Google Vertex ve Gemini CLI
   - H3: Z.AI (GLM)
   - H3: Vercel AI Gateway
-  - H3: Diğer paketlenmiş sağlayıcı Plugin'leri
+  - H3: Diğer paketli sağlayıcı Plugin'leri
   - H4: Bilinmeye değer tuhaflıklar
   - H2: models.providers üzerinden sağlayıcılar (özel/temel URL)
   - H3: Moonshot AI (Kimi)
@@ -2590,40 +2592,40 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## concepts/models.md
 
-- Rota: /concepts/models
+- Route: /concepts/models
 - Başlıklar:
   - H2: Model seçimi nasıl çalışır
-  - H2: Seçim kaynağı ve yedek davranışı
+  - H2: Seçim kaynağı ve fallback davranışı
   - H2: Hızlı model politikası
-  - H2: İlk kurulum (önerilir)
+  - H2: Onboarding (önerilir)
   - H2: Yapılandırma anahtarları (genel bakış)
-  - H3: Güvenli izin listesi düzenlemeleri
-  - H2: "Modele izin verilmiyor" (ve yanıtların neden durduğu)
+  - H3: Güvenli allowlist düzenlemeleri
+  - H2: "Model is not allowed" (ve yanıtların neden durduğu)
   - H2: Sohbette model değiştirme (/model)
   - H2: CLI komutları
   - H3: models list
   - H3: models status
   - H2: Tarama (OpenRouter ücretsiz modeller)
-  - H2: Modeller kayıt defteri (models.json)
+  - H2: Model kayıt defteri (models.json)
   - H2: İlgili
 
 ## concepts/multi-agent.md
 
-- Rota: /concepts/multi-agent
+- Route: /concepts/multi-agent
 - Başlıklar:
   - H2: "Tek ajan" nedir?
   - H2: Yollar (hızlı harita)
   - H3: Tek ajan modu (varsayılan)
   - H2: Ajan yardımcısı
   - H2: Hızlı başlangıç
-  - H2: Birden çok ajan = birden çok kişi, birden çok kişilik
+  - H2: Birden fazla ajan = birden fazla kişi, birden fazla kişilik
   - H2: Ajanlar arası QMD bellek araması
-  - H2: Tek WhatsApp numarası, birden çok kişi (DM ayrımı)
+  - H2: Tek WhatsApp numarası, birden fazla kişi (DM bölme)
   - H2: Yönlendirme kuralları (mesajlar ajanı nasıl seçer)
-  - H2: Birden çok hesap / telefon numarası
+  - H2: Birden fazla hesap / telefon numarası
   - H2: Kavramlar
   - H2: Platform örnekleri
-  - H2: Yaygın desenler
+  - H2: Yaygın kalıplar
   - H2: Ajan başına sandbox ve araç yapılandırması
   - H2: İlgili
 
@@ -2631,14 +2633,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /concepts/oauth
 - Başlıklar:
-  - H2: Token havuzu (neden vardır)
-  - H2: Depolama (tokenların bulunduğu yer)
+  - H2: Token alıcısı (neden var)
+  - H2: Depolama (token'ların bulunduğu yer)
   - H2: Anthropic eski token uyumluluğu
   - H2: Anthropic Claude CLI geçişi
   - H2: OAuth değişimi (oturum açma nasıl çalışır)
   - H3: Anthropic setup-token
   - H3: OpenAI Codex (ChatGPT OAuth)
-  - H2: Yenileme + süre sonu
+  - H2: Yenileme + sona erme
   - H2: Birden çok hesap (profiller) + yönlendirme
   - H3: 1) Tercih edilen: ayrı ajanlar
   - H3: 2) Gelişmiş: tek ajanda birden çok profil
@@ -2649,10 +2651,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /concepts/parallel-specialist-lanes
 - Başlıklar:
   - H2: İlk ilkeler
-  - H2: Önerilen yaygınlaştırma
+  - H2: Önerilen yayına alma
   - H3: Aşama 1: hat sözleşmeleri + arka planda ağır işler
-  - H3: Aşama 2: öncelik ve eşzamanlılık denetimleri
-  - H3: Aşama 3: koordinatör / trafik denetleyicisi
+  - H3: Aşama 2: öncelik ve eşzamanlılık kontrolleri
+  - H3: Aşama 3: koordinatör / trafik denetleyici
   - H2: Minimal hat sözleşmesi şablonu
   - H2: İlgili
 
@@ -2668,18 +2670,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /concepts/presence
 - Başlıklar:
-  - H2: Presence alanları (görünenler)
-  - H2: Üreticiler (presence nereden gelir)
+  - H2: Varlık alanları (görünenler)
+  - H2: Üreticiler (varlığın nereden geldiği)
   - H3: 1) Gateway kendi girdisi
   - H3: 2) WebSocket bağlantısı
   - H4: Tek seferlik CLI komutları neden görünmez
-  - H3: 3) system-event sinyalleri
-  - H3: 4) Node bağlanır (rol: node)
+  - H3: 3) system-event işaretleri
+  - H3: 4) Node bağlanır (role: node)
   - H2: Birleştirme + tekilleştirme kuralları (instanceId neden önemlidir)
   - H2: TTL ve sınırlı boyut
   - H2: Uzak/tünel uyarısı (loopback IP'leri)
   - H2: Tüketiciler
-  - H3: macOS Örnekler sekmesi
+  - H3: macOS Instances sekmesi
   - H2: Hata ayıklama ipuçları
   - H2: İlgili
 
@@ -2688,7 +2690,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /concepts/progress-drafts
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H2: Kullanıcıların gördükleri
+  - H2: Kullanıcıların gördüğü
   - H2: Bir mod seçin
   - H2: Etiketleri yapılandırın
   - H2: İlerleme satırlarını denetleyin
@@ -2712,20 +2714,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H4: Slack çalışma alanını ayarlama
   - H3: WhatsApp QA
   - H3: Convex kimlik bilgisi havuzu
-  - H2: Depo destekli tohumlar
-  - H2: Sağlayıcı mock hatları
+  - H2: Repo destekli tohumlar
+  - H2: Sağlayıcı taklit hatları
   - H2: Taşıma bağdaştırıcıları
   - H3: Kanal ekleme
   - H3: Senaryo yardımcı adları
   - H2: Raporlama
-  - H2: İlgili dokümanlar
+  - H2: İlgili belgeler
 
 ## concepts/qa-matrix.md
 
 - Rota: /concepts/qa-matrix
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H2: Hattın yaptığı iş
+  - H2: Hattın yaptığı
   - H2: CLI
   - H3: Ortak bayraklar
   - H3: Sağlayıcı bayrakları
@@ -2733,7 +2735,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Senaryolar
   - H2: Ortam değişkenleri
   - H2: Çıktı yapıtları
-  - H2: Triage ipuçları
+  - H2: Triyaj ipuçları
   - H2: Canlı taşıma sözleşmesi
   - H2: İlgili
 
@@ -2743,7 +2745,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Çalışma zamanı sınırı
   - H2: Modlar
-  - H2: Burst örneği
+  - H2: Ani yoğunluk örneği
   - H2: Kapsam
   - H2: Debounce
   - H2: İlgili
@@ -2784,11 +2786,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Neden önemlidir
   - H2: Nasıl çalışır
-  - H2: Eski görüntü temizliği
+  - H2: Eski görüntü temizleme
   - H2: Akıllı varsayılanlar
   - H2: Etkinleştirme veya devre dışı bırakma
   - H2: Budama ve Compaction
-  - H2: Daha fazla okuma
+  - H2: Ek okumalar
   - H2: İlgili
 
 ## concepts/session-tool.md
@@ -2799,9 +2801,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Oturumları listeleme ve okuma
   - H2: Oturumlar arası mesaj gönderme
   - H2: Durum ve orkestrasyon yardımcıları
-  - H2: Alt ajanlar oluşturma
+  - H2: Alt ajanları başlatma
   - H2: Görünürlük
-  - H2: Daha fazla okuma
+  - H2: Ek okumalar
   - H2: İlgili
 
 ## concepts/session.md
@@ -2815,18 +2817,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Durumun bulunduğu yer
   - H2: Oturum bakımı
   - H2: Oturumları inceleme
-  - H2: Daha fazla okuma
+  - H2: Ek okumalar
   - H2: İlgili
 
 ## concepts/soul.md
 
 - Rota: /concepts/soul
 - Başlıklar:
-  - H2: SOUL.md içinde neler olmalı
-  - H2: Bu neden işe yarar
+  - H2: SOUL.md içinde neler yer alır
+  - H2: Bu neden çalışır
   - H2: Molty istemi
   - H2: İyi olan nasıl görünür
-  - H2: Tek uyarı
+  - H2: Bir uyarı
   - H2: İlgili
 
 ## concepts/streaming.md
@@ -2836,10 +2838,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Blok akışı (kanal mesajları)
   - H3: Blok akışıyla medya teslimi
   - H2: Parçalama algoritması (düşük/yüksek sınırlar)
-  - H2: Birleştirme (akıtılan blokları birleştir)
+  - H2: Birleştirme (akışla gelen blokları birleştir)
   - H2: Bloklar arasında insana benzer tempo
   - H2: "Parçaları veya her şeyi akıt"
-  - H2: Önizleme akış modları
+  - H2: Önizleme akışı modları
   - H3: Kanal eşleme
   - H3: Çalışma zamanı davranışı
   - H3: Araç ilerlemesi önizleme güncellemeleri
@@ -2853,7 +2855,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yapı
   - H2: İstem modları
   - H2: İstem anlık görüntüleri
-  - H2: Çalışma alanı bootstrap enjeksiyonu
+  - H2: Çalışma alanı önyükleme enjeksiyonu
   - H2: Zaman işleme
   - H2: Skills
   - H2: Dokümantasyon
@@ -2874,12 +2876,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Zihinsel model (30 saniye)
   - H2: Şemaların bulunduğu yer
-  - H2: Geçerli pipeline
+  - H2: Mevcut işlem hattı
   - H2: Şemalar çalışma zamanında nasıl kullanılır
-  - H2: Örnek frameler
+  - H2: Örnek çerçeveler
   - H2: Minimal istemci (Node.js)
   - H2: Çalışılmış örnek: bir yöntemi uçtan uca ekleme
-  - H2: Swift codegen davranışı
+  - H2: Swift kod üretimi davranışı
   - H2: Sürümleme + uyumluluk
   - H2: Şema kalıpları ve kuralları
   - H2: Canlı şema JSON'u
@@ -2900,15 +2902,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /concepts/usage-tracking
 - Başlıklar:
-  - H2: Ne olduğu
+  - H2: Nedir
   - H2: Nerede görünür
-  - H2: Varsayılan kullanım altbilgisi modu
+  - H2: Varsayılan kullanım alt bilgisi modu
   - H3: Üç ayrı oturum durumu
   - H3: Öncelik sırası
   - H3: Sıfırlama ve kapatma
-  - H3: Aç/kapat davranışı
+  - H3: Açma/kapatma davranışı
   - H3: Yapılandırma
-  - H2: Özel /usage tam altbilgisi
+  - H2: Özel /usage tam alt bilgisi
   - H3: Şekil
   - H3: Sözleşme Yolları
   - H3: Fiiller
@@ -2925,10 +2927,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Örnekler
   - H2: Sistem istemi: geçerli tarih ve saat
   - H2: Sistem olayı satırları (varsayılan olarak yerel)
-  - H3: Kullanıcı saat dilimini + biçimi yapılandırma
-  - H2: Zaman biçimi algılama (otomatik)
-  - H2: Araç payloadları + bağlayıcılar (ham sağlayıcı zamanı + normalleştirilmiş alanlar)
-  - H2: İlgili dokümanlar
+  - H3: Kullanıcı saat dilimi + biçimini yapılandırma
+  - H2: Saat biçimi algılama (otomatik)
+  - H2: Araç yükleri + bağlayıcılar (ham sağlayıcı zamanı + normalize edilmiş alanlar)
+  - H2: İlgili belgeler
 
 ## debug/node-issue.md
 
@@ -2937,9 +2939,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Node + tsx "\\name is not a function" çökmesi
   - H2: Özet
   - H2: Ortam
-  - H2: Repro (yalnızca Node)
-  - H2: Depoda minimal repro
-  - H2: Node sürümü kontrolü
+  - H2: Yeniden üretim (yalnızca Node)
+  - H2: Repoda minimal yeniden üretim
+  - H2: Node sürümü denetimi
   - H2: Notlar / hipotez
   - H2: Regresyon geçmişi
   - H2: Geçici çözümler
@@ -2952,9 +2954,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /diagnostics/flags
 - Başlıklar:
   - H2: Nasıl çalışır
-  - H2: Yapılandırma üzerinden etkinleştirme
-  - H2: Ortam değişkeniyle geçersiz kılma (tek seferlik)
-  - H2: Profilleme bayrakları
+  - H2: Yapılandırma ile etkinleştirme
+  - H2: Env geçersiz kılma (tek seferlik)
+  - H2: Profil oluşturma bayrakları
   - H2: Zaman çizelgesi yapıtları
   - H2: Günlüklerin gittiği yer
   - H2: Günlükleri çıkarma
@@ -2968,14 +2970,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Önerilen kurulum (API anahtarı, herhangi bir sağlayıcı)
   - H2: Anthropic: Claude CLI ve token uyumluluğu
   - H2: Anthropic notu
-  - H2: Model auth durumunu denetleme
-  - H2: API anahtarı rotasyon davranışı (gateway)
-  - H2: Gateway çalışırken sağlayıcı auth bilgisini kaldırma
+  - H2: Model kimlik doğrulama durumunu denetleme
+  - H2: API anahtarı döndürme davranışı (Gateway)
+  - H2: Gateway çalışırken sağlayıcı kimlik doğrulamasını kaldırma
   - H2: Hangi kimlik bilgisinin kullanılacağını denetleme
   - H3: OpenAI ve eski openai-codex kimlikleri
-  - H3: Giriş sırasında (CLI)
-  - H3: Oturum başına (chat komutu)
-  - H3: Ajan başına (CLI geçersiz kılması)
+  - H3: Oturum açma sırasında (CLI)
+  - H3: Oturum başına (sohbet komutu)
+  - H3: Ajan başına (CLI geçersiz kılma)
   - H2: Sorun giderme
   - H3: "Kimlik bilgisi bulunamadı"
   - H3: Token süresi doluyor/doldu
@@ -2997,23 +2999,23 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Tailscale üzerinden geniş alan Bonjour (Unicast DNS-SD)
   - H3: Gateway yapılandırması (önerilir)
-  - H3: Tek seferlik DNS sunucusu kurulumu (gateway host'u)
+  - H3: Tek seferlik DNS sunucusu kurulumu (gateway ana makinesi)
   - H3: Tailscale DNS ayarları
   - H3: Gateway dinleyici güvenliği (önerilir)
-  - H2: Nelerin duyurulduğu
+  - H2: Neler duyurulur
   - H2: Hizmet türleri
   - H2: TXT anahtarları (gizli olmayan ipuçları)
-  - H2: macOS üzerinde hata ayıklama
+  - H2: macOS'te hata ayıklama
   - H2: Gateway günlüklerinde hata ayıklama
   - H2: iOS node üzerinde hata ayıklama
   - H2: Bonjour ne zaman etkinleştirilmeli
   - H2: Bonjour ne zaman devre dışı bırakılmalı
-  - H2: Docker püf noktaları
-  - H2: Devre dışı Bonjour sorunlarını giderme
+  - H2: Docker sorunları
+  - H2: Devre dışı Bonjour sorun giderme
   - H2: Yaygın hata modları
-  - H2: Escape edilmiş örnek adları (\032)
+  - H2: Kaçışlanmış örnek adları (\032)
   - H2: Etkinleştirme / devre dışı bırakma / yapılandırma
-  - H2: İlgili dokümanlar
+  - H2: İlgili belgeler
 
 ## gateway/bridge-protocol.md
 
@@ -3021,8 +3023,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Neden vardı
   - H2: Taşıma
-  - H2: El sıkışma + eşleme
-  - H2: Frameler
+  - H2: El sıkışma + eşleştirme
+  - H2: Çerçeveler
   - H2: Exec yaşam döngüsü olayları
   - H2: Geçmiş tailnet kullanımı
   - H2: Sürümleme
@@ -3032,20 +3034,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /gateway/cli-backends
 - Başlıklar:
-  - H2: Yeni başlayanlara uygun hızlı başlangıç
-  - H2: Fallback olarak kullanma
+  - H2: Yeni başlayanlar için hızlı başlangıç
+  - H2: Yedek olarak kullanma
   - H2: Yapılandırmaya genel bakış
   - H3: Örnek yapılandırma
   - H2: Nasıl çalışır
   - H2: Oturumlar
-  - H2: claude-cli oturumlarından fallback başlangıcı
+  - H2: claude-cli oturumlarından yedek giriş bölümü
   - H2: Görüntüler (doğrudan geçiş)
   - H2: Girdiler / çıktılar
-  - H2: Varsayılanlar (Plugin sahipliğinde)
-  - H2: Plugin sahipliğindeki varsayılanlar
+  - H2: Varsayılanlar (Plugin sahipli)
+  - H2: Plugin sahipli varsayılanlar
   - H2: Yerel Compaction sahipliği
-  - H2: Bundle MCP katmanları
-  - H2: Geçmişi yeniden tohumlama sınırı
+  - H2: Paket MCP katmanları
+  - H2: Geçmiş yeniden tohumlama sınırı
   - H2: Sınırlamalar
   - H2: Sorun giderme
   - H2: İlgili
@@ -3063,7 +3065,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: agents.defaults.contextInjection
   - H3: agents.defaults.bootstrapMaxChars
   - H3: agents.defaults.bootstrapTotalMaxChars
-  - H3: Ajan başına bootstrap profili geçersiz kılmaları
+  - H3: Ajan başına önyükleme profili geçersiz kılmaları
   - H3: agents.defaults.bootstrapPromptTruncationWarning
   - H3: Bağlam bütçesi sahiplik haritası
   - H4: agents.defaults.startupContext
@@ -3092,8 +3094,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Ajan başına erişim profilleri
   - H2: Oturum
   - H2: Mesajlar
-  - H3: Yanıt ön eki
-  - H3: Ack tepkisi
+  - H3: Yanıt öneki
+  - H3: Onay tepkisi
   - H3: Gelen debounce
   - H3: TTS (metinden konuşmaya)
   - H2: Konuşma
@@ -3105,8 +3107,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Kanallar
   - H3: DM ve grup erişimi
-  - H3: Kanal modeli geçersiz kılmaları
-  - H3: Kanal varsayılanları ve Heartbeat
+  - H3: Kanal model geçersiz kılmaları
+  - H3: Kanal varsayılanları ve heartbeat
   - H3: WhatsApp
   - H3: Telegram
   - H3: Discord
@@ -3119,11 +3121,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Microsoft Teams
   - H3: IRC
   - H3: Çoklu hesap (tüm kanallar)
-  - H3: Diğer Plugin kanalları
-  - H3: Grup sohbetinde mention gating
-  - H4: DM geçmiş sınırları
+  - H3: Diğer plugin kanalları
+  - H3: Grup sohbeti bahsetme kapısı
+  - H4: DM geçmişi sınırları
   - H4: Kendiyle sohbet modu
-  - H3: Komutlar (chat komutu işleme)
+  - H3: Komutlar (sohbet komutu işleme)
   - H2: İlgili
 
 ## gateway/config-tools.md
@@ -3133,7 +3135,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Araçlar
   - H3: Araç profilleri
   - H3: Araç grupları
-  - H3: Sandbox araç ilkesi içinde MCP ve plugin araçları
+  - H3: Sandbox araç politikası içindeki MCP ve plugin araçları
   - H3: tools.codeMode
   - H3: tools.allow / tools.deny
   - H3: tools.byProvider
@@ -3160,12 +3162,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hızlı başlangıç
   - H3: Mutlak minimum
   - H3: Önerilen başlangıç
-  - H2: Genişletilmiş örnek (ana seçenekler)
+  - H2: Genişletilmiş örnek (başlıca seçenekler)
   - H3: Sembolik bağlı kardeş skill deposu
   - H2: Yaygın kalıplar
-  - H3: Tek geçersiz kılma ile paylaşılan skill temeli
+  - H3: Tek geçersiz kılmayla paylaşılan skill temeli
   - H3: Çok platformlu kurulum
-  - H3: Güvenilir düğüm ağı otomatik onayı
+  - H3: Güvenilir node ağı otomatik onayı
   - H3: Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
   - H3: Anthropic API anahtarı + MiniMax yedeği
   - H3: İş botu (kısıtlı erişim)
@@ -3178,7 +3180,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/configuration-reference
 - Başlıklar:
   - H2: Kanallar
-  - H2: Ajan varsayılanları, çoklu ajan, oturumlar ve iletiler
+  - H2: Aracı varsayılanları, çoklu aracı, oturumlar ve mesajlar
   - H2: Araçlar ve özel sağlayıcılar
   - H2: Modeller
   - H2: MCP
@@ -3190,23 +3192,23 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: UI
   - H2: Gateway
   - H3: OpenAI uyumlu uç noktalar
-  - H3: Çoklu örnek yalıtımı
+  - H3: Çok örnekli yalıtım
   - H3: gateway.tls
   - H3: gateway.reload
   - H2: Hook'lar
   - H3: Gmail entegrasyonu
-  - H2: Canvas plugin host'u
+  - H2: Canvas plugin ana makinesi
   - H2: Keşif
   - H3: mDNS (Bonjour)
   - H3: Geniş alan (DNS-SD)
   - H2: Ortam
-  - H3: env (satır içi ortam değişkenleri)
-  - H3: Ortam değişkeni ikamesi
+  - H3: env (satır içi env değişkenleri)
+  - H3: Env değişkeni ikamesi
   - H2: Gizli bilgiler
   - H3: SecretRef
   - H3: Desteklenen kimlik bilgisi yüzeyi
   - H3: Gizli bilgi sağlayıcıları yapılandırması
-  - H2: Kimlik doğrulama depolaması
+  - H2: Auth depolama
   - H3: auth.cooldowns
   - H2: Günlükleme
   - H2: Tanılama
@@ -3221,22 +3223,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: cron.failureAlert
   - H3: cron.failureDestination
   - H2: Medya modeli şablon değişkenleri
-  - H2: Yapılandırma dahil etmeleri ($include)
+  - H2: Yapılandırma eklemeleri ($include)
   - H2: İlgili
 
 ## gateway/configuration.md
 
 - Rota: /gateway/configuration
 - Başlıklar:
-  - H2: Minimum yapılandırma
+  - H2: Minimal yapılandırma
   - H2: Yapılandırmayı düzenleme
   - H2: Katı doğrulama
   - H2: Yaygın görevler
-  - H2: Yapılandırmayı çalışırken yeniden yükleme
+  - H2: Yapılandırma sıcak yeniden yükleme
   - H3: Yeniden yükleme modları
-  - H3: Çalışırken neler uygulanır, neler yeniden başlatma gerektirir
-  - H3: Yeniden yükleme planlaması
-  - H2: Yapılandırma RPC'si (programlı güncellemeler)
+  - H3: Neler sıcak uygulanır, neler yeniden başlatma gerektirir
+  - H3: Yeniden yükleme planlama
+  - H2: Yapılandırma RPC'si (programatik güncellemeler)
   - H2: Ortam değişkenleri
   - H2: Tam başvuru
   - H2: İlgili
@@ -3247,10 +3249,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Sohbet komutu
-  - H2: Dışa aktarmanın içeriği
+  - H2: Dışa aktarımın içeriği
   - H2: Gizlilik modeli
   - H2: Kararlılık kaydedici
-  - H2: Yararlı seçenekler
+  - H2: Kullanışlı seçenekler
   - H2: Tanılamayı devre dışı bırakma
   - H2: İlgili
 
@@ -3259,14 +3261,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/discovery
 - Başlıklar:
   - H2: Terimler
-  - H2: Neden hem doğrudan hem SSH'yi koruyoruz
+  - H2: Neden hem doğrudan hem SSH'yi tutuyoruz
   - H2: Keşif girdileri (istemciler gateway'in nerede olduğunu nasıl öğrenir)
   - H3: 1) Bonjour / DNS-SD keşfi
   - H4: Hizmet beacon ayrıntıları
   - H3: 2) Tailnet (ağlar arası)
   - H3: 3) Manuel / SSH hedefi
-  - H2: Taşıma seçimi (istemci ilkesi)
-  - H2: Eşleştirme + kimlik doğrulama (doğrudan taşıma)
+  - H2: Taşıma seçimi (istemci politikası)
+  - H2: Eşleme + auth (doğrudan taşıma)
   - H2: Bileşene göre sorumluluklar
   - H2: İlgili
 
@@ -3275,7 +3277,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/doctor
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H3: Başsız ve otomasyon modları
+  - H3: Headless ve otomasyon modları
   - H2: Salt okunur lint modu
   - H2: Ne yapar (özet)
   - H2: Dreams UI geri doldurma ve sıfırlama
@@ -3286,7 +3288,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /gateway/external-apps
 - Başlıklar:
-  - H2: Bugün kullanılabilenler
+  - H2: Bugün kullanılabilir olanlar
   - H2: Önerilen yol
   - H2: Uygulama kodu ve plugin kodu
   - H2: İlgili
@@ -3311,7 +3313,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Çalışma süresi izleme
   - H3: İzleme hizmeti kurulum örnekleri
   - H2: Bir şey başarısız olduğunda
-  - H2: Özel "sağlık" komutu
+  - H2: Ayrılmış "health" komutu
   - H2: İlgili
 
 ## gateway/heartbeat.md
@@ -3324,19 +3326,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yanıt sözleşmesi
   - H2: Yapılandırma
   - H3: Kapsam ve öncelik
-  - H3: Ajan başına Heartbeat'ler
+  - H3: Aracı başına heartbeat'ler
   - H3: Etkin saatler örneği
   - H3: 7/24 kurulum
-  - H3: Çok hesaplı örnek
+  - H3: Çoklu hesap örneği
   - H3: Alan notları
   - H2: Teslim davranışı
-  - H2: Görünürlük denetimleri
-  - H3: Her bayrağın yaptığı
+  - H2: Görünürlük kontrolleri
+  - H3: Her bayrağın yaptığı şey
   - H3: Kanal başına ve hesap başına örnekler
   - H3: Yaygın kalıplar
   - H2: HEARTBEAT.md (isteğe bağlı)
   - H3: tasks: blokları
-  - H3: Ajan HEARTBEAT.md dosyasını güncelleyebilir mi?
+  - H3: Aracı HEARTBEAT.md dosyasını güncelleyebilir mi?
   - H2: Manuel uyandırma (isteğe bağlı)
   - H2: Akıl yürütme teslimi (isteğe bağlı)
   - H2: Maliyet farkındalığı
@@ -3350,17 +3352,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: 5 dakikalık yerel başlatma
   - H2: Çalışma zamanı modeli
   - H2: OpenAI uyumlu uç noktalar
-  - H3: Bağlantı noktası ve bağlama önceliği
-  - H3: Çalışırken yeniden yükleme modları
+  - H3: Port ve bind önceliği
+  - H3: Sıcak yeniden yükleme modları
   - H2: Operatör komut seti
-  - H2: Birden çok gateway (aynı host)
+  - H2: Birden çok gateway (aynı ana makine)
   - H2: Uzaktan erişim
   - H2: Denetim ve hizmet yaşam döngüsü
   - H2: Geliştirme profili hızlı yolu
   - H2: Protokol hızlı başvurusu (operatör görünümü)
   - H2: Operasyonel kontroller
   - H3: Canlılık
-  - H3: Hazırlık durumu
+  - H3: Hazırlık
   - H3: Boşluk kurtarma
   - H2: Yaygın hata imzaları
   - H2: Güvenlik garantileri
@@ -3382,11 +3384,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /gateway/local-models
 - Başlıklar:
-  - H2: Donanım alt sınırı
+  - H2: Donanım tabanı
   - H2: Bir backend seçin
   - H2: Önerilen: LM Studio + büyük yerel model (Responses API)
   - H3: Hibrit yapılandırma: barındırılan birincil, yerel yedek
-  - H3: Önce yerel, barındırılan güvenlik ağıyla
+  - H3: Barındırılan güvenlik ağıyla yerel öncelikli
   - H3: Bölgesel barındırma / veri yönlendirme
   - H2: Diğer OpenAI uyumlu yerel proxy'ler
   - H2: Daha küçük veya daha katı backend'ler
@@ -3398,7 +3400,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/logging
 - Başlıklar:
   - H1: Günlükleme
-  - H2: Dosya tabanlı günlükleyici
+  - H2: Dosya tabanlı logger
   - H2: Konsol yakalama
   - H2: Redaksiyon
   - H2: Gateway WebSocket günlükleri
@@ -3410,14 +3412,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /gateway/multiple-gateways
 - Başlıklar:
-  - H2: Önerilen en iyi kurulum
-  - H2: Rescue-Bot hızlı başlangıcı
+  - H2: En iyi önerilen kurulum
+  - H2: Rescue-Bot Hızlı Başlangıç
   - H2: Bu neden çalışır
-  - H2: --profile rescue onboard neleri değiştirir
+  - H2: --profile rescue onboard neyi değiştirir
   - H2: Genel çoklu gateway kurulumu
   - H2: Yalıtım kontrol listesi
-  - H2: Bağlantı noktası eşlemesi (türetilmiş)
-  - H2: Tarayıcı/CDP notları (yaygın hata kaynağı)
+  - H2: Port eşleme (türetilmiş)
+  - H2: Tarayıcı/CDP notları (yaygın tuzak)
   - H2: Manuel env örneği
   - H2: Hızlı kontroller
   - H2: İlgili
@@ -3434,20 +3436,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Kimlik doğrulama
   - H2: Güvenlik sınırı (önemli)
-  - H2: Bu uç nokta ne zaman kullanılır
-  - H2: Ajan öncelikli model sözleşmesi
+  - H2: Bu uç nokta ne zaman kullanılmalı
+  - H2: Aracı öncelikli model sözleşmesi
   - H2: Uç noktayı etkinleştirme
   - H2: Uç noktayı devre dışı bırakma
   - H2: Oturum davranışı
   - H2: Bu yüzey neden önemlidir
-  - H2: Model listesi ve ajan yönlendirme
+  - H2: Model listesi ve aracı yönlendirme
   - H2: Akış (SSE)
   - H2: Sohbet aracı sözleşmesi
   - H3: Desteklenen istek alanları
   - H3: Desteklenmeyen varyantlar
   - H3: Akışsız araç yanıtı şekli
   - H3: Akışlı araç yanıtı şekli
-  - H3: Araç izleme döngüsü
+  - H3: Araç takip döngüsü
   - H2: Open WebUI hızlı kurulumu
   - H2: Örnekler
   - H2: İlgili
@@ -3461,9 +3463,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: İstek şekli (desteklenen)
   - H2: Öğeler (girdi)
   - H3: message
-  - H3: functioncalloutput (sıra tabanlı araçlar)
+  - H3: functioncalloutput (dönüş tabanlı araçlar)
   - H3: reasoning ve itemreference
-  - H2: Araçlar (istemci tarafı işlev araçları)
+  - H2: Araçlar (istemci tarafı fonksiyon araçları)
   - H2: Görseller (inputimage)
   - H2: Dosyalar (inputfile)
   - H2: Dosya + görsel sınırları (yapılandırma)
@@ -3485,12 +3487,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Mod seçme
   - H2: Yapılandırma başvurusu
   - H2: Örnekler
-  - H3: Minimum uzak kurulum
-  - H3: GPU ile mirror modu
-  - H3: Özel gateway ile ajan başına OpenShell
+  - H3: Minimal uzak kurulum
+  - H3: GPU ile Mirror modu
+  - H3: Özel gateway ile aracı başına OpenShell
   - H2: Yaşam döngüsü yönetimi
-  - H3: Ne zaman yeniden oluşturulmalı
-  - H2: Güvenlik sıkılaştırma
+  - H3: Ne zaman yeniden oluşturmalı
+  - H2: Güvenlik sertleştirme
   - H2: Geçerli sınırlamalar
   - H2: Nasıl çalışır
   - H2: İlgili
@@ -3499,7 +3501,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /gateway/opentelemetry
 - Başlıklar:
-  - H2: Birlikte nasıl çalışır
+  - H2: Birlikte nasıl oturur
   - H2: Hızlı başlangıç
   - H2: Dışa aktarılan sinyaller
   - H2: Yapılandırma başvurusu
@@ -3508,14 +3510,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Örnekleme ve boşaltma
   - H2: Dışa aktarılan metrikler
   - H3: Model kullanımı
-  - H3: İleti akışı
+  - H3: Mesaj akışı
   - H3: Konuşma
   - H3: Kuyruklar ve oturumlar
   - H3: Oturum canlılığı telemetrisi
   - H3: Harness yaşam döngüsü
   - H3: Araç yürütme
   - H3: Exec
-  - H3: Tanılama iç ayrıntıları (bellek ve araç döngüsü)
+  - H3: Tanılama içleri (bellek ve araç döngüsü)
   - H2: Dışa aktarılan span'ler
   - H2: Tanılama olay kataloğu
   - H2: Dışa aktarıcı olmadan
@@ -3529,25 +3531,25 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Roller
   - H2: Kapsam düzeyleri
   - H2: Yöntem kapsamı yalnızca ilk kapıdır
-  - H2: Cihaz eşleştirme onayları
-  - H2: Düğüm eşleştirme onayları
-  - H2: Paylaşılan gizli anahtar kimlik doğrulaması
+  - H2: Cihaz eşleme onayları
+  - H2: Node eşleme onayları
+  - H2: Paylaşılan gizli bilgi auth
 
 ## gateway/pairing.md
 
 - Rota: /gateway/pairing
 - Başlıklar:
   - H2: Kavramlar
-  - H2: Eşleştirme nasıl çalışır
-  - H2: CLI iş akışı (başsız ortama uygun)
+  - H2: Eşleme nasıl çalışır
+  - H2: CLI iş akışı (headless uyumlu)
   - H2: API yüzeyi (gateway protokolü)
-  - H2: Düğüm komutu kapılaması (2026.3.31+)
-  - H2: Düğüm olayı güven sınırları (2026.3.31+)
+  - H2: Node komut kapısı (2026.3.31+)
+  - H2: Node olay güven sınırları (2026.3.31+)
   - H2: Otomatik onay (macOS uygulaması)
-  - H2: Güvenilir CIDR cihaz otomatik onayı
-  - H2: Meta veri yükseltme otomatik onayı
-  - H2: QR eşleştirme yardımcıları
-  - H2: Yerellik ve iletilen üstbilgiler
+  - H2: Trusted-CIDR cihaz otomatik onayı
+  - H2: Metadata yükseltme otomatik onayı
+  - H2: QR eşleme yardımcıları
+  - H2: Yerellik ve iletilmiş üstbilgiler
   - H2: Depolama (yerel, özel)
   - H2: Taşıma davranışı
   - H2: İlgili
@@ -3558,9 +3560,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Dışa aktarılan metrikler
-  - H2: Etiket ilkesi
+  - H2: Etiket politikası
   - H2: PromQL tarifleri
-  - H2: Prometheus ve OpenTelemetry dışa aktarımı arasında seçim yapma
+  - H2: Prometheus ve OpenTelemetry dışa aktarımı arasında seçim
   - H2: Sorun giderme
   - H2: İlgili
 
@@ -3569,29 +3571,29 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/protocol
 - Başlıklar:
   - H2: Taşıma
-  - H2: El sıkışma (bağlanma)
+  - H2: Handshake (bağlanma)
   - H3: Node örneği
   - H2: Çerçeveleme
   - H2: Roller + kapsamlar
   - H3: Roller
   - H3: Kapsamlar (operatör)
-  - H3: Yetenekler/komutlar/izinler (düğüm)
+  - H3: Caps/komutlar/izinler (node)
   - H2: Varlık
-  - H3: Düğüm arka planda canlı olayı
+  - H3: Node arka plan canlı olayı
   - H2: Yayın olayı kapsamlandırma
   - H2: Yaygın RPC yöntem aileleri
   - H3: Yaygın olay aileleri
-  - H3: Düğüm yardımcı yöntemleri
+  - H3: Node yardımcı yöntemleri
   - H3: Görev defteri RPC'leri
   - H3: Operatör yardımcı yöntemleri
   - H3: models.list görünümleri
   - H2: Exec onayları
-  - H2: Ajan teslimi yedeği
+  - H2: Aracı teslim yedeği
   - H2: Sürümleme
   - H3: İstemci sabitleri
-  - H2: Kimlik doğrulama
-  - H2: Cihaz kimliği + eşleştirme
-  - H3: Cihaz kimlik doğrulama geçiş tanılaması
+  - H2: Auth
+  - H2: Cihaz kimliği + eşleme
+  - H3: Cihaz auth migrasyonu tanılaması
   - H2: TLS + pinleme
   - H2: Kapsam
   - H2: İlgili
@@ -3601,16 +3603,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/remote-gateway-readme
 - Başlıklar:
   - H1: OpenClaw.app'i Uzak Gateway ile Çalıştırma
-  - H2: Genel bakış
+  - H2: Genel Bakış
   - H2: Hızlı kurulum
-  - H3: Adım 1: SSH Yapılandırması Ekle
-  - H3: Adım 2: SSH Anahtarını Kopyala
-  - H3: Adım 3: Uzak Gateway Kimlik Doğrulamasını Yapılandır
-  - H3: Adım 4: SSH Tünelini Başlat
-  - H3: Adım 5: OpenClaw.app'i Yeniden Başlat
-  - H2: Oturum Açmada Tüneli Otomatik Başlat
-  - H3: PLIST dosyasını oluştur
-  - H3: Launch Agent'ı yükle
+  - H3: Adım 1: SSH Yapılandırması Ekleme
+  - H3: Adım 2: SSH Anahtarını Kopyalama
+  - H3: Adım 3: Uzak Gateway Kimlik Doğrulamasını Yapılandırma
+  - H3: Adım 4: SSH Tünelini Başlatma
+  - H3: Adım 5: OpenClaw.app'i Yeniden Başlatma
+  - H2: Oturum Açıldığında Tüneli Otomatik Başlatma
+  - H3: PLIST dosyasını oluşturma
+  - H3: Launch Agent'ı Yükleme
   - H2: Sorun giderme
   - H2: Nasıl çalışır
   - H2: İlgili
@@ -3621,22 +3623,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Temel fikir
   - H2: Yaygın VPN ve tailnet kurulumları
-  - H3: Tailnet'inizde sürekli açık Gateway
+  - H3: Tailnet'inizde her zaman açık Gateway
   - H3: Ev masaüstü Gateway'i çalıştırır
   - H3: Dizüstü bilgisayar Gateway'i çalıştırır
-  - H2: Komut akışı (ne nerede çalışır)
+  - H2: Komut akışı (nerede ne çalışır)
   - H2: SSH tüneli (CLI + araçlar)
   - H2: CLI uzak varsayılanları
   - H2: Kimlik bilgisi önceliği
-  - H2: Sohbet kullanıcı arayüzü uzak erişimi
+  - H2: Sohbet UI uzak erişimi
   - H2: macOS uygulaması uzak modu
   - H2: Güvenlik kuralları (uzak/VPN)
   - H3: macOS: LaunchAgent ile kalıcı SSH tüneli
-  - H4: Adım 1: SSH yapılandırması ekleyin
-  - H4: Adım 2: SSH anahtarını kopyalayın (tek seferlik)
-  - H4: Adım 3: gateway belirtecini yapılandırın
-  - H4: Adım 4: LaunchAgent'ı oluşturun
-  - H4: Adım 5: LaunchAgent'ı yükleyin
+  - H4: Adım 1: SSH yapılandırması ekleme
+  - H4: Adım 2: SSH anahtarını kopyalama (tek seferlik)
+  - H4: Adım 3: gateway belirtecini yapılandırma
+  - H4: Adım 4: LaunchAgent oluşturma
+  - H4: Adım 5: LaunchAgent'ı yükleme
   - H4: Sorun giderme
   - H2: İlgili
 
@@ -3646,20 +3648,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Hızlı hata ayıklama
   - H2: Sandbox: araçların çalıştığı yer
-  - H3: Bind mount'lar (hızlı güvenlik kontrolü)
+  - H3: Bind mount'lar (hızlı güvenlik denetimi)
   - H2: Araç ilkesi: hangi araçlar var/çağrılabilir
   - H3: Araç grupları (kısaltmalar)
-  - H2: Yükseltilmiş: yalnızca exec "ana makinede çalıştır"
-  - H2: Yaygın "sandbox jail" düzeltmeleri
-  - H3: "X aracı sandbox araç ilkesi tarafından engellendi"
-  - H3: "Bunun main olduğunu sanıyordum, neden sandbox'ta?"
+  - H2: Yükseltilmiş: yalnızca exec için "ana makinede çalıştır"
+  - H2: Yaygın "sandbox hapishanesi" düzeltmeleri
+  - H3: "Araç X sandbox araç ilkesi tarafından engellendi"
+  - H3: "Bunun ana ortam olduğunu sanıyordum, neden sandbox içinde?"
   - H2: İlgili
 
 ## gateway/sandboxing.md
 
 - Rota: /gateway/sandboxing
 - Başlıklar:
-  - H2: Neler sandbox'a alınır
+  - H2: Sandbox'a alınanlar
   - H2: Modlar
   - H2: Kapsam
   - H2: Arka uç
@@ -3672,10 +3674,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Çalışma alanı erişimi
   - H2: Özel bind mount'lar
   - H2: İmajlar ve kurulum
-  - H2: setupCommand (tek seferlik kapsayıcı kurulumu)
+  - H2: setupCommand (tek seferlik container kurulumu)
   - H2: Araç ilkesi ve kaçış yolları
-  - H2: Çok ajanlı geçersiz kılmalar
-  - H2: En küçük etkinleştirme örneği
+  - H2: Çoklu ajan geçersiz kılmaları
+  - H2: Minimal etkinleştirme örneği
   - H2: İlgili
 
 ## gateway/secrets-plan-contract.md
@@ -3683,14 +3685,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/secrets-plan-contract
 - Başlıklar:
   - H2: Plan dosyası biçimi
-  - H2: Sağlayıcı upsert'leri ve silmeleri
+  - H2: Sağlayıcı ekleme-güncellemeleri ve silmeleri
   - H2: Desteklenen hedef kapsamı
   - H2: Hedef türü davranışı
   - H2: Yol doğrulama kuralları
   - H2: Hata davranışı
   - H2: Exec sağlayıcısı onay davranışı
   - H2: Çalışma zamanı ve denetim kapsamı notları
-  - H2: Operatör kontrolleri
+  - H2: Operatör denetimleri
   - H2: İlgili belgeler
 
 ## gateway/secrets.md
@@ -3699,24 +3701,24 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Hedefler ve çalışma zamanı modeli
   - H2: Ajan erişim sınırı
-  - H2: Etkin yüzey filtreleme
+  - H2: Aktif yüzey filtreleme
   - H2: Gateway kimlik doğrulama yüzeyi tanılamaları
-  - H2: Onboarding başvurusu ön kontrolü
+  - H2: Onboarding referansı ön kontrolü
   - H2: SecretRef sözleşmesi
   - H2: Sağlayıcı yapılandırması
   - H2: Dosya destekli API anahtarları
-  - H2: Exec entegrasyonu örnekleri
+  - H2: Exec entegrasyon örnekleri
   - H2: MCP sunucusu ortam değişkenleri
   - H2: Sandbox SSH kimlik doğrulama materyali
   - H2: Desteklenen kimlik bilgisi yüzeyi
   - H2: Gerekli davranış ve öncelik
   - H2: Etkinleştirme tetikleyicileri
-  - H2: Bozulmuş ve kurtarılmış sinyaller
-  - H2: Komut yolu çözümlemesi
+  - H2: Bozulmuş ve toparlanmış sinyaller
+  - H2: Komut yolu çözümleme
   - H2: Denetim ve yapılandırma iş akışı
   - H2: Tek yönlü güvenlik ilkesi
   - H2: Eski kimlik doğrulama uyumluluk notları
-  - H2: Web kullanıcı arayüzü notu
+  - H2: Web UI notu
   - H2: İlgili
 
 ## gateway/security/audit-checks.md
@@ -3729,12 +3731,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /gateway/security/exposure-runbook
 - Başlıklar:
-  - H2: Maruz kalma kalıbını seçin
+  - H2: Maruz kalma desenini seçme
   - H2: Ön kontrol envanteri
-  - H2: Temel kontroller
-  - H2: En düşük güvenli temel
+  - H2: Temel denetimler
+  - H2: Minimum güvenli temel düzey
   - H2: DM ve grup maruziyeti
-  - H2: Ters proxy kontrolleri
+  - H2: Ters proxy denetimleri
   - H2: Araç ve sandbox incelemesi
   - H2: Değişiklik sonrası doğrulama
   - H2: Geri alma planı
@@ -3745,75 +3747,75 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /gateway/security
 - Başlıklar:
   - H2: Önce kapsam: kişisel asistan güvenlik modeli
-  - H2: Hızlı kontrol: openclaw security audit
-  - H3: Yayımlanmış paket bağımlılık kilidi
+  - H2: Hızlı denetim: openclaw security audit
+  - H3: Yayınlanmış paket bağımlılığı kilidi
   - H3: Dağıtım ve ana makine güveni
   - H3: Güvenli dosya işlemleri
   - H3: Paylaşılan Slack çalışma alanı: gerçek risk
-  - H3: Şirket içinde paylaşılan ajan: kabul edilebilir kalıp
-  - H2: Gateway ve node güven kavramı
+  - H3: Şirket içinde paylaşılan ajan: kabul edilebilir desen
+  - H2: Gateway ve Node güven kavramı
   - H2: Güven sınırı matrisi
   - H2: Tasarım gereği güvenlik açığı olmayanlar
-  - H2: 60 saniyede güçlendirilmiş temel
+  - H2: 60 saniyede güçlendirilmiş temel düzey
   - H2: Paylaşılan gelen kutusu hızlı kuralı
   - H2: Bağlam görünürlük modeli
   - H2: Denetimin kontrol ettikleri (üst düzey)
   - H2: Kimlik bilgisi depolama haritası
   - H2: Güvenlik denetimi kontrol listesi
   - H2: Güvenlik denetimi sözlüğü
-  - H2: HTTP üzerinden Kontrol kullanıcı arayüzü
+  - H2: HTTP üzerinden Control UI
   - H2: Güvensiz veya tehlikeli bayraklar özeti
   - H2: Ters proxy yapılandırması
   - H2: HSTS ve origin notları
-  - H2: Yerel oturum günlükleri diskte durur
-  - H2: Node yürütmesi (system.run)
-  - H2: Dinamik Skills (izleyici / uzak node'lar)
+  - H2: Yerel oturum günlükleri diskte tutulur
+  - H2: Node yürütme (system.run)
+  - H2: Dinamik Skills (izleyici / uzak Node'lar)
   - H2: Tehdit modeli
   - H2: Temel kavram: zekadan önce erişim denetimi
   - H2: Komut yetkilendirme modeli
   - H2: Kontrol düzlemi araçları riski
-  - H2: Plugin'ler
-  - H2: DM erişim modeli: eşleştirme, izin listesi, açık, devre dışı
-  - H2: DM oturumu yalıtımı (çok kullanıcılı mod)
-  - H3: Güvenli DM modu (önerilir)
+  - H2: Plugins
+  - H2: DM erişim modeli: eşleme, izin listesi, açık, devre dışı
+  - H2: DM oturum yalıtımı (çok kullanıcılı mod)
+  - H3: Güvenli DM modu (önerilen)
   - H2: DM'ler ve gruplar için izin listeleri
-  - H2: Prompt injection (ne olduğu, neden önemli olduğu)
-  - H2: Harici içerik özel belirteç temizliği
+  - H2: Prompt enjeksiyonu (nedir, neden önemlidir)
+  - H2: Harici içerik özel belirteç temizleme
   - H2: Güvensiz harici içerik atlama bayrakları
-  - H3: Prompt injection herkese açık DM'ler gerektirmez
+  - H3: Prompt enjeksiyonu herkese açık DM gerektirmez
   - H3: Kendi barındırılan LLM arka uçları
   - H3: Model gücü (güvenlik notu)
   - H2: Gruplarda akıl yürütme ve ayrıntılı çıktı
   - H2: Yapılandırma güçlendirme örnekleri
   - H3: Dosya izinleri
-  - H3: Ağ maruziyeti (bind, port, güvenlik duvarı)
+  - H3: Ağ maruziyeti (bağlama, port, güvenlik duvarı)
   - H3: UFW ile Docker port yayımlama
   - H3: mDNS/Bonjour keşfi
-  - H3: Gateway WebSocket'i kilitleyin (yerel kimlik doğrulama)
+  - H3: Gateway WebSocket'i kilitleme (yerel kimlik doğrulama)
   - H3: Tailscale Serve kimlik başlıkları
-  - H3: Node ana makinesi üzerinden tarayıcı denetimi (önerilir)
-  - H3: Diskteki sırlar
+  - H3: Node ana makinesi üzerinden tarayıcı kontrolü (önerilen)
+  - H3: Disk üzerindeki gizli bilgiler
   - H3: Çalışma alanı .env dosyaları
-  - H3: Günlükler ve transkriptler (redaksiyon ve saklama)
-  - H3: DM'ler: varsayılan olarak eşleştirme
-  - H3: Gruplar: her yerde bahsetmeyi zorunlu kılın
+  - H3: Günlükler ve dökümler (redaksiyon ve saklama)
+  - H3: DM'ler: varsayılan olarak eşleme
+  - H3: Gruplar: her yerde mention gerektir
   - H3: Ayrı numaralar (WhatsApp, Signal, Telegram)
   - H3: Salt okunur mod (sandbox ve araçlar aracılığıyla)
-  - H3: Güvenli temel (kopyala/yapıştır)
-  - H2: Sandboxing (önerilir)
-  - H3: Alt ajan delegasyon koruma çizgisi
-  - H2: Tarayıcı denetimi riskleri
+  - H3: Güvenli temel düzey (kopyala/yapıştır)
+  - H2: Sandboxing (önerilen)
+  - H3: Alt ajan yetkilendirme güvenlik sınırı
+  - H2: Tarayıcı kontrolü riskleri
   - H3: Tarayıcı SSRF ilkesi (varsayılan olarak katı)
-  - H2: Ajan başına erişim profilleri (çok ajanlı)
+  - H2: Ajan başına erişim profilleri (çoklu ajan)
   - H3: Örnek: tam erişim (sandbox yok)
   - H3: Örnek: salt okunur araçlar + salt okunur çalışma alanı
   - H3: Örnek: dosya sistemi/kabuk erişimi yok (sağlayıcı mesajlaşmasına izin verilir)
   - H2: Olay müdahalesi
   - H3: Sınırla
-  - H3: Döndür (sırlar sızdıysa ele geçirildiğini varsayın)
+  - H3: Döndür (gizli bilgiler sızdıysa ele geçirilmiş varsay)
   - H3: Denetle
   - H3: Rapor için topla
-  - H2: Sır tarama
+  - H2: Gizli bilgi tarama
   - H2: Güvenlik sorunlarını bildirme
 
 ## gateway/security/secure-file-operations.md
@@ -3841,13 +3843,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Kimlik doğrulama
   - H2: Yapılandırma örnekleri
   - H3: Yalnızca tailnet (Serve)
-  - H3: Yalnızca tailnet (Tailnet IP'sine bind et)
+  - H3: Yalnızca tailnet (Tailnet IP'sine bağlan)
   - H3: Herkese açık internet (Funnel + paylaşılan parola)
   - H2: CLI örnekleri
   - H2: Notlar
-  - H2: Tarayıcı denetimi (uzak Gateway + yerel tarayıcı)
+  - H2: Tarayıcı kontrolü (uzak Gateway + yerel tarayıcı)
   - H2: Tailscale önkoşulları + sınırlar
-  - H2: Daha fazla bilgi edinin
+  - H2: Daha fazla bilgi
   - H2: İlgili
 
 ## gateway/tools-invoke-http-api.md
@@ -3869,38 +3871,38 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Komut merdiveni
   - H2: Bir güncellemeden sonra
   - H2: Bölünmüş beyin kurulumları ve daha yeni yapılandırma koruması
-  - H2: Geri alma sonrası protokol uyumsuzluğu
+  - H2: Geri almadan sonra protokol uyumsuzluğu
   - H2: Skill symlink'i yol kaçışı olarak atlandı
-  - H2: Uzun bağlam için Anthropic 429 ek kullanım gerekli
+  - H2: Uzun bağlam için Anthropic 429 ek kullanım gerekiyor
   - H2: Upstream 403 engellenmiş yanıtlar
   - H2: Yerel OpenAI uyumlu arka uç doğrudan probları geçiyor ancak ajan çalıştırmaları başarısız oluyor
   - H2: Yanıt yok
-  - H2: Dashboard kontrol kullanıcı arayüzü bağlantısı
+  - H2: Dashboard control UI bağlantısı
   - H3: Kimlik doğrulama ayrıntı kodları hızlı haritası
   - H2: Gateway hizmeti çalışmıyor
-  - H2: macOS gateway sessizce yanıt vermeyi durdurur, sonra dashboard'a dokunduğunuzda devam eder
+  - H2: macOS gateway sessizce yanıt vermeyi durdurur, ardından dashboard'a dokunduğunuzda devam eder
   - H2: Gateway yüksek bellek kullanımı sırasında çıkar
   - H2: Gateway geçersiz yapılandırmayı reddetti
   - H2: Gateway prob uyarıları
   - H2: Kanal bağlı, mesajlar akmıyor
   - H2: Cron ve Heartbeat teslimi
-  - H2: Node eşleştirildi, araç başarısız oluyor
+  - H2: Node eşlendi, araç başarısız oluyor
   - H2: Tarayıcı aracı başarısız oluyor
-  - H2: Yükseltme yaptıysanız ve bir şey aniden bozulduysa
+  - H2: Yükselttiyseniz ve bir şey aniden bozulduysa
   - H2: İlgili
 
 ## gateway/trusted-proxy-auth.md
 
 - Rota: /gateway/trusted-proxy-auth
 - Başlıklar:
-  - H2: Ne zaman kullanılmalı
-  - H2: Ne zaman KULLANILMAMALI
+  - H2: Ne zaman kullanılır
+  - H2: Ne zaman KULLANILMAZ
   - H2: Nasıl çalışır
-  - H2: Kontrol kullanıcı arayüzü eşleştirme davranışı
+  - H2: Control UI eşleme davranışı
   - H2: Yapılandırma
-  - H3: Yapılandırma başvurusu
+  - H3: Yapılandırma referansı
   - H2: TLS sonlandırma ve HSTS
-  - H3: Kullanıma alma rehberi
+  - H3: Yayına alma rehberliği
   - H2: Proxy kurulum örnekleri
   - H2: Karma belirteç yapılandırması
   - H2: Operatör kapsamları başlığı
@@ -3920,8 +3922,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: CLI başlatma ve komut profilleme
   - H2: Gateway izleme modu
   - H2: Geliştirme profili + geliştirme gateway'i (--dev)
-  - H2: Ham akış günlükleme (OpenClaw)
-  - H2: Ham OpenAI uyumlu parça günlükleme
+  - H2: Ham akış günlüğe kaydı (OpenClaw)
+  - H2: Ham OpenAI uyumlu parça günlüğe kaydı
   - H2: Güvenlik notları
   - H2: VSCode'da hata ayıklama
   - H3: Kurulum
@@ -3937,12 +3939,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yapılandırma env bloğu
   - H2: Kabuk env içe aktarma
   - H2: Exec kabuk anlık görüntüleri
-  - H2: Çalışma zamanında enjekte edilen env değişkenleri
-  - H2: UI env değişkenleri
-  - H2: Yapılandırmada env değişkeni ikamesi
-  - H2: Secret ref'leri ve ${ENV} dizeleri
-  - H2: Yolla ilgili env değişkenleri
-  - H2: Günlükleme
+  - H2: Çalışma zamanı tarafından enjekte edilen env var'lar
+  - H2: UI env var'ları
+  - H2: Yapılandırmada env var ikamesi
+  - H2: Gizli bilgi referansları ve ${ENV} dizeleri
+  - H2: Yol ile ilgili env var'lar
+  - H2: Günlüğe kaydetme
   - H3: OPENCLAWHOME
   - H2: nvm kullanıcıları: webfetch TLS hataları
   - H2: Eski ortam değişkenleri
@@ -3959,8 +3961,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /help/faq-models
 - Başlıklar:
-  - H2: Modeller: varsayılanlar, seçim, takma adlar, değiştirme
-  - H2: Model failover'ı ve "Tüm modeller başarısız oldu"
+  - H2: Modeller: varsayılanlar, seçim, alias'lar, geçiş
+  - H2: Model yük devretme ve "Tüm modeller başarısız oldu"
   - H2: Kimlik doğrulama profilleri: nedir ve nasıl yönetilir
   - H2: İlgili
 
@@ -3973,17 +3975,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: OpenClaw nedir?
   - H2: Skills ve otomasyon
   - H2: Sandboxing ve bellek
-  - H2: Şeylerin diskte bulunduğu yer
+  - H2: Diskte şeylerin bulunduğu yerler
   - H2: Yapılandırma temelleri
-  - H2: Uzak gateway'ler ve node'lar
-  - H2: Env değişkenleri ve .env yükleme
-  - H2: Oturumlar ve birden fazla sohbet
-  - H2: Modeller, failover ve kimlik doğrulama profilleri
+  - H2: Uzak gateway'ler ve Node'lar
+  - H2: Env var'lar ve .env yükleme
+  - H2: Oturumlar ve birden çok sohbet
+  - H2: Modeller, yük devretme ve kimlik doğrulama profilleri
   - H2: Gateway: portlar, "zaten çalışıyor" ve uzak mod
-  - H2: Günlükleme ve hata ayıklama
+  - H2: Günlüğe kaydetme ve hata ayıklama
   - H2: Medya ve ekler
   - H2: Güvenlik ve erişim denetimi
-  - H2: Sohbet komutları, görevleri iptal etme ve "durmayacak"
+  - H2: Sohbet komutları, görevleri durdurma ve "durmayacak"
   - H2: Çeşitli
   - H2: İlgili
 
@@ -3993,7 +3995,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: SSS
   - H2: Tanılamalar
-  - H2: Test
+  - H2: Test etme
   - H2: Topluluk ve meta
 
 ## help/scripts.md
@@ -4015,12 +4017,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Canlı: model smoke testi (profil anahtarları)
   - H3: Katman 1: Doğrudan model tamamlama (Gateway yok)
   - H3: Katman 2: Gateway + geliştirme ajanı smoke testi ("@openclaw" gerçekte ne yapar)
-  - H2: Canlı: CLI arka uç smoke testi (Claude, Gemini veya diğer yerel CLI'ler)
+  - H2: Canlı: CLI backend smoke testi (Claude, Gemini veya diğer yerel CLI'ler)
   - H2: Canlı: APNs HTTP/2 proxy erişilebilirliği
-  - H2: Canlı: ACP bağlama smoke testi (/acp spawn ... --bind here)
-  - H2: Canlı: Codex uygulama sunucusu test düzeneği smoke testi
+  - H2: Canlı: ACP bind smoke testi (/acp spawn ... --bind here)
+  - H2: Canlı: Codex app-server harness smoke testi
   - H3: Önerilen canlı tarifler
-  - H2: Canlı: model matrisi (neleri kapsıyoruz)
+  - H2: Canlı: model matrisi (kapsadıklarımız)
   - H3: Modern smoke seti (araç çağırma + görüntü)
   - H3: Temel: araç çağırma (Read + isteğe bağlı Exec)
   - H3: Görüntü: görüntü gönderme (ek → çok modlu mesaj)
@@ -4028,22 +4030,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Kimlik bilgileri (asla commit etmeyin)
   - H2: Deepgram canlı (ses transkripsiyonu)
   - H2: BytePlus kodlama planı canlı
-  - H2: ComfyUI iş akışı medya canlı
-  - H2: Görüntü üretimi canlı
-  - H2: Müzik üretimi canlı
-  - H2: Video üretimi canlı
-  - H2: Medya canlı test düzeneği
+  - H2: ComfyUI iş akışı medyası canlı
+  - H2: Görüntü oluşturma canlı
+  - H2: Müzik oluşturma canlı
+  - H2: Video oluşturma canlı
+  - H2: Medya canlı harness
   - H2: İlgili
 
 ## help/testing-updates-plugins.md
 
 - Rota: /help/testing-updates-plugins
 - Başlıklar:
-  - H2: Neyi koruyoruz
+  - H2: Koruduklarımız
   - H2: Geliştirme sırasında yerel kanıt
-  - H2: Docker yolları
+  - H2: Docker hatları
   - H2: Paket Kabulü
-  - H2: Sürüm varsayılanı
+  - H2: Yayın varsayılanı
   - H2: Eski uyumluluk
   - H2: Kapsam ekleme
   - H2: Hata triyajı
@@ -4053,30 +4055,30 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /help/testing
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H2: Test geçici dizinleri
-  - H2: QA'ya özel çalıştırıcılar
+  - H2: Test Geçici Dizinleri
+  - H2: QA'ya özgü çalıştırıcılar
   - H3: Convex üzerinden paylaşılan Telegram kimlik bilgileri (v1)
   - H3: QA'ya kanal ekleme
-  - H2: Test takımları (nerede ne çalışır)
+  - H2: Test paketleri (nerede ne çalışır)
   - H3: Birim / entegrasyon (varsayılan)
   - H3: Kararlılık (Gateway)
   - H3: E2E (repo toplamı)
   - H3: E2E (Gateway smoke testi)
-  - H3: E2E (Control UI sahte tarayıcı)
-  - H3: E2E: OpenShell arka uç smoke testi
+  - H3: E2E (Control UI mock'lanmış tarayıcı)
+  - H3: E2E: OpenShell backend smoke testi
   - H3: Canlı (gerçek sağlayıcılar + gerçek modeller)
-  - H2: Hangi takımı çalıştırmalıyım?
+  - H2: Hangi paketi çalıştırmalıyım?
   - H2: Canlı (ağa dokunan) testler
   - H2: Docker çalıştırıcıları (isteğe bağlı "Linux'ta çalışır" kontrolleri)
-  - H2: Doküman sağlama
+  - H2: Doküman sağlamlık kontrolü
   - H2: Çevrimdışı regresyon (CI için güvenli)
   - H2: Ajan güvenilirliği değerlendirmeleri (Skills)
   - H2: Sözleşme testleri (Plugin ve kanal şekli)
   - H3: Komutlar
   - H3: Kanal sözleşmeleri
-  - H3: Sağlayıcı durumu sözleşmeleri
+  - H3: Sağlayıcı durum sözleşmeleri
   - H3: Sağlayıcı sözleşmeleri
-  - H3: Ne zaman çalıştırılır
+  - H3: Ne zaman çalıştırmalı
   - H2: Regresyon ekleme (rehberlik)
   - H2: İlgili
 
@@ -4085,11 +4087,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /help/troubleshooting
 - Başlıklar:
   - H2: İlk 60 saniye
-  - H2: Asistan sınırlı hissediyor veya araçları eksik
+  - H2: Asistan sınırlı hissediliyor veya araçlar eksik
   - H2: Anthropic uzun bağlam 429
-  - H2: Yerel OpenAI uyumlu arka uç doğrudan çalışıyor ama OpenClaw içinde başarısız oluyor
-  - H2: Plugin kurulumu eksik openclaw uzantılarıyla başarısız oluyor
-  - H2: Kurulum ilkesi Plugin kurulumlarını veya güncellemelerini engelliyor
+  - H2: Yerel OpenAI uyumlu backend doğrudan çalışıyor ama OpenClaw içinde başarısız oluyor
+  - H2: Plugin kurulumu eksik openclaw uzantıları nedeniyle başarısız oluyor
+  - H2: Kurulum politikası Plugin kurulumlarını veya güncellemelerini engelliyor
   - H2: Plugin mevcut ama şüpheli sahiplik nedeniyle engellenmiş
   - H2: Karar ağacı
   - H2: İlgili
@@ -4103,7 +4105,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır
   - H2: Temel yetenekler
   - H2: Hızlı başlangıç
-  - H2: Dashboard
+  - H2: Pano
   - H2: Yapılandırma (isteğe bağlı)
   - H2: Buradan başlayın
   - H2: Daha fazla bilgi
@@ -4116,7 +4118,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Ne elde edersiniz
   - H2: Hızlı başlangıç
   - H2: Neler kurulur
-  - H2: Kurulum sonrası ayarlar
+  - H2: Kurulum Sonrası Ayar
   - H3: Hızlı komutlar
   - H2: Güvenlik mimarisi
   - H2: Manuel kurulum
@@ -4131,9 +4133,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Ne yapacaksınız
   - H2: Neye ihtiyacınız var
-  - H2: Dağıtımı yapılandırın
-  - H2: Azure kaynaklarını dağıtın
-  - H2: OpenClaw'ı kurun
+  - H2: Dağıtımı yapılandırma
+  - H2: Azure kaynaklarını dağıtma
+  - H2: OpenClaw kurulumu
   - H2: Maliyet değerlendirmeleri
   - H2: Temizleme
   - H2: Sonraki adımlar
@@ -4145,7 +4147,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Kurulum
   - H2: Yaşam döngüsü betikleri
-  - H2: Uyarılar
+  - H2: Dikkat edilmesi gerekenler
   - H2: İlgili
 
 ## install/clawdock.md
@@ -4155,7 +4157,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Kurulum
   - H2: Ne elde edersiniz
   - H3: Temel işlemler
-  - H3: Kapsayıcı erişimi
+  - H3: Konteyner erişimi
   - H3: Web UI ve eşleştirme
   - H3: Kurulum ve bakım
   - H3: Yardımcı araçlar
@@ -4169,9 +4171,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Kanalları değiştirme
   - H2: Tek seferlik sürüm veya etiket hedefleme
-  - H2: Kuru çalıştırma
+  - H2: Deneme çalıştırması
   - H2: Plugin'ler ve kanallar
-  - H2: Mevcut durumu kontrol etme
+  - H2: Geçerli durumu kontrol etme
   - H2: Etiketleme için en iyi uygulamalar
   - H2: macOS uygulama kullanılabilirliği
   - H2: İlgili
@@ -4182,7 +4184,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Ön koşullar
   - H2: Kurulum
-  - H2: Kalıcılık ve yedekler
+  - H2: Kalıcılık ve yedeklemeler
   - H2: 1 GB RAM ipuçları
   - H2: Sorun giderme
   - H2: Sonraki adımlar
@@ -4192,8 +4194,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /install/docker-vm-runtime
 - Başlıklar:
-  - H2: Gerekli ikili dosyaları imajın içine yerleştirin
-  - H2: Derle ve başlat
+  - H2: Gerekli ikilileri imaja dahil edin
+  - H2: Derleme ve başlatma
   - H2: Ne nerede kalıcı olur
   - H2: Güncellemeler
   - H2: İlgili
@@ -4202,21 +4204,21 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /install/docker
 - Başlıklar:
-  - H2: Docker benim için doğru mu?
+  - H2: Docker benim için uygun mu?
   - H2: Ön koşullar
-  - H2: Kapsayıcılı Gateway
+  - H2: Konteynerleştirilmiş Gateway
   - H3: Manuel akış
   - H3: Ortam değişkenleri
   - H3: Gözlemlenebilirlik
   - H3: Sağlık kontrolleri
-  - H3: LAN ve loopback
-  - H3: Ana makine yerel sağlayıcıları
-  - H3: Docker içinde Claude CLI arka ucu
+  - H3: LAN ve loopback karşılaştırması
+  - H3: Ana Makine Yerel Sağlayıcıları
+  - H3: Docker içinde Claude CLI backend
   - H3: Bonjour / mDNS
   - H3: Depolama ve kalıcılık
-  - H3: Kabuk yardımcıları (isteğe bağlı)
-  - H3: VPS üzerinde çalıştırıyor musunuz?
-  - H2: Ajan sanal alanı
+  - H3: Shell yardımcıları (isteğe bağlı)
+  - H3: VPS üzerinde mi çalışıyor?
+  - H2: Ajan sandbox'ı
   - H3: Hızlı etkinleştirme
   - H2: Sorun giderme
   - H2: İlgili
@@ -4229,11 +4231,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Neye ihtiyacınız var
   - H2: Shelley ile otomatik kurulum
   - H2: Manuel kurulum
-  - H2: 1) VM'yi oluşturun
-  - H2: 2) Ön koşulları kurun (VM üzerinde)
-  - H2: 3) OpenClaw'ı kurun
-  - H2: 4) OpenClaw'ı 8000 bağlantı noktasına proxy'lemek için nginx'i ayarlayın
-  - H2: 5) OpenClaw'a erişin ve ayrıcalıkları verin
+  - H2: 1) VM oluşturma
+  - H2: 2) Ön koşulları kurma (VM üzerinde)
+  - H2: 3) OpenClaw kurulumu
+  - H2: 4) OpenClaw'u 8000 numaralı porta proxy'lemek için nginx ayarlama
+  - H2: 5) OpenClaw'a erişme ve ayrıcalıkları verme
   - H2: Uzak kanal kurulumu
   - H2: Uzak erişim
   - H2: Güncelleme
@@ -4248,15 +4250,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Sorun giderme
   - H3: "Uygulama beklenen adreste dinlemiyor"
   - H3: Sağlık kontrolleri başarısız / bağlantı reddedildi
-  - H3: OOM / bellek sorunları
-  - H3: Gateway kilidi sorunları
+  - H3: OOM / Bellek Sorunları
+  - H3: Gateway kilit sorunları
   - H3: Yapılandırma okunmuyor
   - H3: SSH üzerinden yapılandırma yazma
   - H3: Durum kalıcı olmuyor
   - H2: Güncellemeler
-  - H3: Makine güncelleme komutu
-  - H2: Özel dağıtım (güçlendirilmiş)
-  - H3: Özel dağıtım ne zaman kullanılır
+  - H3: Makine komutunu güncelleme
+  - H2: Özel dağıtım (sertleştirilmiş)
+  - H3: Özel dağıtım ne zaman kullanılmalı
   - H3: Kurulum
   - H3: Özel dağıtıma erişme
   - H3: Özel dağıtımla Webhook'lar
@@ -4282,11 +4284,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /install/hetzner
 - Başlıklar:
-  - H2: Amaç
+  - H2: Hedef
   - H2: Ne yapıyoruz (basit ifadeyle)?
   - H2: Hızlı yol (deneyimli operatörler)
   - H2: Neye ihtiyacınız var
-  - H2: Kod olarak altyapı (Terraform)
+  - H2: Kod Olarak Altyapı (Terraform)
   - H2: Sonraki adımlar
   - H2: İlgili
 
@@ -4295,9 +4297,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /install/hostinger
 - Başlıklar:
   - H2: Ön koşullar
-  - H2: Seçenek A: 1 tıklamayla OpenClaw
+  - H2: Seçenek A: 1-Tık OpenClaw
   - H2: Seçenek B: VPS üzerinde OpenClaw
-  - H2: Kurulumunuzu doğrulayın
+  - H2: Kurulumunuzu doğrulama
   - H2: Sorun giderme
   - H2: Sonraki adımlar
   - H2: İlgili
@@ -4313,10 +4315,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: npm, pnpm veya bun
   - H3: Kaynaktan
   - H3: GitHub main checkout'undan kurulum
-  - H3: Kapsayıcılar ve paket yöneticileri
-  - H2: Kurulumu doğrulayın
+  - H3: Konteynerler ve paket yöneticileri
+  - H2: Kurulumu doğrulama
   - H2: Barındırma ve dağıtım
-  - H2: Güncelle, taşı veya kaldır
+  - H2: Güncelleme, taşıma veya kaldırma
   - H2: Sorun giderme: openclaw bulunamadı
 
 ## install/installer.md
@@ -4348,16 +4350,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Kind ile yerel test
   - H2: Adım adım
   - H3: 1) Dağıt
-  - H3: 2) Gateway'e erişin
+  - H3: 2) Gateway'e eriş
   - H2: Neler dağıtılır
   - H2: Özelleştirme
   - H3: Ajan talimatları
   - H3: Gateway yapılandırması
-  - H3: Sağlayıcı ekle
-  - H3: Özel namespace
+  - H3: Sağlayıcı ekleme
+  - H3: Özel ad alanı
   - H3: Özel imaj
-  - H3: Port-forward ötesinde dışa aç
-  - H2: Yeniden dağıt
+  - H3: Port yönlendirmenin ötesine açma
+  - H2: Yeniden dağıtma
   - H2: Kaldırma
   - H2: Mimari notları
   - H2: Dosya yapısı
@@ -4373,16 +4375,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Barındırılan Mac sağlayıcıları (bulut)
   - H2: Hızlı yol (Lume, deneyimli kullanıcılar)
   - H2: Neye ihtiyacınız var (Lume)
-  - H2: 1) Lume'u kurun
-  - H2: 2) macOS VM'yi oluşturun
-  - H2: 3) Setup Assistant'ı tamamlayın
-  - H2: 4) VM IP adresini alın
-  - H2: 5) VM'ye SSH ile bağlanın
-  - H2: 6) OpenClaw'ı kurun
-  - H2: 7) Kanalları yapılandırın
-  - H2: 8) VM'yi ekransız çalıştırın
+  - H2: 1) Lume kurulumu
+  - H2: 2) macOS VM oluşturma
+  - H2: 3) Setup Assistant'ı tamamlama
+  - H2: 4) VM IP adresini alma
+  - H2: 5) VM'ye SSH ile bağlanma
+  - H2: 6) OpenClaw kurulumu
+  - H2: 7) Kanalları yapılandırma
+  - H2: 8) VM'yi başsız çalıştırma
   - H2: Bonus: iMessage entegrasyonu
-  - H2: Altın imaj kaydet
+  - H2: Altın imaj kaydetme
   - H2: 7/24 çalıştırma
   - H2: Sorun giderme
   - H2: İlgili dokümanlar
@@ -4419,12 +4421,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /install/migrating
 - Başlıklar:
-  - H2: Başka bir ajan sisteminden içe aktar
-  - H2: OpenClaw'ı yeni bir makineye taşı
+  - H2: Başka bir ajan sisteminden içe aktarma
+  - H2: OpenClaw'u yeni bir makineye taşıma
   - H3: Taşıma adımları
-  - H3: Yaygın hatalar
+  - H3: Yaygın tuzaklar
   - H3: Doğrulama kontrol listesi
-  - H2: Bir Plugin'i yerinde yükselt
+  - H2: Bir Plugin'i yerinde yükseltme
   - H2: İlgili
 
 ## install/nix.md
@@ -4447,7 +4449,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Node kurulumu
   - H2: Sorun giderme
   - H3: openclaw: komut bulunamadı
-  - H3: npm install -g sırasında izin hataları (Linux)
+  - H3: npm install -g üzerinde izin hataları (Linux)
   - H2: İlgili
 
 ## install/northflank.mdx
@@ -4457,7 +4459,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Northflank
   - H2: Nasıl başlanır
   - H2: Ne elde edersiniz
-  - H2: Bir kanal bağlayın
+  - H2: Kanal bağlama
   - H2: Sonraki adımlar
 
 ## install/oracle.md
@@ -4466,9 +4468,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Ön koşullar
   - H2: Kurulum
-  - H2: Güvenlik duruşunu doğrulayın
+  - H2: Güvenlik duruşunu doğrulama
   - H2: ARM notları
-  - H2: Kalıcılık ve yedekler
+  - H2: Kalıcılık ve yedeklemeler
   - H2: Geri dönüş: SSH tüneli
   - H2: Sorun giderme
   - H2: Sonraki adımlar
@@ -4493,14 +4495,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: Railway
   - H2: Hızlı kontrol listesi (yeni kullanıcılar)
-  - H2: Tek tıklamayla dağıtım
+  - H2: Tek tıkla dağıt
   - H2: Ne elde edersiniz
   - H2: Gerekli Railway ayarları
-  - H3: Genel ağ
-  - H3: Birim (gerekli)
-  - H3: Değişkenler
-  - H2: Bir kanal bağlayın
-  - H2: Yedekler ve taşıma
+  - H3: Public Networking
+  - H3: Volume (gerekli)
+  - H3: Variables
+  - H2: Kanal bağlama
+  - H2: Yedeklemeler &amp; taşıma
   - H2: Sonraki adımlar
 
 ## install/raspberry-pi.md
@@ -4524,11 +4526,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: Render
   - H2: Ön koşullar
-  - H2: Render Blueprint ile dağıt
+  - H2: Render Blueprint ile dağıtma
   - H2: Blueprint'i anlama
-  - H2: Plan seçme
+  - H2: Plan seçimi
   - H2: Dağıtımdan sonra
-  - H3: Control UI'ye eriş
+  - H3: Control UI'ye erişim
   - H2: Render Dashboard özellikleri
   - H3: Günlükler
   - H3: Shell erişimi
@@ -4541,21 +4543,21 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Hizmet başlamıyor
   - H3: Yavaş soğuk başlatmalar (ücretsiz katman)
   - H3: Yeniden dağıtımdan sonra veri kaybı
-  - H3: Sağlık denetimi hataları
+  - H3: Sağlık kontrolü hataları
   - H2: Sonraki adımlar
 
 ## install/uninstall.md
 
 - Rota: /install/uninstall
 - Başlıklar:
-  - H2: Kolay yol (CLI hâlâ kurulu)
-  - H2: Manuel hizmet kaldırma (CLI kurulu değil)
+  - H2: Kolay yol (CLI hâlâ yüklü)
+  - H2: Manuel hizmet kaldırma (CLI yüklü değil)
   - H3: macOS (launchd)
   - H3: Linux (systemd kullanıcı birimi)
   - H3: Windows (Zamanlanmış Görev)
-  - H2: Normal kurulum ve kaynak kod çalışma kopyası
+  - H2: Normal kurulum ve kaynak checkout'u
   - H3: Normal kurulum (install.sh / npm / pnpm / bun)
-  - H3: Kaynak kod çalışma kopyası (git clone)
+  - H3: Kaynak checkout'u (git clone)
   - H2: İlgili
 
 ## install/updating.md
@@ -4563,19 +4565,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /install/updating
 - Başlıklar:
   - H2: Önerilen: openclaw update
-  - H2: npm ve git kurulumları arasında geçiş yap
-  - H2: Alternatif: yükleyiciyi yeniden çalıştır
+  - H2: npm ve git kurulumları arasında geçiş yapma
+  - H2: Alternatif: yükleyiciyi yeniden çalıştırma
   - H2: Alternatif: manuel npm, pnpm veya bun
   - H3: Gelişmiş npm kurulum konuları
   - H2: Otomatik güncelleyici
   - H2: Güncellemeden sonra
-  - H3: doctor çalıştır
-  - H3: Gateway'i yeniden başlat
-  - H3: Doğrula
+  - H3: doctor çalıştırma
+  - H3: Gateway'i yeniden başlatma
+  - H3: Doğrulama
   - H2: Geri alma
-  - H3: Bir sürümü sabitle (npm)
-  - H3: Bir commit'i sabitle (kaynak)
-  - H2: Takılı kaldıysanız
+  - H3: Bir sürümü sabitleme (npm)
+  - H3: Bir commit'i sabitleme (kaynak)
+  - H2: Takılı kalırsanız
   - H2: İlgili
 
 ## install/upstash.md
@@ -4583,11 +4585,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /install/upstash
 - Başlıklar:
   - H2: Ön koşullar
-  - H2: Bir Box oluştur
-  - H2: SSH tüneliyle bağlan
-  - H2: OpenClaw'ı kur
-  - H2: İlk katılımı çalıştır
-  - H2: Gateway'i başlat
+  - H2: Box oluşturma
+  - H2: SSH tüneliyle bağlanma
+  - H2: OpenClaw kurulumu
+  - H2: Onboarding'i çalıştırma
+  - H2: Gateway'i başlatma
   - H2: Otomatik yeniden başlatma
   - H2: Sorun giderme
   - H2: İlgili
@@ -4607,7 +4609,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Gateway WebSocket günlükleri
   - H2: Günlüklemeyi yapılandırma
   - H3: Günlük düzeyleri
-  - H3: Hedeflenmiş model aktarım tanılamaları
+  - H3: Hedeflenmiş model aktarım tanılama
   - H3: İz korelasyonu
   - H3: Model çağrısı boyutu ve zamanlaması
   - H3: Konsol stilleri
@@ -4626,18 +4628,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Puan bantları
   - H2: Yüzey gezgini
   - H2: QA kanıt özeti
-  - H3: Alana göre hazır olma durumu
+  - H3: Alana göre hazırlık
 
 ## maturity/taxonomy.md
 
 - Rota: /maturity/taxonomy
 - Başlıklar:
   - H1: Olgunluk taksonomisi
-  - H2: Bu sayfayı okuma
+  - H2: Bu sayfa nasıl okunur
   - H2: Olgunluk düzeyleri
   - H2: Ürün alanları
   - H2: Ayrıntılar
-  - H3: Core
+  - H3: Çekirdek
   - H3: Platform
   - H3: Kanal
   - H3: Sağlayıcı ve araç
@@ -4647,9 +4649,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /network
 - Başlıklar:
   - H2: Çekirdek model
-  - H2: Eşleme + kimlik
+  - H2: Eşleştirme + kimlik
   - H2: Keşif + aktarımlar
-  - H2: Node'lar + aktarımlar
+  - H2: Düğümler + aktarımlar
   - H2: Güvenlik
   - H2: İlgili
 
@@ -4660,15 +4662,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Çalışanlar
   - H2: Otomatik algılama (varsayılan)
   - H2: Yapılandırma örnekleri
-  - H3: Sağlayıcı + CLI yedeği (OpenAI + Whisper CLI)
-  - H3: Kapsam denetimli yalnızca sağlayıcı
+  - H3: Sağlayıcı + CLI fallback (OpenAI + Whisper CLI)
+  - H3: Kapsam geçidiyle yalnızca sağlayıcı
   - H3: Yalnızca sağlayıcı (Deepgram)
   - H3: Yalnızca sağlayıcı (Mistral Voxtral)
   - H3: Yalnızca sağlayıcı (SenseAudio)
-  - H3: Dökümü sohbete yansıt (isteğe bağlı)
+  - H3: Transkripti sohbete yansıtma (isteğe bağlı)
   - H2: Notlar ve sınırlar
   - H3: Proxy ortam desteği
-  - H2: Gruplarda bahsetme algılama
+  - H2: Gruplarda mention algılama
   - H2: Dikkat edilmesi gerekenler
   - H2: İlgili
 
@@ -4676,22 +4678,22 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /nodes/camera
 - Başlıklar:
-  - H2: iOS Node'u
+  - H2: iOS düğümü
   - H3: Kullanıcı ayarı (varsayılan açık)
   - H3: Komutlar (Gateway node.invoke üzerinden)
-  - H3: Ön plan gereksinimi
+  - H3: Ön planda olma gereksinimi
   - H3: CLI yardımcısı
-  - H2: Android Node'u
+  - H2: Android düğümü
   - H3: Android kullanıcı ayarı (varsayılan açık)
   - H3: İzinler
-  - H3: Android ön plan gereksinimi
+  - H3: Android ön planda olma gereksinimi
   - H3: Android komutları (Gateway node.invoke üzerinden)
-  - H3: Yük koruması
+  - H3: Payload koruması
   - H2: macOS uygulaması
   - H3: Kullanıcı ayarı (varsayılan kapalı)
   - H3: CLI yardımcısı (node invoke)
   - H2: Güvenlik + pratik sınırlar
-  - H2: macOS ekran videosu (OS düzeyi)
+  - H2: macOS ekran videosu (OS düzeyinde)
   - H2: İlgili
 
 ## nodes/images.md
@@ -4699,51 +4701,51 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /nodes/images
 - Başlıklar:
   - H2: Hedefler
-  - H2: CLI Yüzeyi
-  - H2: WhatsApp Web kanal davranışı
-  - H2: Otomatik Yanıt İş Hattı
+  - H2: CLI yüzeyi
+  - H2: WhatsApp Web kanalı davranışı
+  - H2: Otomatik Yanıt İşlem Hattı
   - H2: Gelen Medyadan Komutlara
   - H2: Sınırlar ve hatalar
-  - H2: Testler İçin Notlar
+  - H2: Testler için notlar
   - H2: İlgili
 
 ## nodes/index.md
 
 - Rota: /nodes
 - Başlıklar:
-  - H2: Eşleme + durum
-  - H2: Uzak Node ana makinesi (system.run)
-  - H3: Ne nerede çalışır
-  - H3: Bir Node ana makinesi başlat (ön plan)
-  - H3: SSH tüneli üzerinden uzak Gateway (loopback bağlama)
-  - H3: Bir Node ana makinesi başlat (hizmet)
-  - H3: Eşle + adlandır
-  - H3: Komutlara izin listesi uygula
-  - H3: exec'i Node'a yönlendir
+  - H2: Eşleştirme + durum
+  - H2: Uzak düğüm ana makinesi (system.run)
+  - H3: Nerede ne çalışır
+  - H3: Düğüm ana makinesi başlatma (ön planda)
+  - H3: SSH tüneliyle uzak gateway (loopback bağlama)
+  - H3: Düğüm ana makinesi başlatma (hizmet)
+  - H3: Eşleştir + adlandır
+  - H3: Komutları izin listesine alma
+  - H3: exec'i düğüme yönlendirme
   - H3: Yerel model çıkarımı
   - H2: Komutları çağırma
-  - H2: Komut ilkesi
+  - H2: Komut politikası
   - H2: Yapılandırma (openclaw.json)
   - H2: Ekran görüntüleri (canvas anlık görüntüleri)
   - H3: Canvas denetimleri
   - H3: A2UI (Canvas)
-  - H2: Fotoğraflar + videolar (Node kamera)
-  - H2: Ekran kayıtları (Node'lar)
-  - H2: Konum (Node'lar)
-  - H2: SMS (Android Node'ları)
+  - H2: Fotoğraflar + videolar (düğüm kamerası)
+  - H2: Ekran kayıtları (düğümler)
+  - H2: Konum (düğümler)
+  - H2: SMS (Android düğümleri)
   - H2: Android cihaz + kişisel veri komutları
-  - H2: Sistem komutları (Node ana makinesi / Mac Node)
-  - H2: Exec Node bağlaması
+  - H2: Sistem komutları (düğüm ana makinesi / Mac düğümü)
+  - H2: Exec düğüm bağlama
   - H2: İzinler haritası
-  - H2: Başsız Node ana makinesi (çapraz platform)
-  - H2: Mac Node modu
+  - H2: Headless düğüm ana makinesi (platformlar arası)
+  - H2: Mac düğüm modu
 
 ## nodes/location-command.md
 
 - Rota: /nodes/location-command
 - Başlıklar:
   - H2: TL;DR
-  - H2: Neden seçici (yalnızca anahtar değil)
+  - H2: Neden bir seçici (sadece bir anahtar değil)
   - H2: Ayarlar modeli
   - H2: İzin eşlemesi (node.permissions)
   - H2: Komut: location.get
@@ -4762,12 +4764,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Model girdileri
   - H3: Sağlayıcı kimlik bilgileri (apiKey)
   - H2: Varsayılanlar ve sınırlar
-  - H3: Medya anlamayı otomatik algıla (varsayılan)
-  - H3: Proxy ortam desteği (sağlayıcı modelleri)
+  - H3: Medya anlamayı otomatik algılama (varsayılan)
+  - H3: Proxy ortam desteği (sağlayıcı modeller)
   - H2: Yetenekler (isteğe bağlı)
   - H2: Sağlayıcı destek matrisi (OpenClaw entegrasyonları)
   - H2: Model seçimi rehberi
-  - H2: Ek ilkesi
+  - H2: Ek politikası
   - H2: Yapılandırma örnekleri
   - H2: Durum çıktısı
   - H2: Notlar
@@ -4792,8 +4794,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Komut merdiveni
   - H2: Ön plan gereksinimleri
   - H2: İzinler matrisi
-  - H2: Eşleme ve onaylar
-  - H2: Yaygın Node hata kodları
+  - H2: Eşleştirme ve onaylar
+  - H2: Yaygın düğüm hata kodları
   - H2: Hızlı kurtarma döngüsü
   - H2: İlgili
 
@@ -4808,8 +4810,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Olaylar
   - H2: İstemci davranışı
   - H3: macOS uygulaması
-  - H3: iOS Node'u
-  - H3: Android Node'u
+  - H3: iOS düğümü
+  - H3: Android düğümü
   - H2: İlgili
 
 ## openclaw-agent-runtime.md
@@ -4817,7 +4819,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /openclaw-agent-runtime
 - Başlıklar:
   - H2: Tür denetimi ve linting
-  - H2: Agent Runtime Testlerini Çalıştırma
+  - H2: Agent Runtime Testlerini çalıştırma
   - H2: Manuel test
   - H2: Temiz başlangıç sıfırlaması
   - H2: Referanslar
@@ -4834,25 +4836,25 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /plan/codex-context-engine-harness
 - Başlıklar:
   - H2: Durum
-  - H2: Amaç
-  - H2: Kapsam dışı hedefler
+  - H2: Hedef
+  - H2: Hedef dışı olanlar
   - H2: Mevcut mimari
   - H2: Mevcut boşluk
   - H2: İstenen davranış
   - H2: Tasarım kısıtları
   - H3: Codex app-server, yerel iş parçacığı durumu için kanonik kalır
   - H3: Bağlam motoru derlemesi Codex girdilerine yansıtılmalıdır
-  - H3: Prompt önbelleği kararlılığı önemlidir
+  - H3: İstem önbelleği kararlılığı önemlidir
   - H3: Çalışma zamanı seçim semantiği değişmez
   - H2: Uygulama planı
-  - H3: 1. Yeniden kullanılabilir bağlam motoru deneme yardımcılarını dışa aktar veya taşı
-  - H3: 2. Codex bağlam yansıtma yardımcısı ekle
-  - H3: 3. Codex iş parçacığı başlangıcından önce bootstrap'i bağla
+  - H3: 1. Yeniden kullanılabilir context-engine deneme yardımcılarını dışa aktar veya taşı
+  - H3: 2. Codex bağlam projeksiyonu yardımcısı ekle
+  - H3: 3. Codex iş parçacığı başlatılmadan önce bootstrap'i bağla
   - H3: 4. thread/start / thread/resume ve turn/start öncesinde assemble'ı bağla
-  - H3: 5. Prompt önbelleği için kararlı biçimlendirmeyi koru
-  - H3: 6. Döküm yansıtmasından sonra post-turn'ü bağla
-  - H3: 7. Kullanımı ve prompt önbelleği çalışma zamanı bağlamını normalleştir
-  - H3: 8. Compaction ilkesi
+  - H3: 5. İstem önbelleği kararlı biçimlendirmesini koru
+  - H3: 6. Transkript yansıtma sonrasında post-turn'ü bağla
+  - H3: 7. Kullanımı ve istem önbelleği çalışma zamanı bağlamını normalleştir
+  - H3: 8. Compaction politikası
   - H4: /compact ve açık OpenClaw compaction
   - H4: Tur içi Codex yerel contextCompaction olayları
   - H3: 9. Oturum sıfırlama ve bağlama davranışı
@@ -4873,12 +4875,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Durum
   - H2: Sorun
   - H2: Hedefler
-  - H2: Kapsam dışı hedefler
+  - H2: Hedef dışı olanlar
   - H2: Hedef model
-  - H2: Teslimat meta verileri
+  - H2: Teslim meta verileri
   - H2: Çalışma zamanı yetenek sözleşmesi
   - H2: Kanal eşlemesi
-  - H2: Refactor adımları
+  - H2: Refaktör adımları
   - H2: Testler
   - H2: Açık sorular
   - H2: İlgili
@@ -4889,20 +4891,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Destek özeti
   - H2: Sistem denetimi
-  - H2: Bağlantı çalışma kitabı
+  - H2: Bağlantı runbook'u
   - H3: Ön koşullar
-  - H3: 1) Gateway'i başlat
-  - H3: 2) Keşfi doğrula (isteğe bağlı)
-  - H4: Unicast DNS-SD ile Tailnet (Viyana ⇄ Londra) keşfi
-  - H3: 3) Android'den bağlan
-  - H3: Varlık canlı işaretleri
-  - H3: 4) Eşlemeyi onayla (CLI)
-  - H3: 5) Node'un bağlı olduğunu doğrula
+  - H3: 1) Gateway'i başlatma
+  - H3: 2) Keşfi doğrulama (isteğe bağlı)
+  - H4: Tek noktaya yayın DNS-SD ile Tailnet (Viyana ⇄ Londra) keşfi
+  - H3: 3) Android'den bağlanma
+  - H3: Varlık canlı beacons'ları
+  - H3: 4) Eşleştirmeyi onaylama (CLI)
+  - H3: 5) Düğümün bağlı olduğunu doğrulama
   - H3: 6) Sohbet + geçmiş
   - H3: 7) Canvas + kamera
   - H4: Gateway Canvas Host (web içeriği için önerilir)
   - H3: 8) Ses + genişletilmiş Android komut yüzeyi
-  - H2: Assistant giriş noktaları
+  - H2: Asistan giriş noktaları
   - H2: Bildirim yönlendirme
   - H2: İlgili
 
@@ -4918,8 +4920,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Başlamadan önce
   - H2: Compose uygulaması
-  - H2: OpenClaw'ı yapılandır
-  - H2: Doğrula
+  - H2: OpenClaw'ı yapılandırma
+  - H2: Doğrulama
   - H2: Güncellemeler ve yedekler
   - H2: Sorun giderme
 
@@ -4939,9 +4941,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Ne yapar
   - H2: Gereksinimler
-  - H2: Hızlı başlangıç (eşle + bağlan)
+  - H2: Hızlı başlangıç (eşleştir + bağlan)
   - H2: Resmi derlemeler için relay destekli push
-  - H2: Arka plan canlı işaretleri
+  - H2: Arka plan canlı beacons'ları
   - H2: Kimlik doğrulama ve güven akışı
   - H2: Keşif yolları
   - H3: Bonjour (LAN)
@@ -4949,8 +4951,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Manuel ana makine/bağlantı noktası
   - H2: Canvas + A2UI
   - H2: Computer Use ilişkisi
-  - H3: Canvas eval / anlık görüntü
-  - H2: Voice wake + talk modu
+  - H3: Canvas eval / snapshot
+  - H2: Voice wake + konuşma modu
   - H2: Yaygın hatalar
   - H2: İlgili belgeler
 
@@ -4970,12 +4972,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /platforms/mac/bundled-gateway
 - Başlıklar:
-  - H2: CLI'yi kur (yerel mod için gerekli)
-  - H2: Launchd (Gateway LaunchAgent olarak)
+  - H2: CLI'yi yükleme (yerel mod için gerekli)
+  - H2: Launchd (LaunchAgent olarak Gateway)
   - H2: Sürüm uyumluluğu
-  - H2: macOS'te durum dizini
-  - H2: Uygulama bağlantısını hata ayıkla
-  - H2: Smoke denetimi
+  - H2: macOS'ta durum dizini
+  - H2: Uygulama bağlantısını hata ayıklama
+  - H2: Duman testi
   - H2: İlgili
 
 ## platforms/mac/canvas.md
@@ -4984,10 +4986,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Canvas'ın bulunduğu yer
   - H2: Panel davranışı
-  - H2: Agent API yüzeyi
+  - H2: Ajan API yüzeyi
   - H2: Canvas'ta A2UI
   - H3: A2UI komutları (v0.8)
-  - H2: Canvas'tan agent çalıştırmalarını tetikleme
+  - H2: Canvas'tan ajan çalıştırmalarını tetikleme
   - H2: Güvenlik notları
   - H2: İlgili
 
@@ -4996,7 +4998,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /platforms/mac/child-process
 - Başlıklar:
   - H2: Varsayılan davranış (launchd)
-  - H2: İmzalanmamış geliştirme derlemeleri
+  - H2: İmzasız geliştirme derlemeleri
   - H2: Yalnızca ekleme modu
   - H2: Uzak mod
   - H2: Neden launchd tercih ediyoruz
@@ -5007,50 +5009,50 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /platforms/mac/dev-setup
 - Başlıklar:
   - H1: macOS geliştirici kurulumu
-  - H2: Önkoşullar
-  - H2: 1. Bağımlılıkları Yükleyin
-  - H2: 2. Uygulamayı Derleyin ve Paketleyin
-  - H2: 3. CLI'yi Yükleyin
-  - H2: Sorun Giderme
-  - H3: Derleme başarısız oluyor: araç zinciri veya SDK uyumsuzluğu
+  - H2: Ön koşullar
+  - H2: 1. Bağımlılıkları yükleyin
+  - H2: 2. Uygulamayı derleyin ve paketleyin
+  - H2: 3. CLI'yi yükleyin
+  - H2: Sorun giderme
+  - H3: Derleme başarısız: araç zinciri veya SDK uyuşmazlığı
   - H3: Uygulama izin verme sırasında çöküyor
-  - H3: Gateway "Başlatılıyor..." durumunda süresiz kalıyor
+  - H3: Gateway süresiz olarak "Starting..." durumunda kalıyor
   - H2: İlgili
 
 ## platforms/mac/health.md
 
 - Rota: /platforms/mac/health
 - Başlıklar:
-  - H1: macOS'ta Sağlık Denetimleri
+  - H1: macOS'ta Sağlık Kontrolleri
   - H2: Menü çubuğu
   - H2: Ayarlar
-  - H2: Yoklama nasıl çalışır
-  - H2: Emin olmadığınızda
+  - H2: Sondanın nasıl çalıştığı
+  - H2: Şüphede kaldığınızda
   - H2: İlgili
 
 ## platforms/mac/icon.md
 
 - Rota: /platforms/mac/icon
 - Başlıklar:
-  - H1: Menü Çubuğu Simgesi Durumları
+  - H1: Menü Çubuğu Simge Durumları
   - H2: İlgili
 
 ## platforms/mac/logging.md
 
 - Rota: /platforms/mac/logging
 - Başlıklar:
-  - H1: Günlük Kaydı (macOS)
-  - H2: Döngüsel tanılama dosyası günlüğü (Hata Ayıklama bölmesi)
-  - H2: macOS'ta birleşik günlük kaydı özel verileri
-  - H2: OpenClaw için etkinleştir (ai.openclaw)
-  - H2: Hata ayıklamadan sonra devre dışı bırak
+  - H1: Günlükleme (macOS)
+  - H2: Dönen tanılama dosyası günlüğü (Hata Ayıklama bölmesi)
+  - H2: macOS'ta birleşik günlükleme özel verileri
+  - H2: OpenClaw (ai.openclaw) için etkinleştirin
+  - H2: Hata ayıklamadan sonra devre dışı bırakın
   - H2: İlgili
 
 ## platforms/mac/menu-bar.md
 
 - Rota: /platforms/mac/menu-bar
 - Başlıklar:
-  - H2: Neler gösterilir
+  - H2: Gösterilenler
   - H2: Durum modeli
   - H2: IconState enum (Swift)
   - H3: ActivityKind → glif
@@ -5067,12 +5069,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /platforms/mac/peekaboo
 - Başlıklar:
   - H2: Bu nedir (ve ne değildir)
-  - H2: Bilgisayar Kullanımı ile ilişkisi
-  - H2: Köprüyü etkinleştir
+  - H2: Computer Use ile ilişkisi
+  - H2: Köprüyü etkinleştirin
   - H2: İstemci keşif sırası
   - H2: Güvenlik ve izinler
   - H2: Anlık görüntü davranışı (otomasyon)
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: İlgili
 
 ## platforms/mac/permissions.md
@@ -5090,14 +5092,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /platforms/mac/remote
 - Başlıklar:
   - H2: Modlar
-  - H2: Uzak taşıma yöntemleri
-  - H2: Uzak ana makinedeki önkoşullar
+  - H2: Uzak aktarımlar
+  - H2: Uzak ana makinedeki ön koşullar
   - H2: macOS uygulama kurulumu
   - H2: Web Sohbeti
   - H2: İzinler
   - H2: Güvenlik notları
   - H2: WhatsApp oturum açma akışı (uzak)
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: Bildirim sesleri
   - H2: İlgili
 
@@ -5107,7 +5109,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: mac imzalama (hata ayıklama derlemeleri)
   - H2: Kullanım
-  - H3: Geçici İmzalama Notu
+  - H3: Ad-hoc İmzalama Notu
   - H2: Hakkında için derleme meta verileri
   - H2: Neden
   - H2: İlgili
@@ -5128,7 +5130,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: Ses Yer Paylaşımı Yaşam Döngüsü (macOS)
   - H2: Geçerli amaç
-  - H2: Uygulandı (9 Ara 2025)
+  - H2: Uygulandı (9 Aralık 2025)
   - H2: Sonraki adımlar
   - H2: Hata ayıklama kontrol listesi
   - H2: Geçiş adımları (önerilen)
@@ -5138,7 +5140,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /platforms/mac/voicewake
 - Başlıklar:
-  - H1: Sesle Uyandırma ve Bas-Konuş
+  - H1: Sesle Uyandırma &amp; Bas-Konuş
   - H2: Gereksinimler
   - H2: Modlar
   - H2: Çalışma zamanı davranışı (uyandırma sözcüğü)
@@ -5168,18 +5170,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: OpenClaw macOS IPC mimarisi
   - H2: Hedefler
   - H2: Nasıl çalışır
-  - H3: Gateway + node taşıması
-  - H3: Node hizmeti + uygulama IPC'si
+  - H3: Gateway + node aktarımı
+  - H3: Node hizmeti + uygulama IPC
   - H3: PeekabooBridge (UI otomasyonu)
   - H2: Operasyonel akışlar
-  - H2: Sertleştirme notları
+  - H2: Güçlendirme notları
   - H2: İlgili
 
 ## platforms/macos.md
 
 - Rota: /platforms/macos
 - Başlıklar:
-  - H2: İndir
+  - H2: İndirme
   - H2: İlk çalıştırma
   - H2: Bir Gateway modu seçin
   - H2: Uygulamanın sahip olduğu alanlar
@@ -5203,15 +5205,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /platforms/windows
 - Başlıklar:
   - H2: Önerilen: Windows Hub
-  - H3: Windows Hub neleri içerir
+  - H3: Windows Hub'ın içerikleri
   - H3: İlk başlatma
-  - H2: Windows düğüm modu
+  - H2: Windows node modu
   - H2: Yerel MCP modu
   - H2: Yerel Windows CLI ve Gateway
   - H2: WSL2 Gateway
   - H2: Windows oturum açmadan önce Gateway otomatik başlatma
-  - H2: WSL hizmetlerini LAN üzerinden kullanıma açın
-  - H2: Sorun Giderme
+  - H2: WSL hizmetlerini LAN üzerinden açığa çıkarın
+  - H2: Sorun giderme
   - H3: Tepsi simgesi görünmüyor
   - H3: Yerel kurulum başarısız oluyor
   - H3: Uygulama eşleştirme gerektiğini söylüyor
@@ -5224,7 +5226,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/adding-capabilities
 - Başlıklar:
-  - H2: Ne zaman capability oluşturulmalı
+  - H2: Ne zaman bir yetenek oluşturulmalı
   - H2: Standart sıra
   - H2: Ne nereye gider
   - H2: Sağlayıcı ve harness sınırları
@@ -5239,15 +5241,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /plugins/admin-http-rpc
 - Başlıklar:
   - H2: Etkinleştirmeden önce
-  - H2: Etkinleştir
-  - H2: Rotayı doğrula
+  - H2: Etkinleştirme
+  - H2: Rotayı doğrulama
   - H2: Kimlik doğrulama
   - H2: Güvenlik modeli
   - H2: İstek
   - H2: Yanıt
   - H2: İzin verilen yöntemler
   - H2: WebSocket karşılaştırması
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: İlgili
 
 ## plugins/agent-tools.md
@@ -5265,8 +5267,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Plugin önbellek sınırı
   - H2: Kayıt modeli
   - H2: Konuşma bağlama geri çağrıları
-  - H2: Sağlayıcı çalışma zamanı hook'ları
-  - H3: Hook sırası ve kullanımı
+  - H2: Sağlayıcı çalışma zamanı kancaları
+  - H3: Kanca sırası ve kullanımı
   - H3: Sağlayıcı örneği
   - H3: Yerleşik örnekler
   - H2: Çalışma zamanı yardımcıları
@@ -5274,40 +5276,40 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Gateway HTTP rotaları
   - H2: Plugin SDK içe aktarma yolları
   - H2: Mesaj aracı şemaları
-  - H2: Kanal hedefi çözümleme
+  - H2: Kanal hedef çözümlemesi
   - H2: Yapılandırma destekli dizinler
   - H2: Sağlayıcı katalogları
-  - H2: Salt okunur kanal denetimi
+  - H2: Salt okunur kanal incelemesi
   - H2: Paket paketleri
   - H3: Kanal kataloğu meta verileri
-  - H2: Bağlam motoru Plugin'leri
-  - H2: Yeni bir capability ekleme
-  - H3: Capability kontrol listesi
-  - H3: Capability şablonu
+  - H2: Bağlam motoru pluginleri
+  - H2: Yeni bir yetenek ekleme
+  - H3: Yetenek kontrol listesi
+  - H3: Yetenek şablonu
   - H2: İlgili
 
 ## plugins/architecture.md
 
 - Rota: /plugins/architecture
 - Başlıklar:
-  - H2: Genel capability modeli
-  - H3: Harici uyumluluk duruşu
+  - H2: Genel yetenek modeli
+  - H3: Harici uyumluluk tutumu
   - H3: Plugin biçimleri
-  - H3: Eski hook'lar
+  - H3: Eski kancalar
   - H3: Uyumluluk sinyalleri
   - H2: Mimari genel bakışı
-  - H3: Plugin meta verisi anlık görüntüsü ve arama tablosu
-  - H3: Etkinleştirme planlaması
-  - H3: Kanal Plugin'leri ve paylaşılan mesaj aracı
-  - H2: Capability sahiplik modeli
-  - H3: Capability katmanlama
-  - H3: Çok capability'li şirket Plugin'i örneği
-  - H3: Capability örneği: video anlama
+  - H3: Plugin meta veri anlık görüntüsü ve arama tablosu
+  - H3: Etkinleştirme planlama
+  - H3: Kanal pluginleri ve paylaşılan mesaj aracı
+  - H2: Yetenek sahipliği modeli
+  - H3: Yetenek katmanlama
+  - H3: Çok yetenekli şirket plugini örneği
+  - H3: Yetenek örneği: video anlama
   - H2: Sözleşmeler ve uygulama
-  - H3: Bir sözleşmede neler bulunur
+  - H3: Bir sözleşmeye neler dahil olmalı
   - H2: Yürütme modeli
   - H2: Dışa aktarma sınırı
-  - H2: İç yapılar ve başvuru
+  - H2: İç işleyiş ve başvuru
   - H2: İlgili
 
 ## plugins/building-extensions.md
@@ -5334,32 +5336,32 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/bundles
 - Başlıklar:
-  - H2: Paketler neden vardır
+  - H2: Paketler neden var
   - H2: Bir paket yükleyin
-  - H2: OpenClaw paketlerden neleri eşler
+  - H2: OpenClaw'ın paketlerden eşlediği öğeler
   - H3: Şu anda desteklenenler
   - H4: Skill içeriği
-  - H4: Hook paketleri
+  - H4: Kanca paketleri
   - H4: Gömülü OpenClaw için MCP
   - H4: Gömülü OpenClaw ayarları
   - H4: Gömülü OpenClaw LSP
-  - H3: Algılanır ancak yürütülmez
+  - H3: Algılanan ancak yürütülmeyenler
   - H2: Paket biçimleri
   - H2: Algılama önceliği
   - H2: Çalışma zamanı bağımlılıkları ve temizlik
   - H2: Güvenlik
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: İlgili
 
 ## plugins/cli-backend-plugins.md
 
 - Rota: /plugins/cli-backend-plugins
 - Başlıklar:
-  - H2: Plugin'in sahip olduğu alanlar
-  - H2: Minimal backend Plugin'i
+  - H2: Pluginin sahip olduğu alanlar
+  - H2: Minimal backend plugini
   - H2: Yapılandırma biçimi
-  - H2: Gelişmiş backend hook'ları
-  - H3: ownsNativeCompaction: OpenClaw Compaction dışına çıkma
+  - H2: Gelişmiş backend kancaları
+  - H3: ownsNativeCompaction: OpenClaw compaction'dan çıkma
   - H2: MCP araç köprüsü
   - H2: Kullanıcı yapılandırması
   - H2: Doğrulama
@@ -5375,13 +5377,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Doğrudan cua-driver MCP
   - H2: Hızlı kurulum
   - H2: Komutlar
-  - H2: Pazaryeri seçenekleri
-  - H2: Paketlenmiş macOS pazaryeri
+  - H2: Marketplace seçenekleri
+  - H2: Paketli macOS marketplace
   - H2: Uzak katalog sınırı
   - H2: Yapılandırma başvurusu
-  - H2: OpenClaw neleri denetler
+  - H2: OpenClaw'ın kontrol ettiği öğeler
   - H2: macOS izinleri
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: İlgili
 
 ## plugins/codex-harness-reference.md
@@ -5389,9 +5391,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /plugins/codex-harness-reference
 - Başlıklar:
   - H2: Plugin yapılandırma yüzeyi
-  - H2: Uygulama-sunucu taşıması
+  - H2: Uygulama-sunucu aktarımı
   - H2: Onay ve sandbox modları
-  - H2: Sandbox içinde yerel yürütme
+  - H2: Sandbox'lı yerel yürütme
   - H2: Kimlik doğrulama ve ortam yalıtımı
   - H2: Dinamik araçlar
   - H2: Zaman aşımları
@@ -5407,11 +5409,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Genel bakış
   - H2: İş parçacığı bağlamaları ve model değişiklikleri
   - H2: Görünür yanıtlar ve Heartbeat'ler
-  - H2: Hook sınırları
+  - H2: Kanca sınırları
   - H2: V1 destek sözleşmesi
-  - H2: Yerel izinler ve MCP elicitation'ları
+  - H2: Yerel izinler ve MCP elicitations
   - H2: Kuyruk yönlendirme
-  - H2: Codex geri bildirim yükleme
+  - H2: Codex geri bildirim yüklemesi
   - H2: Compaction ve transkript aynası
   - H2: Medya ve teslimat
   - H2: İlgili
@@ -5425,17 +5427,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yapılandırma
   - H2: Codex çalışma zamanını doğrulayın
   - H2: Yönlendirme ve model seçimi
-  - H2: Dağıtım örüntüleri
+  - H2: Dağıtım desenleri
   - H3: Temel Codex dağıtımı
   - H3: Karma sağlayıcı dağıtımı
-  - H3: Kapalı başarısız Codex dağıtımı
+  - H3: Fail-closed Codex dağıtımı
   - H2: Uygulama-sunucu politikası
   - H2: Komutlar ve tanılama
-  - H3: Codex iş parçacıklarını yerelde inceleyin
-  - H2: Yerel Codex Plugin'leri
-  - H2: Bilgisayar Kullanımı
+  - H3: Codex iş parçacıklarını yerel olarak inceleyin
+  - H2: Yerel Codex pluginleri
+  - H2: Computer Use
   - H2: Çalışma zamanı sınırları
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: İlgili
 
 ## plugins/codex-native-plugins.md
@@ -5444,21 +5446,21 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Gereksinimler
   - H2: Hızlı başlangıç
-  - H2: Plugin'leri sohbetten yönetin
-  - H2: Yerel Plugin kurulumunun çalışma şekli
+  - H2: Pluginleri sohbetten yönetin
+  - H2: Yerel plugin kurulumunun çalışma biçimi
   - H2: V1 destek sınırı
   - H2: Uygulama envanteri ve sahiplik
   - H2: İş parçacığı uygulama yapılandırması
   - H2: Yıkıcı eylem politikası
-  - H2: Sorun Giderme
+  - H2: Sorun giderme
   - H2: İlgili
 
 ## plugins/community.md
 
 - Rota: /plugins/community
 - Başlıklar:
-  - H2: Plugin'leri bulun
-  - H2: Plugin'leri yayımlayın
+  - H2: Pluginleri bulun
+  - H2: Pluginleri yayımlayın
   - H2: İlgili
 
 ## plugins/compatibility.md
@@ -5486,12 +5488,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Kimlik doğrulama
   - H2: Yapılandırma yüzeyi
   - H2: Compaction
-  - H2: Transkript yansıtma
+  - H2: Transkript aynalama
   - H2: Yan sorular (/btw)
   - H2: Doctor
   - H2: Sınırlamalar
   - H2: İzinler ve askuser
-  - H3: Oturum düzeyi GitHub token'ı
+  - H3: Oturum düzeyi GitHub belirteci
   - H2: İlgili
 
 ## plugins/dependency-resolution.md
@@ -5500,37 +5502,37 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Sorumluluk ayrımı
   - H2: Yükleme kökleri
-  - H2: Yerel Plugin'ler
-  - H2: Başlangıç ve yeniden yükleme
-  - H2: Paketlenmiş Plugin'ler
-  - H2: Eski temizliği
+  - H2: Yerel pluginler
+  - H2: Başlatma ve yeniden yükleme
+  - H2: Paketli pluginler
+  - H2: Eski temizlik
 
 ## plugins/google-meet.md
 
 - Rota: /plugins/google-meet
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H3: Yerel gateway + Parallels Chrome
+  - H3: Yerel Gateway + Parallels Chrome
   - H2: Kurulum notları
-  - H2: Taşımalar
+  - H2: Aktarımlar
   - H3: Chrome
   - H3: Twilio
-  - H2: OAuth ve ön denetim
+  - H2: OAuth ve ön kontrol
   - H3: Google kimlik bilgileri oluştur
-  - H3: Yenileme belirtecini üret
+  - H3: Yenileme token'ını üret
   - H3: OAuth'u doctor ile doğrula
   - H2: Yapılandırma
   - H2: Araç
-  - H2: Ajan ve bidi modları
+  - H2: Agent ve bidi modları
   - H2: Canlı test kontrol listesi
   - H2: Sorun giderme
-  - H3: Ajan Google Meet aracını göremiyor
-  - H3: Bağlı Google Meet özellikli Node yok
-  - H3: Tarayıcı açılıyor ancak ajan katılamıyor
+  - H3: Agent Google Meet aracını göremiyor
+  - H3: Bağlı Google Meet yetenekli node yok
+  - H3: Tarayıcı açılıyor ancak agent katılamıyor
   - H3: Toplantı oluşturma başarısız oluyor
-  - H3: Ajan katılıyor ancak konuşmuyor
-  - H3: Twilio kurulum denetimleri başarısız oluyor
-  - H3: Twilio çağrısı başlıyor ancak toplantıya hiç girmiyor
+  - H3: Agent katılıyor ancak konuşmuyor
+  - H3: Twilio kurulum kontrolleri başarısız oluyor
+  - H3: Twilio araması başlıyor ancak toplantıya hiç girmiyor
   - H2: Notlar
   - H2: İlgili
 
@@ -5544,12 +5546,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Araç çağrısı ilkesi
   - H3: Yürütme ortamı hook'u
   - H3: Araç sonucu kalıcılığı
-  - H2: İstem ve model hook'ları
+  - H2: Prompt ve model hook'ları
   - H3: Oturum uzantıları ve sonraki tur enjeksiyonları
   - H2: Mesaj hook'ları
   - H2: Hook'ları kur
   - H2: Gateway yaşam döngüsü
-  - H2: Yaklaşan kullanım dışı bırakmalar
+  - H2: Yaklaşan kullanımdan kaldırmalar
   - H2: İlgili
 
 ## plugins/install-overrides.md
@@ -5565,7 +5567,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /plugins/llama-cpp
 - Başlıklar:
   - H2: Yapılandırma
-  - H2: Yerel Çalışma Zamanı
+  - H2: Yerel Runtime
 
 ## plugins/manage-plugins.md
 
@@ -5576,7 +5578,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yeniden başlat ve incele
   - H2: Plugin'leri güncelle
   - H2: Plugin'leri kaldır
-  - H2: Bir kaynak seç
+  - H2: Kaynak seç
   - H2: Plugin'leri yayımla
   - H2: İlgili
 
@@ -5609,10 +5611,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: providerRequest referansı
   - H2: secretProviderIntegrations referansı
   - H2: modelPricing referansı
-  - H3: OpenClaw Sağlayıcı Dizini
-  - H2: Manifest ve package.json karşılaştırması
+  - H3: OpenClaw Provider Index
+  - H2: Manifest ile package.json karşılaştırması
   - H3: Keşfi etkileyen package.json alanları
-  - H2: Keşif önceliği (yinelenen Plugin kimlikleri)
+  - H2: Keşif önceliği (yinelenen plugin kimlikleri)
   - H2: JSON Schema gereksinimleri
   - H2: Doğrulama davranışı
   - H2: Notlar
@@ -5634,7 +5636,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Sorun giderme
   - H3: Girdi uzunluğu bağlam uzunluğunu aşıyor
   - H3: Desteklenmeyen embedding modeli
-  - H3: Plugin yükleniyor ancak bellekler görünmüyor
+  - H3: Plugin yükleniyor ancak hiçbir anı görünmüyor
   - H2: İlgili
 
 ## plugins/memory-wiki.md
@@ -5644,19 +5646,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Ne ekler
   - H2: Bellekle nasıl uyum sağlar
   - H2: Önerilen hibrit desen
-  - H2: Kasa modları
+  - H2: Vault modları
   - H3: yalıtılmış
   - H3: köprü
-  - H3: güvenli olmayan yerel
-  - H2: Kasa düzeni
+  - H3: güvensiz-yerel
+  - H2: Vault düzeni
   - H2: Open Knowledge Format içe aktarımları
-  - H2: Yapılandırılmış iddialar ve kanıtlar
-  - H2: Ajan odaklı varlık meta verileri
-  - H2: Derleme işlem hattı
-  - H2: Panolar ve sağlık raporları
-  - H2: Arama ve alma
-  - H2: Ajan araçları
-  - H2: İstem ve bağlam davranışı
+  - H2: Yapılandırılmış iddialar ve kanıt
+  - H2: Agent'a yönelik varlık meta verisi
+  - H2: Derleme hattı
+  - H2: Panolar ve durum raporları
+  - H2: Arama ve getirme
+  - H2: Agent araçları
+  - H2: Prompt ve bağlam davranışı
   - H2: Yapılandırma
   - H3: Örnek: QMD + köprü modu
   - H2: CLI
@@ -5670,13 +5672,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Sözleşme
   - H2: Üretici örnekleri
-  - H2: İşleyici sözleşmesi
-  - H2: Çekirdek işleme akışı
+  - H2: Renderer sözleşmesi
+  - H2: Temel render akışı
   - H2: Bozulma kuralları
-  - H3: Düğme değeri geri dönüş görünürlüğü
-  - H2: Sağlayıcı eşleme
+  - H3: Düğme değeri yedek görünürlüğü
+  - H2: Sağlayıcı eşlemesi
   - H2: Sunum ve InteractiveReply karşılaştırması
-  - H2: Teslimat sabitlemesi
+  - H2: Teslimat pini
   - H2: Plugin yazarı kontrol listesi
   - H2: İlgili belgeler
 
@@ -5684,12 +5686,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/oc-path
 - Başlıklar:
-  - H2: Neden etkinleştirmeli
+  - H2: Neden etkinleştirilmeli
   - H2: Nerede çalışır
   - H2: Etkinleştir
   - H2: Bağımlılıklar
   - H2: Ne sağlar
-  - H2: Diğer Plugin'lerle ilişkisi
+  - H2: Diğer plugin'lerle ilişkisi
   - H2: Güvenlik
   - H2: İlgili
 
@@ -5699,7 +5701,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H1: Plugin envanteri
   - H2: Tanımlar
-  - H2: Bir Plugin kur
+  - H2: Bir plugin kur
   - H2: Çekirdek npm paketi
   - H2: Resmi harici paketler
   - H2: Yalnızca kaynak checkout'u
@@ -5708,10 +5710,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/plugin-permission-requests
 - Başlıklar:
-  - H2: Doğru geçidi seç
+  - H2: Doğru kapıyı seç
   - H2: Bir araç çağrısından önce onay iste
   - H2: Karar davranışı
-  - H2: Onay istemlerini yönlendir
+  - H2: Onay prompt'larını yönlendir
   - H2: Codex yerel izinleri
   - H2: Sorun giderme
   - H2: İlgili
@@ -5726,7 +5728,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/acpx
 - Başlıklar:
-  - H1: ACPx Plugin'i
+  - H1: ACPx plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5735,7 +5737,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/admin-http-rpc
 - Başlıklar:
-  - H1: Admin Http Rpc Plugin'i
+  - H1: Admin Http Rpc plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5744,7 +5746,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/alibaba
 - Başlıklar:
-  - H1: Alibaba Plugin'i
+  - H1: Alibaba plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5753,7 +5755,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/amazon-bedrock-mantle
 - Başlıklar:
-  - H1: Amazon Bedrock Mantle Plugin'i
+  - H1: Amazon Bedrock Mantle plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5762,7 +5764,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/amazon-bedrock
 - Başlıklar:
-  - H1: Amazon Bedrock Plugin'i
+  - H1: Amazon Bedrock plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5771,7 +5773,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/anthropic-vertex
 - Başlıklar:
-  - H1: Anthropic Vertex Plugin'i
+  - H1: Anthropic Vertex plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: Claude Fable 5
@@ -5780,7 +5782,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/anthropic
 - Başlıklar:
-  - H1: Anthropic Plugin'i
+  - H1: Anthropic plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5789,7 +5791,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/arcee
 - Başlıklar:
-  - H1: Arcee Plugin'i
+  - H1: Arcee plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5798,7 +5800,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/azure-speech
 - Başlıklar:
-  - H1: Azure Speech Plugin'i
+  - H1: Azure Speech plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5807,7 +5809,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/bonjour
 - Başlıklar:
-  - H1: Bonjour Plugin'i
+  - H1: Bonjour plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5815,7 +5817,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/brave
 - Başlıklar:
-  - H1: Brave Plugin'i
+  - H1: Brave plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5824,7 +5826,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/browser
 - Başlıklar:
-  - H1: Browser Plugin'i
+  - H1: Browser plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5833,7 +5835,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/byteplus
 - Başlıklar:
-  - H1: BytePlus Plugin'i
+  - H1: BytePlus plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5841,7 +5843,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/canvas
 - Başlıklar:
-  - H1: Canvas Plugin'i
+  - H1: Canvas plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5849,7 +5851,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/cerebras
 - Başlıklar:
-  - H1: Cerebras Plugin'i
+  - H1: Cerebras plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5858,7 +5860,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/chutes
 - Başlıklar:
-  - H1: Chutes Plugin'i
+  - H1: Chutes plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5867,7 +5869,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/clickclack
 - Başlıklar:
-  - H1: Clickclack Plugin'i
+  - H1: Clickclack plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5876,7 +5878,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/cloudflare-ai-gateway
 - Başlıklar:
-  - H1: Cloudflare AI Gateway Plugin'i
+  - H1: Cloudflare AI Gateway plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5885,7 +5887,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/codex-supervisor
 - Başlıklar:
-  - H1: Codex Supervisor Plugin'i
+  - H1: Codex Supervisor plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: Oturum Listeleme
@@ -5894,7 +5896,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/codex
 - Başlıklar:
-  - H1: Codex Plugin'i
+  - H1: Codex plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5903,7 +5905,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/cohere
 - Başlıklar:
-  - H1: Cohere Plugin'i
+  - H1: Cohere plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5912,7 +5914,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/comfy
 - Başlıklar:
-  - H1: ComfyUI Plugin'i
+  - H1: ComfyUI plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5921,7 +5923,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/copilot-proxy
 - Başlıklar:
-  - H1: Copilot Proxy Plugin'i
+  - H1: Copilot Proxy plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5929,7 +5931,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/copilot
 - Başlıklar:
-  - H1: Copilot Plugin'i
+  - H1: Copilot plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5938,7 +5940,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/deepgram
 - Başlıklar:
-  - H1: Deepgram Plugin'i
+  - H1: Deepgram plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5947,7 +5949,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/deepinfra
 - Başlıklar:
-  - H1: DeepInfra Plugin'i
+  - H1: DeepInfra plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5956,7 +5958,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/deepseek
 - Başlıklar:
-  - H1: DeepSeek Plugin'i
+  - H1: DeepSeek plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -5965,7 +5967,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/diagnostics-otel
 - Başlıklar:
-  - H1: Diagnostics OpenTelemetry Plugin'i
+  - H1: Diagnostics OpenTelemetry plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5973,7 +5975,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/diagnostics-prometheus
 - Başlıklar:
-  - H1: Diagnostics Prometheus Plugin'i
+  - H1: Diagnostics Prometheus plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5981,7 +5983,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/diffs-language-pack
 - Başlıklar:
-  - H1: Diffs Language Pack Plugin'i
+  - H1: Diffs Language Pack plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: Eklenen diller
@@ -5990,7 +5992,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/diffs
 - Başlıklar:
-  - H1: Diffs Plugin'i
+  - H1: Diffs plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -5998,7 +6000,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/discord
 - Başlıklar:
-  - H1: Discord Plugin'i
+  - H1: Discord plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6007,7 +6009,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/document-extract
 - Başlıklar:
-  - H1: Document Extract Plugin'i
+  - H1: Document Extract plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6016,7 +6018,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/duckduckgo
 - Başlıklar:
-  - H1: DuckDuckGo Plugin'i
+  - H1: DuckDuckGo plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6025,7 +6027,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/elevenlabs
 - Başlıklar:
-  - H1: Elevenlabs Plugin'i
+  - H1: Elevenlabs plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6034,7 +6036,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/exa
 - Başlıklar:
-  - H1: Exa Plugin'i
+  - H1: Exa plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6043,7 +6045,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/fal
 - Başlıklar:
-  - H1: fal Plugin'i
+  - H1: fal plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6052,7 +6054,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/feishu
 - Başlıklar:
-  - H1: Feishu Plugin'i
+  - H1: Feishu plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6061,7 +6063,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/file-transfer
 - Başlıklar:
-  - H1: File Transfer Plugin'i
+  - H1: File Transfer plugin'i
   - H2: Dağıtım
   - H2: Yüzey
 
@@ -6069,7 +6071,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/firecrawl
 - Başlıklar:
-  - H1: Firecrawl Plugin'i
+  - H1: Firecrawl plugin'i
   - H2: Dağıtım
   - H2: Yüzey
   - H2: İlgili belgeler
@@ -6730,7 +6732,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Venice Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/vercel-ai-gateway.md
 
@@ -6739,7 +6741,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Vercel AI Gateway Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/vllm.md
 
@@ -6748,16 +6750,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: vLLM Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/voice-call.md
 
 - Rota: /plugins/reference/voice-call
 - Başlıklar:
-  - H1: Sesli Arama Plugin
+  - H1: Voice Call Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/volcengine.md
 
@@ -6766,7 +6768,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Volcengine Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/voyage.md
 
@@ -6783,7 +6785,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Vydra Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/web-readability.md
 
@@ -6797,10 +6799,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/reference/webhooks
 - Başlıklar:
-  - H1: Webhook'lar Plugin
+  - H1: Webhooks Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/whatsapp.md
 
@@ -6809,7 +6811,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: WhatsApp Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/workboard.md
 
@@ -6818,7 +6820,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Workboard Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/xai.md
 
@@ -6827,7 +6829,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: xAI Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/xiaomi.md
 
@@ -6836,7 +6838,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Xiaomi Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/zai.md
 
@@ -6845,7 +6847,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Z.AI Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/zalo.md
 
@@ -6854,7 +6856,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Zalo Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/reference/zalouser.md
 
@@ -6863,45 +6865,45 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: Zalo Personal Plugin
   - H2: Dağıtım
   - H2: Yüzey
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/sdk-agent-harness.md
 
 - Rota: /plugins/sdk-agent-harness
 - Başlıklar:
-  - H2: Çalıştırma düzeneği ne zaman kullanılır
+  - H2: Ne zaman harness kullanılmalı
   - H2: Çekirdeğin hâlâ sahip olduğu şeyler
-  - H2: Çalıştırma düzeneği kaydetme
+  - H2: Bir harness kaydetme
   - H2: Seçim ilkesi
-  - H2: Sağlayıcı ve çalıştırma düzeneği eşleştirmesi
-  - H3: Araç sonucu ara katmanı
-  - H3: Terminal sonuç sınıflandırması
-  - H3: Ajan sonu yan etkileri
+  - H2: Sağlayıcı ve harness eşleştirmesi
+  - H3: Araç sonucu middleware’i
+  - H3: Terminal sonucu sınıflandırması
+  - H3: Aracı sonu yan etkileri
   - H3: Kullanıcı girdisi ve araç yüzeyleri
-  - H3: Yerel Codex çalıştırma düzeneği modu
+  - H3: Yerel Codex harness modu
   - H2: Çalışma zamanı katılığı
   - H2: Yerel oturumlar ve transkript aynası
   - H2: Araç ve medya sonuçları
-  - H2: Mevcut sınırlamalar
+  - H2: Geçerli sınırlamalar
   - H2: İlgili
 
 ## plugins/sdk-channel-inbound.md
 
 - Rota: /plugins/sdk-channel-inbound
 - Başlıklar:
-  - H2: Çekirdek yardımcıları
+  - H2: Çekirdek Yardımcılar
   - H2: Geçiş
 
 ## plugins/sdk-channel-ingress.md
 
 - Rota: /plugins/sdk-channel-ingress
 - Başlıklar:
-  - H1: Kanal giriş API'si
-  - H2: Çalışma zamanı çözümleyicisi
+  - H1: Kanal giriş API’si
+  - H2: Çalışma Zamanı Çözümleyicisi
   - H2: Sonuç
-  - H2: Erişim grupları
-  - H2: Olay modları
-  - H2: Rotalar ve etkinleştirme
+  - H2: Erişim Grupları
+  - H2: Olay Modları
+  - H2: Rotalar Ve Etkinleştirme
   - H2: Redaksiyon
   - H2: Doğrulama
 
@@ -6915,18 +6917,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /plugins/sdk-channel-outbound
 - Başlıklar:
   - H2: Bağdaştırıcı
-  - H2: Mevcut giden bağdaştırıcılar
-  - H2: Kalıcı gönderimler
-  - H2: Uyumluluk gönderimi
+  - H2: Mevcut Giden Bağdaştırıcılar
+  - H2: Dayanıklı Gönderimler
+  - H2: Uyumluluk Dağıtımı
 
 ## plugins/sdk-channel-plugins.md
 
 - Rota: /plugins/sdk-channel-plugins
 - Başlıklar:
-  - H2: Kanal Plugin'leri nasıl çalışır
+  - H2: Kanal Plugin’leri nasıl çalışır
   - H2: Onaylar ve kanal yetenekleri
   - H2: Gelen bahsetme ilkesi
-  - H2: Adım adım kılavuz
+  - H2: Adım adım anlatım
   - H2: Dosya yapısı
   - H2: Gelişmiş konular
   - H2: Sonraki adımlar
@@ -6953,13 +6955,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/sdk-migration
 - Başlıklar:
-  - H2: Neler değişiyor
+  - H2: Ne değişiyor
   - H2: Bu neden değişti
-  - H2: Konuşma ve gerçek zamanlı ses geçiş planı
+  - H2: Talk ve gerçek zamanlı ses geçiş planı
   - H2: Uyumluluk ilkesi
   - H2: Nasıl geçiş yapılır
-  - H2: İçe aktarma yolu başvurusu
-  - H2: Etkin kullanımdan kaldırmalar
+  - H2: İçe aktarma yolu referansı
+  - H2: Aktif kullanımdan kaldırmalar
   - H2: Kaldırma zaman çizelgesi
   - H2: Uyarıları geçici olarak bastırma
   - H2: İlgili
@@ -6968,32 +6970,32 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/sdk-overview
 - Başlıklar:
-  - H2: İçe aktarma kuralı
-  - H2: Alt yol başvurusu
-  - H2: Kayıt API'si
+  - H2: İçe aktarma konvansiyonu
+  - H2: Alt yol referansı
+  - H2: Kayıt API’si
   - H3: Yetenek kaydı
   - H3: Araçlar ve komutlar
   - H3: Altyapı
-  - H3: İş akışı Plugin'leri için ana makine kancaları
+  - H3: İş akışı Plugin’leri için ana makine hook’ları
   - H3: Gateway keşif kaydı
-  - H3: CLI kayıt meta verileri
+  - H3: CLI kayıt metadata’sı
   - H3: CLI arka uç kaydı
   - H3: Özel yuvalar
   - H3: Kullanımdan kaldırılmış bellek gömme bağdaştırıcıları
   - H3: Olaylar ve yaşam döngüsü
-  - H3: Kanca karar semantiği
+  - H3: Hook karar semantiği
   - H3: API nesnesi alanları
-  - H2: Dahili modül kuralı
+  - H2: Dahili modül konvansiyonu
   - H2: İlgili
 
 ## plugins/sdk-provider-plugins.md
 
 - Rota: /plugins/sdk-provider-plugins
 - Başlıklar:
-  - H2: Adım adım kılavuz
-  - H2: ClawHub'da yayımlama
+  - H2: Adım adım anlatım
+  - H2: ClawHub’da yayımla
   - H2: Dosya yapısı
-  - H2: Katalog sırası başvurusu
+  - H2: Katalog sırası referansı
   - H2: Sonraki adımlar
   - H2: İlgili
 
@@ -7001,10 +7003,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/sdk-runtime
 - Başlıklar:
-  - H2: Yapılandırma yükleme ve yazma
-  - H2: Yeniden kullanılabilir çalışma zamanı yardımcı araçları
+  - H2: Config yükleme ve yazma
+  - H2: Yeniden kullanılabilir çalışma zamanı yardımcı programları
   - H2: Çalışma zamanı ad alanları
-  - H2: Çalışma zamanı başvurularını saklama
+  - H2: Çalışma zamanı referanslarını depolama
   - H2: Diğer üst düzey api alanları
   - H2: İlgili
 
@@ -7012,18 +7014,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/sdk-setup
 - Başlıklar:
-  - H2: Paket meta verileri
+  - H2: Paket metadata’sı
   - H3: openclaw alanları
   - H3: openclaw.channel
   - H3: openclaw.install
   - H3: Ertelenmiş tam yükleme
-  - H2: Plugin manifestosu
-  - H2: ClawHub yayımlama
-  - H2: Kurulum girişi
-  - H3: Dar kurulum yardımcısı içe aktarmaları
+  - H2: Plugin manifesti
+  - H2: ClawHub’da yayımlama
+  - H2: Kurulum girdisi
+  - H3: Dar kurulum yardımcı içe aktarımları
   - H3: Kanalın sahip olduğu tek hesap yükseltmesi
-  - H2: Yapılandırma şeması
-  - H3: Kanal yapılandırma şemaları oluşturma
+  - H2: Config şeması
+  - H3: Kanal config şemaları oluşturma
   - H2: Kurulum sihirbazları
   - H2: Yayımlama ve yükleme
   - H2: İlgili
@@ -7032,29 +7034,29 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /plugins/sdk-subpaths
 - Başlıklar:
-  - H2: Plugin girişi
+  - H2: Plugin girdisi
   - H3: Kullanımdan kaldırılmış uyumluluk ve test yardımcıları
-  - H3: Ayrılmış paketli Plugin yardımcı alt yolları
+  - H3: Ayrılmış paketlenmiş Plugin yardımcı alt yolları
   - H2: İlgili
 
 ## plugins/sdk-testing.md
 
 - Rota: /plugins/sdk-testing
 - Başlıklar:
-  - H2: Test yardımcı araçları
+  - H2: Test yardımcı programları
   - H3: Kullanılabilir dışa aktarımlar
   - H3: Türler
   - H2: Hedef çözümlemeyi test etme
   - H2: Test kalıpları
-  - H3: Kayıt sözleşmelerini test etme
-  - H3: Çalışma zamanı yapılandırma erişimini test etme
-  - H3: Kanal Plugin'ini birim testten geçirme
-  - H3: Sağlayıcı Plugin'ini birim testten geçirme
-  - H3: Plugin çalışma zamanını taklit etme
-  - H3: Örnek başına stub'larla test etme
-  - H2: Sözleşme testleri (depo içi Plugin'ler)
+  - H3: Kayıt kontratlarını test etme
+  - H3: Çalışma zamanı config erişimini test etme
+  - H3: Bir kanal Plugin’ini birim test etme
+  - H3: Bir sağlayıcı Plugin’ini birim test etme
+  - H3: Plugin çalışma zamanını mock’lama
+  - H3: Örnek başına stub’larla test etme
+  - H2: Kontrat testleri (repo içi Plugin’ler)
   - H3: Kapsamlı testleri çalıştırma
-  - H2: Lint zorlaması (depo içi Plugin'ler)
+  - H2: Lint zorlaması (repo içi Plugin’ler)
   - H2: Test yapılandırması
   - H2: İlgili
 
@@ -7064,13 +7066,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Gereksinimler
   - H2: Hızlı başlangıç
-  - H2: Araç yazma
+  - H2: Bir araç yazma
   - H2: İsteğe bağlı ve fabrika araçları
   - H2: Dönüş değerleri
   - H2: Yapılandırma
-  - H2: Oluşturulan meta veriler
-  - H2: Paket meta verileri
-  - H2: CI'da doğrulama
+  - H2: Oluşturulan metadata
+  - H2: Paket metadata’sı
+  - H2: CI’da doğrulama
   - H2: Yerelde yükleme ve inceleme
   - H2: Yayımlama
   - H2: Sorun giderme
@@ -7079,7 +7081,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: openclaw.plugin.json generated metadata is stale
   - H3: package.json openclaw.extensions must include ./dist/index.js
   - H3: Cannot find package 'typebox'
-  - H3: Araç yüklemeden sonra görünmüyor
+  - H3: Araç, yüklemeden sonra görünmüyor
   - H2: Ayrıca bkz.
 
 ## plugins/voice-call.md
@@ -7091,26 +7093,26 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Oturum kapsamı
   - H2: Gerçek zamanlı sesli konuşmalar
   - H3: Araç ilkesi
-  - H3: Ajan ses bağlamı
+  - H3: Aracı ses bağlamı
   - H3: Gerçek zamanlı sağlayıcı örnekleri
   - H2: Akışlı transkripsiyon
-  - H3: Akış sağlayıcısı örnekleri
+  - H3: Akış sağlayıcı örnekleri
   - H2: Aramalar için TTS
   - H3: TTS örnekleri
   - H2: Gelen aramalar
-  - H3: Numara bazında yönlendirme
-  - H3: Sesli çıktı sözleşmesi
+  - H3: Numara başına yönlendirme
+  - H3: Sözlü çıktı kontratı
   - H3: Konuşma başlatma davranışı
   - H3: Twilio akışı bağlantı kesme toleransı
-  - H2: Bayat arama temizleyici
+  - H2: Eski arama temizleyici
   - H2: Webhook güvenliği
   - H2: CLI
-  - H2: Ajan aracı
+  - H2: Aracı aracı
   - H2: Gateway RPC
   - H2: Sorun giderme
-  - H3: Kurulum Webhook açığa çıkarma işleminde başarısız oluyor
+  - H3: Kurulum, Webhook açığa çıkarmada başarısız oluyor
   - H3: Sağlayıcı kimlik bilgileri başarısız oluyor
-  - H3: Aramalar başlıyor ancak sağlayıcı Webhook'ları gelmiyor
+  - H3: Aramalar başlıyor ancak sağlayıcı Webhook’ları gelmiyor
   - H3: İmza doğrulaması başarısız oluyor
   - H3: Google Meet Twilio katılımları başarısız oluyor
   - H3: Gerçek zamanlı aramada konuşma yok
@@ -7128,7 +7130,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: createflow
   - H3: runtask
   - H2: Yanıt şekli
-  - H2: İlgili belgeler
+  - H2: İlgili dokümanlar
 
 ## plugins/workboard.md
 
@@ -7137,20 +7139,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Varsayılan durum
   - H2: Kartların içerdikleri
   - H2: Kart yürütmeleri ve görevler
-  - H2: Ajan koordinasyonu
-  - H3: Gönderim çalışanı seçimi
+  - H2: Aracı koordinasyonu
+  - H3: Dağıtım çalışanı seçimi
   - H3: Çalışan istemi ve yaşam döngüsü
-  - H3: Gönderim giriş noktaları
+  - H3: Dağıtım giriş noktaları
   - H2: CLI ve eğik çizgi komutu
-  - H2: Oturum yaşam döngüsü eşitlemesi
-  - H2: Pano iş akışı
+  - H2: Oturum yaşam döngüsü senkronizasyonu
+  - H2: Dashboard iş akışı
   - H2: İzinler
   - H2: Yapılandırma
   - H2: Sorun giderme
-  - H3: Sekme Workboard kullanılamıyor diyor
+  - H3: Sekme Workboard’un kullanılamadığını söylüyor
   - H3: Kartlar kaydedilmiyor
   - H3: Kart başlatmak beklenen oturumu açmıyor
-  - H3: Gönderim bir çalışan başlatmıyor
+  - H3: Dağıtım bir çalışan başlatmıyor
   - H2: İlgili
 
 ## plugins/zalouser.md
@@ -7160,11 +7162,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Adlandırma
   - H2: Nerede çalışır
   - H2: Yükleme
-  - H3: Seçenek A: npm'den yükleme
-  - H3: Seçenek B: yerel klasörden yükleme (geliştirme)
-  - H2: Yapılandırma
+  - H3: Seçenek A: npm’den yükle
+  - H3: Seçenek B: yerel klasörden yükle (dev)
+  - H2: Config
   - H2: CLI
-  - H2: Ajan aracı
+  - H2: Aracı aracı
   - H2: İlgili
 
 ## prose.md
@@ -7173,7 +7175,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Yükleme
   - H2: Eğik çizgi komutu
-  - H2: Yapabilecekleri
+  - H2: Ne yapabilir
   - H2: Örnek: paralel araştırma ve sentez
   - H2: OpenClaw çalışma zamanı eşlemesi
   - H2: Dosya konumları
@@ -7229,7 +7231,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Başlarken
   - H2: Otomatik model keşfi
   - H3: Desteklenen bölgeler
-  - H2: El ile yapılandırma
+  - H2: Manuel yapılandırma
   - H2: Gelişmiş yapılandırma
   - H2: İlgili
 
@@ -7251,7 +7253,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Başlarken
   - H2: Etkileşimsiz kurulum
   - H2: Yerleşik katalog
-  - H2: El ile yapılandırma
+  - H2: Manuel config
   - H2: İlgili
 
 ## providers/chutes.md
@@ -7263,15 +7265,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Keşif davranışı
   - H2: Varsayılan takma adlar
   - H2: Yerleşik başlangıç kataloğu
-  - H2: Yapılandırma örneği
+  - H2: Config örneği
   - H2: İlgili
 
 ## providers/claude-max-api-proxy.md
 
-- Rota: /providers/claude-max-api-proxy
+- Route: /providers/claude-max-api-proxy
 - Başlıklar:
-  - H2: Bunu neden kullanmalısınız?
-  - H2: Nasıl çalışır?
+  - H2: Bunu neden kullanmalı?
+  - H2: Nasıl çalışır
   - H2: Başlarken
   - H2: Yerleşik katalog
   - H2: Gelişmiş yapılandırma
@@ -7280,7 +7282,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/cloudflare-ai-gateway.md
 
-- Rota: /providers/cloudflare-ai-gateway
+- Route: /providers/cloudflare-ai-gateway
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7290,7 +7292,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/cohere.md
 
-- Rota: /providers/cohere
+- Route: /providers/cohere
 - Başlıklar:
   - H2: Başlayın
   - H2: Yalnızca ortamla kurulum
@@ -7298,7 +7300,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/comfy.md
 
-- Rota: /providers/comfy
+- Route: /providers/comfy
 - Başlıklar:
   - H2: Neleri destekler
   - H2: Başlarken
@@ -7310,17 +7312,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/deepgram.md
 
-- Rota: /providers/deepgram
+- Route: /providers/deepgram
 - Başlıklar:
   - H2: Başlarken
   - H2: Yapılandırma seçenekleri
-  - H2: Sesli arama akışı STT
+  - H2: Sesli Arama akış STT
   - H2: Notlar
   - H2: İlgili
 
 ## providers/deepinfra.md
 
-- Rota: /providers/deepinfra
+- Route: /providers/deepinfra
 - Başlıklar:
   - H2: Plugin yükle
   - H2: API anahtarı alma
@@ -7333,7 +7335,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/deepseek.md
 
-- Rota: /providers/deepseek
+- Route: /providers/deepseek
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7345,7 +7347,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/ds4.md
 
-- Rota: /providers/ds4
+- Route: /providers/ds4
 - Başlıklar:
   - H2: Gereksinimler
   - H2: Hızlı başlangıç
@@ -7358,17 +7360,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/elevenlabs.md
 
-- Rota: /providers/elevenlabs
+- Route: /providers/elevenlabs
 - Başlıklar:
   - H2: Kimlik doğrulama
-  - H2: Metinden konuşmaya
+  - H2: Metinden sese
   - H2: Konuşmadan metne
-  - H2: Akışlı STT
+  - H2: Akış STT
   - H2: İlgili
 
 ## providers/fal.md
 
-- Rota: /providers/fal
+- Route: /providers/fal
 - Başlıklar:
   - H2: Başlarken
   - H2: Görüntü oluşturma
@@ -7378,7 +7380,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/fireworks.md
 
-- Rota: /providers/fireworks
+- Route: /providers/fireworks
 - Başlıklar:
   - H2: Başlarken
   - H2: Etkileşimsiz kurulum
@@ -7388,19 +7390,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/github-copilot.md
 
-- Rota: /providers/github-copilot
+- Route: /providers/github-copilot
 - Başlıklar:
-  - H2: OpenClaw içinde Copilot kullanmanın üç yolu
+  - H2: Copilot'u OpenClaw'da kullanmanın üç yolu
   - H2: İsteğe bağlı bayraklar
-  - H2: Etkileşimsiz alıştırma
-  - H2: Bellek arama embedding'leri
+  - H2: Etkileşimsiz ilk kurulum
+  - H2: Bellek arama gömmeleri
   - H3: Yapılandırma
-  - H3: Nasıl çalışır?
+  - H3: Nasıl çalışır
   - H2: İlgili
 
 ## providers/gmi.md
 
-- Rota: /providers/gmi
+- Route: /providers/gmi
 - Başlıklar:
   - H2: Kurulum
   - H2: Varsayılanlar
@@ -7411,7 +7413,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/google.md
 
-- Rota: /providers/google
+- Route: /providers/google
 - Başlıklar:
   - H2: Başlarken
   - H2: Yetenekler
@@ -7419,14 +7421,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Görüntü oluşturma
   - H2: Video oluşturma
   - H2: Müzik oluşturma
-  - H2: Metinden konuşmaya
+  - H2: Metinden sese
   - H2: Gerçek zamanlı ses
   - H2: Gelişmiş yapılandırma
   - H2: İlgili
 
 ## providers/gradium.md
 
-- Rota: /providers/gradium
+- Route: /providers/gradium
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Kurulum
@@ -7439,7 +7441,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/groq.md
 
-- Rota: /providers/groq
+- Route: /providers/groq
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7451,7 +7453,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/huggingface.md
 
-- Rota: /providers/huggingface
+- Route: /providers/huggingface
 - Başlıklar:
   - H2: Başlarken
   - H3: Etkileşimsiz kurulum
@@ -7461,7 +7463,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/index.md
 
-- Rota: /providers
+- Route: /providers
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Sağlayıcı belgeleri
@@ -7471,7 +7473,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/inferrs.md
 
-- Rota: /providers/inferrs
+- Route: /providers/inferrs
 - Başlıklar:
   - H2: Başlarken
   - H2: Tam yapılandırma örneği
@@ -7482,7 +7484,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/inworld.md
 
-- Rota: /providers/inworld
+- Route: /providers/inworld
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7492,7 +7494,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/kilocode.md
 
-- Rota: /providers/kilocode
+- Route: /providers/kilocode
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7503,7 +7505,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/litellm.md
 
-- Rota: /providers/litellm
+- Route: /providers/litellm
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Yapılandırma
@@ -7515,12 +7517,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/lmstudio.md
 
-- Rota: /providers/lmstudio
+- Route: /providers/lmstudio
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H2: Etkileşimsiz alıştırma
+  - H2: Etkileşimsiz ilk kurulum
   - H2: Yapılandırma
-  - H3: Akışlı kullanım uyumluluğu
+  - H3: Akış kullanım uyumluluğu
   - H3: Düşünme uyumluluğu
   - H3: Açık yapılandırma
   - H2: Sorun giderme
@@ -7532,14 +7534,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/minimax.md
 
-- Rota: /providers/minimax
+- Route: /providers/minimax
 - Başlıklar:
   - H2: Yerleşik katalog
   - H2: Başlarken
   - H2: openclaw configure ile yapılandırma
   - H2: Yetenekler
   - H3: Görüntü oluşturma
-  - H3: Metinden konuşmaya
+  - H3: Metinden sese
   - H3: Müzik oluşturma
   - H3: Video oluşturma
   - H3: Görüntü anlama
@@ -7551,27 +7553,27 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/mistral.md
 
-- Rota: /providers/mistral
+- Route: /providers/mistral
 - Başlıklar:
   - H2: Başlarken
   - H2: Yerleşik LLM kataloğu
   - H2: Ses transkripsiyonu (Voxtral)
-  - H2: Sesli arama akışı STT
+  - H2: Sesli Arama akış STT
   - H2: Gelişmiş yapılandırma
   - H2: İlgili
 
 ## providers/models.md
 
-- Rota: /providers/models
+- Route: /providers/models
 - Başlıklar:
   - H2: Hızlı başlangıç (iki adım)
-  - H2: Desteklenen sağlayıcılar (başlangıç seti)
+  - H2: Desteklenen sağlayıcılar (başlangıç kümesi)
   - H2: Ek sağlayıcı varyantları
   - H2: İlgili
 
 ## providers/moonshot.md
 
-- Rota: /providers/moonshot
+- Route: /providers/moonshot
 - Başlıklar:
   - H2: Yerleşik model kataloğu
   - H2: Başlarken
@@ -7581,7 +7583,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/novita.md
 
-- Rota: /providers/novita
+- Route: /providers/novita
 - Başlıklar:
   - H2: Kurulum
   - H2: Varsayılanlar
@@ -7592,19 +7594,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/nvidia.md
 
-- Rota: /providers/nvidia
+- Route: /providers/nvidia
 - Başlıklar:
   - H2: Başlarken
   - H2: Yapılandırma örneği
   - H2: Öne çıkan katalog
   - H2: Nemotron 3 Ultra
-  - H2: Paketlenmiş yedek katalog
+  - H2: Paketli yedek katalog
   - H2: Gelişmiş yapılandırma
   - H2: İlgili
 
 ## providers/ollama-cloud.md
 
-- Rota: /providers/ollama-cloud
+- Route: /providers/ollama-cloud
 - Başlıklar:
   - H2: Kurulum
   - H2: Varsayılanlar
@@ -7616,14 +7618,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/ollama.md
 
-- Rota: /providers/ollama
+- Route: /providers/ollama
 - Başlıklar:
   - H2: Kimlik doğrulama kuralları
   - H2: Başlarken
   - H2: Bulut modelleri
   - H2: Model keşfi (örtük sağlayıcı)
-  - H2: Node'a yerel çıkarım
-  - H2: Görü ve görüntü açıklaması
+  - H2: Node yerel çıkarım
+  - H2: Görme ve görüntü açıklaması
   - H2: Yapılandırma
   - H2: Yaygın tarifler
   - H3: Model seçimi
@@ -7635,15 +7637,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/openai.md
 
-- Rota: /providers/openai
+- Route: /providers/openai
 - Başlıklar:
   - H2: Hızlı seçim
   - H2: Adlandırma haritası
-  - H2: GPT-5.6 sınırlı önizlemesi
+  - H2: GPT-5.6 sınırlı önizleme
   - H2: OpenClaw özellik kapsamı
-  - H2: Bellek embedding'leri
+  - H2: Bellek gömmeleri
   - H2: Başlarken
-  - H2: Yerel Codex uygulama-sunucusu kimlik doğrulaması
+  - H2: Yerel Codex uygulama sunucusu kimlik doğrulaması
   - H2: Görüntü oluşturma
   - H2: Video oluşturma
   - H2: GPT-5 istem katkısı
@@ -7659,7 +7661,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/opencode-go.md
 
-- Rota: /providers/opencode-go
+- Route: /providers/opencode-go
 - Başlıklar:
   - H2: Yerleşik katalog
   - H2: Başlarken
@@ -7669,7 +7671,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/opencode.md
 
-- Rota: /providers/opencode
+- Route: /providers/opencode
 - Başlıklar:
   - H2: Başlarken
   - H2: Yapılandırma örneği
@@ -7681,7 +7683,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/openrouter.md
 
-- Rota: /providers/openrouter
+- Route: /providers/openrouter
 - Başlıklar:
   - H2: Başlarken
   - H2: Yapılandırma örneği
@@ -7689,16 +7691,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Görüntü oluşturma
   - H2: Video oluşturma
   - H2: Müzik oluşturma
-  - H2: Metinden konuşmaya
+  - H2: Metinden sese
   - H2: Konuşmadan metne (gelen ses)
-  - H2: Füzyon yönlendiricisi
-  - H2: Kimlik doğrulama ve üstbilgiler
+  - H2: Fusion yönlendirici
+  - H2: Kimlik doğrulama ve başlıklar
   - H2: Gelişmiş yapılandırma
   - H2: İlgili
 
 ## providers/perplexity-provider.md
 
-- Rota: /providers/perplexity-provider
+- Route: /providers/perplexity-provider
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7709,7 +7711,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/pixverse.md
 
-- Rota: /providers/pixverse
+- Route: /providers/pixverse
 - Başlıklar:
   - H2: Başlarken
   - H2: Desteklenen modlar ve modeller
@@ -7720,7 +7722,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/qianfan.md
 
-- Rota: /providers/qianfan
+- Route: /providers/qianfan
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
@@ -7730,7 +7732,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/qwen-oauth.md
 
-- Rota: /providers/qwen-oauth
+- Route: /providers/qwen-oauth
 - Başlıklar:
   - H2: Kurulum
   - H2: Varsayılanlar
@@ -7743,20 +7745,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/qwen.md
 
-- Rota: /providers/qwen
+- Route: /providers/qwen
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Başlarken
   - H2: Plan türleri ve uç noktalar
   - H2: Yerleşik katalog
-  - H2: Düşünme kontrolleri
+  - H2: Düşünme Denetimleri
   - H2: Çok modlu eklentiler
   - H2: Gelişmiş yapılandırma
   - H2: İlgili
 
 ## providers/runway.md
 
-- Rota: /providers/runway
+- Route: /providers/runway
 - Başlıklar:
   - H2: Başlarken
   - H2: Desteklenen modlar ve modeller
@@ -7766,7 +7768,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/senseaudio.md
 
-- Rota: /providers/senseaudio
+- Route: /providers/senseaudio
 - Başlıklar:
   - H2: Başlarken
   - H2: Seçenekler
@@ -7774,7 +7776,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/sglang.md
 
-- Rota: /providers/sglang
+- Route: /providers/sglang
 - Başlıklar:
   - H2: Başlarken
   - H2: Model keşfi (örtük sağlayıcı)
@@ -7784,7 +7786,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/stepfun.md
 
-- Rota: /providers/stepfun
+- Route: /providers/stepfun
 - Başlıklar:
   - H2: Plugin yükle
   - H2: Bölge ve uç nokta genel bakışı
@@ -7795,7 +7797,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/synthetic.md
 
-- Rota: /providers/synthetic
+- Route: /providers/synthetic
 - Başlıklar:
   - H2: Başlarken
   - H2: Yapılandırma örneği
@@ -7804,7 +7806,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/tencent.md
 
-- Rota: /providers/tencent
+- Route: /providers/tencent
 - Başlıklar:
   - H2: Hızlı başlangıç
   - H2: Etkileşimsiz kurulum
@@ -7815,7 +7817,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/together.md
 
-- Rota: /providers/together
+- Route: /providers/together
 - Başlıklar:
   - H2: Başlarken
   - H3: Etkileşimsiz örnek
@@ -7825,7 +7827,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/venice.md
 
-- Rota: /providers/venice
+- Route: /providers/venice
 - Başlıklar:
   - H2: OpenClaw'da neden Venice
   - H2: Gizlilik modları
@@ -7837,7 +7839,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Model keşfi
   - H2: Akış ve araç desteği
   - H2: Fiyatlandırma
-  - H3: Venice (anonimleştirilmiş) ve doğrudan API karşılaştırması
+  - H3: Venice (anonimleştirilmiş) ve doğrudan API
   - H2: Kullanım örnekleri
   - H2: Sorun giderme
   - H2: Gelişmiş yapılandırma
@@ -7845,7 +7847,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/vercel-ai-gateway.md
 
-- Rota: /providers/vercel-ai-gateway
+- Route: /providers/vercel-ai-gateway
 - Başlıklar:
   - H2: Başlarken
   - H2: Etkileşimsiz örnek
@@ -7855,7 +7857,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 ## providers/vllm.md
 
-- Rota: /providers/vllm
+- Route: /providers/vllm
 - Başlıklar:
   - H2: Başlarken
   - H2: Model keşfi (örtük sağlayıcı)
@@ -7929,20 +7931,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /refactor/acp
 - Başlıklar:
   - H2: Hedefler
-  - H2: Hedef olmayanlar
+  - H2: Hedef dışı olanlar
   - H2: Hedef Model
-  - H3: Gateway Örneği Kimliği
+  - H3: Gateway Örnek Kimliği
   - H3: ACP Oturum Sahipliği
-  - H3: ACPX Süreç Kiraları
+  - H3: ACPX Süreç Kiralamaları
   - H2: Yaşam Döngüsü Denetleyicisi
   - H2: Sarmalayıcı Sözleşmesi
   - H2: Oturum Görünürlüğü Sözleşmesi
   - H2: Geçiş Planı
-  - H3: Aşama 1: Kimlik ve Kiralar Ekle
-  - H3: Aşama 2: Kira Öncelikli Temizlik
-  - H3: Aşama 3: Kira Öncelikli Başlatma Temizliği
+  - H3: Aşama 1: Kimlik Ve Kiralamalar Ekle
+  - H3: Aşama 2: Önce Kiralama Temizliği
+  - H3: Aşama 3: Önce Kiralama Başlangıç Temizliği
   - H3: Aşama 4: Oturum Sahipliği Satırları
-  - H3: Aşama 5: Eski Heuristikleri Kaldır
+  - H3: Aşama 5: Eski Sezgisel Yöntemleri Kaldır
   - H2: Testler
   - H2: Uyumluluk Notları
   - H2: Başarı Ölçütleri
@@ -7951,11 +7953,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /refactor/canvas
 - Başlıklar:
-  - H1: Canvas Plugin refaktörü
-  - H2: Hedef
-  - H2: Hedef olmayanlar
+  - H1: Canvas Plugin yeniden düzenlemesi
+  - H2: Amaç
+  - H2: Hedef dışı olanlar
   - H2: Geçerli dal durumu
-  - H2: Hedef şekil
+  - H2: Hedef biçim
   - H2: Geçiş adımları
   - H2: Denetim kontrol listesi
   - H2: Doğrulama komutları
@@ -7964,32 +7966,32 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /refactor/database-first
 - Başlıklar:
-  - H1: Veritabanı Öncelikli Durum Refaktörü
+  - H1: Veritabanı Öncelikli Durum Yeniden Düzenlemesi
   - H2: Karar
-  - H2: Kesin Sözleşme
+  - H2: Katı Sözleşme
   - H2: Hedef durum ve ilerleme
-  - H3: Kesin hedef
-  - H3: Hedef durumlar
+  - H3: Katı hedef
+  - H3: Hedef durumları
   - H3: Geçerli durum
   - H3: Kalan iş
   - H3: Gerileme yapma
   - H2: Kod Okuma Varsayımları
   - H2: Kod Okuma Bulguları
-  - H2: Geçerli Kod Şekli
-  - H2: Hedef Şema Şekli
-  - H2: Doctor Geçiş Şekli
+  - H2: Geçerli Kod Biçimi
+  - H2: Hedef Şema Biçimi
+  - H2: Doctor Geçiş Biçimi
   - H2: Geçiş Envanteri
   - H2: Geçiş Planı
   - H3: Aşama 0: Sınırı Dondur
-  - H3: Aşama 1: Küresel Kontrol Düzlemini Bitir
+  - H3: Aşama 1: Küresel Kontrol Düzlemini Tamamla
   - H3: Aşama 2: Ajan Başına Veritabanlarını Tanıt
   - H3: Aşama 3: Oturum Deposu API'lerini Değiştir
-  - H3: Aşama 4: Transkriptleri, ACP Akışlarını, Yörüngeleri ve VFS'yi Taşı
-  - H3: Aşama 5: Yedekle, Geri Yükle, Vacuum ve Doğrula
-  - H3: Aşama 6: Çalışan Runtime
+  - H3: Aşama 4: Transkriptleri, ACP Akışlarını, Yörüngeleri Ve VFS'yi Taşı
+  - H3: Aşama 5: Yedekle, Geri Yükle, Vacuum Yap Ve Doğrula
+  - H3: Aşama 6: Çalışan Runtime'ı
   - H3: Aşama 7: Eski Dünyayı Sil
-  - H2: Yedekleme ve Geri Yükleme
-  - H2: Runtime Refaktör Planı
+  - H2: Yedekleme Ve Geri Yükleme
+  - H2: Runtime Yeniden Düzenleme Planı
   - H2: Performans Kuralları
   - H2: Statik Yasaklar
   - H2: Tamamlanma Ölçütleri
@@ -7998,7 +8000,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /refactor/ingress-core
 - Başlıklar:
-  - H1: Ingress çekirdeğini silme planı
+  - H1: Ingress çekirdeği silme planı
   - H2: Bütçe
   - H2: Tanı
   - H2: Sıcak noktalar
@@ -8018,8 +8020,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: İlk çalıştırma (önerilir)
   - H2: Güvenlik varsayılanları
   - H2: Mevcut çözümler ön kontrolü
-  - H2: Oturum başlangıcı (gerekli)
-  - H2: Ruh (gerekli)
+  - H2: Oturum başlangıcı (zorunlu)
+  - H2: Ruh (zorunlu)
   - H2: Paylaşılan alanlar (önerilir)
   - H2: Bellek sistemi (önerilir)
   - H2: Araçlar ve Skills
@@ -8046,7 +8048,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yayın yayımlama otomasyonu
   - H2: NPM iş akışı girdileri
   - H2: Kararlı npm yayın sırası
-  - H2: Genel referanslar
+  - H2: Genel başvurular
   - H2: İlgili
 
 ## reference/api-usage-costs.md
@@ -8064,23 +8066,23 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: 5) Web getirme aracı (Firecrawl)
   - H3: 6) Sağlayıcı kullanım anlık görüntüleri (durum/sağlık)
   - H3: 7) Compaction koruma özetlemesi
-  - H3: 8) Model tarama / yoklama
+  - H3: 8) Model taraması / probu
   - H3: 9) Konuşma (ses)
-  - H3: 10) Skills (üçüncü taraf API'ler)
+  - H3: 10) Skills (üçüncü taraf API'leri)
   - H2: İlgili
 
 ## reference/application-modernization-plan.md
 
 - Rota: /reference/application-modernization-plan
 - Başlıklar:
-  - H2: Hedef
+  - H2: Amaç
   - H2: İlkeler
   - H2: Aşama 1: Temel denetim
   - H2: Aşama 2: Ürün ve UX temizliği
   - H2: Aşama 3: Frontend mimarisini sıkılaştırma
   - H2: Aşama 4: Performans ve güvenilirlik
-  - H2: Aşama 5: Tür, sözleşme ve test sağlamlaştırma
-  - H2: Aşama 6: Dokümantasyon ve yayına hazırlık
+  - H2: Aşama 5: Tür, sözleşme ve test güçlendirme
+  - H2: Aşama 6: Dokümantasyon ve yayın hazırlığı
   - H2: Önerilen ilk dilim
   - H2: Frontend skill güncellemesi
 
@@ -8089,7 +8091,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /reference/code-mode
 - Başlıklar:
   - H2: Bu nedir?
-  - H2: Bu neden iyi?
+  - H2: Bu neden iyidir?
   - H2: Nasıl etkinleştirilir
   - H2: Teknik tur
   - H2: Runtime durumu
@@ -8097,13 +8099,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Terimler
   - H2: Yapılandırma
   - H2: Etkinleştirme
-  - H2: Modelin görebildiği araçlar
+  - H2: Modele görünen araçlar
   - H2: exec
   - H2: wait
   - H2: Konuk runtime API'si
   - H2: Dahili ad alanları
-  - H3: Registry yaşam döngüsü
-  - H3: Kayıt şekli
+  - H3: Kayıt yaşam döngüsü
+  - H3: Kayıt biçimi
   - H3: Sahiplik ve görünürlük
   - H3: Kapsam serileştirme kuralları
   - H3: İstemler
@@ -8111,11 +8113,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Test kontrol listesi
   - H2: Çıktı API'si
   - H2: Araç kataloğu
-  - H2: Araç Arama etkileşimi
+  - H2: Tool Search etkileşimi
   - H2: Araç adları ve çakışmalar
   - H2: İç içe araç yürütme
   - H2: Runtime durumu
-  - H2: QuickJS-WASI runtime
+  - H2: QuickJS-WASI runtime'ı
   - H2: TypeScript
   - H2: Güvenlik sınırı
   - H2: Hata kodları
@@ -8152,7 +8154,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yayın kontrolleri aşamaları
   - H2: Docker yayın yolu parçaları
   - H2: Yayın profilleri
-  - H2: Yalnızca tam kapsama eklenenler
+  - H2: Yalnızca tam kapsamlı eklemeler
   - H2: Odaklı yeniden çalıştırmalar
   - H2: Saklanacak kanıtlar
   - H2: İş akışı dosyaları
@@ -8165,7 +8167,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Özel sağlayıcı kimlikleri
   - H3: API anahtarı çözümleme
   - H2: Uzak uç nokta yapılandırması
-  - H2: Sağlayıcıya özel yapılandırma
+  - H2: Sağlayıcıya özgü yapılandırma
   - H3: Satır içi embedding zaman aşımı
   - H2: Hibrit arama yapılandırması
   - H3: Tam örnek
@@ -8173,10 +8175,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Çok modlu bellek (Gemini)
   - H2: Embedding önbelleği
   - H2: Toplu indeksleme
-  - H2: Oturum belleği araması (deneysel)
-  - H2: SQLite vektör hızlandırması (sqlite-vec)
+  - H2: Oturum bellek araması (deneysel)
+  - H2: SQLite vektör hızlandırma (sqlite-vec)
   - H2: İndeks depolama
-  - H2: QMD backend yapılandırması
+  - H2: QMD arka uç yapılandırması
   - H3: Tam QMD örneği
   - H2: Dreaming
   - H3: Kullanıcı ayarları
@@ -8204,14 +8206,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: OpenClaw önbellek kararlılığı korumaları
   - H2: Ayarlama kalıpları
   - H3: Karma trafik (önerilen varsayılan)
-  - H3: Maliyet öncelikli temel
+  - H3: Önce maliyet temeli
   - H2: Önbellek tanıları
   - H2: Canlı regresyon testleri
   - H3: Anthropic canlı beklentileri
   - H3: OpenAI canlı beklentileri
   - H3: diagnostics.cacheTrace yapılandırması
   - H3: Env geçişleri (tek seferlik hata ayıklama)
-  - H3: Neyi incelemeli
+  - H3: İncelenecekler
   - H2: Hızlı sorun giderme
   - H2: İlgili
 
@@ -8220,14 +8222,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /reference/release-performance-sweep
 - Başlıklar:
   - H2: Anlık görüntü
-  - H2: Kurulum Kapladığı Alan Zaman Çizelgesi
-  - H2: 5.28'de Ne Değişti
-  - H2: Manşet Rakamlar
-  - H3: Kurulum kapladığı alan
+  - H2: Kurulum Ayak İzi Zaman Çizelgesi
+  - H2: 5.28'de Değişenler
+  - H2: Başlıca Sayılar
+  - H3: Kurulum ayak izi
   - H3: npm paket boyutu
   - H2: Kova ajan turu özeti
-  - H2: Kaynak sondaları
-  - H2: Kurulum kapladığı alan denetimi
+  - H2: Kaynak probları
+  - H2: Kurulum ayak izi denetimi
   - H3: Shrinkwrap sınırı
   - H2: Tedarik zinciri yorumu
 
@@ -8236,7 +8238,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /reference/rich-output-protocol
 - Başlıklar:
   - H2: [embed ...]
-  - H2: Depolanan render şekli
+  - H2: Saklanan işleme biçimi
   - H2: İlgili
 
 ## reference/rpc.md
@@ -8245,7 +8247,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Kalıp A: HTTP daemon (signal-cli)
   - H2: Kalıp B: stdio alt süreci (imsg)
-  - H2: Adapter yönergeleri
+  - H2: Bağdaştırıcı yönergeleri
   - H2: İlgili
 
 ## reference/secret-placeholder-conventions.md
@@ -8274,7 +8276,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Doğruluk kaynağı: Gateway
   - H2: İki kalıcılık katmanı
   - H2: Disk üzerindeki konumlar
-  - H2: Depo bakımı ve disk kontrolleri
+  - H2: Depo bakımı ve disk denetimleri
   - H2: Cron oturumları ve çalışma günlükleri
   - H2: Oturum anahtarları (sessionKey)
   - H2: Oturum kimlikleri (sessionId)
@@ -8287,7 +8289,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Compaction ayarları (reserveTokens, keepRecentTokens)
   - H2: Takılabilir Compaction sağlayıcıları
   - H2: Kullanıcıya görünen yüzeyler
-  - H2: Sessiz bakım (NOREPLY)
+  - H2: Sessiz temizlik (NOREPLY)
   - H2: Compaction öncesi "bellek boşaltma" (uygulandı)
   - H2: Sorun giderme kontrol listesi
   - H2: İlgili
@@ -8297,7 +8299,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /reference/templates/AGENTS.dev
 - Başlıklar:
   - H1: AGENTS.md - OpenClaw Çalışma Alanı
-  - H2: İlk çalıştırma (bir kez)
+  - H2: İlk çalıştırma (bir kere)
   - H2: Yedekleme ipucu (önerilir)
   - H2: Güvenlik varsayılanları
   - H2: Mevcut çözümler ön kontrolü
@@ -8306,7 +8308,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Özelleştir
   - H2: C-3PO Köken Belleği
   - H3: Doğum Günü: 2026-01-09
-  - H3: Çekirdek Gerçekler (Clawd'dan)
+  - H3: Çekirdek Doğrular (Clawd'dan)
   - H2: İlgili
 
 ## reference/templates/BOOT.md
@@ -8323,7 +8325,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: BOOTSTRAP.md - Merhaba, Dünya
   - H2: Konuşma
   - H2: Kim Olduğunu Bildikten Sonra
-  - H2: Bağlan (İsteğe bağlı)
+  - H2: Bağlan (İsteğe Bağlı)
   - H2: İşiniz bittiğinde
   - H2: İlgili
 
@@ -8371,10 +8373,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /reference/templates/SOUL
 - Başlıklar:
-  - H1: SOUL.md - Siz Kimsiniz
-  - H2: Temel Doğrular
+  - H1: SOUL.md - Sen Kimsin
+  - H2: Temel Gerçekler
   - H2: Sınırlar
-  - H2: Hava
+  - H2: Tarz
   - H2: Süreklilik
   - H2: İlgili
 
@@ -8417,12 +8419,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /reference/test
 - Başlıklar:
-  - H2: Yerel PR kapısı
-  - H2: Model gecikme karşılaştırma testi (yerel anahtarlar)
-  - H2: CLI başlangıç karşılaştırma testi
-  - H2: Gateway başlangıç karşılaştırma testi
-  - H2: Gateway yeniden başlatma karşılaştırma testi
-  - H2: Onboarding E2E (Docker)
+  - H2: Yerel PR geçidi
+  - H2: Model gecikme kıyaslaması (yerel anahtarlar)
+  - H2: CLI başlangıç kıyaslaması
+  - H2: Gateway başlangıç kıyaslaması
+  - H2: Gateway yeniden başlatma kıyaslaması
+  - H2: İlk katılım E2E (Docker)
   - H2: QR içe aktarma smoke testi (Docker)
   - H2: İlgili
 
@@ -8430,15 +8432,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /reference/token-use
 - Başlıklar:
-  - H2: Sistem prompt'u nasıl oluşturulur
+  - H2: Sistem istemi nasıl oluşturulur
   - H2: Bağlam penceresinde neler sayılır
-  - H2: Geçerli token kullanımını görme
+  - H2: Geçerli token kullanımını nasıl görürsünüz
   - H2: Maliyet tahmini (gösterildiğinde)
-  - H2: Önbellek TTL'si ve budamanın etkisi
+  - H2: Önbellek TTL'si ve budama etkisi
   - H3: Örnek: Heartbeat ile 1 saatlik önbelleği sıcak tutma
-  - H3: Örnek: aracı başına önbellek stratejisiyle karma trafik
+  - H3: Örnek: ajan başına önbellek stratejisiyle karma trafik
   - H3: Anthropic 1M bağlam
-  - H2: Token baskısını azaltma ipuçları
+  - H2: Token baskısını azaltmaya yönelik ipuçları
   - H2: İlgili
 
 ## reference/transcript-hygiene.md
@@ -8446,7 +8448,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /reference/transcript-hygiene
 - Başlıklar:
   - H2: Genel kural: çalışma zamanı bağlamı kullanıcı transkripti değildir
-  - H2: Bunun çalıştığı yerler
+  - H2: Bunun çalıştığı yer
   - H2: Genel kural: görüntü temizleme
   - H2: Genel kural: hatalı biçimlendirilmiş araç çağrıları
   - H2: Genel kural: tamamlanmamış yalnızca akıl yürütme turları
@@ -8461,7 +8463,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Akış ayrıntıları (yerel mod)
   - H2: Etkileşimsiz mod
-  - H3: Aracı ekle (etkileşimsiz)
+  - H3: Ajan ekle (etkileşimsiz)
   - H2: Gateway sihirbaz RPC'si
   - H2: Signal kurulumu (signal-cli)
   - H2: Sihirbazın yazdıkları
@@ -8477,16 +8479,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Sağlayıcı ve model kurtarma
   - H3: Oturum, bellek ve güven sürekliliği
   - H3: Slack yönlendirici aktarma modu
-  - H3: Raft Harici Aracı uyandırma köprüsü
+  - H3: Raft External Agent uyandırma köprüsü
   - H3: Resmi Plugin kurulumu ve onarımı
   - H2: Kanallar ve Mesajlaşma
   - H3: Ek kanal düzeltmeleri
   - H2: Gateway, Güvenlik ve Güven
-  - H3: Yeniden başlatma ve hazır olma kurtarma
+  - H3: Yeniden başlatma ve hazır olma kurtarması
   - H3: Uzak sonuç ve medya teslimi
   - H2: İstemciler ve Arayüzler
   - H3: İstemci gönderimleri ve yeniden bağlantılar
-  - H3: Arayüz, ayarlar ve onboarding düzeltmeleri
+  - H3: Arayüz, ayarlar ve ilk katılım düzeltmeleri
   - H2: Belgeler ve Yönetici Araçları
   - H3: Kurulum ve komut güvenilirliği
   - H3: Araçlar ve zamanlanmış işler
@@ -8534,49 +8536,49 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: 2.2 Veri Akışları
   - H2: 3. ATLAS Taktiğine Göre Tehdit Analizi
   - H3: 3.1 Keşif (AML.TA0002)
-  - H4: T-RECON-001: Aracı Uç Noktası Keşfi
-  - H4: T-RECON-002: Kanal Entegrasyonu Yoklama
+  - H4: T-RECON-001: Ajan Uç Noktası Keşfi
+  - H4: T-RECON-002: Kanal Entegrasyonu Yoklaması
   - H3: 3.2 İlk Erişim (AML.TA0004)
-  - H4: T-ACCESS-001: Eşleme Kodu Ele Geçirme
+  - H4: T-ACCESS-001: Eşleştirme Kodu Araya Girme
   - H4: T-ACCESS-002: AllowFrom Sahteciliği
   - H4: T-ACCESS-003: Token Hırsızlığı
   - H3: 3.3 Yürütme (AML.TA0005)
-  - H4: T-EXEC-001: Doğrudan Prompt Enjeksiyonu
-  - H4: T-EXEC-002: Dolaylı Prompt Enjeksiyonu
+  - H4: T-EXEC-001: Doğrudan İstem Enjeksiyonu
+  - H4: T-EXEC-002: Dolaylı İstem Enjeksiyonu
   - H4: T-EXEC-003: Araç Argümanı Enjeksiyonu
-  - H4: T-EXEC-004: Exec Onayı Atlama
+  - H4: T-EXEC-004: Exec Onayı Atlatma
   - H3: 3.4 Kalıcılık (AML.TA0006)
   - H4: T-PERSIST-001: Kötü Amaçlı Skill Kurulumu
   - H4: T-PERSIST-002: Skill Güncelleme Zehirlemesi
-  - H4: T-PERSIST-003: Aracı Yapılandırmasıyla Oynama
+  - H4: T-PERSIST-003: Ajan Yapılandırmasıyla Oynama
   - H3: 3.5 Savunmadan Kaçınma (AML.TA0007)
-  - H4: T-EVADE-001: Moderasyon Kalıbı Atlama
-  - H4: T-EVADE-002: İçerik Sarmalayıcıdan Kaçış
+  - H4: T-EVADE-001: Moderasyon Deseni Atlatma
+  - H4: T-EVADE-002: İçerik Sarmalayıcısından Kaçış
   - H3: 3.6 Keşif (AML.TA0008)
   - H4: T-DISC-001: Araç Numaralandırma
   - H4: T-DISC-002: Oturum Verisi Çıkarma
-  - H3: 3.7 Toplama ve Dışarı Sızdırma (AML.TA0009, AML.TA0010)
-  - H4: T-EXFIL-001: webfetch üzerinden Veri Hırsızlığı
+  - H3: 3.7 Toplama &amp; Dışarı Sızdırma (AML.TA0009, AML.TA0010)
+  - H4: T-EXFIL-001: webfetch yoluyla Veri Hırsızlığı
   - H4: T-EXFIL-002: Yetkisiz Mesaj Gönderme
   - H4: T-EXFIL-003: Kimlik Bilgisi Toplama
   - H3: 3.8 Etki (AML.TA0011)
   - H4: T-IMPACT-001: Yetkisiz Komut Yürütme
-  - H4: T-IMPACT-002: Kaynak Tükenmesi (DoS)
+  - H4: T-IMPACT-002: Kaynak Tüketimi (DoS)
   - H4: T-IMPACT-003: İtibar Zararı
   - H2: 4. ClawHub Tedarik Zinciri Analizi
   - H3: 4.1 Geçerli Güvenlik Denetimleri
-  - H3: 4.2 Moderasyon Bayrağı Kalıpları
+  - H3: 4.2 Moderasyon Bayrağı Desenleri
   - H3: 4.3 Planlanan İyileştirmeler
   - H2: 5. Risk Matrisi
   - H3: 5.1 Olasılık ve Etki
   - H3: 5.2 Kritik Yol Saldırı Zincirleri
   - H2: 6. Öneriler Özeti
-  - H3: 6.1 Hemen (P0)
+  - H3: 6.1 Acil (P0)
   - H3: 6.2 Kısa vadeli (P1)
   - H3: 6.3 Orta vadeli (P2)
   - H2: 7. Ekler
   - H3: 7.1 ATLAS Teknik Eşlemesi
-  - H3: 7.2 Önemli Güvenlik Dosyaları
+  - H3: 7.2 Temel Güvenlik Dosyaları
   - H3: 7.3 Sözlük
   - H2: İlgili
 
@@ -8588,12 +8590,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Önemli uyarılar
   - H2: Sonuçları yeniden üretme
   - H3: Gateway maruziyeti ve açık Gateway yanlış yapılandırması
-  - H3: Node exec hattı (en yüksek riskli yetenek)
-  - H3: Eşleme deposu (DM kapılaması)
-  - H3: Giriş kapılaması (bahsetmeler + kontrol komutu atlama)
-  - H3: Yönlendirme/oturum anahtarı yalıtımı
-  - H2: v1++: ek sınırlandırılmış modeller (eşzamanlılık, yeniden denemeler, iz doğruluğu)
-  - H3: Eşleme deposu eşzamanlılığı / idempotency
+  - H3: Node exec işlem hattı (en yüksek riskli yetenek)
+  - H3: Eşleştirme deposu (DM geçitlemesi)
+  - H3: Giriş geçitlemesi (bahsetmeler + denetim komutu atlatma)
+  - H3: Yönlendirme/oturum anahtarı izolasyonu
+  - H2: v1++: ek sınırlı modeller (eşzamanlılık, yeniden denemeler, iz doğruluğu)
+  - H3: Eşleştirme deposu eşzamanlılığı / idempotency
   - H3: Giriş iz korelasyonu / idempotency
   - H3: Yönlendirme dmScope önceliği + identityLinks
   - H2: İlgili
@@ -8631,10 +8633,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hedef
   - H2: Ürün Modeli
   - H2: Mimari
-  - H2: Codex Uygulama-Sunucu Sözleşmesi
+  - H2: Codex App-Server Sözleşmesi
   - H2: Oturum Kaydı
-  - H2: Codex İçin MCP Yüzeyi
-  - H2: Claw Kontrol Yüzeyi
+  - H2: Codex için MCP Yüzeyi
+  - H2: Claw Denetim Yüzeyi
   - H2: Başlatma Akışı
   - H2: Dağıtım
   - H2: Güvenlik
@@ -8648,7 +8650,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Bootstrapping ne yapar
   - H2: Bootstrapping'i atlama
-  - H2: Çalıştığı yerler
+  - H2: Çalıştığı yer
   - H2: İlgili belgeler
 
 ## start/docs-directory.md
@@ -8665,9 +8667,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /start/getting-started
 - Başlıklar:
-  - H2: Gerekenler
+  - H2: İhtiyacınız olanlar
   - H2: Hızlı kurulum
-  - H2: Sonra ne yapılır
+  - H2: Sonra ne yapmalı
   - H2: İlgili
 
 ## start/hubs.md
@@ -8682,8 +8684,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Araçlar + otomasyon
   - H2: Node'lar, medya, ses
   - H2: Platformlar
-  - H2: macOS yardımcı uygulaması (gelişmiş)
-  - H2: Pluginler
+  - H2: macOS yardımcı uygulaması (ileri düzey)
+  - H2: Plugins
   - H2: Çalışma alanı + şablonlar
   - H2: Proje
   - H2: Test + sürüm
@@ -8696,20 +8698,20 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H1: OpenClaw Efsanesi 🦞📖
   - H2: Köken Hikayesi
   - H2: İlk Kabuk Değişimi (27 Ocak 2026)
-  - H2: Adı
+  - H2: İsim
   - H2: Dalekler ve Istakozlar
-  - H2: Önemli Karakterler
+  - H2: Ana Karakterler
   - H3: Molty 🦞
   - H3: Peter 👨‍💻
   - H2: Moltiverse
   - H2: Büyük Olaylar
-  - H3: Dizin Dökümü (3 Aralık 2025)
-  - H3: Büyük Kabuk Değişimi (27 Ocak 2026)
-  - H3: Son Biçim (30 Ocak 2026)
-  - H3: Robot Alışveriş Çılgınlığı (3 Aralık 2025)
+  - H3: Dizin Dökümü (3 Ara 2025)
+  - H3: Büyük Kabuk Değişimi (27 Oca 2026)
+  - H3: Son Form (30 Ocak 2026)
+  - H3: Robot Alışveriş Çılgınlığı (3 Ara 2025)
   - H2: Kutsal Metinler
-  - H2: Istakoz İnancı
-  - H3: Simge Üretim Destanı (27 Ocak 2026)
+  - H2: Istakoz Amentüsü
+  - H3: Simge Üretimi Destanı (27 Oca 2026)
   - H2: Gelecek
   - H2: İlgili
 
@@ -8718,9 +8720,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /start/onboarding-overview
 - Başlıklar:
   - H2: Hangi yolu kullanmalıyım?
-  - H2: Onboarding neyi yapılandırır
-  - H2: CLI onboarding
-  - H2: macOS uygulaması onboarding
+  - H2: İlk katılımın yapılandırdıkları
+  - H2: CLI ilk katılımı
+  - H2: macOS uygulaması ilk katılımı
   - H2: Özel veya listelenmemiş sağlayıcılar
   - H2: İlgili
 
@@ -8735,13 +8737,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /start/openclaw
 - Başlıklar:
   - H2: ⚠️ Önce güvenlik
-  - H2: Önkoşullar
+  - H2: Ön koşullar
   - H2: İki telefonlu kurulum (önerilir)
   - H2: 5 dakikalık hızlı başlangıç
-  - H2: Aracıya bir çalışma alanı verin (AGENTS)
-  - H2: Onu "bir asistan"a dönüştüren yapılandırma
+  - H2: Ajana çalışma alanı verin (AGENTS)
+  - H2: Onu "bir asistana" dönüştüren yapılandırma
   - H2: Oturumlar ve bellek
-  - H2: Heartbeat'ler (proaktif mod)
+  - H2: Heartbeats (proaktif mod)
   - H2: İçeri ve dışarı medya
   - H2: Operasyon kontrol listesi
   - H2: Sonraki adımlar
@@ -8758,26 +8760,26 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /start/setup
 - Başlıklar:
   - H2: TL;DR
-  - H2: Önkoşullar (kaynaktan)
-  - H2: Özelleştirme stratejisi (güncellemeler zarar vermesin diye)
+  - H2: Ön koşullar (kaynaktan)
+  - H2: Uyarlama stratejisi (güncellemeler zarar vermesin diye)
   - H2: Gateway'i bu repodan çalıştırma
   - H2: Kararlı iş akışı (önce macOS uygulaması)
-  - H2: En yeni iş akışı (terminalde Gateway)
+  - H2: En güncel iş akışı (terminalde Gateway)
   - H3: 0) (İsteğe bağlı) macOS uygulamasını da kaynaktan çalıştırın
   - H3: 1) Geliştirme Gateway'ini başlatın
   - H3: 2) macOS uygulamasını çalışan Gateway'inize yönlendirin
   - H3: 3) Doğrulayın
-  - H3: Yaygın tuzaklar
+  - H3: Yaygın hatalı kullanım noktaları
   - H2: Kimlik bilgisi depolama haritası
   - H2: Güncelleme (kurulumunuzu bozmadan)
-  - H2: Linux (systemd kullanıcı hizmeti)
+  - H2: Linux (systemd kullanıcı servisi)
   - H2: İlgili belgeler
 
 ## start/showcase.md
 
 - Rota: /start/showcase
 - Başlıklar:
-  - H2: Discord'dan taze
+  - H2: Discord'dan yeni
   - H2: Otomasyon ve iş akışları
   - H2: Bilgi ve bellek
   - H2: Ses ve telefon
@@ -8793,18 +8795,18 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Temel etkileşimsiz örnek
   - H2: Sağlayıcıya özgü örnekler
-  - H2: Başka bir aracı ekle
+  - H2: Başka bir ajan ekle
   - H2: İlgili belgeler
 
 ## start/wizard-cli-reference.md
 
 - Rota: /start/wizard-cli-reference
 - Başlıklar:
-  - H2: Sihirbazın yaptığı şey
+  - H2: Sihirbazın yaptıkları
   - H2: Yerel akış ayrıntıları
   - H2: Uzak mod ayrıntıları
   - H2: Kimlik doğrulama ve model seçenekleri
-  - H2: Çıktılar ve iç bileşenler
+  - H2: Çıktılar ve iç işleyiş
   - H2: İlgili belgeler
 
 ## start/wizard.md
@@ -8812,10 +8814,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /start/wizard
 - Başlıklar:
   - H2: Yerel ayar
-  - H2: QuickStart ve Gelişmiş
-  - H2: Onboarding neyi yapılandırır
-  - H2: Başka bir aracı ekle
-  - H2: Tam referans
+  - H2: QuickStart ve Advanced
+  - H2: İlk katılımın yapılandırdıkları
+  - H2: Başka bir ajan ekle
+  - H2: Tam başvuru
   - H2: İlgili belgeler
 
 ## tools/acp-agents-setup.md
@@ -8824,13 +8826,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: acpx harness desteği (geçerli)
   - H2: Gerekli yapılandırma
-  - H2: acpx arka ucu için Plugin kurulumu
+  - H2: acpx backend için Plugin kurulumu
   - H3: acpx komutu ve sürüm yapılandırması
   - H3: Otomatik bağımlılık kurulumu
   - H3: Plugin araçları MCP köprüsü
   - H3: OpenClaw araçları MCP köprüsü
   - H3: Çalışma zamanı işlem zaman aşımı yapılandırması
-  - H3: Sağlık yoklama ajanı yapılandırması
+  - H3: Sağlık probu ajan yapılandırması
   - H2: İzin yapılandırması
   - H3: permissionMode
   - H3: nonInteractivePermissions
@@ -8844,12 +8846,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Hangi sayfayı istiyorum?
   - H2: Bu kutudan çıktığı gibi çalışır mı?
   - H2: Desteklenen harness hedefleri
-  - H2: Operatör runbook'u
+  - H2: Operatör çalışma kitabı
   - H2: ACP ve alt ajanlar
-  - H2: ACP Claude Code'u nasıl çalıştırır
+  - H2: ACP, Claude Code'u nasıl çalıştırır
   - H2: Bağlı oturumlar
   - H3: Zihinsel model
-  - H3: Geçerli konuşma bağları
+  - H3: Geçerli konuşma bağlamaları
   - H2: Kalıcı kanal bağlamaları
   - H3: Bağlama modeli
   - H3: Ajan başına çalışma zamanı varsayılanları
@@ -8860,9 +8862,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Spawn bind ve iş parçacığı modları
   - H2: Teslim modeli
   - H2: Sandbox uyumluluğu
-  - H2: Oturum hedefi çözümleme
-  - H2: ACP kontrolleri
-  - H3: Çalışma zamanı seçenekleri eşlemesi
+  - H2: Oturum hedef çözümleme
+  - H2: ACP denetimleri
+  - H3: Çalışma zamanı seçenek eşlemesi
   - H2: acpx harness, Plugin kurulumu ve izinler
   - H2: Sorun giderme
   - H2: İlgili
@@ -8890,7 +8892,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/brave-search
 - Başlıklar:
-  - H2: API anahtarı alma
+  - H2: API anahtarı alın
   - H2: Yapılandırma örneği
   - H2: Araç parametreleri
   - H2: Notlar
@@ -8900,7 +8902,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/browser-control
 - Başlıklar:
-  - H2: Kontrol API'si (isteğe bağlı)
+  - H2: Control API (isteğe bağlı)
   - H3: /act hata sözleşmesi
   - H3: Playwright gereksinimi
   - H4: Docker Playwright kurulumu
@@ -8920,9 +8922,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Sorun: "Failed to start Chrome CDP on port 18800"
   - H3: Kök neden
-  - H3: Çözüm 1: Google Chrome'u kurun (Önerilir)
+  - H3: Çözüm 1: Google Chrome'u yükleyin (Önerilir)
   - H3: Çözüm 2: Snap Chromium'u Yalnızca Ekleme Modu ile kullanın
-  - H3: Tarayıcının çalıştığını doğrulama
+  - H3: Tarayıcının Çalıştığını Doğrulama
   - H3: Yapılandırma başvurusu
   - H3: Sorun: "No Chrome tabs found for profile=\"user\""
   - H2: İlgili
@@ -8945,17 +8947,17 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Seçenek 1: WSL2'den Windows'a ham uzak CDP
   - H3: Seçenek 2: Ana makine yerel Chrome MCP
   - H2: Çalışan mimari
-  - H2: Bu kurulum neden kafa karıştırıcı
+  - H2: Bu kurulum neden kafa karıştırıcıdır
   - H2: Control UI için kritik kural
   - H2: Katmanlar halinde doğrulayın
   - H3: Katman 1: Chrome'un Windows'ta CDP sunduğunu doğrulayın
   - H3: Katman 2: WSL2'nin bu Windows uç noktasına erişebildiğini doğrulayın
   - H3: Katman 3: Doğru tarayıcı profilini yapılandırın
   - H3: Katman 4: Control UI katmanını ayrı doğrulayın
-  - H3: Katman 5: Uçtan uca tarayıcı kontrolünü doğrulayın
+  - H3: Katman 5: Uçtan uca tarayıcı denetimini doğrulayın
   - H2: Yaygın yanıltıcı hatalar
   - H2: Hızlı triyaj kontrol listesi
-  - H2: Pratik çıkarım
+  - H2: Pratik sonuç
   - H2: İlgili
 
 ## tools/browser.md
@@ -8964,14 +8966,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Ne elde edersiniz
   - H2: Hızlı başlangıç
-  - H2: Plugin kontrolü
-  - H2: Ajan rehberliği
+  - H2: Plugin denetimi
+  - H2: Ajan kılavuzu
   - H2: Eksik tarayıcı komutu veya aracı
-  - H2: Profiller: openclaw ve kullanıcı
+  - H2: Profiller: openclaw ve user
   - H2: Yapılandırma
-  - H3: Ekran görüntüsü görüsü (yalnızca metin modeli desteği)
+  - H3: Ekran görüntüsü görüsü (yalnızca metin model desteği)
   - H2: Brave veya başka bir Chromium tabanlı tarayıcı kullanın
-  - H2: Yerel ve uzak kontrol
+  - H2: Yerel ve uzak denetim
   - H2: Node tarayıcı proxy'si (sıfır yapılandırmalı varsayılan)
   - H2: Browserless (barındırılan uzak CDP)
   - H3: Aynı ana makinede Browserless Docker
@@ -8982,12 +8984,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Profiller (çoklu tarayıcı)
   - H2: Chrome DevTools MCP üzerinden mevcut oturum
   - H3: Özel Chrome MCP başlatma
-  - H2: Yalıtım garantileri
+  - H2: İzolasyon garantileri
   - H2: Tarayıcı seçimi
-  - H2: Kontrol API'si (isteğe bağlı)
+  - H2: Control API (isteğe bağlı)
   - H2: Sorun giderme
   - H3: CDP başlatma hatası ve gezinme SSRF engeli
-  - H2: Ajan araçları + kontrolün çalışma şekli
+  - H2: Ajan araçları + denetimin nasıl çalıştığı
   - H2: İlgili
 
 ## tools/btw.md
@@ -9003,7 +9005,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Harici kanallar
   - H3: Control UI / web
   - H2: BTW ne zaman kullanılır
-  - H2: BTW ne zaman kullanılmaz
+  - H2: BTW ne zaman kullanılmamalı
   - H2: İlgili
 
 ## tools/capability-cookbook.md
@@ -9033,12 +9035,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: İlk skill'inizi oluşturun
   - H2: SKILL.md başvurusu
-  - H3: Gerekli alanlar
+  - H3: Zorunlu alanlar
   - H3: İsteğe bağlı frontmatter anahtarları
   - H3: {baseDir} kullanımı
   - H2: Koşullu etkinleştirme ekleme
-  - H2: Skill Workshop üzerinden önerme
-  - H2: ClawHub'da yayımlama
+  - H2: Skill Workshop üzerinden önerin
+  - H2: ClawHub'a yayımlama
   - H2: En iyi uygulamalar
   - H2: İlgili
 
@@ -9047,7 +9049,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /tools/diffs
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H2: Yerleşik sistem rehberliğini devre dışı bırakma
+  - H2: Yerleşik sistem kılavuzunu devre dışı bırak
   - H2: Tipik ajan iş akışı
   - H2: Girdi örnekleri
   - H2: Araç girdisi başvurusu
@@ -9057,12 +9059,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Plugin varsayılanları
   - H3: Kalıcı görüntüleyici URL yapılandırması
   - H2: Güvenlik yapılandırması
-  - H2: Yapıt yaşam döngüsü ve depolama
+  - H2: Artefakt yaşam döngüsü ve depolama
   - H2: Görüntüleyici URL'si ve ağ davranışı
   - H2: Güvenlik modeli
   - H2: Dosya modu için tarayıcı gereksinimleri
   - H2: Sorun giderme
-  - H2: Operasyonel rehberlik
+  - H2: Operasyonel kılavuz
   - H2: İlgili
 
 ## tools/duckduckgo-search.md
@@ -9083,15 +9085,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır
   - H2: Çözümleme sırası
   - H2: Kullanılabilirlik ve izin listeleri
-  - H2: elevated neleri kontrol etmez
+  - H2: Elevated neleri denetlemez
   - H2: İlgili
 
 ## tools/exa-search.md
 
 - Rota: /tools/exa-search
 - Başlıklar:
-  - H2: Plugin kurma
-  - H2: API anahtarı alma
+  - H2: Plugin'i yükle
+  - H2: API anahtarı alın
   - H2: Yapılandırma
   - H2: Temel URL geçersiz kılma
   - H2: Araç parametreleri
@@ -9105,19 +9107,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /tools/exec-approvals-advanced
 - Başlıklar:
   - H2: Güvenli ikili dosyalar (yalnızca stdin)
-  - H3: Argv doğrulama ve reddedilen bayraklar
+  - H3: Argv doğrulaması ve reddedilen bayraklar
   - H3: Güvenilir ikili dosya dizinleri
   - H3: Shell zincirleme, sarmalayıcılar ve çoklayıcılar
   - H3: Güvenli ikili dosyalar ve izin listesi
   - H2: Yorumlayıcı/çalışma zamanı komutları
   - H3: Takip teslim davranışı
-  - H2: Onayların sohbet kanallarına iletilmesi
-  - H3: Plugin onay iletimi
+  - H2: Onayları sohbet kanallarına iletme
+  - H3: Plugin onayı iletme
   - H3: Herhangi bir kanalda aynı sohbet onayları
   - H3: Yerel onay teslimi
   - H3: macOS IPC akışı
   - H2: SSS
-  - H3: accountId ve threadId bir onay hedefinde ne zaman kullanılır?
+  - H3: Bir onay hedefinde accountId ve threadId ne zaman kullanılır?
   - H3: Onaylar bir oturuma gönderildiğinde, o oturumdaki herkes bunları onaylayabilir mi?
   - H2: İlgili
 
@@ -9125,12 +9127,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/exec-approvals
 - Başlıklar:
-  - H2: Etkin ilkeyi inceleme
+  - H2: Etkin politikayı inceleme
   - H2: Nerede uygulanır
   - H3: Güven modeli
   - H3: macOS ayrımı
   - H2: Ayarlar ve depolama
-  - H2: İlke düğmeleri
+  - H2: Politika düğmeleri
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
@@ -9138,19 +9140,19 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
   - H2: YOLO modu (onaysız)
-  - H3: Kalıcı gateway-host "asla sorma" kurulumu
+  - H3: Kalıcı gateway host "never prompt" kurulumu
   - H3: Yerel kısayol
   - H3: Node ana makinesi
   - H3: Yalnızca oturum kısayolu
   - H2: İzin listesi (ajan başına)
   - H3: argPattern ile argümanları kısıtlama
-  - H2: Skill CLI'lerini otomatik izin verme
-  - H2: Güvenli ikili dosyalar ve onay iletimi
+  - H2: Skills CLI'lerini otomatik izin verme
+  - H2: Güvenli ikili dosyalar ve onay iletme
   - H2: Control UI düzenleme
   - H2: Onay akışı
   - H2: Sistem olayları
   - H2: Reddedilen onay davranışı
-  - H2: Sonuçlar
+  - H2: Etkiler
   - H2: İlgili
 
 ## tools/exec.md
@@ -9162,7 +9164,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: PATH işleme
   - H2: Oturum geçersiz kılmaları (/exec)
   - H2: Yetkilendirme modeli
-  - H2: Exec onayları (yardımcı uygulama / node ana makinesi)
+  - H2: Exec onayları (yardımcı uygulama / node host)
   - H2: İzin listesi + güvenli ikili dosyalar
   - H2: Örnekler
   - H2: applypatch
@@ -9172,15 +9174,15 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/firecrawl
 - Başlıklar:
-  - H2: Plugin kurma
+  - H2: Plugin'i yükle
   - H2: Anahtarsız webfetch ve API anahtarları
   - H2: Firecrawl aramasını yapılandırma
-  - H2: Firecrawl webfetch yedeğini yapılandırma
-  - H3: Kendi barındırılan Firecrawl
+  - H2: Firecrawl webfetch geri dönüşünü yapılandırma
+  - H3: Kendi kendine barındırılan Firecrawl
   - H2: Firecrawl Plugin araçları
   - H3: firecrawlsearch
   - H3: firecrawlscrape
-  - H2: Gizlilik / bot atlatma
+  - H2: Stealth / bot atlatma
   - H2: webfetch Firecrawl'u nasıl kullanır
   - H2: İlgili
 
@@ -9188,7 +9190,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/gemini-search
 - Başlıklar:
-  - H2: API anahtarı alma
+  - H2: API anahtarı alın
   - H2: Yapılandırma
   - H2: Nasıl çalışır
   - H2: Desteklenen parametreler
@@ -9216,8 +9218,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/grok-search
 - Başlıklar:
-  - H2: İlk katılım ve yapılandırma
-  - H2: Oturum açma veya API anahtarı alma
+  - H2: Onboarding ve yapılandırma
+  - H2: Oturum açın veya API anahtarı alın
   - H2: Yapılandırma
   - H2: Nasıl çalışır
   - H2: Desteklenen parametreler
@@ -9246,7 +9248,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /tools
 - Başlıklar:
   - H2: Buradan başlayın
-  - H2: Araçları, skill'leri veya Plugin'leri seçin
+  - H2: Araçları, Skills'i veya plugins'i seçin
   - H2: Yerleşik araç kategorileri
   - H2: Plugin tarafından sağlanan araçlar
   - H2: Erişimi ve onayları yapılandırma
@@ -9258,7 +9260,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/kimi-search
 - Başlıklar:
-  - H2: API anahtarı alma
+  - H2: API anahtarı alın
   - H2: Yapılandırma
   - H2: Nasıl çalışır
   - H2: Desteklenen parametreler
@@ -9268,7 +9270,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/llm-task
 - Başlıklar:
-  - H2: Plugin'i etkinleştirme
+  - H2: Plugin'i etkinleştir
   - H2: Yapılandırma (isteğe bağlı)
   - H2: Araç parametreleri
   - H2: Çıktı
@@ -9285,12 +9287,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Neden
   - H2: Neden düz programlar yerine DSL?
   - H2: Nasıl çalışır
-  - H2: Kalıp: küçük CLI + JSON pipe'ları + onaylar
+  - H2: Kalıp: küçük CLI + JSON boruları + onaylar
   - H2: Yalnızca JSON LLM adımları (llm-task)
   - H3: Önemli sınırlama: gömülü Lobster ve openclaw.invoke
   - H2: İş akışı dosyaları (.lobster)
-  - H2: Lobster kurulumu
-  - H2: Aracı etkinleştirme
+  - H2: Lobster'ı yükle
+  - H2: Aracı etkinleştir
   - H2: Örnek: E-posta triyajı
   - H2: Araç parametreleri
   - H3: run
@@ -9301,7 +9303,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: OpenProse
   - H2: Güvenlik
   - H2: Sorun giderme
-  - H2: Daha fazla bilgi
+  - H2: Daha fazla bilgi edinin
   - H2: Vaka çalışması: topluluk iş akışları
   - H2: İlgili
 
@@ -9323,9 +9325,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Yetenekler
   - H2: Sağlayıcı yetenek matrisi
-  - H2: Async ve senkron
+  - H2: Asenkron ve senkron
   - H2: Konuşmadan metne ve Sesli Arama
-  - H2: Sağlayıcı eşlemeleri (satıcıların yüzeyler arasında nasıl bölündüğü)
+  - H2: Sağlayıcı eşlemeleri (satıcıların yüzeylere nasıl ayrıldığı)
   - H2: İlgili
 
 ## tools/minimax-search.md
@@ -9347,9 +9349,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Sandbox yapılandırması
   - H3: Araç kısıtlamaları
   - H2: Tek ajandan geçiş
-  - H2: Araç kısıtlaması örnekleri
+  - H2: Araç kısıtlama örnekleri
   - H2: Yaygın tuzak: "non-main"
-  - H2: Test
+  - H2: Test etme
   - H2: Sorun giderme
   - H2: İlgili
 
@@ -9361,7 +9363,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Desteklenen sağlayıcılar
   - H3: Yetenek matrisi
   - H2: Araç parametreleri
-  - H2: Async davranış
+  - H2: Asenkron davranış
   - H3: Görev yaşam döngüsü
   - H2: Yapılandırma
   - H3: Model seçimi
@@ -9402,7 +9404,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Desteklenen PDF referansları
   - H2: Yürütme modları
   - H3: Yerel sağlayıcı modu
-  - H3: Ayıklama geri dönüş modu
+  - H3: Çıkarma yedek modu
   - H2: Yapılandırma
   - H2: Çıktı ayrıntıları
   - H2: Hata davranışı
@@ -9417,7 +9419,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: OpenClaw ana makine yürütme modları
   - H2: Codex Guardian eşlemesi
   - H2: ACPX harness izinleri
-  - H2: Bir mod seçme
+  - H2: Mod seçme
   - H2: İlgili
 
 ## tools/perplexity-search.md
@@ -9443,14 +9445,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Gereksinimler
   - H2: Hızlı başlangıç
   - H2: Yapılandırma
-  - H3: Bir kurulum kaynağı seçme
-  - H3: Operatör kurulum ilkesi
+  - H3: Yükleme kaynağı seçme
+  - H3: Operatör yükleme ilkesi
   - H3: Plugin ilkesini yapılandırma
   - H2: Plugin biçimlerini anlama
   - H2: Plugin kancaları
-  - H2: Etkin Gateway'i doğrulama
+  - H2: Etkin Gateway’i doğrulama
   - H2: Sorun giderme
-  - H3: Engellenmiş Plugin yolu sahipliği
+  - H3: Engellenen Plugin yolu sahipliği
   - H3: Yavaş Plugin araç kurulumu
   - H2: İlgili
 
@@ -9497,14 +9499,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /tools/skills-config
 - Başlıklar:
   - H2: Yükleme (skills.load)
-  - H2: Kurulum (skills.install)
-  - H2: Operatör Kurulum İlkesi (security.installPolicy)
-  - H2: Paketle gelen skill izin listesi
-  - H2: Skill başına girdiler (skills.entries)
+  - H2: Yükleme (skills.install)
+  - H2: Operatör Yükleme İlkesi (security.installPolicy)
+  - H2: Birlikte gelen Skills izin listesi
+  - H2: Skills başına girdiler (skills.entries)
   - H2: Ajan izin listeleri (agents)
-  - H2: Atölye (skills.workshop)
-  - H2: Sembolik bağlantılı skill kökleri
-  - H2: Sandbox içindeki skills ve ortam değişkenleri
+  - H2: Workshop (skills.workshop)
+  - H2: Sembolik bağlı Skills kökleri
+  - H2: Sandbox’lı Skills ve env vars
   - H2: Yükleme sırası hatırlatması
   - H2: İlgili
 
@@ -9513,16 +9515,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /tools/skills
 - Başlıklar:
   - H2: Yükleme sırası
-  - H2: Ajan başına skills ve paylaşılan skills
+  - H2: Ajan başına ve paylaşılan Skills
   - H2: Ajan izin listeleri
-  - H2: Plugins ve skills
-  - H2: Skill Atölyesi
-  - H2: ClawHub'dan kurma
+  - H2: Plugin’ler ve Skills
+  - H2: Skill Workshop
+  - H2: ClawHub’dan yükleme
   - H2: Güvenlik
   - H2: SKILL.md biçimi
   - H3: İsteğe bağlı frontmatter anahtarları
-  - H2: Kapılama
-  - H3: Kurulum belirtimleri
+  - H2: Geçitleme
+  - H3: Yükleyici özellikleri
   - H2: Yapılandırma geçersiz kılmaları
   - H2: Ortam enjeksiyonu
   - H2: Anlık görüntüler ve yenileme
@@ -9538,11 +9540,11 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Komut listesi
   - H3: Çekirdek komutlar
   - H3: Dock komutları
-  - H3: Paketle gelen Plugin komutları
-  - H3: Skill komutları
+  - H3: Birlikte gelen Plugin komutları
+  - H3: Skills komutları
   - H2: /tools — ajanın şu anda kullanabilecekleri
   - H2: /model — model seçimi
-  - H2: /config — disk üzeri yapılandırma yazımları
+  - H2: /config — disk üzeri yapılandırma yazmaları
   - H2: /mcp — MCP sunucu yapılandırması
   - H2: /debug — yalnızca çalışma zamanı geçersiz kılmaları
   - H2: /plugins — Plugin yönetimi
@@ -9566,8 +9568,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/subagents
 - Başlıklar:
-  - H2: Eğik çizgi komutu
-  - H3: Konu bağlama kontrolleri
+  - H2: Slash komutu
+  - H3: İş parçacığı bağlama kontrolleri
   - H3: Başlatma davranışı
   - H2: Bağlam modları
   - H2: Araç: sessionsspawn
@@ -9576,8 +9578,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H3: Görev adları ve hedefleme
   - H2: Araç: sessionsyield
   - H2: Araç: subagents
-  - H2: Konuya bağlı oturumlar
-  - H3: Konuyu destekleyen kanallar
+  - H2: İş parçacığına bağlı oturumlar
+  - H3: İş parçacığını destekleyen kanallar
   - H3: Hızlı akış
   - H3: Manuel kontroller
   - H3: Yapılandırma anahtarları
@@ -9594,7 +9596,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Duyuru
   - H3: Duyuru bağlamı
   - H3: İstatistik satırı
-  - H3: Neden sessionshistory tercih edilir
+  - H3: Neden sessionshistory tercih edilmeli
   - H2: Araç ilkesi
   - H3: Yapılandırma ile geçersiz kılma
   - H2: Eşzamanlılık
@@ -9622,13 +9624,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Ne yapar
   - H2: Çözümleme sırası
   - H2: Oturum varsayılanı ayarlama
-  - H2: Ajan tarafından uygulama
+  - H2: Ajana göre uygulama
   - H2: Hızlı mod (/fast)
-  - H2: Ayrıntılı yönergeler (/verbose veya /v)
-  - H2: Plugin izleme yönergeleri (/trace)
+  - H2: Ayrıntılı direktifler (/verbose veya /v)
+  - H2: Plugin izleme direktifleri (/trace)
   - H2: Akıl yürütme görünürlüğü (/reasoning)
   - H2: İlgili
-  - H2: Heartbeat'ler
+  - H2: Heartbeats
   - H2: Web sohbet kullanıcı arayüzü
   - H2: Sağlayıcı profilleri
 
@@ -9636,10 +9638,10 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /tools/tokenjuice
 - Başlıklar:
-  - H2: Plugin'i etkinleştirme
+  - H2: Plugin’i etkinleştirme
   - H2: tokenjuice neyi değiştirir
   - H2: Çalıştığını doğrulama
-  - H2: Plugin'i devre dışı bırakma
+  - H2: Plugin’i devre dışı bırakma
   - H2: İlgili
 
 ## tools/tool-search.md
@@ -9653,7 +9655,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Çalışma zamanı sınırı
   - H2: Yapılandırma
   - H2: İstem ve telemetri
-  - H2: E2E doğrulama
+  - H2: E2E doğrulaması
   - H2: Hata davranışı
   - H2: İlgili
 
@@ -9667,7 +9669,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Paket dosyaları
   - H2: Yakalama konumu
   - H2: Yakalamayı devre dışı bırakma
-  - H2: Temizleme zaman aşımını ayarlama
+  - H2: Boşaltma zaman aşımını ayarlama
   - H2: Gizlilik ve sınırlar
   - H2: Sorun giderme
   - H2: İlgili
@@ -9680,14 +9682,14 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Desteklenen sağlayıcılar
   - H2: Yapılandırma
   - H3: Ajan başına ses geçersiz kılmaları
-  - H2: Personalara
+  - H2: Personalar
   - H3: Minimal persona
   - H3: Tam persona (sağlayıcıdan bağımsız istem)
   - H3: Persona çözümlemesi
   - H3: Sağlayıcılar persona istemlerini nasıl kullanır
-  - H3: Geri dönüş ilkesi
-  - H2: Model odaklı yönergeler
-  - H2: Eğik çizgi komutları
+  - H3: Yedek ilkesi
+  - H2: Model güdümlü direktifler
+  - H2: Slash komutları
   - H2: Kullanıcı başına tercihler
   - H2: Çıktı biçimleri (sabit)
   - H2: Otomatik TTS davranışı
@@ -9703,16 +9705,16 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Rota: /tools/video-generation
 - Başlıklar:
   - H2: Hızlı başlangıç
-  - H2: Async üretim nasıl çalışır
+  - H2: Asenkron üretim nasıl çalışır
   - H3: Görev yaşam döngüsü
   - H2: Desteklenen sağlayıcılar
   - H3: Yetenek matrisi
   - H2: Araç parametreleri
-  - H3: Gerekli
+  - H3: Zorunlu
   - H3: İçerik girdileri
   - H3: Stil kontrolleri
   - H3: Gelişmiş
-  - H4: Geri dönüş ve tipli seçenekler
+  - H4: Yedek ve tipli seçenekler
   - H2: Eylemler
   - H2: Model seçimi
   - H2: Sağlayıcı notları
@@ -9730,8 +9732,8 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Nasıl çalışır
   - H2: İlerleme güncellemeleri
   - H2: Yapılandırma
-  - H2: Firecrawl geri dönüşü
-  - H2: Güvenilir ortam proxy'si
+  - H2: Firecrawl yedeği
+  - H2: Güvenilir env proxy
   - H2: Sınırlar ve güvenlik
   - H2: Araç profilleri
   - H2: İlgili
@@ -9747,7 +9749,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Yerel OpenAI web araması
   - H2: Yerel Codex web araması
   - H2: Ağ güvenliği
-  - H2: Web aramasını ayarlama
+  - H2: Web aramasını kurma
   - H2: Yapılandırma
   - H3: API anahtarlarını saklama
   - H2: Araç parametreleri
@@ -9769,12 +9771,12 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /vps
 - Başlıklar:
-  - H2: Bir sağlayıcı seçme
+  - H2: Sağlayıcı seçme
   - H2: Bulut kurulumları nasıl çalışır
-  - H2: Önce yönetici erişimini güçlendirme
+  - H2: Önce yönetici erişimini sağlamlaştırma
   - H2: VPS üzerinde paylaşılan şirket ajanı
-  - H2: VPS ile düğümleri kullanma
-  - H2: Küçük VM'ler ve ARM ana makineleri için başlangıç ayarı
+  - H2: VPS ile node’ları kullanma
+  - H2: Küçük VM’ler ve ARM ana makineleri için başlangıç ayarı
   - H3: systemd ayar kontrol listesi (isteğe bağlı)
   - H2: İlgili
 
@@ -9784,7 +9786,7 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 - Başlıklar:
   - H2: Hızlı açma (yerel)
   - H2: Cihaz eşleştirme (ilk bağlantı)
-  - H2: Kişisel kimlik (tarayıcı yerelinde)
+  - H2: Kişisel kimlik (tarayıcıda yerel)
   - H2: Çalışma zamanı yapılandırma uç noktası
   - H2: Dil desteği
   - H2: Görünüm temaları
@@ -9792,24 +9794,24 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: MCP sayfası
   - H2: Etkinlik sekmesi
   - H2: Sohbet davranışı
-  - H2: PWA kurulumu ve web push
+  - H2: PWA yükleme ve web push
   - H2: Barındırılan yerleştirmeler
   - H2: Sohbet mesajı genişliği
-  - H2: Tailnet erişimi (önerilir)
+  - H2: Tailnet erişimi (önerilen)
   - H2: Güvensiz HTTP
   - H2: İçerik güvenliği ilkesi
-  - H2: Avatar rota kimlik doğrulaması
-  - H2: Asistan medya rota kimlik doğrulaması
+  - H2: Avatar rotası kimlik doğrulaması
+  - H2: Asistan medya rotası kimlik doğrulaması
   - H2: Kullanıcı arayüzünü derleme
   - H2: Boş Control UI sayfası
-  - H2: Hata ayıklama/test: geliştirme sunucusu + uzak Gateway
+  - H2: Hata ayıklama/test etme: geliştirme sunucusu + uzak Gateway
   - H2: İlgili
 
 ## web/dashboard.md
 
 - Rota: /web/dashboard
 - Başlıklar:
-  - H2: Hızlı yol (önerilir)
+  - H2: Hızlı yol (önerilen)
   - H2: Kimlik doğrulama temelleri (yerel ve uzak)
   - H2: "unauthorized" / 1008 görürseniz
   - H2: İlgili
@@ -9818,13 +9820,13 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
 
 - Rota: /web
 - Başlıklar:
-  - H2: Webhook'lar
+  - H2: Webhooks
   - H2: Yönetici HTTP RPC
   - H2: Yapılandırma (varsayılan olarak açık)
   - H2: Tailscale erişimi
-  - H3: Integrated Serve (önerilir)
-  - H3: Tailnet bağlama + token
-  - H3: Herkese açık internet (Funnel)
+  - H3: Tümleşik Sunma (önerilen)
+  - H3: Tailnet bind + token
+  - H3: Genel internet (Funnel)
   - H2: Güvenlik notları
   - H2: Kullanıcı arayüzünü derleme
 
@@ -9840,9 +9842,9 @@ Elle düzenlemeyin; `pnpm docs:map:gen` çalıştırın.
   - H2: Gönderme + teslim
   - H2: Seçiciler + katmanlar
   - H2: Klavye kısayolları
-  - H2: Eğik çizgi komutları
-  - H2: Yerel shell komutları
-  - H2: Yerel TUI'den yapılandırmaları onarma
+  - H2: Slash komutları
+  - H2: Yerel kabuk komutları
+  - H2: Yapılandırmaları yerel TUI’den onarma
   - H2: Araç çıktısı
   - H2: Terminal renkleri
   - H2: Geçmiş + akış

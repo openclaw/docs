@@ -5,30 +5,30 @@ read_when:
 summary: signal-cli aracılığıyla Signal desteği (yerel daemon veya bbernhard container), kurulum yolları ve numara modeli
 title: Signal
 x-i18n:
-    generated_at: "2026-06-28T00:15:20Z"
+    generated_at: "2026-07-03T17:38:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7f4d82f43a11494d371a9af9a8e55b227364594a5a144b5a4d8690e865d9ade8
+    source_hash: 862afe3764e89aa026d245f57134b8e8e157539f24975ca341d67296fb8852d0
     source_path: channels/signal.md
     workflow: 16
 ---
 
-Durum: harici CLI entegrasyonu. Gateway, `signal-cli` ile HTTP üzerinden konuşur: yerel daemon (JSON-RPC + SSE) veya bbernhard/signal-cli-rest-api konteyneri (REST + WebSocket).
+Durum: harici CLI entegrasyonu. Gateway, `signal-cli` ile HTTP üzerinden konuşur — yerel daemon (JSON-RPC + SSE) veya bbernhard/signal-cli-rest-api container (REST + WebSocket).
 
-## Ön koşullar
+## Önkoşullar
 
-- Sunucunuzda OpenClaw kurulu (aşağıdaki Linux akışı Ubuntu 24 üzerinde test edilmiştir).
+- Sunucunuzda OpenClaw kurulu (aşağıdaki Linux akışı Ubuntu 24 üzerinde test edildi).
 - Şunlardan biri:
-  - Ana makinede `signal-cli` kullanılabilir durumda (yerel mod), **veya**
-  - `bbernhard/signal-cli-rest-api` Docker konteyneri (konteyner modu).
+  - Ana makinede `signal-cli` kullanılabilir (yerel mod), **veya**
+  - `bbernhard/signal-cli-rest-api` Docker container (container modu).
 - Bir doğrulama SMS'i alabilen bir telefon numarası (SMS kayıt yolu için).
 - Kayıt sırasında Signal captcha (`signalcaptchas.org`) için tarayıcı erişimi.
 
 ## Hızlı kurulum (başlangıç)
 
 1. Bot için **ayrı bir Signal numarası** kullanın (önerilir).
-2. OpenClaw Plugin'ini kurun:
+2. OpenClaw plugin'ini kurun:
 
 ```bash
 openclaw plugins install @openclaw/signal
@@ -37,11 +37,11 @@ openclaw plugins install @openclaw/signal
 3. `signal-cli` kurun (JVM derlemesini kullanıyorsanız Java gerekir).
 4. Bir kurulum yolu seçin:
    - **Yol A (QR bağlantısı):** `signal-cli link -n "OpenClaw"` ve Signal ile tarayın.
-   - **Yol B (SMS kaydı):** captcha + SMS doğrulamasıyla ayrılmış bir numara kaydedin.
+   - **Yol B (SMS kaydı):** captcha + SMS doğrulaması ile ayrılmış bir numara kaydedin.
 5. OpenClaw'ı yapılandırın ve gateway'i yeniden başlatın.
 6. İlk DM'yi gönderin ve eşleştirmeyi onaylayın (`openclaw pairing approve signal <CODE>`).
 
-En küçük yapılandırma:
+Minimal yapılandırma:
 
 ```json5
 {
@@ -59,23 +59,23 @@ En küçük yapılandırma:
 
 Alan başvurusu:
 
-| Alan         | Açıklama                                                     |
-| ------------ | ------------------------------------------------------------ |
-| `account`    | E.164 biçiminde bot telefon numarası (`+15551234567`)        |
-| `cliPath`    | `signal-cli` yolu (`PATH` üzerindeyse `signal-cli`)          |
-| `configPath` | `--config` olarak geçirilen signal-cli yapılandırma dizini   |
-| `dmPolicy`   | DM erişim ilkesi (`pairing` önerilir)                        |
+| Alan         | Açıklama                                                  |
+| ------------ | --------------------------------------------------------- |
+| `account`    | E.164 biçiminde bot telefon numarası (`+15551234567`)     |
+| `cliPath`    | `signal-cli` yolu (`PATH` üzerindeyse `signal-cli`)       |
+| `configPath` | `--config` olarak geçirilen signal-cli yapılandırma dizini |
+| `dmPolicy`   | DM erişim ilkesi (`pairing` önerilir)                     |
 | `allowFrom`  | DM göndermesine izin verilen telefon numaraları veya `uuid:<id>` değerleri |
 
 ## Nedir
 
 - `signal-cli` üzerinden Signal kanalı (gömülü libsignal değil).
-- Belirleyici yönlendirme: yanıtlar her zaman Signal'e geri gider.
-- DM'ler aracının ana oturumunu paylaşır; gruplar yalıtılır (`agent:<agentId>:signal:group:<groupId>`).
+- Deterministik yönlendirme: yanıtlar her zaman Signal'a geri gider.
+- DM'ler agent'ın ana oturumunu paylaşır; gruplar yalıtılır (`agent:<agentId>:signal:group:<groupId>`).
 
 ## Yapılandırma yazımları
 
-Varsayılan olarak Signal'in `/config set|unset` tarafından tetiklenen yapılandırma güncellemelerini yazmasına izin verilir (`commands.config: true` gerektirir).
+Varsayılan olarak Signal, `/config set|unset` tarafından tetiklenen yapılandırma güncellemelerini yazabilir (`commands.config: true` gerekir).
 
 Şununla devre dışı bırakın:
 
@@ -89,14 +89,14 @@ Varsayılan olarak Signal'in `/config set|unset` tarafından tetiklenen yapılan
 
 - Gateway bir **Signal cihazına** (`signal-cli` hesabı) bağlanır.
 - Botu **kişisel Signal hesabınızda** çalıştırırsanız, kendi mesajlarınızı yok sayar (döngü koruması).
-- "Bota mesaj atıyorum ve yanıtlıyor" için **ayrı bir bot numarası** kullanın.
+- "Bota mesaj atıyorum ve yanıt veriyor" için **ayrı bir bot numarası** kullanın.
 
-## Kurulum yolu A: Mevcut Signal hesabını bağlama (QR)
+## Kurulum yolu A: mevcut Signal hesabını bağlama (QR)
 
 1. `signal-cli` kurun (JVM veya yerel derleme).
 2. Bir bot hesabı bağlayın:
-   - `signal-cli link -n "OpenClaw"` ardından Signal'deki QR'ı tarayın.
-3. Signal'i yapılandırın ve gateway'i başlatın.
+   - `signal-cli link -n "OpenClaw"` ardından QR'ı Signal içinde tarayın.
+3. Signal'ı yapılandırın ve gateway'i başlatın.
 
 Örnek:
 
@@ -114,9 +114,9 @@ Varsayılan olarak Signal'in `/config set|unset` tarafından tetiklenen yapılan
 }
 ```
 
-Çok hesaplı destek: hesap başına yapılandırma ve isteğe bağlı `name` ile `channels.signal.accounts` kullanın. Paylaşılan kalıp için [`gateway/configuration`](/tr/gateway/config-channels#multi-account-all-channels) bölümüne bakın.
+Çoklu hesap desteği: hesap başına yapılandırma ve isteğe bağlı `name` ile `channels.signal.accounts` kullanın. Paylaşılan desen için [`gateway/configuration`](/tr/gateway/config-channels#multi-account-all-channels) bölümüne bakın.
 
-## Kurulum yolu B: Ayrılmış bot numarası kaydetme (SMS, Linux)
+## Kurulum yolu B: ayrılmış bot numarası kaydetme (SMS, Linux)
 
 Mevcut bir Signal uygulama hesabını bağlamak yerine ayrılmış bir bot numarası istediğinizde bunu kullanın.
 
@@ -133,7 +133,7 @@ signal-cli --version
 ```
 
 JVM derlemesini (`signal-cli-${VERSION}.tar.gz`) kullanıyorsanız önce JRE 25+ kurun.
-`signal-cli` güncel tutun; upstream, Signal sunucu API'leri değiştikçe eski sürümlerin bozulabileceğini belirtir.
+`signal-cli` aracını güncel tutun; upstream, Signal sunucu API'leri değiştikçe eski sürümlerin bozulabileceğini belirtir.
 
 3. Numarayı kaydedin ve doğrulayın:
 
@@ -170,7 +170,7 @@ openclaw channels status --probe
    - "Bilinmeyen kişi" uyarısını önlemek için bot numarasını telefonunuzda kişi olarak kaydedin.
 
 <Warning>
-`signal-cli` ile bir telefon numarası hesabı kaydetmek, o numaranın ana Signal uygulama oturumunun yetkisini kaldırabilir. Ayrılmış bir bot numarası tercih edin veya mevcut telefon uygulaması kurulumunuzu korumanız gerekiyorsa QR bağlantı modunu kullanın.
+`signal-cli` ile bir telefon numarası hesabı kaydetmek, o numara için ana Signal uygulaması oturumunun yetkisini kaldırabilir. Ayrılmış bir bot numarası tercih edin veya mevcut telefon uygulaması kurulumunuzu korumanız gerekiyorsa QR bağlantı modunu kullanın.
 </Warning>
 
 Upstream başvuruları:
@@ -181,7 +181,7 @@ Upstream başvuruları:
 
 ## Harici daemon modu (httpUrl)
 
-`signal-cli` yönetimini kendiniz yapmak istiyorsanız (yavaş JVM soğuk başlatmaları, konteyner başlatma veya paylaşılan CPU'lar), daemon'ı ayrı çalıştırın ve OpenClaw'ı ona yönlendirin:
+`signal-cli` aracını kendiniz yönetmek istiyorsanız (yavaş JVM soğuk başlatmaları, container başlangıcı veya paylaşılan CPU'lar), daemon'u ayrı çalıştırın ve OpenClaw'ı ona yönlendirin:
 
 ```json5
 {
@@ -194,16 +194,16 @@ Upstream başvuruları:
 }
 ```
 
-Bu, OpenClaw içindeki otomatik başlatmayı ve başlangıç beklemesini atlar. Otomatik başlatmada yavaş başlangıçlar için `channels.signal.startupTimeoutMs` ayarlayın.
+Bu, otomatik başlatmayı ve OpenClaw içindeki başlangıç beklemesini atlar. Otomatik başlatma sırasında yavaş başlangıçlar için `channels.signal.startupTimeoutMs` ayarlayın.
 
-## Konteyner modu (bbernhard/signal-cli-rest-api)
+## Container modu (bbernhard/signal-cli-rest-api)
 
-`signal-cli` yerel olarak çalıştırmak yerine [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) Docker konteynerini kullanabilirsiniz. Bu, `signal-cli` için bir REST API ve WebSocket arayüzü sağlar.
+`signal-cli` aracını yerel olarak çalıştırmak yerine [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) Docker container'ını kullanabilirsiniz. Bu, `signal-cli` aracını bir REST API ve WebSocket arayüzünün arkasına sarar.
 
 Gereksinimler:
 
-- Gerçek zamanlı mesaj alma için konteyner **mutlaka** `MODE=json-rpc` ile çalışmalıdır.
-- OpenClaw'a bağlanmadan önce Signal hesabınızı konteyner içinde kaydedin veya bağlayın.
+- Gerçek zamanlı mesaj almak için container **mutlaka** `MODE=json-rpc` ile çalışmalıdır.
+- OpenClaw'a bağlanmadan önce Signal hesabınızı container içinde kaydedin veya bağlayın.
 
 Örnek `docker-compose.yml` hizmeti:
 
@@ -228,37 +228,37 @@ OpenClaw yapılandırması:
       account: "+15551234567",
       httpUrl: "http://signal-cli:8080",
       autoStart: false,
-      apiMode: "container", // veya otomatik algılamak için "auto"
+      apiMode: "container", // veya otomatik algılama için "auto"
     },
   },
 }
 ```
 
-`apiMode` alanı OpenClaw'ın hangi protokolü kullanacağını denetler:
+`apiMode` alanı, OpenClaw'ın hangi protokolü kullanacağını denetler:
 
-| Değer         | Davranış                                                                             |
-| ------------- | ------------------------------------------------------------------------------------ |
-| `"auto"`      | (Varsayılan) İki aktarımı da yoklar; akış konteyner WebSocket alımını doğrular       |
-| `"native"`    | Yerel signal-cli'ı zorlar (`/api/v1/rpc` üzerinde JSON-RPC, `/api/v1/events` üzerinde SSE) |
-| `"container"` | bbernhard konteynerini zorlar (`/v2/send` üzerinde REST, `/v1/receive/{account}` üzerinde WebSocket) |
+| Değer         | Davranış                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `"auto"`      | (Varsayılan) İki aktarımı da yoklar; akış, container WebSocket alımını doğrular                 |
+| `"native"`    | Yerel signal-cli'yi zorlar (`/api/v1/rpc` üzerinde JSON-RPC, `/api/v1/events` üzerinde SSE)     |
+| `"container"` | bbernhard container'ını zorlar (`/v2/send` üzerinde REST, `/v1/receive/{account}` üzerinde WebSocket) |
 
-`apiMode` `"auto"` olduğunda OpenClaw, yinelenen yoklamaları önlemek için algılanan modu 30 saniye önbelleğe alır. Konteyner alma, yalnızca `/v1/receive/{account}` WebSocket'e yükseltildikten sonra akış için seçilir; bu `MODE=json-rpc` gerektirir.
+`apiMode` `"auto"` olduğunda OpenClaw, tekrar eden yoklamaları önlemek için algılanan modu 30 saniye önbelleğe alır. Container alımı, yalnızca `/v1/receive/{account}` WebSocket'e yükseldikten sonra akış için seçilir; bu da `MODE=json-rpc` gerektirir.
 
-Konteyner modu, konteyner eşleşen API'leri sunduğunda yerel modla aynı Signal kanalı işlemlerini destekler: gönderimler, alımlar, ekler, yazıyor göstergeleri, okundu/görüldü alındıları, tepkiler, gruplar ve stilli metin. OpenClaw, yerel Signal RPC çağrılarını konteynerin REST yüklerine çevirir; buna `group.{base64(internal_id)}` grup kimlikleri ve biçimlendirilmiş metin için `text_mode: "styled"` dahildir.
+Container modu, container eşleşen API'leri sunduğunda yerel modla aynı Signal kanalı işlemlerini destekler: gönderimler, alımlar, ekler, yazıyor göstergeleri, okundu/görüldü alındıları, tepkiler, gruplar ve stilli metin. OpenClaw, yerel Signal RPC çağrılarını container'ın REST yüklerine çevirir; buna `group.{base64(internal_id)}` grup kimlikleri ve biçimlendirilmiş metin için `text_mode: "styled"` dahildir.
 
 Operasyonel notlar:
 
-- Konteyner moduyla `autoStart: false` kullanın. `apiMode: "container"` seçiliyken OpenClaw yerel bir daemon başlatmamalıdır.
-- Alma için `MODE=json-rpc` kullanın. `MODE=normal`, `/v1/about` yolunu sağlıklı gösterebilir, ancak `/v1/receive/{account}` WebSocket'e yükselmez; bu nedenle OpenClaw `auto` modunda konteyner alma akışını seçmez.
+- Container moduyla `autoStart: false` kullanın. `apiMode: "container"` seçildiğinde OpenClaw yerel bir daemon başlatmamalıdır.
+- Alım için `MODE=json-rpc` kullanın. `MODE=normal`, `/v1/about` için sağlıklı görünebilir, ancak `/v1/receive/{account}` WebSocket'e yükselmez; bu yüzden OpenClaw `auto` modunda container alım akışını seçmez.
 - `httpUrl` değerinin bbernhard'ın REST API'sine işaret ettiğini biliyorsanız `apiMode: "container"` ayarlayın. Yerel `signal-cli` JSON-RPC/SSE'ye işaret ettiğini biliyorsanız `apiMode: "native"` ayarlayın. Dağıtım değişebiliyorsa `"auto"` kullanın.
-- Konteyner ek indirmeleri, yerel modla aynı medya bayt sınırlarına uyar. Sunucu `Content-Length` gönderdiğinde aşırı büyük yanıtlar tamamen arabelleğe alınmadan önce, aksi halde akış sırasında reddedilir.
+- Container ek indirmeleri, yerel modla aynı medya bayt sınırlarına uyar. Sunucu `Content-Length` gönderdiğinde aşırı büyük yanıtlar tam olarak arabelleğe alınmadan önce, aksi halde akış sırasında reddedilir.
 
 ## Erişim denetimi (DM'ler + gruplar)
 
 DM'ler:
 
 - Varsayılan: `channels.signal.dmPolicy = "pairing"`.
-- Bilinmeyen gönderenler bir eşleştirme kodu alır; onaylanana kadar mesajlar yok sayılır (kodlar 1 saat sonra sona erer).
+- Bilinmeyen gönderenler bir eşleştirme kodu alır; mesajlar onaylanana kadar yok sayılır (kodlar 1 saat sonra sona erer).
 - Şununla onaylayın:
   - `openclaw pairing list signal`
   - `openclaw pairing approve signal <CODE>`
@@ -269,39 +269,54 @@ Gruplar:
 
 - `channels.signal.groupPolicy = open | allowlist | disabled`.
 - `channels.signal.groupAllowFrom`, `allowlist` ayarlandığında hangi grupların veya gönderenlerin grup yanıtlarını tetikleyebileceğini denetler; girdiler Signal grup kimlikleri (ham, `group:<id>` veya `signal:group:<id>`), gönderen telefon numaraları, `uuid:<id>` değerleri veya `*` olabilir.
-- `channels.signal.groups["<group-id>" | "*"]`, grup davranışını `requireMention`, `tools` ve `toolsBySender` ile geçersiz kılabilir.
-- Çok hesaplı kurulumlarda hesap başına geçersiz kılmalar için `channels.signal.accounts.<id>.groups` kullanın.
-- Bir Signal grubunu `groupAllowFrom` üzerinden izin listesine almak, söz edilme kapısını tek başına devre dışı bırakmaz. Özellikle yapılandırılmış bir `channels.signal.groups["<group-id>"]` girdisi, `requireMention=true` ayarlanmadıkça her grup mesajını işler.
-- Çalışma zamanı notu: `channels.signal` tamamen eksikse çalışma zamanı, grup denetimleri için `groupPolicy="allowlist"` değerine geri döner (`channels.defaults.groupPolicy` ayarlı olsa bile).
+- `channels.signal.groups["<group-id>" | "*"]`, `requireMention`, `tools` ve `toolsBySender` ile grup davranışını geçersiz kılabilir.
+- Çoklu hesap kurulumlarında hesap başına geçersiz kılmalar için `channels.signal.accounts.<id>.groups` kullanın.
+- Bir Signal grubunu `groupAllowFrom` üzerinden izin listesine almak, kendi başına bahsetme geçidini devre dışı bırakmaz. Özellikle yapılandırılmış bir `channels.signal.groups["<group-id>"]` girdisi, `requireMention=true` ayarlanmadıkça her grup mesajını işler.
+- Çalışma zamanı notu: `channels.signal` tamamen eksikse, çalışma zamanı grup denetimleri için `groupPolicy="allowlist"` değerine geri döner (`channels.defaults.groupPolicy` ayarlı olsa bile).
 
 ## Nasıl çalışır (davranış)
 
 - Yerel mod: `signal-cli` daemon olarak çalışır; gateway olayları SSE üzerinden okur.
-- Konteyner modu: gateway REST API üzerinden gönderir ve WebSocket üzerinden alır.
-- Gelen mesajlar paylaşılan kanal zarfına normalleştirilir.
+- Container modu: gateway REST API üzerinden gönderir ve WebSocket üzerinden alır.
+- Gelen mesajlar paylaşılan kanal zarfına normalize edilir.
 - Yanıtlar her zaman aynı numaraya veya gruba geri yönlendirilir.
 
 ## Medya + sınırlar
 
 - Giden metin `channels.signal.textChunkLimit` değerine göre parçalara ayrılır (varsayılan 4000).
-- İsteğe bağlı yeni satır parçalama: uzunluğa göre parçalamadan önce boş satırlarda (paragraf sınırları) bölmek için `channels.signal.chunkMode="newline"` ayarlayın.
-- Ekler desteklenir (`signal-cli` üzerinden base64 alınır).
+- İsteğe bağlı yeni satır parçalama: uzunluğa göre parçalamadan önce boş satırlardan (paragraf sınırları) bölmek için `channels.signal.chunkMode="newline"` ayarlayın.
+- Ekler desteklenir (`signal-cli` üzerinden base64 olarak alınır).
 - Sesli not ekleri, `contentType` eksik olduğunda MIME yedeği olarak `signal-cli` dosya adını kullanır; böylece ses transkripsiyonu AAC sesli notlarını yine de sınıflandırabilir.
 - Varsayılan medya sınırı: `channels.signal.mediaMaxMb` (varsayılan 8).
 - Medya indirmeyi atlamak için `channels.signal.ignoreAttachments` kullanın.
-- Grup geçmişi bağlamı `channels.signal.historyLimit` (veya `channels.signal.accounts.*.historyLimit`) kullanır; `messages.groupChat.historyLimit` değerine geri döner. Devre dışı bırakmak için `0` ayarlayın (varsayılan 50).
+- Grup geçmişi bağlamı `channels.signal.historyLimit` (veya `channels.signal.accounts.*.historyLimit`) kullanır, yoksa `messages.groupChat.historyLimit` değerine geri döner. Devre dışı bırakmak için `0` ayarlayın (varsayılan 50).
 
 ## Yazıyor + okundu alındıları
 
 - **Yazma göstergeleri**: OpenClaw, `signal-cli sendTyping` aracılığıyla yazma sinyalleri gönderir ve bir yanıt çalışırken bunları yeniler.
 - **Okundu bilgileri**: `channels.signal.sendReadReceipts` true olduğunda OpenClaw, izin verilen DM'ler için okundu bilgilerini iletir.
-- Signal-cli, gruplar için okundu bilgilerini sunmaz.
+- signal-cli, gruplar için okundu bilgilerini sunmaz.
 
-## Tepkiler (message aracı)
+## Yaşam döngüsü durumu tepkileri
+
+Signal'in gelen turlarda paylaşılan
+kuyrukta/düşünüyor/araç/Compaction/tamamlandı/hata tepki yaşam döngüsünü göstermesine izin vermek için `messages.statusReactions.enabled: true` ayarlayın.
+Signal, gelen ileti zaman damgasını tepki hedefi olarak kullanır; grup
+tepkileri, hedef yazar olarak Signal grup kimliği ve özgün gönderen ile gönderilir.
+
+Durum tepkileri ayrıca bir ack tepkisi ve eşleşen bir
+`messages.ackReactionScope` (`direct`, `group-all`, `group-mentions` veya `all`) gerektirir.
+Signal durum tepkilerini devre dışı bırakmak için `channels.signal.reactionLevel: "off"` ayarlayın.
+İleti aracı `react` eylemi daha katı kalır: `reactionLevel: "minimal"` veya `"extensive"` gerektirir.
+
+`messages.removeAckAfterReply: true`, yapılandırılmış bekletme süresinden sonra son durum tepkisini temizler.
+Aksi halde Signal, son done/error durumundan sonra ilk ack tepkisini geri yükler.
+
+## Tepkiler (ileti aracı)
 
 - `channel=signal` ile `message action=react` kullanın.
-- Hedefler: gönderen E.164 veya UUID (`uuid:<id>` değerini eşleştirme çıktısından kullanın; çıplak UUID de çalışır).
-- `messageId`, tepki verdiğiniz mesajın Signal zaman damgasıdır.
+- Hedefler: gönderen E.164 veya UUID (eşleştirme çıktısından `uuid:<id>` kullanın; yalın UUID de çalışır).
+- `messageId`, tepki verdiğiniz iletinin Signal zaman damgasıdır.
 - Grup tepkileri `targetAuthor` veya `targetAuthorUuid` gerektirir.
 
 Örnekler:
@@ -314,36 +329,85 @@ message action=react channel=signal target=signal:group:<groupId> targetAuthor=u
 
 Yapılandırma:
 
-- `channels.signal.actions.reactions`: tepki eylemlerini etkinleştirir/devre dışı bırakır (varsayılan true).
+- `channels.signal.actions.reactions`: tepki eylemlerini etkinleştir/devre dışı bırak (varsayılan true).
 - `channels.signal.reactionLevel`: `off | ack | minimal | extensive`.
-  - `off`/`ack`, ajan tepkilerini devre dışı bırakır (`react` message aracı hata verir).
-  - `minimal`/`extensive`, ajan tepkilerini etkinleştirir ve rehberlik düzeyini ayarlar.
-- Hesap başına geçersiz kılmalar: `channels.signal.accounts.<id>.actions.reactions`, `channels.signal.accounts.<id>.reactionLevel`.
+  - `off`/`ack`, ajan tepkilerini devre dışı bırakır (ileti aracı `react` hata verir).
+  - `minimal`/`extensive`, ajan tepkilerini etkinleştirir ve yönlendirme düzeyini ayarlar.
+- Hesap bazlı geçersiz kılmalar: `channels.signal.accounts.<id>.actions.reactions`, `channels.signal.accounts.<id>.reactionLevel`.
 
 ## Onay tepkileri
 
-Signal exec ve Plugin onay istemleri, üst düzey `approvals.exec` ve
+Signal exec ve Plugin onay istemleri üst düzey `approvals.exec` ve
 `approvals.plugin` yönlendirme bloklarını kullanır. Signal'de
 `channels.signal.execApprovals` bloğu yoktur.
 
 - `👍` bir kez onaylar.
 - `👎` reddeder.
-- Bir istek kalıcı onay sunuyorsa `/approve <id> allow-always` kullanın.
+- Bir istek kalıcı onay sunduğunda `/approve <id> allow-always` kullanın.
 
-Onay tepkisi çözümlemesi, `channels.signal.allowFrom`, `channels.signal.defaultTo`
-veya eşleşen hesap düzeyi alanlardan açık Signal onaylayıcıları gerektirir.
-Aynı sohbetteki doğrudan exec onay istemleri, açık onaylayıcılar olmadan da yinelenen yerel `/approve` yedeğini bastırabilir; onaylayıcısız grup onayları yerel yedeği görünür tutar.
+Onay tepkisi çözümlemesi, `channels.signal.allowFrom`, `channels.signal.defaultTo` veya eşleşen hesap düzeyi alanlardan açık Signal onaylayıcıları gerektirir.
+Doğrudan aynı sohbet exec onay istemleri, açık onaylayıcılar olmadan da yinelenen yerel `/approve` yedeğini bastırabilir; onaylayıcısız grup onayları yerel yedeği görünür tutar.
 
-## Teslim hedefleri (CLI/Cron)
+## Teslim hedefleri (CLI/cron)
 
 - DM'ler: `signal:+15551234567` (veya düz E.164).
-- UUID DM'leri: `uuid:<id>` (veya çıplak UUID).
+- UUID DM'leri: `uuid:<id>` (veya yalın UUID).
 - Gruplar: `signal:group:<groupId>`.
 - Kullanıcı adları: `username:<name>` (Signal hesabınız destekliyorsa).
 
+## Takma adlar
+
+Yinelenen Signal hedefleri için kararlı adlar istediğinizde takma adları yapılandırın.
+Takma adlar yalnızca OpenClaw tarafı yapılandırmadır; Signal kişileri oluşturmaz veya düzenlemez.
+
+```json5
+{
+  channels: {
+    signal: {
+      aliases: {
+        me: "+15557654321",
+        jane: "uuid:123e4567-e89b-12d3-a456-426614174000",
+        ops: "group:<groupId>",
+      },
+      defaultTo: "signal:me",
+    },
+  },
+}
+```
+
+Signal teslim hedeflerinin kabul edildiği her yerde takma adları kullanın:
+
+```bash
+openclaw message send --channel signal --target signal:ops --message "Deployment is complete"
+```
+
+Hesap bazlı takma adlar üst düzey takma adları devralır ve ad ekleyebilir veya geçersiz kılabilir:
+
+```json5
+{
+  channels: {
+    signal: {
+      aliases: {
+        me: "+15557654321",
+      },
+      accounts: {
+        work: {
+          aliases: {
+            ops: "group:<workGroupId>",
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+`openclaw directory peers list --channel signal` ve
+`openclaw directory groups list --channel signal` yapılandırılmış takma adları listeler. Signal dizini yapılandırma desteklidir; Signal kişilerini canlı sorgulamaz veya Signal hesabını değiştirmez.
+
 ## Sorun giderme
 
-Önce şu basamakları çalıştırın:
+Önce bu basamağı çalıştırın:
 
 ```bash
 openclaw status
@@ -353,7 +417,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Ardından gerekirse DM eşleştirme durumunu doğrulayın:
+Gerekirse ardından DM eşleştirme durumunu doğrulayın:
 
 ```bash
 openclaw pairing list signal
@@ -362,12 +426,12 @@ openclaw pairing list signal
 Yaygın hatalar:
 
 - Daemon erişilebilir ama yanıt yok: hesap/daemon ayarlarını (`httpUrl`, `account`) ve alma modunu doğrulayın.
-- DM'ler yok sayılıyor: gönderenin eşleştirme onayı beklemede.
-- Grup mesajları yok sayılıyor: grup göndereni/bahsetme kapıları teslimi engelliyor.
+- DM'ler yok sayılıyor: gönderen eşleştirme onayı bekliyor.
+- Grup iletileri yok sayılıyor: grup göndereninden/mention geçitleri teslimi engelliyor.
 - Düzenlemelerden sonra yapılandırma doğrulama hataları: `openclaw doctor --fix` çalıştırın.
-- Signal tanılamalarda eksik: `channels.signal.enabled: true` değerini doğrulayın.
+- Signal tanılarda eksik: `channels.signal.enabled: true` olduğunu doğrulayın.
 
-Ek denetimler:
+Ek kontroller:
 
 ```bash
 openclaw pairing list signal
@@ -375,49 +439,51 @@ pgrep -af signal-cli
 grep -i "signal" "/tmp/openclaw/openclaw-$(date +%Y-%m-%d).log" | tail -20
 ```
 
-Triyaj akışı için: [/channels/troubleshooting](/tr/channels/troubleshooting).
+Triage akışı için: [/channels/troubleshooting](/tr/channels/troubleshooting).
 
 ## Güvenlik notları
 
 - `signal-cli`, hesap anahtarlarını yerel olarak saklar (genellikle `~/.local/share/signal-cli/data/`).
-- Sunucu geçişi veya yeniden kurulumdan önce Signal hesap durumunu yedekleyin.
-- Daha geniş DM erişimini açıkça istemiyorsanız `channels.signal.dmPolicy: "pairing"` değerini koruyun.
-- SMS doğrulaması yalnızca kayıt veya kurtarma akışları için gerekir, ancak numaranın/hesabın denetimini kaybetmek yeniden kaydı zorlaştırabilir.
+- Sunucu geçişi veya yeniden oluşturma öncesinde Signal hesap durumunu yedekleyin.
+- Daha geniş DM erişimini açıkça istemediğiniz sürece `channels.signal.dmPolicy: "pairing"` olarak tutun.
+- SMS doğrulaması yalnızca kayıt veya kurtarma akışları için gereklidir, ancak numaranın/hesabın denetimini kaybetmek yeniden kaydı zorlaştırabilir.
 
-## Yapılandırma referansı (Signal)
+## Yapılandırma başvurusu (Signal)
 
 Tam yapılandırma: [Yapılandırma](/tr/gateway/configuration)
 
 Sağlayıcı seçenekleri:
 
-- `channels.signal.enabled`: kanal başlangıcını etkinleştirir/devre dışı bırakır.
-- `channels.signal.apiMode`: `auto | native | container` (varsayılan: auto). Bkz. [Konteyner modu](#container-mode-bbernhardsignal-cli-rest-api).
+- `channels.signal.enabled`: kanal başlangıcını etkinleştir/devre dışı bırak.
+- `channels.signal.apiMode`: `auto | native | container` (varsayılan: auto). Bkz. [Container modu](#container-mode-bbernhardsignal-cli-rest-api).
 - `channels.signal.account`: bot hesabı için E.164.
 - `channels.signal.cliPath`: `signal-cli` yolu.
 - `channels.signal.configPath`: isteğe bağlı `signal-cli --config` dizini.
 - `channels.signal.httpUrl`: tam daemon URL'si (host/port değerlerini geçersiz kılar).
-- `channels.signal.httpHost`, `channels.signal.httpPort`: daemon bind değeri (varsayılan 127.0.0.1:8080).
-- `channels.signal.autoStart`: daemon'ı otomatik başlatır (`httpUrl` ayarlanmamışsa varsayılan true).
+- `channels.signal.httpHost`, `channels.signal.httpPort`: daemon bağlaması (varsayılan 127.0.0.1:8080).
+- `channels.signal.autoStart`: daemon'ı otomatik başlat (varsayılan true, `httpUrl` ayarlanmamışsa).
 - `channels.signal.startupTimeoutMs`: ms cinsinden başlangıç bekleme zaman aşımı (üst sınır 120000).
 - `channels.signal.receiveMode`: `on-start | manual`.
-- `channels.signal.ignoreAttachments`: ek indirmelerini atlar.
-- `channels.signal.ignoreStories`: daemon'dan gelen hikayeleri yok sayar.
-- `channels.signal.sendReadReceipts`: okundu bilgilerini iletir.
+- `channels.signal.ignoreAttachments`: ek indirmelerini atla.
+- `channels.signal.ignoreStories`: daemon'dan gelen story'leri yok say.
+- `channels.signal.sendReadReceipts`: okundu bilgilerini ilet.
 - `channels.signal.dmPolicy`: `pairing | allowlist | open | disabled` (varsayılan: pairing).
-- `channels.signal.allowFrom`: DM izin listesi (E.164 veya `uuid:<id>`). `open`, `"*"` gerektirir. Signal'de kullanıcı adı yoktur; telefon/UUID kimlikleri kullanın.
+- `channels.signal.allowFrom`: DM izin listesi (E.164 veya `uuid:<id>`). `open`, `"*"` gerektirir. Signal'de kullanıcı adları yoktur; telefon/UUID kimlikleri kullanın.
+- `channels.signal.aliases`: DM veya grup teslim hedefleri için OpenClaw tarafı takma adlar.
 - `channels.signal.groupPolicy`: `open | allowlist | disabled` (varsayılan: allowlist).
 - `channels.signal.groupAllowFrom`: grup izin listesi; Signal grup kimliklerini (ham, `group:<id>` veya `signal:group:<id>`), gönderen E.164 numaralarını veya `uuid:<id>` değerlerini kabul eder.
-- `channels.signal.groups`: Signal grup kimliğine (veya `"*"`) göre anahtarlanan grup başına geçersiz kılmalar. Desteklenen alanlar: `requireMention`, `tools`, `toolsBySender`.
-- `channels.signal.accounts.<id>.groups`: çok hesaplı kurulumlar için `channels.signal.groups` değerinin hesap başına sürümü.
-- `channels.signal.historyLimit`: bağlam olarak dahil edilecek en fazla grup mesajı (0 devre dışı bırakır).
-- `channels.signal.dmHistoryLimit`: kullanıcı turları cinsinden DM geçmiş sınırı. Kullanıcı başına geçersiz kılmalar: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
+- `channels.signal.groups`: Signal grup kimliğine (veya `"*"`) göre anahtarlanmış grup bazlı geçersiz kılmalar. Desteklenen alanlar: `requireMention`, `tools`, `toolsBySender`.
+- `channels.signal.accounts.<id>.groups`: çok hesaplı kurulumlar için `channels.signal.groups` değerinin hesap bazlı sürümü.
+- `channels.signal.accounts.<id>.aliases`: üst düzey takma adlarla birleştirilen hesap bazlı takma adlar.
+- `channels.signal.historyLimit`: bağlam olarak eklenecek en fazla grup iletisi (0 devre dışı bırakır).
+- `channels.signal.dmHistoryLimit`: kullanıcı turları cinsinden DM geçmiş sınırı. Kullanıcı bazlı geçersiz kılmalar: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
 - `channels.signal.textChunkLimit`: giden parça boyutu (karakter).
-- `channels.signal.chunkMode`: uzunluğa göre parçalamadan önce boş satırlardan (paragraf sınırları) bölmek için `length` (varsayılan) veya `newline`.
+- `channels.signal.chunkMode`: uzunluğa göre parçalamadan önce boş satırlarda (paragraf sınırları) bölmek için `length` (varsayılan) veya `newline`.
 - `channels.signal.mediaMaxMb`: gelen/giden medya üst sınırı (MB).
 
 İlgili genel seçenekler:
 
-- `agents.list[].groupChat.mentionPatterns` (Signal yerel bahsetmeleri desteklemez).
+- `agents.list[].groupChat.mentionPatterns` (Signal yerel mention'ları desteklemez).
 - `messages.groupChat.mentionPatterns` (genel yedek).
 - `messages.responsePrefix`.
 
@@ -425,6 +491,6 @@ Sağlayıcı seçenekleri:
 
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
 - [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
-- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme kapıları
-- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirme
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve mention geçidi
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — iletiler için oturum yönlendirmesi
 - [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma

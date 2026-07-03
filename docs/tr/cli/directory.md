@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Bir kanal için kişi/grup/kendi kimliklerini bulmak istiyorsunuz
-    - Bir kanal dizini adaptörü geliştiriyorsunuz
-summary: '`openclaw directory` için CLI referansı (kendisi, eşler, gruplar)'
+    - Bir kanal için kişileri/grupları/kendi kimliklerinizi aramak istiyorsunuz
+    - Bir kanal dizini bağdaştırıcısı geliştiriyorsunuz
+summary: '`openclaw directory` için CLI başvurusu (kendi, eşler, gruplar)'
 title: Dizin
 x-i18n:
-    generated_at: "2026-05-06T17:52:26Z"
+    generated_at: "2026-07-03T17:36:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
+    source_hash: d17f545ce0bbe23a6c1ba74e4d1b44b103cc985b52affe4b25fbc6a6d1121045
     source_path: cli/directory.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw directory`
@@ -20,16 +20,16 @@ Bunu destekleyen kanallar için dizin aramaları (kişiler/eşler, gruplar ve "b
 
 ## Ortak bayraklar
 
-- `--channel <name>`: kanal kimliği/takma adı (birden fazla kanal yapılandırıldığında gereklidir; yalnızca bir kanal yapılandırıldığında otomatik)
+- `--channel <name>`: kanal kimliği/takma adı (birden fazla kanal yapılandırıldığında gerekli; yalnızca bir kanal yapılandırıldığında otomatik)
 - `--account <id>`: hesap kimliği (varsayılan: kanal varsayılanı)
 - `--json`: JSON çıktısı ver
 
 ## Notlar
 
-- `directory`, başka komutlara yapıştırabileceğiniz kimlikleri bulmanıza yardımcı olmak için tasarlanmıştır (özellikle `openclaw message send --target ...`).
-- Birçok kanalda sonuçlar canlı bir sağlayıcı dizini yerine yapılandırma desteklidir (izin listeleri / yapılandırılmış gruplar).
-- Kurulu kanal Pluginleri yine de dizin desteğini atlayabilir; bu durumda komut, Plugini yeniden yüklemek yerine desteklenmeyen dizin işlemini bildirir.
-- Varsayılan çıktı, sekmeyle ayrılmış `id` (ve bazen `name`) değeridir; betik yazımı için `--json` kullanın.
+- `directory`, diğer komutlara yapıştırabileceğiniz kimlikleri bulmanıza yardımcı olmak içindir (özellikle `openclaw message send --target ...`).
+- Birçok kanal için sonuçlar canlı bir sağlayıcı dizini yerine yapılandırma desteklidir (izin listeleri / yapılandırılmış gruplar).
+- Yüklü kanal plugin'leri yine de dizin desteğini atlayabilir; bu durumda komut, plugin'i yeniden yüklemek yerine desteklenmeyen dizin işlemini bildirir.
+- Varsayılan çıktı, sekme ile ayrılmış `id` (ve bazen `name`) değeridir; betik yazımı için `--json` kullanın.
 
 ## Sonuçları `message send` ile kullanma
 
@@ -41,15 +41,16 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ## Kimlik biçimleri (kanala göre)
 
 - WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grup), `120363123456789@newsletter` (Kanal/Bülten giden hedefi)
+- Signal: yapılandırılmış takma adlar E.164/UUID DM hedeflerine veya `group:<id>` grup hedeflerine çözümlenir
 - Telegram: `@username` veya sayısal sohbet kimliği; gruplar sayısal kimliklerdir
 - Slack: `user:U…` ve `channel:C…`
 - Discord: `user:<id>` ve `channel:<id>`
-- Matrix (Plugin): `user:@user:server`, `room:!roomId:server` veya `#alias:server`
-- Microsoft Teams (Plugin): `user:<id>` ve `conversation:<id>`
-- Zalo (Plugin): kullanıcı kimliği (Bot API)
-- Zalo Personal / `zalouser` (Plugin): `zca` kaynaklı iş parçacığı kimliği (DM/grup) (`me`, `friend list`, `group list`)
+- Matrix (plugin): `user:@user:server`, `room:!roomId:server` veya `#alias:server`
+- Microsoft Teams (plugin): `user:<id>` ve `conversation:<id>`
+- Zalo (plugin): kullanıcı kimliği (Bot API)
+- Zalo Personal / `zalouser` (plugin): `zca` kaynaklı iş parçacığı kimliği (DM/grup) (`me`, `friend list`, `group list`)
 
-## Kendisi ("ben")
+## Kendiniz ("ben")
 
 ```bash
 openclaw directory self --channel zalouser

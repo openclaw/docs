@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Ви хочете знайти ідентифікатори контактів/груп/себе для каналу
+    - Ви хочете знайти ідентифікатори контактів/груп/власного профілю для каналу
     - Ви розробляєте адаптер каталогу каналів
-summary: Довідник CLI для `openclaw directory` (себе, рівноправних учасників, груп)
+summary: Довідник CLI для `openclaw directory` (себе, учасників, груп)
 title: Каталог
 x-i18n:
-    generated_at: "2026-05-06T16:00:07Z"
+    generated_at: "2026-07-03T17:40:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
+    source_hash: d17f545ce0bbe23a6c1ba74e4d1b44b103cc985b52affe4b25fbc6a6d1121045
     source_path: cli/directory.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw directory`
 
-Пошук у каталозі для каналів, які його підтримують (контакти/пири, групи та "me").
+Пошук у каталозі для каналів, які це підтримують (контакти/peers, групи та «я»).
 
-## Спільні прапорці
+## Поширені прапорці
 
-- `--channel <name>`: id/псевдонім каналу (обов’язково, коли налаштовано кілька каналів; автоматично, коли налаштовано лише один)
-- `--account <id>`: id облікового запису (типово: типовий для каналу)
+- `--channel <name>`: ідентифікатор/псевдонім каналу (обов’язково, коли налаштовано кілька каналів; автоматично, коли налаштовано лише один)
+- `--account <id>`: ідентифікатор облікового запису (за замовчуванням: типовий для каналу)
 - `--json`: вивести JSON
 
 ## Примітки
 
-- `directory` призначено, щоб допомогти вам знайти ID, які можна вставити в інші команди (особливо `openclaw message send --target ...`).
-- Для багатьох каналів результати спираються на конфігурацію (списки дозволених / налаштовані групи), а не на живий каталог провайдера.
+- `directory` призначено, щоб допомогти знайти ідентифікатори, які можна вставити в інші команди (особливо `openclaw message send --target ...`).
+- Для багатьох каналів результати беруться з конфігурації (allowlists / налаштовані групи), а не з живого каталогу провайдера.
 - Установлені Plugin каналів усе ще можуть не підтримувати каталог; у такому разі команда повідомляє про непідтримувану операцію каталогу замість перевстановлення Plugin.
-- Типовий вивід — це `id` (і іноді `name`), розділені табуляцією; використовуйте `--json` для сценаріїв.
+- Типовий вивід — це `id` (і іноді `name`), розділені табуляцією; використовуйте `--json` для скриптів.
 
 ## Використання результатів із `message send`
 
@@ -38,24 +38,25 @@ openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## Формати ID (за каналом)
+## Формати ідентифікаторів (за каналом)
 
-- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (група), `120363123456789@newsletter` (вихідна ціль каналу/розсилки)
-- Telegram: `@username` або числовий id чату; групи мають числові id
+- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (група), `120363123456789@newsletter` (ціль вихідного надсилання Channel/Newsletter)
+- Signal: налаштовані псевдоніми розв’язуються в цілі DM E.164/UUID або групові цілі `group:<id>`
+- Telegram: `@username` або числовий ідентифікатор чату; групи мають числові ідентифікатори
 - Slack: `user:U…` і `channel:C…`
 - Discord: `user:<id>` і `channel:<id>`
 - Matrix (Plugin): `user:@user:server`, `room:!roomId:server` або `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` і `conversation:<id>`
-- Zalo (Plugin): id користувача (Bot API)
-- Zalo Personal / `zalouser` (Plugin): id гілки (DM/група) з `zca` (`me`, `friend list`, `group list`)
+- Zalo (Plugin): ідентифікатор користувача (Bot API)
+- Zalo Personal / `zalouser` (Plugin): ідентифікатор треду (DM/група) з `zca` (`me`, `friend list`, `group list`)
 
-## Себе ("me")
+## Власний профіль («я»)
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## Пири (контакти/користувачі)
+## Peers (контакти/користувачі)
 
 ```bash
 openclaw directory peers list --channel zalouser
