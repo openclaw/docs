@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Bạn muốn tra cứu ID của liên hệ/nhóm/bản thân cho một kênh
+    - Bạn muốn tra cứu mã định danh của liên hệ/nhóm/chính bạn cho một kênh
     - Bạn đang phát triển một bộ điều hợp thư mục kênh
-summary: Tài liệu tham chiếu CLI cho `openclaw directory` (bản thân, các đối tượng ngang hàng, nhóm)
+summary: Tham chiếu CLI cho `openclaw directory` (bản thân, các ngang hàng, nhóm)
 title: Thư mục
 x-i18n:
-    generated_at: "2026-05-06T17:52:30Z"
+    generated_at: "2026-07-03T15:33:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
+    source_hash: d17f545ce0bbe23a6c1ba74e4d1b44b103cc985b52affe4b25fbc6a6d1121045
     source_path: cli/directory.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw directory`
 
-Tra cứu thư mục cho các kênh hỗ trợ tính năng này (liên hệ/đồng cấp, nhóm và "tôi").
+Tra cứu thư mục cho các kênh hỗ trợ tính năng này (liên hệ/peer, nhóm và "tôi").
 
-## Cờ chung
+## Cờ thông dụng
 
-- `--channel <name>`: id/bí danh kênh (bắt buộc khi nhiều kênh được cấu hình; tự động khi chỉ có một kênh được cấu hình)
+- `--channel <name>`: id/bí danh kênh (bắt buộc khi cấu hình nhiều kênh; tự động khi chỉ cấu hình một kênh)
 - `--account <id>`: id tài khoản (mặc định: mặc định của kênh)
 - `--json`: xuất JSON
 
 ## Ghi chú
 
 - `directory` nhằm giúp bạn tìm các ID có thể dán vào lệnh khác (đặc biệt là `openclaw message send --target ...`).
-- Với nhiều kênh, kết quả dựa trên cấu hình (danh sách cho phép / nhóm đã cấu hình) thay vì một thư mục nhà cung cấp trực tiếp.
-- Các Plugin kênh đã cài đặt vẫn có thể không hỗ trợ thư mục; trong trường hợp đó, lệnh sẽ báo thao tác thư mục không được hỗ trợ thay vì cài đặt lại Plugin.
-- Đầu ra mặc định là `id` (và đôi khi là `name`) được phân tách bằng tab; dùng `--json` để viết script.
+- Với nhiều kênh, kết quả dựa trên cấu hình (danh sách cho phép / nhóm đã cấu hình) thay vì thư mục nhà cung cấp trực tiếp.
+- Các Plugin kênh đã cài đặt vẫn có thể không hỗ trợ thư mục; trong trường hợp đó, lệnh báo thao tác thư mục không được hỗ trợ thay vì cài đặt lại Plugin.
+- Đầu ra mặc định là `id` (và đôi khi là `name`) được phân tách bằng tab; dùng `--json` cho scripting.
 
-## Sử dụng kết quả với `message send`
+## Dùng kết quả với `message send`
 
 ```bash
 openclaw directory peers list --channel slack --query "U0"
@@ -40,14 +40,15 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 
 ## Định dạng ID (theo kênh)
 
-- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (nhóm), `120363123456789@newsletter` (đích gửi đi của Kênh/Bản tin)
-- Telegram: `@username` hoặc id cuộc trò chuyện dạng số; nhóm là các id dạng số
+- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (nhóm), `120363123456789@newsletter` (đích gửi đi Channel/Newsletter)
+- Signal: bí danh đã cấu hình phân giải thành đích DM E.164/UUID hoặc đích nhóm `group:<id>`
+- Telegram: `@username` hoặc id chat dạng số; nhóm là id dạng số
 - Slack: `user:U…` và `channel:C…`
 - Discord: `user:<id>` và `channel:<id>`
-- Matrix (Plugin): `user:@user:server`, `room:!roomId:server`, hoặc `#alias:server`
-- Microsoft Teams (Plugin): `user:<id>` và `conversation:<id>`
-- Zalo (Plugin): id người dùng (Bot API)
-- Zalo Personal / `zalouser` (Plugin): id luồng (DM/nhóm) từ `zca` (`me`, `friend list`, `group list`)
+- Matrix (plugin): `user:@user:server`, `room:!roomId:server`, hoặc `#alias:server`
+- Microsoft Teams (plugin): `user:<id>` và `conversation:<id>`
+- Zalo (plugin): id người dùng (Bot API)
+- Zalo Personal / `zalouser` (plugin): id luồng (DM/nhóm) từ `zca` (`me`, `friend list`, `group list`)
 
 ## Bản thân ("tôi")
 
@@ -55,7 +56,7 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 openclaw directory self --channel zalouser
 ```
 
-## Đồng cấp (liên hệ/người dùng)
+## Peer (liên hệ/người dùng)
 
 ```bash
 openclaw directory peers list --channel zalouser

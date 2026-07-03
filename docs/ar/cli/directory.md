@@ -1,35 +1,35 @@
 ---
 read_when:
-    - تريد البحث عن معرّفات جهات الاتصال/المجموعات/الحساب نفسه لقناة
-    - أنت تطوّر محوّل دليل القنوات
+    - تريد البحث عن معرفات جهات الاتصال/المجموعات/الذات لقناة ما
+    - أنت تطوّر محوّل دليل قناة
 summary: مرجع CLI لـ `openclaw directory` (الذات، النظراء، المجموعات)
 title: الدليل
 x-i18n:
-    generated_at: "2026-05-06T17:52:49Z"
+    generated_at: "2026-07-03T15:27:08Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
+    source_hash: d17f545ce0bbe23a6c1ba74e4d1b44b103cc985b52affe4b25fbc6a6d1121045
     source_path: cli/directory.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw directory`
 
-عمليات البحث في الدليل للقنوات التي تدعم ذلك (جهات الاتصال/الأقران، والمجموعات، و"أنا").
+عمليات البحث في الدليل للقنوات التي تدعم ذلك (جهات الاتصال/النظراء، والمجموعات، و"me").
 
 ## العلامات الشائعة
 
-- `--channel <name>`: معرّف/اسم مستعار للقناة (مطلوب عند تكوين عدة قنوات؛ تلقائي عند تكوين قناة واحدة فقط)
-- `--account <id>`: معرّف الحساب (الافتراضي: افتراضي القناة)
+- `--channel <name>`: معرف/اسم مستعار للقناة (مطلوب عند تكوين قنوات متعددة؛ تلقائي عند تكوين قناة واحدة فقط)
+- `--account <id>`: معرف الحساب (الافتراضي: افتراضي القناة)
 - `--json`: إخراج JSON
 
 ## ملاحظات
 
-- يهدف `directory` إلى مساعدتك في العثور على المعرّفات التي يمكنك لصقها في أوامر أخرى (خصوصًا `openclaw message send --target ...`).
-- بالنسبة إلى كثير من القنوات، تكون النتائج مستندة إلى التكوين (قوائم السماح / المجموعات المكوّنة) بدلًا من دليل موفّر مباشر.
+- يهدف `directory` إلى مساعدتك في العثور على المعرفات التي يمكنك لصقها في أوامر أخرى (خصوصًا `openclaw message send --target ...`).
+- في العديد من القنوات، تكون النتائج مدعومة بالإعدادات (قوائم السماح / المجموعات المكوّنة) بدلًا من دليل مزود حي.
 - لا يزال بإمكان Plugins القنوات المثبتة إغفال دعم الدليل؛ في هذه الحالة يبلّغ الأمر عن عملية الدليل غير المدعومة بدلًا من إعادة تثبيت Plugin.
-- الإخراج الافتراضي هو `id` (وأحيانًا `name`) مفصولًا بعلامة تبويب؛ استخدم `--json` للبرمجة النصية.
+- الإخراج الافتراضي هو `id` (وأحيانًا `name`) مفصولًا بعلامة جدولة؛ استخدم `--json` للبرمجة النصية.
 
 ## استخدام النتائج مع `message send`
 
@@ -38,24 +38,25 @@ openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## صيغ المعرّفات (حسب القناة)
+## تنسيقات المعرفات (حسب القناة)
 
-- WhatsApp: `+15551234567` (رسالة مباشرة)، `1234567890-1234567890@g.us` (مجموعة)، `120363123456789@newsletter` (هدف صادر لقناة/نشرة إخبارية)
-- Telegram: `@username` أو معرّف دردشة رقمي؛ المجموعات هي معرّفات رقمية
+- WhatsApp: `+15551234567` (رسالة مباشرة)، `1234567890-1234567890@g.us` (مجموعة)، `120363123456789@newsletter` (هدف إرسال صادر لقناة/نشرة إخبارية)
+- Signal: الأسماء المستعارة المكوّنة تُحل إلى أهداف رسائل مباشرة E.164/UUID أو أهداف مجموعات `group:<id>`
+- Telegram: `@username` أو معرف دردشة رقمي؛ المجموعات هي معرفات رقمية
 - Slack: `user:U…` و`channel:C…`
 - Discord: `user:<id>` و`channel:<id>`
-- Matrix (Plugin): `user:@user:server` أو `room:!roomId:server` أو `#alias:server`
+- Matrix (Plugin): `user:@user:server`، أو `room:!roomId:server`، أو `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` و`conversation:<id>`
-- Zalo (Plugin): معرّف المستخدم (Bot API)
-- Zalo Personal / `zalouser` (Plugin): معرّف سلسلة المحادثة (رسالة مباشرة/مجموعة) من `zca` (`me`، `friend list`، `group list`)
+- Zalo (Plugin): معرف المستخدم (Bot API)
+- Zalo Personal / `zalouser` (Plugin): معرف سلسلة المحادثة (رسالة مباشرة/مجموعة) من `zca` (`me`، `friend list`، `group list`)
 
-## الذات ("أنا")
+## الذات ("me")
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## الأقران (جهات الاتصال/المستخدمون)
+## النظراء (جهات الاتصال/المستخدمون)
 
 ```bash
 openclaw directory peers list --channel zalouser
@@ -71,6 +72,6 @@ openclaw directory groups list --channel zalouser --query "work"
 openclaw directory groups members --channel zalouser --group-id <id>
 ```
 
-## ذات صلة
+## ذو صلة
 
 - [مرجع CLI](/ar/cli)
