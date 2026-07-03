@@ -233,7 +233,7 @@ jobs:
         id: mdx_repair
         if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
         continue-on-error: true
-        uses: openai/codex-action@v1
+        uses: openai/codex-action@v1.9
         env:
           LOCALE: ${{ inputs.locale }}
         with:
