@@ -1,21 +1,21 @@
 ---
 read_when:
     - 安装 OpenClaw 之前，你需要先安装 Node.js
-    - 你安装了 OpenClaw，但 `openclaw` 提示找不到命令
-    - npm install -g 因权限或 PATH 问题失败
+    - 你安装了 OpenClaw，但 `openclaw` 提示命令未找到
+    - '`npm install -g` 因权限或 `PATH` 问题失败'
 summary: 为 OpenClaw 安装和配置 Node.js - 版本要求、安装选项和 PATH 故障排除
 title: Node.js
 x-i18n:
-    generated_at: "2026-06-27T02:19:30Z"
+    generated_at: "2026-07-04T08:43:31Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
+    source_hash: 6c556593982efa7f6fcd6e24787cca7ca6af30d265f54bb927a0608d2efc58d6
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw 需要 **Node 22.19 或更新版本**。**Node 24 是安装、CI 和发布工作流的默认且推荐的运行时**。Node 22 仍通过活跃的 LTS 线受支持。[安装程序脚本](/zh-CN/install#alternative-install-methods)会自动检测并安装 Node - 本页适用于你想自行设置 Node，并确保所有内容都正确连接（版本、PATH、全局安装）的情况。
+OpenClaw 需要 **Node 22.19+、Node 23.11+ 或 Node 24+**。**Node 24 是安装、CI 和发布工作流的默认且推荐的运行时**。Node 22 仍通过活跃的 LTS 分支受支持。[安装脚本](/zh-CN/install#alternative-install-methods)会自动检测并安装 Node；当你想自行设置 Node，并确保一切都正确接入时（版本、PATH、全局安装），请使用本页。
 
 ## 检查你的版本
 
@@ -23,7 +23,7 @@ OpenClaw 需要 **Node 22.19 或更新版本**。**Node 24 是安装、CI 和发
 node -v
 ```
 
-如果输出 `v24.x.x` 或更高版本，则你使用的是推荐默认版本。如果输出 `v22.19.x` 或更高版本，则你使用的是受支持的 Node 22 LTS 路径，但我们仍建议在方便时升级到 Node 24。如果未安装 Node 或版本过旧，请从下面选择一种安装方法。
+如果输出 `v24.x.x` 或更高版本，说明你正在使用推荐的默认版本。如果输出 `v22.19.x` 或更高版本，说明你正在使用受支持的 Node 22 LTS 路径，但我们仍建议你在方便时升级到 Node 24。`v23.11.0` 之前的 Node 23 版本不受支持。如果未安装 Node，或版本超出支持范围，请从下面选择一种安装方式。
 
 ## 安装 Node
 
@@ -35,7 +35,7 @@ node -v
     brew install node
     ```
 
-    或者从 [nodejs.org](https://nodejs.org/) 下载 macOS 安装程序。
+    或从 [nodejs.org](https://nodejs.org/) 下载 macOS 安装程序。
 
   </Tab>
   <Tab title="Linux">
@@ -68,13 +68,13 @@ node -v
     choco install nodejs-lts
     ```
 
-    或者从 [nodejs.org](https://nodejs.org/) 下载 Windows 安装程序。
+    或从 [nodejs.org](https://nodejs.org/) 下载 Windows 安装程序。
 
   </Tab>
 </Tabs>
 
-<Accordion title="使用版本管理器（nvm、fnm、mise、asdf）">
-  版本管理器让你可以轻松切换 Node 版本。常用选项：
+<Accordion title="Using a version manager (nvm, fnm, mise, asdf)">
+  版本管理器让你可以轻松切换 Node 版本。常用选项包括：
 
 - [**fnm**](https://github.com/Schniz/fnm) - 快速、跨平台
 - [**nvm**](https://github.com/nvm-sh/nvm) - 在 macOS/Linux 上广泛使用
@@ -99,12 +99,12 @@ fnm use 24
 这几乎总是意味着 npm 的全局 bin 目录不在你的 PATH 中。
 
 <Steps>
-  <Step title="查找你的全局 npm 前缀">
+  <Step title="Find your global npm prefix">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="检查它是否在你的 PATH 中">
+  <Step title="Check if it's on your PATH">
     ```bash
     echo "$PATH"
     ```
@@ -112,7 +112,7 @@ fnm use 24
     在输出中查找 `<npm-prefix>/bin`（macOS/Linux）或 `<npm-prefix>`（Windows）。
 
   </Step>
-  <Step title="将其添加到你的 shell 启动文件">
+  <Step title="Add it to your shell startup file">
     <Tabs>
       <Tab title="macOS / Linux">
         添加到 `~/.zshrc` 或 `~/.bashrc`：
@@ -131,9 +131,9 @@ fnm use 24
   </Step>
 </Steps>
 
-### `npm install -g` 的权限错误（Linux）
+### `npm install -g` 上的权限错误（Linux）
 
-如果你看到 `EACCES` 错误，请将 npm 的全局前缀切换到用户可写目录：
+如果你看到 `EACCES` 错误，请将 npm 的全局 prefix 切换到用户可写目录：
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -143,8 +143,8 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 
 将 `export PATH=...` 这一行添加到你的 `~/.bashrc` 或 `~/.zshrc`，使其永久生效。
 
-## 相关内容
+## 相关
 
-- [安装概览](/zh-CN/install) - 所有安装方法
+- [安装概览](/zh-CN/install) - 所有安装方式
 - [更新](/zh-CN/install/updating) - 让 OpenClaw 保持最新
 - [入门指南](/zh-CN/start/getting-started) - 安装后的第一步

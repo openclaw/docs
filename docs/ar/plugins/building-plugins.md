@@ -3,53 +3,49 @@ doc-schema-version: 1
 read_when:
     - تريد إنشاء Plugin جديد لـ OpenClaw
     - تحتاج إلى دليل بدء سريع لتطوير Plugin
-    - أنت تختار بين وثائق القناة أو المزوّد أو الواجهة الخلفية لـ CLI أو الأداة أو الخطاف.
+    - أنت تختار بين توثيق القناة أو المزوّد أو واجهة CLI الخلفية أو الأداة أو الخطاف
 sidebarTitle: Getting Started
-summary: أنشئ أول Plugin لك في OpenClaw خلال دقائق
-title: بناء plugins
+summary: أنشئ أول Plugin لك في دقائق
+title: بناء Plugins
 x-i18n:
-    generated_at: "2026-06-27T18:00:36Z"
+    generated_at: "2026-07-04T08:46:23Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8991b9e857af76b4fecc15a5feb9bd6659af91a4b7518f59c83ca091dc7f705c
+    source_hash: 2b5ad271e6a985c3bc8a5a39cfd540af1d8566178fb235fca0e29e4cee083148
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-توسّع Plugins إمكانات OpenClaw من دون تغيير النواة. يمكن لـ Plugin إضافة قناة مراسلة،
-أو مزوّد نماذج، أو واجهة CLI محلية خلفية، أو أداة وكيل، أو hook، أو مزوّد وسائط،
-أو قدرة أخرى مملوكة لـ Plugin.
+توسّع Plugins قدرات OpenClaw دون تغيير النواة. يمكن لـ plugin أن يضيف قناة مراسلة، أو موفر نموذج، أو خلفية CLI محلية، أو أداة وكيل، أو hook، أو موفر وسائط، أو قدرة أخرى مملوكة لـ plugin.
 
-لا تحتاج إلى إضافة Plugin خارجي إلى مستودع OpenClaw. انشر
-الحزمة إلى [ClawHub](/ar/clawhub) ويثبّتها المستخدمون باستخدام:
+لا تحتاج إلى إضافة plugin خارجي إلى مستودع OpenClaw. انشر الحزمة إلى [ClawHub](/ar/clawhub)، وسيثبتها المستخدمون باستخدام:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-تظل مواصفات الحزم المجردة تُثبَّت من npm أثناء انتقال الإطلاق. استخدم
-البادئة `clawhub:` عندما تريد حلّ الحزمة عبر ClawHub.
+ما زالت مواصفات الحزم المجرّدة تثبّت من npm أثناء انتقال الإطلاق. استخدم البادئة `clawhub:` عندما تريد حلّ ClawHub.
 
 ## المتطلبات
 
-- استخدم Node 22.19 أو أحدث ومدير حزم مثل `npm` أو `pnpm`.
+- استخدم Node 22.19+، أو Node 23.11+، أو Node 24+ ومدير حزم مثل `npm` أو `pnpm`.
 - كن ملمًّا بوحدات TypeScript ESM.
-- للعمل على Plugin مضمّن داخل المستودع، انسخ المستودع وشغّل `pnpm install`.
-  تطوير Plugins من نسخة مصدرية مخصّص لـ pnpm فقط لأن OpenClaw يحمّل Plugins
-  المضمّنة من حزم مساحة العمل `extensions/*`.
+- للعمل على plugin مضمّن داخل المستودع، استنسخ المستودع وشغّل `pnpm install`.
+  تطوير Plugins من checkout للمصدر يقتصر على pnpm لأن OpenClaw يحمّل Plugins المضمّنة
+  من حزم مساحة العمل `extensions/*`.
 
-## اختر شكل Plugin
+## اختر شكل plugin
 
 <CardGroup cols={2}>
   <Card title="Channel plugin" icon="messages-square" href="/ar/plugins/sdk-channel-plugins">
     وصّل OpenClaw بمنصة مراسلة.
   </Card>
   <Card title="Provider plugin" icon="cpu" href="/ar/plugins/sdk-provider-plugins">
-    أضف مزوّد نماذج أو وسائط أو بحث أو جلب أو كلام أو مزوّدًا لحظيًا.
+    أضف نموذجًا، أو وسائط، أو بحثًا، أو جلبًا، أو كلامًا، أو موفرًا آنيًا.
   </Card>
   <Card title="CLI backend plugin" icon="terminal" href="/ar/plugins/cli-backend-plugins">
-    شغّل واجهة CLI محلية للذكاء الاصطناعي عبر احتياطي نماذج OpenClaw.
+    شغّل CLI ذكاء اصطناعيًا محليًا عبر احتياطي نموذج OpenClaw.
   </Card>
   <Card title="Tool plugin" icon="wrench" href="/ar/plugins/tool-plugins">
     سجّل أدوات الوكيل.
@@ -58,8 +54,7 @@ openclaw plugins install clawhub:<package-name>
 
 ## البدء السريع
 
-ابنِ Plugin أداة بسيطًا بتسجيل أداة وكيل مطلوبة واحدة. هذا هو أقصر
-شكل Plugin مفيد، ويعرض الحزمة والبيان ونقطة الدخول والإثبات المحلي.
+ابنِ tool plugin بسيطًا بتسجيل أداة وكيل واحدة مطلوبة. هذا هو أقصر شكل plugin مفيد، ويعرض الحزمة والبيان ونقطة الدخول والإثبات المحلي.
 
 <Steps>
   <Step title="Create package metadata">
@@ -104,22 +99,11 @@ openclaw plugins install clawhub:<package-name>
 
     </CodeGroup>
 
-    يجب أن تشير Plugins الخارجية المنشورة في إدخالات وقت التشغيل إلى ملفات JavaScript
-    المبنية. راجع [نقاط دخول SDK](/ar/plugins/sdk-entrypoints) للاطلاع على عقد نقطة
-    الدخول الكامل.
+    يجب أن تشير Plugins الخارجية المنشورة بإدخالات وقت التشغيل إلى ملفات JavaScript المبنية. راجع [نقاط دخول SDK](/ar/plugins/sdk-entrypoints) لمعرفة عقد نقطة الدخول الكامل.
 
-    يحتاج كل Plugin إلى بيان، حتى عندما لا يحتوي على إعدادات. يجب أن تظهر أدوات
-    وقت التشغيل في `contracts.tools` حتى يتمكن OpenClaw من اكتشاف الملكية من دون
-    تحميل كل وقت تشغيل Plugin بشكل مبكر. اضبط `activation.onStartup`
-    عمدًا. يبدأ هذا المثال عند بدء Gateway.
+    يحتاج كل plugin إلى بيان، حتى عندما لا تكون لديه إعدادات. يجب أن تظهر أدوات وقت التشغيل في `contracts.tools` حتى يتمكن OpenClaw من اكتشاف الملكية دون تحميل وقت تشغيل كل plugin مسبقًا. عيّن `activation.onStartup` عمدًا. يبدأ هذا المثال عند بدء Gateway.
 
-    أسطح Plugin الموثوقة من المضيف محكومة أيضًا بالبيان وتتطلب تمكينًا صريحًا
-    لـ Plugins المثبّتة. إذا سجّل Plugin مثبّت
-    `api.registerAgentToolResultMiddleware(...)`، فأعلن كل وقت تشغيل مستهدف في
-    `contracts.agentToolResultMiddleware`. وإذا سجّل
-    `api.registerTrustedToolPolicy(...)`، فأعلن كل معرّف سياسة في
-    `contracts.trustedToolPolicies`. تُبقي هذه التصريحات فحص وقت التثبيت
-    وتسجيل وقت التشغيل متوافقين.
+    أسطح plugin الموثوقة من المضيف تخضع أيضًا لحراسة البيان وتتطلب تمكينًا صريحًا لـ Plugins المثبّتة. إذا سجّل plugin مثبّت `api.registerAgentToolResultMiddleware(...)`، فأعلن كل وقت تشغيل مستهدف في `contracts.agentToolResultMiddleware`. وإذا سجّل `api.registerTrustedToolPolicy(...)`، فأعلن كل معرّف سياسة في `contracts.trustedToolPolicies`. تحافظ هذه التصريحات على اتساق فحص وقت التثبيت مع تسجيل وقت التشغيل.
 
     لكل حقل في البيان، راجع [بيان Plugin](/ar/plugins/manifest).
 
@@ -149,24 +133,23 @@ openclaw plugins install clawhub:<package-name>
     });
     ```
 
-    استخدم `definePluginEntry` لـ Plugins غير القنوات. تستخدم Plugins القنوات
+    استخدم `definePluginEntry` لـ Plugins غير القنوات. تستخدم Channel plugins
     `defineChannelPluginEntry`.
 
   </Step>
 
   <Step title="Test the runtime">
-    بالنسبة إلى Plugin مثبّت أو خارجي، افحص وقت التشغيل المحمّل:
+    بالنسبة إلى plugin مثبّت أو خارجي، افحص وقت التشغيل المحمّل:
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    إذا سجّل Plugin أمر CLI، فشغّل ذلك الأمر أيضًا. على سبيل المثال،
+    إذا كان plugin يسجّل أمر CLI، فشغّل ذلك الأمر أيضًا. على سبيل المثال،
     يجب أن يكون لأمر تجريبي إثبات تنفيذ مثل
     `openclaw demo-plugin ping`.
 
-    بالنسبة إلى Plugin مضمّن في هذا المستودع، يكتشف OpenClaw حزم Plugins
-    من نسخة مصدرية من مساحة العمل `extensions/*`. شغّل أقرب اختبار موجّه:
+    بالنسبة إلى plugin مضمّن في هذا المستودع، يكتشف OpenClaw حزم Plugins من checkout للمصدر من مساحة العمل `extensions/*`. شغّل أقرب اختبار مستهدف:
 
     ```bash
     pnpm test -- extensions/my-plugin/
@@ -183,7 +166,7 @@ openclaw plugins install clawhub:<package-name>
     clawhub package publish your-org/your-plugin
     ```
 
-    توجد مقتطفات ClawHub القياسية في `docs/snippets/plugin-publish/`.
+    توجد مقتطفات ClawHub المعتمدة في `docs/snippets/plugin-publish/`.
 
   </Step>
 
@@ -201,8 +184,7 @@ openclaw plugins install clawhub:<package-name>
 
 ## تسجيل الأدوات
 
-يمكن أن تكون الأدوات مطلوبة أو اختيارية. تكون الأدوات المطلوبة متاحة دائمًا عندما يكون
-Plugin مفعّلًا. تتطلب الأدوات الاختيارية موافقة المستخدم.
+يمكن أن تكون الأدوات مطلوبة أو اختيارية. الأدوات المطلوبة متاحة دائمًا عندما يكون plugin مفعّلًا. تتطلب الأدوات الاختيارية موافقة المستخدم المسبقة.
 
 ```typescript
 register(api) {
@@ -220,8 +202,7 @@ register(api) {
 }
 ```
 
-يجب أيضًا التصريح عن كل أداة مسجلة باستخدام `api.registerTool(...)` في
-بيان Plugin:
+يجب أيضًا التصريح عن كل أداة مسجّلة باستخدام `api.registerTool(...)` في بيان plugin:
 
 ```json
 {
@@ -244,58 +225,41 @@ register(api) {
 }
 ```
 
-تتحكم الأدوات الاختيارية فيما إذا كانت الأداة مكشوفة للنموذج. استخدم
-[طلبات أذونات Plugin](/ar/plugins/plugin-permission-requests) عندما ينبغي لأداة
-أو hook طلب الموافقة بعد أن يختارها النموذج وقبل تشغيل الإجراء.
+تتحكم الأدوات الاختيارية فيما إذا كانت الأداة تُعرض للنموذج. استخدم
+[طلبات أذونات plugin](/ar/plugins/plugin-permission-requests) عندما ينبغي لأداة
+أو hook أن يطلب الموافقة بعد أن يختاره النموذج وقبل تنفيذ الإجراء.
 
-استخدم الأدوات الاختيارية للآثار الجانبية أو الثنائيات غير المعتادة أو القدرات التي
-لا ينبغي كشفها افتراضيًا. يجب ألا تتعارض أسماء الأدوات مع أدوات النواة؛
-تُتخطى التعارضات ويُبلّغ عنها في تشخيصات Plugin. تُتخطى التسجيلات
-غير الصحيحة، بما في ذلك أوصاف الأدوات التي لا تحتوي على `parameters`، ويُبلّغ
-عنها بالطريقة نفسها. الأدوات المسجلة هي دوال مكتوبة الأنواع يمكن للنموذج استدعاؤها
-بعد اجتياز فحوصات السياسة وقائمة السماح.
+استخدم الأدوات الاختيارية للآثار الجانبية، أو الثنائيات غير المعتادة، أو القدرات التي لا ينبغي عرضها افتراضيًا. يجب ألا تتعارض أسماء الأدوات مع أدوات النواة؛ يتم تخطي التعارضات والإبلاغ عنها في تشخيصات plugin. يتم تخطي التسجيلات غير الصحيحة، بما في ذلك واصفات الأدوات التي لا تحتوي على `parameters`، والإبلاغ عنها بالطريقة نفسها. الأدوات المسجّلة هي دوال ذات أنواع يمكن للنموذج استدعاؤها بعد اجتياز فحوص السياسة وقائمة السماح.
 
-تتلقى مصانع الأدوات كائن سياق يوفّره وقت التشغيل. استخدم `ctx.activeModel`
-عندما تحتاج أداة إلى التسجيل أو العرض أو التكيّف مع النموذج النشط للدورة الحالية.
-يمكن أن يتضمن الكائن `provider` و`modelId` و`modelRef`. تعامل معه على أنه
-بيانات وصفية معلوماتية لوقت التشغيل، وليس حدًا أمنيًا ضد المشغّل المحلي
-أو كود Plugin المثبّت أو وقت تشغيل OpenClaw معدّل. يجب أن تظل الأدوات المحلية
-الحساسة تتطلب موافقة صريحة من Plugin أو المشغّل، وأن تفشل مغلقة عندما تكون
-بيانات النموذج النشط الوصفية مفقودة أو غير مناسبة.
+تتلقى مصانع الأدوات كائن سياق يوفّره وقت التشغيل. استخدم `ctx.activeModel` عندما تحتاج أداة إلى تسجيل النموذج النشط أو عرضه أو التكيّف معه للدورة الحالية. يمكن أن يتضمن الكائن `provider` و`modelId` و`modelRef`. عامله باعتباره بيانات وصفية معلوماتية لوقت التشغيل، لا باعتباره حدًا أمنيًا أمام المشغّل المحلي، أو كود plugin المثبّت، أو وقت تشغيل OpenClaw معدّل. يجب أن تظل الأدوات المحلية الحساسة تتطلب موافقة صريحة من plugin أو المشغّل وأن تفشل بإغلاق عندما تكون بيانات النموذج النشط الوصفية مفقودة أو غير مناسبة.
 
-يعلن البيان الملكية والاكتشاف؛ لا يزال التنفيذ يستدعي تطبيق الأداة المسجلة الحي.
-أبقِ `toolMetadata.<tool>.optional: true` متوافقًا مع
-`api.registerTool(..., { optional: true })` حتى يتمكن OpenClaw من تجنب
-تحميل وقت تشغيل ذلك Plugin إلى أن تُدرج الأداة صراحة في قائمة السماح.
+يعلن البيان الملكية والاكتشاف؛ أما التنفيذ فلا يزال يستدعي تنفيذ الأداة الحية المسجّلة. أبقِ `toolMetadata.<tool>.optional: true` متوافقًا مع `api.registerTool(..., { optional: true })` حتى يتمكن OpenClaw من تجنّب تحميل وقت تشغيل ذلك plugin إلى أن تُضاف الأداة صراحةً إلى قائمة السماح.
 
 ## اصطلاحات الاستيراد
 
-استورد من مسارات SDK فرعية مركّزة:
+استورد من المسارات الفرعية المركّزة في SDK:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 ```
 
-لا تستورد من البرميل الجذري المهمل:
+لا تستورد من الجذر المجمّع المهجور:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-داخل حزمة Plugin الخاصة بك، استخدم ملفات برميل محلية مثل `api.ts` و
-`runtime-api.ts` للاستيرادات الداخلية. لا تستورد Plugin الخاص بك عبر
-مسار SDK. يجب أن تبقى المساعدات الخاصة بالمزوّد داخل حزمة المزوّد ما لم تكن
-الوصلة عامة فعلًا.
+داخل حزمة plugin الخاصة بك، استخدم ملفات تجميع محلية مثل `api.ts` و
+`runtime-api.ts` للاستيرادات الداخلية. لا تستورد plugin الخاص بك عبر مسار
+SDK. يجب أن تبقى المساعدات الخاصة بالموفر داخل حزمة الموفر ما لم تكن نقطة الربط عامة حقًا.
 
-طرق RPC المخصصة لـ Gateway هي نقطة دخول متقدمة. أبقِها على بادئة خاصة
-بـ Plugin؛ تبقى مساحات أسماء الإدارة في النواة مثل `config.*`،
-و`exec.approvals.*`، و`operator.admin.*`، و`wizard.*`، و`update.*` محجوزة
-وتُحل إلى `operator.admin`. جسر
-`openclaw/plugin-sdk/gateway-method-runtime` محجوز لمسارات HTTP الخاصة بـ Plugin
-التي تعلن `contracts.gatewayMethodDispatch: ["authenticated-request"]`.
+طرق Gateway RPC المخصصة هي نقطة دخول متقدمة. أبقِها على بادئة خاصة بـ plugin؛ تظل مساحات أسماء الإدارة الأساسية مثل `config.*` و
+`exec.approvals.*` و`operator.admin.*` و`wizard.*` و`update.*` محجوزة
+وتُحلّ إلى `operator.admin`. جسر
+`openclaw/plugin-sdk/gateway-method-runtime` محجوز لمسارات HTTP الخاصة بـ plugin التي تعلن `contracts.gatewayMethodDispatch: ["authenticated-request"]`.
 
-لخريطة الاستيراد الكاملة، راجع [نظرة عامة على SDK الخاص بـ Plugin](/ar/plugins/sdk-overview).
+لخريطة الاستيراد الكاملة، راجع [نظرة عامة على Plugin SDK](/ar/plugins/sdk-overview).
 
 ## قائمة التحقق قبل الإرسال
 
@@ -303,36 +267,36 @@ import { definePluginEntry } from "openclaw/plugin-sdk";
 <Check>بيان **openclaw.plugin.json** موجود وصالح</Check>
 <Check>تستخدم نقطة الدخول `defineChannelPluginEntry` أو `definePluginEntry`</Check>
 <Check>تستخدم كل الاستيرادات مسارات `plugin-sdk/<subpath>` مركّزة</Check>
-<Check>تستخدم الاستيرادات الداخلية وحدات محلية، وليس استيرادات ذاتية من SDK</Check>
+<Check>تستخدم الاستيرادات الداخلية وحدات محلية، لا استيرادات ذاتية من SDK</Check>
 <Check>تنجح الاختبارات (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
 <Check>ينجح `pnpm check` (لـ Plugins داخل المستودع)</Check>
 
 ## الاختبار مقابل إصدارات بيتا
 
-1. راقب وسوم إصدارات GitHub على [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) واشترك عبر `Watch` > `Releases`. تبدو وسوم بيتا مثل `v2026.3.N-beta.1`. يمكنك أيضًا تفعيل الإشعارات لحساب OpenClaw الرسمي على X ‏[@openclaw](https://x.com/openclaw) لإعلانات الإصدارات.
-2. اختبر Plugin الخاص بك مقابل وسم بيتا فور ظهوره. تكون النافذة قبل الإصدار المستقر عادة بضع ساعات فقط.
-3. انشر في سلسلة Plugin الخاصة بك في قناة Discord باسم `plugin-forum` بعد الاختبار باستخدام إما `all good` أو ما تعطل. إذا لم تكن لديك سلسلة بعد، فأنشئ واحدة.
-4. إذا تعطل شيء، فافتح مشكلة أو حدّثها بعنوان `Beta blocker: <plugin-name> - <summary>` وطبّق وسم `beta-blocker`. ضع رابط المشكلة في سلسلتك.
-5. افتح PR إلى `main` بعنوان `fix(<plugin-id>): beta blocker - <summary>` واربط المشكلة في كل من PR وسلسلة Discord الخاصة بك. لا يستطيع المساهمون وسم PRs، لذلك يكون العنوان إشارة جانب PR للمشرفين والأتمتة. تُدمج العوائق التي لديها PR؛ أما العوائق التي لا تملك واحدًا فقد تُشحن على أي حال. يراقب المشرفون هذه السلاسل أثناء اختبار بيتا.
-6. الصمت يعني أن كل شيء أخضر. إذا فاتتك النافذة، فمن المرجح أن يصل إصلاحك في الدورة التالية.
+1. راقب وسوم إصدارات GitHub على [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) واشترك عبر `Watch` > `Releases`. تبدو وسوم بيتا مثل `v2026.3.N-beta.1`. يمكنك أيضًا تشغيل الإشعارات لحساب OpenClaw الرسمي على X ‏[@openclaw](https://x.com/openclaw) لإعلانات الإصدارات.
+2. اختبر plugin الخاص بك مقابل وسم بيتا فور ظهوره. عادةً ما تكون النافذة قبل الإصدار المستقر بضع ساعات فقط.
+3. انشر في سلسلة plugin الخاصة بك في قناة Discord `plugin-forum` بعد الاختبار إما باستخدام `all good` أو بما تعطل. إذا لم تكن لديك سلسلة بعد، فأنشئ واحدة.
+4. إذا تعطل شيء ما، فافتح issue أو حدّث واحدة بعنوان `Beta blocker: <plugin-name> - <summary>` وطبّق وسم `beta-blocker`. ضع رابط issue في سلسلتك.
+5. افتح PR إلى `main` بعنوان `fix(<plugin-id>): beta blocker - <summary>` واربط issue في كل من PR وسلسلة Discord الخاصة بك. لا يمكن للمساهمين وسم PRs، لذلك يكون العنوان هو إشارة جهة PR للمشرفين والأتمتة. تُدمج العوائق التي لديها PR؛ وقد تُشحن العوائق التي لا تملك واحدًا على أي حال. يراقب المشرفون هذه السلاسل أثناء اختبار بيتا.
+6. الصمت يعني أن الحالة سليمة. إذا فاتتك النافذة، فمن المرجح أن يصل إصلاحك في الدورة التالية.
 
 ## الخطوات التالية
 
 <CardGroup cols={2}>
   <Card title="Channel Plugins" icon="messages-square" href="/ar/plugins/sdk-channel-plugins">
-    ابنِ Plugin قناة مراسلة
+    ابنِ messaging channel plugin
   </Card>
   <Card title="Provider Plugins" icon="cpu" href="/ar/plugins/sdk-provider-plugins">
-    ابنِ Plugin مزوّد نماذج
+    ابنِ model provider plugin
   </Card>
   <Card title="CLI Backend Plugins" icon="terminal" href="/ar/plugins/cli-backend-plugins">
-    سجّل واجهة CLI محلية خلفية للذكاء الاصطناعي
+    سجّل خلفية CLI محلية للذكاء الاصطناعي
   </Card>
   <Card title="SDK Overview" icon="book-open" href="/ar/plugins/sdk-overview">
-    مرجع خريطة الاستيراد وواجهة API للتسجيل
+    خريطة الاستيراد ومرجع API التسجيل
   </Card>
   <Card title="Runtime Helpers" icon="settings" href="/ar/plugins/sdk-runtime">
-    TTS والبحث والوكيل الفرعي عبر api.runtime
+    TTS، والبحث، والوكيل الفرعي عبر api.runtime
   </Card>
   <Card title="Testing" icon="test-tubes" href="/ar/plugins/sdk-testing">
     أدوات وأنماط الاختبار
@@ -344,5 +308,5 @@ import { definePluginEntry } from "openclaw/plugin-sdk";
 
 ## ذات صلة
 
-- [Hooks الخاصة بـ Plugin](/ar/plugins/hooks)
+- [Plugin hooks](/ar/plugins/hooks)
 - [معمارية Plugin](/ar/plugins/architecture)

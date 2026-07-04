@@ -6,16 +6,16 @@ read_when:
 summary: Instale e configure o Node.js para o OpenClaw - requisitos de versão, opções de instalação e solução de problemas de PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-06-27T17:39:09Z"
+    generated_at: "2026-07-04T08:44:36Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
+    source_hash: 6c556593982efa7f6fcd6e24787cca7ca6af30d265f54bb927a0608d2efc58d6
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw requer **Node 22.19 ou mais recente**. **Node 24 é o runtime padrão e recomendado** para instalações, CI e fluxos de trabalho de lançamento. Node 22 continua compatível pela linha LTS ativa. O [script de instalação](/pt-BR/install#alternative-install-methods) detectará e instalará o Node automaticamente - esta página é para quando você quiser configurar o Node por conta própria e garantir que tudo esteja conectado corretamente (versões, PATH, instalações globais).
+OpenClaw requer **Node 22.19+, Node 23.11+ ou Node 24+**. **Node 24 é o runtime padrão e recomendado** para instalações, CI e fluxos de release. Node 22 continua compatível pela linha LTS ativa. O [script de instalação](/pt-BR/install#alternative-install-methods) detectará e instalará o Node automaticamente - esta página é para quando você quiser configurar o Node por conta própria e garantir que tudo esteja conectado corretamente (versões, PATH, instalações globais).
 
 ## Verifique sua versão
 
@@ -23,7 +23,7 @@ OpenClaw requer **Node 22.19 ou mais recente**. **Node 24 é o runtime padrão e
 node -v
 ```
 
-Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se imprimir `v22.19.x` ou superior, você está no caminho compatível do Node 22 LTS, mas ainda recomendamos atualizar para Node 24 quando for conveniente. Se o Node não estiver instalado ou a versão for antiga demais, escolha um método de instalação abaixo.
+Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se imprimir `v22.19.x` ou superior, você está no caminho compatível do Node 22 LTS, mas ainda recomendamos atualizar para o Node 24 quando for conveniente. Versões do Node 23 anteriores a `v23.11.0` não são compatíveis. Se o Node não estiver instalado ou a versão estiver fora do intervalo compatível, escolha um método de instalação abaixo.
 
 ## Instale o Node
 
@@ -35,7 +35,7 @@ Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se i
     brew install node
     ```
 
-    Ou baixe o instalador do macOS em [nodejs.org](https://nodejs.org/).
+    Ou baixe o instalador para macOS em [nodejs.org](https://nodejs.org/).
 
   </Tab>
   <Tab title="Linux">
@@ -68,15 +68,15 @@ Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se i
     choco install nodejs-lts
     ```
 
-    Ou baixe o instalador do Windows em [nodejs.org](https://nodejs.org/).
+    Ou baixe o instalador para Windows em [nodejs.org](https://nodejs.org/).
 
   </Tab>
 </Tabs>
 
-<Accordion title="Usando um gerenciador de versões (nvm, fnm, mise, asdf)">
-  Gerenciadores de versões permitem alternar facilmente entre versões do Node. Opções populares:
+<Accordion title="Using a version manager (nvm, fnm, mise, asdf)">
+  Gerenciadores de versão permitem alternar facilmente entre versões do Node. Opções populares:
 
-- [**fnm**](https://github.com/Schniz/fnm) - rápido, multiplataforma
+- [**fnm**](https://github.com/Schniz/fnm) - rápido e multiplataforma
 - [**nvm**](https://github.com/nvm-sh/nvm) - amplamente usado no macOS/Linux
 - [**mise**](https://mise.jdx.dev/) - poliglota (Node, Python, Ruby etc.)
 
@@ -88,7 +88,7 @@ fnm use 24
 ```
 
   <Warning>
-  Garanta que seu gerenciador de versões esteja inicializado no arquivo de inicialização do shell (`~/.zshrc` ou `~/.bashrc`). Se não estiver, `openclaw` talvez não seja encontrado em novas sessões de terminal porque o PATH não incluirá o diretório bin do Node.
+  Certifique-se de que seu gerenciador de versões esteja inicializado no arquivo de inicialização do seu shell (`~/.zshrc` ou `~/.bashrc`). Se não estiver, `openclaw` pode não ser encontrado em novas sessões de terminal porque o PATH não incluirá o diretório bin do Node.
   </Warning>
 </Accordion>
 
@@ -99,12 +99,12 @@ fnm use 24
 Isso quase sempre significa que o diretório bin global do npm não está no seu PATH.
 
 <Steps>
-  <Step title="Encontre seu prefixo global do npm">
+  <Step title="Find your global npm prefix">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="Verifique se ele está no seu PATH">
+  <Step title="Check if it's on your PATH">
     ```bash
     echo "$PATH"
     ```
@@ -112,7 +112,7 @@ Isso quase sempre significa que o diretório bin global do npm não está no seu
     Procure por `<npm-prefix>/bin` (macOS/Linux) ou `<npm-prefix>` (Windows) na saída.
 
   </Step>
-  <Step title="Adicione-o ao arquivo de inicialização do shell">
+  <Step title="Add it to your shell startup file">
     <Tabs>
       <Tab title="macOS / Linux">
         Adicione a `~/.zshrc` ou `~/.bashrc`:
@@ -124,7 +124,7 @@ Isso quase sempre significa que o diretório bin global do npm não está no seu
         Depois abra um novo terminal (ou execute `rehash` no zsh / `hash -r` no bash).
       </Tab>
       <Tab title="Windows">
-        Adicione a saída de `npm prefix -g` ao PATH do sistema via Configurações → Sistema → Variáveis de Ambiente.
+        Adicione a saída de `npm prefix -g` ao PATH do sistema em Configurações → Sistema → Variáveis de Ambiente.
       </Tab>
     </Tabs>
 
@@ -143,8 +143,8 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 
 Adicione a linha `export PATH=...` ao seu `~/.bashrc` ou `~/.zshrc` para torná-la permanente.
 
-## Relacionado
+## Relacionados
 
 - [Visão geral da instalação](/pt-BR/install) - todos os métodos de instalação
-- [Atualização](/pt-BR/install/updating) - mantendo o OpenClaw atualizado
+- [Atualização](/pt-BR/install/updating) - manter o OpenClaw atualizado
 - [Primeiros passos](/pt-BR/start/getting-started) - primeiros passos após a instalação

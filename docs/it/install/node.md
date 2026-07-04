@@ -1,31 +1,31 @@
 ---
 read_when:
-    - È necessario installare Node.js prima di installare OpenClaw
+    - Devi installare Node.js prima di installare OpenClaw
     - Hai installato OpenClaw ma `openclaw` è comando non trovato
-    - npm install -g non riesce a causa di problemi di permessi o di PATH
+    - npm install -g non riesce per problemi di autorizzazioni o di PATH
 summary: Installa e configura Node.js per OpenClaw - requisiti di versione, opzioni di installazione e risoluzione dei problemi del PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-06-27T17:41:00Z"
+    generated_at: "2026-07-04T08:46:46Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
+    source_hash: 6c556593982efa7f6fcd6e24787cca7ca6af30d265f54bb927a0608d2efc58d6
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw richiede **Node 22.19 o versioni successive**. **Node 24 è il runtime predefinito e consigliato** per installazioni, CI e flussi di lavoro di rilascio. Node 22 resta supportato tramite la linea LTS attiva. Lo [script di installazione](/it/install#alternative-install-methods) rileverà e installerà Node automaticamente: questa pagina serve quando vuoi configurare Node manualmente e assicurarti che tutto sia collegato correttamente (versioni, PATH, installazioni globali).
+OpenClaw richiede **Node 22.19+, Node 23.11+ o Node 24+**. **Node 24 è il runtime predefinito e consigliato** per installazioni, CI e workflow di rilascio. Node 22 rimane supportato tramite la linea LTS attiva. Lo [script di installazione](/it/install#alternative-install-methods) rileverà e installerà Node automaticamente - questa pagina serve quando vuoi configurare Node manualmente e assicurarti che tutto sia collegato correttamente (versioni, PATH, installazioni globali).
 
-## Controlla la tua versione
+## Controllare la versione
 
 ```bash
 node -v
 ```
 
-Se stampa `v24.x.x` o superiore, stai usando l'impostazione predefinita consigliata. Se stampa `v22.19.x` o superiore, stai usando il percorso Node 22 LTS supportato, ma consigliamo comunque di passare a Node 24 quando possibile. Se Node non è installato o la versione è troppo vecchia, scegli un metodo di installazione qui sotto.
+Se stampa `v24.x.x` o superiore, stai usando il valore predefinito consigliato. Se stampa `v22.19.x` o superiore, stai usando il percorso Node 22 LTS supportato, ma consigliamo comunque di passare a Node 24 quando è comodo. Le versioni di Node 23 precedenti a `v23.11.0` non sono supportate. Se Node non è installato o la versione è fuori dall'intervallo supportato, scegli un metodo di installazione qui sotto.
 
-## Installa Node
+## Installare Node
 
 <Tabs>
   <Tab title="macOS">
@@ -74,7 +74,7 @@ Se stampa `v24.x.x` o superiore, stai usando l'impostazione predefinita consigli
 </Tabs>
 
 <Accordion title="Uso di un gestore di versioni (nvm, fnm, mise, asdf)">
-  I gestori di versioni ti permettono di passare facilmente tra versioni di Node. Opzioni popolari:
+  I gestori di versioni ti permettono di passare facilmente da una versione di Node all'altra. Opzioni popolari:
 
 - [**fnm**](https://github.com/Schniz/fnm) - veloce, multipiattaforma
 - [**nvm**](https://github.com/nvm-sh/nvm) - ampiamente usato su macOS/Linux
@@ -131,9 +131,9 @@ Questo significa quasi sempre che la directory bin globale di npm non è nel tuo
   </Step>
 </Steps>
 
-### Errori di permessi su `npm install -g` (Linux)
+### Errori di autorizzazione su `npm install -g` (Linux)
 
-Se vedi errori `EACCES`, imposta il prefisso globale di npm su una directory scrivibile dall'utente:
+Se vedi errori `EACCES`, sposta il prefisso globale di npm in una directory scrivibile dall'utente:
 
 ```bash
 mkdir -p "$HOME/.npm-global"

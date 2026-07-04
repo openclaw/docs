@@ -3,55 +3,55 @@ doc-schema-version: 1
 read_when:
     - Sie möchten ein neues OpenClaw-Plugin erstellen
     - Sie benötigen einen Schnellstart für die Plugin-Entwicklung
-    - Sie wählen zwischen Dokumentation für Kanal, Provider, CLI-Backend, Tool oder Hook
+    - Sie wählen zwischen Kanal-, Provider-, CLI-Backend-, Tool- oder Hook-Dokumentation
 sidebarTitle: Getting Started
 summary: Erstellen Sie Ihr erstes OpenClaw-Plugin in wenigen Minuten
 title: Plugins erstellen
 x-i18n:
-    generated_at: "2026-06-27T17:44:55Z"
+    generated_at: "2026-07-04T08:45:09Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8991b9e857af76b4fecc15a5feb9bd6659af91a4b7518f59c83ca091dc7f705c
+    source_hash: 2b5ad271e6a985c3bc8a5a39cfd540af1d8566178fb235fca0e29e4cee083148
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Plugins erweitern OpenClaw, ohne den Core zu ändern. Ein Plugin kann einen Messaging-
-Kanal, Modell-Provider, ein lokales CLI-Backend, ein Agent-Tool, einen Hook, Medien-Provider
-oder eine andere Plugin-eigene Fähigkeit hinzufügen.
+Plugins erweitern OpenClaw, ohne den Kern zu ändern. Ein Plugin kann einen Messaging-
+Kanal, Modell-Provider, ein lokales CLI-Backend, Agent-Tool, Hook, Medien-Provider
+oder eine andere vom Plugin verantwortete Fähigkeit hinzufügen.
 
-Sie müssen kein externes Plugin zum OpenClaw-Repository hinzufügen. Veröffentlichen Sie
-das Paket in [ClawHub](/de/clawhub), und Benutzer installieren es mit:
+Sie müssen kein externes Plugin zum OpenClaw-Repository hinzufügen. Veröffentlichen
+Sie das Paket in [ClawHub](/de/clawhub), und Benutzer installieren es mit:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-Reine Paketspezifikationen installieren während der Launch-Umstellung weiterhin aus npm. Verwenden Sie das
+Bare-Package-Spezifikationen werden während der Launch-Umstellung weiterhin aus npm installiert. Verwenden Sie das
 Präfix `clawhub:`, wenn Sie ClawHub-Auflösung möchten.
 
 ## Anforderungen
 
-- Verwenden Sie Node 22.19 oder neuer und einen Paketmanager wie `npm` oder `pnpm`.
+- Verwenden Sie Node 22.19+, Node 23.11+ oder Node 24+ und einen Paketmanager wie `npm` oder `pnpm`.
 - Sie sollten mit TypeScript-ESM-Modulen vertraut sein.
 - Für im Repository gebündelte Plugin-Arbeit klonen Sie das Repository und führen Sie `pnpm install` aus.
-  Plugin-Entwicklung aus einem Source-Checkout ist ausschließlich pnpm-basiert, weil OpenClaw gebündelte
+  Plugin-Entwicklung in einem Source-Checkout ist nur mit pnpm möglich, da OpenClaw gebündelte
   Plugins aus `extensions/*`-Workspace-Paketen lädt.
 
 ## Plugin-Form auswählen
 
 <CardGroup cols={2}>
-  <Card title="Channel plugin" icon="messages-square" href="/de/plugins/sdk-channel-plugins">
+  <Card title="Kanal-Plugin" icon="messages-square" href="/de/plugins/sdk-channel-plugins">
     Verbinden Sie OpenClaw mit einer Messaging-Plattform.
   </Card>
-  <Card title="Provider plugin" icon="cpu" href="/de/plugins/sdk-provider-plugins">
-    Fügen Sie ein Modell, Medien, Suche, Abruf, Sprache oder einen Realtime-Provider hinzu.
+  <Card title="Provider-Plugin" icon="cpu" href="/de/plugins/sdk-provider-plugins">
+    Fügen Sie einen Modell-, Medien-, Such-, Fetch-, Sprach- oder Realtime-Provider hinzu.
   </Card>
-  <Card title="CLI backend plugin" icon="terminal" href="/de/plugins/cli-backend-plugins">
+  <Card title="CLI-Backend-Plugin" icon="terminal" href="/de/plugins/cli-backend-plugins">
     Führen Sie eine lokale KI-CLI über OpenClaw-Modell-Fallback aus.
   </Card>
-  <Card title="Tool plugin" icon="wrench" href="/de/plugins/tool-plugins">
+  <Card title="Tool-Plugin" icon="wrench" href="/de/plugins/tool-plugins">
     Registrieren Sie Agent-Tools.
   </Card>
 </CardGroup>
@@ -105,22 +105,22 @@ lokalen Nachweis.
 
     </CodeGroup>
 
-    Veröffentlichte externe Plugins sollten Runtime-Einstiege auf gebaute JavaScript-
-    Dateien verweisen lassen. Siehe [SDK-Einstiegspunkte](/de/plugins/sdk-entrypoints) für den vollständigen
+    Veröffentlichte externe Plugins sollten Laufzeiteinstiege auf gebaute JavaScript-
+    Dateien zeigen lassen. Siehe [SDK-Einstiegspunkte](/de/plugins/sdk-entrypoints) für den vollständigen
     Einstiegspunktvertrag.
 
     Jedes Plugin benötigt ein Manifest, auch wenn es keine Konfiguration hat. Runtime-Tools
-    müssen in `contracts.tools` erscheinen, damit OpenClaw die Zuständigkeit erkennen kann, ohne
-    jede Plugin-Runtime sofort zu laden. Setzen Sie `activation.onStartup`
+    müssen in `contracts.tools` erscheinen, damit OpenClaw die Zuständigkeit erkennen kann,
+    ohne jede Plugin-Laufzeit vorab zu laden. Setzen Sie `activation.onStartup`
     bewusst. Dieses Beispiel startet beim Gateway-Start.
 
-    Host-vertrauenswürdige Plugin-Oberflächen sind ebenfalls manifestgesteuert und erfordern explizite
+    Host-vertrauenswürdige Plugin-Oberflächen sind ebenfalls manifestgesteuert und erfordern eine explizite
     Aktivierung für installierte Plugins. Wenn ein installiertes Plugin
-    `api.registerAgentToolResultMiddleware(...)` registriert, deklarieren Sie jede Ziel-Runtime in
+    `api.registerAgentToolResultMiddleware(...)` registriert, deklarieren Sie jede Ziellaufzeit in
     `contracts.agentToolResultMiddleware`. Wenn es
     `api.registerTrustedToolPolicy(...)` registriert, deklarieren Sie jede Policy-ID in
-    `contracts.trustedToolPolicies`. Diese Deklarationen halten Installationszeit-
-    Prüfung und Runtime-Registrierung konsistent.
+    `contracts.trustedToolPolicies`. Diese Deklarationen halten Installationsprüfung
+    und Laufzeitregistrierung synchron.
 
     Für jedes Manifestfeld siehe [Plugin-Manifest](/de/plugins/manifest).
 
@@ -150,13 +150,13 @@ lokalen Nachweis.
     });
     ```
 
-    Verwenden Sie `definePluginEntry` für Nicht-Channel-Plugins. Channel-Plugins verwenden
+    Verwenden Sie `definePluginEntry` für Nicht-Kanal-Plugins. Kanal-Plugins verwenden
     `defineChannelPluginEntry`.
 
   </Step>
 
-  <Step title="Runtime testen">
-    Für ein installiertes oder externes Plugin prüfen Sie die geladene Runtime:
+  <Step title="Laufzeit testen">
+    Prüfen Sie für ein installiertes oder externes Plugin die geladene Laufzeit:
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
@@ -185,7 +185,7 @@ lokalen Nachweis.
     clawhub package publish your-org/your-plugin
     ```
 
-    Die kanonischen ClawHub-Snippets liegen in `docs/snippets/plugin-publish/`.
+    Die kanonischen ClawHub-Snippets befinden sich in `docs/snippets/plugin-publish/`.
 
   </Step>
 
@@ -204,7 +204,7 @@ lokalen Nachweis.
 ## Tools registrieren
 
 Tools können erforderlich oder optional sein. Erforderliche Tools sind immer verfügbar, wenn das
-Plugin aktiviert ist. Optionale Tools erfordern ein Opt-in durch den Benutzer.
+Plugin aktiviert ist. Optionale Tools erfordern eine Zustimmung des Benutzers.
 
 ```typescript
 register(api) {
@@ -248,28 +248,28 @@ Benutzer stimmen mit `tools.allow` zu:
 
 Optionale Tools steuern, ob ein Tool dem Modell bereitgestellt wird. Verwenden Sie
 [Plugin-Berechtigungsanfragen](/de/plugins/plugin-permission-requests), wenn ein Tool
-oder Hook nach Genehmigung fragen soll, nachdem das Modell es ausgewählt hat und bevor die
-Aktion ausgeführt wird.
+oder Hook nach der Modellauswahl und vor der Ausführung der Aktion eine Genehmigung
+anfordern soll.
 
 Verwenden Sie optionale Tools für Seiteneffekte, ungewöhnliche Binärdateien oder Fähigkeiten, die
-standardmäßig nicht bereitgestellt werden sollten. Tool-Namen dürfen nicht mit Core-Tools kollidieren;
+standardmäßig nicht bereitgestellt werden sollten. Tool-Namen dürfen nicht mit Kern-Tools kollidieren;
 Konflikte werden übersprungen und in Plugin-Diagnosen gemeldet. Fehlerhafte
 Registrierungen, einschließlich Tool-Deskriptoren ohne `parameters`, werden übersprungen und
-auf die gleiche Weise gemeldet. Registrierte Tools sind typisierte Funktionen, die das Modell aufrufen kann,
+auf dieselbe Weise gemeldet. Registrierte Tools sind typisierte Funktionen, die das Modell aufrufen kann,
 nachdem Policy- und Allowlist-Prüfungen bestanden wurden.
 
-Tool-Factories erhalten ein von der Runtime bereitgestelltes Kontextobjekt. Verwenden Sie `ctx.activeModel`,
-wenn ein Tool das aktive Modell für den aktuellen Turn protokollieren, anzeigen oder sich daran anpassen muss.
-Das Objekt kann `provider`, `modelId` und `modelRef` enthalten. Behandeln Sie es als
-informative Runtime-Metadaten, nicht als Sicherheitsgrenze gegenüber dem lokalen
-Operator, installiertem Plugin-Code oder einer modifizierten OpenClaw-Runtime. Sensible lokale
-Tools sollten weiterhin ein explizites Plugin- oder Operator-Opt-in erfordern und geschlossen fehlschlagen,
+Tool-Factories erhalten ein von der Laufzeit bereitgestelltes Kontextobjekt. Verwenden Sie `ctx.activeModel`,
+wenn ein Tool für den aktuellen Turn das aktive Modell protokollieren, anzeigen oder sich daran
+anpassen muss. Das Objekt kann `provider`, `modelId` und `modelRef` enthalten. Behandeln Sie es als
+informative Laufzeitmetadaten, nicht als Sicherheitsgrenze gegenüber dem lokalen
+Operator, installiertem Plugin-Code oder einer modifizierten OpenClaw-Laufzeit. Sensible lokale
+Tools sollten weiterhin eine explizite Plugin- oder Operator-Zustimmung erfordern und geschlossen fehlschlagen,
 wenn Active-Model-Metadaten fehlen oder ungeeignet sind.
 
 Das Manifest deklariert Zuständigkeit und Erkennung; die Ausführung ruft weiterhin die live
 registrierte Tool-Implementierung auf. Halten Sie `toolMetadata.<tool>.optional: true`
-mit `api.registerTool(..., { optional: true })` konsistent, damit OpenClaw vermeiden kann,
-diese Plugin-Runtime zu laden, bis das Tool explizit allowlisted ist.
+mit `api.registerTool(..., { optional: true })` synchron, damit OpenClaw vermeiden kann,
+diese Plugin-Laufzeit zu laden, bis das Tool explizit erlaubt wurde.
 
 ## Importkonventionen
 
@@ -286,13 +286,13 @@ Importieren Sie nicht aus dem veralteten Root-Barrel:
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-Innerhalb Ihres Plugin-Pakets verwenden Sie lokale Barrel-Dateien wie `api.ts` und
+Verwenden Sie innerhalb Ihres Plugin-Pakets lokale Barrel-Dateien wie `api.ts` und
 `runtime-api.ts` für interne Importe. Importieren Sie Ihr eigenes Plugin nicht über einen
-SDK-Pfad. Provider-spezifische Hilfsfunktionen sollten im Provider-Paket bleiben, es sei denn,
-die Schnittstelle ist wirklich generisch.
+SDK-Pfad. Provider-spezifische Helfer sollten im Provider-Paket bleiben, sofern
+die Schnittstelle nicht wirklich generisch ist.
 
-Benutzerdefinierte Gateway-RPC-Methoden sind ein fortgeschrittener Einstiegspunkt. Halten Sie sie auf einem
-Plugin-spezifischen Präfix; Core-Admin-Namespaces wie `config.*`,
+Benutzerdefinierte Gateway-RPC-Methoden sind ein fortgeschrittener Einstiegspunkt. Halten Sie sie unter einem
+Plugin-spezifischen Präfix; Kern-Admin-Namespaces wie `config.*`,
 `exec.approvals.*`, `operator.admin.*`, `wizard.*` und `update.*` bleiben reserviert
 und werden zu `operator.admin` aufgelöst. Die
 `openclaw/plugin-sdk/gateway-method-runtime`-Bridge ist für Plugin-HTTP-
@@ -302,50 +302,50 @@ Die vollständige Importzuordnung finden Sie unter [Plugin-SDK-Übersicht](/de/p
 
 ## Checkliste vor der Einreichung
 
-<Check>**package.json** hat korrekte `openclaw`-Metadaten</Check>
+<Check>**package.json** enthält korrekte `openclaw`-Metadaten</Check>
 <Check>**openclaw.plugin.json**-Manifest ist vorhanden und gültig</Check>
 <Check>Einstiegspunkt verwendet `defineChannelPluginEntry` oder `definePluginEntry`</Check>
 <Check>Alle Importe verwenden fokussierte `plugin-sdk/<subpath>`-Pfade</Check>
 <Check>Interne Importe verwenden lokale Module, keine SDK-Selbstimporte</Check>
 <Check>Tests bestehen (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` besteht (Plugins im Repository)</Check>
+<Check>`pnpm check` besteht (In-Repo-Plugins)</Check>
 
 ## Gegen Beta-Releases testen
 
-1. Achten Sie auf GitHub-Release-Tags bei [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) und abonnieren Sie sie über `Watch` > `Releases`. Beta-Tags sehen aus wie `v2026.3.N-beta.1`. Sie können auch Benachrichtigungen für das offizielle OpenClaw-X-Konto [@openclaw](https://x.com/openclaw) aktivieren, um Release-Ankündigungen zu erhalten.
+1. Achten Sie auf GitHub-Release-Tags auf [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) und abonnieren Sie sie über `Watch` > `Releases`. Beta-Tags sehen aus wie `v2026.3.N-beta.1`. Sie können außerdem Benachrichtigungen für das offizielle OpenClaw-X-Konto [@openclaw](https://x.com/openclaw) für Release-Ankündigungen aktivieren.
 2. Testen Sie Ihr Plugin gegen das Beta-Tag, sobald es erscheint. Das Zeitfenster vor Stable beträgt typischerweise nur wenige Stunden.
 3. Posten Sie nach dem Testen im Thread Ihres Plugins im Discord-Kanal `plugin-forum` entweder `all good` oder was kaputtgegangen ist. Wenn Sie noch keinen Thread haben, erstellen Sie einen.
-4. Wenn etwas kaputtgeht, öffnen oder aktualisieren Sie ein Issue mit dem Titel `Beta blocker: <plugin-name> - <summary>` und wenden Sie das Label `beta-blocker` an. Legen Sie den Issue-Link in Ihren Thread.
-5. Öffnen Sie einen PR zu `main` mit dem Titel `fix(<plugin-id>): beta blocker - <summary>` und verlinken Sie das Issue sowohl im PR als auch in Ihrem Discord-Thread. Beitragende können PRs nicht labeln, daher ist der Titel das PR-seitige Signal für Maintainer und Automatisierung. Blocker mit PR werden gemergt; Blocker ohne PR werden möglicherweise trotzdem ausgeliefert. Maintainer beobachten diese Threads während der Beta-Tests.
+4. Wenn etwas kaputtgeht, öffnen oder aktualisieren Sie ein Issue mit dem Titel `Beta blocker: <plugin-name> - <summary>` und wenden Sie das Label `beta-blocker` an. Fügen Sie den Issue-Link in Ihren Thread ein.
+5. Öffnen Sie einen PR gegen `main` mit dem Titel `fix(<plugin-id>): beta blocker - <summary>` und verlinken Sie das Issue sowohl im PR als auch in Ihrem Discord-Thread. Beitragende können PRs nicht labeln, daher ist der Titel das PR-seitige Signal für Maintainer und Automatisierung. Blocker mit PR werden gemergt; Blocker ohne PR werden möglicherweise trotzdem ausgeliefert. Maintainer beobachten diese Threads während des Beta-Tests.
 6. Stille bedeutet grün. Wenn Sie das Zeitfenster verpassen, landet Ihr Fix wahrscheinlich im nächsten Zyklus.
 
 ## Nächste Schritte
 
 <CardGroup cols={2}>
-  <Card title="Channel Plugins" icon="messages-square" href="/de/plugins/sdk-channel-plugins">
-    Erstellen Sie ein Messaging-Channel-Plugin
+  <Card title="Kanal-Plugins" icon="messages-square" href="/de/plugins/sdk-channel-plugins">
+    Ein Messaging-Kanal-Plugin erstellen
   </Card>
-  <Card title="Provider Plugins" icon="cpu" href="/de/plugins/sdk-provider-plugins">
-    Erstellen Sie ein Modell-Provider-Plugin
+  <Card title="Provider-Plugins" icon="cpu" href="/de/plugins/sdk-provider-plugins">
+    Ein Modell-Provider-Plugin erstellen
   </Card>
-  <Card title="CLI Backend Plugins" icon="terminal" href="/de/plugins/cli-backend-plugins">
-    Registrieren Sie ein lokales KI-CLI-Backend
+  <Card title="CLI-Backend-Plugins" icon="terminal" href="/de/plugins/cli-backend-plugins">
+    Ein lokales KI-CLI-Backend registrieren
   </Card>
-  <Card title="SDK Overview" icon="book-open" href="/de/plugins/sdk-overview">
+  <Card title="SDK-Übersicht" icon="book-open" href="/de/plugins/sdk-overview">
     Importzuordnung und Registrierungs-API-Referenz
   </Card>
-  <Card title="Runtime Helpers" icon="settings" href="/de/plugins/sdk-runtime">
+  <Card title="Laufzeit-Helfer" icon="settings" href="/de/plugins/sdk-runtime">
     TTS, Suche, Subagent über api.runtime
   </Card>
-  <Card title="Testing" icon="test-tubes" href="/de/plugins/sdk-testing">
+  <Card title="Testen" icon="test-tubes" href="/de/plugins/sdk-testing">
     Testhilfen und Muster
   </Card>
-  <Card title="Plugin Manifest" icon="file-json" href="/de/plugins/manifest">
+  <Card title="Plugin-Manifest" icon="file-json" href="/de/plugins/manifest">
     Vollständige Manifest-Schema-Referenz
   </Card>
 </CardGroup>
 
-## Verwandte Themen
+## Verwandt
 
 - [Plugin-Hooks](/de/plugins/hooks)
 - [Plugin-Architektur](/de/plugins/architecture)

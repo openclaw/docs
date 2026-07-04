@@ -3,19 +3,19 @@ read_when:
     - OpenClaw를 설치하기 전에 Node.js를 설치해야 합니다.
     - OpenClaw를 설치했지만 `openclaw` 명령을 찾을 수 없습니다
     - npm install -g가 권한 또는 PATH 문제로 실패함
-summary: OpenClaw용 Node.js 설치 및 구성 - 버전 요구 사항, 설치 옵션 및 PATH 문제 해결
+summary: OpenClaw용 Node.js 설치 및 구성 - 버전 요구 사항, 설치 옵션, PATH 문제 해결
 title: Node.js
 x-i18n:
-    generated_at: "2026-06-27T17:37:44Z"
+    generated_at: "2026-07-04T08:45:05Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
+    source_hash: 6c556593982efa7f6fcd6e24787cca7ca6af30d265f54bb927a0608d2efc58d6
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw에는 **Node 22.19 이상**이 필요합니다. **Node 24는 설치, CI, 릴리스 워크플로의 기본 및 권장 런타임**입니다. Node 22는 활성 LTS 라인을 통해 계속 지원됩니다. [설치 스크립트](/ko/install#alternative-install-methods)는 Node를 자동으로 감지하고 설치합니다. 이 페이지는 Node를 직접 설정하고 모든 것이 올바르게 연결되었는지(버전, PATH, 전역 설치) 확인하려는 경우를 위한 것입니다.
+OpenClaw에는 **Node 22.19+, Node 23.11+ 또는 Node 24+**가 필요합니다. **Node 24는 설치, CI, 릴리스 워크플로의 기본 및 권장 런타임**입니다. Node 22는 활성 LTS 라인을 통해 계속 지원됩니다. [설치 스크립트](/ko/install#alternative-install-methods)는 Node를 자동으로 감지하고 설치합니다. 이 페이지는 Node를 직접 설정하고 모든 것이 올바르게 연결되었는지 확인하려는 경우(버전, PATH, 전역 설치)를 위한 것입니다.
 
 ## 버전 확인
 
@@ -23,7 +23,7 @@ OpenClaw에는 **Node 22.19 이상**이 필요합니다. **Node 24는 설치, CI
 node -v
 ```
 
-이 명령이 `v24.x.x` 이상을 출력하면 권장 기본값을 사용 중입니다. `v22.19.x` 이상을 출력하면 지원되는 Node 22 LTS 경로를 사용 중이지만, 여전히 편한 시점에 Node 24로 업그레이드하는 것을 권장합니다. Node가 설치되어 있지 않거나 버전이 너무 오래된 경우 아래에서 설치 방법을 선택하세요.
+이 명령이 `v24.x.x` 이상을 출력하면 권장 기본 버전을 사용 중입니다. `v22.19.x` 이상을 출력하면 지원되는 Node 22 LTS 경로를 사용 중이지만, 가능할 때 Node 24로 업그레이드하는 것을 여전히 권장합니다. `v23.11.0` 이전의 Node 23 버전은 지원되지 않습니다. Node가 설치되어 있지 않거나 버전이 지원 범위를 벗어나면 아래 설치 방법 중 하나를 선택하세요.
 
 ## Node 설치
 
@@ -74,11 +74,11 @@ node -v
 </Tabs>
 
 <Accordion title="버전 관리자 사용(nvm, fnm, mise, asdf)">
-  버전 관리자를 사용하면 Node 버전 간에 쉽게 전환할 수 있습니다. 많이 쓰이는 옵션은 다음과 같습니다.
+  버전 관리자를 사용하면 Node 버전 사이를 쉽게 전환할 수 있습니다. 인기 있는 옵션:
 
 - [**fnm**](https://github.com/Schniz/fnm) - 빠르고 크로스 플랫폼 지원
 - [**nvm**](https://github.com/nvm-sh/nvm) - macOS/Linux에서 널리 사용됨
-- [**mise**](https://mise.jdx.dev/) - 다중 언어 지원(Node, Python, Ruby 등)
+- [**mise**](https://mise.jdx.dev/) - 여러 언어 지원(Node, Python, Ruby 등)
 
 fnm 예시:
 
@@ -104,7 +104,7 @@ fnm use 24
     npm prefix -g
     ```
   </Step>
-  <Step title="PATH에 포함되어 있는지 확인">
+  <Step title="PATH에 있는지 확인">
     ```bash
     echo "$PATH"
     ```
@@ -146,5 +146,5 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 ## 관련 문서
 
 - [설치 개요](/ko/install) - 모든 설치 방법
-- [업데이트](/ko/install/updating) - OpenClaw를 최신 상태로 유지하기
+- [업데이트](/ko/install/updating) - OpenClaw를 최신 상태로 유지
 - [시작하기](/ko/start/getting-started) - 설치 후 첫 단계
