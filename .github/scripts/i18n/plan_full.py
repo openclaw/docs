@@ -15,10 +15,9 @@ Parameters:
 
 Outputs:
   GITHUB_OUTPUT receives locale_count, canary locale fields, selected_locales,
-  shard_total, and batch_1 through batch_6 JSON matrices. Each batch exposes a
-  shard matrix for translation jobs and a locale matrix for one finalizer per
-  locale. The step summary records the selected canary and batch count. Exits
-  non-zero for unknown locales or oversized batch requests.
+  expected_locales, shard_total, and batch_1 through batch_6 JSON matrices.
+  The step summary records the selected canary and batch count. Exits non-zero
+  for unknown locales or oversized batch requests.
 
 Examples:
   python .github/scripts/i18n/plan_full.py --target-locale all
@@ -63,18 +62,19 @@ def append_outputs(selected: list[Locale], batches: list[list[Locale]], shard_to
     if not output:
         return
     canary = selected[0]
+    expected_locales = " ".join(f"{locale.locale_slug}={locale.locale}" for locale in selected)
     with Path(output).open("a", encoding="utf-8") as fh:
         fh.write(f"locale_count={len(selected)}\n")
         fh.write(f"canary_locale={canary.locale}\n")
         fh.write(f"canary_locale_slug={canary.locale_slug}\n")
         fh.write(f"selected_locales={','.join(locale.locale for locale in selected)}\n")
+        fh.write(f"expected_locales={expected_locales}\n")
         fh.write(f"source_doc_count={source_docs}\n")
         fh.write(f"shard_total={shard_total}\n")
         for index in range(MAX_BATCHES):
             batch = batches[index] if index < len(batches) else []
             fh.write(f"batch_{index + 1}_count={len(batch)}\n")
             fh.write(f"batch_{index + 1}={matrix_json(expand_shards(batch, shard_total))}\n")
-            fh.write(f"batch_{index + 1}_locales={matrix_json([locale.matrix_item_with_shards(shard_total) for locale in batch])}\n")
 
 
 def append_summary(target_locale: str, selected: list[Locale], batches: list[list[Locale]], shard_total: int, source_docs: int) -> None:
@@ -103,15 +103,16 @@ def plan_full(
     batches = build_batches(selected, batch_size)
     source_docs = source_doc_count(docs_root or Path("docs"))
     shard_total = shard_total_for_doc_count(source_docs, target_docs_per_shard, max_shards)
+    expected_locales = " ".join(f"{locale.locale_slug}={locale.locale}" for locale in selected)
     append_outputs(selected, batches, shard_total, source_docs)
     append_summary(target_locale, selected, batches, shard_total, source_docs)
     return {
         "selected": [locale.matrix_item() for locale in selected],
         "canary": selected[0].matrix_item(),
+        "expected_locales": expected_locales,
         "source_doc_count": source_docs,
         "shard_total": shard_total,
         "batches": [expand_shards(batch, shard_total) for batch in batches],
-        "batch_locales": [[locale.matrix_item_with_shards(shard_total) for locale in batch] for batch in batches],
     }
 
 

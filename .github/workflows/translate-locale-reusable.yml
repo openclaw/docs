@@ -315,7 +315,7 @@ jobs:
   commit-locale:
     name: Finalize ${{ inputs.locale }} artifact
     needs: translate
-    if: needs.translate.result == 'success' && (inputs.commit_locale || inputs.artifact_role == 'canary')
+    if: needs.translate.result == 'success' && (inputs.commit_locale || (inputs.artifact_role == 'canary' && inputs.canary_publish_required))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -416,7 +416,7 @@ jobs:
           exit 1
 
       - name: Dispatch locale docs deploy
-        if: inputs.artifact_role == 'canary' || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')
+        if: (inputs.artifact_role == 'canary' && inputs.canary_publish_required) || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')
         env:
           GH_TOKEN: ${{ github.token }}
           ARTIFACT_ROLE: ${{ inputs.artifact_role }}

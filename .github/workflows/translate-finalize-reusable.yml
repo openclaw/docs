@@ -12,6 +12,10 @@ on:
       shard_total:
         required: true
         type: string
+      expected_locales:
+        required: false
+        default: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr hi=hi ar=ar it=it vi=vi nl=nl fa=fa ru=ru tr=tr uk=uk id=id pl=pl th=th
+        type: string
 
 permissions:
   actions: write
@@ -62,7 +66,7 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
           MODE: ${{ inputs.mode }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
-          EXPECTED_LOCALES: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr hi=hi ar=ar it=it vi=vi nl=nl fa=fa ru=ru tr=tr uk=uk id=id pl=pl th=th
+          EXPECTED_LOCALES: ${{ inputs.expected_locales }}
         run: |
           set -euo pipefail
           python "${I18N_SCRIPT_DIR}/apply_artifacts.py" \

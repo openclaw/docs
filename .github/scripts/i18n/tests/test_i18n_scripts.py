@@ -200,25 +200,32 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn(f"translate-batch-{index}:", text)
             self.assertIn("needs.translate-canary.result == 'success'", text)
             self.assertIn("inputs.canary_only != true", text)
-        for index in range(1, 6):
-            self.assertIn(f"needs.finalize-batch-{index}.result == 'success'", text)
         self.assertIn("artifact_role: canary", text)
         self.assertIn("canary_source_path: channels/line.md", text)
         self.assertIn("canary_live_path: channels/line", text)
         self.assertIn("canary_expected_h1: LINE", text)
         self.assertIn("canary_publish_required: ${{ inputs.canary_only == true }}", text)
-        self.assertIn("batch_1_locales:", text)
         self.assertIn("shard_index: ${{ matrix.shard_index }}", text)
         self.assertIn("shard_total: ${{ matrix.shard_total }}", text)
         self.assertIn("commit_locale: false", text)
-        self.assertIn("translate-locale-finalize-reusable.yml", text)
-        self.assertRegex(text, r"translate-canary:[\s\S]*?artifact_role: canary[\s\S]*?commit_locale: true")
-        self.assertIn("inputs.commit_locale || inputs.artifact_role == 'canary'", reusable)
+        self.assertIn("translate-finalize-reusable.yml", text)
+        self.assertNotIn("translate-locale-finalize-reusable.yml", text)
+        self.assertRegex(
+            text,
+            r"translate-canary:[\s\S]*?artifact_role: canary[\s\S]*?commit_locale: \$\{\{ inputs\.canary_only == true \}\}",
+        )
+        self.assertIn(
+            "inputs.commit_locale || (inputs.artifact_role == 'canary' && inputs.canary_publish_required)",
+            reusable,
+        )
         self.assertNotIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("inputs.commit_locale && steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("Fail uncommitted locale refresh", reusable)
-        self.assertIn("inputs.artifact_role == 'canary' || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')", reusable)
+        self.assertIn(
+            "(inputs.artifact_role == 'canary' && inputs.canary_publish_required) || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')",
+            reusable,
+        )
         self.assertIn("ARTIFACT_DIR: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}", reusable)
         self.assertIn("include-hidden-files: true", reusable)
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
@@ -244,12 +251,11 @@ class I18NScriptTests(unittest.TestCase):
         finalize_reusable = (REPO_ROOT / ".github/workflows/translate-finalize-reusable.yml").read_text(encoding="utf-8")
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', finalize_reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", finalize_reusable)
+        self.assertIn("EXPECTED_LOCALES: ${{ inputs.expected_locales }}", finalize_reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', finalize_reusable)
-        locale_finalize_reusable = (REPO_ROOT / ".github/workflows/translate-locale-finalize-reusable.yml").read_text(encoding="utf-8")
-        self.assertIn("Download locale shard artifacts", locale_finalize_reusable)
-        self.assertIn('python "${I18N_SCRIPT_DIR}/apply_artifacts.py"', locale_finalize_reusable)
-        self.assertIn('python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"', locale_finalize_reusable)
-        self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', locale_finalize_reusable)
+        self.assertIn("expected_locales: ${{ needs.plan.outputs.expected_locales }}", text)
+        self.assertIn("FINALIZE_RESULT: ${{ needs.finalize.result }}", text)
+        self.assertNotIn("finalize-batch-", text)
         self.assertIn("provider-preflight:", text)
         self.assertIn("Translate Full completed with failed or cancelled work", text)
         r2_pages = (REPO_ROOT / ".github/workflows/r2-pages.yml").read_text(encoding="utf-8")
@@ -341,7 +347,8 @@ class I18NScriptTests(unittest.TestCase):
         self.assertEqual("zh-CN", result["canary"]["locale"])
         self.assertEqual(5, len(result["batches"]))
         self.assertEqual(1, result["shard_total"])
-        self.assertLessEqual(max(len(batch) for batch in result["batch_locales"]), 4)
+        self.assertEqual(20, len(result["expected_locales"].split()))
+        self.assertLessEqual(max(len(batch) for batch in result["batches"]), 4)
         self.assertEqual(20, sum(len(batch) for batch in result["batches"]))
 
     def test_translation_plan_shared_shard_policy(self) -> None:
@@ -365,7 +372,7 @@ class I18NScriptTests(unittest.TestCase):
             ],
             result["batches"][0],
         )
-        self.assertEqual([[{"locale": "ru", "locale_slug": "ru", "shard_total": "2"}]], result["batch_locales"])
+        self.assertEqual("ru=ru", result["expected_locales"])
 
     def test_full_plan_excludes_supported_locale_dirs_without_marker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

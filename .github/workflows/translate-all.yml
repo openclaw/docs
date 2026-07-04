@@ -94,26 +94,21 @@ jobs:
       canary_locale: ${{ steps.plan.outputs.canary_locale }}
       canary_locale_slug: ${{ steps.plan.outputs.canary_locale_slug }}
       selected_locales: ${{ steps.plan.outputs.selected_locales }}
+      expected_locales: ${{ steps.plan.outputs.expected_locales }}
       source_doc_count: ${{ steps.plan.outputs.source_doc_count }}
       shard_total: ${{ steps.plan.outputs.shard_total }}
       batch_1_count: ${{ steps.plan.outputs.batch_1_count }}
       batch_1: ${{ steps.plan.outputs.batch_1 }}
-      batch_1_locales: ${{ steps.plan.outputs.batch_1_locales }}
       batch_2_count: ${{ steps.plan.outputs.batch_2_count }}
       batch_2: ${{ steps.plan.outputs.batch_2 }}
-      batch_2_locales: ${{ steps.plan.outputs.batch_2_locales }}
       batch_3_count: ${{ steps.plan.outputs.batch_3_count }}
       batch_3: ${{ steps.plan.outputs.batch_3 }}
-      batch_3_locales: ${{ steps.plan.outputs.batch_3_locales }}
       batch_4_count: ${{ steps.plan.outputs.batch_4_count }}
       batch_4: ${{ steps.plan.outputs.batch_4 }}
-      batch_4_locales: ${{ steps.plan.outputs.batch_4_locales }}
       batch_5_count: ${{ steps.plan.outputs.batch_5_count }}
       batch_5: ${{ steps.plan.outputs.batch_5 }}
-      batch_5_locales: ${{ steps.plan.outputs.batch_5_locales }}
       batch_6_count: ${{ steps.plan.outputs.batch_6_count }}
       batch_6: ${{ steps.plan.outputs.batch_6 }}
-      batch_6_locales: ${{ steps.plan.outputs.batch_6_locales }}
     steps:
       - name: Check out
         uses: actions/checkout@v7
@@ -171,9 +166,9 @@ jobs:
       canary_live_path: channels/line
       canary_expected_h1: LINE
       canary_publish_required: ${{ inputs.canary_only == true }}
-      artifact_prefix: i18n-canary
+      artifact_prefix: canary
       artifact_role: canary
-      commit_locale: true
+      commit_locale: ${{ inputs.canary_only == true }}
     secrets: inherit
 
   translate-batch-1:
@@ -204,27 +199,6 @@ jobs:
       commit_locale: false
     secrets: inherit
 
-  finalize-batch-1:
-    name: Finalize full batch 1
-    needs:
-      - prepare
-      - plan
-      - translate-batch-1
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-batch-1.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_1_count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_1_locales) }}
-    uses: ./.github/workflows/translate-locale-finalize-reusable.yml
-    with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
-      source_sha: ${{ needs.prepare.outputs.source_sha }}
-      mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ matrix.shard_total }}
-      artifact_prefix: i18n
-    secrets: inherit
-
   translate-batch-2:
     name: Full batch 2
     needs:
@@ -232,8 +206,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-1
-      - finalize-batch-1
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.finalize-batch-1.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_2_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_2_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -255,27 +228,6 @@ jobs:
       commit_locale: false
     secrets: inherit
 
-  finalize-batch-2:
-    name: Finalize full batch 2
-    needs:
-      - prepare
-      - plan
-      - translate-batch-2
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-batch-2.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_2_count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_2_locales) }}
-    uses: ./.github/workflows/translate-locale-finalize-reusable.yml
-    with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
-      source_sha: ${{ needs.prepare.outputs.source_sha }}
-      mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ matrix.shard_total }}
-      artifact_prefix: i18n
-    secrets: inherit
-
   translate-batch-3:
     name: Full batch 3
     needs:
@@ -283,8 +235,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-2
-      - finalize-batch-2
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.finalize-batch-2.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_3_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_3_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -306,27 +257,6 @@ jobs:
       commit_locale: false
     secrets: inherit
 
-  finalize-batch-3:
-    name: Finalize full batch 3
-    needs:
-      - prepare
-      - plan
-      - translate-batch-3
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-batch-3.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_3_count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_3_locales) }}
-    uses: ./.github/workflows/translate-locale-finalize-reusable.yml
-    with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
-      source_sha: ${{ needs.prepare.outputs.source_sha }}
-      mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ matrix.shard_total }}
-      artifact_prefix: i18n
-    secrets: inherit
-
   translate-batch-4:
     name: Full batch 4
     needs:
@@ -334,8 +264,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-3
-      - finalize-batch-3
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.finalize-batch-3.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_4_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_4_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -357,27 +286,6 @@ jobs:
       commit_locale: false
     secrets: inherit
 
-  finalize-batch-4:
-    name: Finalize full batch 4
-    needs:
-      - prepare
-      - plan
-      - translate-batch-4
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-batch-4.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_4_count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_4_locales) }}
-    uses: ./.github/workflows/translate-locale-finalize-reusable.yml
-    with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
-      source_sha: ${{ needs.prepare.outputs.source_sha }}
-      mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ matrix.shard_total }}
-      artifact_prefix: i18n
-    secrets: inherit
-
   translate-batch-5:
     name: Full batch 5
     needs:
@@ -385,8 +293,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-4
-      - finalize-batch-4
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.finalize-batch-4.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_5_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_5_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -408,27 +315,6 @@ jobs:
       commit_locale: false
     secrets: inherit
 
-  finalize-batch-5:
-    name: Finalize full batch 5
-    needs:
-      - prepare
-      - plan
-      - translate-batch-5
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-batch-5.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_5_count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_5_locales) }}
-    uses: ./.github/workflows/translate-locale-finalize-reusable.yml
-    with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
-      source_sha: ${{ needs.prepare.outputs.source_sha }}
-      mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ matrix.shard_total }}
-      artifact_prefix: i18n
-    secrets: inherit
-
   translate-batch-6:
     name: Full batch 6
     needs:
@@ -436,8 +322,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-5
-      - finalize-batch-5
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.finalize-batch-5.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_6_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_6_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -459,25 +344,25 @@ jobs:
       commit_locale: false
     secrets: inherit
 
-  finalize-batch-6:
-    name: Finalize full batch 6
+  finalize:
+    name: Commit aggregate translation refresh
     needs:
       - prepare
       - plan
+      - translate-canary
+      - translate-batch-1
+      - translate-batch-2
+      - translate-batch-3
+      - translate-batch-4
+      - translate-batch-5
       - translate-batch-6
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-batch-6.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_6_count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_6_locales) }}
-    uses: ./.github/workflows/translate-locale-finalize-reusable.yml
+    if: always() && needs.prepare.outputs.should_translate == 'true' && inputs.canary_only != true && needs.translate-canary.result == 'success'
+    uses: ./.github/workflows/translate-finalize-reusable.yml
     with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ matrix.shard_total }}
-      artifact_prefix: i18n
+      shard_total: ${{ needs.plan.outputs.shard_total }}
+      expected_locales: ${{ needs.plan.outputs.expected_locales }}
     secrets: inherit
 
   full-status:
@@ -493,12 +378,7 @@ jobs:
       - translate-batch-4
       - translate-batch-5
       - translate-batch-6
-      - finalize-batch-1
-      - finalize-batch-2
-      - finalize-batch-3
-      - finalize-batch-4
-      - finalize-batch-5
-      - finalize-batch-6
+      - finalize
     if: always() && needs.prepare.outputs.should_translate == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -525,12 +405,7 @@ jobs:
           BATCH_4_RESULT: ${{ needs.translate-batch-4.result }}
           BATCH_5_RESULT: ${{ needs.translate-batch-5.result }}
           BATCH_6_RESULT: ${{ needs.translate-batch-6.result }}
-          FINALIZE_1_RESULT: ${{ needs.finalize-batch-1.result }}
-          FINALIZE_2_RESULT: ${{ needs.finalize-batch-2.result }}
-          FINALIZE_3_RESULT: ${{ needs.finalize-batch-3.result }}
-          FINALIZE_4_RESULT: ${{ needs.finalize-batch-4.result }}
-          FINALIZE_5_RESULT: ${{ needs.finalize-batch-5.result }}
-          FINALIZE_6_RESULT: ${{ needs.finalize-batch-6.result }}
+          FINALIZE_RESULT: ${{ needs.finalize.result }}
         run: |
           set -euo pipefail
 
@@ -548,12 +423,7 @@ jobs:
             echo "- batch 4: \`${BATCH_4_RESULT}\`"
             echo "- batch 5: \`${BATCH_5_RESULT}\`"
             echo "- batch 6: \`${BATCH_6_RESULT}\`"
-            echo "- finalize batch 1: \`${FINALIZE_1_RESULT}\`"
-            echo "- finalize batch 2: \`${FINALIZE_2_RESULT}\`"
-            echo "- finalize batch 3: \`${FINALIZE_3_RESULT}\`"
-            echo "- finalize batch 4: \`${FINALIZE_4_RESULT}\`"
-            echo "- finalize batch 5: \`${FINALIZE_5_RESULT}\`"
-            echo "- finalize batch 6: \`${FINALIZE_6_RESULT}\`"
+            echo "- aggregate finalizer: \`${FINALIZE_RESULT}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
           python .github/scripts/i18n/summarize_full.py \
@@ -564,7 +434,7 @@ jobs:
           for result in \
             "${PROVIDER_RESULT}" "${CANARY_RESULT}" \
             "${BATCH_1_RESULT}" "${BATCH_2_RESULT}" "${BATCH_3_RESULT}" "${BATCH_4_RESULT}" "${BATCH_5_RESULT}" "${BATCH_6_RESULT}" \
-            "${FINALIZE_1_RESULT}" "${FINALIZE_2_RESULT}" "${FINALIZE_3_RESULT}" "${FINALIZE_4_RESULT}" "${FINALIZE_5_RESULT}" "${FINALIZE_6_RESULT}"; do
+            "${FINALIZE_RESULT}"; do
             case "${result}" in
               success|skipped)
                 ;;
