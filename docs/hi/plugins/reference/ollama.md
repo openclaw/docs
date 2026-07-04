@@ -4,18 +4,18 @@ read_when:
 summary: OpenClaw में Ollama और Ollama Cloud मॉडल प्रदाता समर्थन जोड़ता है।
 title: Ollama Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:47:26Z"
+    generated_at: "2026-07-04T03:48:06Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
+    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
 
 # Ollama Plugin
 
-OpenClaw में Ollama, Ollama Cloud मॉडल प्रदाता समर्थन जोड़ता है।
+OpenClaw में Ollama और Ollama Cloud मॉडल प्रदाता समर्थन जोड़ता है।
 
 ## वितरण
 
@@ -24,7 +24,7 @@ OpenClaw में Ollama, Ollama Cloud मॉडल प्रदाता स�
 
 ## सतह
 
-providers: ollama, ollama-cloud; contracts: memoryEmbeddingProviders, webSearchProviders
+प्रदाता: ollama, ollama-cloud; अनुबंध: memoryEmbeddingProviders, tools, webSearchProviders
 
 ## संबंधित दस्तावेज़
 

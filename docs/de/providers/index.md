@@ -5,23 +5,22 @@ read_when:
 summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
 title: Provider-Verzeichnis
 x-i18n:
-    generated_at: "2026-06-27T18:04:38Z"
+    generated_at: "2026-07-04T03:43:08Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw kann viele LLM-Provider verwenden. Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie dann das
-Standardmodell als `provider/model` fest.
+OpenClaw kann viele LLM-Provider verwenden. Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie dann das Standardmodell als `provider/model` fest.
 
 Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/usw.)? Siehe [Kanäle](/de/channels).
 
 ## Schnellstart
 
-1. Authentifizieren Sie sich beim Provider (normalerweise über `openclaw onboard`).
+1. Authentifizieren Sie sich beim Provider (in der Regel über `openclaw onboard`).
 2. Legen Sie das Standardmodell fest:
 
 ```json5
@@ -41,6 +40,7 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
 - [Cerebras](/de/providers/cerebras)
 - [Chutes](/de/providers/chutes)
+- [ClawRouter (verwaltetes Multi-Provider-Routing)](/providers/clawrouter)
 - [Cohere](/de/providers/cohere)
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
 - [ComfyUI](/de/providers/comfy)
@@ -108,7 +108,6 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 
 ## Community-Tools
 
-- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Anmeldedaten (prüfen Sie vor der Nutzung die Richtlinien/Nutzungsbedingungen von Anthropic)
+- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Anmeldedaten (Anthropic-Richtlinie/-Bedingungen vor der Nutzung prüfen)
 
-Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und die erweiterte Konfiguration
-finden Sie unter [Modell-Provider](/de/concepts/model-providers).
+Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration finden Sie unter [Modell-Provider](/de/concepts/model-providers).

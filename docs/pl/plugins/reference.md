@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Potrzebujesz strony referencyjnej dla konkretnego OpenClaw Plugin
+    - Potrzebujesz strony referencyjnej dla konkretnego Plugin OpenClaw
     - Przeprowadzasz audyt pokrycia dokumentacji Plugin
-summary: Wygenerowany indeks stron referencyjnych Plugin OpenClaw
-title: Odwołanie do Plugin
+summary: Wygenerowany indeks stron referencyjnych pluginów OpenClaw
+title: Dokumentacja referencyjna Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:57:55Z"
+    generated_at: "2026-07-04T04:10:51Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 83278d55abceed52b67e8ae73c72e45d38bd77a2ce8d553ff39476b6dcc8d8a5
+    source_hash: ba0c5e453eec38249f79746aebcc9a977d8eaffd70b558a558eb64d74c8c4ba1
     source_path: plugins/reference.md
     workflow: 16
 ---
 
-# Dokumentacja referencyjna Plugin
+# Dokumentacja Plugin
 
 Ta strona jest generowana z `extensions/*/package.json` i
 `openclaw.plugin.json`. Wygeneruj ją ponownie za pomocą:
@@ -23,5 +23,5 @@ Ta strona jest generowana z `extensions/*/package.json` i
 pnpm plugins:inventory:gen
 ```
 
-Użyj [Spisu Plugin](/pl/plugins/plugin-inventory), aby przeglądać wszystkie 129
-wygenerowanych stron dokumentacji referencyjnej Plugin według dystrybucji, pakietu i opisu.
+Użyj [Inwentarza Plugin](/pl/plugins/plugin-inventory), aby przeglądać wszystkie 130
+wygenerowanych stron dokumentacji Plugin według dystrybucji, pakietu i opisu.

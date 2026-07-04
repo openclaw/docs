@@ -5,24 +5,24 @@ read_when:
 summary: Dostawcy modeli (LLM) obsługiwani przez OpenClaw
 title: Katalog dostawców
 x-i18n:
-    generated_at: "2026-06-27T18:12:44Z"
+    generated_at: "2026-07-04T04:10:18Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw może używać wielu dostawców LLM. Wybierz dostawcę, uwierzytelnij się, a następnie ustaw
-domyślny model jako `provider/model`.
+OpenClaw może korzystać z wielu dostawców LLM. Wybierz dostawcę, uwierzytelnij się, a następnie ustaw
+model domyślny jako `provider/model`.
 
-Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/itp.)? Zobacz [Kanały](/pl/channels).
+Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/itd.)? Zobacz [Kanały](/pl/channels).
 
 ## Szybki start
 
 1. Uwierzytelnij się u dostawcy (zwykle przez `openclaw onboard`).
-2. Ustaw domyślny model:
+2. Ustaw model domyślny:
 
 ```json5
 {
@@ -41,6 +41,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 - [BytePlus (międzynarodowy)](/pl/concepts/model-providers#byteplus-international)
 - [Cerebras](/pl/providers/cerebras)
 - [Chutes](/pl/providers/chutes)
+- [ClawRouter (zarządzane trasowanie wielu dostawców)](/providers/clawrouter)
 - [Cohere](/pl/providers/cohere)
 - [Cloudflare AI Gateway](/pl/providers/cloudflare-ai-gateway)
 - [ComfyUI](/pl/providers/comfy)
@@ -57,7 +58,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 - [Hugging Face (inferencja)](/pl/providers/huggingface)
 - [inferrs (modele lokalne)](/pl/providers/inferrs)
 - [Kilocode](/pl/providers/kilocode)
-- [LiteLLM (zunifikowany Gateway)](/pl/providers/litellm)
+- [LiteLLM (ujednolicony Gateway)](/pl/providers/litellm)
 - [LM Studio (modele lokalne)](/pl/providers/lmstudio)
 - [MiniMax](/pl/providers/minimax)
 - [Mistral](/pl/providers/mistral)
@@ -81,7 +82,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 - [Synthetic](/pl/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/pl/providers/tencent)
 - [Together AI](/pl/providers/together)
-- [Venice (Venice AI, ukierunkowany na prywatność)](/pl/providers/venice)
+- [Venice (Venice AI, ukierunkowane na prywatność)](/pl/providers/venice)
 - [Vercel AI Gateway](/pl/providers/vercel-ai-gateway)
 - [vLLM (modele lokalne)](/pl/providers/vllm)
 - [Volcengine (Doubao)](/pl/providers/volcengine)
@@ -92,7 +93,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 
 ## Wspólne strony przeglądowe
 
-- [Dodatkowe dołączone warianty](/pl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy i Gemini CLI OAuth
+- [Dodatkowe warianty w pakiecie](/pl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy i Gemini CLI OAuth
 - [Generowanie obrazów](/pl/tools/image-generation) - Wspólne narzędzie `image_generate`, wybór dostawcy i przełączanie awaryjne
 - [Generowanie muzyki](/pl/tools/music-generation) - Wspólne narzędzie `music_generate`, wybór dostawcy i przełączanie awaryjne
 - [Generowanie wideo](/pl/tools/video-generation) - Wspólne narzędzie `video_generate`, wybór dostawcy i przełączanie awaryjne
@@ -108,7 +109,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 
 ## Narzędzia społeczności
 
-- [Claude Max API Proxy](/pl/providers/claude-max-api-proxy) - Społecznościowy proxy dla danych uwierzytelniających subskrypcji Claude (przed użyciem sprawdź zasady/warunki Anthropic)
+- [Claude Max API Proxy](/pl/providers/claude-max-api-proxy) - Społecznościowy serwer proxy dla danych uwierzytelniających subskrypcji Claude (przed użyciem zweryfikuj zasady/warunki Anthropic)
 
-Pełny katalog dostawców (xAI, Groq, Mistral itp.) i zaawansowaną konfigurację
+Pełny katalog dostawców (xAI, Groq, Mistral itd.) i zaawansowaną konfigurację
 znajdziesz w [Dostawcy modeli](/pl/concepts/model-providers).

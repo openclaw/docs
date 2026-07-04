@@ -1,28 +1,28 @@
 ---
 read_when:
-    - تريد اختيار مزوّد نموذج
-    - تحتاج إلى نظرة عامة سريعة على واجهات LLM الخلفية المدعومة
+    - تريد اختيار موفّر نموذج
+    - تحتاج إلى نظرة عامة سريعة على الواجهات الخلفية لنماذج LLM المدعومة
 summary: موفرو النماذج (LLMs) المدعومون من OpenClaw
-title: دليل المزوّدين
+title: دليل المزوّد
 x-i18n:
-    generated_at: "2026-06-27T18:25:16Z"
+    generated_at: "2026-07-04T03:49:46Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر مزوّدًا، ثم صادِق، ثم اضبط
+يمكن لـ OpenClaw استخدام مزودين كثيرين لنماذج اللغة الكبيرة. اختر مزودًا، وصادق، ثم عيّن
 النموذج الافتراضي بصيغة `provider/model`.
 
-هل تبحث عن وثائق قنوات الدردشة (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/وغيرها)؟ راجع [القنوات](/ar/channels).
+هل تبحث عن وثائق قنوات الدردشة (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/وغيرها)؟ راجع [القنوات](/ar/channels).
 
 ## البدء السريع
 
-1. صادِق مع المزوّد (عادة عبر `openclaw onboard`).
-2. اضبط النموذج الافتراضي:
+1. صادق مع المزود (عادةً عبر `openclaw onboard`).
+2. عيّن النموذج الافتراضي:
 
 ```json5
 {
@@ -30,7 +30,7 @@ OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر 
 }
 ```
 
-## وثائق المزوّدين
+## وثائق المزودين
 
 - [Alibaba Model Studio](/ar/providers/alibaba)
 - [Amazon Bedrock](/ar/providers/bedrock)
@@ -41,6 +41,7 @@ OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر 
 - [BytePlus (دولي)](/ar/concepts/model-providers#byteplus-international)
 - [Cerebras](/ar/providers/cerebras)
 - [Chutes](/ar/providers/chutes)
+- [ClawRouter (توجيه مُدار عبر مزودين متعددين)](/providers/clawrouter)
 - [Cohere](/ar/providers/cohere)
 - [Cloudflare AI Gateway](/ar/providers/cloudflare-ai-gateway)
 - [ComfyUI](/ar/providers/comfy)
@@ -57,14 +58,14 @@ OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر 
 - [Hugging Face (الاستدلال)](/ar/providers/huggingface)
 - [inferrs (نماذج محلية)](/ar/providers/inferrs)
 - [Kilocode](/ar/providers/kilocode)
-- [LiteLLM (Gateway موحّد)](/ar/providers/litellm)
+- [LiteLLM (Gateway موحد)](/ar/providers/litellm)
 - [LM Studio (نماذج محلية)](/ar/providers/lmstudio)
 - [MiniMax](/ar/providers/minimax)
 - [Mistral](/ar/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/ar/providers/moonshot)
 - [NVIDIA](/ar/providers/nvidia)
 - [NovitaAI](/ar/providers/novita)
-- [Ollama (نماذج سحابية + محلية)](/ar/providers/ollama)
+- [Ollama (السحابة + نماذج محلية)](/ar/providers/ollama)
 - [Ollama Cloud](/ar/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/ar/providers/openai)
 - [OpenCode](/ar/providers/opencode)
@@ -81,7 +82,7 @@ OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر 
 - [Synthetic](/ar/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/ar/providers/tencent)
 - [Together AI](/ar/providers/together)
-- [Venice (Venice AI، يركّز على الخصوصية)](/ar/providers/venice)
+- [Venice (Venice AI، مع تركيز على الخصوصية)](/ar/providers/venice)
 - [Vercel AI Gateway](/ar/providers/vercel-ai-gateway)
 - [vLLM (نماذج محلية)](/ar/providers/vllm)
 - [Volcengine (Doubao)](/ar/providers/volcengine)
@@ -90,14 +91,14 @@ OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر 
 - [Xiaomi](/ar/providers/xiaomi)
 - [Z.AI (GLM)](/ar/providers/zai)
 
-## صفحات نظرة عامة مشتركة
+## صفحات النظرة العامة المشتركة
 
-- [تنويعات إضافية مضمّنة](/ar/providers/models#additional-bundled-provider-variants) - Anthropic Vertex وCopilot Proxy وGemini CLI OAuth
-- [توليد الصور](/ar/tools/image-generation) - أداة `image_generate` المشتركة، واختيار المزوّد، والتحويل عند الفشل
-- [توليد الموسيقى](/ar/tools/music-generation) - أداة `music_generate` المشتركة، واختيار المزوّد، والتحويل عند الفشل
-- [توليد الفيديو](/ar/tools/video-generation) - أداة `video_generate` المشتركة، واختيار المزوّد، والتحويل عند الفشل
+- [متغيرات إضافية مضمّنة](/ar/providers/models#additional-bundled-provider-variants) - Anthropic Vertex وCopilot Proxy وGemini CLI OAuth
+- [توليد الصور](/ar/tools/image-generation) - أداة `image_generate` المشتركة، واختيار المزود، وتجاوز الفشل
+- [توليد الموسيقى](/ar/tools/music-generation) - أداة `music_generate` المشتركة، واختيار المزود، وتجاوز الفشل
+- [توليد الفيديو](/ar/tools/video-generation) - أداة `video_generate` المشتركة، واختيار المزود، وتجاوز الفشل
 
-## مزوّدو النسخ
+## مزودو النسخ النصي
 
 - [Deepgram (نسخ صوتي)](/ar/providers/deepgram)
 - [ElevenLabs](/ar/providers/elevenlabs#speech-to-text)
@@ -108,7 +109,7 @@ OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر 
 
 ## أدوات المجتمع
 
-- [Claude Max API Proxy](/ar/providers/claude-max-api-proxy) - وكيل مجتمعي لبيانات اعتماد اشتراك Claude (تحقّق من سياسة/شروط Anthropic قبل الاستخدام)
+- [Claude Max API Proxy](/ar/providers/claude-max-api-proxy) - وكيل مجتمعي لبيانات اعتماد اشتراك Claude (تحقق من سياسة/شروط Anthropic قبل الاستخدام)
 
-للاطلاع على كتالوج المزوّدين الكامل (xAI وGroq وMistral وغيرها) والإعدادات المتقدمة،
-راجع [مزوّدي النماذج](/ar/concepts/model-providers).
+للاطلاع على كتالوج المزودين الكامل (xAI وGroq وMistral وغيرها) والتكوين المتقدم،
+راجع [مزودي النماذج](/ar/concepts/model-providers).

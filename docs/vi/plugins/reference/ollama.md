@@ -1,14 +1,14 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin ollama
-summary: Thêm hỗ trợ nhà cung cấp mô hình Ollama, Ollama Cloud cho OpenClaw.
+summary: Thêm hỗ trợ nhà cung cấp mô hình Ollama, Ollama Cloud vào OpenClaw.
 title: Plugin Ollama
 x-i18n:
-    generated_at: "2026-06-27T17:54:31Z"
+    generated_at: "2026-07-04T03:53:52Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
+    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -22,9 +22,9 @@ Thêm hỗ trợ nhà cung cấp mô hình Ollama, Ollama Cloud vào OpenClaw.
 - Gói: `@openclaw/ollama-provider`
 - Tuyến cài đặt: được bao gồm trong OpenClaw
 
-## Giao diện
+## Bề mặt
 
-providers: ollama, ollama-cloud; contracts: memoryEmbeddingProviders, webSearchProviders
+nhà cung cấp: ollama, ollama-cloud; hợp đồng: memoryEmbeddingProviders, tools, webSearchProviders
 
 ## Tài liệu liên quan
 

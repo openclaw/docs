@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Vous voulez choisir un fournisseur de modèles
+    - Vous souhaitez choisir un fournisseur de modèles
     - Vous avez besoin d’un aperçu rapide des backends LLM pris en charge
 summary: Fournisseurs de modèles (LLM) pris en charge par OpenClaw
-title: Répertoire des fournisseurs
+title: Répertoire du fournisseur
 x-i18n:
-    generated_at: "2026-06-27T18:05:12Z"
+    generated_at: "2026-07-04T03:45:31Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 OpenClaw peut utiliser de nombreux fournisseurs de LLM. Choisissez un fournisseur, authentifiez-vous, puis définissez le
 modèle par défaut sous la forme `provider/model`.
 
-Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.) ? Consultez [Canaux](/fr/channels).
+Vous cherchez la documentation des canaux de discussion (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.) ? Consultez [Canaux](/fr/channels).
 
 ## Démarrage rapide
 
@@ -38,9 +38,10 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Anthropic (API + CLI Claude)](/fr/providers/anthropic)
 - [Arcee AI (modèles Trinity)](/fr/providers/arcee)
 - [Azure Speech](/fr/providers/azure-speech)
-- [BytePlus (International)](/fr/concepts/model-providers#byteplus-international)
+- [BytePlus (international)](/fr/concepts/model-providers#byteplus-international)
 - [Cerebras](/fr/providers/cerebras)
 - [Chutes](/fr/providers/chutes)
+- [ClawRouter (routage multi-fournisseur géré)](/providers/clawrouter)
 - [Cohere](/fr/providers/cohere)
 - [Cloudflare AI Gateway](/fr/providers/cloudflare-ai-gateway)
 - [ComfyUI](/fr/providers/comfy)
@@ -54,7 +55,7 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Google (Gemini)](/fr/providers/google)
 - [Gradium](/fr/providers/gradium)
 - [Groq (inférence LPU)](/fr/providers/groq)
-- [Hugging Face (Inference)](/fr/providers/huggingface)
+- [Hugging Face (inférence)](/fr/providers/huggingface)
 - [inferrs (modèles locaux)](/fr/providers/inferrs)
 - [Kilocode](/fr/providers/kilocode)
 - [LiteLLM (Gateway unifié)](/fr/providers/litellm)
@@ -90,9 +91,9 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Xiaomi](/fr/providers/xiaomi)
 - [Z.AI (GLM)](/fr/providers/zai)
 
-## Pages d’aperçu partagées
+## Pages de vue d’ensemble partagées
 
-- [Variantes groupées supplémentaires](/fr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy et OAuth Gemini CLI
+- [Variantes groupées supplémentaires](/fr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy et Gemini CLI OAuth
 - [Génération d’images](/fr/tools/image-generation) - Outil `image_generate` partagé, sélection du fournisseur et basculement
 - [Génération de musique](/fr/tools/music-generation) - Outil `music_generate` partagé, sélection du fournisseur et basculement
 - [Génération de vidéos](/fr/tools/video-generation) - Outil `video_generate` partagé, sélection du fournisseur et basculement

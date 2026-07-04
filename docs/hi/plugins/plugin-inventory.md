@@ -1,16 +1,16 @@
 ---
 read_when:
-    - आप तय कर रहे हैं कि कोई Plugin मुख्य npm पैकेज में शामिल होकर आता है या अलग से इंस्टॉल होता है
+    - आप तय कर रहे हैं कि कोई plugin मुख्य npm package में शामिल होकर शिप होता है या अलग से इंस्टॉल होता है।
     - आप बंडल किए गए Plugin पैकेज मेटाडेटा या रिलीज़ ऑटोमेशन अपडेट कर रहे हैं
     - आपको प्रामाणिक आंतरिक बनाम बाहरी Plugin सूची चाहिए
-summary: कोर में शामिल करके वितरित, बाहरी रूप से प्रकाशित, या केवल स्रोत के रूप में रखे गए OpenClaw Plugin की जनरेट की गई सूची
-title: Plugin इन्वेंटरी
+summary: कोर में भेजे गए, बाहरी रूप से प्रकाशित, या केवल-स्रोत रखे गए OpenClaw Plugin की जनरेट की गई इन्वेंटरी
+title: Plugin इन्वेंट्री
 x-i18n:
-    generated_at: "2026-06-28T23:39:35Z"
+    generated_at: "2026-07-04T03:48:59Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
+    source_hash: 1af48e3d1ca8e994780dae2ac39dd2d3c3ed0bc8c136cbf3448fe18fadddfb0a
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ x-i18n:
 # Plugin इन्वेंटरी
 
 यह पेज `extensions/*/package.json`, `openclaw.plugin.json`,
-और रूट npm पैकेज `files` exclusions से जनरेट किया गया है। इसे फिर से जनरेट करें:
+और रूट npm पैकेज `files` exclusions से जनरेट किया गया है। इसे इसके साथ फिर से जनरेट करें:
 
 ```bash
 pnpm plugins:inventory:gen
@@ -27,18 +27,18 @@ pnpm plugins:inventory:gen
 ## परिभाषाएँ
 
 - **कोर npm पैकेज:** `openclaw` npm पैकेज में निर्मित और अलग Plugin इंस्टॉल किए बिना उपलब्ध।
-- **आधिकारिक बाहरी पैकेज:** OpenClaw-मेंटेन किया गया Plugin जो कोर npm पैकेज से छोड़ा गया है, इस आधिकारिक इन्वेंटरी में रखा गया है, और ClawHub और/या npm के माध्यम से मांग पर इंस्टॉल किया जाता है।
-- **केवल स्रोत checkout:** repo-local Plugin जो प्रकाशित npm artifacts से छोड़ा गया है और इंस्टॉल किए जा सकने वाले पैकेज के रूप में विज्ञापित नहीं है।
+- **आधिकारिक बाहरी पैकेज:** OpenClaw-द्वारा अनुरक्षित Plugin जो कोर npm पैकेज से हटाया गया है, इस आधिकारिक इन्वेंटरी में रखा गया है, और ClawHub और/या npm के माध्यम से मांग पर इंस्टॉल किया जाता है।
+- **केवल सोर्स चेकआउट:** रेपो-स्थानीय Plugin जो प्रकाशित npm आर्टिफैक्ट से हटाया गया है और इंस्टॉल करने योग्य पैकेज के रूप में विज्ञापित नहीं है।
 
-स्रोत checkouts npm installs से अलग हैं: `pnpm install` के बाद, बंडल किए गए
-plugins `extensions/<id>` से लोड होते हैं ताकि स्थानीय edits और package-local workspace
+सोर्स चेकआउट npm इंस्टॉल से अलग होते हैं: `pnpm install` के बाद, बंडल किए गए
+Plugin `extensions/<id>` से लोड होते हैं ताकि स्थानीय बदलाव और पैकेज-स्थानीय workspace
 dependencies उपलब्ध रहें।
 
 ## Plugin इंस्टॉल करें
 
-हर entry में install route का उपयोग करके तय करें कि install की आवश्यकता है या नहीं। वे Plugins
-जो `included in OpenClaw` कहते हैं, कोर पैकेज में पहले से मौजूद हैं।
-आधिकारिक बाहरी पैकेजों को एक install की जरूरत होती है, फिर Gateway restart की।
+इंस्टॉल की जरूरत है या नहीं, यह तय करने के लिए हर एंट्री में इंस्टॉल रूट का उपयोग करें। जिन Plugin
+में `included in OpenClaw` लिखा है, वे कोर पैकेज में पहले से मौजूद हैं।
+आधिकारिक बाहरी पैकेजों को एक इंस्टॉल की जरूरत होती है, फिर Gateway restart की।
 
 उदाहरण के लिए, Discord एक आधिकारिक बाहरी पैकेज है:
 
@@ -48,17 +48,17 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-launch cutover के दौरान, सामान्य bare package specs अभी भी npm से install होते हैं।
-जब आपको explicit source चाहिए, तो `clawhub:@openclaw/discord` या `npm:@openclaw/discord` का उपयोग करें।
-install के बाद, credentials और channel config जोड़ने के लिए Plugin का setup doc follow करें, जैसे
+लॉन्च कटओवर के दौरान, सामान्य bare package specs अब भी npm से इंस्टॉल होते हैं।
+जब आपको स्पष्ट स्रोत चाहिए, तो `clawhub:@openclaw/discord` या `npm:@openclaw/discord` का उपयोग करें।
+इंस्टॉल के बाद, credentials और channel config जोड़ने के लिए Plugin के setup doc का पालन करें, जैसे
 [Discord](/hi/channels/discord)। update, uninstall, और publishing
-commands के लिए [Plugins प्रबंधित करें](/hi/plugins/manage-plugins) देखें।
+commands के लिए [Plugin प्रबंधित करें](/hi/plugins/manage-plugins) देखें।
 
-हर entry package, distribution route, और description सूचीबद्ध करती है।
+हर एंट्री पैकेज, distribution route, और description सूचीबद्ध करती है।
 
 ## कोर npm पैकेज
 
-59 plugins
+60 Plugin
 
 - **[admin-http-rpc](/hi/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - OpenClaw में शामिल। OpenClaw admin HTTP RPC endpoint।
 
@@ -68,7 +68,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[azure-speech](/hi/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - OpenClaw में शामिल। Azure AI Speech text-to-speech (MP3, native Ogg/Opus voice notes, PCM telephony)।
 
-- **[bonjour](/hi/plugins/reference/bonjour)** (`@openclaw/bonjour`) - OpenClaw में शामिल। स्थानीय OpenClaw gateway को Bonjour/mDNS पर advertise करता है।
+- **[bonjour](/hi/plugins/reference/bonjour)** (`@openclaw/bonjour`) - OpenClaw में शामिल। स्थानीय OpenClaw gateway को Bonjour/mDNS पर विज्ञापित करें।
 
 - **[browser](/hi/plugins/reference/browser)** (`@openclaw/browser-plugin`) - OpenClaw में शामिल। agent-callable tools जोड़ता है।
 
@@ -76,7 +76,9 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[canvas](/hi/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - OpenClaw में शामिल। paired nodes के लिए experimental Canvas control और A2UI rendering surfaces।
 
-- **[codex-supervisor](/hi/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - OpenClaw में शामिल। OpenClaw से Codex app-server sessions supervise करें।
+- **[clawrouter](/plugins/reference/clawrouter)** (`@openclaw/clawrouter`) - OpenClaw में शामिल। OpenClaw में ClawRouter model provider support जोड़ता है।
+
+- **[codex-supervisor](/hi/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - OpenClaw में शामिल। OpenClaw से Codex app-server sessions की निगरानी करें।
 
 - **[cohere](/hi/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - OpenClaw में शामिल; npm; ClawHub: `clawhub:@openclaw/cohere-provider`। OpenClaw Cohere provider Plugin।
 
@@ -86,7 +88,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[deepgram](/hi/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - OpenClaw में शामिल। media understanding provider support जोड़ता है। realtime transcription provider support जोड़ता है।
 
-- **[document-extract](/hi/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - OpenClaw में शामिल। local document attachments से text और fallback page images extract करता है।
+- **[document-extract](/hi/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - OpenClaw में शामिल। स्थानीय document attachments से text और fallback page images निकालें।
 
 - **[duckduckgo](/hi/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - OpenClaw में शामिल। web search provider support जोड़ता है।
 
@@ -94,7 +96,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[fal](/hi/plugins/reference/fal)** (`@openclaw/fal-provider`) - OpenClaw में शामिल। OpenClaw में fal model provider support जोड़ता है।
 
-- **[file-transfer](/hi/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - OpenClaw में शामिल। dedicated node commands के माध्यम से paired nodes पर files fetch, list, और write करता है। 16 MB तक की binaries के लिए node.invoke पर base64 का उपयोग करके bash stdout truncation को bypass करता है।
+- **[file-transfer](/hi/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - OpenClaw में शामिल। dedicated node commands के जरिए paired nodes पर files fetch, list, और write करें। 16 MB तक के binaries के लिए node.invoke पर base64 का उपयोग करके bash stdout truncation को bypass करता है।
 
 - **[github-copilot](/hi/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - OpenClaw में शामिल। OpenClaw में GitHub Copilot model provider support जोड़ता है।
 
@@ -118,7 +120,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[microsoft-foundry](/hi/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - OpenClaw में शामिल। OpenClaw में Microsoft Foundry model provider support जोड़ता है।
 
-- **[migrate-claude](/hi/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - OpenClaw में शामिल। Claude Code और Claude Desktop instructions, MCP servers, Skills, और safe configuration को OpenClaw में import करता है।
+- **[migrate-claude](/hi/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - OpenClaw में शामिल। Claude Code और Claude Desktop instructions, MCP servers, Skills, और सुरक्षित configuration को OpenClaw में import करता है।
 
 - **[migrate-hermes](/hi/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - OpenClaw में शामिल। Hermes configuration, memories, Skills, और supported credentials को OpenClaw में import करता है।
 
@@ -168,7 +170,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[vydra](/hi/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - OpenClaw में शामिल। OpenClaw में Vydra model provider support जोड़ता है।
 
-- **[web-readability](/hi/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - OpenClaw में शामिल। local HTML web fetch responses से readable article content extract करता है।
+- **[web-readability](/hi/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - OpenClaw में शामिल। स्थानीय HTML web fetch responses से readable article content निकालें।
 
 - **[webhooks](/hi/plugins/reference/webhooks)** (`@openclaw/webhooks`) - OpenClaw में शामिल। authenticated inbound webhooks जो external automation को OpenClaw TaskFlows से bind करते हैं।
 
@@ -180,7 +182,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 ## आधिकारिक बाहरी पैकेज
 
-68 plugins
+68 Plugin
 
 - **[acpx](/hi/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub। Plugin-owned session और transport management के साथ OpenClaw ACP runtime backend।
 
@@ -188,7 +190,7 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[amazon-bedrock-mantle](/hi/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. OpenAI-संगत मॉडल रूटिंग के लिए OpenClaw Amazon Bedrock Mantle प्रदाता Plugin.
 
-- **[anthropic-vertex](/hi/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Google Vertex AI पर Claude मॉडलों के लिए OpenClaw Anthropic Vertex प्रदाता Plugin.
+- **[anthropic-vertex](/hi/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Google Vertex AI पर Claude मॉडल के लिए OpenClaw Anthropic Vertex प्रदाता Plugin.
 
 - **[arcee](/hi/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. OpenClaw में Arcee मॉडल प्रदाता समर्थन जोड़ता है.
 
@@ -210,21 +212,21 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[deepseek](/hi/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. OpenClaw में DeepSeek मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[diagnostics-otel](/hi/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. मेट्रिक्स, ट्रेस और लॉग के लिए OpenClaw डायग्नॉस्टिक्स OpenTelemetry एक्सपोर्टर.
+- **[diagnostics-otel](/hi/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. मेट्रिक्स, ट्रेस और लॉग के लिए OpenClaw डायग्नोस्टिक्स OpenTelemetry एक्सपोर्टर.
 
-- **[diagnostics-prometheus](/hi/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. रनटाइम मेट्रिक्स के लिए OpenClaw डायग्नॉस्टिक्स Prometheus एक्सपोर्टर.
+- **[diagnostics-prometheus](/hi/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. रनटाइम मेट्रिक्स के लिए OpenClaw डायग्नोस्टिक्स Prometheus एक्सपोर्टर.
 
-- **[diffs](/hi/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. एजेंटों के लिए OpenClaw केवल-पढ़ने योग्य diff व्यूअर Plugin और फ़ाइल रेंडरर.
+- **[diffs](/hi/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. एजेंटों के लिए OpenClaw रीड-ओनली diff viewer Plugin और फ़ाइल रेंडरर.
 
-- **[diffs-language-pack](/hi/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. डिफ़ॉल्ट diffs व्यूअर सेट के बाहर की भाषाओं के लिए सिंटैक्स हाइलाइटिंग जोड़ता है.
+- **[diffs-language-pack](/hi/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. डिफ़ॉल्ट diffs viewer सेट से बाहर की भाषाओं के लिए सिंटैक्स हाइलाइटिंग जोड़ता है.
 
-- **[discord](/hi/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. चैनल, DMs, कमांड और ऐप इवेंट के लिए OpenClaw Discord चैनल Plugin.
+- **[discord](/hi/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. चैनलों, DMs, कमांड और ऐप इवेंट्स के लिए OpenClaw Discord चैनल Plugin.
 
 - **[exa](/hi/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. वेब खोज प्रदाता समर्थन जोड़ता है.
 
-- **[feishu](/hi/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. चैट और कार्यस्थल टूल के लिए OpenClaw Feishu/Lark चैनल Plugin (समुदाय द्वारा @m1heng के रखरखाव में).
+- **[feishu](/hi/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. चैट और कार्यस्थल टूल्स के लिए OpenClaw Feishu/Lark चैनल Plugin (@m1heng द्वारा समुदाय-प्रबंधित).
 
-- **[firecrawl](/hi/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. एजेंट-कॉल करने योग्य टूल जोड़ता है. वेब fetch प्रदाता समर्थन जोड़ता है. वेब खोज प्रदाता समर्थन जोड़ता है.
+- **[firecrawl](/hi/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. एजेंट-कॉल योग्य टूल्स जोड़ता है. वेब fetch प्रदाता समर्थन जोड़ता है. वेब खोज प्रदाता समर्थन जोड़ता है.
 
 - **[fireworks](/hi/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. OpenClaw में Fireworks मॉडल प्रदाता समर्थन जोड़ता है.
 
@@ -232,13 +234,13 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[google-meet](/hi/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Chrome या Twilio ट्रांसपोर्ट के माध्यम से कॉल में शामिल होने के लिए OpenClaw Google Meet प्रतिभागी Plugin.
 
-- **[googlechat](/hi/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. स्पेस और डायरेक्ट संदेशों के लिए OpenClaw Google Chat चैनल Plugin.
+- **[googlechat](/hi/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. स्पेसेज़ और सीधे संदेशों के लिए OpenClaw Google Chat चैनल Plugin.
 
 - **[gradium](/hi/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. टेक्स्ट-टू-स्पीच प्रदाता समर्थन जोड़ता है.
 
 - **[groq](/hi/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. OpenClaw में Groq मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[inworld](/hi/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Inworld स्ट्रीमिंग टेक्स्ट-टू-स्पीच (MP3, OGG_OPUS, PCM टेलीफोनी).
+- **[inworld](/hi/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Inworld स्ट्रीमिंग टेक्स्ट-टू-स्पीच (MP3, OGG_OPUS, PCM telephony).
 
 - **[irc](/hi/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. OpenClaw संदेश भेजने और प्राप्त करने के लिए IRC चैनल सतह जोड़ता है.
 
@@ -246,27 +248,27 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[kimi](/hi/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. OpenClaw में Kimi, Kimi Coding मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[line](/hi/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. LINE Bot API चैट के लिए OpenClaw LINE चैनल Plugin.
+- **[line](/hi/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. LINE Bot API चैट्स के लिए OpenClaw LINE चैनल Plugin.
 
-- **[llama-cpp](/hi/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. node-llama-cpp के माध्यम से स्थानीय GGUF एम्बेडिंग.
+- **[llama-cpp](/hi/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. node-llama-cpp के माध्यम से स्थानीय GGUF embeddings.
 
-- **[lobster](/hi/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. टाइप्ड पाइपलाइन और फिर से शुरू किए जा सकने वाले अनुमोदनों के लिए Lobster वर्कफ़्लो टूल Plugin.
+- **[lobster](/hi/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. टाइप्ड पाइपलाइनों और फिर से शुरू किए जा सकने वाले अनुमोदनों के लिए Lobster वर्कफ़्लो टूल Plugin.
 
-- **[matrix](/hi/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. रूम और डायरेक्ट संदेशों के लिए OpenClaw Matrix चैनल Plugin.
+- **[matrix](/hi/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. रूम्स और सीधे संदेशों के लिए OpenClaw Matrix चैनल Plugin.
 
 - **[mattermost](/hi/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. OpenClaw संदेश भेजने और प्राप्त करने के लिए Mattermost चैनल सतह जोड़ता है.
 
-- **[memory-lancedb](/hi/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. ऑटो-रिकॉल, ऑटो-कैप्चर और वेक्टर खोज के साथ OpenClaw LanceDB-समर्थित दीर्घकालिक मेमोरी Plugin.
+- **[memory-lancedb](/hi/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. ऑटो-रीकॉल, ऑटो-कैप्चर और वेक्टर खोज के साथ OpenClaw LanceDB-समर्थित दीर्घकालिक मेमोरी Plugin.
 
 - **[moonshot](/hi/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. OpenClaw में Moonshot मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[msteams](/hi/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. बॉट बातचीत के लिए OpenClaw Microsoft Teams चैनल Plugin.
+- **[msteams](/hi/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. बॉट वार्तालापों के लिए OpenClaw Microsoft Teams चैनल Plugin.
 
-- **[nextcloud-talk](/hi/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. बातचीत के लिए OpenClaw Nextcloud Talk चैनल Plugin.
+- **[nextcloud-talk](/hi/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. वार्तालापों के लिए OpenClaw Nextcloud Talk चैनल Plugin.
 
-- **[nostr](/hi/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. NIP-04 एन्क्रिप्टेड डायरेक्ट संदेशों के लिए OpenClaw Nostr चैनल Plugin.
+- **[nostr](/hi/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. NIP-04 एन्क्रिप्टेड सीधे संदेशों के लिए OpenClaw Nostr चैनल Plugin.
 
-- **[openshell](/hi/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. मिरर किए गए स्थानीय वर्कस्पेस और SSH कमांड निष्पादन के साथ NVIDIA OpenShell CLI के लिए OpenClaw सैंडबॉक्स बैकएंड.
+- **[openshell](/hi/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. मिरर किए गए स्थानीय वर्कस्पेस और SSH कमांड निष्पादन के साथ NVIDIA OpenShell CLI के लिए OpenClaw sandbox backend.
 
 - **[parallel](/hi/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. वेब खोज प्रदाता समर्थन जोड़ता है.
 
@@ -276,31 +278,31 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[qianfan](/hi/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. OpenClaw में Qianfan मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[qqbot](/hi/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. समूह और डायरेक्ट-मैसेज वर्कफ़्लो के लिए OpenClaw QQ Bot चैनल Plugin.
+- **[qqbot](/hi/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. समूह और सीधे-संदेश वर्कफ़्लो के लिए OpenClaw QQ Bot चैनल Plugin.
 
 - **[qwen](/hi/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. OpenClaw में Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[raft](/hi/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. सुरक्षित CLI वेक ब्रिज के लिए OpenClaw Raft चैनल Plugin.
+- **[raft](/hi/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. सुरक्षित CLI वेक ब्रिजों के लिए OpenClaw Raft चैनल Plugin.
 
 - **[searxng](/hi/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. वेब खोज प्रदाता समर्थन जोड़ता है.
 
 - **[signal](/hi/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. OpenClaw संदेश भेजने और प्राप्त करने के लिए Signal चैनल सतह जोड़ता है.
 
-- **[slack](/hi/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. चैनल, DMs, कमांड और ऐप इवेंट के लिए OpenClaw Slack चैनल Plugin.
+- **[slack](/hi/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. चैनलों, DMs, कमांड और ऐप इवेंट्स के लिए OpenClaw Slack चैनल Plugin.
 
 - **[sms](/hi/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. OpenClaw टेक्स्ट संदेशों के लिए Twilio SMS चैनल Plugin.
 
 - **[stepfun](/hi/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. OpenClaw में StepFun, StepFun Plan मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[synology-chat](/hi/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. OpenClaw चैनलों और डायरेक्ट संदेशों के लिए Synology Chat चैनल Plugin.
+- **[synology-chat](/hi/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. OpenClaw चैनलों और सीधे संदेशों के लिए Synology Chat चैनल Plugin.
 
-- **[tavily](/hi/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. एजेंट-कॉल करने योग्य टूल जोड़ता है. वेब खोज प्रदाता समर्थन जोड़ता है.
+- **[tavily](/hi/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. एजेंट-कॉल योग्य टूल्स जोड़ता है. वेब खोज प्रदाता समर्थन जोड़ता है.
 
 - **[tencent](/hi/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. OpenClaw में Tencent TokenHub मॉडल प्रदाता समर्थन जोड़ता है.
 
 - **[tlon](/hi/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. चैट वर्कफ़्लो के लिए OpenClaw Tlon/Urbit चैनल Plugin.
 
-- **[tokenjuice](/hi/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. tokenjuice reducers के साथ exec और bash टूल परिणामों को संक्षिप्त करता है.
+- **[tokenjuice](/hi/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. tokenjuice रिड्यूसर के साथ exec और bash टूल परिणामों को संक्षिप्त करता है.
 
 - **[twitch](/hi/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. चैट और मॉडरेशन वर्कफ़्लो के लिए OpenClaw Twitch चैनल Plugin.
 
@@ -308,22 +310,22 @@ commands के लिए [Plugins प्रबंधित करें](/hi/pl
 
 - **[vercel-ai-gateway](/hi/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. OpenClaw में Vercel AI Gateway मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[voice-call](/hi/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Twilio, Telnyx और Plivo फ़ोन कॉल के लिए OpenClaw voice-call Plugin.
+- **[voice-call](/hi/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Twilio, Telnyx और Plivo फ़ोन कॉलों के लिए OpenClaw voice-call Plugin.
 
-- **[whatsapp](/hi/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. WhatsApp Web चैट के लिए OpenClaw WhatsApp चैनल Plugin.
+- **[whatsapp](/hi/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. WhatsApp Web चैट्स के लिए OpenClaw WhatsApp चैनल Plugin.
 
 - **[zai](/hi/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. OpenClaw में Z.AI मॉडल प्रदाता समर्थन जोड़ता है.
 
-- **[zalo](/hi/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. बॉट और Webhook चैट के लिए OpenClaw Zalo चैनल Plugin.
+- **[zalo](/hi/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. बॉट और webhook चैट्स के लिए OpenClaw Zalo चैनल Plugin.
 
 - **[zalouser](/hi/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. नेटिव zca-js इंटीग्रेशन के माध्यम से OpenClaw Zalo Personal Account Plugin.
 
 ## केवल स्रोत चेकआउट
 
-3 Plugin
+3 Plugins
 
 - **[qa-channel](/hi/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - केवल स्रोत चेकआउट. OpenClaw संदेश भेजने और प्राप्त करने के लिए QA Channel सतह जोड़ता है.
 
-- **[qa-lab](/hi/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - केवल स्रोत चेकआउट. निजी डिबगर UI और परिदृश्य रनर के साथ OpenClaw QA lab Plugin.
+- **[qa-lab](/hi/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - केवल स्रोत चेकआउट. निजी डीबगर UI और परिदृश्य रनर के साथ OpenClaw QA lab Plugin.
 
-- **[qa-matrix](/hi/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - केवल स्रोत चेकआउट में। Matrix QA ट्रांसपोर्ट रनर और आधार।
+- **[qa-matrix](/hi/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - केवल स्रोत checkout। Matrix QA transport runner और substrate.

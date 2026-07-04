@@ -1,14 +1,14 @@
 ---
 read_when:
-    - ollama Pluginをインストール、構成、または監査している
-summary: OpenClaw に Ollama、Ollama Cloud モデルプロバイダー対応を追加します。
+    - ollama Plugin をインストール、設定、または監査している
+summary: OpenClaw に Ollama と Ollama Cloud モデルプロバイダーのサポートを追加します。
 title: Ollama Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:26:51Z"
+    generated_at: "2026-07-04T03:36:00Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
+    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -24,7 +24,7 @@ OpenClaw に Ollama、Ollama Cloud モデルプロバイダー対応を追加し
 
 ## サーフェス
 
-プロバイダー: ollama, ollama-cloud; コントラクト: memoryEmbeddingProviders, webSearchProviders
+providers: ollama, ollama-cloud; contracts: memoryEmbeddingProviders, tools, webSearchProviders
 
 ## 関連ドキュメント
 

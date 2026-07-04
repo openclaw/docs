@@ -1,27 +1,27 @@
 ---
 read_when:
     - Bạn muốn chọn một nhà cung cấp mô hình
-    - Bạn cần một cái nhìn tổng quan nhanh về các backend LLM được hỗ trợ
+    - Bạn cần tổng quan nhanh về các backend LLM được hỗ trợ
 summary: Các nhà cung cấp mô hình (LLM) được OpenClaw hỗ trợ
 title: Thư mục nhà cung cấp
 x-i18n:
-    generated_at: "2026-06-27T18:03:51Z"
+    generated_at: "2026-07-04T03:53:57Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
 
 OpenClaw có thể sử dụng nhiều nhà cung cấp LLM. Chọn một nhà cung cấp, xác thực, rồi đặt
-mô hình mặc định là `provider/model`.
+mô hình mặc định dưới dạng `provider/model`.
 
-Bạn đang tìm tài liệu về kênh trò chuyện (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/v.v.)? Xem [Kênh](/vi/channels).
+Bạn đang tìm tài liệu về kênh chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/v.v.)? Xem [Kênh](/vi/channels).
 
 ## Bắt đầu nhanh
 
-1. Xác thực với nhà cung cấp (thường thông qua `openclaw onboard`).
+1. Xác thực với nhà cung cấp (thường qua `openclaw onboard`).
 2. Đặt mô hình mặc định:
 
 ```json5
@@ -41,6 +41,7 @@ Bạn đang tìm tài liệu về kênh trò chuyện (WhatsApp/Telegram/Discord
 - [BytePlus (Quốc tế)](/vi/concepts/model-providers#byteplus-international)
 - [Cerebras](/vi/providers/cerebras)
 - [Chutes](/vi/providers/chutes)
+- [ClawRouter (định tuyến đa nhà cung cấp được quản lý)](/providers/clawrouter)
 - [Cohere](/vi/providers/cohere)
 - [Cloudflare AI Gateway](/vi/providers/cloudflare-ai-gateway)
 - [ComfyUI](/vi/providers/comfy)
@@ -54,7 +55,7 @@ Bạn đang tìm tài liệu về kênh trò chuyện (WhatsApp/Telegram/Discord
 - [Google (Gemini)](/vi/providers/google)
 - [Gradium](/vi/providers/gradium)
 - [Groq (suy luận LPU)](/vi/providers/groq)
-- [Hugging Face (Inference)](/vi/providers/huggingface)
+- [Hugging Face (Suy luận)](/vi/providers/huggingface)
 - [inferrs (mô hình cục bộ)](/vi/providers/inferrs)
 - [Kilocode](/vi/providers/kilocode)
 - [LiteLLM (gateway hợp nhất)](/vi/providers/litellm)
@@ -73,7 +74,7 @@ Bạn đang tìm tài liệu về kênh trò chuyện (WhatsApp/Telegram/Discord
 - [Perplexity (tìm kiếm web)](/vi/providers/perplexity-provider)
 - [Qianfan](/vi/providers/qianfan)
 - [Qwen Cloud](/vi/providers/qwen)
-- [Qwen OAuth / Portal](/vi/providers/qwen-oauth)
+- [Qwen OAuth / Cổng thông tin](/vi/providers/qwen-oauth)
 - [Runway](/vi/providers/runway)
 - [SenseAudio](/vi/providers/senseaudio)
 - [SGLang (mô hình cục bộ)](/vi/providers/sglang)
@@ -90,7 +91,7 @@ Bạn đang tìm tài liệu về kênh trò chuyện (WhatsApp/Telegram/Discord
 - [Xiaomi](/vi/providers/xiaomi)
 - [Z.AI (GLM)](/vi/providers/zai)
 
-## Trang tổng quan dùng chung
+## Trang tổng quan chung
 
 - [Biến thể đi kèm bổ sung](/vi/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy và Gemini CLI OAuth
 - [Tạo hình ảnh](/vi/tools/image-generation) - Công cụ `image_generate` dùng chung, lựa chọn nhà cung cấp và chuyển đổi dự phòng
@@ -108,7 +109,7 @@ Bạn đang tìm tài liệu về kênh trò chuyện (WhatsApp/Telegram/Discord
 
 ## Công cụ cộng đồng
 
-- [Claude Max API Proxy](/vi/providers/claude-max-api-proxy) - Proxy cộng đồng cho thông tin xác thực thuê bao Claude (xác minh chính sách/điều khoản của Anthropic trước khi sử dụng)
+- [Claude Max API Proxy](/vi/providers/claude-max-api-proxy) - Proxy cộng đồng cho thông tin đăng nhập gói đăng ký Claude (xác minh chính sách/điều khoản của Anthropic trước khi sử dụng)
 
 Để xem danh mục nhà cung cấp đầy đủ (xAI, Groq, Mistral, v.v.) và cấu hình nâng cao,
 xem [Nhà cung cấp mô hình](/vi/concepts/model-providers).

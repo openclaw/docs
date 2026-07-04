@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin ollama
-summary: Agrega compatibilidad con el proveedor de modelos Ollama y Ollama Cloud a OpenClaw.
+    - Estás instalando, configurando o auditando el plugin de ollama
+summary: Añade soporte de proveedor de modelos Ollama y Ollama Cloud a OpenClaw.
 title: Plugin de Ollama
 x-i18n:
-    generated_at: "2026-06-27T12:22:58Z"
+    generated_at: "2026-07-04T03:35:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
+    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -24,7 +24,7 @@ Añade compatibilidad con los proveedores de modelos Ollama y Ollama Cloud a Ope
 
 ## Superficie
 
-providers: ollama, ollama-cloud; contratos: memoryEmbeddingProviders, webSearchProviders
+proveedores: ollama, ollama-cloud; contratos: memoryEmbeddingProviders, tools, webSearchProviders
 
 ## Documentación relacionada
 

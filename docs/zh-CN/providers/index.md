@@ -1,26 +1,26 @@
 ---
 read_when:
     - 你想选择一个模型提供商
-    - 你需要快速了解支持的 LLM 后端
-summary: OpenClaw 支持的模型提供商（大语言模型）
+    - 你需要快速了解受支持的 LLM 后端
+summary: OpenClaw 支持的模型提供商（LLM）
 title: 提供商目录
 x-i18n:
-    generated_at: "2026-06-27T03:05:16Z"
+    generated_at: "2026-07-04T03:35:57Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份验证，然后将默认模型设置为 `provider/model`。
+OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成认证，然后将默认模型设置为 `provider/model`。
 
-在找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）等）？请参阅[渠道](/zh-CN/channels)。
+在找聊天频道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）/等）？请参阅 [频道](/zh-CN/channels)。
 
 ## 快速开始
 
-1. 使用提供商进行身份验证（通常通过 `openclaw onboard`）。
+1. 使用提供商完成认证（通常通过 `openclaw onboard`）。
 2. 设置默认模型：
 
 ```json5
@@ -40,6 +40,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [BytePlus（国际版）](/zh-CN/concepts/model-providers#byteplus-international)
 - [Cerebras](/zh-CN/providers/cerebras)
 - [Chutes](/zh-CN/providers/chutes)
+- [ClawRouter（托管式多提供商路由）](/providers/clawrouter)
 - [Cohere](/zh-CN/providers/cohere)
 - [Cloudflare AI Gateway](/zh-CN/providers/cloudflare-ai-gateway)
 - [ComfyUI](/zh-CN/providers/comfy)
@@ -92,13 +93,13 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 ## 共享概览页面
 
 - [其他内置变体](/zh-CN/providers/models#additional-bundled-provider-variants) - Anthropic Vertex、Copilot Proxy 和 Gemini CLI OAuth
-- [图像生成](/zh-CN/tools/image-generation) - 共享 `image_generate` 工具、提供商选择和故障转移
-- [音乐生成](/zh-CN/tools/music-generation) - 共享 `music_generate` 工具、提供商选择和故障转移
-- [视频生成](/zh-CN/tools/video-generation) - 共享 `video_generate` 工具、提供商选择和故障转移
+- [图像生成](/zh-CN/tools/image-generation) - 共享的 `image_generate` 工具、提供商选择和故障转移
+- [音乐生成](/zh-CN/tools/music-generation) - 共享的 `music_generate` 工具、提供商选择和故障转移
+- [视频生成](/zh-CN/tools/video-generation) - 共享的 `video_generate` 工具、提供商选择和故障转移
 
-## 转写提供商
+## 转录提供商
 
-- [Deepgram（音频转写）](/zh-CN/providers/deepgram)
+- [Deepgram（音频转录）](/zh-CN/providers/deepgram)
 - [ElevenLabs](/zh-CN/providers/elevenlabs#speech-to-text)
 - [Mistral](/zh-CN/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/zh-CN/providers/openai#speech-to-text)
@@ -107,7 +108,6 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 
 ## 社区工具
 
-- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭证的社区代理（使用前请核实 Anthropic 政策/条款）
+- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭证的社区代理（使用前请确认 Anthropic 政策/条款）
 
-如需完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，
-请参阅[模型提供商](/zh-CN/concepts/model-providers)。
+如需完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参阅 [模型提供商](/zh-CN/concepts/model-providers)。

@@ -1,15 +1,15 @@
 ---
 read_when:
-    - تحتاج إلى صفحة مرجعية لـ Plugin محدد من OpenClaw
+    - تحتاج إلى صفحة مرجعية لـ Plugin محدد في OpenClaw
     - أنت تدقق في تغطية وثائق Plugin
 summary: فهرس مُنشأ لصفحات مرجع Plugin في OpenClaw
 title: مرجع Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:09:35Z"
+    generated_at: "2026-07-04T03:49:55Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 83278d55abceed52b67e8ae73c72e45d38bd77a2ce8d553ff39476b6dcc8d8a5
+    source_hash: ba0c5e453eec38249f79746aebcc9a977d8eaffd70b558a558eb64d74c8c4ba1
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -17,11 +17,11 @@ x-i18n:
 # مرجع Plugin
 
 تُولَّد هذه الصفحة من `extensions/*/package.json` و
-`openclaw.plugin.json`. أعِد توليدها باستخدام:
+`openclaw.plugin.json`. أعد توليدها باستخدام:
 
 ```bash
 pnpm plugins:inventory:gen
 ```
 
-استخدم [جرد Plugin](/ar/plugins/plugin-inventory) لتصفح جميع صفحات مرجع Plugin
-المُولَّدة البالغ عددها 129 حسب التوزيع والحزمة والوصف.
+استخدم [مخزون Plugin](/ar/plugins/plugin-inventory) لتصفح جميع صفحات مرجع Plugin
+المُولَّدة البالغ عددها 130 حسب التوزيع والحزمة والوصف.

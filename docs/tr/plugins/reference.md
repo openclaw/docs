@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Belirli bir OpenClaw Plugin'i için bir başvuru sayfasına ihtiyacınız var
+    - Belirli bir OpenClaw Plugin için bir referans sayfasına ihtiyacınız var
     - Plugin dokümantasyonu kapsamını denetliyorsunuz
-summary: OpenClaw Plugin referans sayfalarının oluşturulan dizini
-title: Plugin başvurusu
+summary: OpenClaw Plugin başvuru sayfalarının oluşturulmuş dizini
+title: Plugin referansı
 x-i18n:
-    generated_at: "2026-06-28T00:56:55Z"
+    generated_at: "2026-07-04T04:03:43Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 83278d55abceed52b67e8ae73c72e45d38bd77a2ce8d553ff39476b6dcc8d8a5
+    source_hash: ba0c5e453eec38249f79746aebcc9a977d8eaffd70b558a558eb64d74c8c4ba1
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -23,5 +23,4 @@ Bu sayfa `extensions/*/package.json` ve
 pnpm plugins:inventory:gen
 ```
 
-Dağıtım, paket ve açıklamaya göre oluşturulan 129
-Plugin referans sayfasının tümüne göz atmak için [Plugin envanteri](/tr/plugins/plugin-inventory) sayfasını kullanın.
+Oluşturulan 130 Plugin referans sayfasının tamamına dağıtım, paket ve açıklamaya göre göz atmak için [Plugin envanteri](/tr/plugins/plugin-inventory) sayfasını kullanın.

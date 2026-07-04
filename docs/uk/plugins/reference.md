@@ -2,14 +2,14 @@
 read_when:
     - Вам потрібна довідкова сторінка для конкретного Plugin OpenClaw
     - Ви перевіряєте покриття документації Plugin
-summary: Згенерований покажчик сторінок довідника Plugin OpenClaw
+summary: Згенерований індекс довідкових сторінок Plugin OpenClaw
 title: Довідник Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:55:54Z"
+    generated_at: "2026-07-04T04:06:57Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 83278d55abceed52b67e8ae73c72e45d38bd77a2ce8d553ff39476b6dcc8d8a5
+    source_hash: ba0c5e453eec38249f79746aebcc9a977d8eaffd70b558a558eb64d74c8c4ba1
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -17,11 +17,11 @@ x-i18n:
 # Довідник Plugin
 
 Цю сторінку згенеровано з `extensions/*/package.json` і
-`openclaw.plugin.json`. Перегенеруйте її за допомогою:
+`openclaw.plugin.json`. Згенеруйте її повторно за допомогою:
 
 ```bash
 pnpm plugins:inventory:gen
 ```
 
-Скористайтеся [Інвентарем Plugin](/uk/plugins/plugin-inventory), щоб переглянути всі 129
-згенерованих довідкових сторінок Plugin за дистрибутивом, пакетом і описом.
+Скористайтеся [інвентарем Plugin](/uk/plugins/plugin-inventory), щоб переглянути всі 130
+згенерованих довідкових сторінок Plugin за дистрибуцією, пакетом і описом.

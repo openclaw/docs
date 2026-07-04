@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin ollama
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin ollama
 summary: Menambahkan dukungan penyedia model Ollama dan Ollama Cloud ke OpenClaw.
 title: Plugin Ollama
 x-i18n:
-    generated_at: "2026-06-27T17:55:51Z"
+    generated_at: "2026-07-04T04:07:25Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
+    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -24,7 +24,7 @@ Menambahkan dukungan penyedia model Ollama dan Ollama Cloud ke OpenClaw.
 
 ## Permukaan
 
-penyedia: ollama, ollama-cloud; kontrak: memoryEmbeddingProviders, webSearchProviders
+penyedia: ollama, ollama-cloud; kontrak: memoryEmbeddingProviders, tools, webSearchProviders
 
 ## Dokumentasi terkait
 

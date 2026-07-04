@@ -2,26 +2,26 @@
 read_when:
     - Je wilt een modelprovider kiezen
     - Je hebt een snel overzicht nodig van ondersteunde LLM-backends
-summary: Modelproviders (LLM's) die door OpenClaw worden ondersteund
-title: Provider-directory
+summary: Modelproviders (LLM's) ondersteund door OpenClaw
+title: Providerdirectory
 x-i18n:
-    generated_at: "2026-06-27T18:12:37Z"
+    generated_at: "2026-07-04T03:55:45Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
+    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw kan veel LLM-providers gebruiken. Kies een provider, verifieer en stel daarna het
+OpenClaw kan veel LLM-providers gebruiken. Kies een provider, authenticeer en stel daarna het
 standaardmodel in als `provider/model`.
 
-Op zoek naar documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/enz.)? Zie [Kanalen](/nl/channels).
+Zoek je documentatie over chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/enz.)? Zie [Kanalen](/nl/channels).
 
-## Snelstart
+## Snel starten
 
-1. Verifieer bij de provider (meestal via `openclaw onboard`).
+1. Authenticeer bij de provider (meestal via `openclaw onboard`).
 2. Stel het standaardmodel in:
 
 ```json5
@@ -38,9 +38,10 @@ Op zoek naar documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Matt
 - [Anthropic (API + Claude CLI)](/nl/providers/anthropic)
 - [Arcee AI (Trinity-modellen)](/nl/providers/arcee)
 - [Azure Speech](/nl/providers/azure-speech)
-- [BytePlus (Internationaal)](/nl/concepts/model-providers#byteplus-international)
+- [BytePlus (internationaal)](/nl/concepts/model-providers#byteplus-international)
 - [Cerebras](/nl/providers/cerebras)
 - [Chutes](/nl/providers/chutes)
+- [ClawRouter (beheerde multi-provider-routering)](/providers/clawrouter)
 - [Cohere](/nl/providers/cohere)
 - [Cloudflare AI Gateway](/nl/providers/cloudflare-ai-gateway)
 - [ComfyUI](/nl/providers/comfy)
@@ -54,10 +55,10 @@ Op zoek naar documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Matt
 - [Google (Gemini)](/nl/providers/google)
 - [Gradium](/nl/providers/gradium)
 - [Groq (LPU-inferentie)](/nl/providers/groq)
-- [Hugging Face (Inferentie)](/nl/providers/huggingface)
+- [Hugging Face (Inference)](/nl/providers/huggingface)
 - [inferrs (lokale modellen)](/nl/providers/inferrs)
 - [Kilocode](/nl/providers/kilocode)
-- [LiteLLM (uniforme gateway)](/nl/providers/litellm)
+- [LiteLLM (uniforme Gateway)](/nl/providers/litellm)
 - [LM Studio (lokale modellen)](/nl/providers/lmstudio)
 - [MiniMax](/nl/providers/minimax)
 - [Mistral](/nl/providers/mistral)
@@ -92,7 +93,7 @@ Op zoek naar documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Matt
 
 ## Gedeelde overzichtspagina's
 
-- [Aanvullende gebundelde varianten](/nl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy en Gemini CLI OAuth
+- [Aanvullende meegeleverde varianten](/nl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy en Gemini CLI OAuth
 - [Afbeeldingen genereren](/nl/tools/image-generation) - Gedeelde `image_generate`-tool, providerselectie en failover
 - [Muziek genereren](/nl/tools/music-generation) - Gedeelde `music_generate`-tool, providerselectie en failover
 - [Video genereren](/nl/tools/video-generation) - Gedeelde `video_generate`-tool, providerselectie en failover
@@ -108,6 +109,6 @@ Op zoek naar documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Matt
 
 ## Communitytools
 
-- [Claude Max API Proxy](/nl/providers/claude-max-api-proxy) - Communityproxy voor Claude-abonnementsreferenties (controleer het beleid/de voorwaarden van Anthropic vóór gebruik)
+- [Claude Max API Proxy](/nl/providers/claude-max-api-proxy) - Communityproxy voor Claude-abonnementsreferenties (controleer vóór gebruik het beleid/de voorwaarden van Anthropic)
 
 Zie [Modelproviders](/nl/concepts/model-providers) voor de volledige providercatalogus (xAI, Groq, Mistral, enz.) en geavanceerde configuratie.
