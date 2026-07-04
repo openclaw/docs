@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Anda perlu memanggil helper inti dari plugin (TTS, STT, pembuatan gambar, pencarian web, subagen, node)
+    - Anda perlu memanggil helper inti dari plugin (TTS, STT, pembuatan gambar, pencarian web, subagent, node)
     - Anda ingin memahami apa yang diekspos oleh api.runtime
     - Anda mengakses helper konfigurasi, agen, atau media dari kode plugin
 sidebarTitle: Runtime helpers
-summary: api.runtime -- helper runtime yang diinjeksi yang tersedia untuk Plugin
+summary: api.runtime -- helper runtime yang diinjeksi dan tersedia untuk Plugin
 title: Helper runtime Plugin
 x-i18n:
-    generated_at: "2026-06-30T14:28:35Z"
+    generated_at: "2026-07-04T20:44:37Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 028e4b75840fe228ee98440f7e86030cb4e1377b2688e0564394d1424662ca39
+    source_hash: 22448865af70eedb71180ab88946a88d7eb59c43f09fc1a819d43263b4c4223c
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-Referensi untuk objek `api.runtime` yang disuntikkan ke setiap plugin saat registrasi. Gunakan helper ini alih-alih mengimpor internal host secara langsung.
+Referensi untuk objek `api.runtime` yang disuntikkan ke setiap plugin selama registrasi. Gunakan helper ini alih-alih mengimpor internal host secara langsung.
 
 <CardGroup cols={2}>
   <Card title="Plugin channel" href="/id/plugins/sdk-channel-plugins">
     Panduan langkah demi langkah yang menggunakan helper ini dalam konteks untuk plugin channel.
   </Card>
-  <Card title="Plugin penyedia" href="/id/plugins/sdk-provider-plugins">
-    Panduan langkah demi langkah yang menggunakan helper ini dalam konteks untuk plugin penyedia.
+  <Card title="Plugin provider" href="/id/plugins/sdk-provider-plugins">
+    Panduan langkah demi langkah yang menggunakan helper ini dalam konteks untuk plugin provider.
   </Card>
 </CardGroup>
 
@@ -35,38 +35,38 @@ register(api) {
 
 ## Pemuatan dan penulisan konfigurasi
 
-Utamakan konfigurasi yang sudah diteruskan ke jalur panggilan aktif, misalnya `api.config` saat registrasi atau argumen `cfg` pada callback channel/penyedia. Ini menjaga satu snapshot proses mengalir melalui pekerjaan alih-alih mem-parsing ulang konfigurasi pada hot path.
+Utamakan konfigurasi yang sudah diteruskan ke jalur panggilan aktif, misalnya `api.config` selama registrasi atau argumen `cfg` pada callback channel/provider. Ini menjaga satu snapshot proses mengalir melalui pekerjaan alih-alih mem-parsing ulang konfigurasi pada jalur panas.
 
 Gunakan `api.runtime.config.current()` hanya ketika handler berumur panjang membutuhkan snapshot proses saat ini dan tidak ada konfigurasi yang diteruskan ke fungsi tersebut. Nilai yang dikembalikan bersifat readonly; kloning atau gunakan helper mutasi sebelum mengedit.
 
-Factory tool menerima `ctx.runtimeConfig` plus `ctx.getRuntimeConfig()`. Gunakan getter di dalam callback `execute` milik tool berumur panjang ketika konfigurasi dapat berubah setelah definisi tool dibuat.
+Factory alat menerima `ctx.runtimeConfig` ditambah `ctx.getRuntimeConfig()`. Gunakan getter di dalam callback `execute` milik alat berumur panjang ketika konfigurasi dapat berubah setelah definisi alat dibuat.
 
-Pertahankan perubahan dengan `api.runtime.config.mutateConfigFile(...)` atau `api.runtime.config.replaceConfigFile(...)`. Setiap penulisan harus memilih kebijakan `afterWrite` yang eksplisit:
+Persistenkan perubahan dengan `api.runtime.config.mutateConfigFile(...)` atau `api.runtime.config.replaceConfigFile(...)`. Setiap penulisan harus memilih kebijakan `afterWrite` eksplisit:
 
-- `afterWrite: { mode: "auto" }` membiarkan Gateway reload planner memutuskan.
-- `afterWrite: { mode: "restart", reason: "..." }` memaksa restart bersih ketika penulis tahu hot reload tidak aman.
+- `afterWrite: { mode: "auto" }` membiarkan pemuat ulang gateway menentukan keputusan.
+- `afterWrite: { mode: "restart", reason: "..." }` memaksa restart bersih ketika penulis mengetahui bahwa hot reload tidak aman.
 - `afterWrite: { mode: "none", reason: "..." }` menekan reload/restart otomatis hanya ketika pemanggil memiliki tindak lanjutnya.
 
-Helper mutasi mengembalikan `afterWrite` plus ringkasan `followUp` bertipe agar pemanggil dapat mencatat log atau menguji apakah mereka meminta restart. Gateway tetap memiliki kapan restart itu benar-benar terjadi.
+Helper mutasi mengembalikan `afterWrite` ditambah ringkasan `followUp` bertipe sehingga pemanggil dapat mencatat log atau menguji apakah mereka meminta restart. Gateway tetap memiliki kendali atas kapan restart itu benar-benar terjadi.
 
-`api.runtime.config.loadConfig()` dan `api.runtime.config.writeConfigFile(...)` adalah helper kompatibilitas yang tidak lagi dianjurkan di bawah `runtime-config-load-write`. Keduanya memperingatkan sekali saat runtime, dan tetap tersedia untuk plugin eksternal lama selama jendela migrasi. Plugin bawaan tidak boleh menggunakannya; guard batas konfigurasi gagal jika kode plugin memanggilnya atau mengimpor helper tersebut dari subpath SDK plugin.
+`api.runtime.config.loadConfig()` dan `api.runtime.config.writeConfigFile(...)` adalah helper kompatibilitas yang tidak lagi disarankan di bawah `runtime-config-load-write`. Keduanya memperingatkan sekali saat runtime, dan tetap tersedia untuk plugin eksternal lama selama jendela migrasi. Plugin bawaan tidak boleh menggunakannya; penjaga batas konfigurasi gagal jika kode plugin memanggilnya atau mengimpor helper tersebut dari subpath SDK plugin.
 
-Untuk impor SDK langsung, gunakan subpath konfigurasi yang terfokus alih-alih compatibility barrel luas
+Untuk impor SDK langsung, gunakan subpath konfigurasi yang terfokus alih-alih barrel kompatibilitas luas
 `openclaw/plugin-sdk/config-runtime`: `config-contracts` untuk
-tipe, `plugin-config-runtime` untuk asersi konfigurasi yang sudah dimuat dan lookup entri plugin,
-`runtime-config-snapshot` untuk snapshot proses saat ini, dan
-`config-mutation` untuk penulisan. Pengujian plugin bawaan harus me-mock subpath terfokus ini
-secara langsung alih-alih me-mock compatibility barrel luas.
+tipe, `plugin-config-runtime` untuk asersi konfigurasi yang sudah dimuat dan pencarian entri
+plugin, `runtime-config-snapshot` untuk snapshot proses saat ini, dan
+`config-mutation` untuk penulisan. Pengujian plugin bawaan sebaiknya me-mock subpath terfokus ini
+secara langsung alih-alih me-mock barrel kompatibilitas luas.
 
-Kode runtime internal OpenClaw memiliki arah yang sama: muat konfigurasi sekali di batas CLI, Gateway, atau proses, lalu teruskan nilai tersebut. Penulisan mutasi yang berhasil menyegarkan snapshot runtime proses dan memajukan revisi internalnya; cache berumur panjang harus memakai cache key milik runtime alih-alih menserialisasi konfigurasi secara lokal. Modul runtime berumur panjang memiliki pemindai tanpa toleransi untuk panggilan `loadConfig()` ambient; gunakan `cfg` yang diteruskan, `context.getRuntimeConfig()` permintaan, atau `getRuntimeConfig()` pada batas proses yang eksplisit.
+Kode runtime internal OpenClaw memiliki arah yang sama: muat konfigurasi sekali di batas CLI, gateway, atau proses, lalu teruskan nilai itu. Penulisan mutasi yang berhasil menyegarkan snapshot runtime proses dan memajukan revisi internalnya; cache berumur panjang sebaiknya memakai kunci cache milik runtime alih-alih menserialisasi konfigurasi secara lokal. Modul runtime berumur panjang memiliki pemindai tanpa toleransi untuk panggilan ambient `loadConfig()`; gunakan `cfg` yang diteruskan, `context.getRuntimeConfig()` permintaan, atau `getRuntimeConfig()` pada batas proses eksplisit.
 
-Jalur eksekusi penyedia dan channel harus menggunakan snapshot konfigurasi runtime aktif, bukan snapshot file yang dikembalikan untuk pembacaan ulang atau pengeditan konfigurasi. Snapshot file mempertahankan nilai sumber seperti marker SecretRef untuk UI dan penulisan; callback penyedia membutuhkan tampilan runtime yang sudah di-resolve. Ketika helper dapat dipanggil dengan snapshot sumber aktif atau snapshot runtime aktif, rutekan melalui `selectApplicableRuntimeConfig()` sebelum membaca kredensial.
+Jalur eksekusi provider dan channel harus menggunakan snapshot konfigurasi runtime aktif, bukan snapshot file yang dikembalikan untuk pembacaan balik atau pengeditan konfigurasi. Snapshot file mempertahankan nilai sumber seperti penanda SecretRef untuk UI dan penulisan; callback provider membutuhkan tampilan runtime yang telah di-resolve. Ketika helper dapat dipanggil dengan snapshot sumber aktif atau snapshot runtime aktif, rutekan melalui `selectApplicableRuntimeConfig()` sebelum membaca kredensial.
 
-## Utilitas runtime yang dapat digunakan kembali
+## Utilitas runtime yang dapat digunakan ulang
 
-Gunakan fakta `botLoopProtection` masuk untuk pesan masuk yang dibuat bot. Core menerapkan guard sliding-window dalam memori bersama sebelum catatan sesi dan dispatch, tanpa mengikat kebijakan ke satu channel. Guard melacak key `(scopeId, conversationId, participant pair)`, menghitung kedua arah dari satu pasangan bersama-sama, menerapkan cooldown setelah anggaran window terlampaui, dan memangkas entri tidak aktif secara oportunistik.
+Gunakan fakta `botLoopProtection` masuk untuk pesan masuk yang dibuat bot. Core menerapkan penjaga sliding-window dalam memori bersama sebelum pencatatan sesi dan dispatch, tanpa mengikat kebijakan ke satu channel. Penjaga melacak kunci `(scopeId, conversationId, participant pair)`, menghitung kedua arah dari satu pasangan bersama-sama, menerapkan cooldown setelah anggaran window terlampaui, dan memangkas entri tidak aktif secara oportunistik.
 
-Plugin channel yang mengekspos perilaku ini kepada operator sebaiknya mengutamakan bentuk bersama `channels.defaults.botLoopProtection` untuk anggaran baseline, lalu melapisi override khusus channel/penyedia di atasnya. Konfigurasi bersama menggunakan detik karena bersifat menghadap pengguna:
+Plugin channel yang mengekspos perilaku ini kepada operator sebaiknya mengutamakan bentuk bersama `channels.defaults.botLoopProtection` untuk anggaran dasar, lalu melapisi override khusus channel/provider di atasnya. Konfigurasi bersama menggunakan detik karena bersifat menghadap pengguna:
 
 ```typescript
 type ChannelBotLoopProtectionConfig = {
@@ -77,7 +77,7 @@ type ChannelBotLoopProtectionConfig = {
 };
 ```
 
-Teruskan fakta pasangan bot yang dinormalisasi bersama giliran yang sudah di-resolve. Core me-resolve default, konversi unit, dan semantik `enabled`:
+Teruskan fakta pasangan bot yang dinormalisasi bersama turn yang telah di-resolve. Core me-resolve default, konversi unit, dan semantik `enabled`:
 
 ```typescript
 return {
@@ -100,7 +100,7 @@ return {
 ```
 
 Gunakan `openclaw/plugin-sdk/pair-loop-guard-runtime` secara langsung hanya untuk loop peristiwa
-dua pihak kustom yang tidak melalui runner balasan masuk bersama.
+dua pihak khusus yang tidak melalui runner balasan masuk bersama.
 
 ## Namespace runtime
 
@@ -148,13 +148,13 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    `runEmbeddedAgent(...)` adalah helper netral untuk memulai giliran agent OpenClaw normal dari kode plugin. Ini menggunakan resolusi penyedia/model dan pemilihan agent-harness yang sama seperti balasan yang dipicu channel.
+    `runEmbeddedAgent(...)` adalah helper netral untuk memulai turn agent OpenClaw normal dari kode plugin. Ini menggunakan resolusi provider/model dan pemilihan agent-harness yang sama seperti balasan yang dipicu channel.
 
-    `runEmbeddedPiAgent(...)` tetap menjadi alias kompatibilitas yang tidak lagi dianjurkan untuk plugin yang ada. Kode baru sebaiknya menggunakan `runEmbeddedAgent(...)`.
+    `runEmbeddedPiAgent(...)` tetap menjadi alias kompatibilitas yang tidak lagi disarankan untuk plugin yang ada. Kode baru sebaiknya menggunakan `runEmbeddedAgent(...)`.
 
-    `resolveThinkingPolicy(...)` mengembalikan tingkat berpikir yang didukung penyedia/model dan default opsional. Plugin penyedia memiliki profil khusus model melalui hook berpikir mereka, jadi plugin tool sebaiknya memanggil helper runtime ini alih-alih mengimpor atau menduplikasi daftar penyedia.
+    `resolveThinkingPolicy(...)` mengembalikan level berpikir yang didukung provider/model dan default opsional. Plugin provider memiliki profil khusus model melalui hook berpikir mereka, sehingga plugin alat sebaiknya memanggil helper runtime ini alih-alih mengimpor atau menduplikasi daftar provider.
 
-    `normalizeThinkingLevel(...)` mengonversi teks pengguna seperti `on`, `x-high`, atau `extra high` ke tingkat tersimpan kanonis sebelum memeriksanya terhadap kebijakan yang sudah di-resolve.
+    `normalizeThinkingLevel(...)` mengonversi teks pengguna seperti `on`, `x-high`, atau `extra high` ke level tersimpan kanonis sebelum memeriksanya terhadap kebijakan yang telah di-resolve.
 
     **Helper penyimpanan sesi** berada di bawah `api.runtime.agent.session`:
 
@@ -168,17 +168,27 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
       sessionKey,
       update: (entry) => ({ thinkingLevel: "high" }),
     });
+
+    const storePath = api.runtime.agent.session.resolveStorePath(cfg.session?.store, { agentId });
+    await api.runtime.agent.session.runWithWorkAdmission(
+      { storePath, sessionKey },
+      async (signal) => {
+        // Create or update the session, then pass signal to the admitted agent run.
+      },
+    );
     ```
 
-    Utamakan `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)`, atau `upsertSessionEntry(...)` untuk alur kerja sesi. Helper ini mengalamatkan sesi berdasarkan identitas agent/sesi sehingga plugin tidak bergantung pada bentuk penyimpanan legacy `sessions.json`. Gunakan `preserveActivity: true` untuk patch metadata saja yang tidak boleh menyegarkan aktivitas sesi, dan `replaceEntry: true` hanya ketika callback mengembalikan entri lengkap dan field yang dihapus harus tetap terhapus.
+    Utamakan `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)`, atau `upsertSessionEntry(...)` untuk alur kerja sesi. Helper ini mengalamatkan sesi berdasarkan identitas agent/sesi sehingga plugin tidak bergantung pada bentuk penyimpanan `sessions.json` lama. Gunakan `preserveActivity: true` untuk patch khusus metadata yang tidak boleh menyegarkan aktivitas sesi, dan `replaceEntry: true` hanya ketika callback mengembalikan entri lengkap dan field yang dihapus harus tetap terhapus.
 
-    Untuk pembacaan dan penulisan transkrip, impor `openclaw/plugin-sdk/session-transcript-runtime` dan gunakan `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)`, atau `withSessionTranscriptWriteLock(...)` dengan `{ agentId, sessionKey, sessionId }`. API ini memungkinkan plugin mengidentifikasi transkrip, membaca peristiwanya, menambahkan pesan, menerbitkan pembaruan, dan menjalankan operasi terkait di bawah lock penulisan transkrip yang sama. Meneruskan `sessionFile`, menggunakan `resolveSessionTranscriptLegacyFileTarget(...)`, atau mengimpor `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` tingkat rendah dari `openclaw/plugin-sdk/agent-harness-runtime` tidak lagi dianjurkan; jalur tersebut hanya ada untuk kode legacy yang sudah menerima artefak transkrip aktif.
+    Gunakan `runWithWorkAdmission(...)` ketika plugin memulai pekerjaan pada sesi yang dipersistenkan. Callback menolak sesi yang diarsipkan atau diganti secara bersamaan, menjaga mutasi arsip/reset/hapus tetap terkoordinasi hingga selesai, dan menerima `AbortSignal` yang harus diteruskan ke run agent.
 
-    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)`, dan `resolveAndPersistSessionFile(...)` adalah helper kompatibilitas yang tidak lagi dianjurkan untuk plugin yang masih sengaja bergantung pada bentuk legacy seluruh store atau file transkrip. Kode plugin baru tidak boleh menggunakan helper tersebut, dan pemanggil yang ada sebaiknya bermigrasi ke helper entri dan helper identitas transkrip.
+    Untuk pembacaan dan penulisan transkrip, impor `openclaw/plugin-sdk/session-transcript-runtime` dan gunakan `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)`, atau `withSessionTranscriptWriteLock(...)` dengan `{ agentId, sessionKey, sessionId }`. API ini memungkinkan plugin mengidentifikasi transkrip, membaca peristiwanya, menambahkan pesan, memublikasikan pembaruan, dan menjalankan operasi terkait di bawah write lock transkrip yang sama. Meneruskan `sessionFile`, menggunakan `resolveSessionTranscriptLegacyFileTarget(...)`, atau mengimpor `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` tingkat rendah dari `openclaw/plugin-sdk/agent-harness-runtime` tidak lagi disarankan; jalur tersebut hanya ada untuk kode lama yang sudah menerima artefak transkrip aktif.
+
+    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)`, dan `resolveAndPersistSessionFile(...)` adalah helper kompatibilitas yang tidak lagi disarankan untuk plugin yang masih sengaja bergantung pada bentuk whole-store atau transcript-file lama. Kode plugin baru tidak boleh menggunakan helper tersebut, dan pemanggil yang ada sebaiknya bermigrasi ke helper entri dan helper identitas transkrip.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
-    Konstanta model dan penyedia default:
+    Konstanta model dan provider default:
 
     ```typescript
     const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -188,7 +198,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    Jalankan penyelesaian teks milik host tanpa mengimpor internal penyedia atau
+    Jalankan penyelesaian teks milik host tanpa mengimpor internal provider atau
     menduplikasi persiapan model/auth/base URL OpenClaw.
 
     ```typescript
@@ -200,15 +210,20 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    Helper menggunakan jalur persiapan penyelesaian sederhana yang sama seperti runtime bawaan OpenClaw dan snapshot konfigurasi runtime milik host. Mesin konteks menerima kapabilitas `llm.complete` yang terikat sesi, sehingga panggilan model menggunakan agent sesi aktif dan tidak diam-diam fallback ke agent default. Hasilnya mencakup atribusi penyedia/model/agent plus penggunaan token, cache, dan estimasi biaya yang dinormalisasi jika tersedia.
+    Helper ini menggunakan jalur persiapan penyelesaian sederhana yang sama seperti runtime
+    bawaan OpenClaw dan snapshot konfigurasi runtime milik host. Mesin konteks
+    menerima kapabilitas `llm.complete` yang terikat sesi, sehingga panggilan model menggunakan
+    agent milik sesi aktif dan tidak diam-diam fallback ke agent default. Hasilnya
+    menyertakan atribusi provider/model/agent ditambah penggunaan token,
+    cache, dan estimasi biaya yang dinormalisasi saat tersedia.
 
     <Warning>
-    Override model memerlukan opt-in operator melalui `plugins.entries.<id>.llm.allowModelOverride: true` dalam konfigurasi. Gunakan `plugins.entries.<id>.llm.allowedModels` untuk membatasi plugin tepercaya ke target `provider/model` kanonis tertentu. Penyelesaian lintas-agent memerlukan `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
+    Penggantian model memerlukan persetujuan operator melalui `plugins.entries.<id>.llm.allowModelOverride: true` di config. Gunakan `plugins.entries.<id>.llm.allowedModels` untuk membatasi plugin tepercaya ke target kanonis `provider/model` tertentu. Penyelesaian lintas agen memerlukan `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    Luncurkan dan kelola run subagent latar belakang.
+    Luncurkan dan kelola run subagen latar belakang.
 
     ```typescript
     // Start a subagent run
@@ -236,14 +251,14 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     ```
 
     <Warning>
-    Penggantian model (`provider`/`model`) memerlukan persetujuan operator melalui `plugins.entries.<id>.subagent.allowModelOverride: true` dalam konfigurasi. Plugin yang tidak tepercaya tetap dapat menjalankan subagen, tetapi permintaan penggantian ditolak.
+    Penggantian model (`provider`/`model`) memerlukan persetujuan operator melalui `plugins.entries.<id>.subagent.allowModelOverride: true` di config. Plugin yang tidak tepercaya tetap dapat menjalankan subagen, tetapi permintaan penggantian ditolak.
     </Warning>
 
-    `deleteSession(...)` dapat menghapus sesi yang dibuat oleh Plugin yang sama melalui `api.runtime.subagent.run(...)`. Menghapus sesi pengguna atau operator sembarang tetap memerlukan permintaan Gateway dengan cakupan admin.
+    `deleteSession(...)` dapat menghapus sesi yang dibuat oleh plugin yang sama melalui `api.runtime.subagent.run(...)`. Menghapus sesi pengguna atau operator sembarang tetap memerlukan permintaan Gateway dengan cakupan admin.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Cantumkan node yang terhubung dan panggil perintah host-node dari kode Plugin yang dimuat Gateway atau dari perintah CLI Plugin. Gunakan ini ketika Plugin memiliki pekerjaan lokal pada perangkat yang dipasangkan, misalnya bridge browser atau audio di Mac lain.
+    Cantumkan node yang terhubung dan panggil perintah host node dari kode plugin yang dimuat Gateway atau dari perintah CLI plugin. Gunakan ini ketika plugin memiliki pekerjaan lokal pada perangkat yang dipasangkan, misalnya browser atau jembatan audio di Mac lain.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -256,22 +271,22 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    Di dalam Gateway, runtime ini berjalan dalam proses. Dalam perintah CLI Plugin, ini memanggil Gateway yang dikonfigurasi melalui RPC, sehingga perintah seperti `openclaw googlemeet recover-tab` dapat memeriksa node yang dipasangkan dari terminal. Perintah Node tetap melewati pemasangan node Gateway normal, daftar izin perintah, kebijakan pemanggilan node Plugin, dan penanganan perintah lokal node.
+    Di dalam Gateway, runtime ini berjalan dalam proses. Dalam perintah CLI plugin, runtime ini memanggil Gateway yang dikonfigurasi melalui RPC, sehingga perintah seperti `openclaw googlemeet recover-tab` dapat memeriksa node yang dipasangkan dari terminal. Perintah Node tetap melewati pemasangan node Gateway normal, daftar izin perintah, kebijakan pemanggilan node plugin, dan penanganan perintah lokal node.
 
-    Plugin yang mengekspos perintah host-node berbahaya sebaiknya mendaftarkan kebijakan pemanggilan node dengan `api.registerNodeInvokePolicy(...)`. Kebijakan berjalan di Gateway setelah pemeriksaan daftar izin perintah dan sebelum perintah diteruskan ke node, sehingga panggilan `node.invoke` langsung dan alat Plugin tingkat lebih tinggi berbagi jalur penegakan yang sama.
+    Plugin yang mengekspos perintah host node berbahaya harus mendaftarkan kebijakan pemanggilan node dengan `api.registerNodeInvokePolicy(...)`. Kebijakan berjalan di Gateway setelah pemeriksaan daftar izin perintah dan sebelum perintah diteruskan ke node, sehingga panggilan langsung `node.invoke` dan alat plugin tingkat lebih tinggi berbagi jalur penegakan yang sama.
 
     <Warning>
-    Bidang opsional `scopes` meminta cakupan operator Gateway untuk pemanggilan. OpenClaw menghormatinya hanya untuk Plugin bawaan dan instalasi Plugin resmi tepercaya; permintaan dari Plugin lain tidak meningkatkan hak panggilan. Gunakan hanya ketika Plugin tepercaya harus memanggil perintah node dengan cakupan Gateway yang lebih ketat, seperti `operator.admin`.
+    Kolom opsional `scopes` meminta cakupan operator Gateway untuk pemanggilan. OpenClaw menghormatinya hanya untuk plugin bawaan dan instalasi plugin resmi tepercaya; permintaan dari plugin lain tidak meningkatkan hak panggilan. Gunakan hanya ketika plugin tepercaya harus memanggil perintah node dengan cakupan Gateway yang lebih ketat, seperti `operator.admin`.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Ikat runtime Alur Tugas ke kunci sesi OpenClaw yang sudah ada atau konteks alat tepercaya, lalu buat dan kelola Alur Tugas tanpa meneruskan pemilik pada setiap panggilan.
+    Ikat runtime Task Flow ke kunci sesi OpenClaw yang sudah ada atau konteks alat tepercaya, lalu buat dan kelola Task Flow tanpa meneruskan owner pada setiap panggilan.
 
-    Alur Tugas melacak status workflow multi-langkah yang persisten. Ini bukan penjadwal:
-    gunakan Cron atau `api.session.workflow.scheduleSessionTurn(...)` untuk wakeup mendatang,
-    lalu gunakan `managedFlows` dari giliran terjadwal ketika pekerjaan tersebut
-    membutuhkan status alur, tugas anak, penantian, atau pembatalan.
+    Task Flow melacak status alur kerja beberapa langkah yang tahan lama. Ini bukan penjadwal:
+    gunakan Cron atau `api.session.workflow.scheduleSessionTurn(...)` untuk wakeup
+    mendatang, lalu gunakan `managedFlows` dari giliran terjadwal ketika pekerjaan itu
+    memerlukan status flow, tugas anak, penantian, atau pembatalan.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -298,7 +313,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    Gunakan `bindSession({ sessionKey, requesterOrigin })` ketika Anda sudah memiliki kunci sesi OpenClaw tepercaya dari lapisan pengikatan Anda sendiri. Jangan mengikat dari input pengguna mentah.
+    Gunakan `bindSession({ sessionKey, requesterOrigin })` ketika Anda sudah memiliki kunci sesi OpenClaw tepercaya dari lapisan binding Anda sendiri. Jangan ikat dari input pengguna mentah.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -324,7 +339,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    Menggunakan konfigurasi inti `messages.tts` dan pemilihan penyedia. Mengembalikan buffer audio PCM + laju sampel.
+    Menggunakan konfigurasi inti `messages.tts` dan pemilihan provider. Mengembalikan buffer audio PCM + laju sampel.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
@@ -445,9 +460,9 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    Snapshot konfigurasi runtime saat ini dan penulisan konfigurasi transaksional. Utamakan
-    konfigurasi yang sudah diteruskan ke jalur panggilan aktif; gunakan
-    `current()` hanya ketika handler membutuhkan snapshot proses secara langsung.
+    Snapshot config runtime saat ini dan penulisan config transaksional. Utamakan
+    config yang sudah diteruskan ke jalur panggilan aktif; gunakan
+    `current()` hanya ketika handler memerlukan snapshot proses secara langsung.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -459,9 +474,9 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    `mutateConfigFile(...)` dan `replaceConfigFile(...)` mengembalikan nilai `followUp`,
-    misalnya `{ mode: "restart", requiresRestart: true, reason }`,
-    yang mencatat maksud penulis tanpa mengambil kontrol restart dari
+    `mutateConfigFile(...)` dan `replaceConfigFile(...)` mengembalikan nilai
+    `followUp`, misalnya `{ mode: "restart", requiresRestart: true, reason }`,
+    yang mencatat maksud penulis tanpa mengambil kendali restart dari
     gateway.
 
   </Accordion>
@@ -480,8 +495,8 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runCommandWithTimeout(...)` mengembalikan `stdout` dan `stderr` yang ditangkap, jumlah
-    pemotongan opsional, `code`, `signal`, `killed`, `termination`, dan
+    `runCommandWithTimeout(...)` mengembalikan `stdout` dan `stderr` yang ditangkap,
+    jumlah pemotongan opsional, `code`, `signal`, `killed`, `termination`, dan
     `noOutputTimedOut`. Hasil timeout dan timeout-tanpa-output melaporkan `code: 124`
     ketika proses anak tidak menyediakan kode keluar bukan nol. Keluar karena sinyal
     non-timeout masih dapat mengembalikan `code: null`, jadi gunakan `termination` dan
@@ -502,7 +517,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
 
   </Accordion>
   <Accordion title="api.runtime.logging">
-    Pencatatan log.
+    Logging.
 
     ```typescript
     const verbose = api.runtime.logging.shouldLogVerbose();
@@ -511,7 +526,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    Resolusi autentikasi model dan penyedia.
+    Resolusi autentikasi model dan provider.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -523,7 +538,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    Resolusi direktori status dan penyimpanan berkunci yang didukung SQLite.
+    Resolusi direktori state dan penyimpanan berkunci berbasis SQLite.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -540,10 +555,10 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     await store.clear();
     ```
 
-    Store berkunci bertahan setelah mulai ulang dan diisolasi berdasarkan id plugin yang terikat runtime. Gunakan `registerIfAbsent(...)` untuk klaim dedupe atomik: fungsi ini mengembalikan `true` saat kunci tidak ada atau kedaluwarsa lalu didaftarkan, atau `false` saat nilai aktif sudah ada tanpa menimpa nilainya, waktu pembuatan, atau TTL. Batasan: `maxEntries` per namespace, 6.000 baris aktif per plugin, nilai JSON di bawah 64KB, dan kedaluwarsa TTL opsional. Saat penulisan akan melebihi batas baris plugin, runtime dapat mengeluarkan baris aktif terlama dari namespace yang sedang ditulis; namespace saudara tidak dikeluarkan untuk penulisan tersebut, dan penulisan tetap gagal jika namespace tidak dapat membebaskan cukup baris.
+    Penyimpanan berkunci bertahan setelah restart dan diisolasi berdasarkan id plugin yang terikat runtime. Gunakan `registerIfAbsent(...)` untuk klaim dedupe atomik: fungsi ini mengembalikan `true` ketika kunci tidak ada atau sudah kedaluwarsa lalu didaftarkan, atau `false` ketika nilai aktif sudah ada tanpa menimpa nilainya, waktu pembuatannya, atau TTL. Batas: `maxEntries` per namespace, 6.000 baris aktif per plugin, nilai JSON di bawah 64KB, dan kedaluwarsa TTL opsional. Ketika penulisan akan melampaui batas baris plugin, runtime dapat mengeluarkan baris aktif paling lama dari namespace yang sedang ditulis; namespace saudara tidak dikeluarkan untuk penulisan tersebut, dan penulisan tetap gagal jika namespace tidak dapat membebaskan cukup baris.
 
     <Warning>
-    Hanya plugin bawaan dalam rilis ini.
+    Plugin bundel saja dalam rilis ini.
     </Warning>
 
   </Accordion>
@@ -558,9 +573,9 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    Pembantu runtime khusus kanal (tersedia saat plugin kanal dimuat).
+    Helper runtime khusus channel (tersedia ketika plugin channel dimuat).
 
-    `api.runtime.channel.media` adalah permukaan yang disarankan untuk unduhan dan penyimpanan media kanal:
+    `api.runtime.channel.media` adalah permukaan yang disarankan untuk pengunduhan dan penyimpanan media channel:
 
     ```typescript
     const saved = await api.runtime.channel.media.saveRemoteMedia({
@@ -571,9 +586,9 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    Gunakan `saveRemoteMedia(...)` saat URL jarak jauh harus menjadi media OpenClaw. Gunakan `saveResponseMedia(...)` saat plugin sudah mengambil `Response` dengan penanganan autentikasi, pengalihan, atau allowlist yang dimiliki plugin. Gunakan `readRemoteMediaBuffer(...)` hanya saat plugin membutuhkan byte mentah untuk inspeksi, transformasi, dekripsi, atau unggah ulang. `fetchRemoteMedia(...)` tetap menjadi alias kompatibilitas yang sudah tidak digunakan lagi untuk `readRemoteMediaBuffer(...)`.
+    Gunakan `saveRemoteMedia(...)` ketika URL jarak jauh harus menjadi media OpenClaw. Gunakan `saveResponseMedia(...)` ketika plugin sudah mengambil `Response` dengan penanganan autentikasi, pengalihan, atau allowlist milik plugin. Gunakan `readRemoteMediaBuffer(...)` hanya ketika plugin membutuhkan byte mentah untuk inspeksi, transformasi, dekripsi, atau unggah ulang. `fetchRemoteMedia(...)` tetap menjadi alias kompatibilitas yang sudah deprecated untuk `readRemoteMediaBuffer(...)`.
 
-    `api.runtime.channel.mentions` adalah permukaan kebijakan mention masuk bersama untuk plugin kanal bawaan yang menggunakan injeksi runtime:
+    `api.runtime.channel.mentions` adalah permukaan kebijakan mention masuk bersama untuk plugin channel bundel yang menggunakan injeksi runtime:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -600,7 +615,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     });
     ```
 
-    Pembantu mention yang tersedia:
+    Helper mention yang tersedia:
 
     - `buildMentionRegexes`
     - `matchesMentionPatterns`
@@ -608,7 +623,7 @@ dua pihak kustom yang tidak melalui runner balasan masuk bersama.
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions` sengaja tidak mengekspos pembantu kompatibilitas lama `resolveMentionGating*`. Utamakan jalur `{ facts, policy }` yang sudah dinormalisasi.
+    `api.runtime.channel.mentions` sengaja tidak mengekspos helper kompatibilitas lama `resolveMentionGating*`. Pilih jalur `{ facts, policy }` yang sudah dinormalisasi.
 
   </Accordion>
 </AccordionGroup>
@@ -656,10 +671,10 @@ Gunakan `createPluginRuntimeStore` untuk menyimpan referensi runtime agar dapat 
 </Steps>
 
 <Note>
-Utamakan `pluginId` untuk identitas runtime-store. Bentuk `key` tingkat lebih rendah ditujukan untuk kasus yang jarang terjadi ketika satu plugin sengaja membutuhkan lebih dari satu slot runtime.
+Pilih `pluginId` untuk identitas runtime-store. Bentuk `key` tingkat lebih rendah ditujukan untuk kasus yang jarang terjadi ketika satu plugin sengaja membutuhkan lebih dari satu slot runtime.
 </Note>
 
-## Kolom `api` tingkat atas lainnya
+## Bidang `api` tingkat atas lainnya
 
 Selain `api.runtime`, objek API juga menyediakan:
 
@@ -670,13 +685,13 @@ Selain `api.runtime`, objek API juga menyediakan:
   Nama tampilan plugin.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  Snapshot config saat ini (snapshot runtime dalam memori yang aktif saat tersedia).
+  Snapshot config saat ini (snapshot runtime dalam memori yang aktif jika tersedia).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
   Config khusus plugin dari `plugins.entries.<id>.config`.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
-  Logger tercakup (`debug`, `info`, `warn`, `error`).
+  Logger berskup (`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
   Mode pemuatan saat ini; `"setup-runtime"` adalah jendela startup/setup ringan sebelum entri penuh.
@@ -687,6 +702,6 @@ Selain `api.runtime`, objek API juga menyediakan:
 
 ## Terkait
 
-- [Internal Plugin](/id/plugins/architecture) — model kapabilitas dan registry
+- [Internal Plugin](/id/plugins/architecture) — model capability dan registry
 - [Titik masuk SDK](/id/plugins/sdk-entrypoints) — opsi `definePluginEntry`
 - [Ikhtisar SDK](/id/plugins/sdk-overview) — referensi subpath

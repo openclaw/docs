@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Je wilt opgeslagen sessies weergeven en recente activiteit zien
+    - Je wilt opgeslagen sessies weergeven en recente activiteit bekijken
 summary: CLI-referentie voor `openclaw sessions` (opgeslagen sessies weergeven + gebruik)
 title: Sessies
 x-i18n:
-    generated_at: "2026-06-27T17:22:46Z"
+    generated_at: "2026-07-04T20:37:37Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b9454e4b6ef925f8f90b5e8beceb6bea6404539f460cb78bcf82e241dff168d
+    source_hash: 7c24ee8a632998624ee41945b26ace3bfe37cadf9447f7632c373784a9301bde
     source_path: cli/sessions.md
     workflow: 16
 ---
 
 # `openclaw sessions`
 
-Geef opgeslagen gesprekssessies weer.
+Toon opgeslagen gesprekssessies.
 
-Sessielijsten zijn geen livenesscontroles voor kanalen/providers. Ze tonen opgeslagen
-gespreksrijen uit sessiestores. Een stil Discord-, Slack-, Telegram- of
-ander kanaal kan succesvol opnieuw verbinden zonder een nieuwe sessierij te maken
-totdat een bericht wordt verwerkt. Gebruik `openclaw channels status --probe`,
+Sessielijsten zijn geen beschikbaarheidscontroles voor kanalen/providers. Ze tonen bewaarde
+gespreksrijen uit sessiestores. Een stille Discord-, Slack-, Telegram- of
+ander kanaal kan succesvol opnieuw verbinden zonder een nieuwe sessierij aan te maken
+totdat een bericht is verwerkt. Gebruik `openclaw channels status --probe`,
 `openclaw status --deep` of `openclaw health --verbose` wanneer je live
 kanaalconnectiviteit nodig hebt.
 
-Antwoorden van `openclaw sessions` en Gateway `sessions.list` zijn standaard
-begrensd zodat grote, langlevende stores het CLI-proces of de Gateway-eventloop
-niet kunnen monopoliseren. De CLI retourneert standaard de nieuwste 100 sessies; geef
+`openclaw sessions`- en Gateway-`sessions.list`-antwoorden zijn standaard
+begrensd, zodat grote stores die lang blijven bestaan het CLI-proces of de Gateway
+event loop niet kunnen monopoliseren. De CLI retourneert standaard de nieuwste 100 sessies; geef
 `--limit <n>` mee voor een kleiner/groter venster of `--limit all` wanneer je bewust
 de volledige store nodig hebt. JSON-antwoorden bevatten `totalCount`, `limitApplied` en
-`hasMore` wanneer aanroepers moeten tonen dat er meer rijen bestaan.
+`hasMore` wanneer callers moeten tonen dat er meer rijen bestaan.
 
 RPC-clients kunnen `configuredAgentsOnly: true` meegeven om de brede gecombineerde
-ontdekkingsbron te behouden, maar alleen rijen te retourneren voor agents die momenteel
-in de configuratie aanwezig zijn. Control UI gebruikt die modus standaard, zodat verwijderde
-of alleen-op-schijf agentstores niet opnieuw verschijnen in de Sessions-weergave.
+ontdekkingsbron te behouden, maar alleen rijen te retourneren voor agents die momenteel in de config aanwezig zijn.
+Control UI gebruikt die modus standaard, zodat verwijderde of alleen-op-schijf agentstores
+niet opnieuw verschijnen in de Sessies-weergave.
 
 ```bash
 openclaw sessions
@@ -53,9 +53,9 @@ Scope-selectie:
 - `--agent <id>`: één geconfigureerde agentstore
 - `--all-agents`: alle geconfigureerde agentstores samenvoegen
 - `--store <path>`: expliciet storepad (kan niet worden gecombineerd met `--agent` of `--all-agents`)
-- `--limit <n|all>`: maximaal aantal uit te voeren rijen (standaard `100`; `all` herstelt volledige uitvoer)
+- `--limit <n|all>`: maximaal aantal rijen om uit te voeren (standaard `100`; `all` herstelt volledige uitvoer)
 
-Tail menselijk leesbare trajectvoortgang voor opgeslagen sessies:
+Volg menselijk leesbare trajectvoortgang voor opgeslagen sessies:
 
 ```bash
 openclaw sessions tail
@@ -65,9 +65,9 @@ openclaw sessions --agent work tail --follow
 openclaw sessions --all-agents tail --follow
 ```
 
-`openclaw sessions tail` rendert recente trajectory JSONL-events als compacte voortgangsregels. Zonder `--session-key` tailt het eerst actieve sessies en daarna de nieuwste opgeslagen sessie. `--tail <count>` bepaalt hoeveel bestaande events worden afgedrukt vóór volgmodus; de standaard is `80`, en `0` begint aan het huidige einde. `--follow` blijft de geselecteerde trajectbestanden volgen, inclusief verplaatste bestanden waarnaar wordt verwezen door `<session>.trajectory-path.json`.
+`openclaw sessions tail` geeft recente traject-JSONL-events weer als compacte voortgangsregels. Zonder `--session-key` volgt het eerst actieve sessies en daarna de laatst opgeslagen sessie. `--tail <count>` bepaalt hoeveel bestaande events worden afgedrukt vóór volgmodus; de standaard is `80`, en `0` begint bij het huidige einde. `--follow` blijft de geselecteerde trajectbestanden volgen, inclusief verplaatste bestanden waarnaar wordt verwezen door `<session>.trajectory-path.json`.
 
-De voortgangsweergave is bewust conservatief: prompttekst, toolargumenten en bodies van toolresultaten worden niet afgedrukt. Toolaanroepen tonen de toolnaam met `{...redacted...}`; toolresultaten tonen status zoals `ok`, `error` of `done`; regels voor modelvoltooiing tonen provider/model en terminale status.
+De voortgangsweergave is bewust conservatief: prompttekst, toolargumenten en toolresultaatinhoud worden niet afgedrukt. Toolaanroepen tonen de toolnaam met `{...redacted...}`; toolresultaten tonen status zoals `ok`, `error` of `done`; regels voor modelvoltooiing tonen provider/model en terminale status.
 
 Exporteer een trajectbundel voor een opgeslagen sessie:
 
@@ -76,13 +76,13 @@ openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:12
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
 ```
 
-Dit is het commandopad dat wordt gebruikt door het `/export-trajectory` slashcommand nadat
-de eigenaar het exec-verzoek heeft goedgekeurd. De uitvoermap wordt altijd opgelost
-binnen `.openclaw/trajectory-exports/` onder de geselecteerde werkruimte.
+Dit is het commandopad dat door het slash-commando `/export-trajectory` wordt gebruikt nadat
+de owner het exec-verzoek goedkeurt. De uitvoermap wordt altijd opgelost
+binnen `.openclaw/trajectory-exports/` onder de geselecteerde workspace.
 
 `openclaw sessions --all-agents` leest geconfigureerde agentstores. Gateway- en ACP-
-sessieontdekking zijn breder: ze omvatten ook alleen-op-schijf stores die worden gevonden onder
-de standaardroot `agents/` of een getemplate `session.store`-root. Die
+sessieontdekking is breder: die bevat ook alleen-op-schijf stores die zijn gevonden onder
+de standaard `agents/`-root of een getemplate `session.store`-root. Die
 ontdekte stores moeten worden opgelost naar reguliere `sessions.json`-bestanden binnen de
 agentroot; symlinks en paden buiten de root worden overgeslagen.
 
@@ -110,9 +110,9 @@ JSON-voorbeelden:
 }
 ```
 
-## Opschoononderhoud
+## Opschoningsonderhoud
 
-Voer onderhoud nu uit (in plaats van te wachten op de volgende schrijfcyclus):
+Voer onderhoud nu uit (in plaats van te wachten op de volgende schrijfronde):
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -124,25 +124,25 @@ openclaw sessions cleanup --dry-run --fix-dm-scope
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` gebruikt `session.maintenance`-instellingen uit de configuratie:
+`openclaw sessions cleanup` gebruikt `session.maintenance`-instellingen uit config:
 
-- Scope-opmerking: `openclaw sessions cleanup` onderhoudt sessiestores, transcripties en trajectory-sidecars. Het snoeit geen Cron-runhistorie; die wordt beheerd door `cron.runLog.keepLines` in [Cron-configuratie](/nl/automation/cron-jobs#configuration) en uitgelegd in [Cron-onderhoud](/nl/automation/cron-jobs#maintenance).
-- Opschoning snoeit ook niet-verwezen primaire transcripties, Compaction-checkpoints en trajectory-sidecars ouder dan `session.maintenance.pruneAfter`; bestanden waarnaar nog wordt verwezen door `sessions.json` blijven behouden.
-- Opschoning rapporteert kortlevende gateway-model-run-probeopschoning apart als `modelRunPruned`. Dit matcht alleen strikte expliciete sleutels met de vorm `agent:*:explicit:model-run-<uuid>`. De vaste retentie is `24h`, maar deze is drukgestuurd: stale proberijen worden alleen verwijderd wanneer session-entry-onderhoud/capdruk wordt bereikt. Wanneer dit draait, vindt model-run-opschoning plaats vóór globale stale opschoning en afkapping.
+- Scope-opmerking: `openclaw sessions cleanup` onderhoudt sessiestores, transcripts en traject-sidecars. Het ruimt geen Cron-runhistorie op; die wordt beheerd door `cron.runLog.keepLines` in [Cron-configuratie](/nl/automation/cron-jobs#configuration) en uitgelegd in [Cron-onderhoud](/nl/automation/cron-jobs#maintenance).
+- Opschoning verwijdert ook niet-gerefereerde primaire transcripts, Compaction-checkpoints en traject-sidecars die ouder zijn dan `session.maintenance.pruneAfter`; bestanden waarnaar nog wordt verwezen door `sessions.json` blijven behouden.
+- Opschoning rapporteert het opruimen van kortlevende Gateway-modelrunprobes apart als `modelRunPruned`. Dit matcht alleen strikte expliciete sleutels met de vorm `agent:*:explicit:model-run-<uuid>`. De vaste bewaartermijn is `24h`, maar deze is drukgestuurd: stale proberijen worden alleen verwijderd wanneer onderhouds-/capdruk voor sessie-items is bereikt. Wanneer het draait, gebeurt modelrun-opruiming vóór globale stale opschoning en capping.
 
-- `--dry-run`: bekijk vooraf hoeveel entries zouden worden gesnoeid/afgekapt zonder te schrijven.
-  - In tekstmodus drukt dry-run een actietabel per sessie af (`Action`, `Key`, `Age`, `Model`, `Flags`) plus een samenvatting gegroepeerd per sessielabel, zodat je kunt zien wat behouden versus verwijderd zou worden.
-- `--enforce`: pas onderhoud toe, zelfs wanneer `session.maintenance.mode` `warn` is.
-- `--fix-missing`: verwijder entries waarvan transcriptiebestanden ontbreken of alleen een header/leeg zijn, zelfs als ze normaal nog niet door leeftijd/aantal zouden uitvallen.
-- `--fix-dm-scope`: wanneer `session.dmScope` `main` is, retire stale peer-keyed direct-DM-rijen die zijn achtergebleven door eerdere `per-peer`-, `per-channel-peer`- of `per-account-channel-peer`-routing. Gebruik eerst `--dry-run`; het toepassen van de opschoning verwijdert die rijen uit `sessions.json` en bewaart hun transcripties als verwijderde archieven.
-- `--active-key <key>`: bescherm een specifieke actieve sleutel tegen disk-budget-evictie. Duurzame externe gespreksverwijzingen, zoals groepssessies en thread-scoped chatsessies, blijven ook behouden door onderhoud op leeftijd/aantal/diskbudget.
-- `--agent <id>`: voer opschoning uit voor één geconfigureerde agentstore.
-- `--all-agents`: voer opschoning uit voor alle geconfigureerde agentstores.
-- `--store <path>`: voer uit tegen een specifiek `sessions.json`-bestand.
-- `--json`: druk een JSON-samenvatting af. Met `--all-agents` bevat de uitvoer één samenvatting per store.
+- `--dry-run`: bekijk vooraf hoeveel items zouden worden verwijderd/gecapt zonder te schrijven.
+  - In tekstmodus drukt de proefrun een actietabel per sessie af (`Action`, `Key`, `Age`, `Model`, `Flags`) plus een samenvatting gegroepeerd op sessielabel, zodat je kunt zien wat behouden versus verwijderd zou worden.
+- `--enforce`: onderhoud toepassen zelfs wanneer `session.maintenance.mode` `warn` is.
+- `--fix-missing`: items verwijderen waarvan transcriptbestanden ontbreken of alleen een header hebben/leeg zijn, zelfs als ze normaal nog niet op leeftijd/aantal zouden uitvallen.
+- `--fix-dm-scope`: wanneer `session.dmScope` `main` is, stale peer-keyed direct-DM-rijen uitfaseren die zijn achtergelaten door eerdere `per-peer`-, `per-channel-peer`- of `per-account-channel-peer`-routing. Gebruik eerst `--dry-run`; het toepassen van de opschoning verwijdert die rijen uit `sessions.json` en behoudt hun transcripts als verwijderde archieven.
+- `--active-key <key>`: bescherm een specifieke actieve sleutel tegen verwijdering door het schijfbudget. Duurzame externe gesprekspointers, zoals groepssessies en thread-scoped chatsessies, worden ook behouden door onderhoud op leeftijd/aantal/schijfbudget.
+- `--agent <id>`: opschoning uitvoeren voor één geconfigureerde agentstore.
+- `--all-agents`: opschoning uitvoeren voor alle geconfigureerde agentstores.
+- `--store <path>`: uitvoeren tegen een specifiek `sessions.json`-bestand.
+- `--json`: een JSON-samenvatting afdrukken. Met `--all-agents` bevat de uitvoer één samenvatting per store.
 
-Wanneer een Gateway bereikbaar is, wordt niet-dry-run opschoning voor geconfigureerde agentstores
-via de Gateway verzonden, zodat deze dezelfde session-store-writer deelt als runtimeverkeer.
+Wanneer een Gateway bereikbaar is, wordt niet-proefrunopschoning voor geconfigureerde agentstores
+via de Gateway verstuurd, zodat deze dezelfde sessiestore-writer deelt als runtimeverkeer.
 Gebruik `--store <path>` voor expliciete offline reparatie van een storebestand.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
@@ -177,9 +177,9 @@ Gebruik `--store <path>` voor expliciete offline reparatie van een storebestand.
 }
 ```
 
-## Een sessie compacten
+## Een sessie compacteren
 
-Win contextbudget terug voor een vastgelopen of te grote sessie. `openclaw sessions compact <key>` is de eersteklas wrapper rond de `sessions.compact` gateway-RPC en vereist een draaiende gateway.
+Win contextbudget terug voor een vastgelopen of te grote sessie. `openclaw sessions compact <key>` is de eersteklas wrapper rond de `sessions.compact` Gateway-RPC en vereist een actieve Gateway.
 
 ```bash
 openclaw sessions compact "agent:main:main"
@@ -187,16 +187,16 @@ openclaw sessions compact "agent:main:main" --max-lines 200
 openclaw sessions compact "agent:work:main" --agent work --json
 ```
 
-- Zonder `--max-lines` vat de gateway-LLM de transcriptie samen. Dit kan traag zijn, dus de standaardwaarde voor `--timeout` is `180000` ms.
-- Met `--max-lines <n>` wordt afgekapt tot de laatste `n` transcriptieregels en wordt de eerdere transcriptie gearchiveerd als een `.bak`-sidecar.
+- Zonder `--max-lines` vat de Gateway het transcript samen met een LLM. De CLI legt standaard geen clientdeadline op; de Gateway bezit de geconfigureerde Compaction-levenscyclus.
+- Met `--max-lines <n>` kapt het af tot de laatste `n` transcriptregels en archiveert het het eerdere transcript als een `.bak`-sidecar.
 - `--agent <id>`: agent die eigenaar is van de sessie; vereist voor `global`-sleutels.
-- `--url` / `--token` / `--password`: overschrijvingen voor gatewayverbinding.
-- `--timeout <ms>`: RPC-timeout in milliseconden.
-- `--json`: druk de ruwe RPC-payload af.
+- `--url` / `--token` / `--password`: Gateway-verbindingsoverschrijvingen.
+- `--timeout <ms>`: optionele client-side RPC-time-out in milliseconden.
+- `--json`: de ruwe RPC-payload afdrukken.
 
-Het commando eindigt met een niet-nulcode wanneer de gateway een mislukte Compaction rapporteert of onbereikbaar is, zodat crons en scripts een stille no-op nooit verwarren met succes.
+Het commando sluit af met een niet-nulcode wanneer de Gateway een mislukte Compaction rapporteert of onbereikbaar is, zodat crons en scripts een stille no-op nooit voor succes aanzien.
 
-> Opmerking: `openclaw agent --message '/compact ...'` is **geen** Compaction-pad. Slashcommands vanuit de CLI worden geweigerd door de authorized-sender-controle; die aanroep eindigt met een niet-nulcode met begeleiding die hiernaar verwijst in plaats van stil niets te doen.
+> Opmerking: `openclaw agent --message '/compact ...'` is **geen** Compaction-pad. Slash-commando's vanuit de CLI worden geweigerd door de authorized-sender-controle; die aanroep sluit af met een niet-nulcode met begeleiding die hierheen verwijst in plaats van stil niets te doen.
 
 ### sessions.compact-RPC
 
@@ -204,9 +204,9 @@ Het commando eindigt met een niet-nulcode wanneer de gateway een mislukte Compac
 
 | Veld       | Type        | Vereist | Beschrijving                                               |
 | ---------- | ----------- | ------- | ---------------------------------------------------------- |
-| `key`      | string      | ja      | Sessiesleutel om te compacten (bijvoorbeeld `agent:main:main`). |
-| `agentId`  | string      | nee     | Agent-id dat eigenaar is van de sessie (voor `global`-sleutels). |
-| `maxLines` | integer ≥ 1 | nee     | Kap af tot de laatste N regels in plaats van LLM-samenvatting. |
+| `key`      | string      | ja      | Sessiesleutel om te compacteren (bijvoorbeeld `agent:main:main`). |
+| `agentId`  | string      | nee     | Agent-id die eigenaar is van de sessie (voor `global`-sleutels). |
+| `maxLines` | integer ≥ 1 | nee     | Afkappen tot de laatste N regels in plaats van LLM-samenvatting. |
 
 Voorbeeldantwoord voor LLM-samenvatting:
 

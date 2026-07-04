@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Você quer configuração guiada para gateway, espaço de trabalho, autenticação, canais e Skills
-summary: Referência da CLI para `openclaw onboard` (integração interativa)
+    - Você quer uma configuração guiada para Gateway, workspace, autenticação, canais e Skills
+summary: Referência da CLI para `openclaw onboard` (configuração inicial interativa)
 title: Integrar
 x-i18n:
-    generated_at: "2026-07-01T12:52:52Z"
+    generated_at: "2026-07-04T20:28:22Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b8f1f1b1e4f3a9e3c544efede027d50123050660a999ae61573e41cd466bbfa4
+    source_hash: 99362cdca49929f7d05c2bf7bd8b0a55811b7ad6c618be90effb8869cd2ad839
     source_path: cli/onboard.md
     workflow: 16
 ---
 
 # `openclaw onboard`
 
-Integração inicial guiada completa para configuração local ou remota do Gateway. Use isto quando quiser que o OpenClaw percorra autenticação de modelo, workspace, gateway, canais, Skills e integridade em um único fluxo.
+Integração guiada completa para configuração local ou remota do Gateway. Use isto quando quiser que o OpenClaw percorra autenticação de modelo, espaço de trabalho, gateway, canais, skills e integridade em um único fluxo.
 
 ## Guias relacionados
 
 <CardGroup cols={2}>
-  <Card title="CLI onboarding hub" href="/pt-BR/start/wizard" icon="rocket">
+  <Card title="Hub de integração da CLI" href="/pt-BR/start/wizard" icon="rocket">
     Passo a passo do fluxo interativo da CLI.
   </Card>
-  <Card title="Onboarding overview" href="/pt-BR/start/onboarding-overview" icon="map">
-    Como a integração inicial do OpenClaw se conecta.
+  <Card title="Visão geral da integração" href="/pt-BR/start/onboarding-overview" icon="map">
+    Como a integração do OpenClaw se encaixa.
   </Card>
-  <Card title="CLI setup reference" href="/pt-BR/start/wizard-cli-reference" icon="book">
-    Saídas, componentes internos e comportamento por etapa.
+  <Card title="Referência de configuração da CLI" href="/pt-BR/start/wizard-cli-reference" icon="book">
+    Saídas, detalhes internos e comportamento por etapa.
   </Card>
-  <Card title="CLI automation" href="/pt-BR/start/wizard-cli-automation" icon="terminal">
-    Flags não interativas e configurações automatizadas por script.
+  <Card title="Automação da CLI" href="/pt-BR/start/wizard-cli-automation" icon="terminal">
+    Flags não interativas e configurações por script.
   </Card>
-  <Card title="macOS app onboarding" href="/pt-BR/start/onboarding" icon="apple">
-    Fluxo de integração inicial para o app de barra de menus do macOS.
+  <Card title="Integração do app macOS" href="/pt-BR/start/onboarding" icon="apple">
+    Fluxo de integração para o app da barra de menus do macOS.
   </Card>
 </CardGroup>
 
@@ -50,34 +50,40 @@ openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--flow import` usa provedores de migração de propriedade de plugins, como Hermes. Ele é executado apenas em uma configuração nova do OpenClaw; se houver configuração, credenciais, sessões ou arquivos de memória/identidade do workspace existentes, redefina ou escolha uma configuração nova antes de importar.
+`--flow import` usa provedores de migração pertencentes ao plugin, como Hermes. Ele só é executado em uma configuração nova do OpenClaw; se configurações, credenciais, sessões ou arquivos de memória/identidade do espaço de trabalho existentes estiverem presentes, redefina ou escolha uma configuração nova antes de importar.
 
-`--modern` inicia a prévia de integração inicial conversacional do Crestodian. Sem
-`--modern`, `openclaw onboard` mantém o fluxo clássico de integração inicial.
+`--modern` inicia a prévia de integração conversacional do Crestodian. Sem
+`--modern`, `openclaw onboard` mantém o fluxo clássico de integração.
 
-Em uma instalação nova em que o arquivo de configuração ativo está ausente ou não tem configurações
-criadas (vazio ou somente com metadados), `openclaw` puro também inicia o fluxo clássico de
-integração inicial. Depois que um arquivo de configuração tiver configurações criadas, `openclaw`
-puro abre o Crestodian.
+Em um terminal interativo, `openclaw` puro (sem subcomando) roteia pelo estado
+da configuração:
+
+- Se o arquivo de configuração ativo estiver ausente ou não tiver configurações autorais (vazio ou
+  apenas metadados), ele inicia este fluxo clássico de integração.
+- Se o arquivo de configuração existir, mas falhar na validação, ele inicia
+  [Crestodian](/pt-BR/cli/crestodian) para reparo.
+- Se o arquivo de configuração for válido, ele abre a TUI normal do agente, localmente
+  ou conectada a um Gateway configurado acessível. Em uma instalação configurada,
+  acesse o Crestodian com `/crestodian` dentro da TUI ou `openclaw crestodian`.
 
 `ws://` em texto simples é aceito para loopback, literais de IP privado, `.local` e
-URLs de gateway Tailnet `*.ts.net`. Para outros nomes trusted private-DNS, defina
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` no ambiente do processo de integração inicial.
+URLs de gateway Tailnet `*.ts.net`. Para outros nomes DNS privados confiáveis, defina
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` no ambiente do processo de integração.
 
 ## Localidade
 
-A integração inicial interativa usa a localidade do assistente da CLI para textos fixos de configuração. A ordem
-de resolução é:
+A integração interativa usa a localidade do assistente da CLI para textos fixos de configuração. A ordem de resolução
+é:
 
 1. `OPENCLAW_LOCALE`
 2. `LC_ALL`
 3. `LC_MESSAGES`
 4. `LANG`
-5. Fallback em inglês
+5. fallback para inglês
 
-As localidades compatíveis do assistente são `en`, `zh-CN` e `zh-TW`. Os valores de localidade podem usar
-sublinhado ou formas com sufixo POSIX, como `zh_CN.UTF-8`. Nomes de produto, nomes de comando,
-chaves de configuração, URLs, IDs de provedor, IDs de modelo e rótulos de plugin/canal
+As localidades compatíveis do assistente são `en`, `zh-CN` e `zh-TW`. Valores de localidade podem usar
+sublinhado ou formas com sufixo POSIX, como `zh_CN.UTF-8`. Nomes de produtos, nomes de comandos, chaves
+de configuração, URLs, IDs de provedor, IDs de modelo e rótulos de plugin/canal
 permanecem literais.
 
 Exemplo:
@@ -99,11 +105,11 @@ openclaw onboard --non-interactive \
   --custom-image-input
 ```
 
-`--custom-api-key` é opcional no modo não interativo. Se omitida, a integração inicial verifica `CUSTOM_API_KEY`.
-O OpenClaw marca IDs comuns de modelos de visão como compatíveis com imagem automaticamente. Passe `--custom-image-input` para IDs de visão personalizados desconhecidos, ou `--custom-text-input` para forçar metadados somente de texto.
-Use `--custom-compatibility openai-responses` para endpoints compatíveis com OpenAI que aceitam `/v1/responses`, mas não `/v1/chat/completions`.
+`--custom-api-key` é opcional no modo não interativo. Se omitido, a integração verifica `CUSTOM_API_KEY`.
+O OpenClaw marca automaticamente IDs comuns de modelos de visão como compatíveis com imagem. Passe `--custom-image-input` para IDs de visão personalizados desconhecidos, ou `--custom-text-input` para forçar metadados somente texto.
+Use `--custom-compatibility openai-responses` para endpoints compatíveis com OpenAI que dão suporte a `/v1/responses`, mas não a `/v1/chat/completions`.
 
-O LM Studio também aceita uma flag de chave específica do provedor no modo não interativo:
+O LM Studio também dá suporte a uma flag de chave específica do provedor no modo não interativo:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -124,7 +130,7 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` usa `http://127.0.0.1:11434` por padrão. `--custom-model-id` é opcional; se omitido, a integração inicial usa os padrões sugeridos pelo Ollama. IDs de modelos em nuvem como `kimi-k2.5:cloud` também funcionam aqui.
+`--custom-base-url` usa `http://127.0.0.1:11434` por padrão. `--custom-model-id` é opcional; se omitido, a integração usa os padrões sugeridos do Ollama. IDs de modelos em nuvem, como `kimi-k2.5:cloud`, também funcionam aqui.
 
 Armazene chaves de provedor como referências em vez de texto simples:
 
@@ -135,28 +141,28 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Com `--secret-input-mode ref`, a integração inicial grava referências baseadas em variáveis de ambiente em vez de valores de chave em texto simples.
-Para provedores baseados em perfil de autenticação, isso grava entradas `keyRef`; para provedores personalizados, isso grava `models.providers.<id>.apiKey` como uma referência de ambiente (por exemplo, `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+Com `--secret-input-mode ref`, a integração grava refs apoiadas por env em vez de valores de chave em texto simples.
+Para provedores apoiados por auth-profile, isso grava entradas `keyRef`; para provedores personalizados, isso grava `models.providers.<id>.apiKey` como uma ref de env (por exemplo, `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
 
-Contrato do modo `ref` não interativo:
+Contrato do modo não interativo `ref`:
 
-- Defina a variável de ambiente do provedor no ambiente do processo de integração inicial (por exemplo, `OPENAI_API_KEY`).
-- Não passe flags de chave inline (por exemplo, `--openai-api-key`) a menos que essa variável de ambiente também esteja definida.
-- Se uma flag de chave inline for passada sem a variável de ambiente exigida, a integração inicial falhará rapidamente com orientação.
+- Defina a variável de ambiente do provedor no ambiente do processo de integração (por exemplo, `OPENAI_API_KEY`).
+- Não passe flags de chave inline (por exemplo, `--openai-api-key`), a menos que essa variável de ambiente também esteja definida.
+- Se uma flag de chave inline for passada sem a variável de ambiente exigida, a integração falha rapidamente com orientação.
 
 Opções de token do Gateway no modo não interativo:
 
 - `--gateway-auth token --gateway-token <token>` armazena um token em texto simples.
-- `--gateway-auth token --gateway-token-ref-env <name>` armazena `gateway.auth.token` como uma SecretRef de ambiente.
+- `--gateway-auth token --gateway-token-ref-env <name>` armazena `gateway.auth.token` como um SecretRef de env.
 - `--gateway-token` e `--gateway-token-ref-env` são mutuamente exclusivos.
-- `--gateway-token-ref-env` exige uma variável de ambiente não vazia no ambiente do processo de integração inicial.
+- `--gateway-token-ref-env` exige uma variável de ambiente não vazia no ambiente do processo de integração.
 - Com `--install-daemon`, quando a autenticação por token exige um token, tokens de gateway gerenciados por SecretRef são validados, mas não persistidos como texto simples resolvido nos metadados de ambiente do serviço supervisor.
-- Com `--install-daemon`, se o modo de token exigir um token e a SecretRef de token configurada não puder ser resolvida, a integração inicial falhará fechada com orientação de correção.
-- Com `--install-daemon`, se `gateway.auth.token` e `gateway.auth.password` estiverem configurados e `gateway.auth.mode` não estiver definido, a integração inicial bloqueará a instalação até que o modo seja definido explicitamente.
-- A integração inicial local grava `gateway.mode="local"` na configuração. Se um arquivo de configuração posterior não tiver `gateway.mode`, trate isso como dano de configuração ou edição manual incompleta, não como um atalho válido de modo local.
-- A integração inicial local instala plugins baixáveis selecionados quando o caminho de configuração escolhido exige isso.
-- A integração inicial remota grava apenas informações de conexão para o Gateway remoto e não instala pacotes de plugins locais.
-- `--allow-unconfigured` é uma saída de emergência separada para o runtime do gateway. Ela não significa que a integração inicial pode omitir `gateway.mode`.
+- Com `--install-daemon`, se o modo de token exigir um token e o SecretRef de token configurado estiver não resolvido, a integração falha fechada com orientação de correção.
+- Com `--install-daemon`, se `gateway.auth.token` e `gateway.auth.password` estiverem configurados e `gateway.auth.mode` não estiver definido, a integração bloqueia a instalação até que o modo seja definido explicitamente.
+- A integração local grava `gateway.mode="local"` na configuração. Se um arquivo de configuração posterior estiver sem `gateway.mode`, trate isso como dano de configuração ou uma edição manual incompleta, não como um atalho válido de modo local.
+- A integração local instala plugins baixáveis selecionados quando o caminho de configuração escolhido os exige.
+- A integração remota grava apenas informações de conexão para o Gateway remoto e não instala pacotes de plugins locais.
+- `--allow-unconfigured` é uma escotilha de escape separada do runtime do gateway. Ela não significa que a integração possa omitir `gateway.mode`.
 
 Exemplo:
 
@@ -172,27 +178,27 @@ openclaw onboard --non-interactive \
 
 Integridade do gateway local não interativo:
 
-- A menos que você passe `--skip-health`, a integração inicial aguarda um gateway local acessível antes de sair com sucesso.
-- `--install-daemon` inicia primeiro o caminho de instalação do gateway gerenciado. Sem ela, você já precisa ter um gateway local em execução, por exemplo `openclaw gateway run`.
-- Se você quiser apenas gravações de configuração/workspace/bootstrap em automação, use `--skip-health`.
-- Se você gerencia os arquivos de workspace por conta própria, passe `--skip-bootstrap` para definir `agents.defaults.skipBootstrap: true` e pular a criação de `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` e `BOOTSTRAP.md`.
+- A menos que você passe `--skip-health`, a integração espera por um gateway local acessível antes de sair com sucesso.
+- `--install-daemon` inicia primeiro o caminho de instalação do gateway gerenciado. Sem ele, você já deve ter um gateway local em execução, por exemplo `openclaw gateway run`.
+- Se você quer apenas gravações de configuração/espaço de trabalho/bootstrap na automação, use `--skip-health`.
+- Se você gerencia arquivos do espaço de trabalho por conta própria, passe `--skip-bootstrap` para definir `agents.defaults.skipBootstrap: true` e pular a criação de `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` e `BOOTSTRAP.md`.
 - No Windows nativo, `--install-daemon` tenta primeiro Tarefas Agendadas e recorre a um item de login na pasta Inicializar por usuário se a criação da tarefa for negada.
 
-Comportamento da integração inicial interativa com modo de referência:
+Comportamento da integração interativa com modo de referência:
 
 - Escolha **Usar referência de segredo** quando solicitado.
-- Em seguida, escolha uma das opções:
+- Depois escolha uma destas opções:
   - Variável de ambiente
   - Provedor de segredo configurado (`file` ou `exec`)
-- A integração inicial executa uma validação rápida de preflight antes de salvar a referência.
-  - Se a validação falhar, a integração inicial mostra o erro e permite tentar novamente.
+- A integração executa uma validação de preflight rápida antes de salvar a ref.
+  - Se a validação falhar, a integração mostra o erro e permite tentar novamente.
 
-### Escolhas de endpoint Z.AI não interativas
+### Opções de endpoint Z.AI não interativas
 
 <Note>
 `--auth-choice zai-api-key` detecta automaticamente o melhor endpoint e modelo Z.AI para
-sua chave. Endpoints Coding Plan preferem `zai/glm-5.2`; endpoints de API geral usam
-`zai/glm-5.1`. Para forçar um endpoint Coding Plan, escolha `zai-coding-global` ou
+sua chave. Endpoints do Coding Plan preferem `zai/glm-5.2`; endpoints de API geral usam
+`zai/glm-5.1`. Para forçar um endpoint do Coding Plan, escolha `zai-coding-global` ou
 `zai-coding-cn`.
 </Note>
 
@@ -208,7 +214,7 @@ openclaw onboard --non-interactive \
 # --auth-choice zai-cn
 ```
 
-Exemplo não interativo do Mistral:
+Exemplo Mistral não interativo:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -222,55 +228,55 @@ Autenticação de modelo baseada em token (não interativa; usada com `--auth-ch
 
 - `--token-provider <id>` — ID do provedor de token. Identifica qual provedor emite o token.
 - `--token <token>` — Valor do token para autenticação de modelo.
-- `--token-profile-id <id>` — ID do perfil de autenticação. O armazenamento genérico de token usa `<provider>:manual` por padrão; fluxos de configuração de propriedade do provedor podem usar seu próprio padrão, como `anthropic:default`.
+- `--token-profile-id <id>` — ID do perfil de autenticação. O armazenamento genérico de token usa `<provider>:manual` por padrão; fluxos de configuração pertencentes ao provedor podem usar seu próprio padrão, como `anthropic:default`.
 - `--token-expires-in <duration>` — Duração opcional de expiração do token (por exemplo, `365d`, `12h`).
 
 Cloudflare AI Gateway (não interativo):
 
-- `--cloudflare-ai-gateway-account-id <id>` — ID da conta Cloudflare para roteamento por meio do Cloudflare AI Gateway.
+- `--cloudflare-ai-gateway-account-id <id>` — ID da conta Cloudflare para roteamento pelo Cloudflare AI Gateway.
 - `--cloudflare-ai-gateway-gateway-id <id>` — ID do Cloudflare AI Gateway.
 
 Controle de instalação do daemon:
 
-- `--no-install-daemon` — Pula explicitamente a instalação do serviço de gateway.
-- `--skip-daemon` — Alias de `--no-install-daemon`.
+- `--no-install-daemon` — Pular explicitamente a instalação do serviço de gateway.
+- `--skip-daemon` — Alias para `--no-install-daemon`.
 
 Controle de configuração da UI e de hooks:
 
-- `--skip-ui` — Pula prompts de Control UI / TUI durante a integração inicial.
-- `--skip-hooks` — Pula prompts de configuração de webhook / hook durante a integração inicial.
+- `--skip-ui` — Pular prompts da Control UI / TUI durante a integração.
+- `--skip-hooks` — Pular prompts de webhook / hook durante a integração.
 
 Supressão de saída:
 
-- `--suppress-gateway-token-output` — Suprime a saída do Gateway/UI que contém token (dicas de token, URL de login automático com token incorporado e inicialização automática da Control UI). Útil em ambientes de terminal compartilhado e CI.
+- `--suppress-gateway-token-output` — Suprime saída do Gateway/UI que contém token (dicas de token, URL de login automático com token incorporado e inicialização automática da Control UI). Útil em ambientes de terminal compartilhado e CI.
 
-## Observações de fluxo
+## Notas de fluxo
 
 <AccordionGroup>
-  <Accordion title="Flow types">
+  <Accordion title="Tipos de fluxo">
     - `quickstart`: prompts mínimos, gera automaticamente um token de gateway.
     - `manual`: prompts completos para porta, bind e autenticação (alias de `advanced`).
-    - `import`: executa um provedor de migração detectado, pré-visualiza o plano e depois aplica após confirmação.
+    - `import`: executa um provedor de migração detectado, pré-visualiza o plano e então aplica após confirmação.
 
   </Accordion>
-  <Accordion title="Provider prefiltering">
-    Quando uma escolha de autenticação implica um provedor preferencial, a integração inicial pré-filtra os seletores de modelo padrão e allowlist para esse provedor. Para Volcengine e BytePlus, isso também corresponde às variantes de coding-plan (`volcengine-plan/*`, `byteplus-plan/*`).
+  <Accordion title="Pré-filtragem de provedores">
+    Quando uma escolha de autenticação implica um provedor preferencial, a integração pré-filtra os seletores de modelo padrão e allowlist para esse provedor. Para Volcengine e BytePlus, isso também corresponde às variantes de plano de codificação (`volcengine-plan/*`, `byteplus-plan/*`).
 
-    Se o filtro de provedor preferencial ainda não retornar nenhum modelo carregado, a integração inicial recorre ao catálogo sem filtro em vez de deixar o seletor vazio.
-
-  </Accordion>
-  <Accordion title="Web-search follow-ups">
-    Alguns provedores de web-search acionam prompts de acompanhamento específicos do provedor:
-
-    - **Grok** pode oferecer configuração opcional de `x_search` com o mesmo perfil OAuth ou chave de API da xAI e uma escolha de modelo `x_search`.
-    - **Kimi** pode perguntar pela região da API Moonshot (`api.moonshot.ai` vs `api.moonshot.cn`) e pelo modelo padrão de web-search do Kimi.
+    Se o filtro de provedor preferencial ainda não produzir modelos carregados, a integração recorre ao catálogo não filtrado em vez de deixar o seletor vazio.
 
   </Accordion>
-  <Accordion title="Other behaviors">
-    - Comportamento de escopo de DM da integração inicial local: [Referência de configuração da CLI](/pt-BR/start/wizard-cli-reference#outputs-and-internals).
+  <Accordion title="Acompanhamentos de pesquisa na web">
+    Alguns provedores de pesquisa na web acionam prompts de acompanhamento específicos do provedor:
+
+    - **Grok** pode oferecer configuração opcional de `x_search` com o mesmo perfil OAuth xAI ou chave de API e uma escolha de modelo `x_search`.
+    - **Kimi** pode perguntar pela região da API Moonshot (`api.moonshot.ai` vs `api.moonshot.cn`) e pelo modelo padrão de pesquisa na web Kimi.
+
+  </Accordion>
+  <Accordion title="Outros comportamentos">
+    - Comportamento de escopo de DM na integração local: [referência de configuração da CLI](/pt-BR/start/wizard-cli-reference#outputs-and-internals).
     - Primeiro chat mais rápido: `openclaw dashboard` (Control UI, sem configuração de canal).
     - Provedor personalizado: conecte qualquer endpoint compatível com OpenAI ou Anthropic, incluindo provedores hospedados não listados. Use Unknown para detectar automaticamente.
-    - Se o estado do Hermes for detectado, a integração inicial oferecerá um fluxo de migração. Use [Migrar](/pt-BR/cli/migrate) para planos de dry-run, modo de substituição, relatórios e mapeamentos exatos.
+    - Se o estado do Hermes for detectado, a integração oferece um fluxo de migração. Use [Migrate](/pt-BR/cli/migrate) para planos dry-run, modo de sobrescrita, relatórios e mapeamentos exatos.
 
   </Accordion>
 </AccordionGroup>
@@ -283,8 +289,8 @@ openclaw configure
 openclaw agents add <name>
 ```
 
-Use `openclaw setup` como o mesmo ponto de entrada de integração inicial guiada. Use `openclaw setup --baseline` quando você precisar apenas da configuração/workspace de baseline, `openclaw configure` depois para alterações direcionadas e `openclaw channels add` para configuração somente de canal.
+Use `openclaw setup` como o mesmo ponto de entrada guiado de onboarding. Use `openclaw setup --baseline` quando você precisar apenas da configuração/workspace de baseline, `openclaw configure` depois para alterações direcionadas, e `openclaw channels add` para configuração somente de canais.
 
 <Note>
-`--json` não implica modo não interativo. Use `--non-interactive` para scripts.
+`--json` não implica modo não interativo. Use `--non-interactive` em scripts.
 </Note>

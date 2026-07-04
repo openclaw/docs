@@ -1,29 +1,29 @@
 ---
 read_when:
-    - आपको Plugin से कोर हेल्पर कॉल करने हैं (TTS, STT, इमेज जनरेशन, वेब खोज, उप-एजेंट, नोड्स)
-    - आप समझना चाहते हैं कि api.runtime क्या उपलब्ध कराता है
-    - आप Plugin कोड से कॉन्फ़िगरेशन, एजेंट, या मीडिया हेल्पर तक पहुँच रहे हैं
+    - आपको Plugin से कोर हेल्पर कॉल करने की आवश्यकता है (TTS, STT, छवि जनरेशन, वेब खोज, सबएजेंट, नोड्स)
+    - आप समझना चाहते हैं कि api.runtime क्या उजागर करता है
+    - आप Plugin कोड से config, agent, या media helpers तक पहुंच रहे हैं
 sidebarTitle: Runtime helpers
 summary: api.runtime -- Plugin के लिए उपलब्ध इंजेक्ट किए गए रनटाइम हेल्पर
-title: Plugin रनटाइम हेल्पर
+title: Plugin रनटाइम सहायक
 x-i18n:
-    generated_at: "2026-06-30T14:06:22Z"
+    generated_at: "2026-07-04T20:34:07Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 028e4b75840fe228ee98440f7e86030cb4e1377b2688e0564394d1424662ca39
+    source_hash: 22448865af70eedb71180ab88946a88d7eb59c43f09fc1a819d43263b4c4223c
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-`api.runtime` ऑब्जेक्ट का संदर्भ, जो पंजीकरण के दौरान हर plugin में इंजेक्ट किया जाता है। होस्ट internals को सीधे import करने के बजाय इन helpers का उपयोग करें।
+प्रत्येक plugin में registration के दौरान inject किए गए `api.runtime` object का संदर्भ। host internals को सीधे import करने के बजाय इन helpers का उपयोग करें।
 
 <CardGroup cols={2}>
   <Card title="Channel plugins" href="/hi/plugins/sdk-channel-plugins">
-    चैनल plugins के लिए संदर्भ में इन helpers का उपयोग करने वाली चरण-दर-चरण मार्गदर्शिका।
+    channel plugins के लिए संदर्भ में इन helpers का उपयोग करने वाली चरण-दर-चरण मार्गदर्शिका।
   </Card>
   <Card title="Provider plugins" href="/hi/plugins/sdk-provider-plugins">
-    प्रदाता plugins के लिए संदर्भ में इन helpers का उपयोग करने वाली चरण-दर-चरण मार्गदर्शिका।
+    provider plugins के लिए संदर्भ में इन helpers का उपयोग करने वाली चरण-दर-चरण मार्गदर्शिका।
   </Card>
 </CardGroup>
 
@@ -35,38 +35,34 @@ register(api) {
 
 ## Config लोडिंग और writes
 
-उस config को प्राथमिकता दें जो active call path में पहले ही पास किया जा चुका था, उदाहरण के लिए पंजीकरण के दौरान `api.config` या चैनल/प्रदाता callbacks पर `cfg` argument। इससे hot paths पर config को दोबारा parse करने के बजाय एक process snapshot पूरे कार्य में प्रवाहित होता रहता है।
+उस config को प्राथमिकता दें जो पहले से active call path में पास किया गया था, उदाहरण के लिए registration के दौरान `api.config` या channel/provider callbacks पर `cfg` argument। यह hot paths पर config को फिर से parse करने के बजाय काम के दौरान एक process snapshot को प्रवाहित रखता है।
 
-`api.runtime.config.current()` का उपयोग केवल तब करें जब किसी लंबे समय तक चलने वाले handler को वर्तमान process snapshot चाहिए और उस function को कोई config पास नहीं किया गया हो। लौटाया गया value readonly होता है; edit करने से पहले clone करें या mutation helper का उपयोग करें।
+`api.runtime.config.current()` का उपयोग केवल तब करें जब किसी long-lived handler को current process snapshot की जरूरत हो और उस function को कोई config पास न किया गया हो। returned value readonly है; edit करने से पहले clone करें या mutation helper का उपयोग करें।
 
-Tool factories को `ctx.runtimeConfig` और `ctx.getRuntimeConfig()` मिलते हैं। लंबे समय तक चलने वाले tool के `execute` callback के अंदर getter का उपयोग करें, जब tool definition बनने के बाद config बदल सकता हो।
+Tool factories को `ctx.runtimeConfig` और `ctx.getRuntimeConfig()` मिलते हैं। जब tool definition बनने के बाद config बदल सकता हो, तो long-lived tool के `execute` callback के अंदर getter का उपयोग करें।
 
-बदलावों को `api.runtime.config.mutateConfigFile(...)` या `api.runtime.config.replaceConfigFile(...)` से persist करें। हर write को एक स्पष्ट `afterWrite` policy चुननी होगी:
+बदलावों को `api.runtime.config.mutateConfigFile(...)` या `api.runtime.config.replaceConfigFile(...)` के साथ persist करें। हर write को explicit `afterWrite` policy चुननी होगी:
 
 - `afterWrite: { mode: "auto" }` gateway reload planner को निर्णय लेने देता है।
 - `afterWrite: { mode: "restart", reason: "..." }` तब clean restart बाध्य करता है जब writer जानता है कि hot reload unsafe है।
 - `afterWrite: { mode: "none", reason: "..." }` automatic reload/restart को केवल तब suppress करता है जब caller follow-up का owner हो।
 
-Mutation helpers `afterWrite` के साथ typed `followUp` summary लौटाते हैं ताकि callers log कर सकें या test कर सकें कि उन्होंने restart request किया था या नहीं। वह restart वास्तव में कब होता है, इसका owner फिर भी Gateway होता है।
+mutation helpers `afterWrite` और typed `followUp` summary लौटाते हैं ताकि callers log कर सकें या test कर सकें कि उन्होंने restart request किया था या नहीं। वह restart वास्तव में कब होता है, इसका owner अब भी gateway है।
 
-`api.runtime.config.loadConfig()` और `api.runtime.config.writeConfigFile(...)` `runtime-config-load-write` के अंतर्गत deprecated compatibility helpers हैं। वे runtime पर एक बार warn करते हैं, और migration window के दौरान पुराने external plugins के लिए उपलब्ध रहते हैं। Bundled plugins को इनका उपयोग नहीं करना चाहिए; अगर plugin code इन्हें call करता है या plugin SDK subpaths से इन helpers को import करता है, तो config boundary guards fail हो जाते हैं।
+`api.runtime.config.loadConfig()` और `api.runtime.config.writeConfigFile(...)`, `runtime-config-load-write` के अंतर्गत deprecated compatibility helpers हैं। वे runtime पर एक बार warn करते हैं, और migration window के दौरान पुराने external plugins के लिए उपलब्ध रहते हैं। Bundled plugins को उनका उपयोग नहीं करना चाहिए; यदि plugin code उन्हें call करता है या plugin SDK subpaths से उन helpers को import करता है, तो config boundary guards fail हो जाते हैं।
 
 Direct SDK imports के लिए, broad
-`openclaw/plugin-sdk/config-runtime` compatibility barrel के बजाय focused config subpaths का उपयोग करें: types के लिए
-`config-contracts`, पहले से loaded config assertions और plugin
-entry lookup के लिए `plugin-config-runtime`, current process snapshots के लिए `runtime-config-snapshot`, और
-writes के लिए `config-mutation`। Bundled plugin tests को broad compatibility barrel को mock करने के बजाय इन focused
-subpaths को सीधे mock करना चाहिए।
+`openclaw/plugin-sdk/config-runtime` compatibility barrel के बजाय focused config subpaths का उपयोग करें: types के लिए `config-contracts`, already-loaded config assertions और plugin entry lookup के लिए `plugin-config-runtime`, current process snapshots के लिए `runtime-config-snapshot`, और writes के लिए `config-mutation`। Bundled plugin tests को broad compatibility barrel को mock करने के बजाय इन focused subpaths को सीधे mock करना चाहिए।
 
-Internal OpenClaw runtime code की दिशा भी यही है: CLI, Gateway, या process boundary पर config एक बार load करें, फिर उस value को आगे pass करें। सफल mutation writes process runtime snapshot को refresh करते हैं और उसके internal revision को आगे बढ़ाते हैं; लंबे समय तक चलने वाले caches को config को locally serialize करने के बजाय runtime-owned cache key पर key करना चाहिए। लंबे समय तक चलने वाले runtime modules में ambient `loadConfig()` calls के लिए zero-tolerance scanner है; passed `cfg`, request `context.getRuntimeConfig()`, या explicit process boundary पर `getRuntimeConfig()` का उपयोग करें।
+Internal OpenClaw runtime code की दिशा भी यही है: CLI, gateway, या process boundary पर config को एक बार load करें, फिर उस value को आगे पास करें। सफल mutation writes process runtime snapshot को refresh करते हैं और उसके internal revision को आगे बढ़ाते हैं; long-lived caches को config को locally serialize करने के बजाय runtime-owned cache key पर आधारित होना चाहिए। Long-lived runtime modules में ambient `loadConfig()` calls के लिए zero-tolerance scanner है; पास किए गए `cfg`, request `context.getRuntimeConfig()`, या explicit process boundary पर `getRuntimeConfig()` का उपयोग करें।
 
-Provider और channel execution paths को active runtime config snapshot का उपयोग करना होगा, config readback या editing के लिए लौटाए गए file snapshot का नहीं। File snapshots UI और writes के लिए SecretRef markers जैसे source values को preserve करते हैं; provider callbacks को resolved runtime view चाहिए। जब कोई helper active source snapshot या active runtime snapshot, दोनों में से किसी के साथ call किया जा सकता हो, तो credentials पढ़ने से पहले `selectApplicableRuntimeConfig()` से route करें।
+Provider और channel execution paths को active runtime config snapshot का उपयोग करना चाहिए, config readback या editing के लिए returned file snapshot का नहीं। File snapshots UI और writes के लिए SecretRef markers जैसी source values सुरक्षित रखते हैं; provider callbacks को resolved runtime view चाहिए। जब कोई helper active source snapshot या active runtime snapshot में से किसी के साथ call किया जा सकता हो, तो credentials पढ़ने से पहले `selectApplicableRuntimeConfig()` से route करें।
 
 ## Reusable runtime utilities
 
-Bot-authored inbound messages के लिए inbound `botLoopProtection` facts का उपयोग करें। Core session record और dispatch से पहले shared in-memory sliding-window guard लागू करता है, policy को किसी एक channel से बांधे बिना। Guard `(scopeId, conversationId, participant pair)` keys को track करता है, pair की दोनों दिशाओं को साथ count करता है, window budget exceed होने पर cooldown लागू करता है, और inactive entries को opportunistically prune करता है।
+bot-authored inbound messages के लिए inbound `botLoopProtection` facts का उपयोग करें। Core session record और dispatch से पहले shared in-memory sliding-window guard लागू करता है, policy को किसी एक channel से बांधे बिना। Guard `(scopeId, conversationId, participant pair)` keys track करता है, pair की दोनों directions को साथ गिनता है, window budget exceed होने पर cooldown लागू करता है, और inactive entries को opportunistically prune करता है।
 
-जो channel plugins इस behavior को operators के सामने expose करते हैं, उन्हें baseline budgets के लिए shared `channels.defaults.botLoopProtection` shape को प्राथमिकता देनी चाहिए, फिर उसके ऊपर channel/provider-specific overrides layer करने चाहिए। Shared config seconds का उपयोग करता है क्योंकि यह user-facing है:
+जो Channel plugins इस behavior को operators के सामने expose करते हैं, उन्हें baseline budgets के लिए shared `channels.defaults.botLoopProtection` shape को प्राथमिकता देनी चाहिए, फिर उसके ऊपर channel/provider-specific overrides layer करने चाहिए। Shared config seconds का उपयोग करता है क्योंकि यह user-facing है:
 
 ```typescript
 type ChannelBotLoopProtectionConfig = {
@@ -77,7 +73,7 @@ type ChannelBotLoopProtectionConfig = {
 };
 ```
 
-Resolved turn के साथ normalized bot-pair facts pass करें। Core defaults, unit conversion, और `enabled` semantics resolve करता है:
+Resolved turn के साथ normalized bot-pair facts पास करें। Core defaults, unit conversion, और `enabled` semantics resolve करता है:
 
 ```typescript
 return {
@@ -99,8 +95,8 @@ return {
 };
 ```
 
-Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-loop-guard-runtime` का सीधे उपयोग करें,
-जो shared inbound reply runner से होकर नहीं जाते।
+`openclaw/plugin-sdk/pair-loop-guard-runtime` का सीधे उपयोग केवल custom
+two-party event loops के लिए करें जो shared inbound reply runner से नहीं गुजरते।
 
 ## Runtime namespaces
 
@@ -148,11 +144,11 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    `runEmbeddedAgent(...)` plugin code से सामान्य OpenClaw agent turn शुरू करने के लिए neutral helper है। यह वही provider/model resolution और agent-harness selection उपयोग करता है जो channel-triggered replies करते हैं।
+    `runEmbeddedAgent(...)` plugin code से सामान्य OpenClaw agent turn शुरू करने के लिए neutral helper है। यह channel-triggered replies जैसी ही provider/model resolution और agent-harness selection का उपयोग करता है।
 
-    `runEmbeddedPiAgent(...)` मौजूदा plugins के लिए deprecated compatibility alias के रूप में रहता है। नए code को `runEmbeddedAgent(...)` का उपयोग करना चाहिए।
+    `runEmbeddedPiAgent(...)` existing plugins के लिए deprecated compatibility alias के रूप में बना रहता है। New code को `runEmbeddedAgent(...)` का उपयोग करना चाहिए।
 
-    `resolveThinkingPolicy(...)` provider/model के supported thinking levels और optional default लौटाता है। Provider plugins अपने thinking hooks के माध्यम से model-specific profile own करते हैं, इसलिए tool plugins को provider lists import या duplicate करने के बजाय इस runtime helper को call करना चाहिए।
+    `resolveThinkingPolicy(...)` provider/model के supported thinking levels और optional default लौटाता है। Provider plugins अपने thinking hooks के माध्यम से model-specific profile के owner होते हैं, इसलिए tool plugins को provider lists import या duplicate करने के बजाय इस runtime helper को call करना चाहिए।
 
     `normalizeThinkingLevel(...)` user text जैसे `on`, `x-high`, या `extra high` को resolved policy के विरुद्ध check करने से पहले canonical stored level में convert करता है।
 
@@ -168,13 +164,23 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
       sessionKey,
       update: (entry) => ({ thinkingLevel: "high" }),
     });
+
+    const storePath = api.runtime.agent.session.resolveStorePath(cfg.session?.store, { agentId });
+    await api.runtime.agent.session.runWithWorkAdmission(
+      { storePath, sessionKey },
+      async (signal) => {
+        // Create or update the session, then pass signal to the admitted agent run.
+      },
+    );
     ```
 
-    Session workflows के लिए `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)`, या `upsertSessionEntry(...)` को प्राथमिकता दें। ये helpers sessions को agent/session identity से address करते हैं ताकि plugins legacy `sessions.json` storage shape पर depend न करें। Metadata-only patches के लिए `preserveActivity: true` का उपयोग करें जिन्हें session activity refresh नहीं करनी चाहिए, और `replaceEntry: true` का उपयोग केवल तब करें जब callback complete entry लौटाता हो और deleted fields deleted ही रहने चाहिए।
+    session workflows के लिए `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)`, या `upsertSessionEntry(...)` को प्राथमिकता दें। ये helpers sessions को agent/session identity से address करते हैं ताकि plugins legacy `sessions.json` storage shape पर निर्भर न हों। metadata-only patches के लिए `preserveActivity: true` का उपयोग करें जिन्हें session activity refresh नहीं करनी चाहिए, और `replaceEntry: true` केवल तब जब callback complete entry लौटाता हो और deleted fields को deleted ही रहना हो।
 
-    Transcript reads और writes के लिए, `openclaw/plugin-sdk/session-transcript-runtime` import करें और `{ agentId, sessionKey, sessionId }` के साथ `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)`, या `withSessionTranscriptWriteLock(...)` का उपयोग करें। ये APIs plugins को transcript identify करने, उसके events पढ़ने, messages append करने, updates publish करने, और related operations को उसी transcript write lock के अंतर्गत चलाने देती हैं। `sessionFile` pass करना, `resolveSessionTranscriptLegacyFileTarget(...)` का उपयोग करना, या `openclaw/plugin-sdk/agent-harness-runtime` से low-level `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` import करना deprecated है; वे paths केवल legacy code के लिए मौजूद हैं जिसे पहले से active transcript artifact मिलता है।
+    जब कोई plugin persisted session पर work शुरू करता है, तो `runWithWorkAdmission(...)` का उपयोग करें। Callback archived या concurrently replaced sessions को reject करता है, archive/reset/delete mutations को completion के माध्यम से coordinated रखता है, और एक `AbortSignal` प्राप्त करता है जिसे agent run तक forward करना जरूरी है।
 
-    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)`, और `resolveAndPersistSessionFile(...)` उन plugins के लिए deprecated compatibility helpers हैं जो अभी भी जानबूझकर legacy whole-store या transcript-file shape पर depend करते हैं। नए plugin code को इन helpers का उपयोग नहीं करना चाहिए, और मौजूदा callers को entry helpers और transcript identity helpers पर migrate करना चाहिए।
+    transcript reads और writes के लिए, `openclaw/plugin-sdk/session-transcript-runtime` import करें और `{ agentId, sessionKey, sessionId }` के साथ `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)`, या `withSessionTranscriptWriteLock(...)` का उपयोग करें। ये APIs plugins को transcript identify करने, उसके events पढ़ने, messages append करने, updates publish करने, और related operations को same transcript write lock के अंतर्गत चलाने देती हैं। `sessionFile` पास करना, `resolveSessionTranscriptLegacyFileTarget(...)` का उपयोग करना, या `openclaw/plugin-sdk/agent-harness-runtime` से low-level `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` import करना deprecated है; वे paths केवल legacy code के लिए मौजूद हैं जिसे पहले से active transcript artifact मिलता है।
+
+    `loadSessionStore(...)`, `saveSessionStore(...)`, `updateSessionStore(...)`, `resolveSessionFilePath(...)`, और `resolveAndPersistSessionFile(...)` उन plugins के लिए deprecated compatibility helpers हैं जो अब भी जानबूझकर legacy whole-store या transcript-file shape पर निर्भर हैं। New plugin code को उन helpers का उपयोग नहीं करना चाहिए, और existing callers को entry helpers और transcript identity helpers पर migrate करना चाहिए।
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
@@ -188,7 +194,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    Provider internals import किए बिना या
+    provider internals import किए बिना या
     OpenClaw model/auth/base URL preparation duplicate किए बिना host-owned text completion चलाएं।
 
     ```typescript
@@ -200,19 +206,16 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    Helper वही simple-completion preparation path उपयोग करता है जो OpenClaw का
-    built-in runtime और host-owned runtime config snapshot उपयोग करते हैं। Context engines को
-    session-bound `llm.complete` capability मिलती है, इसलिए model calls
-    active session के agent का उपयोग करते हैं और silently default agent पर fall back नहीं करते। Result में provider/model/agent attribution के साथ normalized token,
-    cache, और estimated cost usage शामिल होता है, जब उपलब्ध हो।
+    Helper OpenClaw के built-in runtime जैसी same simple-completion preparation path और host-owned runtime config snapshot का उपयोग करता है। Context engines को session-bound `llm.complete` capability मिलती है, इसलिए model calls active session के agent का उपयोग करते हैं और चुपचाप default agent पर fall back नहीं करते। Result में provider/model/agent attribution और उपलब्ध होने पर normalized token,
+    cache, और estimated cost usage शामिल होते हैं।
 
     <Warning>
-    Model overrides के लिए config में `plugins.entries.<id>.llm.allowModelOverride: true` के माध्यम से operator opt-in आवश्यक है। Trusted plugins को specific canonical `provider/model` targets तक restrict करने के लिए `plugins.entries.<id>.llm.allowedModels` का उपयोग करें। Cross-agent completions के लिए `plugins.entries.<id>.llm.allowAgentIdOverride: true` आवश्यक है।
+    मॉडल ओवरराइड के लिए config में `plugins.entries.<id>.llm.allowModelOverride: true` के माध्यम से ऑपरेटर की ऑप्ट-इन आवश्यक है। विश्वसनीय plugins को विशिष्ट कैननिकल `provider/model` लक्ष्यों तक सीमित करने के लिए `plugins.entries.<id>.llm.allowedModels` का उपयोग करें। क्रॉस-एजेंट पूर्णताओं के लिए `plugins.entries.<id>.llm.allowAgentIdOverride: true` आवश्यक है।
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    Background subagent runs launch और manage करें।
+    पृष्ठभूमि subagent रन शुरू और प्रबंधित करें।
 
     ```typescript
     // Start a subagent run
@@ -240,14 +243,14 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     ```
 
     <Warning>
-    Model ओवरराइड (`provider`/`model`) के लिए config में `plugins.entries.<id>.subagent.allowModelOverride: true` के जरिए ऑपरेटर opt-in आवश्यक है। अविश्वसनीय Plugin अब भी subagent चला सकते हैं, लेकिन ओवरराइड अनुरोध अस्वीकार कर दिए जाते हैं।
+    मॉडल ओवरराइड (`provider`/`model`) के लिए config में `plugins.entries.<id>.subagent.allowModelOverride: true` के माध्यम से ऑपरेटर की ऑप्ट-इन आवश्यक है। अविश्वसनीय plugins फिर भी subagents चला सकते हैं, लेकिन ओवरराइड अनुरोध अस्वीकार कर दिए जाते हैं।
     </Warning>
 
-    `deleteSession(...)`, `api.runtime.subagent.run(...)` के जरिए उसी Plugin द्वारा बनाए गए सेशन मिटा सकता है। मनमाने उपयोगकर्ता या ऑपरेटर सेशन मिटाने के लिए अब भी admin-scoped Gateway अनुरोध आवश्यक है।
+    `deleteSession(...)`, उसी plugin द्वारा `api.runtime.subagent.run(...)` के माध्यम से बनाए गए सेशनों को हटा सकता है। मनमाने उपयोगकर्ता या ऑपरेटर सेशन हटाने के लिए अब भी admin-स्कोप वाला Gateway अनुरोध आवश्यक है।
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    कनेक्टेड Node सूचीबद्ध करें और Gateway-लोडेड Plugin कोड से या Plugin CLI कमांड से node-host कमांड invoke करें। इसका उपयोग तब करें जब किसी Plugin के पास paired डिवाइस पर स्थानीय काम हो, उदाहरण के लिए दूसरे Mac पर browser या audio bridge।
+    कनेक्टेड nodes सूचीबद्ध करें और Gateway-लोडेड plugin कोड या plugin CLI कमांड से node-host कमांड invoke करें। इसका उपयोग तब करें जब कोई plugin जोड़े गए डिवाइस पर स्थानीय काम का मालिक हो, उदाहरण के लिए किसी दूसरे Mac पर ब्राउज़र या ऑडियो ब्रिज।
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -260,22 +263,22 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    Gateway के अंदर यह runtime in-process है। Plugin CLI कमांड में यह configured Gateway को RPC पर कॉल करता है, इसलिए `openclaw googlemeet recover-tab` जैसे कमांड terminal से paired nodes inspect कर सकते हैं। Node कमांड अब भी सामान्य Gateway node pairing, command allowlists, Plugin node-invoke policies, और node-local command handling से गुजरते हैं।
+    Gateway के अंदर यह रनटाइम in-process है। plugin CLI कमांड में यह कॉन्फ़िगर किए गए Gateway को RPC पर कॉल करता है, इसलिए `openclaw googlemeet recover-tab` जैसे कमांड terminal से paired nodes का निरीक्षण कर सकते हैं। Node कमांड अब भी सामान्य Gateway node pairing, command allowlists, plugin node-invoke policies, और node-local command handling से होकर गुजरते हैं।
 
-    जो Plugin खतरनाक node-host कमांड expose करते हैं, उन्हें `api.registerNodeInvokePolicy(...)` के साथ node-invoke policy register करनी चाहिए। यह policy command allowlist checks के बाद और command को node पर forward करने से पहले Gateway में चलती है, इसलिए direct `node.invoke` calls और higher-level Plugin tools समान enforcement path साझा करते हैं।
+    खतरनाक node-host कमांड उजागर करने वाले plugins को `api.registerNodeInvokePolicy(...)` के साथ node-invoke policy पंजीकृत करनी चाहिए। Policy, Gateway में command allowlist जाँचों के बाद और कमांड को node पर forward करने से पहले चलती है, इसलिए सीधे `node.invoke` कॉल और उच्च-स्तरीय plugin tools समान enforcement path साझा करते हैं।
 
     <Warning>
-    वैकल्पिक `scopes` field invocation के लिए Gateway operator scopes का अनुरोध करता है। OpenClaw इसे केवल bundled Plugin और trusted official Plugin installations के लिए मानता है; दूसरे Plugin से आए अनुरोध call को elevate नहीं करते। इसका उपयोग केवल तब करें जब trusted Plugin को `operator.admin` जैसे stricter Gateway scope के साथ node command invoke करना हो।
+    वैकल्पिक `scopes` फ़ील्ड invocation के लिए Gateway operator scopes का अनुरोध करता है। OpenClaw इसे केवल bundled plugins और विश्वसनीय आधिकारिक plugin installations के लिए मानता है; अन्य plugins से आने वाले अनुरोध call को elevate नहीं करते। इसका उपयोग केवल तब करें जब किसी विश्वसनीय plugin को `operator.admin` जैसे कड़े Gateway scope के साथ node command invoke करना आवश्यक हो।
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Task Flow runtime को मौजूदा OpenClaw session key या trusted tool context से bind करें, फिर हर call पर owner पास किए बिना Task Flows बनाएं और manage करें।
+    कार्य प्रवाह runtime को किसी मौजूदा OpenClaw session key या विश्वसनीय tool context से bind करें, फिर हर call पर owner पास किए बिना कार्य प्रवाह बनाएं और प्रबंधित करें।
 
-    Task Flow durable multi-step workflow state track करता है। यह scheduler नहीं है:
-    future wakeups के लिए Cron या `api.session.workflow.scheduleSessionTurn(...)` का उपयोग करें,
-    फिर scheduled turn से `managedFlows` का उपयोग करें जब उस काम को
-    flow state, child tasks, waits, या cancellation की जरूरत हो।
+    कार्य प्रवाह टिकाऊ multi-step workflow state ट्रैक करता है। यह scheduler नहीं है:
+    भविष्य के wakeups के लिए Cron या `api.session.workflow.scheduleSessionTurn(...)` का उपयोग करें,
+    फिर scheduled turn से `managedFlows` का उपयोग करें जब उस काम को flow state,
+    child tasks, waits, या cancellation की आवश्यकता हो।
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -302,7 +305,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    जब आपके अपने binding layer से आपके पास पहले से trusted OpenClaw session key हो, तो `bindSession({ sessionKey, requesterOrigin })` का उपयोग करें। raw user input से bind न करें।
+    जब आपके पास अपनी binding layer से पहले से विश्वसनीय OpenClaw session key हो, तब `bindSession({ sessionKey, requesterOrigin })` का उपयोग करें। कच्चे user input से bind न करें।
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -332,7 +335,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
-    Image, audio, और video analysis।
+    छवि, ऑडियो, और वीडियो विश्लेषण।
 
     ```typescript
     // Describe an image
@@ -390,7 +393,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    जब कोई output produced नहीं होता (जैसे skipped input), तो `{ text: undefined }` लौटाता है।
+    जब कोई output produced नहीं होता, तो `{ text: undefined }` लौटाता है (जैसे skipped input)।
 
     <Info>
     `api.runtime.stt.transcribeAudioFile(...)`, `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` के लिए compatibility alias के रूप में बना रहता है।
@@ -398,7 +401,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
   </Accordion>
   <Accordion title="api.runtime.imageGeneration">
-    Image generation।
+    छवि generation।
 
     ```typescript
     const result = await api.runtime.imageGeneration.generate({
@@ -411,7 +414,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
   </Accordion>
   <Accordion title="api.runtime.webSearch">
-    Web search।
+    वेब search।
 
     ```typescript
     const providers = api.runtime.webSearch.listProviders({ config: api.config });
@@ -449,9 +452,8 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    वर्तमान runtime config snapshot और transactional config writes। उस
-    config को प्राथमिकता दें जो पहले से active call path में पास किया गया था; `current()`
-    का उपयोग केवल तब करें जब handler को सीधे process snapshot चाहिए।
+    वर्तमान runtime config snapshot और transactional config writes। सक्रिय call path में पहले से पास किए गए
+    config को प्राथमिकता दें; `current()` का उपयोग केवल तब करें जब handler को सीधे process snapshot की आवश्यकता हो।
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -465,7 +467,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
     `mutateConfigFile(...)` और `replaceConfigFile(...)` एक `followUp`
     value लौटाते हैं, उदाहरण के लिए `{ mode: "restart", requiresRestart: true, reason }`,
-    जो gateway से restart control लिए बिना writer intent record करता है।
+    जो gateway से restart control छिने बिना writer intent record करता है।
 
   </Accordion>
   <Accordion title="api.runtime.system">
@@ -483,11 +485,11 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runCommandWithTimeout(...)` captured `stdout` और `stderr`, optional
+    `runCommandWithTimeout(...)` captured `stdout` और `stderr`, वैकल्पिक
     truncation counts, `code`, `signal`, `killed`, `termination`, और
     `noOutputTimedOut` लौटाता है। Timeout और no-output-timeout results `code: 124`
-    report करते हैं जब child process non-zero exit code प्रदान नहीं करता। Non-timeout
-    signal exits अब भी `code: null` लौटा सकते हैं, इसलिए timeout कारणों में अंतर करने के लिए
+    report करते हैं जब child process non-zero exit code उपलब्ध नहीं कराता। Non-timeout
+    signal exits फिर भी `code: null` लौटा सकते हैं, इसलिए timeout reasons अलग करने के लिए
     `termination` और `noOutputTimedOut` का उपयोग करें।
 
   </Accordion>
@@ -526,7 +528,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    State directory resolution और SQLite-backed keyed storage।
+    State डायरेक्टरी रिज़ॉल्यूशन और SQLite-समर्थित keyed storage.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -543,15 +545,15 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     await store.clear();
     ```
 
-    कुंजीबद्ध स्टोर रीस्टार्ट के बाद भी बने रहते हैं और रनटाइम-बद्ध Plugin id से अलग-थलग रहते हैं। परमाणु डीड्यूप दावों के लिए `registerIfAbsent(...)` का उपयोग करें: कुंजी गायब या समाप्त होने और पंजीकृत होने पर यह `true` लौटाता है, या जब कोई लाइव मान पहले से मौजूद हो तो उसके मान, निर्माण समय, या TTL को ओवरराइट किए बिना `false` लौटाता है। सीमाएं: प्रति namespace `maxEntries`, प्रति Plugin 6,000 लाइव पंक्तियां, 64KB से कम JSON मान, और वैकल्पिक TTL समाप्ति। जब कोई लेखन Plugin पंक्ति सीमा से अधिक हो जाएगा, तो रनटाइम लिखे जा रहे namespace से सबसे पुरानी लाइव पंक्तियां हटा सकता है; उस लेखन के लिए सहोदर namespace हटाए नहीं जाते, और यदि namespace पर्याप्त पंक्तियां खाली नहीं कर सकता तो लेखन फिर भी विफल हो जाता है।
+    Keyed stores restart के बाद भी बने रहते हैं और runtime-बाउंड plugin id के आधार पर अलग-थलग रहते हैं. atomic dedupe claims के लिए `registerIfAbsent(...)` का उपयोग करें: यह तब `true` लौटाता है जब key मौजूद नहीं थी या expire हो चुकी थी और register की गई, या तब `false` लौटाता है जब कोई live value पहले से मौजूद हो और उसकी value, creation time, या TTL overwrite न की जाए. सीमाएं: प्रति namespace `maxEntries`, प्रति plugin 6,000 live rows, 64KB से छोटे JSON values, और वैकल्पिक TTL expiry. जब कोई write plugin row cap से आगे निकल जाएगा, तो runtime लिखे जा रहे namespace से सबसे पुराने live rows evict कर सकता है; उस write के लिए sibling namespaces evict नहीं किए जाते, और अगर namespace पर्याप्त rows free नहीं कर सकता तो write फिर भी fail होता है.
 
     <Warning>
-    इस रिलीज़ में केवल बंडल किए गए Plugin।
+    इस रिलीज़ में केवल bundled plugins.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tools">
-    मेमोरी टूल फैक्ट्रियां और CLI।
+    Memory tool factories और CLI.
 
     ```typescript
     const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -561,9 +563,9 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    चैनल-विशिष्ट रनटाइम हेल्पर (चैनल Plugin लोड होने पर उपलब्ध)।
+    Channel-specific runtime helpers (जब कोई channel plugin load किया गया हो तब उपलब्ध).
 
-    `api.runtime.channel.media` चैनल मीडिया डाउनलोड और स्टोरेज के लिए पसंदीदा सतह है:
+    `api.runtime.channel.media` channel media downloads और storage के लिए preferred surface है:
 
     ```typescript
     const saved = await api.runtime.channel.media.saveRemoteMedia({
@@ -574,9 +576,9 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    जब किसी दूरस्थ URL को OpenClaw मीडिया बनना चाहिए, तो `saveRemoteMedia(...)` का उपयोग करें। जब Plugin ने Plugin-स्वामित्व वाले auth, redirect, या allowlist हैंडलिंग के साथ पहले ही `Response` प्राप्त कर लिया हो, तो `saveResponseMedia(...)` का उपयोग करें। `readRemoteMediaBuffer(...)` का उपयोग केवल तब करें जब Plugin को निरीक्षण, रूपांतरण, डिक्रिप्शन, या फिर से अपलोड करने के लिए कच्चे bytes चाहिए। `fetchRemoteMedia(...)`, `readRemoteMediaBuffer(...)` के लिए एक अप्रचलित संगतता alias बना रहता है।
+    जब remote URL को OpenClaw media बनना हो, तब `saveRemoteMedia(...)` का उपयोग करें. जब plugin ने plugin-owned auth, redirect, या allowlist handling के साथ पहले ही कोई `Response` fetch कर लिया हो, तब `saveResponseMedia(...)` का उपयोग करें. `readRemoteMediaBuffer(...)` का उपयोग केवल तब करें जब plugin को inspection, transforms, decryption, या reupload के लिए raw bytes चाहिए हों. `fetchRemoteMedia(...)`, `readRemoteMediaBuffer(...)` के लिए deprecated compatibility alias बना रहता है.
 
-    `api.runtime.channel.mentions` रनटाइम इंजेक्शन का उपयोग करने वाले बंडल किए गए चैनल Plugin के लिए साझा इनबाउंड mention-policy सतह है:
+    `api.runtime.channel.mentions` runtime injection का उपयोग करने वाले bundled channel plugins के लिए shared inbound mention-policy surface है:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -603,7 +605,7 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     });
     ```
 
-    उपलब्ध mention हेल्पर:
+    उपलब्ध mention helpers:
 
     - `buildMentionRegexes`
     - `matchesMentionPatterns`
@@ -611,14 +613,14 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions` जानबूझकर पुराने `resolveMentionGating*` संगतता हेल्पर उजागर नहीं करता। सामान्यीकृत `{ facts, policy }` पथ को प्राथमिकता दें।
+    `api.runtime.channel.mentions` जानबूझकर पुराने `resolveMentionGating*` compatibility helpers expose नहीं करता. normalized `{ facts, policy }` path को प्राथमिकता दें.
 
   </Accordion>
 </AccordionGroup>
 
-## रनटाइम संदर्भ संग्रहित करना
+## Runtime references store करना
 
-`register` callback के बाहर उपयोग के लिए रनटाइम संदर्भ संग्रहित करने हेतु `createPluginRuntimeStore` का उपयोग करें:
+`register` callback के बाहर उपयोग के लिए runtime reference store करने हेतु `createPluginRuntimeStore` का उपयोग करें:
 
 <Steps>
   <Step title="Create the store">
@@ -659,37 +661,37 @@ Custom two-party event loops के लिए ही `openclaw/plugin-sdk/pair-l
 </Steps>
 
 <Note>
-रनटाइम-स्टोर पहचान के लिए `pluginId` को प्राथमिकता दें। निचले-स्तर वाला `key` रूप उन असामान्य मामलों के लिए है जहां एक Plugin को जानबूझकर एक से अधिक रनटाइम स्लॉट की आवश्यकता होती है।
+runtime-store identity के लिए `pluginId` को प्राथमिकता दें. lower-level `key` form उन uncommon cases के लिए है जहां एक plugin को जानबूझकर एक से अधिक runtime slot चाहिए.
 </Note>
 
-## अन्य शीर्ष-स्तरीय `api` फ़ील्ड
+## अन्य top-level `api` fields
 
-`api.runtime` के अलावा, API ऑब्जेक्ट यह भी प्रदान करता है:
+`api.runtime` के अलावा, API object यह भी प्रदान करता है:
 
 <ParamField path="api.id" type="string">
-  Plugin id।
+  Plugin id.
 </ParamField>
 <ParamField path="api.name" type="string">
-  Plugin प्रदर्शन नाम।
+  Plugin display name.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  वर्तमान config स्नैपशॉट (उपलब्ध होने पर सक्रिय इन-मेमोरी रनटाइम स्नैपशॉट)।
+  मौजूदा config snapshot (उपलब्ध होने पर active in-memory runtime snapshot).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  `plugins.entries.<id>.config` से Plugin-विशिष्ट config।
+  `plugins.entries.<id>.config` से Plugin-specific config.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
-  स्कोप्ड logger (`debug`, `info`, `warn`, `error`)।
+  Scoped logger (`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  वर्तमान load mode; `"setup-runtime"` हल्का pre-full-entry startup/setup window है।
+  मौजूदा load mode; `"setup-runtime"` lightweight pre-full-entry startup/setup window है.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  Plugin root के सापेक्ष path resolve करें।
+  Plugin root के relative कोई path resolve करें.
 </ParamField>
 
 ## संबंधित
 
-- [Plugin आंतरिक विवरण](/hi/plugins/architecture) — capability model और registry
-- [SDK entry points](/hi/plugins/sdk-entrypoints) — `definePluginEntry` विकल्प
-- [SDK overview](/hi/plugins/sdk-overview) — subpath संदर्भ
+- [Plugin internals](/hi/plugins/architecture) — capability model और registry
+- [SDK entry points](/hi/plugins/sdk-entrypoints) — `definePluginEntry` options
+- [SDK overview](/hi/plugins/sdk-overview) — subpath reference
