@@ -381,11 +381,13 @@ metadata:
     - 规格可以包含 `os: ["darwin"|"linux"|"win32"]`，用于按平台筛选。
     - Node 安装会遵循 `openclaw.json` 中的 `skills.install.nodeManager`（默认：npm；选项：npm / pnpm / yarn / bun）。这只影响 skill 安装；Gateway 网关运行时仍应为 Node。
     - Gateway 网关安装器偏好顺序：Homebrew → uv → 已配置的 node manager → go → download。
+
   </Accordion>
   <Accordion title="各安装器详情">
     - **Homebrew：** OpenClaw 不会自动安装 Homebrew，也不会把 brew formula 转换为系统包命令。在没有 `brew` 的 Linux 容器中，仅支持 brew 的安装器会被隐藏；请使用自定义镜像或手动安装依赖。
     - **Go：** OpenClaw 要求 Go 1.21 或更新版本才能自动安装 skill，并会保留现有的 `GOBIN`、`GOPATH` 和 `GOTOOLCHAIN` 设置。如果配置的工具链无法满足模块要求的 Go 版本，新手引导会在安装尝试后，将该 skill 归入需要手动处理 Go 前置条件的组。如果缺少 `go` 且 Homebrew 可用，OpenClaw 会先通过 Homebrew 安装 Go，并将 `GOBIN` 设置为 Homebrew 的 `bin`。在 Linux 上，如果刷新后的 `golang-go` candidate 满足最低版本，OpenClaw 也可以改用 root 权限或免密 `sudo` 运行 `apt-get`。
     - **Download：** `url`（必填）、`archive`（`tar.gz` | `tar.bz2` | `zip`）、`extract`（默认：检测到 archive 时自动）、`stripComponents`、`targetDir`（默认：`~/.openclaw/tools/<skillKey>`）。
+
   </Accordion>
   <Accordion title="沙箱隔离说明">
     `requires.bins` 会在 skill 加载时于**主机**上检查。如果智能体在沙箱中运行，该二进制文件也必须存在于**容器内**。请通过 `agents.defaults.sandbox.docker.setupCommand` 或自定义镜像安装。`setupCommand` 会在容器创建后运行一次，并要求沙箱中具备网络出口、可写 root FS 和 root 用户。
