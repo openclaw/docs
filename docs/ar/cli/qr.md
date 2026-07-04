@@ -1,22 +1,22 @@
 ---
 read_when:
-    - تريد إقران تطبيق عقدة على الهاتف المحمول مع Gateway بسرعة
+    - تريد إقران تطبيق عقدة متنقل مع Gateway بسرعة
     - تحتاج إلى مخرجات setup-code للمشاركة عن بُعد/يدويًا
-summary: مرجع CLI لـ `openclaw qr` (إنشاء رمز QR لإقران الهاتف المحمول + رمز الإعداد)
+summary: مرجع CLI لـ `openclaw qr` (إنشاء رمز QR للاقتران عبر الهاتف المحمول + رمز الإعداد)
 title: QR
 x-i18n:
-    generated_at: "2026-07-03T13:31:15Z"
+    generated_at: "2026-07-04T18:02:20Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d2a0d71fb7be0734a015084bfb5edef74953310d384964eab9cccbabf7c497e3
+    source_hash: 81d15c9d551960c6f5677649b481e447ecda55a395957746959b4ecf81712bdb
     source_path: cli/qr.md
     workflow: 16
 ---
 
 # `openclaw qr`
 
-أنشئ رمز QR لاقتران الجهاز المحمول ورمز إعداد من تهيئة Gateway الحالية لديك.
+أنشئ رمز QR لإقران الهاتف ورمز إعداد من تهيئة Gateway الحالية لديك.
 
 ## الاستخدام
 
@@ -30,35 +30,37 @@ openclaw qr --url wss://gateway.example/ws
 
 ## الخيارات
 
-- `--remote`: يفضّل `gateway.remote.url`؛ وإذا لم يكن معيّنًا، فلا يزال بإمكان `gateway.tailscale.mode=serve|funnel` توفير عنوان URL العام البعيد
-- `--url <url>`: تجاوز عنوان URL الخاص بالـ Gateway المستخدم في الحمولة
+- `--remote`: يفضّل `gateway.remote.url`؛ إذا لم يكن معيّناً، فيمكن لـ `gateway.tailscale.mode=serve|funnel` أن يوفّر عنوان URL العام البعيد أيضاً
+- `--url <url>`: تجاوز عنوان URL الخاص بـ gateway المستخدم في الحمولة
 - `--public-url <url>`: تجاوز عنوان URL العام المستخدم في الحمولة
-- `--token <token>`: تجاوز رمز Gateway الذي يصادق تدفق التمهيد مقابله
-- `--password <password>`: تجاوز كلمة مرور Gateway التي يصادق تدفق التمهيد مقابلها
+- `--token <token>`: تجاوز رمز gateway الذي يتوثق تدفق التمهيد مقابله
+- `--password <password>`: تجاوز كلمة مرور gateway التي يتوثق تدفق التمهيد مقابلها
 - `--setup-code-only`: اطبع رمز الإعداد فقط
 - `--no-ascii`: تخطَّ عرض QR بصيغة ASCII
-- `--json`: أصدِر JSON (`setupCode`, `gatewayUrl`, `auth`, `urlSource`)
+- `--json`: أخرج JSON (`setupCode`, `gatewayUrl`, `auth`, `urlSource`)
 
 ## ملاحظات
 
-- `--token` و`--password` متنافيان.
-- يحمل رمز الإعداد نفسه الآن `bootstrapToken` قصير الأمد ومبهمًا، وليس رمز/كلمة مرور Gateway المشتركة.
-- يعيد تمهيد رمز الإعداد المدمج رمز `node` أساسيًا مع `scopes: []` بالإضافة إلى رمز تسليم `operator` محدود للإعداد الموثوق للأجهزة المحمولة.
-- يقتصر رمز المشغّل المُسلَّم على `operator.approvals` و`operator.read` و`operator.talk.secrets` و`operator.write`؛ ولا تزال نطاقات تعديل الاقتران و`operator.admin` تتطلب اقتران مشغّل منفصلًا معتمدًا أو تدفق رمز منفصلًا.
-- يفشل اقتران الجهاز المحمول بطريقة مغلقة لعناوين URL الخاصة بـ Gateway عبر Tailscale/العامة باستخدام `ws://`. تظل عناوين LAN الخاصة ومضيفو Bonjour من نوع `.local` مدعومة عبر `ws://`، لكن ينبغي لمسارات الأجهزة المحمولة عبر Tailscale/العامة استخدام Tailscale Serve/Funnel أو عنوان URL للـ Gateway عبر `wss://`.
+- الخياران `--token` و`--password` متنافيان.
+- يحمل رمز الإعداد نفسه الآن `bootstrapToken` معتماً وقصير العمر، وليس رمز gateway/كلمة المرور المشتركة.
+- يعيد تمهيد رمز الإعداد المضمّن رمز `node` أساسياً مع `scopes: []` بالإضافة إلى رمز تسليم `operator` محدود للإعداد الموثوق للهاتف.
+- يقتصر رمز المشغّل المسلَّم على `operator.approvals` و`operator.read` و`operator.talk.secrets` و`operator.write`؛ ولا تزال نطاقات تعديل الإقران و`operator.admin` تتطلب إقران مشغّل منفصلاً ومعتمداً أو تدفق رمز.
+- يفشل إقران الهاتف بشكل مغلق لعناوين URL الخاصة بـ gateway بصيغة `ws://` عبر Tailscale/العامة. تظل عناوين LAN الخاصة ومضيفو Bonjour بصيغة `.local` مدعومة عبر `ws://`، لكن يجب أن تستخدم مسارات الهاتف عبر Tailscale/العامة Tailscale Serve/Funnel أو عنوان URL لـ gateway بصيغة `wss://`.
 - مع `--remote`، يتطلب OpenClaw إما `gateway.remote.url` أو
   `gateway.tailscale.mode=serve|funnel`.
-- مع `--remote`، إذا كانت بيانات الاعتماد البعيدة الفعالة مهيأة بصفتها SecretRefs ولم تمرر `--token` أو `--password`، فسيحلّها الأمر من لقطة Gateway النشطة. إذا لم يكن Gateway متاحًا، يفشل الأمر بسرعة.
-- بدون `--remote`، تُحلّ SecretRefs لمصادقة Gateway المحلية عندما لا يُمرَّر تجاوز مصادقة عبر CLI:
-  - يُحلّ `gateway.auth.token` عندما يمكن لمصادقة الرمز الفوز (وضع `gateway.auth.mode="token"` الصريح أو الوضع المستنتج حيث لا يفوز أي مصدر كلمة مرور).
-  - يُحلّ `gateway.auth.password` عندما يمكن لمصادقة كلمة المرور الفوز (وضع `gateway.auth.mode="password"` الصريح أو الوضع المستنتج بلا رمز فائز من المصادقة/البيئة).
-- إذا كان كل من `gateway.auth.token` و`gateway.auth.password` مهيأين (بما في ذلك SecretRefs) وكان `gateway.auth.mode` غير معيّن، يفشل حل رمز الإعداد إلى أن يُعيَّن الوضع صراحةً.
-- ملاحظة اختلاف إصدار Gateway: يتطلب مسار هذا الأمر Gateway يدعم `secrets.resolve`؛ وتعيد البوابات الأقدم خطأ طريقة غير معروفة.
-- بعد المسح، وافق على اقتران الجهاز باستخدام:
+- مع `--remote`، إذا كانت بيانات اعتماد البعيد الفعالة والنشطة مهيأة كـ SecretRefs ولم تمرر `--token` أو `--password`، يحلّها الأمر من لقطة gateway النشطة. إذا كان gateway غير متاح، يفشل الأمر سريعاً.
+- بدون `--remote`، تُحل SecretRefs الخاصة بمصادقة gateway المحلي عند عدم تمرير تجاوز مصادقة عبر CLI:
+  - يُحل `gateway.auth.token` عندما يمكن لمصادقة الرمز أن تفوز (`gateway.auth.mode="token"` الصريح أو الوضع المستنتج حيث لا يفوز أي مصدر كلمة مرور).
+  - يُحل `gateway.auth.password` عندما يمكن لمصادقة كلمة المرور أن تفوز (`gateway.auth.mode="password"` الصريح أو الوضع المستنتج من دون رمز فائز من المصادقة/البيئة).
+- إذا كان كل من `gateway.auth.token` و`gateway.auth.password` مهيأين (بما في ذلك SecretRefs) وكان `gateway.auth.mode` غير معيّن، يفشل حل رمز الإعداد حتى يتم تعيين الوضع صراحةً.
+- ملاحظة حول اختلاف إصدار Gateway: يتطلب مسار هذا الأمر gateway يدعم `secrets.resolve`؛ تعيد الإصدارات الأقدم من gateway خطأ طريقة غير معروفة.
+- تتصل تطبيقات OpenClaw الرسمية على iOS وAndroid تلقائياً عندما تتطابق
+  بيانات تعريف رمز الإعداد لديها. إذا ظل الطلب معلقاً (مثلاً، لعميل
+  غير رسمي أو بيانات تعريف غير متطابقة)، فراجعه ووافق عليه باستخدام:
   - `openclaw devices list`
   - `openclaw devices approve <requestId>`
 
-## ذات صلة
+## ذو صلة
 
 - [مرجع CLI](/ar/cli)
-- [الاقتران](/ar/cli/pairing)
+- [الإقران](/ar/cli/pairing)

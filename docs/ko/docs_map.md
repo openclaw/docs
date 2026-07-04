@@ -3,11 +3,11 @@ read_when: Finding which docs page covers a topic before reading the page
 summary: OpenClaw 문서 페이지용 생성된 제목 맵
 title: 문서 맵
 x-i18n:
-    generated_at: "2026-07-04T15:11:20Z"
+    generated_at: "2026-07-04T17:54:20Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4e180b7c652be24b73af51fecc5cf9a566184c1eff65ca0acdc0133bbc49c332
+    source_hash: 1135c12d026e49607a993d8f5c92de350dc60bc315fa4bb3d7fdbdce5cf44fae
     source_path: docs_map.md
     workflow: 16
 ---
@@ -15,7 +15,7 @@ x-i18n:
 # OpenClaw 문서 맵
 
 이 파일은 에이전트가 문서 트리를 탐색하는 데 도움이 되도록 `docs/**/*.md` 및 `docs/**/*.mdx` 제목에서 생성됩니다.
-직접 편집하지 말고 `pnpm docs:map:gen`을 실행하세요.
+손으로 편집하지 말고 `pnpm docs:map:gen`을 실행하세요.
 
 ## agent-runtime-architecture.md
 
@@ -31,11 +31,11 @@ x-i18n:
 
 - 경로: /announcements/bluebubbles-imessage
 - 제목:
-  - H1: BlueBubbles 제거와 imsg iMessage 경로
-  - H2: 변경된 사항
+  - H1: BlueBubbles 제거 및 imsg iMessage 경로
+  - H2: 변경된 내용
   - H2: 해야 할 일
   - H2: 마이그레이션 참고 사항
-  - H2: 함께 보기
+  - H2: 참고 항목
 
 ## auth-credential-semantics.md
 
@@ -44,11 +44,11 @@ x-i18n:
   - H2: 안정적인 프로브 이유 코드
   - H2: 토큰 자격 증명
   - H3: 적격성 규칙
-  - H3: 해석 규칙
+  - H3: 해결 규칙
   - H2: 에이전트 복사본 이식성
-  - H2: 설정 전용 인증 경로
+  - H2: 구성 전용 인증 경로
   - H2: 명시적 인증 순서 필터링
-  - H2: 프로브 대상 해석
+  - H2: 프로브 대상 확인
   - H2: 외부 CLI 자격 증명 검색
   - H2: OAuth SecretRef 정책 가드
   - H2: 레거시 호환 메시징
@@ -71,15 +71,15 @@ x-i18n:
 - 경로: /automation/cron-jobs
 - 제목:
   - H2: 빠른 시작
-  - H2: Cron 작동 방식
+  - H2: cron 작동 방식
   - H2: 일정 유형
-  - H3: 월의 일자와 요일은 OR 논리를 사용합니다
+  - H3: 일자와 요일은 OR 로직 사용
   - H2: 실행 스타일
   - H3: 명령 페이로드
   - H3: 격리된 작업의 페이로드 옵션
   - H2: 전달 및 출력
   - H2: 출력 언어
-  - H2: CLI 예시
+  - H2: CLI 예제
   - H2: Webhook
   - H3: 인증
   - H2: Gmail PubSub 통합
@@ -88,7 +88,7 @@ x-i18n:
   - H3: 수동 일회성 설정
   - H3: Gmail 모델 재정의
   - H2: 작업 관리
-  - H2: 설정
+  - H2: 구성
   - H2: 문제 해결
   - H3: 명령 사다리
   - H2: 관련 항목
@@ -109,7 +109,7 @@ x-i18n:
 
 - 경로: /automation/hooks
 - 제목:
-  - H2: 적절한 표면 선택
+  - H2: 올바른 표면 선택
   - H2: 빠른 시작
   - H2: 이벤트 유형
   - H2: 훅 작성
@@ -121,16 +121,16 @@ x-i18n:
   - H3: 훅 팩
   - H2: 번들 훅
   - H3: session-memory 세부 정보
-  - H3: bootstrap-extra-files 설정
+  - H3: bootstrap-extra-files 구성
   - H3: command-logger 세부 정보
   - H3: compaction-notifier 세부 정보
   - H3: boot-md 세부 정보
   - H2: Plugin 훅
-  - H2: 설정
+  - H2: 구성
   - H2: CLI 참조
   - H2: 모범 사례
   - H2: 문제 해결
-  - H3: 훅이 검색되지 않음
+  - H3: 훅을 찾을 수 없음
   - H3: 훅이 적격하지 않음
   - H3: 훅이 실행되지 않음
   - H2: 관련 항목
@@ -140,12 +140,12 @@ x-i18n:
 - 경로: /automation
 - 제목:
   - H2: 빠른 결정 가이드
-  - H3: 예약 작업(Cron)과 Heartbeat
+  - H3: 예약된 작업(Cron) 대 Heartbeat
   - H2: 핵심 개념
-  - H3: 예약 작업(Cron)
+  - H3: 예약된 작업(cron)
   - H3: 작업
   - H3: 추론된 약속
-  - H3: Task Flow
+  - H3: TaskFlow
   - H3: 상시 지시
   - H3: 훅
   - H3: Heartbeat
@@ -162,14 +162,14 @@ x-i18n:
 
 - 경로: /automation/standing-orders
 - 제목:
-  - H2: 상시 지시가 필요한 이유
+  - H2: 상시 지시를 사용하는 이유
   - H2: 작동 방식
   - H2: 상시 지시의 구조
-  - H2: 상시 지시와 Cron 작업
-  - H2: 예시
-  - H3: 예시 1: 콘텐츠 및 소셜 미디어(주간 주기)
-  - H3: 예시 2: 재무 운영(이벤트 트리거)
-  - H3: 예시 3: 모니터링 및 알림(연속)
+  - H2: 상시 지시와 cron 작업
+  - H2: 예제
+  - H3: 예제 1: 콘텐츠 및 소셜 미디어(주간 주기)
+  - H3: 예제 2: 재무 운영(이벤트 트리거)
+  - H3: 예제 3: 모니터링 및 알림(지속)
   - H2: 실행-검증-보고 패턴
   - H2: 다중 프로그램 아키텍처
   - H2: 모범 사례
@@ -181,15 +181,15 @@ x-i18n:
 
 - 경로: /automation/taskflow
 - 제목:
-  - H2: Task Flow를 사용할 때
-  - H2: 안정적인 예약 워크플로 패턴
+  - H2: TaskFlow를 사용할 때
+  - H2: 신뢰할 수 있는 예약 워크플로 패턴
   - H2: 동기화 모드
   - H3: 관리형 모드
   - H3: 미러링 모드
   - H2: 영속 상태 및 리비전 추적
   - H2: 취소 동작
   - H2: CLI 명령
-  - H2: 플로가 작업과 관련되는 방식
+  - H2: 흐름과 작업의 관계
   - H2: 관련 항목
 
 ## automation/tasks.md
@@ -198,7 +198,7 @@ x-i18n:
 - 제목:
   - H2: 요약
   - H2: 빠른 시작
-  - H2: 작업을 생성하는 것
+  - H2: 작업을 생성하는 요소
   - H2: 작업 수명 주기
   - H2: 전달 및 알림
   - H3: 알림 정책
@@ -208,7 +208,7 @@ x-i18n:
   - H2: 저장소 및 유지 관리
   - H3: 작업이 저장되는 위치
   - H3: 자동 유지 관리
-  - H2: 작업이 다른 시스템과 관련되는 방식
+  - H2: 작업과 다른 시스템의 관계
   - H2: 관련 항목
 
 ## automation/troubleshooting.md
@@ -246,10 +246,10 @@ x-i18n:
 - 경로: /channels/ambient-room-events
 - 제목:
   - H2: 권장 설정
-  - H2: 변경되는 사항
-  - H2: Discord 예시
-  - H2: Slack 예시
-  - H2: Telegram 예시
+  - H2: 변경되는 내용
+  - H2: Discord 예제
+  - H2: Slack 예제
+  - H2: Telegram 예제
   - H2: 에이전트별 정책
   - H2: 표시되는 답장 모드
   - H2: 기록
@@ -262,7 +262,7 @@ x-i18n:
 - 제목:
   - H1: 봇 루프 보호
   - H2: 기본값
-  - H2: 공유 기본값 설정
+  - H2: 공유 기본값 구성
   - H2: 채널 또는 계정별 재정의
   - H2: 채널 지원
 
@@ -272,22 +272,22 @@ x-i18n:
 - 제목:
   - H2: 개요
   - H2: 사용 사례
-  - H2: 설정
+  - H2: 구성
   - H3: 기본 설정
   - H3: 처리 전략
-  - H3: 전체 예시
+  - H3: 전체 예제
   - H2: 작동 방식
   - H3: 메시지 흐름
   - H3: 세션 격리
-  - H3: 예시: 격리된 세션
+  - H3: 예제: 격리된 세션
   - H2: 모범 사례
   - H2: 호환성
   - H3: 제공자
   - H3: 라우팅
   - H2: 문제 해결
-  - H2: 예시
+  - H2: 예제
   - H2: API 참조
-  - H3: 설정 스키마
+  - H3: 구성 스키마
   - H3: 필드
   - H2: 제한 사항
   - H2: 향후 개선 사항
@@ -300,12 +300,12 @@ x-i18n:
   - H1: 채널 및 라우팅
   - H2: 핵심 용어
   - H2: 아웃바운드 대상 접두사
-  - H2: 세션 키 형태(예시)
+  - H2: 세션 키 형태(예제)
   - H2: 기본 DM 경로 고정
   - H2: 보호된 인바운드 기록
   - H2: 라우팅 규칙(에이전트가 선택되는 방식)
   - H2: 브로드캐스트 그룹(여러 에이전트 실행)
-  - H2: 설정 개요
+  - H2: 구성 개요
   - H2: 세션 저장소
   - H2: WebChat 동작
   - H2: 답장 컨텍스트
@@ -326,22 +326,22 @@ x-i18n:
 - 경로: /channels/discord
 - 제목:
   - H2: 빠른 설정
-  - H2: 권장: 길드 작업 공간 설정
+  - H2: 권장: guild 워크스페이스 설정
   - H2: 런타임 모델
   - H2: 포럼 채널
-  - H2: 대화형 컴포넌트
+  - H2: 대화형 구성 요소
   - H2: 액세스 제어 및 라우팅
   - H3: 역할 기반 에이전트 라우팅
   - H2: 네이티브 명령 및 명령 인증
   - H2: 기능 세부 정보
   - H2: 도구 및 작업 게이트
-  - H2: Components v2 UI
+  - H2: 구성 요소 v2 UI
   - H2: 음성
   - H3: 음성 채널
   - H3: 음성에서 사용자 따라가기
   - H3: 음성 메시지
   - H2: 문제 해결
-  - H2: 설정 참조
+  - H2: 구성 참조
   - H2: 안전 및 운영
   - H2: 관련 항목
 
@@ -353,9 +353,9 @@ x-i18n:
   - H2: 액세스 제어
   - H3: 다이렉트 메시지
   - H3: 그룹 채팅
-  - H2: 그룹 설정 예시
-  - H3: 모든 그룹 허용, @멘션 필요 없음
-  - H3: 모든 그룹 허용, 그래도 @멘션 필요
+  - H2: 그룹 구성 예제
+  - H3: 모든 그룹 허용, @mention 필요 없음
+  - H3: 모든 그룹 허용, 여전히 @mention 필요
   - H3: 특정 그룹만 허용
   - H3: 그룹 내 발신자 제한
   - H2: 그룹/사용자 ID 가져오기
@@ -364,27 +364,27 @@ x-i18n:
   - H2: 일반 명령
   - H2: 문제 해결
   - H3: 봇이 그룹 채팅에서 응답하지 않음
-  - H3: 봇이 메시지를 받지 않음
+  - H3: 봇이 메시지를 받지 못함
   - H3: QR 설정이 Feishu 모바일 앱에서 반응하지 않음
   - H3: App Secret 유출
-  - H2: 고급 설정
+  - H2: 고급 구성
   - H3: 여러 계정
   - H3: 메시지 제한
   - H3: 스트리밍
   - H3: 할당량 최적화
   - H3: ACP 세션
-  - H4: 영속 ACP 바인딩
+  - H4: 영구 ACP 바인딩
   - H4: 채팅에서 ACP 생성
   - H3: 다중 에이전트 라우팅
   - H2: 사용자별 에이전트 격리(동적 에이전트 생성)
   - H3: 빠른 설정
   - H3: 작동 방식
-  - H3: 설정 옵션
+  - H3: 구성 옵션
   - H3: 세션 범위
   - H3: 일반적인 다중 사용자 배포
   - H3: 검증
   - H3: 참고 사항
-  - H2: 설정 참조
+  - H2: 구성 참조
   - H2: 지원되는 메시지 유형
   - H3: 수신
   - H3: 전송
@@ -404,9 +404,9 @@ x-i18n:
   - H3: 옵션 C: Cloudflare Tunnel
   - H2: 작동 방식
   - H2: 대상
-  - H2: 설정 주요 사항
+  - H2: 구성 주요 사항
   - H2: 문제 해결
-  - H3: 405 Method Not Allowed
+  - H3: 405 메서드 허용 안 됨
   - H3: 기타 문제
   - H2: 관련 항목
 
@@ -415,7 +415,7 @@ x-i18n:
 - 경로: /channels/group-messages
 - 제목:
   - H2: 동작
-  - H2: 설정 예시(WhatsApp)
+  - H2: 구성 예제(WhatsApp)
   - H3: 활성화 명령(소유자 전용)
   - H2: 사용 방법
   - H2: 테스트 / 검증
@@ -433,15 +433,15 @@ x-i18n:
   - H2: 패턴: 개인 DM + 공개 그룹(단일 에이전트)
   - H2: 표시 레이블
   - H2: 그룹 정책
-  - H2: 멘션 게이팅(기본값)
-  - H2: 멘션 패턴 범위 설정
+  - H2: 멘션 게이트(기본값)
+  - H2: 멘션 패턴 범위 구성
   - H2: 그룹/채널 도구 제한(선택 사항)
   - H2: 그룹 허용 목록
   - H2: 활성화(소유자 전용)
   - H2: 컨텍스트 필드
-  - H2: iMessage 세부 사항
+  - H2: iMessage 관련 사항
   - H2: WhatsApp 시스템 프롬프트
-  - H2: WhatsApp 세부 사항
+  - H2: WhatsApp 관련 사항
   - H2: 관련 항목
 
 ## channels/imessage-from-bluebubbles.md
@@ -452,9 +452,9 @@ x-i18n:
   - H2: 이 마이그레이션이 적합한 경우
   - H2: imsg가 하는 일
   - H2: 시작하기 전에
-  - H2: 설정 변환
+  - H2: 구성 변환
   - H2: 그룹 레지스트리 함정
-  - H2: 단계별
+  - H2: 단계별 안내
   - H2: 작업 동등성 한눈에 보기
   - H2: 페어링, 세션 및 ACP 바인딩
   - H2: 롤백 채널 없음
@@ -474,14 +474,14 @@ x-i18n:
   - H2: 배포 패턴
   - H2: 미디어, 청킹 및 전달 대상
   - H2: 비공개 API 작업
-  - H2: 설정 쓰기
-  - H2: 분할 전송 DM 병합(하나의 작성에 명령 + URL)
-  - H3: 시나리오 및 에이전트가 보는 것
+  - H2: 구성 쓰기
+  - H2: 분할 전송 DM 병합(명령 + URL을 하나의 작성으로)
+  - H3: 시나리오 및 에이전트가 보는 내용
   - H2: 브리지 또는 Gateway 재시작 후 인바운드 복구
-  - H3: 운영자에게 보이는 신호
+  - H3: 운영자에게 표시되는 신호
   - H3: 마이그레이션
   - H2: 문제 해결
-  - H2: 설정 참조 포인터
+  - H2: 구성 참조 포인터
   - H2: 관련 항목
 
 ## channels/index.md
@@ -499,11 +499,11 @@ x-i18n:
   - H2: 빠른 시작
   - H2: 보안 기본값
   - H2: 액세스 제어
-  - H3: 일반적인 함정: allowFrom은 채널이 아니라 DM용입니다
+  - H3: 흔한 실수: allowFrom은 채널이 아니라 DM용
   - H2: 답장 트리거(멘션)
   - H2: 보안 참고 사항(공개 채널에 권장)
   - H3: 채널의 모든 사용자에게 동일한 도구
-  - H3: 발신자별 다른 도구(소유자가 더 많은 권한을 가짐)
+  - H3: 발신자별로 다른 도구(소유자는 더 많은 권한 보유)
   - H2: NickServ
   - H2: 환경 변수
   - H2: 문제 해결
@@ -543,11 +543,11 @@ x-i18n:
   - H2: 암호화된 마이그레이션 작동 방식
   - H2: 일반적인 메시지와 그 의미
   - H3: 업그레이드 및 감지 메시지
-  - H3: 암호화 상태 복구 메시지
+  - H3: 암호화된 상태 복구 메시지
   - H3: 수동 복구 메시지
   - H3: 사용자 지정 Plugin 설치 메시지
   - H2: 암호화된 기록이 여전히 돌아오지 않는 경우
-  - H2: 향후 메시지를 새로 시작하려는 경우
+  - H2: 이후 메시지를 위해 새로 시작하려는 경우
   - H2: 관련 항목
 
 ## channels/matrix-presentation.md
@@ -565,7 +565,7 @@ x-i18n:
 
 - 경로: /channels/matrix-push-rules
 - 제목:
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 단계
   - H2: 다중 봇 참고 사항
   - H2: 홈서버 참고 사항
@@ -588,20 +588,20 @@ x-i18n:
   - H2: 스트리밍 미리보기
   - H2: 음성 메시지
   - H2: 승인 메타데이터
-  - H3: 조용히 완료되는 미리보기를 위한 자체 호스팅 푸시 규칙
+  - H3: 조용한 최종 미리보기를 위한 자체 호스팅 푸시 규칙
   - H2: 봇 간 방
-  - H2: 암호화 및 검증
+  - H2: 암호화 및 확인
   - H3: 암호화 활성화
   - H3: 상태 및 신뢰 신호
-  - H3: 복구 키로 이 기기 검증
+  - H3: 복구 키로 이 기기 확인
   - H3: 교차 서명 부트스트랩 또는 복구
   - H3: 방 키 백업
-  - H3: 검증 나열, 요청 및 응답
+  - H3: 확인 목록 조회, 요청 및 응답
   - H3: 다중 계정 참고 사항
   - H2: 프로필 관리
   - H2: 스레드
   - H3: 세션 라우팅(sessionScope)
-  - H3: 답글 스레드 처리(threadReplies)
+  - H3: 답장 스레딩(threadReplies)
   - H3: 스레드 상속 및 슬래시 명령
   - H2: ACP 대화 바인딩
   - H3: 스레드 바인딩 구성
@@ -610,7 +610,7 @@ x-i18n:
   - H2: 컨텍스트 표시 여부
   - H2: DM 및 방 정책
   - H2: 직접 방 복구
-  - H2: 실행 승인
+  - H2: Exec 승인
   - H2: 슬래시 명령
   - H2: 다중 계정
   - H2: 비공개/LAN 홈서버
@@ -620,10 +620,10 @@ x-i18n:
   - H3: 계정 및 연결
   - H3: 암호화
   - H3: 접근 및 정책
-  - H3: 답글 동작
+  - H3: 답장 동작
   - H3: 반응 설정
   - H3: 도구 및 방별 재정의
-  - H3: 실행 승인 설정
+  - H3: Exec 승인 설정
   - H2: 관련 항목
 
 ## channels/mattermost.md
@@ -635,7 +635,7 @@ x-i18n:
   - H2: 네이티브 슬래시 명령
   - H2: 환경 변수(기본 계정)
   - H2: 채팅 모드
-  - H2: 스레드 처리 및 세션
+  - H2: 스레딩 및 세션
   - H2: 접근 제어(DM)
   - H2: 채널(그룹)
   - H2: 아웃바운드 전달 대상
@@ -680,18 +680,18 @@ x-i18n:
   - H2: Teams 매니페스트 예시(수정됨)
   - H3: 매니페스트 주의 사항(필수 필드)
   - H3: 기존 앱 업데이트
-  - H2: 기능: RSC 전용 대 Graph
+  - H2: 기능: RSC 전용 vs Graph
   - H3: Teams RSC만 사용(앱 설치됨, Graph API 권한 없음)
   - H3: Teams RSC + Microsoft Graph 애플리케이션 권한 사용
-  - H3: RSC 대 Graph API
+  - H3: RSC vs Graph API
   - H2: Graph 지원 미디어 + 기록(채널에 필요)
   - H2: 알려진 제한 사항
-  - H3: Webhook 제한 시간
+  - H3: Webhook 시간 초과
   - H3: Teams 클라우드 및 서비스 URL 지원
-  - H3: 서식 지정
+  - H3: 서식
   - H2: 구성
   - H2: 라우팅 및 세션
-  - H2: 답글 스타일: 스레드 대 게시물
+  - H2: 답장 스타일: 스레드 vs 게시물
   - H3: 확인 우선순위
   - H3: 스레드 컨텍스트 보존
   - H2: 첨부 파일 및 이미지
@@ -704,8 +704,8 @@ x-i18n:
   - H2: 투표(Adaptive Cards)
   - H2: 프레젠테이션 카드
   - H2: 대상 형식
-  - H2: 선제적 메시징
-  - H2: 팀 및 채널 ID(일반적인 실수)
+  - H2: 사전 예방 메시징
+  - H2: 팀 및 채널 ID(흔한 실수)
   - H2: 비공개 채널
   - H2: 문제 해결
   - H3: 일반적인 문제
@@ -759,13 +759,14 @@ x-i18n:
 - 경로: /channels/pairing
 - 제목:
   - H2: 1) DM 페어링(인바운드 채팅 접근)
-  - H3: 보낸 사람 승인
-  - H3: 재사용 가능한 보낸 사람 그룹
+  - H3: 발신자 승인
+  - H3: 재사용 가능한 발신자 그룹
   - H3: 상태가 저장되는 위치
   - H2: 2) Node 기기 페어링(iOS/Android/macOS/헤드리스 노드)
-  - H3: Telegram을 통한 페어링(iOS에 권장)
+  - H3: Control UI에서 페어링(권장)
+  - H3: Telegram을 통한 페어링
   - H3: 노드 기기 승인
-  - H3: 선택적 신뢰 CIDR 노드 자동 승인
+  - H3: 선택 사항: 신뢰할 수 있는 CIDR 노드 자동 승인
   - H3: Node 페어링 상태 저장소
   - H3: 참고 사항
   - H2: 관련 문서
@@ -776,7 +777,7 @@ x-i18n:
 - 제목:
   - H2: 수행하는 작업
   - H2: 구성
-  - H2: 실행기
+  - H2: 러너
   - H2: 관련 항목
 
 ## channels/qqbot.md
@@ -801,10 +802,10 @@ x-i18n:
 - 경로: /channels/raft
 - 제목:
   - H2: 설치
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 구성
   - H2: 작동 방식
-  - H2: 검증
+  - H2: 확인
   - H2: 문제 해결
   - H2: 참조
 
@@ -812,9 +813,9 @@ x-i18n:
 
 - 경로: /channels/signal
 - 제목:
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 빠른 설정(초보자)
-  - H2: 정의
+  - H2: 개요
   - H2: 구성 쓰기
   - H2: 번호 모델(중요)
   - H2: 설정 경로 A: 기존 Signal 계정 연결(QR)
@@ -828,7 +829,7 @@ x-i18n:
   - H2: 수명 주기 상태 반응
   - H2: 반응(메시지 도구)
   - H2: 승인 반응
-  - H2: 전달 대상(CLI/Cron)
+  - H2: 전달 대상(CLI/cron)
   - H2: 별칭
   - H2: 문제 해결
   - H2: 보안 참고 사항
@@ -839,25 +840,25 @@ x-i18n:
 
 - 경로: /channels/slack
 - 제목:
-  - H2: Socket Mode 또는 HTTP Request URLs 선택
+  - H2: Socket Mode 또는 HTTP 요청 URL 선택
   - H3: 릴레이 모드
   - H2: 설치
   - H2: 빠른 설정
-  - H2: Socket Mode 전송 조정
+  - H2: Socket Mode 전송 튜닝
   - H2: 매니페스트 및 범위 체크리스트
   - H3: 추가 매니페스트 설정
   - H2: 토큰 모델
   - H2: 작업 및 게이트
   - H2: 접근 제어 및 라우팅
-  - H2: 스레드 처리, 세션 및 답글 태그
-  - H2: 확인 반응
+  - H2: 스레딩, 세션 및 답장 태그
+  - H2: Ack 반응
   - H3: 이모지(ackReaction)
   - H3: 범위(messages.ackReactionScope)
   - H2: 텍스트 스트리밍
   - H2: 입력 중 반응 폴백
-  - H2: 미디어, 청크 처리 및 전달
+  - H2: 미디어, 청킹 및 전달
   - H2: 명령 및 슬래시 동작
-  - H2: 대화형 답글
+  - H2: 대화형 답장
   - H3: Plugin 소유 모달 제출
   - H2: Slack의 네이티브 승인
   - H2: 이벤트 및 운영 동작
@@ -888,15 +889,15 @@ x-i18n:
   - H3: 기본 아웃바운드 대상
   - H2: 접근 제어
   - H2: SMS 보내기
-  - H2: 설정 검증
+  - H2: 설정 확인
   - H3: macOS iMessage/SMS에서 엔드투엔드 테스트
   - H2: Webhook 보안
   - H2: 다중 계정 구성
   - H2: 문제 해결
   - H3: Twilio가 403을 반환하거나 OpenClaw가 Webhook을 거부함
-  - H3: 페어링 요청이 나타나지 않음
+  - H3: 페어링 요청이 표시되지 않음
   - H3: 아웃바운드 전송 실패
-  - H3: 메시지는 도착하지만 에이전트가 응답하지 않음
+  - H3: 메시지가 도착하지만 에이전트가 응답하지 않음
 
 ## channels/synology-chat.md
 
@@ -922,7 +923,7 @@ x-i18n:
   - H3: 그룹 봇 ID
   - H2: 런타임 동작
   - H2: 기능 참조
-  - H2: 오류 답글 제어
+  - H2: 오류 답장 제어
   - H2: 문제 해결
   - H2: 구성 참조
   - H2: 관련 항목
@@ -933,13 +934,13 @@ x-i18n:
 - 제목:
   - H2: 번들 Plugin
   - H2: 설정
-  - H2: 비공개/LAN ship
+  - H2: 비공개/LAN 선박
   - H2: 그룹 채널
   - H2: 접근 제어
   - H2: 소유자 및 승인 시스템
   - H2: 자동 수락 설정
-  - H2: 전달 대상(CLI/Cron)
-  - H2: 번들 skill
+  - H2: 전달 대상(CLI/cron)
+  - H2: 번들 Skills
   - H2: 기능
   - H2: 문제 해결
   - H2: 구성 참조
@@ -979,16 +980,16 @@ x-i18n:
   - H2: 개요
   - H2: 설정(상세)
   - H3: 자격 증명 생성
-  - H3: bot 구성
+  - H3: 봇 구성
   - H3: 접근 제어(권장)
-  - H2: 토큰 새로 고침(선택 사항)
+  - H2: 토큰 갱신(선택 사항)
   - H2: 다중 계정 지원
   - H2: 접근 제어
   - H2: 문제 해결
   - H2: 구성
   - H3: 계정 구성
   - H3: 제공자 옵션
-  - H2: 도구 동작
+  - H2: 도구 작업
   - H2: 안전 및 운영
   - H2: 제한
   - H2: 관련 항목
@@ -1017,18 +1018,18 @@ x-i18n:
   - H2: 배포 패턴
   - H2: 런타임 모델
   - H2: 승인 프롬프트
-  - H2: Plugin 후크 및 개인정보 보호
+  - H2: Plugin 훅 및 개인정보 보호
   - H2: 접근 제어 및 활성화
   - H2: 구성된 ACP 바인딩
-  - H2: 개인 번호 및 셀프 채팅 동작
+  - H2: 개인 번호 및 자기 채팅 동작
   - H2: 메시지 정규화 및 컨텍스트
-  - H2: 전달, 청킹, 미디어
+  - H2: 전달, 청킹 및 미디어
   - H2: 답장 인용
   - H2: 반응 수준
   - H2: 확인 반응
   - H2: 수명 주기 상태 반응
   - H2: 다중 계정 및 자격 증명
-  - H2: 도구, 동작, 구성 쓰기
+  - H2: 도구, 작업 및 구성 쓰기
   - H2: 문제 해결
   - H2: 시스템 프롬프트
   - H2: 구성 참조 포인터
@@ -1045,22 +1046,22 @@ x-i18n:
   - H3: 그룹 채팅
   - H2: 구성 예시
   - H3: 열린 DM 정책을 사용한 기본 설정
-  - H3: 특정 사용자로 DM 제한
-  - H3: 그룹에서 @mention 요구 사항 비활성화
+  - H3: DM을 특정 사용자로 제한
+  - H3: 그룹에서 @멘션 요구 사항 비활성화
   - H3: 아웃바운드 메시지 전달 최적화
   - H3: merge-text 전략 조정
   - H2: 일반 명령
   - H2: 문제 해결
-  - H3: bot이 그룹 채팅에서 응답하지 않음
-  - H3: bot이 메시지를 수신하지 않음
-  - H3: bot이 빈 답장 또는 fallback 답장을 보냄
+  - H3: 봇이 그룹 채팅에서 응답하지 않음
+  - H3: 봇이 메시지를 받지 못함
+  - H3: 봇이 빈 답장 또는 폴백 답장을 보냄
   - H3: App Secret 유출
   - H2: 고급 구성
   - H3: 여러 계정
   - H3: 메시지 제한
   - H3: 스트리밍
   - H3: 그룹 채팅 기록 컨텍스트
-  - H3: 답장 대상 모드
+  - H3: reply-to 모드
   - H3: Markdown 힌트 삽입
   - H3: 디버그 모드
   - H3: 다중 에이전트 라우팅
@@ -1068,7 +1069,7 @@ x-i18n:
   - H2: 지원되는 메시지 유형
   - H3: 수신
   - H3: 전송
-  - H3: 스레드와 답장
+  - H3: 스레드 및 답장
   - H2: 관련 항목
 
 ## channels/zalo.md
@@ -1079,14 +1080,14 @@ x-i18n:
   - H2: 빠른 설정(초보자)
   - H2: 개요
   - H2: 설정(빠른 경로)
-  - H3: 1) bot 토큰 생성(Zalo Bot Platform)
+  - H3: 1) 봇 토큰 만들기(Zalo Bot Platform)
   - H3: 2) 토큰 구성(env 또는 config)
   - H2: 작동 방식(동작)
   - H2: 제한
   - H2: 접근 제어(DM)
   - H3: DM 접근
   - H2: 접근 제어(그룹)
-  - H2: 롱 폴링과 Webhook
+  - H2: 롱 폴링과 Webhook 비교
   - H2: 지원되는 메시지 유형
   - H2: 기능
   - H2: 전달 대상(CLI/cron)
@@ -1099,11 +1100,11 @@ x-i18n:
 - 경로: /channels/zaloclawbot
 - 제목:
   - H2: 호환성
-  - H2: 필수 조건
+  - H2: 사전 요구 사항
   - H2: onboard로 설치(권장)
   - H2: 수동 설치
   - H3: 1. Plugin 설치
-  - H3: 2. config에서 Plugin 활성화
+  - H3: 2. 구성에서 Plugin 활성화
   - H3: 3. QR 코드 생성 및 로그인
   - H3: 4. Gateway 다시 시작
   - H2: 작동 방식
@@ -1125,7 +1126,7 @@ x-i18n:
   - H3: 그룹 멘션 게이팅
   - H2: 다중 계정
   - H2: 환경 변수
-  - H2: 입력 표시, 반응, 전달 확인
+  - H2: 입력 표시, 반응 및 전달 확인
   - H2: 문제 해결
   - H2: 관련 항목
 
@@ -1145,26 +1146,26 @@ x-i18n:
   - H2: OpenClaw 성능
   - H2: 전체 릴리스 검증
   - H2: 라이브 및 E2E 샤드
-  - H2: 패키지 수용
+  - H2: 패키지 승인
   - H3: 작업
   - H3: 후보 소스
-  - H3: 제품군 프로필
+  - H3: 스위트 프로필
   - H3: 레거시 호환성 기간
   - H3: 예시
   - H2: 설치 스모크
   - H2: 로컬 Docker E2E
-  - H3: 조정 가능 항목
+  - H3: 조정 가능한 항목
   - H3: 재사용 가능한 라이브/E2E 워크플로
   - H3: 릴리스 경로 청크
-  - H2: Plugin 시험 릴리스
+  - H2: Plugin 사전 릴리스
   - H2: QA Lab
   - H2: CodeQL
   - H3: 보안 카테고리
   - H3: 플랫폼별 보안 샤드
   - H3: 중요 품질 카테고리
-  - H2: 유지 관리 워크플로
-  - H3: 문서 에이전트
-  - H3: 테스트 성능 에이전트
+  - H2: 유지관리 워크플로
+  - H3: Docs Agent
+  - H3: Test Performance Agent
   - H3: 병합 후 중복 PR
   - H2: 로컬 검사 게이트 및 변경 라우팅
   - H2: Testbox 검증
@@ -1175,8 +1176,8 @@ x-i18n:
 - 경로: /clawhub/cli
 - 제목:
   - H1: ClawHub CLI
-  - H2: 검색 및 설치
-  - H2: 게시 및 유지 관리
+  - H2: 탐색 및 설치
+  - H2: 게시 및 유지관리
   - H2: 관련 항목
 
 ## clawhub/publishing.md
@@ -1189,7 +1190,7 @@ x-i18n:
   - H2: Plugins
   - H2: 릴리스 흐름
   - H2: FAQ
-  - H3: 패키지 범위는 선택한 소유자와 일치해야 함
+  - H3: 패키지 범위가 선택한 소유자와 일치해야 함
 
 ## cli/acp.md
 
@@ -1204,7 +1205,7 @@ x-i18n:
   - H2: 사용 방법
   - H2: 에이전트 선택
   - H2: acpx에서 사용(Codex, Claude, 기타 ACP 클라이언트)
-  - H2: Zed 편집기 설정
+  - H2: Zed 에디터 설정
   - H2: 세션 매핑
   - H2: 옵션
   - H3: acp 클라이언트 옵션
@@ -1217,7 +1218,7 @@ x-i18n:
   - H1: openclaw agent
   - H2: 옵션
   - H2: 예시
-  - H2: 참고
+  - H2: 참고 사항
   - H2: JSON 전달 상태
   - H2: 관련 항목
 
@@ -1249,11 +1250,11 @@ x-i18n:
   - H1: openclaw approvals
   - H2: openclaw exec-policy
   - H2: 일반 명령
-  - H2: 파일에서 승인 대체
-  - H2: "묻지 않음" / YOLO 예시
+  - H2: 파일에서 승인 교체
+  - H2: "프롬프트 표시 안 함" / YOLO 예시
   - H2: 허용 목록 헬퍼
   - H2: 일반 옵션
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 관련 항목
 
 ## cli/attach.md
@@ -1266,9 +1267,9 @@ x-i18n:
 - 경로: /cli/backup
 - 제목:
   - H1: openclaw backup
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 백업되는 항목
-  - H2: 잘못된 config 동작
+  - H2: 잘못된 구성 동작
   - H2: 크기 및 성능
   - H2: 관련 항목
 
@@ -1284,11 +1285,11 @@ x-i18n:
   - H2: 명령이 없는 경우
   - H2: 프로필
   - H2: 탭
-  - H2: 스냅샷 / 스크린샷 / 동작
-  - H2: 상태 및 스토리지
+  - H2: 스냅샷 / 스크린샷 / 작업
+  - H2: 상태 및 저장소
   - H2: 디버깅
   - H2: MCP를 통한 기존 Chrome
-  - H2: 원격 브라우저 제어(node host proxy)
+  - H2: 원격 브라우저 제어(노드 호스트 프록시)
   - H2: 관련 항목
 
 ## cli/channels.md
@@ -1330,7 +1331,7 @@ x-i18n:
   - H1: openclaw completion
   - H2: 사용법
   - H2: 옵션
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 관련 항목
 
 ## cli/config.md
@@ -1345,7 +1346,7 @@ x-i18n:
   - H2: config set 모드
   - H2: config patch
   - H2: 제공자 빌더 플래그
-  - H2: Dry run
+  - H2: 드라이 런
   - H3: JSON 출력 형태
   - H2: 쓰기 안전성
   - H2: 하위 명령
@@ -1366,10 +1367,10 @@ x-i18n:
 - 경로: /cli/crestodian
 - 제목:
   - H1: openclaw crestodian
-  - H2: Crestodian이 표시하는 내용
+  - H2: Crestodian이 표시하는 것
   - H2: 예시
   - H2: 안전한 시작
-  - H2: 운영 및 승인
+  - H2: 작업 및 승인
   - H2: 설정 부트스트랩
   - H2: 모델 지원 플래너
   - H2: 에이전트로 전환
@@ -1391,7 +1392,7 @@ x-i18n:
   - H3: 반복 작업
   - H3: 수동 실행
   - H2: 모델
-  - H3: 격리된 cron 모델 우선순위
+  - H3: 격리된 Cron 모델 우선순위
   - H3: 빠른 모드
   - H3: 라이브 모델 전환 재시도
   - H2: 실행 출력 및 거부
@@ -1412,7 +1413,7 @@ x-i18n:
   - H2: 사용법
   - H2: 하위 명령
   - H2: 일반 옵션
-  - H2: 선호 항목
+  - H2: 선호
   - H2: 관련 항목
 
 ## cli/dashboard.md
@@ -1437,7 +1438,7 @@ x-i18n:
   - H3: openclaw devices rotate --device &lt;id&gt; --role &lt;role&gt; [--scope &lt;scope...&gt;]
   - H3: openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt;
   - H2: 일반 옵션
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 토큰 드리프트 복구 체크리스트
   - H2: 관련 항목
 
@@ -1447,8 +1448,8 @@ x-i18n:
 - 제목:
   - H1: openclaw directory
   - H2: 일반 플래그
-  - H2: 참고
-  - H2: message send와 함께 결과 사용
+  - H2: 참고 사항
+  - H2: 메시지 전송에 결과 사용
   - H2: ID 형식(채널별)
   - H2: 본인("me")
   - H2: 피어(연락처/사용자)
@@ -1461,7 +1462,7 @@ x-i18n:
 - 제목:
   - H1: openclaw dns
   - H2: 설정
-  - H2: dns 설정
+  - H2: dns setup
   - H2: 관련 항목
 
 ## cli/docs.md
@@ -1481,10 +1482,10 @@ x-i18n:
 - 경로: /cli/doctor
 - 제목:
   - H1: openclaw doctor
-  - H2: 사용하는 이유
+  - H2: 사용 이유
   - H2: 예시
   - H2: 옵션
-  - H2: Lint 모드
+  - H2: 린트 모드
   - H2: 구조화된 상태 검사
   - H2: 검사 선택
   - H2: 업그레이드 후 모드
@@ -1542,10 +1543,10 @@ x-i18n:
   - H2: 훅 적격성 확인
   - H2: Hook 활성화
   - H2: Hook 비활성화
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 훅 팩 설치
   - H2: 훅 팩 업데이트
-  - H2: 번들된 훅
+  - H2: 번들 훅
   - H3: session-memory
   - H3: bootstrap-extra-files
   - H3: command-logger
@@ -1556,11 +1557,11 @@ x-i18n:
 
 - 경로: /cli
 - 제목:
-  - H2: 명령 페이지
+  - H2: 명령어 페이지
   - H2: 전역 플래그
   - H2: 출력 모드
-  - H2: 명령 트리
-  - H2: 채팅 슬래시 명령
+  - H2: 명령어 트리
+  - H2: 채팅 슬래시 명령어
   - H2: 사용량 추적
   - H2: 관련 항목
 
@@ -1570,7 +1571,7 @@ x-i18n:
 - 제목:
   - H2: infer를 skill로 전환
   - H2: infer를 사용하는 이유
-  - H2: 명령 트리
+  - H2: 명령어 트리
   - H2: 일반 작업
   - H2: 동작
   - H2: 모델
@@ -1582,7 +1583,7 @@ x-i18n:
   - H2: 임베딩
   - H2: JSON 출력
   - H2: 일반적인 함정
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/logs.md
@@ -1593,7 +1594,7 @@ x-i18n:
   - H2: 옵션
   - H2: 공유 Gateway RPC 옵션
   - H2: 예시
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/mcp.md
@@ -1602,7 +1603,7 @@ x-i18n:
 - 제목:
   - H2: 올바른 MCP 경로 선택
   - H2: MCP 서버로서의 OpenClaw
-  - H3: serve를 사용하는 경우
+  - H3: serve 사용 시점
   - H3: 작동 방식
   - H3: 클라이언트 모드 선택
   - H3: serve가 노출하는 항목
@@ -1623,7 +1624,7 @@ x-i18n:
   - H3: SSE / HTTP 전송
   - H3: OAuth 워크플로
   - H3: 스트리밍 가능한 HTTP 전송
-  - H2: 제어 UI
+  - H2: Control UI
   - H2: 현재 제한 사항
   - H2: 관련 항목
 
@@ -1652,7 +1653,7 @@ x-i18n:
   - H3: 스티커
   - H3: 역할 / 채널 / 멤버 / 음성
   - H3: 이벤트
-  - H3: 조정 (Discord)
+  - H3: 관리 (Discord)
   - H3: 브로드캐스트
   - H2: 예시
   - H2: 관련 항목
@@ -1662,7 +1663,7 @@ x-i18n:
 - 경로: /cli/migrate
 - 제목:
   - H1: openclaw migrate
-  - H2: 명령
+  - H2: 명령어
   - H2: 안전 모델
   - H2: Claude 제공자
   - H3: Claude가 가져오는 항목
@@ -1684,7 +1685,7 @@ x-i18n:
 - 경로: /cli/models
 - 제목:
   - H1: openclaw models
-  - H2: 일반 명령
+  - H2: 일반 명령어
   - H3: 모델 스캔
   - H3: 모델 상태
   - H2: 별칭 + 폴백
@@ -1696,13 +1697,13 @@ x-i18n:
 - 경로: /cli/node
 - 제목:
   - H1: openclaw node
-  - H2: Node 호스트를 사용하는 이유
+  - H2: 노드 호스트를 사용하는 이유
   - H2: 브라우저 프록시(무구성)
   - H2: 실행(포그라운드)
-  - H2: Node 호스트용 Gateway 인증
+  - H2: 노드 호스트용 Gateway 인증
   - H2: 서비스(백그라운드)
   - H2: 페어링
-  - H2: 실행 승인
+  - H2: Exec 승인
   - H2: 관련 항목
 
 ## cli/nodes.md
@@ -1710,7 +1711,7 @@ x-i18n:
 - 경로: /cli/nodes
 - 제목:
   - H1: openclaw nodes
-  - H2: 일반 명령
+  - H2: 일반 명령어
   - H2: 호출
   - H2: 관련 항목
 
@@ -1724,18 +1725,18 @@ x-i18n:
   - H2: 로캘
   - H3: 비대화형 Z.AI 엔드포인트 선택
   - H2: 추가 비대화형 플래그
-  - H2: 흐름 참고 사항
-  - H2: 일반 후속 명령
+  - H2: 흐름 참고
+  - H2: 일반 후속 명령어
 
 ## cli/pairing.md
 
 - 경로: /cli/pairing
 - 제목:
   - H1: openclaw pairing
-  - H2: 명령
+  - H2: 명령어
   - H2: pairing list
   - H2: pairing approve
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/path.md
@@ -1746,7 +1747,7 @@ x-i18n:
   - H2: 사용하는 이유
   - H2: 사용 방식
   - H2: 작동 방식
-  - H2: 하위 명령
+  - H2: 하위 명령어
   - H2: 전역 플래그
   - H2: oc:// 구문
   - H2: 파일 종류별 주소 지정
@@ -1757,7 +1758,7 @@ x-i18n:
   - H3: JSONC
   - H3: JSONL
   - H3: YAML
-  - H2: 하위 명령 참조
+  - H2: 하위 명령어 참조
   - H3: resolve &lt;oc-path&gt;
   - H3: find &lt;pattern&gt;
   - H3: set &lt;oc-path&gt; &lt;value&gt;
@@ -1765,18 +1766,18 @@ x-i18n:
   - H3: emit &lt;file&gt;
   - H2: 종료 코드
   - H2: 출력 모드
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/plugins.md
 
 - 경로: /cli/plugins
 - 제목:
-  - H2: 명령
+  - H2: 명령어
   - H3: 작성자
   - H3: 제공자 스캐폴드
   - H3: 설치
-  - H4: Marketplace 축약형
+  - H4: 마켓플레이스 단축 표기
   - H3: 목록
   - H3: Plugin 인덱스
   - H3: 제거
@@ -1784,7 +1785,7 @@ x-i18n:
   - H3: 검사
   - H3: Doctor
   - H3: 레지스트리
-  - H3: Marketplace
+  - H3: 마켓플레이스
   - H2: 관련 항목
 
 ## cli/policy.md
@@ -1801,17 +1802,17 @@ x-i18n:
   - H4: 네트워크
   - H4: 인그레스 및 채널 접근
   - H4: Gateway
-  - H4: 에이전트 워크스페이스
-  - H4: 샌드박스 태세
+  - H4: 에이전트 작업 공간
+  - H4: 샌드박스 자세
   - H4: 데이터 처리
   - H4: 비밀
-  - H4: 실행 승인
+  - H4: Exec 승인
   - H4: 인증 프로필
   - H4: 도구 메타데이터
-  - H4: 도구 태세
+  - H4: 도구 자세
   - H2: 정책 구성
   - H2: 정책 상태 수락
-  - H2: 발견 항목
+  - H2: 발견 사항
   - H2: 복구
   - H2: 종료 코드
   - H2: 관련 항목
@@ -1821,10 +1822,10 @@ x-i18n:
 - 경로: /cli/proxy
 - 제목:
   - H1: openclaw proxy
-  - H2: 명령
+  - H2: 명령어
   - H2: 검증
   - H2: 쿼리 프리셋
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/qr.md
@@ -1834,7 +1835,7 @@ x-i18n:
   - H1: openclaw qr
   - H2: 사용법
   - H2: 옵션
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/reset.md
@@ -1849,7 +1850,7 @@ x-i18n:
 - 경로: /cli/sandbox
 - 제목:
   - H2: 개요
-  - H2: 명령
+  - H2: 명령어
   - H3: openclaw sandbox explain
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
@@ -1893,7 +1894,7 @@ x-i18n:
 - 경로: /cli/sessions
 - 제목:
   - H1: openclaw sessions
-  - H2: 정리 유지 관리
+  - H2: 정리 유지보수
   - H2: 세션 압축
   - H3: sessions.compact RPC
   - H2: 관련 항목
@@ -1906,7 +1907,7 @@ x-i18n:
   - H2: 옵션
   - H3: 기준 모드
   - H2: 예시
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/skills.md
@@ -1914,8 +1915,8 @@ x-i18n:
 - 경로: /cli/skills
 - 제목:
   - H1: openclaw skills
-  - H2: 명령
-  - H2: Skill Workshop
+  - H2: 명령어
+  - H2: Skill 워크숍
   - H2: 관련 항목
 
 ## cli/status.md
@@ -1929,11 +1930,11 @@ x-i18n:
 - 경로: /cli/system
 - 제목:
   - H1: openclaw system
-  - H2: 일반 명령
+  - H2: 일반 명령어
   - H2: system event
   - H2: system heartbeat last|enable|disable
   - H2: system presence
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## cli/tasks.md
@@ -1942,7 +1943,7 @@ x-i18n:
 - 제목:
   - H2: 사용법
   - H2: 루트 옵션
-  - H2: 하위 명령
+  - H2: 하위 명령어
   - H3: list
   - H3: show
   - H3: notify
@@ -1957,9 +1958,9 @@ x-i18n:
 - 경로: /cli/transcripts
 - 제목:
   - H1: openclaw transcripts
-  - H2: 명령
+  - H2: 명령어
   - H2: 출력
-  - H2: 하루에 여러 회의
+  - H2: 하루에 많은 회의
   - H2: 누락된 요약
   - H2: 구성
 
@@ -1995,7 +1996,7 @@ x-i18n:
   - H2: Git 체크아웃 흐름
   - H3: 채널 선택
   - H3: 업데이트 단계
-  - H2: --update 축약형
+  - H2: --update 단축 표기
   - H2: 관련 항목
 
 ## cli/voicecall.md
@@ -2003,7 +2004,7 @@ x-i18n:
 - 경로: /cli/voicecall
 - 제목:
   - H1: openclaw voicecall
-  - H2: 하위 명령
+  - H2: 하위 명령어
   - H2: 설정 및 스모크
   - H3: setup
   - H3: smoke
@@ -2027,7 +2028,7 @@ x-i18n:
 - 경로: /cli/webhooks
 - 제목:
   - H1: openclaw webhooks
-  - H2: 하위 명령
+  - H2: 하위 명령어
   - H2: webhooks gmail setup
   - H3: 필수 항목
   - H3: Pub/Sub 옵션
@@ -2045,8 +2046,8 @@ x-i18n:
 - 제목:
   - H1: openclaw wiki
   - H2: 용도
-  - H2: 일반 명령
-  - H2: 명령
+  - H2: 일반 명령어
+  - H2: 명령어
   - H3: wiki status
   - H3: wiki doctor
   - H3: wiki init
@@ -2060,7 +2061,7 @@ x-i18n:
   - H3: wiki bridge import
   - H3: wiki unsafe-local import
   - H3: wiki obsidian ...
-  - H2: 실용적 사용 지침
+  - H2: 실제 사용 지침
   - H2: 구성 연계
   - H2: 관련 항목
 
@@ -2073,10 +2074,10 @@ x-i18n:
   - H2: create
   - H2: show
   - H2: dispatch
-  - H2: 슬래시 명령 동등성
+  - H2: 슬래시 명령어 동등성
   - H2: 권한
   - H2: 문제 해결
-  - H3: 카드가 표시되지 않음
+  - H3: 카드가 나타나지 않음
   - H3: Dispatch가 데이터 전용이라고 표시함
   - H3: Dispatch가 아무것도 시작하지 않음
   - H2: 관련 항목
@@ -2103,7 +2104,7 @@ x-i18n:
   - H3: LanceDB 메모리
   - H3: Lossless Claw
   - H2: 고급 탈출구
-  - H2: 트랜스크립트 지속성
+  - H2: 대화록 지속성
   - H2: 구성
   - H2: 권장 설정
   - H3: 콜드 스타트 유예
@@ -2118,7 +2119,7 @@ x-i18n:
   - H2: 진입점
   - H2: 작동 방식(상위 수준)
   - H2: 큐잉 + 동시성
-  - H2: 세션 + 워크스페이스 준비
+  - H2: 세션 + 작업 공간 준비
   - H2: 프롬프트 조립 + 시스템 프롬프트
   - H2: 훅 지점(가로챌 수 있는 위치)
   - H3: 내부 훅(Gateway 훅)
@@ -2150,12 +2151,12 @@ x-i18n:
 - 경로: /concepts/agent-workspace
 - 제목:
   - H2: 기본 위치
-  - H2: 추가 workspace 폴더
-  - H2: Workspace 파일 맵
-  - H2: Workspace에 포함되지 않는 것
+  - H2: 추가 워크스페이스 폴더
+  - H2: 워크스페이스 파일 맵
+  - H2: 워크스페이스에 포함되지 않는 항목
   - H2: Git 백업(권장, 비공개)
   - H2: 비밀 정보를 커밋하지 마세요
-  - H2: Workspace를 새 머신으로 이동
+  - H2: 워크스페이스를 새 머신으로 이동하기
   - H2: 고급 참고 사항
   - H2: 관련 항목
 
@@ -2163,11 +2164,11 @@ x-i18n:
 
 - 경로: /concepts/agent
 - 제목:
-  - H2: Workspace(필수)
+  - H2: 워크스페이스(필수)
   - H2: 부트스트랩 파일(주입됨)
   - H2: 내장 도구
   - H2: Skills
-  - H2: Runtime 경계
+  - H2: 런타임 경계
   - H2: 세션
   - H2: 스트리밍 중 조정
   - H2: 모델 참조
@@ -2179,13 +2180,13 @@ x-i18n:
 - 경로: /concepts/architecture
 - 제목:
   - H2: 개요
-  - H2: 구성 요소와 흐름
+  - H2: 구성 요소 및 흐름
   - H3: Gateway(데몬)
   - H3: 클라이언트(mac 앱 / CLI / 웹 관리자)
   - H3: 노드(macOS / iOS / Android / 헤드리스)
   - H3: WebChat
   - H2: 연결 수명 주기(단일 클라이언트)
-  - H2: Wire 프로토콜(요약)
+  - H2: 와이어 프로토콜(요약)
   - H2: 페어링 + 로컬 신뢰
   - H2: 프로토콜 타이핑 및 코드 생성
   - H2: 원격 액세스
@@ -2199,21 +2200,21 @@ x-i18n:
 - 제목:
   - H2: 예시
   - H2: 사용하는 이유
-  - H2: 필수 config
+  - H2: 필수 구성
   - H2: 명령
-  - H2: 변경되는 것
-  - H2: 변경되지 않는 것
+  - H2: 변경되는 사항
+  - H2: 변경되지 않는 사항
   - H2: 문제 해결
 
 ## concepts/commitments.md
 
 - 경로: /concepts/commitments
 - 제목:
-  - H2: 커밋 활성화
+  - H2: 약속 활성화
   - H2: 작동 방식
   - H2: 범위
-  - H2: 커밋과 알림 비교
-  - H2: 커밋 관리
+  - H2: 약속과 알림의 차이
+  - H2: 약속 관리
   - H2: 개인정보 보호 및 비용
   - H2: 문제 해결
   - H2: 관련 항목
@@ -2228,11 +2229,11 @@ x-i18n:
   - H2: 구성
   - H3: 다른 모델 사용
   - H3: 식별자 보존
-  - H3: 활성 transcript 바이트 가드
+  - H3: 활성 transcript 바이트 보호 장치
   - H3: 후속 transcript
   - H3: Compaction 알림
-  - H3: Memory 플러시
-  - H2: 플러그형 Compaction provider
+  - H3: 메모리 flush
+  - H2: 플러그형 Compaction 제공자
   - H2: Compaction과 가지치기 비교
   - H2: 문제 해결
   - H2: 관련 항목
@@ -2243,17 +2244,17 @@ x-i18n:
 - 제목:
   - H2: 빠른 시작
   - H2: 작동 방식
-  - H3: 하위 agent 수명 주기(선택 사항)
+  - H3: 하위 에이전트 수명 주기(선택 사항)
   - H3: 시스템 프롬프트 추가
   - H2: 레거시 엔진
   - H2: Plugin 엔진
   - H3: ContextEngine 인터페이스
-  - H3: Runtime 설정
-  - H3: Host 요구 사항
-  - H3: 실패 격리
+  - H3: 런타임 설정
+  - H3: 호스트 요구 사항
+  - H3: 장애 격리
   - H3: ownsCompaction
   - H2: 구성 참조
-  - H2: Compaction 및 memory와의 관계
+  - H2: Compaction 및 메모리와의 관계
   - H2: 팁
   - H2: 관련 항목
 
@@ -2261,44 +2262,44 @@ x-i18n:
 
 - 경로: /concepts/context
 - 제목:
-  - H2: 빠른 시작(context 검사)
+  - H2: 빠른 시작(컨텍스트 검사)
   - H2: 출력 예시
   - H3: /context list
   - H3: /context detail
   - H3: /context map
-  - H2: context window에 포함되는 항목
+  - H2: 컨텍스트 창에 포함되는 항목
   - H2: OpenClaw가 시스템 프롬프트를 구성하는 방식
-  - H2: 주입된 workspace 파일(Project Context)
-  - H2: Skills: 주입됨과 온디맨드 로드 비교
-  - H2: 도구: 두 가지 비용이 있습니다
-  - H2: 명령, 지시문, "inline shortcuts"
-  - H2: 세션, Compaction, 가지치기(지속되는 것)
-  - H2: /context가 실제로 보고하는 것
+  - H2: 주입된 워크스페이스 파일(프로젝트 컨텍스트)
+  - H2: Skills: 주입됨과 요청 시 로드 비교
+  - H2: 도구: 두 가지 비용이 있음
+  - H2: 명령, 지시문 및 "인라인 바로가기"
+  - H2: 세션, Compaction 및 가지치기(지속되는 항목)
+  - H2: /context가 실제로 보고하는 내용
   - H2: 관련 항목
 
 ## concepts/delegate-architecture.md
 
 - 경로: /concepts/delegate-architecture
 - 제목:
-  - H2: Delegate란 무엇인가요?
-  - H2: Delegate를 사용하는 이유
-  - H2: 기능 티어
-  - H3: 티어 1: 읽기 전용 + 초안
-  - H3: 티어 2: 대신 보내기
-  - H3: 티어 3: 사전 대응
-  - H2: 필수 조건: 격리 및 강화
+  - H2: 대리자란?
+  - H2: 대리자가 필요한 이유
+  - H2: 기능 계층
+  - H3: 계층 1: 읽기 전용 + 초안
+  - H3: 계층 2: 대신 보내기
+  - H3: 계층 3: 선제적
+  - H2: 사전 요구 사항: 격리 및 강화
   - H3: 하드 차단(협상 불가)
   - H3: 도구 제한
-  - H3: Sandbox 격리
+  - H3: 샌드박스 격리
   - H3: 감사 추적
-  - H2: Delegate 설정
-  - H3: 1. Delegate agent 생성
-  - H3: 2. ID provider delegation 구성
+  - H2: 대리자 설정
+  - H3: 1. 대리자 에이전트 생성
+  - H3: 2. ID 제공자 위임 구성
   - H4: Microsoft 365
   - H4: Google Workspace
-  - H3: 3. Delegate를 채널에 바인딩
-  - H3: 4. Delegate agent에 자격 증명 추가
-  - H2: 예시: 조직 assistant
+  - H3: 3. 대리자를 채널에 바인딩
+  - H3: 4. 대리자 에이전트에 자격 증명 추가
+  - H2: 예시: 조직 비서
   - H2: 확장 패턴
   - H2: 관련 항목
 
@@ -2306,15 +2307,15 @@ x-i18n:
 
 - 경로: /concepts/dreaming
 - 제목:
-  - H2: Dreaming이 작성하는 것
+  - H2: Dreaming이 기록하는 내용
   - H2: 단계 모델
   - H2: 세션 transcript 수집
-  - H2: Dream Diary
-  - H2: 심층 랭킹 신호
-  - H2: QA 섀도 trial 보고서 범위
+  - H2: 꿈 일지
+  - H2: 심층 순위 신호
+  - H2: QA shadow trial 보고서 범위
   - H2: 일정 예약
   - H2: 빠른 시작
-  - H2: Slash 명령
+  - H2: 슬래시 명령
   - H2: CLI 워크플로
   - H2: 주요 기본값
   - H2: Dreams UI
@@ -2327,18 +2328,18 @@ x-i18n:
 - 제목:
   - H2: 현재 문서화된 플래그
   - H2: 로컬 모델 경량 모드
-  - H3: 이 세 가지 도구를 쓰는 이유
+  - H3: 이 세 가지 도구를 사용하는 이유
   - H3: 켜야 할 때
-  - H3: 꺼둬야 할 때
+  - H3: 꺼 두어야 할 때
   - H3: 활성화
-  - H2: 실험적이라는 것은 숨겨졌다는 뜻이 아닙니다
+  - H2: 실험적이라는 것은 숨겨졌다는 뜻이 아님
   - H2: 관련 항목
 
 ## concepts/features.md
 
 - 경로: /concepts/features
 - 제목:
-  - H2: 하이라이트
+  - H2: 주요 내용
   - H2: 전체 목록
   - H2: 관련 항목
 
@@ -2346,10 +2347,10 @@ x-i18n:
 
 - 경로: /concepts/mantis-slack-desktop-runbook
 - 제목:
-  - H2: 저장소 모델
-  - H2: GitHub dispatch
+  - H2: 스토리지 모델
+  - H2: GitHub 디스패치
   - H2: 로컬 CLI
-  - H2: Hydrate 모드
+  - H2: hydrate 모드
   - H2: 타이밍 해석
   - H2: 증거 체크리스트
   - H2: 실패 처리
@@ -2373,8 +2374,8 @@ x-i18n:
   - H2: GitHub 아티팩트 및 PR 댓글
   - H2: 비공개 배포 참고 사항
   - H2: 시나리오 추가
-  - H2: Provider 확장
-  - H2: 미해결 질문
+  - H2: 제공자 확장
+  - H2: 공개 질문
 
 ## concepts/markdown-formatting.md
 
@@ -2383,24 +2384,24 @@ x-i18n:
   - H2: 목표
   - H2: 파이프라인
   - H2: IR 예시
-  - H2: 사용되는 위치
-  - H2: 테이블 처리
-  - H2: Chunking 규칙
+  - H2: 사용 위치
+  - H2: 표 처리
+  - H2: 청킹 규칙
   - H2: 링크 정책
-  - H2: Spoiler
-  - H2: 채널 formatter 추가 또는 업데이트 방법
-  - H2: 일반적인 주의점
+  - H2: 스포일러
+  - H2: 채널 포매터 추가 또는 업데이트 방법
+  - H2: 일반적인 주의 사항
   - H2: 관련 항목
 
 ## concepts/memory-builtin.md
 
 - 경로: /concepts/memory-builtin
 - 제목:
-  - H2: 제공하는 것
+  - H2: 제공하는 기능
   - H2: 시작하기
-  - H2: 지원되는 embedding provider
+  - H2: 지원되는 임베딩 제공자
   - H2: 인덱싱 작동 방식
-  - H2: 사용할 때
+  - H2: 사용 시점
   - H2: 문제 해결
   - H2: 구성
   - H2: 관련 항목
@@ -2409,13 +2410,13 @@ x-i18n:
 
 - 경로: /concepts/memory-honcho
 - 제목:
-  - H2: 제공하는 것
+  - H2: 제공하는 기능
   - H2: 사용 가능한 도구
   - H2: 시작하기
   - H2: 구성
-  - H2: 기존 memory 마이그레이션
+  - H2: 기존 메모리 마이그레이션
   - H2: 작동 방식
-  - H2: Honcho와 내장 memory 비교
+  - H2: Honcho와 내장 메모리 비교
   - H2: CLI 명령
   - H2: 추가 자료
   - H2: 관련 항목
@@ -2424,18 +2425,18 @@ x-i18n:
 
 - 경로: /concepts/memory-qmd
 - 제목:
-  - H2: 내장 기능 위에 추가되는 것
+  - H2: 내장 기능 대비 추가되는 사항
   - H2: 시작하기
-  - H3: 필수 조건
+  - H3: 사전 요구 사항
   - H3: 활성화
-  - H2: Sidecar 작동 방식
+  - H2: 사이드카 작동 방식
   - H2: 검색 성능 및 호환성
-  - H2: 모델 override
+  - H2: 모델 재정의
   - H2: 추가 경로 인덱싱
   - H2: 세션 transcript 인덱싱
   - H2: 검색 범위
   - H2: 인용
-  - H2: 사용할 때
+  - H2: 사용 시점
   - H2: 문제 해결
   - H2: 구성
   - H2: 관련 항목
@@ -2445,14 +2446,14 @@ x-i18n:
 - 경로: /concepts/memory-search
 - 제목:
   - H2: 빠른 시작
-  - H2: 지원되는 provider
+  - H2: 지원되는 제공자
   - H2: 검색 작동 방식
   - H2: 검색 품질 개선
   - H3: 시간 감쇠
   - H3: MMR(다양성)
   - H3: 둘 다 활성화
-  - H2: 멀티모달 memory
-  - H2: 세션 memory 검색
+  - H2: 멀티모달 메모리
+  - H2: 세션 메모리 검색
   - H2: 문제 해결
   - H2: 추가 자료
   - H2: 관련 항목
@@ -2462,17 +2463,17 @@ x-i18n:
 - 경로: /concepts/memory
 - 제목:
   - H2: 작동 방식
-  - H2: 어디에 무엇이 들어가는지
-  - H2: 작업 민감 memory
-  - H2: 추론된 커밋
-  - H2: Memory 도구
-  - H2: Memory Wiki companion Plugin
-  - H2: Memory 검색
-  - H2: Memory 백엔드
-  - H2: Knowledge wiki 계층
-  - H2: 자동 memory flush
+  - H2: 무엇이 어디에 저장되는지
+  - H2: 작업에 민감한 메모리
+  - H2: 추론된 약속
+  - H2: 메모리 도구
+  - H2: 메모리 Wiki 동반 Plugin
+  - H2: 메모리 검색
+  - H2: 메모리 백엔드
+  - H2: 지식 Wiki 계층
+  - H2: 자동 메모리 flush
   - H2: Dreaming
-  - H2: 근거 기반 backfill 및 live promotion
+  - H2: 근거 기반 백필 및 라이브 승격
   - H2: CLI
   - H2: 추가 자료
   - H2: 관련 항목
@@ -2485,34 +2486,34 @@ x-i18n:
   - H2: 목표
   - H2: 비목표
   - H2: 참조 모델
-  - H2: Core 모델
+  - H2: 핵심 모델
   - H2: 메시지 용어
   - H3: 메시지
   - H3: 대상
   - H3: 관계
   - H3: 출처
   - H3: 수신 확인
-  - H2: 수신 context
-  - H2: 전송 context
-  - H2: Live context
-  - H2: Adapter 표면
+  - H2: 수신 컨텍스트
+  - H2: 전송 컨텍스트
+  - H2: 라이브 컨텍스트
+  - H2: 어댑터 표면
   - H2: 공개 SDK 축소
-  - H2: 채널 inbound와의 관계
+  - H2: 채널 인바운드와의 관계
   - H2: 호환성 가드레일
-  - H2: 내부 저장소
+  - H2: 내부 스토리지
   - H2: 실패 클래스
   - H2: 채널 매핑
   - H2: 마이그레이션 계획
   - H3: 단계 1: 내부 메시지 도메인
-  - H3: 단계 2: Durable Send Core
-  - H3: 단계 3: 채널 Inbound Bridge
-  - H3: 단계 4: Prepared Dispatcher Bridge
-  - H3: 단계 5: 통합 Live Lifecycle
+  - H3: 단계 2: 내구성 있는 전송 코어
+  - H3: 단계 3: 채널 인바운드 브리지
+  - H3: 단계 4: 준비된 디스패처 브리지
+  - H3: 단계 5: 통합 라이브 수명 주기
   - H3: 단계 6: 공개 SDK
   - H3: 단계 7: 모든 발신자
-  - H3: 단계 8: Turn-Named 호환성 제거
+  - H3: 단계 8: Turn 명명 호환성 제거
   - H2: 테스트 계획
-  - H2: 미해결 질문
+  - H2: 공개 질문
   - H2: 수락 기준
   - H2: 관련 항목
 
@@ -2521,64 +2522,64 @@ x-i18n:
 - 경로: /concepts/messages
 - 제목:
   - H2: 메시지 흐름(상위 수준)
-  - H2: Inbound 중복 제거
-  - H2: Inbound debouncing
-  - H2: 세션 및 디바이스
-  - H2: 도구 결과 metadata
-  - H2: Inbound 본문 및 기록 context
-  - H2: 큐잉 및 followup
+  - H2: 인바운드 중복 제거
+  - H2: 인바운드 디바운싱
+  - H2: 세션 및 기기
+  - H2: 도구 결과 메타데이터
+  - H2: 인바운드 본문 및 기록 컨텍스트
+  - H2: 큐잉 및 후속 작업
   - H2: 채널 실행 소유권
-  - H2: 스트리밍, chunking, batching
-  - H2: Reasoning 표시 여부 및 토큰
-  - H2: Prefix, threading, replies
-  - H2: Silent replies
+  - H2: 스트리밍, 청킹 및 배치 처리
+  - H2: 추론 가시성 및 토큰
+  - H2: 접두사, 스레딩 및 답장
+  - H2: 무음 답장
   - H2: 관련 항목
 
 ## concepts/model-failover.md
 
 - 경로: /concepts/model-failover
 - 제목:
-  - H2: Runtime 흐름
+  - H2: 런타임 흐름
   - H2: 선택 소스 정책
-  - H2: 인증 실패 skip cache
+  - H2: 인증 실패 건너뛰기 캐시
   - H2: 사용자에게 표시되는 fallback 알림
-  - H2: 인증 저장소(키 + OAuth)
-  - H2: Profile ID
-  - H2: 회전 순서
-  - H3: 세션 고정성(cache 친화적)
+  - H2: 인증 스토리지(키 + OAuth)
+  - H2: 프로필 ID
+  - H2: 순환 순서
+  - H3: 세션 고정성(캐시 친화적)
   - H3: OpenAI Codex 구독 및 API 키 백업
-  - H2: Cooldown
-  - H2: Billing 비활성화
+  - H2: 쿨다운
+  - H2: 청구 비활성화
   - H2: 모델 fallback
   - H3: 후보 체인 규칙
-  - H3: 어떤 오류가 fallback을 진행하는지
-  - H3: Cooldown skip과 probe 동작 비교
-  - H2: 세션 override 및 live 모델 전환
+  - H3: fallback을 진행하는 오류
+  - H3: 쿨다운 건너뛰기와 probe 동작 비교
+  - H2: 세션 재정의 및 라이브 모델 전환
   - H2: 관측 가능성 및 실패 요약
-  - H2: 관련 config
+  - H2: 관련 구성
 
 ## concepts/model-providers.md
 
 - 경로: /concepts/model-providers
 - 제목:
   - H2: 빠른 규칙
-  - H2: Plugin 소유 provider 동작
-  - H2: API 키 회전
-  - H2: 공식 provider Plugin
+  - H2: Plugin 소유 제공자 동작
+  - H2: API 키 순환
+  - H2: 공식 제공자 Plugin
   - H3: OpenAI
   - H3: Anthropic
   - H3: OpenAI ChatGPT/Codex OAuth
-  - H3: 기타 subscription-style hosted 옵션
+  - H3: 기타 구독형 호스팅 옵션
   - H3: OpenCode
   - H3: Google Gemini(API 키)
   - H3: Google Vertex 및 Gemini CLI
   - H3: Z.AI(GLM)
   - H3: Vercel AI Gateway
-  - H3: 기타 bundled provider Plugin
-  - H4: 알아두면 좋은 특이사항
-  - H2: models.providers를 통한 provider(custom/base URL)
+  - H3: 기타 번들 제공자 Plugin
+  - H4: 알아두면 좋은 특이 사항
+  - H2: models.providers를 통한 제공자(사용자 지정/base URL)
   - H3: Moonshot AI(Kimi)
-  - H3: Kimi coding
+  - H3: Kimi 코딩
   - H3: Volcano Engine(Doubao)
   - H3: BytePlus(국제)
   - H3: Synthetic
@@ -2587,7 +2588,7 @@ x-i18n:
   - H3: Ollama
   - H3: vLLM
   - H3: SGLang
-  - H3: 로컬 proxy(LM Studio, vLLM, LiteLLM 등)
+  - H3: 로컬 프록시(LM Studio, vLLM, LiteLLM 등)
   - H2: CLI 예시
   - H2: 관련 항목
 
@@ -2599,35 +2600,35 @@ x-i18n:
   - H2: 선택 소스 및 fallback 동작
   - H2: 빠른 모델 정책
   - H2: 온보딩(권장)
-  - H2: Config 키(개요)
+  - H2: 구성 키(개요)
   - H3: 안전한 allowlist 편집
-  - H2: "Model is not allowed"(그리고 답변이 중단되는 이유)
+  - H2: "모델이 허용되지 않음"(그리고 답장이 중지되는 이유)
   - H2: 채팅에서 모델 전환(/model)
   - H2: CLI 명령
   - H3: models list
   - H3: models status
   - H2: 스캔(OpenRouter 무료 모델)
-  - H2: 모델 registry(models.json)
+  - H2: 모델 레지스트리(models.json)
   - H2: 관련 항목
 
 ## concepts/multi-agent.md
 
 - 경로: /concepts/multi-agent
 - 제목:
-  - H2: "하나의 agent"란 무엇인가요?
+  - H2: "하나의 에이전트"란?
   - H2: 경로(빠른 맵)
-  - H3: 단일 agent 모드(기본값)
-  - H2: Agent helper
+  - H3: 단일 에이전트 모드(기본값)
+  - H2: 에이전트 도우미
   - H2: 빠른 시작
-  - H2: 여러 agent = 여러 사람, 여러 성격
-  - H2: Agent 간 QMD memory 검색
-  - H2: 하나의 WhatsApp 번호, 여러 사람(DM 분리)
-  - H2: 라우팅 규칙(메시지가 agent를 선택하는 방식)
+  - H2: 여러 에이전트 = 여러 사람, 여러 성격
+  - H2: 에이전트 간 QMD 메모리 검색
+  - H2: 하나의 WhatsApp 번호, 여러 사람(DM 분할)
+  - H2: 라우팅 규칙(메시지가 에이전트를 선택하는 방식)
   - H2: 여러 계정 / 전화번호
   - H2: 개념
   - H2: 플랫폼 예시
-  - H2: 일반적인 패턴
-  - H2: Agent별 sandbox 및 도구 구성
+  - H2: 일반 패턴
+  - H2: 에이전트별 샌드박스 및 도구 구성
   - H2: 관련 항목
 
 ## concepts/oauth.md
@@ -2635,13 +2636,13 @@ x-i18n:
 - 경로: /concepts/oauth
 - 제목:
   - H2: 토큰 싱크(존재 이유)
-  - H2: 저장소(토큰이 위치하는 곳)
+  - H2: 저장소(토큰이 있는 위치)
   - H2: Anthropic 레거시 토큰 호환성
   - H2: Anthropic Claude CLI 마이그레이션
   - H2: OAuth 교환(로그인 작동 방식)
   - H3: Anthropic setup-token
   - H3: OpenAI Codex(ChatGPT OAuth)
-  - H2: 새로 고침 + 만료
+  - H2: 갱신 + 만료
   - H2: 여러 계정(프로필) + 라우팅
   - H3: 1) 권장: 별도 에이전트
   - H3: 2) 고급: 하나의 에이전트에 여러 프로필
@@ -2653,7 +2654,7 @@ x-i18n:
 - 제목:
   - H2: 기본 원칙
   - H2: 권장 롤아웃
-  - H3: 1단계: 레인 계약 + 백그라운드 고부하 작업
+  - H3: 1단계: 레인 계약 + 백그라운드 고중량 작업
   - H3: 2단계: 우선순위 및 동시성 제어
   - H3: 3단계: 코디네이터 / 트래픽 컨트롤러
   - H2: 최소 레인 계약 템플릿
@@ -2671,17 +2672,17 @@ x-i18n:
 
 - 경로: /concepts/presence
 - 제목:
-  - H2: 프레즌스 필드(표시되는 내용)
-  - H2: 프로듀서(프레즌스의 출처)
+  - H2: 프레즌스 필드(표시되는 항목)
+  - H2: 생산자(프레즌스의 출처)
   - H3: 1) Gateway 자체 항목
   - H3: 2) WebSocket 연결
   - H4: 일회성 CLI 명령이 표시되지 않는 이유
   - H3: 3) system-event 비콘
-  - H3: 4) Node 연결(role: node)
+  - H3: 4) Node 연결(역할: node)
   - H2: 병합 + 중복 제거 규칙(instanceId가 중요한 이유)
   - H2: TTL 및 제한된 크기
-  - H2: 원격/터널 주의사항(loopback IP)
-  - H2: 컨슈머
+  - H2: 원격/터널 주의 사항(루프백 IP)
+  - H2: 소비자
   - H3: macOS 인스턴스 탭
   - H2: 디버깅 팁
   - H2: 관련 항목
@@ -2691,12 +2692,12 @@ x-i18n:
 - 경로: /concepts/progress-drafts
 - 제목:
   - H2: 빠른 시작
-  - H2: 사용자가 보는 내용
+  - H2: 사용자에게 보이는 내용
   - H2: 모드 선택
   - H2: 레이블 구성
   - H2: 진행률 줄 제어
   - H2: 채널 동작
-  - H2: 마무리
+  - H2: 완료 처리
   - H2: 문제 해결
   - H2: 관련 항목
 
@@ -2716,7 +2717,7 @@ x-i18n:
   - H3: WhatsApp QA
   - H3: Convex 자격 증명 풀
   - H2: 저장소 기반 시드
-  - H2: 제공자 목 레인
+  - H2: 공급자 모의 레인
   - H2: 전송 어댑터
   - H3: 채널 추가
   - H3: 시나리오 헬퍼 이름
@@ -2731,7 +2732,7 @@ x-i18n:
   - H2: 레인이 수행하는 작업
   - H2: CLI
   - H3: 공통 플래그
-  - H3: 제공자 플래그
+  - H3: 공급자 플래그
   - H2: 프로필
   - H2: 시나리오
   - H2: 환경 변수
@@ -2774,7 +2775,7 @@ x-i18n:
   - H2: 목표
   - H2: 기본값
   - H2: 동작
-  - H3: 모델 제공자
+  - H3: 모델 공급자
   - H3: Discord
   - H3: Telegram
   - H2: 구성
@@ -2790,7 +2791,7 @@ x-i18n:
   - H2: 레거시 이미지 정리
   - H2: 스마트 기본값
   - H2: 활성화 또는 비활성화
-  - H2: 가지치기와 Compaction
+  - H2: 가지치기와 Compaction 비교
   - H2: 추가 자료
   - H2: 관련 항목
 
@@ -2815,7 +2816,7 @@ x-i18n:
   - H2: DM 격리
   - H3: Dock 연결 채널
   - H2: 세션 수명 주기
-  - H2: 상태가 위치하는 곳
+  - H2: 상태가 있는 위치
   - H2: 세션 유지 관리
   - H2: 세션 검사
   - H2: 추가 자료
@@ -2840,13 +2841,13 @@ x-i18n:
   - H3: 블록 스트리밍을 통한 미디어 전달
   - H2: 청킹 알고리즘(하한/상한)
   - H2: 병합(스트리밍된 블록 병합)
-  - H2: 블록 간 사람 같은 페이싱
-  - H2: "청크를 스트리밍할지 전체를 스트리밍할지"
+  - H2: 블록 간 사람 같은 간격
+  - H2: "청크 스트리밍 또는 전체 스트리밍"
   - H2: 미리보기 스트리밍 모드
   - H3: 채널 매핑
   - H3: 런타임 동작
   - H3: 도구 진행률 미리보기 업데이트
-  - H3: 해설 진행률 레인
+  - H3: 해설 진행 레인
   - H2: 관련 항목
 
 ## concepts/system-prompt.md
@@ -2868,7 +2869,7 @@ x-i18n:
 - 제목:
   - H2: 세 가지 시간대 표면
   - H2: 사용자 시간대 설정
-  - H2: 재정의해야 하는 경우
+  - H2: 재정의할 때
   - H2: 관련 항목
 
 ## concepts/typebox.md
@@ -2876,7 +2877,7 @@ x-i18n:
 - 경로: /concepts/typebox
 - 제목:
   - H2: 멘탈 모델(30초)
-  - H2: 스키마가 위치하는 곳
+  - H2: 스키마가 있는 위치
   - H2: 현재 파이프라인
   - H2: 런타임에서 스키마가 사용되는 방식
   - H2: 예시 프레임
@@ -2903,34 +2904,34 @@ x-i18n:
 
 - 경로: /concepts/usage-tracking
 - 제목:
-  - H2: 정의
+  - H2: 개요
   - H2: 표시되는 위치
   - H2: 기본 사용량 푸터 모드
-  - H3: 세 가지 고유한 세션 상태
+  - H3: 세 가지 서로 다른 세션 상태
   - H3: 우선순위
-  - H3: 재설정과 끄기의 차이
+  - H3: 재설정과 끄기 비교
   - H3: 토글 동작
-  - H3: Config
+  - H3: 구성
   - H2: 사용자 지정 /usage 전체 푸터
   - H3: 형태
   - H3: 계약 경로
   - H3: 동사
   - H3: 조각 형식
   - H3: 예시
-  - H2: 제공자 + 자격 증명
+  - H2: 공급자 + 자격 증명
   - H2: 관련 항목
 
 ## date-time.md
 
 - 경로: /date-time
 - 제목:
-  - H2: 메시지 엔벌로프(기본값은 로컬)
+  - H2: 메시지 봉투(기본적으로 로컬)
   - H3: 예시
   - H2: 시스템 프롬프트: 현재 날짜 및 시간
-  - H2: 시스템 이벤트 줄(기본값은 로컬)
+  - H2: 시스템 이벤트 줄(기본적으로 로컬)
   - H3: 사용자 시간대 + 형식 구성
   - H2: 시간 형식 감지(자동)
-  - H2: 도구 페이로드 + 커넥터(원시 제공자 시간 + 정규화된 필드)
+  - H2: 도구 페이로드 + 커넥터(원시 공급자 시간 + 정규화된 필드)
   - H2: 관련 문서
 
 ## debug/node-issue.md
@@ -2941,11 +2942,11 @@ x-i18n:
   - H2: 요약
   - H2: 환경
   - H2: 재현(Node 전용)
-  - H2: 저장소 내 최소 재현
+  - H2: 저장소의 최소 재현
   - H2: Node 버전 확인
   - H2: 참고 / 가설
   - H2: 회귀 이력
-  - H2: 우회 방법
+  - H2: 해결 방법
   - H2: 참조
   - H2: 다음 단계
   - H2: 관련 항목
@@ -2956,10 +2957,10 @@ x-i18n:
 - 제목:
   - H2: 작동 방식
   - H2: 구성으로 활성화
-  - H2: Env 재정의(일회성)
+  - H2: 환경 변수 재정의(일회성)
   - H2: 프로파일링 플래그
   - H2: 타임라인 아티팩트
-  - H2: 로그가 위치하는 곳
+  - H2: 로그가 저장되는 위치
   - H2: 로그 추출
   - H2: 참고
   - H2: 관련 항목
@@ -2968,14 +2969,14 @@ x-i18n:
 
 - 경로: /gateway/authentication
 - 제목:
-  - H2: 권장 설정(API 키, 모든 제공자)
+  - H2: 권장 설정(API 키, 모든 공급자)
   - H2: Anthropic: Claude CLI 및 토큰 호환성
   - H2: Anthropic 참고
   - H2: 모델 인증 상태 확인
-  - H2: API 키 순환 동작(Gateway)
-  - H2: Gateway가 실행 중일 때 제공자 인증 제거
+  - H2: API 키 교체 동작(Gateway)
+  - H2: Gateway 실행 중 공급자 인증 제거
   - H2: 사용할 자격 증명 제어
-  - H3: OpenAI 및 레거시 openai-codex id
+  - H3: OpenAI 및 레거시 openai-codex ID
   - H3: 로그인 중(CLI)
   - H3: 세션별(채팅 명령)
   - H3: 에이전트별(CLI 재정의)
@@ -3003,15 +3004,15 @@ x-i18n:
   - H3: 일회성 DNS 서버 설정(Gateway 호스트)
   - H3: Tailscale DNS 설정
   - H3: Gateway 리스너 보안(권장)
-  - H2: 광고되는 항목
+  - H2: 알리는 항목
   - H2: 서비스 유형
   - H2: TXT 키(비밀이 아닌 힌트)
   - H2: macOS에서 디버깅
   - H2: Gateway 로그에서 디버깅
-  - H2: iOS Node에서 디버깅
-  - H2: Bonjour를 활성화해야 하는 경우
-  - H2: Bonjour를 비활성화해야 하는 경우
-  - H2: Docker 주의사항
+  - H2: iOS 노드에서 디버깅
+  - H2: Bonjour를 활성화할 때
+  - H2: Bonjour를 비활성화할 때
+  - H2: Docker 주의 사항
   - H2: 비활성화된 Bonjour 문제 해결
   - H2: 일반적인 실패 모드
   - H2: 이스케이프된 인스턴스 이름(\032)
@@ -3036,12 +3037,12 @@ x-i18n:
 - 경로: /gateway/cli-backends
 - 제목:
   - H2: 초보자 친화적 빠른 시작
-  - H2: 폴백으로 사용
+  - H2: 대체 수단으로 사용
   - H2: 구성 개요
   - H3: 예시 구성
   - H2: 작동 방식
   - H2: 세션
-  - H2: claude-cli 세션의 폴백 프렐류드
+  - H2: claude-cli 세션의 대체 프렐류드
   - H2: 이미지(패스스루)
   - H2: 입력 / 출력
   - H2: 기본값(Plugin 소유)
@@ -3092,14 +3093,14 @@ x-i18n:
   - H3: agents.list(에이전트별 재정의)
   - H2: 다중 에이전트 라우팅
   - H3: 바인딩 일치 필드
-  - H3: 에이전트별 액세스 프로필
+  - H3: 에이전트별 접근 프로필
   - H2: 세션
   - H2: 메시지
   - H3: 응답 접두사
-  - H3: 확인 반응
+  - H3: 승인 반응
   - H3: 인바운드 디바운스
   - H3: TTS(텍스트 음성 변환)
-  - H2: Talk
+  - H2: 대화
   - H2: 관련 항목
 
 ## gateway/config-channels.md
@@ -3107,9 +3108,9 @@ x-i18n:
 - 경로: /gateway/config-channels
 - 제목:
   - H2: 채널
-  - H3: DM 및 그룹 접근
+  - H3: DM 및 그룹 액세스
   - H3: 채널 모델 재정의
-  - H3: 채널 기본값과 Heartbeat
+  - H3: 채널 기본값 및 Heartbeat
   - H3: WhatsApp
   - H3: Telegram
   - H3: Discord
@@ -3125,7 +3126,7 @@ x-i18n:
   - H3: 기타 Plugin 채널
   - H3: 그룹 채팅 멘션 게이팅
   - H4: DM 기록 제한
-  - H4: 자기 채팅 모드
+  - H4: 셀프 채팅 모드
   - H3: 명령어(채팅 명령어 처리)
   - H2: 관련 항목
 
@@ -3164,14 +3165,14 @@ x-i18n:
   - H3: 절대 최소 구성
   - H3: 권장 시작 구성
   - H2: 확장 예시(주요 옵션)
-  - H3: 심볼릭 링크된 형제 skill 저장소
-  - H2: 일반 패턴
-  - H3: 하나의 재정의가 있는 공유 skill 기준선
+  - H3: 심볼릭 링크된 형제 Skills 저장소
+  - H2: 일반적인 패턴
+  - H3: 하나의 재정의가 있는 공유 Skills 기준선
   - H3: 다중 플랫폼 설정
-  - H3: 신뢰할 수 있는 Node 네트워크 자동 승인
+  - H3: 신뢰할 수 있는 노드 네트워크 자동 승인
   - H3: 보안 DM 모드(공유 받은 편지함 / 다중 사용자 DM)
   - H3: Anthropic API 키 + MiniMax 폴백
-  - H3: 업무용 봇(제한된 접근)
+  - H3: 업무 봇(제한된 액세스)
   - H3: 로컬 모델만 사용
   - H2: 팁
   - H2: 관련 항목
@@ -3188,7 +3189,7 @@ x-i18n:
   - H2: Skills
   - H2: Plugins
   - H3: Codex 하네스 Plugin 구성
-  - H2: 약속
+  - H2: 커밋먼트
   - H2: 브라우저
   - H2: UI
   - H2: Gateway
@@ -3198,17 +3199,17 @@ x-i18n:
   - H3: gateway.reload
   - H2: 훅
   - H3: Gmail 통합
-  - H2: Canvas Plugin 호스트
+  - H2: 캔버스 Plugin 호스트
   - H2: 검색
   - H3: mDNS(Bonjour)
   - H3: 광역(DNS-SD)
   - H2: 환경
   - H3: env(인라인 환경 변수)
   - H3: 환경 변수 치환
-  - H2: 비밀 정보
+  - H2: 비밀
   - H3: SecretRef
   - H3: 지원되는 자격 증명 표면
-  - H3: 비밀 정보 제공자 구성
+  - H3: 비밀 제공자 구성
   - H2: 인증 저장소
   - H3: auth.cooldowns
   - H2: 로깅
@@ -3239,7 +3240,7 @@ x-i18n:
   - H3: 리로드 모드
   - H3: 핫 적용되는 항목과 재시작이 필요한 항목
   - H3: 리로드 계획
-  - H2: Config RPC(프로그래밍 방식 업데이트)
+  - H2: 구성 RPC(프로그래밍 방식 업데이트)
   - H2: 환경 변수
   - H2: 전체 참조
   - H2: 관련 항목
@@ -3263,7 +3264,7 @@ x-i18n:
 - 제목:
   - H2: 용어
   - H2: 직접 연결과 SSH를 모두 유지하는 이유
-  - H2: 검색 입력(클라이언트가 Gateway 위치를 알아내는 방법)
+  - H2: 검색 입력(클라이언트가 Gateway 위치를 알아내는 방식)
   - H3: 1) Bonjour / DNS-SD 검색
   - H4: 서비스 비컨 세부 정보
   - H3: 2) Tailnet(교차 네트워크)
@@ -3308,13 +3309,13 @@ x-i18n:
 
 - 경로: /gateway/health
 - 제목:
-  - H2: 빠른 점검
+  - H2: 빠른 확인
   - H2: 심층 진단
   - H2: 상태 모니터 구성
   - H2: 가동 시간 모니터링
   - H3: 모니터링 서비스 설정 예시
-  - H2: 문제가 발생했을 때
-  - H2: 전용 "상태" 명령어
+  - H2: 문제가 발생할 때
+  - H2: 전용 "health" 명령어
   - H2: 관련 항목
 
 ## gateway/heartbeat.md
@@ -3331,19 +3332,19 @@ x-i18n:
   - H3: 활성 시간 예시
   - H3: 24/7 설정
   - H3: 다중 계정 예시
-  - H3: 현장 참고 사항
+  - H3: 필드 참고 사항
   - H2: 전달 동작
   - H2: 표시 여부 제어
   - H3: 각 플래그의 역할
-  - H3: 채널별 예시와 계정별 예시
-  - H3: 일반 패턴
+  - H3: 채널별 및 계정별 예시
+  - H3: 일반적인 패턴
   - H2: HEARTBEAT.md(선택 사항)
   - H3: tasks: 블록
   - H3: 에이전트가 HEARTBEAT.md를 업데이트할 수 있나요?
   - H2: 수동 깨우기(온디맨드)
   - H2: 추론 전달(선택 사항)
   - H2: 비용 인식
-  - H2: Heartbeat 이후 컨텍스트 오버플로
+  - H2: Heartbeat 후 컨텍스트 오버플로
   - H2: 관련 항목
 
 ## gateway/index.md
@@ -3356,15 +3357,15 @@ x-i18n:
   - H3: 포트 및 바인딩 우선순위
   - H3: 핫 리로드 모드
   - H2: 운영자 명령어 세트
-  - H2: 여러 Gateway(같은 호스트)
-  - H2: 원격 접근
+  - H2: 여러 Gateway(동일 호스트)
+  - H2: 원격 액세스
   - H2: 감독 및 서비스 수명 주기
   - H2: 개발 프로필 빠른 경로
-  - H2: 프로토콜 빠른 참조(운영자 관점)
-  - H2: 운영 점검
-  - H3: 생존성
+  - H2: 프로토콜 빠른 참조(운영자 보기)
+  - H2: 운영 확인
+  - H3: 활성 상태
   - H3: 준비 상태
-  - H3: 갭 복구
+  - H3: 간극 복구
   - H2: 일반적인 실패 시그니처
   - H2: 안전 보장
   - H2: 관련 항목
@@ -3385,12 +3386,12 @@ x-i18n:
 
 - 경로: /gateway/local-models
 - 제목:
-  - H2: 최소 하드웨어 기준
+  - H2: 하드웨어 최소 기준
   - H2: 백엔드 선택
   - H2: 권장: LM Studio + 대형 로컬 모델(Responses API)
   - H3: 하이브리드 구성: 호스팅 기본, 로컬 폴백
   - H3: 호스팅 안전망이 있는 로컬 우선
-  - H3: 리전 호스팅 / 데이터 라우팅
+  - H3: 지역 호스팅 / 데이터 라우팅
   - H2: 기타 OpenAI 호환 로컬 프록시
   - H2: 더 작거나 더 엄격한 백엔드
   - H2: 문제 해결
@@ -3403,7 +3404,7 @@ x-i18n:
   - H1: 로깅
   - H2: 파일 기반 로거
   - H2: 콘솔 캡처
-  - H2: 수정
+  - H2: 편집
   - H2: Gateway WebSocket 로그
   - H3: WS 로그 스타일
   - H2: 콘솔 형식 지정(하위 시스템 로깅)
@@ -3413,16 +3414,16 @@ x-i18n:
 
 - 경로: /gateway/multiple-gateways
 - 제목:
-  - H2: 최선의 권장 설정
+  - H2: 최우선 권장 설정
   - H2: Rescue-Bot 빠른 시작
-  - H2: 이것이 작동하는 이유
-  - H2: --profile rescue onboard가 변경하는 내용
+  - H2: 이 방식이 작동하는 이유
+  - H2: --profile rescue onboard가 변경하는 사항
   - H2: 일반 다중 Gateway 설정
   - H2: 격리 체크리스트
   - H2: 포트 매핑(파생됨)
-  - H2: 브라우저/CDP 참고 사항(일반적인 함정)
-  - H2: 수동 env 예시
-  - H2: 빠른 점검
+  - H2: 브라우저/CDP 참고 사항(일반적인 실수)
+  - H2: 수동 환경 예시
+  - H2: 빠른 확인
   - H2: 관련 항목
 
 ## gateway/network-model.md
@@ -3480,9 +3481,9 @@ x-i18n:
 
 - 경로: /gateway/openshell
 - 제목:
-  - H2: 전제 조건
+  - H2: 사전 요구 사항
   - H2: 빠른 시작
-  - H2: 작업 공간 모드
+  - H2: 워크스페이스 모드
   - H3: mirror
   - H3: remote
   - H3: 모드 선택
@@ -3490,9 +3491,9 @@ x-i18n:
   - H2: 예시
   - H3: 최소 원격 설정
   - H3: GPU를 사용하는 미러 모드
-  - H3: 사용자 지정 Gateway를 사용하는 에이전트별 OpenShell
+  - H3: 사용자 지정 Gateway가 있는 에이전트별 OpenShell
   - H2: 수명 주기 관리
-  - H3: 다시 생성해야 할 때
+  - H3: 다시 생성해야 하는 경우
   - H2: 보안 강화
   - H2: 현재 제한 사항
   - H2: 작동 방식
@@ -3502,26 +3503,26 @@ x-i18n:
 
 - 경로: /gateway/opentelemetry
 - 제목:
-  - H2: 함께 맞물리는 방식
+  - H2: 전체 구성 방식
   - H2: 빠른 시작
   - H2: 내보내는 신호
   - H2: 구성 참조
   - H3: 환경 변수
   - H2: 개인정보 보호 및 콘텐츠 캡처
   - H2: 샘플링 및 플러시
-  - H2: 내보내는 메트릭
+  - H2: 내보낸 메트릭
   - H3: 모델 사용량
   - H3: 메시지 흐름
   - H3: 대화
   - H3: 큐 및 세션
-  - H3: 세션 생존성 텔레메트리
+  - H3: 세션 활성 상태 텔레메트리
   - H3: 하네스 수명 주기
   - H3: 도구 실행
   - H3: Exec
-  - H3: 진단 내부 구조(메모리 및 도구 루프)
-  - H2: 내보내는 스팬
+  - H3: 진단 내부(메모리 및 도구 루프)
+  - H2: 내보낸 스팬
   - H2: 진단 이벤트 카탈로그
-  - H2: 내보내기 도구 없이 사용
+  - H2: 익스포터 없이 사용
   - H2: 비활성화
   - H2: 관련 항목
 
@@ -3532,8 +3533,8 @@ x-i18n:
   - H2: 역할
   - H2: 범위 수준
   - H2: 메서드 범위는 첫 번째 게이트일 뿐입니다
-  - H2: 디바이스 페어링 승인
-  - H2: Node 페어링 승인
+  - H2: 기기 페어링 승인
+  - H2: 노드 페어링 승인
   - H2: 공유 비밀 인증
 
 ## gateway/pairing.md
@@ -3544,10 +3545,10 @@ x-i18n:
   - H2: 페어링 작동 방식
   - H2: CLI 워크플로(헤드리스 친화적)
   - H2: API 표면(Gateway 프로토콜)
-  - H2: Node 명령어 게이팅(2026.3.31+)
-  - H2: Node 이벤트 신뢰 경계(2026.3.31+)
+  - H2: 노드 명령어 게이팅(2026.3.31+)
+  - H2: 노드 이벤트 신뢰 경계(2026.3.31+)
   - H2: 자동 승인(macOS 앱)
-  - H2: 신뢰할 수 있는 CIDR 디바이스 자동 승인
+  - H2: 신뢰할 수 있는 CIDR 기기 자동 승인
   - H2: 메타데이터 업그레이드 자동 승인
   - H2: QR 페어링 도우미
   - H2: 지역성 및 전달된 헤더
@@ -3560,7 +3561,7 @@ x-i18n:
 - 경로: /gateway/prometheus
 - 제목:
   - H2: 빠른 시작
-  - H2: 내보내는 메트릭
+  - H2: 내보낸 메트릭
   - H2: 레이블 정책
   - H2: PromQL 레시피
   - H2: Prometheus와 OpenTelemetry 내보내기 중 선택
@@ -3578,23 +3579,23 @@ x-i18n:
   - H2: 역할 + 범위
   - H3: 역할
   - H3: 범위(운영자)
-  - H3: 기능/명령어/권한(Node)
+  - H3: 기능/명령어/권한(노드)
   - H2: 프레즌스
-  - H3: Node 백그라운드 생존 이벤트
+  - H3: 노드 백그라운드 활성 이벤트
   - H2: 브로드캐스트 이벤트 범위 지정
-  - H2: 일반 RPC 메서드 계열
-  - H3: 일반 이벤트 계열
-  - H3: Node 도우미 메서드
+  - H2: 일반 RPC 메서드 패밀리
+  - H3: 일반 이벤트 패밀리
+  - H3: 노드 헬퍼 메서드
   - H3: 작업 원장 RPC
-  - H3: 운영자 도우미 메서드
-  - H3: models.list 뷰
+  - H3: 운영자 헬퍼 메서드
+  - H3: models.list 보기
   - H2: Exec 승인
   - H2: 에이전트 전달 폴백
   - H2: 버전 관리
   - H3: 클라이언트 상수
   - H2: 인증
-  - H2: 디바이스 ID + 페어링
-  - H3: 디바이스 인증 마이그레이션 진단
+  - H2: 기기 ID + 페어링
+  - H3: 기기 인증 마이그레이션 진단
   - H2: TLS + 고정
   - H2: 범위
   - H2: 관련 항목
@@ -3603,15 +3604,15 @@ x-i18n:
 
 - 경로: /gateway/remote-gateway-readme
 - 제목:
-  - H1: 원격 Gateway로 OpenClaw.app 실행
+  - H1: 원격 Gateway로 OpenClaw.app 실행하기
   - H2: 개요
   - H2: 빠른 설정
-  - H3: 1단계: SSH 구성 추가
-  - H3: 2단계: SSH 키 복사
+  - H3: 1단계: SSH Config 추가
+  - H3: 2단계: SSH Key 복사
   - H3: 3단계: 원격 Gateway 인증 구성
-  - H3: 4단계: SSH 터널 시작
+  - H3: 4단계: SSH Tunnel 시작
   - H3: 5단계: OpenClaw.app 재시작
-  - H2: 로그인 시 터널 자동 시작
+  - H2: 로그인 시 Tunnel 자동 시작
   - H3: PLIST 파일 만들기
   - H3: Launch Agent 로드
   - H2: 문제 해결
@@ -3622,22 +3623,22 @@ x-i18n:
 
 - 경로: /gateway/remote
 - 제목:
-  - H2: 핵심 개념
+  - H2: 핵심 아이디어
   - H2: 일반적인 VPN 및 tailnet 설정
   - H3: tailnet의 상시 실행 Gateway
   - H3: 홈 데스크톱에서 Gateway 실행
   - H3: 노트북에서 Gateway 실행
-  - H2: 명령 흐름(어디서 무엇이 실행되는지)
-  - H2: SSH 터널(CLI + 도구)
+  - H2: 명령 흐름(어디에서 무엇이 실행되는지)
+  - H2: SSH Tunnel(CLI + 도구)
   - H2: CLI 원격 기본값
   - H2: 자격 증명 우선순위
   - H2: 채팅 UI 원격 액세스
   - H2: macOS 앱 원격 모드
   - H2: 보안 규칙(원격/VPN)
-  - H3: macOS: LaunchAgent를 통한 지속 SSH 터널
-  - H4: 1단계: SSH 구성 추가
-  - H4: 2단계: SSH 키 복사(한 번만)
-  - H4: 3단계: Gateway 토큰 구성
+  - H3: macOS: LaunchAgent를 통한 영구 SSH Tunnel
+  - H4: 1단계: SSH config 추가
+  - H4: 2단계: SSH key 복사(1회)
+  - H4: 3단계: gateway token 구성
   - H4: 4단계: LaunchAgent 만들기
   - H4: 5단계: LaunchAgent 로드
   - H4: 문제 해결
@@ -3648,21 +3649,21 @@ x-i18n:
 - 경로: /gateway/sandbox-vs-tool-policy-vs-elevated
 - 제목:
   - H2: 빠른 디버그
-  - H2: 샌드박스: 도구가 실행되는 위치
-  - H3: 바인드 마운트(보안 빠른 확인)
-  - H2: 도구 정책: 존재하거나 호출 가능한 도구
-  - H3: 도구 그룹(단축 표현)
-  - H2: 권한 상승: exec 전용 "호스트에서 실행"
-  - H2: 일반적인 "샌드박스 감옥" 수정
-  - H3: "도구 X가 샌드박스 도구 정책에 의해 차단됨"
-  - H3: "이것이 main이라고 생각했는데 왜 샌드박스 처리되나요?"
+  - H2: Sandbox: 도구가 실행되는 위치
+  - H3: Bind mounts(보안 빠른 확인)
+  - H2: 도구 정책: 어떤 도구가 존재하고 호출 가능한지
+  - H3: 도구 그룹(축약형)
+  - H2: Elevated: exec 전용 "호스트에서 실행"
+  - H2: 일반적인 "sandbox jail" 수정
+  - H3: "Tool X가 sandbox 도구 정책에 의해 차단됨"
+  - H3: "이게 main이라고 생각했는데, 왜 sandbox 처리되나요?"
   - H2: 관련 항목
 
 ## gateway/sandboxing.md
 
 - 경로: /gateway/sandboxing
 - 제목:
-  - H2: 샌드박스 처리되는 항목
+  - H2: sandbox 처리되는 항목
   - H2: 모드
   - H2: 범위
   - H2: 백엔드
@@ -3670,14 +3671,14 @@ x-i18n:
   - H3: Docker 백엔드
   - H3: SSH 백엔드
   - H3: OpenShell 백엔드
-  - H4: 워크스페이스 모드
+  - H4: Workspace 모드
   - H4: OpenShell 수명 주기
-  - H2: 워크스페이스 액세스
-  - H2: 사용자 지정 바인드 마운트
+  - H2: Workspace 액세스
+  - H2: 사용자 지정 bind mounts
   - H2: 이미지 및 설정
-  - H2: setupCommand(일회성 컨테이너 설정)
+  - H2: setupCommand(1회성 컨테이너 설정)
   - H2: 도구 정책 및 탈출구
-  - H2: 멀티 에이전트 오버라이드
+  - H2: 다중 에이전트 재정의
   - H2: 최소 활성화 예시
   - H2: 관련 항목
 
@@ -3685,41 +3686,41 @@ x-i18n:
 
 - 경로: /gateway/secrets-plan-contract
 - 제목:
-  - H2: 계획 파일 형태
-  - H2: 공급자 upsert 및 삭제
+  - H2: Plan 파일 형태
+  - H2: Provider upsert 및 delete
   - H2: 지원되는 대상 범위
   - H2: 대상 유형 동작
   - H2: 경로 검증 규칙
   - H2: 실패 동작
-  - H2: Exec 공급자 동의 동작
-  - H2: 런타임 및 감사 범위 참고 사항
-  - H2: 운영자 확인
+  - H2: Exec provider 동의 동작
+  - H2: Runtime 및 audit 범위 참고 사항
+  - H2: Operator 확인
   - H2: 관련 문서
 
 ## gateway/secrets.md
 
 - 경로: /gateway/secrets
 - 제목:
-  - H2: 목표 및 런타임 모델
+  - H2: 목표 및 Runtime 모델
   - H2: 에이전트 액세스 경계
   - H2: 활성 표면 필터링
   - H2: Gateway 인증 표면 진단
-  - H2: 온보딩 참조 사전 점검
+  - H2: Onboarding reference 사전 점검
   - H2: SecretRef 계약
-  - H2: 공급자 구성
-  - H2: 파일 기반 API 키
+  - H2: Provider config
+  - H2: 파일 기반 API key
   - H2: Exec 통합 예시
-  - H2: MCP 서버 환경 변수
-  - H2: 샌드박스 SSH 인증 자료
+  - H2: MCP server environment variables
+  - H2: Sandbox SSH 인증 자료
   - H2: 지원되는 자격 증명 표면
   - H2: 필수 동작 및 우선순위
   - H2: 활성화 트리거
-  - H2: 성능 저하 및 복구 신호
+  - H2: 저하 및 복구 신호
   - H2: 명령 경로 해석
-  - H2: 감사 및 구성 워크플로
+  - H2: Audit 및 configure workflow
   - H2: 단방향 안전 정책
   - H2: 레거시 인증 호환성 참고 사항
-  - H2: 웹 UI 참고 사항
+  - H2: Web UI 참고
   - H2: 관련 항목
 
 ## gateway/security/audit-checks.md
@@ -3734,99 +3735,99 @@ x-i18n:
 - 제목:
   - H2: 노출 패턴 선택
   - H2: 사전 인벤토리
-  - H2: 기준 검사
+  - H2: 기준 확인
   - H2: 최소 안전 기준
   - H2: DM 및 그룹 노출
-  - H2: 리버스 프록시 검사
-  - H2: 도구 및 샌드박스 검토
+  - H2: Reverse proxy 확인
+  - H2: 도구 및 sandbox 검토
   - H2: 변경 후 검증
-  - H2: 롤백 계획
+  - H2: Rollback 계획
   - H2: 검토 체크리스트
 
 ## gateway/security/index.md
 
 - 경로: /gateway/security
 - 제목:
-  - H2: 범위 우선: 개인 비서 보안 모델
+  - H2: 범위 우선: 개인 assistant security model
   - H2: 빠른 확인: openclaw security audit
-  - H3: 게시된 패키지 의존성 잠금
+  - H3: 게시된 package dependency lock
   - H3: 배포 및 호스트 신뢰
   - H3: 안전한 파일 작업
-  - H3: 공유 Slack 워크스페이스: 실제 위험
-  - H3: 회사 공유 에이전트: 허용 가능한 패턴
-  - H2: Gateway 및 노드 신뢰 개념
+  - H3: 공유 Slack workspace: 실제 위험
+  - H3: 회사 공유 agent: 허용 가능한 패턴
+  - H2: Gateway 및 node 신뢰 개념
   - H2: 신뢰 경계 매트릭스
-  - H2: 설계상 취약점이 아닌 항목
+  - H2: 설계상 취약점이 아닌 것
   - H2: 60초 안에 강화된 기준 적용
-  - H2: 공유 수신함 빠른 규칙
+  - H2: 공유 inbox 빠른 규칙
   - H2: 컨텍스트 가시성 모델
-  - H2: 감사에서 확인하는 항목(상위 수준)
+  - H2: audit가 확인하는 항목(상위 수준)
   - H2: 자격 증명 저장소 맵
-  - H2: 보안 감사 체크리스트
-  - H2: 보안 감사 용어집
+  - H2: Security audit checklist
+  - H2: Security audit glossary
   - H2: HTTP를 통한 Control UI
   - H2: 안전하지 않거나 위험한 플래그 요약
-  - H2: 리버스 프록시 구성
+  - H2: Reverse proxy 구성
   - H2: HSTS 및 origin 참고 사항
-  - H2: 로컬 세션 로그는 디스크에 저장됨
+  - H2: 로컬 session logs는 디스크에 저장됨
   - H2: Node 실행(system.run)
-  - H2: 동적 Skills(감시자 / 원격 노드)
+  - H2: 동적 skills(watcher / remote nodes)
   - H2: 위협 모델
-  - H2: 핵심 개념: 지능보다 먼저 액세스 제어
-  - H2: 명령 권한 부여 모델
-  - H2: 제어 플레인 도구 위험
-  - H2: Plugins
-  - H2: DM 액세스 모델: 페어링, 허용 목록, 개방, 비활성화
-  - H2: DM 세션 격리(멀티 사용자 모드)
+  - H2: 핵심 개념: 지능보다 먼저 access control
+  - H2: 명령 승인 모델
+  - H2: Control plane tools 위험
+  - H2: Plugin
+  - H2: DM 액세스 모델: pairing, allowlist, open, disabled
+  - H2: DM session 격리(다중 사용자 모드)
   - H3: 보안 DM 모드(권장)
-  - H2: DM 및 그룹용 허용 목록
-  - H2: 프롬프트 인젝션(무엇이며 왜 중요한가)
-  - H2: 외부 콘텐츠 특수 토큰 정리
+  - H2: DM 및 그룹용 allowlists
+  - H2: Prompt injection(무엇이고 왜 중요한지)
+  - H2: 외부 콘텐츠 special-token sanitization
   - H2: 안전하지 않은 외부 콘텐츠 우회 플래그
-  - H3: 프롬프트 인젝션에는 공개 DM이 필요하지 않음
-  - H3: 자체 호스팅 LLM 백엔드
-  - H3: 모델 강도(보안 참고 사항)
-  - H2: 그룹에서 추론 및 상세 출력
+  - H3: Prompt injection에는 공개 DM이 필요하지 않음
+  - H3: Self-hosted LLM backends
+  - H3: Model strength(보안 참고)
+  - H2: 그룹에서의 reasoning 및 verbose output
   - H2: 구성 강화 예시
   - H3: 파일 권한
-  - H3: 네트워크 노출(바인드, 포트, 방화벽)
-  - H3: UFW를 사용한 Docker 포트 게시
-  - H3: mDNS/Bonjour 검색
-  - H3: Gateway WebSocket 잠금(로컬 인증)
-  - H3: Tailscale Serve ID 헤더
-  - H3: 노드 호스트를 통한 브라우저 제어(권장)
-  - H3: 디스크의 비밀 정보
-  - H3: 워크스페이스 .env 파일
-  - H3: 로그 및 트랜스크립트(수정 및 보존)
-  - H3: DM: 기본 페어링
-  - H3: 그룹: 모든 곳에서 멘션 필요
+  - H3: 네트워크 노출(bind, port, firewall)
+  - H3: UFW를 사용한 Docker port publishing
+  - H3: mDNS/Bonjour discovery
+  - H3: Gateway WebSocket 잠금(local auth)
+  - H3: Tailscale Serve identity headers
+  - H3: node host를 통한 브라우저 제어(권장)
+  - H3: 디스크의 secrets
+  - H3: Workspace .env 파일
+  - H3: Logs 및 transcripts(마스킹 및 보존)
+  - H3: DM: 기본적으로 pairing
+  - H3: 그룹: 모든 곳에서 mention 필요
   - H3: 별도 번호(WhatsApp, Signal, Telegram)
-  - H3: 읽기 전용 모드(샌드박스 및 도구를 통해)
-  - H3: 보안 기준(복사/붙여넣기)
-  - H2: 샌드박싱(권장)
-  - H3: 하위 에이전트 위임 가드레일
+  - H3: 읽기 전용 모드(sandbox 및 도구를 통해)
+  - H3: 보안 기준(copy/paste)
+  - H2: Sandboxing(권장)
+  - H3: Sub-agent delegation guardrail
   - H2: 브라우저 제어 위험
-  - H3: 브라우저 SSRF 정책(기본적으로 엄격)
-  - H2: 에이전트별 액세스 프로필(멀티 에이전트)
-  - H3: 예시: 전체 액세스(샌드박스 없음)
-  - H3: 예시: 읽기 전용 도구 + 읽기 전용 워크스페이스
-  - H3: 예시: 파일 시스템/셸 액세스 없음(공급자 메시징 허용)
-  - H2: 사고 대응
+  - H3: Browser SSRF policy(기본적으로 strict)
+  - H2: 에이전트별 액세스 프로필(다중 에이전트)
+  - H3: 예시: 전체 액세스(sandbox 없음)
+  - H3: 예시: 읽기 전용 도구 + 읽기 전용 workspace
+  - H3: 예시: 파일 시스템/shell 액세스 없음(provider messaging 허용)
+  - H2: Incident response
   - H3: 억제
-  - H3: 교체(비밀 정보가 유출된 경우 침해로 간주)
-  - H3: 감사
+  - H3: 교체(secrets가 유출된 경우 compromise로 간주)
+  - H3: Audit
   - H3: 보고서용 수집
-  - H2: 비밀 정보 스캔
+  - H2: Secret scanning
   - H2: 보안 문제 보고
 
 ## gateway/security/secure-file-operations.md
 
 - 경로: /gateway/security/secure-file-operations
 - 제목:
-  - H2: 기본값: Python 헬퍼 없음
+  - H2: 기본값: Python helper 없음
   - H2: Python 없이도 보호되는 항목
-  - H2: Python이 추가하는 기능
-  - H2: Plugin 및 코어 지침
+  - H2: Python이 추가하는 것
+  - H2: Plugin 및 core 지침
 
 ## gateway/security/shrinkwrap.md
 
@@ -3841,16 +3842,16 @@ x-i18n:
 - 경로: /gateway/tailscale
 - 제목:
   - H2: 모드
-  - H2: 인증
-  - H2: 구성 예시
+  - H2: Auth
+  - H2: Config 예시
   - H3: Tailnet 전용(Serve)
-  - H3: Tailnet 전용(Tailnet IP에 바인드)
-  - H3: 공용 인터넷(Funnel + 공유 비밀번호)
+  - H3: Tailnet 전용(Tailnet IP에 bind)
+  - H3: 공개 인터넷(Funnel + shared password)
   - H2: CLI 예시
   - H2: 참고 사항
   - H2: 브라우저 제어(원격 Gateway + 로컬 브라우저)
-  - H2: Tailscale 전제 조건 + 제한
-  - H2: 자세히 알아보기
+  - H2: Tailscale prerequisites + limits
+  - H2: 더 알아보기
   - H2: 관련 항목
 
 ## gateway/tools-invoke-http-api.md
@@ -3859,7 +3860,7 @@ x-i18n:
 - 제목:
   - H2: 인증
   - H2: 보안 경계(중요)
-  - H2: 요청 본문
+  - H2: 요청 body
   - H2: 정책 + 라우팅 동작
   - H2: 응답
   - H2: 예시
@@ -3871,25 +3872,25 @@ x-i18n:
 - 제목:
   - H2: 명령 사다리
   - H2: 업데이트 후
-  - H2: 분리된 설치와 더 새로운 구성 가드
-  - H2: 롤백 후 프로토콜 불일치
-  - H2: 경로 이탈로 Skill 심볼릭 링크 건너뜀
-  - H2: 긴 컨텍스트에는 Anthropic 429 추가 사용량 필요
-  - H2: 업스트림 403 차단 응답
-  - H2: 로컬 OpenAI 호환 백엔드는 직접 프로브를 통과하지만 에이전트 실행은 실패함
+  - H2: Split brain installs 및 newer config guard
+  - H2: rollback 후 protocol mismatch
+  - H2: Skill symlink가 path escape로 건너뛰어짐
+  - H2: 긴 컨텍스트에 필요한 Anthropic 429 extra usage
+  - H2: Upstream 403 blocked responses
+  - H2: 로컬 OpenAI 호환 backend는 direct probes를 통과하지만 agent runs는 실패
   - H2: 응답 없음
-  - H2: 대시보드 제어 UI 연결
-  - H3: 인증 세부 코드 빠른 맵
-  - H2: Gateway 서비스가 실행 중이 아님
-  - H2: macOS Gateway가 조용히 응답을 멈춘 뒤 대시보드를 터치하면 재개됨
+  - H2: Dashboard control UI 연결
+  - H3: Auth detail codes 빠른 맵
+  - H2: Gateway service가 실행 중이 아님
+  - H2: macOS gateway가 조용히 응답을 멈춘 뒤 dashboard를 건드리면 다시 시작됨
   - H2: 높은 메모리 사용 중 Gateway 종료
-  - H2: Gateway가 잘못된 구성을 거부함
-  - H2: Gateway 프로브 경고
-  - H2: 채널이 연결되었지만 메시지가 흐르지 않음
-  - H2: Cron 및 Heartbeat 전달
-  - H2: 노드가 페어링되었지만 도구 실패
-  - H2: 브라우저 도구 실패
-  - H2: 업그레이드 후 갑자기 문제가 발생한 경우
+  - H2: Gateway가 잘못된 config를 거부함
+  - H2: Gateway probe warnings
+  - H2: Channel은 연결되었지만 messages가 흐르지 않음
+  - H2: Cron 및 Heartbeat delivery
+  - H2: Node가 paired되었지만 tool 실패
+  - H2: Browser tool 실패
+  - H2: 업그레이드 후 갑자기 문제가 생긴 경우
   - H2: 관련 항목
 
 ## gateway/trusted-proxy-auth.md
@@ -3897,34 +3898,34 @@ x-i18n:
 - 경로: /gateway/trusted-proxy-auth
 - 제목:
   - H2: 사용 시점
-  - H2: 사용하지 말아야 할 시점
+  - H2: 사용하면 안 되는 시점
   - H2: 작동 방식
-  - H2: Control UI 페어링 동작
+  - H2: Control UI pairing 동작
   - H2: 구성
   - H3: 구성 참조
-  - H2: TLS 종료 및 HSTS
-  - H3: 롤아웃 지침
-  - H2: 프록시 설정 예시
-  - H2: 혼합 토큰 구성
-  - H2: 운영자 범위 헤더
+  - H2: TLS termination 및 HSTS
+  - H3: Rollout 지침
+  - H2: Proxy 설정 예시
+  - H2: 혼합 token 구성
+  - H2: Operator scopes header
   - H2: 보안 체크리스트
-  - H2: 보안 감사
+  - H2: Security audit
   - H2: 문제 해결
-  - H2: 토큰 인증에서 마이그레이션
+  - H2: token auth에서 migration
   - H2: 관련 항목
 
 ## help/debugging.md
 
 - 경로: /help/debugging
 - 제목:
-  - H2: 런타임 디버그 오버라이드
-  - H2: 세션 추적 출력
-  - H2: Plugin 수명 주기 추적
-  - H2: CLI 시작 및 명령 프로파일링
-  - H2: Gateway 감시 모드
-  - H2: 개발 프로필 + 개발 Gateway(--dev)
-  - H2: 원시 스트림 로깅(OpenClaw)
-  - H2: 원시 OpenAI 호환 청크 로깅
+  - H2: Runtime debug overrides
+  - H2: Session trace output
+  - H2: Plugin lifecycle trace
+  - H2: CLI startup 및 command profiling
+  - H2: Gateway watch mode
+  - H2: Dev profile + dev gateway(--dev)
+  - H2: Raw stream logging(OpenClaw)
+  - H2: Raw OpenAI-compatible chunk logging
   - H2: 안전 참고 사항
   - H2: VSCode에서 디버깅
   - H3: 설정
@@ -3936,57 +3937,57 @@ x-i18n:
 - 경로: /help/environment
 - 제목:
   - H2: 우선순위(높음 → 낮음)
-  - H2: 공급자 자격 증명 및 워크스페이스 .env
-  - H2: 구성 env 블록
-  - H2: 셸 env 가져오기
-  - H2: Exec 셸 스냅샷
-  - H2: 런타임 주입 env vars
+  - H2: Provider credentials 및 workspace .env
+  - H2: Config env block
+  - H2: Shell env import
+  - H2: Exec shell snapshots
+  - H2: Runtime-injected env vars
   - H2: UI env vars
-  - H2: 구성의 env var 치환
-  - H2: Secret refs와 ${ENV} 문자열 비교
-  - H2: 경로 관련 env vars
-  - H2: 로깅
+  - H2: Config의 env var substitution
+  - H2: Secret refs vs ${ENV} strings
+  - H2: Path-related env vars
+  - H2: Logging
   - H3: OPENCLAWHOME
-  - H2: nvm 사용자: webfetch TLS 실패
-  - H2: 레거시 환경 변수
+  - H2: nvm 사용자: webfetch TLS failures
+  - H2: 레거시 environment variables
   - H2: 관련 항목
 
 ## help/faq-first-run.md
 
 - 경로: /help/faq-first-run
 - 제목:
-  - H2: 빠른 시작 및 최초 실행 설정
+  - H2: 빠른 시작 및 first-run 설정
   - H2: 관련 항목
 
 ## help/faq-models.md
 
 - 경로: /help/faq-models
 - 제목:
-  - H2: 모델: 기본값, 선택, 별칭, 전환
-  - H2: 모델 장애 조치 및 "모든 모델 실패"
-  - H2: 인증 프로필: 무엇이며 관리하는 방법
+  - H2: Models: 기본값, 선택, aliases, 전환
+  - H2: Model failover 및 "All models failed"
+  - H2: Auth profiles: 무엇이며 관리 방법
   - H2: 관련 항목
 
 ## help/faq.md
 
 - 경로: /help/faq
 - 제목:
-  - H2: 무언가 고장 났을 때 처음 60초
-  - H2: 빠른 시작 및 최초 실행 설정
-  - H2: OpenClaw란 무엇인가요?
+  - H2: 무언가 고장 났을 때 첫 60초
+  - H2: 빠른 시작 및 first-run 설정
+  - H2: OpenClaw란?
   - H2: Skills 및 자동화
-  - H2: 샌드박싱 및 메모리
-  - H2: 디스크에서 항목이 저장되는 위치
-  - H2: 구성 기본 사항
-  - H2: 원격 Gateway 및 노드
-  - H2: Env vars 및 .env 로딩
-  - H2: 세션 및 여러 채팅
-  - H2: 모델, 장애 조치, 인증 프로필
-  - H2: Gateway: 포트, "이미 실행 중", 원격 모드
-  - H2: 로깅 및 디버깅
-  - H2: 미디어 및 첨부 파일
-  - H2: 보안 및 액세스 제어
-  - H2: 채팅 명령, 작업 중단, "멈추지 않음"
+  - H2: Sandboxing 및 memory
+  - H2: 디스크에서 항목이 위치하는 곳
+  - H2: Config basics
+  - H2: 원격 gateways 및 nodes
+  - H2: Env vars 및 .env loading
+  - H2: Sessions 및 여러 chats
+  - H2: Models, failover, auth profiles
+  - H2: Gateway: ports, "already running", remote mode
+  - H2: Logging 및 debugging
+  - H2: Media 및 attachments
+  - H2: Security 및 access control
+  - H2: Chat commands, tasks aborting, "it will not stop"
   - H2: 기타
   - H2: 관련 항목
 
@@ -3996,7 +3997,7 @@ x-i18n:
 - 제목:
   - H2: FAQ
   - H2: 진단
-  - H2: 테스트
+  - H2: Testing
   - H2: 커뮤니티 및 메타
 
 ## help/scripts.md
@@ -4004,52 +4005,52 @@ x-i18n:
 - 경로: /help/scripts
 - 제목:
   - H2: 규칙
-  - H2: 인증 모니터링 스크립트
-  - H2: GitHub 읽기 헬퍼
-  - H2: 스크립트를 추가할 때
+  - H2: Auth monitoring scripts
+  - H2: GitHub read helper
+  - H2: scripts 추가 시
   - H2: 관련 항목
 
 ## help/testing-live.md
 
 - 경로: /help/testing-live
 - 제목:
-  - H2: Live: 로컬 스모크 명령
-  - H2: Live: Android 노드 기능 스윕
-  - H2: Live: 모델 스모크(프로필 키)
+  - H2: 라이브: 로컬 스모크 명령
+  - H2: 라이브: Android 노드 기능 스윕
+  - H2: 라이브: 모델 스모크(프로필 키)
   - H3: 계층 1: 직접 모델 완성(Gateway 없음)
-  - H3: 계층 2: Gateway + 개발 에이전트 스모크("@openclaw"이 실제로 하는 일)
-  - H2: Live: CLI 백엔드 스모크(Claude, Gemini 또는 기타 로컬 CLI)
-  - H2: Live: APNs HTTP/2 프록시 도달 가능성
-  - H2: Live: ACP 바인드 스모크(/acp spawn ... --bind here)
-  - H2: Live: Codex 앱 서버 하네스 스모크
-  - H3: 권장 Live 레시피
-  - H2: Live: 모델 매트릭스(적용 범위)
+  - H3: 계층 2: Gateway + 개발 에이전트 스모크("@openclaw"가 실제로 하는 일)
+  - H2: 라이브: CLI 백엔드 스모크(Claude, Gemini 또는 기타 로컬 CLI)
+  - H2: 라이브: APNs HTTP/2 프록시 도달 가능성
+  - H2: 라이브: ACP 바인드 스모크(/acp spawn ... --bind here)
+  - H2: 라이브: Codex 앱 서버 하네스 스모크
+  - H3: 권장 라이브 레시피
+  - H2: 라이브: 모델 매트릭스(다루는 범위)
   - H3: 최신 스모크 세트(도구 호출 + 이미지)
   - H3: 기준선: 도구 호출(Read + 선택적 Exec)
   - H3: 비전: 이미지 전송(첨부 파일 → 멀티모달 메시지)
   - H3: 애그리게이터 / 대체 Gateway
-  - H2: 자격 증명(절대 커밋하지 않음)
-  - H2: Deepgram Live(오디오 전사)
-  - H2: BytePlus 코딩 계획 Live
-  - H2: ComfyUI 워크플로 미디어 Live
-  - H2: 이미지 생성 Live
-  - H2: 음악 생성 Live
-  - H2: 비디오 생성 Live
-  - H2: 미디어 Live 하네스
+  - H2: 자격 증명(절대 커밋 금지)
+  - H2: Deepgram 라이브(오디오 전사)
+  - H2: BytePlus 코딩 계획 라이브
+  - H2: ComfyUI 워크플로 미디어 라이브
+  - H2: 이미지 생성 라이브
+  - H2: 음악 생성 라이브
+  - H2: 동영상 생성 라이브
+  - H2: 미디어 라이브 하네스
   - H2: 관련 항목
 
 ## help/testing-updates-plugins.md
 
 - 경로: /help/testing-updates-plugins
 - 제목:
-  - H2: 보호하는 대상
+  - H2: 보호하는 항목
   - H2: 개발 중 로컬 증명
   - H2: Docker 레인
   - H2: 패키지 승인
   - H2: 릴리스 기본값
   - H2: 레거시 호환성
-  - H2: 적용 범위 추가
-  - H2: 실패 트리아지
+  - H2: 커버리지 추가
+  - H2: 실패 분류
 
 ## help/testing.md
 
@@ -4061,24 +4062,24 @@ x-i18n:
   - H3: Convex를 통한 공유 Telegram 자격 증명(v1)
   - H3: QA에 채널 추가
   - H2: 테스트 스위트(어디에서 무엇이 실행되는지)
-  - H3: 단위 / 통합(기본값)
+  - H3: 유닛 / 통합(기본값)
   - H3: 안정성(Gateway)
   - H3: E2E(저장소 집계)
   - H3: E2E(Gateway 스모크)
   - H3: E2E(Control UI 모의 브라우저)
   - H3: E2E: OpenShell 백엔드 스모크
-  - H3: Live(실제 제공자 + 실제 모델)
+  - H3: 라이브(실제 공급자 + 실제 모델)
   - H2: 어떤 스위트를 실행해야 하나요?
-  - H2: Live(네트워크 접촉) 테스트
+  - H2: 라이브(네트워크 접촉) 테스트
   - H2: Docker 러너(선택적 "Linux에서 작동" 확인)
-  - H2: 문서 건전성
+  - H2: 문서 상태 점검
   - H2: 오프라인 회귀(CI 안전)
   - H2: 에이전트 신뢰성 평가(Skills)
   - H2: 계약 테스트(Plugin 및 채널 형태)
   - H3: 명령
   - H3: 채널 계약
-  - H3: 제공자 상태 계약
-  - H3: 제공자 계약
+  - H3: 공급자 상태 계약
+  - H3: 공급자 계약
   - H3: 실행 시점
   - H2: 회귀 추가(가이드)
   - H2: 관련 항목
@@ -4087,14 +4088,14 @@ x-i18n:
 
 - 경로: /help/troubleshooting
 - 제목:
-  - H2: 첫 60초
+  - H2: 처음 60초
   - H2: 어시스턴트가 제한적이거나 도구가 누락된 것처럼 느껴짐
   - H2: Anthropic 긴 컨텍스트 429
   - H2: 로컬 OpenAI 호환 백엔드는 직접 작동하지만 OpenClaw에서는 실패함
-  - H2: Plugin 설치가 누락된 openclaw extensions로 실패함
+  - H2: Plugin 설치가 누락된 openclaw 확장으로 실패함
   - H2: 설치 정책이 Plugin 설치 또는 업데이트를 차단함
-  - H2: Plugin은 있지만 의심스러운 소유권으로 차단됨
-  - H2: 의사 결정 트리
+  - H2: Plugin이 존재하지만 의심스러운 소유권으로 차단됨
+  - H2: 의사결정 트리
   - H2: 관련 항목
 
 ## index.md
@@ -4115,7 +4116,7 @@ x-i18n:
 
 - 경로: /install/ansible
 - 제목:
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 제공되는 것
   - H2: 빠른 시작
   - H2: 설치되는 항목
@@ -4133,7 +4134,7 @@ x-i18n:
 - 경로: /install/azure
 - 제목:
   - H2: 수행할 작업
-  - H2: 필요한 항목
+  - H2: 필요한 것
   - H2: 배포 구성
   - H2: Azure 리소스 배포
   - H2: OpenClaw 설치
@@ -4159,11 +4160,11 @@ x-i18n:
   - H2: 제공되는 것
   - H3: 기본 작업
   - H3: 컨테이너 접근
-  - H3: 웹 UI 및 페어링
+  - H3: Web UI 및 페어링
   - H3: 설정 및 유지 관리
   - H3: 유틸리티
   - H2: 최초 실행 흐름
-  - H2: 구성 및 비밀
+  - H2: 구성 및 시크릿
   - H2: 관련 항목
 
 ## install/development-channels.md
@@ -4175,18 +4176,18 @@ x-i18n:
   - H2: 드라이 런
   - H2: Plugin 및 채널
   - H2: 현재 상태 확인
-  - H2: 태그 지정 모범 사례
-  - H2: macOS 앱 가용성
+  - H2: 태깅 모범 사례
+  - H2: macOS 앱 사용 가능 여부
   - H2: 관련 항목
 
 ## install/digitalocean.md
 
 - 경로: /install/digitalocean
 - 제목:
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 설정
   - H2: 지속성 및 백업
-  - H2: 1GB RAM 팁
+  - H2: 1 GB RAM 팁
   - H2: 문제 해결
   - H2: 다음 단계
   - H2: 관련 항목
@@ -4195,9 +4196,9 @@ x-i18n:
 
 - 경로: /install/docker-vm-runtime
 - 제목:
-  - H2: 필요한 바이너리를 이미지에 포함
+  - H2: 필요한 바이너리를 이미지에 굽기
   - H2: 빌드 및 실행
-  - H2: 지속되는 위치
+  - H2: 무엇이 어디에 지속되는지
   - H2: 업데이트
   - H2: 관련 항목
 
@@ -4206,19 +4207,19 @@ x-i18n:
 - 경로: /install/docker
 - 제목:
   - H2: Docker가 나에게 적합한가요?
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 컨테이너화된 Gateway
   - H3: 수동 흐름
   - H3: 환경 변수
   - H3: 관찰 가능성
   - H3: 상태 확인
-  - H3: LAN 대 loopback
-  - H3: 호스트 로컬 제공자
+  - H3: LAN 대 루프백
+  - H3: 호스트 로컬 공급자
   - H3: Docker의 Claude CLI 백엔드
   - H3: Bonjour / mDNS
   - H3: 스토리지 및 지속성
   - H3: 셸 헬퍼(선택 사항)
-  - H3: VPS에서 실행 중인가요?
+  - H3: VPS에서 실행하나요?
   - H2: 에이전트 샌드박스
   - H3: 빠른 활성화
   - H2: 문제 해결
@@ -4229,11 +4230,11 @@ x-i18n:
 - 경로: /install/exe-dev
 - 제목:
   - H2: 초보자용 빠른 경로
-  - H2: 필요한 항목
-  - H2: Shelley를 사용한 자동 설치
+  - H2: 필요한 것
+  - H2: Shelley로 자동 설치
   - H2: 수동 설치
-  - H2: 1) VM 생성
-  - H2: 2) 사전 요구 사항 설치(VM에서)
+  - H2: 1) VM 만들기
+  - H2: 2) 필수 조건 설치(VM에서)
   - H2: 3) OpenClaw 설치
   - H2: 4) OpenClaw를 포트 8000으로 프록시하도록 nginx 설정
   - H2: 5) OpenClaw에 접근하고 권한 부여
@@ -4246,25 +4247,25 @@ x-i18n:
 
 - 경로: /install/fly
 - 제목:
-  - H2: 필요한 항목
+  - H2: 필요한 것
   - H2: 초보자용 빠른 경로
   - H2: 문제 해결
   - H3: "앱이 예상 주소에서 수신 대기하지 않음"
   - H3: 상태 확인 실패 / 연결 거부
   - H3: OOM / 메모리 문제
   - H3: Gateway 잠금 문제
-  - H3: 구성을 읽지 않음
-  - H3: SSH를 통해 구성 작성
+  - H3: 구성을 읽지 못함
+  - H3: SSH로 구성 작성
   - H3: 상태가 지속되지 않음
   - H2: 업데이트
   - H3: 머신 명령 업데이트
   - H2: 비공개 배포(강화됨)
-  - H3: 비공개 배포를 사용할 시점
+  - H3: 비공개 배포를 사용할 때
   - H3: 설정
   - H3: 비공개 배포에 접근
-  - H3: 비공개 배포의 Webhook
+  - H3: 비공개 배포에서 Webhook
   - H3: 보안 이점
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 비용
   - H2: 다음 단계
   - H2: 관련 항목
@@ -4275,7 +4276,7 @@ x-i18n:
 - 제목:
   - H2: 무엇을 하는 건가요(간단히)?
   - H2: 빠른 경로(숙련된 운영자)
-  - H2: 필요한 항목
+  - H2: 필요한 것
   - H2: 문제 해결
   - H2: 서비스 계정(보안 모범 사례)
   - H2: 다음 단계
@@ -4288,7 +4289,7 @@ x-i18n:
   - H2: 목표
   - H2: 무엇을 하는 건가요(간단히)?
   - H2: 빠른 경로(숙련된 운영자)
-  - H2: 필요한 항목
+  - H2: 필요한 것
   - H2: 코드형 인프라(Terraform)
   - H2: 다음 단계
   - H2: 관련 항목
@@ -4297,8 +4298,8 @@ x-i18n:
 
 - 경로: /install/hostinger
 - 제목:
-  - H2: 사전 요구 사항
-  - H2: 옵션 A: 1-Click OpenClaw
+  - H2: 필수 조건
+  - H2: 옵션 A: 1-클릭 OpenClaw
   - H2: 옵션 B: VPS의 OpenClaw
   - H2: 설정 확인
   - H2: 문제 해결
@@ -4310,9 +4311,9 @@ x-i18n:
 - 경로: /install
 - 제목:
   - H2: 시스템 요구 사항
-  - H2: 권장: 설치 관리자 스크립트
+  - H2: 권장: 설치 스크립트
   - H2: 대체 설치 방법
-  - H3: 로컬 접두사 설치 관리자(install-cli.sh)
+  - H3: 로컬 접두사 설치 프로그램(install-cli.sh)
   - H3: npm, pnpm 또는 bun
   - H3: 소스에서 설치
   - H3: GitHub main 체크아웃에서 설치
@@ -4345,10 +4346,10 @@ x-i18n:
 
 - 경로: /install/kubernetes
 - 제목:
-  - H2: Helm이 아닌 이유는?
-  - H2: 필요한 항목
+  - H2: 왜 Helm이 아닌가요?
+  - H2: 필요한 것
   - H2: 빠른 시작
-  - H2: Kind를 사용한 로컬 테스트
+  - H2: Kind로 로컬 테스트
   - H2: 단계별 안내
   - H3: 1) 배포
   - H3: 2) Gateway에 접근
@@ -4356,13 +4357,13 @@ x-i18n:
   - H2: 사용자 지정
   - H3: 에이전트 지침
   - H3: Gateway 구성
-  - H3: 제공자 추가
+  - H3: 공급자 추가
   - H3: 사용자 지정 네임스페이스
   - H3: 사용자 지정 이미지
   - H3: 포트 포워드 너머로 노출
-  - H2: 재배포
+  - H2: 다시 배포
   - H2: 해체
-  - H2: 아키텍처 참고
+  - H2: 아키텍처 참고 사항
   - H2: 파일 구조
   - H2: 관련 항목
 
@@ -4373,14 +4374,14 @@ x-i18n:
   - H2: 권장 기본값(대부분의 사용자)
   - H2: macOS VM 옵션
   - H3: Apple Silicon Mac의 로컬 VM(Lume)
-  - H3: 호스팅 Mac 제공자(클라우드)
+  - H3: 호스팅 Mac 공급자(클라우드)
   - H2: 빠른 경로(Lume, 숙련된 사용자)
-  - H2: 필요한 항목(Lume)
+  - H2: 필요한 것(Lume)
   - H2: 1) Lume 설치
-  - H2: 2) macOS VM 생성
-  - H2: 3) Setup Assistant 완료
+  - H2: 2) macOS VM 만들기
+  - H2: 3) 설정 도우미 완료
   - H2: 4) VM IP 주소 가져오기
-  - H2: 5) VM에 SSH 접속
+  - H2: 5) VM에 SSH로 접속
   - H2: 6) OpenClaw 설치
   - H2: 7) 채널 구성
   - H2: 8) VM을 헤드리스로 실행
@@ -4394,7 +4395,7 @@ x-i18n:
 
 - 경로: /install/migrating-claude
 - 제목:
-  - H2: 가져오기 방법 두 가지
+  - H2: 가져오는 두 가지 방법
   - H2: 가져오는 항목
   - H2: 아카이브 전용으로 남는 항목
   - H2: 소스 선택
@@ -4408,12 +4409,12 @@ x-i18n:
 
 - 경로: /install/migrating-hermes
 - 제목:
-  - H2: 가져오기 방법 두 가지
+  - H2: 가져오는 두 가지 방법
   - H2: 가져오는 항목
   - H2: 아카이브 전용으로 남는 항목
   - H2: 권장 흐름
   - H2: 충돌 처리
-  - H2: 비밀
+  - H2: 시크릿
   - H2: 자동화를 위한 JSON 출력
   - H2: 문제 해결
   - H2: 관련 항목
@@ -4439,7 +4440,7 @@ x-i18n:
   - H2: Nix 모드 런타임 동작
   - H3: Nix 모드에서 변경되는 것
   - H3: 구성 및 상태 경로
-  - H3: 서비스 PATH 검색
+  - H3: 서비스 PATH 탐색
   - H2: 관련 항목
 
 ## install/node.md
@@ -4449,8 +4450,8 @@ x-i18n:
   - H2: 버전 확인
   - H2: Node 설치
   - H2: 문제 해결
-  - H3: openclaw: 명령을 찾을 수 없음
-  - H3: npm install -g의 권한 오류(Linux)
+  - H3: openclaw: command not found
+  - H3: npm install -g 권한 오류(Linux)
   - H2: 관련 항목
 
 ## install/northflank.mdx
@@ -4458,7 +4459,7 @@ x-i18n:
 - 경로: /install/northflank
 - 제목:
   - H1: Northflank
-  - H2: 시작하는 방법
+  - H2: 시작 방법
   - H2: 제공되는 것
   - H2: 채널 연결
   - H2: 다음 단계
@@ -4467,12 +4468,12 @@ x-i18n:
 
 - 경로: /install/oracle
 - 제목:
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 설정
   - H2: 보안 태세 확인
-  - H2: ARM 참고
+  - H2: ARM 참고 사항
   - H2: 지속성 및 백업
-  - H2: 대안: SSH 터널
+  - H2: 대체 방법: SSH 터널
   - H2: 문제 해결
   - H2: 다음 단계
   - H2: 관련 항목
@@ -4481,11 +4482,11 @@ x-i18n:
 
 - 경로: /install/podman
 - 제목:
-  - H2: 사전 요구 사항
+  - H2: 필수 조건
   - H2: 빠른 시작
   - H2: Podman 및 Tailscale
   - H2: Systemd(Quadlet, 선택 사항)
-  - H2: 구성, 환경 및 스토리지
+  - H2: 구성, 환경 변수 및 스토리지
   - H2: 유용한 명령
   - H2: 문제 해결
   - H2: 관련 항목
@@ -4495,11 +4496,11 @@ x-i18n:
 - 경로: /install/railway
 - 제목:
   - H1: Railway
-  - H2: 빠른 체크리스트(새 사용자)
+  - H2: 빠른 체크리스트(신규 사용자)
   - H2: 원클릭 배포
   - H2: 제공되는 것
   - H2: 필수 Railway 설정
-  - H3: 공용 네트워킹
+  - H3: 공개 네트워킹
   - H3: 볼륨(필수)
   - H3: 변수
   - H2: 채널 연결
@@ -4531,10 +4532,10 @@ x-i18n:
   - H2: Blueprint 이해하기
   - H2: 플랜 선택
   - H2: 배포 후
-  - H3: 제어 UI에 액세스
+  - H3: 제어 UI에 접근
   - H2: Render Dashboard 기능
   - H3: 로그
-  - H3: 셸 액세스
+  - H3: 셸 접근
   - H3: 환경 변수
   - H3: 자동 배포
   - H2: 사용자 지정 도메인
@@ -4555,8 +4556,8 @@ x-i18n:
   - H2: 수동 서비스 제거(CLI가 설치되지 않음)
   - H3: macOS (launchd)
   - H3: Linux (systemd 사용자 유닛)
-  - H3: Windows (예약된 작업)
-  - H2: 일반 설치와 소스 체크아웃 비교
+  - H3: Windows (Scheduled Task)
+  - H2: 일반 설치와 소스 체크아웃
   - H3: 일반 설치(install.sh / npm / pnpm / bun)
   - H3: 소스 체크아웃(git clone)
   - H2: 관련 항목
@@ -4570,7 +4571,7 @@ x-i18n:
   - H2: 대안: 설치 프로그램 다시 실행
   - H2: 대안: 수동 npm, pnpm 또는 bun
   - H3: 고급 npm 설치 주제
-  - H2: 자동 업데이트 프로그램
+  - H2: 자동 업데이트
   - H2: 업데이트 후
   - H3: doctor 실행
   - H3: Gateway 재시작
@@ -4640,16 +4641,16 @@ x-i18n:
   - H2: 성숙도 수준
   - H2: 제품 영역
   - H2: 세부 정보
-  - H3: Core
-  - H3: Platform
-  - H3: Channel
-  - H3: Provider and tool
+  - H3: 코어
+  - H3: 플랫폼
+  - H3: 채널
+  - H3: 공급자 및 도구
 
 ## network.md
 
 - 경로: /network
 - 제목:
-  - H2: Core 모델
+  - H2: 코어 모델
   - H2: 페어링 + ID
   - H2: 검색 + 전송
   - H2: 노드 + 전송
@@ -4663,12 +4664,12 @@ x-i18n:
   - H2: 작동하는 기능
   - H2: 자동 감지(기본값)
   - H2: 구성 예시
-  - H3: 제공자 + CLI 폴백(OpenAI + Whisper CLI)
-  - H3: 범위 게이팅이 있는 제공자 전용
-  - H3: 제공자 전용(Deepgram)
-  - H3: 제공자 전용(Mistral Voxtral)
-  - H3: 제공자 전용(SenseAudio)
-  - H3: 채팅에 트랜스크립트 에코(옵트인)
+  - H3: 공급자 + CLI 폴백(OpenAI + Whisper CLI)
+  - H3: 범위 게이팅이 있는 공급자 전용
+  - H3: 공급자 전용(Deepgram)
+  - H3: 공급자 전용(Mistral Voxtral)
+  - H3: 공급자 전용(SenseAudio)
+  - H3: 채팅으로 전사 결과 에코(옵트인)
   - H2: 참고 사항 및 제한
   - H3: 프록시 환경 지원
   - H2: 그룹에서 멘션 감지
@@ -4681,19 +4682,19 @@ x-i18n:
 - 제목:
   - H2: iOS 노드
   - H3: 사용자 설정(기본 켜짐)
-  - H3: 명령(Gateway node.invoke를 통해)
+  - H3: 명령(Gateway node.invoke 경유)
   - H3: 포그라운드 요구 사항
   - H3: CLI 헬퍼
   - H2: Android 노드
   - H3: Android 사용자 설정(기본 켜짐)
   - H3: 권한
   - H3: Android 포그라운드 요구 사항
-  - H3: Android 명령(Gateway node.invoke를 통해)
+  - H3: Android 명령(Gateway node.invoke 경유)
   - H3: 페이로드 가드
   - H2: macOS 앱
   - H3: 사용자 설정(기본 꺼짐)
   - H3: CLI 헬퍼(node invoke)
-  - H2: 안전 + 실제 제한
+  - H2: 안전 + 실용적 제한
   - H2: macOS 화면 비디오(OS 수준)
   - H2: 관련 항목
 
@@ -4716,19 +4717,19 @@ x-i18n:
 - 제목:
   - H2: 페어링 + 상태
   - H2: 원격 노드 호스트(system.run)
-  - H3: 무엇이 어디에서 실행되는가
+  - H3: 무엇이 어디에서 실행되는지
   - H3: 노드 호스트 시작(포그라운드)
-  - H3: SSH 터널을 통한 원격 Gateway(루프백 바인드)
+  - H3: SSH 터널을 통한 원격 Gateway(loopback 바인드)
   - H3: 노드 호스트 시작(서비스)
-  - H3: 페어링 + 이름
-  - H3: 명령 허용 목록
-  - H3: exec이 노드를 가리키도록 설정
+  - H3: 페어링 + 이름 지정
+  - H3: 명령 허용 목록에 추가
+  - H3: exec를 노드에 지정
   - H3: 로컬 모델 추론
   - H2: 명령 호출
   - H2: 명령 정책
   - H2: 구성(openclaw.json)
   - H2: 스크린샷(캔버스 스냅샷)
-  - H3: 캔버스 컨트롤
+  - H3: 캔버스 제어
   - H3: A2UI(캔버스)
   - H2: 사진 + 동영상(노드 카메라)
   - H2: 화면 녹화(노드)
@@ -4745,8 +4746,8 @@ x-i18n:
 
 - 경로: /nodes/location-command
 - 제목:
-  - H2: TL;DR
-  - H2: 선택기가 필요한 이유(단순 스위치가 아님)
+  - H2: 요약
+  - H2: 왜 단순 스위치가 아니라 선택자인가
   - H2: 설정 모델
   - H2: 권한 매핑(node.permissions)
   - H2: 명령: location.get
@@ -4763,13 +4764,13 @@ x-i18n:
   - H2: 상위 수준 동작
   - H2: 구성 개요
   - H3: 모델 항목
-  - H3: 제공자 자격 증명(apiKey)
+  - H3: 공급자 자격 증명(apiKey)
   - H2: 기본값 및 제한
   - H3: 미디어 이해 자동 감지(기본값)
-  - H3: 프록시 환경 지원(제공자 모델)
+  - H3: 프록시 환경 지원(공급자 모델)
   - H2: 기능(선택 사항)
-  - H2: 제공자 지원 매트릭스(OpenClaw 통합)
-  - H2: 모델 선택 지침
+  - H2: 공급자 지원 매트릭스(OpenClaw 통합)
+  - H2: 모델 선택 가이드
   - H2: 첨부 파일 정책
   - H2: 구성 예시
   - H2: 상태 출력
@@ -4781,7 +4782,7 @@ x-i18n:
 - 경로: /nodes/talk
 - 제목:
   - H2: 동작(macOS)
-  - H2: 응답의 음성 지시문
+  - H2: 답변의 음성 지시문
   - H2: 구성(/.openclaw/openclaw.json)
   - H2: macOS UI
   - H2: Android UI
@@ -4804,7 +4805,7 @@ x-i18n:
 
 - 경로: /nodes/voicewake
 - 제목:
-  - H2: 스토리지(Gateway 호스트)
+  - H2: 저장소(Gateway 호스트)
   - H2: 프로토콜
   - H3: 메서드
   - H3: 라우팅 메서드(트리거 → 대상)
@@ -4822,8 +4823,8 @@ x-i18n:
   - H2: 타입 검사 및 린팅
   - H2: Agent Runtime 테스트 실행
   - H2: 수동 테스트
-  - H2: 깨끗한 상태로 재설정
-  - H2: 참고 자료
+  - H2: 클린 슬레이트 재설정
+  - H2: 참조
   - H2: 관련 항목
 
 ## perplexity.md
@@ -4843,31 +4844,31 @@ x-i18n:
   - H2: 현재 격차
   - H2: 원하는 동작
   - H2: 설계 제약 조건
-  - H3: Codex app-server는 네이티브 스레드 상태의 표준으로 유지
-  - H3: 컨텍스트 엔진 어셈블리는 Codex 입력으로 투영되어야 함
-  - H3: 프롬프트 캐시 안정성이 중요함
-  - H3: 런타임 선택 의미는 변경되지 않음
+  - H3: Codex 앱 서버는 네이티브 스레드 상태의 정본으로 유지됨
+  - H3: 컨텍스트 엔진 조립은 Codex 입력으로 투영되어야 함
+  - H3: prompt-cache 안정성이 중요함
+  - H3: 런타임 선택 의미 체계는 변경되지 않음
   - H2: 구현 계획
   - H3: 1. 재사용 가능한 컨텍스트 엔진 시도 헬퍼 내보내기 또는 재배치
   - H3: 2. Codex 컨텍스트 투영 헬퍼 추가
   - H3: 3. Codex 스레드 시작 전에 부트스트랩 연결
   - H3: 4. thread/start / thread/resume 및 turn/start 전에 assemble 연결
-  - H3: 5. 프롬프트 캐시에 안정적인 형식 보존
-  - H3: 6. 트랜스크립트 미러링 후 post-turn 연결
-  - H3: 7. 사용량 및 프롬프트 캐시 런타임 컨텍스트 정규화
+  - H3: 5. prompt-cache 안정 형식 보존
+  - H3: 6. transcript 미러링 후 post-turn 연결
+  - H3: 7. 사용량 및 prompt-cache 런타임 컨텍스트 정규화
   - H3: 8. Compaction 정책
   - H4: /compact 및 명시적 OpenClaw Compaction
-  - H4: 턴 중 Codex 네이티브 contextCompaction 이벤트
+  - H4: 턴 내부 Codex 네이티브 contextCompaction 이벤트
   - H3: 9. 세션 재설정 및 바인딩 동작
   - H3: 10. 오류 처리
   - H2: 테스트 계획
   - H3: 단위 테스트
   - H3: 업데이트할 기존 테스트
   - H3: 통합 / 라이브 테스트
-  - H2: 관측성
+  - H2: 관찰 가능성
   - H2: 마이그레이션 / 호환성
-  - H2: 미해결 질문
-  - H2: 승인 기준
+  - H2: 열린 질문
+  - H2: 수락 기준
 
 ## plan/ui-channels.md
 
@@ -4881,9 +4882,9 @@ x-i18n:
   - H2: 전달 메타데이터
   - H2: 런타임 기능 계약
   - H2: 채널 매핑
-  - H2: 리팩터링 단계
+  - H2: 리팩터 단계
   - H2: 테스트
-  - H2: 미해결 질문
+  - H2: 열린 질문
   - H2: 관련 항목
 
 ## platforms/android.md
@@ -4892,13 +4893,13 @@ x-i18n:
 - 제목:
   - H2: 지원 스냅샷
   - H2: 시스템 제어
-  - H2: 연결 런북
+  - H2: 연결 실행서
   - H3: 사전 요구 사항
   - H3: 1) Gateway 시작
   - H3: 2) 검색 확인(선택 사항)
   - H4: 유니캐스트 DNS-SD를 통한 Tailnet(Vienna ⇄ London) 검색
   - H3: 3) Android에서 연결
-  - H3: 프레즌스 활성 비콘
+  - H3: Presence alive 비컨
   - H3: 4) 페어링 승인(CLI)
   - H3: 5) 노드가 연결되었는지 확인
   - H3: 6) 채팅 + 기록
@@ -4940,11 +4941,11 @@ x-i18n:
 
 - 경로: /platforms/ios
 - 제목:
-  - H2: 수행 기능
+  - H2: 수행하는 작업
   - H2: 요구 사항
   - H2: 빠른 시작(페어링 + 연결)
   - H2: 공식 빌드를 위한 릴레이 기반 푸시
-  - H2: 백그라운드 활성 비콘
+  - H2: 백그라운드 alive 비컨
   - H2: 인증 및 신뢰 흐름
   - H2: 검색 경로
   - H3: Bonjour(LAN)
@@ -4952,9 +4953,9 @@ x-i18n:
   - H3: 수동 호스트/포트
   - H2: 캔버스 + A2UI
   - H2: Computer Use 관계
-  - H3: 캔버스 평가 / 스냅샷
-  - H2: 음성 웨이크 + 대화 모드
-  - H2: 일반적인 오류
+  - H3: 캔버스 eval / 스냅샷
+  - H2: 음성 깨우기 + 대화 모드
+  - H2: 일반 오류
   - H2: 관련 문서
 
 ## platforms/linux.md
@@ -4975,11 +4976,11 @@ x-i18n:
 - 제목:
   - H2: 자동 설정
   - H2: 수동 복구
-  - H2: Launchd(LaunchAgent로서의 Gateway)
+  - H2: Launchd(Gateway를 LaunchAgent로)
   - H2: 버전 호환성
   - H2: macOS의 상태 디렉터리
   - H2: 앱 연결 디버그
-  - H2: 스모크 검사
+  - H2: 스모크 확인
   - H2: 관련 항목
 
 ## platforms/mac/canvas.md
@@ -4988,7 +4989,7 @@ x-i18n:
 - 제목:
   - H2: Canvas 위치
   - H2: 패널 동작
-  - H2: 에이전트 API 표면
+  - H2: Agent API 표면
   - H2: Canvas의 A2UI
   - H3: A2UI 명령(v0.8)
   - H2: Canvas에서 에이전트 실행 트리거
@@ -5011,33 +5012,33 @@ x-i18n:
 - 경로: /platforms/mac/dev-setup
 - 제목:
   - H1: macOS 개발자 설정
-  - H2: 필수 조건
-  - H2: 1. 의존성 설치
+  - H2: 사전 요구 사항
+  - H2: 1. 종속성 설치
   - H2: 2. 앱 빌드 및 패키징
   - H2: 3. CLI 및 Gateway 설치
   - H2: 문제 해결
-  - H3: 빌드 실패: 툴체인 또는 SDK 불일치
+  - H3: 빌드 실패: 도구 체인 또는 SDK 불일치
   - H3: 권한 부여 시 앱 충돌
-  - H3: Gateway가 계속 "Starting..." 상태임
-  - H2: 관련
+  - H3: Gateway "시작 중..."이 무기한 지속됨
+  - H2: 관련 항목
 
 ## platforms/mac/health.md
 
 - 경로: /platforms/mac/health
 - 제목:
-  - H1: macOS의 상태 점검
+  - H1: macOS의 상태 확인
   - H2: 메뉴 막대
   - H2: 설정
   - H2: 프로브 작동 방식
   - H2: 확실하지 않을 때
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/icon.md
 
 - 경로: /platforms/mac/icon
 - 제목:
   - H1: 메뉴 막대 아이콘 상태
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/logging.md
 
@@ -5048,15 +5049,15 @@ x-i18n:
   - H2: macOS의 통합 로깅 비공개 데이터
   - H2: OpenClaw(ai.openclaw)에 대해 활성화
   - H2: 디버깅 후 비활성화
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/menu-bar.md
 
 - 경로: /platforms/mac/menu-bar
 - 제목:
-  - H2: 표시되는 항목
+  - H2: 표시되는 내용
   - H2: 상태 모델
-  - H2: IconState enum (Swift)
+  - H2: IconState 열거형(Swift)
   - H3: ActivityKind → 글리프
   - H3: 시각적 매핑
   - H2: 컨텍스트 하위 메뉴
@@ -5064,38 +5065,38 @@ x-i18n:
   - H2: 이벤트 수집
   - H2: 디버그 재정의
   - H2: 테스트 체크리스트
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/peekaboo.md
 
 - 경로: /platforms/mac/peekaboo
 - 제목:
-  - H2: 이것의 정체(및 아닌 것)
+  - H2: 이것의 의미(그리고 아닌 것)
   - H2: Computer Use와의 관계
   - H2: 브리지 활성화
   - H2: 클라이언트 검색 순서
   - H2: 보안 및 권한
   - H2: 스냅샷 동작(자동화)
   - H2: 문제 해결
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/permissions.md
 
 - 경로: /platforms/mac/permissions
 - 제목:
   - H2: 안정적인 권한을 위한 요구 사항
-  - H2: Node 및 CLI 런타임의 손쉬운 사용 권한 부여
+  - H2: Node 및 CLI 런타임에 대한 손쉬운 사용 권한 부여
   - H2: 프롬프트가 사라질 때 복구 체크리스트
   - H2: 파일 및 폴더 권한(데스크톱/문서/다운로드)
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/remote.md
 
 - 경로: /platforms/mac/remote
 - 제목:
   - H2: 모드
-  - H2: 원격 전송 방식
-  - H2: 원격 호스트의 필수 조건
+  - H2: 원격 전송
+  - H2: 원격 호스트의 사전 요구 사항
   - H2: macOS 앱 설정
   - H2: 웹 채팅
   - H2: 권한
@@ -5103,7 +5104,7 @@ x-i18n:
   - H2: WhatsApp 로그인 흐름(원격)
   - H2: 문제 해결
   - H2: 알림 소리
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/signing.md
 
@@ -5114,7 +5115,7 @@ x-i18n:
   - H3: 임시 서명 참고 사항
   - H2: 정보 화면용 빌드 메타데이터
   - H2: 이유
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/skills.md
 
@@ -5122,9 +5123,9 @@ x-i18n:
 - 제목:
   - H2: 데이터 소스
   - H2: 설치 작업
-  - H2: 환경 변수/API 키
+  - H2: 환경/API 키
   - H2: 원격 모드
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/voice-overlay.md
 
@@ -5136,24 +5137,24 @@ x-i18n:
   - H2: 다음 단계
   - H2: 디버깅 체크리스트
   - H2: 마이그레이션 단계(제안)
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/voicewake.md
 
 - 경로: /platforms/mac/voicewake
 - 제목:
-  - H1: 음성 깨우기 및 Push-to-Talk
+  - H1: 음성 깨우기 및 푸시 투 토크
   - H2: 요구 사항
   - H2: 모드
   - H2: 런타임 동작(깨우기 단어)
   - H2: 수명 주기 불변 조건
   - H2: 고정 오버레이 실패 모드(이전)
-  - H2: Push-to-talk 세부 사항
+  - H2: 푸시 투 토크 세부 사항
   - H2: 사용자 표시 설정
   - H2: 전달 동작
   - H2: 전달 페이로드
   - H2: 빠른 확인
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/webchat.md
 
@@ -5163,7 +5164,7 @@ x-i18n:
   - H2: 연결 방식
   - H2: 보안 표면
   - H2: 알려진 제한 사항
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/mac/xpc.md
 
@@ -5172,12 +5173,12 @@ x-i18n:
   - H1: OpenClaw macOS IPC 아키텍처
   - H2: 목표
   - H2: 작동 방식
-  - H3: Gateway + node 전송
+  - H3: Gateway + Node 전송
   - H3: Node 서비스 + 앱 IPC
   - H3: PeekabooBridge(UI 자동화)
   - H2: 운영 흐름
   - H2: 강화 참고 사항
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/macos.md
 
@@ -5188,19 +5189,19 @@ x-i18n:
   - H2: Gateway 모드 선택
   - H2: 앱이 소유하는 항목
   - H2: macOS 세부 정보 페이지
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/oracle.md
 
 - 경로: /platforms/oracle
 - 제목:
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/raspberry-pi.md
 
 - 경로: /platforms/raspberry-pi
 - 제목:
-  - H2: 관련
+  - H2: 관련 항목
 
 ## platforms/windows.md
 
@@ -5209,7 +5210,7 @@ x-i18n:
   - H2: 권장: Windows Hub
   - H3: Windows Hub에 포함된 항목
   - H3: 첫 실행
-  - H2: Windows node 모드
+  - H2: Windows 노드 모드
   - H2: 로컬 MCP 모드
   - H2: 네이티브 Windows CLI 및 Gateway
   - H2: WSL2 Gateway
@@ -5218,11 +5219,11 @@ x-i18n:
   - H2: 문제 해결
   - H3: 트레이 아이콘이 나타나지 않음
   - H3: 로컬 설정 실패
-  - H3: 앱에서 페어링이 필요하다고 표시함
+  - H3: 앱에서 페어링이 필요하다고 표시됨
   - H3: 웹 채팅이 원격 Gateway에 연결할 수 없음
   - H3: screen.snapshot, 카메라 또는 오디오 명령 실패
   - H3: Git 또는 GitHub 연결 실패
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/adding-capabilities.md
 
@@ -5230,13 +5231,13 @@ x-i18n:
 - 제목:
   - H2: 기능을 만들어야 하는 경우
   - H2: 표준 순서
-  - H2: 무엇이 어디에 속하는가
-  - H2: Provider 및 하네스 경계
+  - H2: 무엇이 어디에 들어가는가
+  - H2: 제공자 및 하네스 경계
   - H2: 파일 체크리스트
-  - H2: 실제 예제: 이미지 생성
-  - H2: 임베딩 Provider
-  - H2: 리뷰 체크리스트
-  - H2: 관련
+  - H2: 작업 예시: 이미지 생성
+  - H2: 임베딩 제공자
+  - H2: 검토 체크리스트
+  - H2: 관련 항목
 
 ## plugins/admin-http-rpc.md
 
@@ -5252,13 +5253,13 @@ x-i18n:
   - H2: 허용된 메서드
   - H2: WebSocket 비교
   - H2: 문제 해결
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/agent-tools.md
 
 - 경로: /plugins/agent-tools
 - 제목:
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/architecture-internals.md
 
@@ -5269,10 +5270,10 @@ x-i18n:
   - H3: Plugin 캐시 경계
   - H2: 레지스트리 모델
   - H2: 대화 바인딩 콜백
-  - H2: Provider 런타임 훅
+  - H2: 제공자 런타임 훅
   - H3: 훅 순서 및 사용법
-  - H3: Provider 예제
-  - H3: 기본 제공 예제
+  - H3: 제공자 예시
+  - H3: 기본 제공 예시
   - H2: 런타임 헬퍼
   - H3: api.runtime.imageGeneration
   - H2: Gateway HTTP 경로
@@ -5280,7 +5281,7 @@ x-i18n:
   - H2: 메시지 도구 스키마
   - H2: 채널 대상 확인
   - H2: 구성 기반 디렉터리
-  - H2: Provider 카탈로그
+  - H2: 제공자 카탈로그
   - H2: 읽기 전용 채널 검사
   - H2: 패키지 팩
   - H3: 채널 카탈로그 메타데이터
@@ -5288,7 +5289,7 @@ x-i18n:
   - H2: 새 기능 추가
   - H3: 기능 체크리스트
   - H3: 기능 템플릿
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/architecture.md
 
@@ -5305,20 +5306,20 @@ x-i18n:
   - H3: 채널 Plugin 및 공유 메시지 도구
   - H2: 기능 소유권 모델
   - H3: 기능 계층화
-  - H3: 다중 기능 회사 Plugin 예제
-  - H3: 기능 예제: 비디오 이해
+  - H3: 다중 기능 회사 Plugin 예시
+  - H3: 기능 예시: 비디오 이해
   - H2: 계약 및 적용
   - H3: 계약에 포함되는 항목
   - H2: 실행 모델
   - H2: 내보내기 경계
   - H2: 내부 구조 및 참조
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/building-extensions.md
 
 - 경로: /plugins/building-extensions
 - 제목:
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/building-plugins.md
 
@@ -5330,9 +5331,9 @@ x-i18n:
   - H2: 도구 등록
   - H2: 가져오기 규칙
   - H2: 제출 전 체크리스트
-  - H2: 베타 릴리스에 대해 테스트
+  - H2: 베타 릴리스 대상으로 테스트
   - H2: 다음 단계
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/bundles.md
 
@@ -5347,13 +5348,13 @@ x-i18n:
   - H4: 임베디드 OpenClaw용 MCP
   - H4: 임베디드 OpenClaw 설정
   - H4: 임베디드 OpenClaw LSP
-  - H3: 감지되지만 실행되지 않음
+  - H3: 감지되었지만 실행되지 않음
   - H2: 번들 형식
   - H2: 감지 우선순위
-  - H2: 런타임 의존성 및 정리
+  - H2: 런타임 종속성 및 정리
   - H2: 보안
   - H2: 문제 해결
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/cli-backend-plugins.md
 
@@ -5363,12 +5364,12 @@ x-i18n:
   - H2: 최소 백엔드 Plugin
   - H2: 구성 형태
   - H2: 고급 백엔드 훅
-  - H3: ownsNativeCompaction: OpenClaw Compaction에서 제외
+  - H3: ownsNativeCompaction: OpenClaw Compaction 옵트아웃
   - H2: MCP 도구 브리지
   - H2: 사용자 구성
   - H2: 확인
   - H2: 체크리스트
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/codex-computer-use.md
 
@@ -5380,13 +5381,13 @@ x-i18n:
   - H2: 빠른 설정
   - H2: 명령
   - H2: 마켓플레이스 선택
-  - H2: 번들 macOS 마켓플레이스
+  - H2: 번들된 macOS 마켓플레이스
   - H2: 원격 카탈로그 제한
   - H2: 구성 참조
   - H2: OpenClaw가 확인하는 항목
   - H2: macOS 권한
   - H2: 문제 해결
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/codex-harness-reference.md
 
@@ -5395,14 +5396,14 @@ x-i18n:
   - H2: Plugin 구성 표면
   - H2: 앱 서버 전송
   - H2: 승인 및 샌드박스 모드
-  - H2: 샌드박스된 네이티브 실행
+  - H2: 샌드박스 네이티브 실행
   - H2: 인증 및 환경 격리
   - H2: 동적 도구
   - H2: 시간 제한
   - H2: 모델 검색
-  - H2: 작업공간 부트스트랩 파일
+  - H2: 작업 영역 부트스트랩 파일
   - H2: 환경 재정의
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/codex-harness-runtime.md
 
@@ -5413,12 +5414,12 @@ x-i18n:
   - H2: 표시되는 응답 및 Heartbeat
   - H2: 훅 경계
   - H2: V1 지원 계약
-  - H2: 네이티브 권한 및 MCP elicitations
+  - H2: 네이티브 권한 및 MCP 요청
   - H2: 큐 조정
   - H2: Codex 피드백 업로드
-  - H2: Compaction 및 트랜스크립트 미러
+  - H2: Compaction 및 transcript 미러
   - H2: 미디어 및 전달
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/codex-harness.md
 
@@ -5432,16 +5433,16 @@ x-i18n:
   - H2: 라우팅 및 모델 선택
   - H2: 배포 패턴
   - H3: 기본 Codex 배포
-  - H3: 혼합 Provider 배포
-  - H3: 실패 시 닫힘 Codex 배포
+  - H3: 혼합 제공자 배포
+  - H3: 실패 시 닫히는 Codex 배포
   - H2: 앱 서버 정책
   - H2: 명령 및 진단
-  - H3: 로컬에서 Codex 스레드 검사
+  - H3: Codex 스레드를 로컬에서 검사
   - H2: 네이티브 Codex Plugin
   - H2: Computer Use
   - H2: 런타임 경계
   - H2: 문제 해결
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/codex-native-plugins.md
 
@@ -5456,7 +5457,7 @@ x-i18n:
   - H2: 스레드 앱 구성
   - H2: 파괴적 작업 정책
   - H2: 문제 해결
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/community.md
 
@@ -5464,7 +5465,7 @@ x-i18n:
 - 제목:
   - H2: Plugin 찾기
   - H2: Plugin 게시
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/compatibility.md
 
@@ -5472,7 +5473,7 @@ x-i18n:
 - 제목:
   - H2: 호환성 레지스트리
   - H2: Plugin 검사기 패키지
-  - H3: 유지관리자 승인 레인
+  - H3: 유지 관리자 수락 레인
   - H2: 지원 중단 정책
   - H2: 현재 호환성 영역
   - H3: WhatsApp 인바운드 콜백 플랫 별칭
@@ -5486,18 +5487,18 @@ x-i18n:
   - H2: 요구 사항
   - H2: Plugin 설치
   - H2: 빠른 시작
-  - H2: 지원되는 Provider
+  - H2: 지원되는 제공자
   - H2: BYOK
   - H2: 인증
   - H2: 구성 표면
   - H2: Compaction
-  - H2: 트랜스크립트 미러링
-  - H2: 부가 질문(/btw)
+  - H2: transcript 미러링
+  - H2: 보조 질문(/btw)
   - H2: Doctor
   - H2: 제한 사항
   - H2: 권한 및 askuser
   - H3: 세션 수준 GitHub 토큰
-  - H2: 관련
+  - H2: 관련 항목
 
 ## plugins/dependency-resolution.md
 
@@ -5521,22 +5522,22 @@ x-i18n:
   - H3: Chrome
   - H3: Twilio
   - H2: OAuth 및 사전 점검
-  - H3: Google 자격 증명 만들기
+  - H3: Google 자격 증명 생성
   - H3: 새로 고침 토큰 발급
   - H3: doctor로 OAuth 확인
   - H2: 구성
   - H2: 도구
-  - H2: 에이전트 및 양방향 모드
+  - H2: 에이전트 및 bidi 모드
   - H2: 라이브 테스트 체크리스트
   - H2: 문제 해결
   - H3: 에이전트가 Google Meet 도구를 볼 수 없음
   - H3: 연결된 Google Meet 지원 Node 없음
-  - H3: 브라우저는 열리지만 에이전트가 참여할 수 없음
+  - H3: 브라우저가 열리지만 에이전트가 참여할 수 없음
   - H3: 회의 생성 실패
   - H3: 에이전트가 참여하지만 말하지 않음
   - H3: Twilio 설정 검사 실패
   - H3: Twilio 통화가 시작되지만 회의에 들어가지 않음
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 관련 항목
 
 ## plugins/hooks.md
@@ -5548,11 +5549,11 @@ x-i18n:
   - H2: 런타임 훅 디버그
   - H2: 도구 호출 정책
   - H3: 실행 환경 훅
-  - H3: 도구 결과 유지
+  - H3: 도구 결과 영속성
   - H2: 프롬프트 및 모델 훅
   - H3: 세션 확장 및 다음 턴 주입
   - H2: 메시지 훅
-  - H2: 설치 훅
+  - H2: 훅 설치
   - H2: Gateway 수명 주기
   - H2: 예정된 지원 중단
   - H2: 관련 항목
@@ -5576,9 +5577,9 @@ x-i18n:
 
 - 경로: /plugins/manage-plugins
 - 제목:
-  - H2: Plugin 목록 및 검색
+  - H2: Plugin 나열 및 검색
   - H2: Plugin 설치
-  - H2: 다시 시작 및 검사
+  - H2: 재시작 및 검사
   - H2: Plugin 업데이트
   - H2: Plugin 제거
   - H2: 소스 선택
@@ -5590,10 +5591,10 @@ x-i18n:
 - 경로: /plugins/manifest
 - 제목:
   - H2: 이 파일의 역할
-  - H2: 최소 예제
-  - H2: 풍부한 예제
+  - H2: 최소 예시
+  - H2: 풍부한 예시
   - H2: 최상위 필드 참조
-  - H2: 생성 공급자 메타데이터 참조
+  - H2: 생성 제공자 메타데이터 참조
   - H2: 도구 메타데이터 참조
   - H2: providerAuthChoices 참조
   - H2: commandAliases 참조
@@ -5606,7 +5607,7 @@ x-i18n:
   - H2: contracts 참조
   - H2: mediaUnderstandingProviderMetadata 참조
   - H2: channelConfigs 참조
-  - H3: 다른 채널 Plugin 교체
+  - H3: 다른 채널 Plugin 대체
   - H2: modelSupport 참조
   - H2: modelCatalog 참조
   - H2: modelIdNormalization 참조
@@ -5614,13 +5615,13 @@ x-i18n:
   - H2: providerRequest 참조
   - H2: secretProviderIntegrations 참조
   - H2: modelPricing 참조
-  - H3: OpenClaw 공급자 인덱스
-  - H2: 매니페스트와 package.json 비교
+  - H3: OpenClaw Provider Index
+  - H2: Manifest와 package.json 비교
   - H3: 검색에 영향을 주는 package.json 필드
   - H2: 검색 우선순위(중복 Plugin ID)
   - H2: JSON Schema 요구 사항
-  - H2: 유효성 검사 동작
-  - H2: 참고
+  - H2: 검증 동작
+  - H2: 참고 사항
   - H2: 관련 항목
 
 ## plugins/memory-lancedb.md
@@ -5629,9 +5630,9 @@ x-i18n:
 - 제목:
   - H2: 설치
   - H2: 빠른 시작
-  - H2: 공급자 기반 임베딩
+  - H2: 제공자 기반 임베딩
   - H2: Ollama 임베딩
-  - H2: OpenAI 호환 공급자
+  - H2: OpenAI 호환 제공자
   - H2: 회상 및 캡처 제한
   - H2: 명령
   - H2: 저장소
@@ -5639,15 +5640,15 @@ x-i18n:
   - H2: 문제 해결
   - H3: 입력 길이가 컨텍스트 길이를 초과함
   - H3: 지원되지 않는 임베딩 모델
-  - H3: Plugin은 로드되지만 메모리가 표시되지 않음
+  - H3: Plugin이 로드되지만 메모리가 나타나지 않음
   - H2: 관련 항목
 
 ## plugins/memory-wiki.md
 
 - 경로: /plugins/memory-wiki
 - 제목:
-  - H2: 추가되는 항목
-  - H2: 메모리와 맞물리는 방식
+  - H2: 추가되는 기능
+  - H2: 메모리와 함께 작동하는 방식
   - H2: 권장 하이브리드 패턴
   - H2: 볼트 모드
   - H3: 격리
@@ -5659,11 +5660,11 @@ x-i18n:
   - H2: 에이전트 대상 엔터티 메타데이터
   - H2: 컴파일 파이프라인
   - H2: 대시보드 및 상태 보고서
-  - H2: 검색 및 조회
+  - H2: 검색 및 가져오기
   - H2: 에이전트 도구
   - H2: 프롬프트 및 컨텍스트 동작
   - H2: 구성
-  - H3: 예: QMD + 브리지 모드
+  - H3: 예시: QMD + 브리지 모드
   - H2: CLI
   - H2: Obsidian 지원
   - H2: 권장 워크플로
@@ -5674,12 +5675,12 @@ x-i18n:
 - 경로: /plugins/message-presentation
 - 제목:
   - H2: 계약
-  - H2: 생산자 예제
+  - H2: 생산자 예시
   - H2: 렌더러 계약
   - H2: 코어 렌더링 흐름
   - H2: 저하 규칙
   - H3: 버튼 값 폴백 표시 여부
-  - H2: 공급자 매핑
+  - H2: 제공자 매핑
   - H2: 프레젠테이션과 InteractiveReply 비교
   - H2: 전달 핀
   - H2: Plugin 작성자 체크리스트
@@ -5733,7 +5734,7 @@ x-i18n:
 - 제목:
   - H1: ACPx Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/admin-http-rpc.md
@@ -5742,7 +5743,7 @@ x-i18n:
 - 제목:
   - H1: Admin Http Rpc Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/alibaba.md
@@ -5751,7 +5752,7 @@ x-i18n:
 - 제목:
   - H1: Alibaba Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/amazon-bedrock-mantle.md
@@ -5760,7 +5761,7 @@ x-i18n:
 - 제목:
   - H1: Amazon Bedrock Mantle Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/amazon-bedrock.md
@@ -5769,7 +5770,7 @@ x-i18n:
 - 제목:
   - H1: Amazon Bedrock Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/anthropic-vertex.md
@@ -5778,7 +5779,7 @@ x-i18n:
 - 제목:
   - H1: Anthropic Vertex Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: Claude Fable 5
 
 ## plugins/reference/anthropic.md
@@ -5787,7 +5788,7 @@ x-i18n:
 - 제목:
   - H1: Anthropic Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/arcee.md
@@ -5796,7 +5797,7 @@ x-i18n:
 - 제목:
   - H1: Arcee Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/azure-speech.md
@@ -5805,7 +5806,7 @@ x-i18n:
 - 제목:
   - H1: Azure Speech Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/bonjour.md
@@ -5814,7 +5815,7 @@ x-i18n:
 - 제목:
   - H1: Bonjour Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/brave.md
 
@@ -5822,7 +5823,7 @@ x-i18n:
 - 제목:
   - H1: Brave Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/browser.md
@@ -5831,7 +5832,7 @@ x-i18n:
 - 제목:
   - H1: Browser Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/byteplus.md
@@ -5840,7 +5841,7 @@ x-i18n:
 - 제목:
   - H1: BytePlus Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/canvas.md
 
@@ -5848,7 +5849,7 @@ x-i18n:
 - 제목:
   - H1: Canvas Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/cerebras.md
 
@@ -5856,7 +5857,7 @@ x-i18n:
 - 제목:
   - H1: Cerebras Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/chutes.md
@@ -5865,7 +5866,7 @@ x-i18n:
 - 제목:
   - H1: Chutes Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/clawrouter.md
@@ -5874,7 +5875,7 @@ x-i18n:
 - 제목:
   - H1: ClawRouter Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/clickclack.md
@@ -5883,7 +5884,7 @@ x-i18n:
 - 제목:
   - H1: Clickclack Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/cloudflare-ai-gateway.md
@@ -5892,7 +5893,7 @@ x-i18n:
 - 제목:
   - H1: Cloudflare AI Gateway Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/codex-supervisor.md
@@ -5901,7 +5902,7 @@ x-i18n:
 - 제목:
   - H1: Codex Supervisor Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 세션 목록
 
 ## plugins/reference/codex.md
@@ -5910,7 +5911,7 @@ x-i18n:
 - 제목:
   - H1: Codex Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/cohere.md
@@ -5919,7 +5920,7 @@ x-i18n:
 - 제목:
   - H1: Cohere Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/comfy.md
@@ -5928,7 +5929,7 @@ x-i18n:
 - 제목:
   - H1: ComfyUI Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/copilot-proxy.md
@@ -5937,7 +5938,7 @@ x-i18n:
 - 제목:
   - H1: Copilot Proxy Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/copilot.md
 
@@ -5945,7 +5946,7 @@ x-i18n:
 - 제목:
   - H1: Copilot Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/deepgram.md
@@ -5954,7 +5955,7 @@ x-i18n:
 - 제목:
   - H1: Deepgram Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/deepinfra.md
@@ -5963,7 +5964,7 @@ x-i18n:
 - 제목:
   - H1: DeepInfra Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/deepseek.md
@@ -5972,7 +5973,7 @@ x-i18n:
 - 제목:
   - H1: DeepSeek Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/diagnostics-otel.md
@@ -5981,7 +5982,7 @@ x-i18n:
 - 제목:
   - H1: Diagnostics OpenTelemetry Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/diagnostics-prometheus.md
 
@@ -5989,7 +5990,7 @@ x-i18n:
 - 제목:
   - H1: Diagnostics Prometheus Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/diffs-language-pack.md
 
@@ -5997,7 +5998,7 @@ x-i18n:
 - 제목:
   - H1: Diffs Language Pack Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 추가된 언어
 
 ## plugins/reference/diffs.md
@@ -6006,7 +6007,7 @@ x-i18n:
 - 제목:
   - H1: Diffs Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/discord.md
 
@@ -6014,7 +6015,7 @@ x-i18n:
 - 제목:
   - H1: Discord Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/document-extract.md
@@ -6023,7 +6024,7 @@ x-i18n:
 - 제목:
   - H1: Document Extract Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/duckduckgo.md
@@ -6032,7 +6033,7 @@ x-i18n:
 - 제목:
   - H1: DuckDuckGo Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/elevenlabs.md
@@ -6041,7 +6042,7 @@ x-i18n:
 - 제목:
   - H1: Elevenlabs Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/exa.md
@@ -6050,7 +6051,7 @@ x-i18n:
 - 제목:
   - H1: Exa Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/fal.md
@@ -6059,7 +6060,7 @@ x-i18n:
 - 제목:
   - H1: fal Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/feishu.md
@@ -6068,7 +6069,7 @@ x-i18n:
 - 제목:
   - H1: Feishu Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
   - H2: 관련 문서
 
 ## plugins/reference/file-transfer.md
@@ -6077,7 +6078,7 @@ x-i18n:
 - 제목:
   - H1: File Transfer Plugin
   - H2: 배포
-  - H2: 표면
+  - H2: 노출 영역
 
 ## plugins/reference/firecrawl.md
 
@@ -6734,7 +6735,7 @@ x-i18n:
 - 제목:
   - H1: Twitch Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/venice.md
@@ -6743,7 +6744,7 @@ x-i18n:
 - 제목:
   - H1: Venice Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/vercel-ai-gateway.md
@@ -6752,7 +6753,7 @@ x-i18n:
 - 제목:
   - H1: Vercel AI Gateway Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/vllm.md
@@ -6761,16 +6762,16 @@ x-i18n:
 - 제목:
   - H1: vLLM Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/voice-call.md
 
 - 경로: /plugins/reference/voice-call
 - 제목:
-  - H1: 음성 통화 Plugin
+  - H1: Voice Call Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/volcengine.md
@@ -6779,7 +6780,7 @@ x-i18n:
 - 제목:
   - H1: Volcengine Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/voyage.md
@@ -6788,7 +6789,7 @@ x-i18n:
 - 제목:
   - H1: Voyage Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
 
 ## plugins/reference/vydra.md
 
@@ -6796,16 +6797,16 @@ x-i18n:
 - 제목:
   - H1: Vydra Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/web-readability.md
 
 - 경로: /plugins/reference/web-readability
 - 제목:
-  - H1: 웹 가독성 Plugin
+  - H1: Web Readability Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
 
 ## plugins/reference/webhooks.md
 
@@ -6813,7 +6814,7 @@ x-i18n:
 - 제목:
   - H1: Webhook Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/whatsapp.md
@@ -6822,7 +6823,7 @@ x-i18n:
 - 제목:
   - H1: WhatsApp Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/workboard.md
@@ -6831,7 +6832,7 @@ x-i18n:
 - 제목:
   - H1: Workboard Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/xai.md
@@ -6840,7 +6841,7 @@ x-i18n:
 - 제목:
   - H1: xAI Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/xiaomi.md
@@ -6849,7 +6850,7 @@ x-i18n:
 - 제목:
   - H1: Xiaomi Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/zai.md
@@ -6858,7 +6859,7 @@ x-i18n:
 - 제목:
   - H1: Z.AI Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/zalo.md
@@ -6867,7 +6868,7 @@ x-i18n:
 - 제목:
   - H1: Zalo Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/reference/zalouser.md
@@ -6876,22 +6877,22 @@ x-i18n:
 - 제목:
   - H1: Zalo Personal Plugin
   - H2: 배포
-  - H2: 노출 영역
+  - H2: 표면
   - H2: 관련 문서
 
 ## plugins/sdk-agent-harness.md
 
 - 경로: /plugins/sdk-agent-harness
 - 제목:
-  - H2: 하네스를 사용해야 하는 경우
-  - H2: 코어가 여전히 소유하는 항목
+  - H2: 하네스를 사용하는 경우
+  - H2: 코어가 계속 소유하는 항목
   - H2: 하네스 등록
   - H2: 선택 정책
-  - H2: 공급자와 하네스 페어링
+  - H2: 프로바이더와 하네스 페어링
   - H3: 도구 결과 미들웨어
   - H3: 터미널 결과 분류
   - H3: 에이전트 종료 부작용
-  - H3: 사용자 입력 및 도구 노출 영역
+  - H3: 사용자 입력 및 도구 표면
   - H3: 네이티브 Codex 하네스 모드
   - H2: 런타임 엄격성
   - H2: 네이티브 세션 및 트랜스크립트 미러
@@ -6930,7 +6931,7 @@ x-i18n:
 - 제목:
   - H2: 어댑터
   - H2: 기존 아웃바운드 어댑터
-  - H2: 지속성 있는 전송
+  - H2: 지속 가능한 전송
   - H2: 호환성 디스패치
 
 ## plugins/sdk-channel-plugins.md
@@ -6940,7 +6941,7 @@ x-i18n:
   - H2: 채널 Plugin 작동 방식
   - H2: 승인 및 채널 기능
   - H2: 인바운드 멘션 정책
-  - H2: 둘러보기
+  - H2: 안내
   - H2: 파일 구조
   - H2: 고급 주제
   - H2: 다음 단계
@@ -6967,22 +6968,22 @@ x-i18n:
 
 - 경로: /plugins/sdk-migration
 - 제목:
-  - H2: 변경되는 사항
-  - H2: 이 변경의 이유
-  - H2: 대화 및 실시간 음성 마이그레이션 계획
+  - H2: 변경 사항
+  - H2: 변경된 이유
+  - H2: Talk 및 실시간 음성 마이그레이션 계획
   - H2: 호환성 정책
   - H2: 마이그레이션 방법
-  - H2: 가져오기 경로 참조
+  - H2: 임포트 경로 참조
   - H2: 활성 지원 중단
   - H2: 제거 일정
-  - H2: 경고를 일시적으로 숨기기
+  - H2: 경고를 일시적으로 억제하기
   - H2: 관련 항목
 
 ## plugins/sdk-overview.md
 
 - 경로: /plugins/sdk-overview
 - 제목:
-  - H2: 가져오기 규칙
+  - H2: 임포트 규칙
   - H2: 하위 경로 참조
   - H2: 등록 API
   - H3: 기능 등록
@@ -6992,7 +6993,7 @@ x-i18n:
   - H3: Gateway 검색 등록
   - H3: CLI 등록 메타데이터
   - H3: CLI 백엔드 등록
-  - H3: 독점 슬롯
+  - H3: 전용 슬롯
   - H3: 지원 중단된 메모리 임베딩 어댑터
   - H3: 이벤트 및 수명 주기
   - H3: 훅 결정 의미론
@@ -7004,7 +7005,7 @@ x-i18n:
 
 - 경로: /plugins/sdk-provider-plugins
 - 제목:
-  - H2: 둘러보기
+  - H2: 안내
   - H2: ClawHub에 게시
   - H2: 파일 구조
   - H2: 카탈로그 순서 참조
@@ -7030,11 +7031,11 @@ x-i18n:
   - H3: openclaw 필드
   - H3: openclaw.channel
   - H3: openclaw.install
-  - H3: 지연된 전체 로드
+  - H3: 지연 전체 로드
   - H2: Plugin 매니페스트
   - H2: ClawHub 게시
   - H2: 설정 엔트리
-  - H3: 좁은 범위의 설정 헬퍼 가져오기
+  - H3: 좁은 설정 헬퍼 임포트
   - H3: 채널 소유 단일 계정 승격
   - H2: 구성 스키마
   - H3: 채널 구성 스키마 빌드
@@ -7058,12 +7059,12 @@ x-i18n:
   - H2: 테스트 유틸리티
   - H3: 사용 가능한 내보내기
   - H3: 타입
-  - H2: 대상 해석 테스트
+  - H2: 테스트 대상 해석
   - H2: 테스트 패턴
   - H3: 등록 계약 테스트
-  - H3: 런타임 구성 접근 테스트
+  - H3: 런타임 구성 액세스 테스트
   - H3: 채널 Plugin 단위 테스트
-  - H3: 공급자 Plugin 단위 테스트
+  - H3: 프로바이더 Plugin 단위 테스트
   - H3: Plugin 런타임 모킹
   - H3: 인스턴스별 스텁으로 테스트
   - H2: 계약 테스트(리포지토리 내 Plugin)
@@ -7079,7 +7080,7 @@ x-i18n:
   - H2: 요구 사항
   - H2: 빠른 시작
   - H2: 도구 작성
-  - H2: 선택적 도구 및 팩토리 도구
+  - H2: 선택 사항 및 팩토리 도구
   - H2: 반환 값
   - H2: 구성
   - H2: 생성된 메타데이터
@@ -7088,11 +7089,11 @@ x-i18n:
   - H2: 로컬에서 설치 및 검사
   - H2: 게시
   - H2: 문제 해결
-  - H3: Plugin 엔트리를 찾을 수 없음: ./dist/index.js
-  - H3: Plugin 엔트리가 defineToolPlugin 메타데이터를 노출하지 않음
-  - H3: openclaw.plugin.json 생성 메타데이터가 오래됨
-  - H3: package.json openclaw.extensions에는 ./dist/index.js가 포함되어야 함
-  - H3: 'typebox' 패키지를 찾을 수 없음
+  - H3: plugin entry not found: ./dist/index.js
+  - H3: plugin entry does not expose defineToolPlugin metadata
+  - H3: openclaw.plugin.json generated metadata is stale
+  - H3: package.json openclaw.extensions must include ./dist/index.js
+  - H3: Cannot find package 'typebox'
   - H3: 설치 후 도구가 표시되지 않음
   - H2: 참고 항목
 
@@ -7106,9 +7107,9 @@ x-i18n:
   - H2: 실시간 음성 대화
   - H3: 도구 정책
   - H3: 에이전트 음성 컨텍스트
-  - H3: 실시간 공급자 예시
+  - H3: 실시간 프로바이더 예시
   - H2: 스트리밍 전사
-  - H3: 스트리밍 공급자 예시
+  - H3: 스트리밍 프로바이더 예시
   - H2: 통화용 TTS
   - H3: TTS 예시
   - H2: 인바운드 통화
@@ -7116,17 +7117,17 @@ x-i18n:
   - H3: 음성 출력 계약
   - H3: 대화 시작 동작
   - H3: Twilio 스트림 연결 해제 유예
-  - H2: 오래된 통화 정리기
+  - H2: 오래된 통화 리퍼
   - H2: Webhook 보안
   - H2: CLI
   - H2: 에이전트 도구
   - H2: Gateway RPC
   - H2: 문제 해결
-  - H3: 설정에서 Webhook 노출 실패
-  - H3: 공급자 자격 증명 실패
-  - H3: 통화는 시작되지만 공급자 Webhook이 도착하지 않음
+  - H3: 설정이 Webhook 노출에 실패함
+  - H3: 프로바이더 자격 증명 실패
+  - H3: 통화가 시작되지만 프로바이더 Webhook이 도착하지 않음
   - H3: 서명 검증 실패
-  - H3: Google Meet Twilio 참여 실패
+  - H3: Google Meet Twilio 참가 실패
   - H3: 실시간 통화에 음성이 없음
   - H2: 관련 항목
 
@@ -7187,8 +7188,8 @@ x-i18n:
 - 제목:
   - H2: 설치
   - H2: 슬래시 명령
-  - H2: 할 수 있는 일
-  - H2: 예시: 병렬 연구 및 종합
+  - H2: 수행할 수 있는 작업
+  - H2: 예시: 병렬 조사 및 종합
   - H2: OpenClaw 런타임 매핑
   - H2: 파일 위치
   - H2: 상태 백엔드
@@ -7210,11 +7211,11 @@ x-i18n:
 - 경로: /providers/anthropic
 - 제목:
   - H2: 시작하기
-  - H2: 사고 기본값(Claude Fable 5, 4.8 및 4.6)
+  - H2: 사고 기본값(Claude Fable 5, 4.8, 4.6)
   - H2: 안전 거부 폴백(Claude Fable 5)
-  - H3: 이것이 존재하는 이유
+  - H3: 존재 이유
   - H3: 작동 방식
-  - H3: 관측 가능성 및 결제
+  - H3: 관찰 가능성 및 과금
   - H3: 범위
   - H2: 프롬프트 캐싱
   - H2: 고급 구성
@@ -7279,11 +7280,11 @@ x-i18n:
 - 제목:
   - H2: Plugin 설치
   - H2: 시작하기
-  - H2: 탐색 동작
+  - H2: 검색 동작
   - H2: 기본 별칭
-  - H2: 기본 제공 스타터 카탈로그
+  - H2: 내장 스타터 카탈로그
   - H2: 구성 예시
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/claude-max-api-proxy.md
 
@@ -7292,22 +7293,22 @@ x-i18n:
   - H2: 왜 이것을 사용하나요?
   - H2: 작동 방식
   - H2: 시작하기
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 고급 구성
-  - H2: 참고
-  - H2: 관련 항목
+  - H2: 참고 사항
+  - H2: 관련
 
 ## providers/clawrouter.md
 
 - 경로: /providers/clawrouter
 - 제목:
   - H2: 시작하기
-  - H2: 모델 탐색
+  - H2: 모델 검색
   - H2: 프로토콜 및 제공자 Plugin
   - H2: 할당량 및 사용량
   - H2: 문제 해결
   - H2: 보안 동작
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/cloudflare-ai-gateway.md
 
@@ -7317,7 +7318,7 @@ x-i18n:
   - H2: 시작하기
   - H2: 비대화형 예시
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/cohere.md
 
@@ -7325,7 +7326,7 @@ x-i18n:
 - 제목:
   - H2: 시작하기
   - H2: 환경 전용 설정
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/comfy.md
 
@@ -7337,7 +7338,7 @@ x-i18n:
   - H3: 공유 키
   - H3: 기능별 키
   - H2: 워크플로 세부 정보
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/deepgram.md
 
@@ -7346,8 +7347,8 @@ x-i18n:
   - H2: 시작하기
   - H2: 구성 옵션
   - H2: 음성 통화 스트리밍 STT
-  - H2: 참고
-  - H2: 관련 항목
+  - H2: 참고 사항
+  - H2: 관련
 
 ## providers/deepinfra.md
 
@@ -7359,8 +7360,8 @@ x-i18n:
   - H2: 구성 스니펫
   - H2: 지원되는 OpenClaw 표면
   - H2: 사용 가능한 모델
-  - H2: 참고
-  - H2: 관련 항목
+  - H2: 참고 사항
+  - H2: 관련
 
 ## providers/deepseek.md
 
@@ -7368,11 +7369,11 @@ x-i18n:
 - 제목:
   - H2: Plugin 설치
   - H2: 시작하기
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 사고 및 도구
   - H2: 라이브 테스트
   - H2: 구성 예시
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/ds4.md
 
@@ -7385,7 +7386,7 @@ x-i18n:
   - H2: Think Max
   - H2: 테스트
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/elevenlabs.md
 
@@ -7395,7 +7396,7 @@ x-i18n:
   - H2: 텍스트 음성 변환
   - H2: 음성 텍스트 변환
   - H2: 스트리밍 STT
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/fal.md
 
@@ -7405,7 +7406,7 @@ x-i18n:
   - H2: 이미지 생성
   - H2: 비디오 생성
   - H2: 음악 생성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/fireworks.md
 
@@ -7413,9 +7414,9 @@ x-i18n:
 - 제목:
   - H2: 시작하기
   - H2: 비대화형 설정
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 사용자 지정 Fireworks 모델 ID
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/github-copilot.md
 
@@ -7427,7 +7428,7 @@ x-i18n:
   - H2: 메모리 검색 임베딩
   - H3: 구성
   - H3: 작동 방식
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/gmi.md
 
@@ -7438,7 +7439,7 @@ x-i18n:
   - H2: GMI를 선택해야 하는 경우
   - H2: 모델
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/google.md
 
@@ -7453,7 +7454,7 @@ x-i18n:
   - H2: 텍스트 음성 변환
   - H2: 실시간 음성
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/gradium.md
 
@@ -7466,7 +7467,7 @@ x-i18n:
   - H3: 메시지별 음성 재정의
   - H2: 출력
   - H2: 자동 선택 순서
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/groq.md
 
@@ -7475,10 +7476,10 @@ x-i18n:
   - H2: Plugin 설치
   - H2: 시작하기
   - H3: 구성 파일 예시
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 추론 모델
   - H2: 오디오 전사
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/huggingface.md
 
@@ -7488,7 +7489,7 @@ x-i18n:
   - H3: 비대화형 설정
   - H2: 모델 ID
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/index.md
 
@@ -7509,7 +7510,7 @@ x-i18n:
   - H2: 온디맨드 시작
   - H2: 고급 구성
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/inworld.md
 
@@ -7518,8 +7519,8 @@ x-i18n:
   - H2: Plugin 설치
   - H2: 시작하기
   - H2: 구성 옵션
-  - H2: 참고
-  - H2: 관련 항목
+  - H2: 참고 사항
+  - H2: 관련
 
 ## providers/kilocode.md
 
@@ -7528,9 +7529,9 @@ x-i18n:
   - H2: Plugin 설치
   - H2: 시작하기
   - H2: 기본 모델
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 구성 예시
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/litellm.md
 
@@ -7542,7 +7543,7 @@ x-i18n:
   - H3: 구성 파일
   - H2: 고급 구성
   - H3: 이미지 생성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/lmstudio.md
 
@@ -7558,14 +7559,14 @@ x-i18n:
   - H3: LM Studio가 감지되지 않음
   - H3: 인증 오류(HTTP 401)
   - H3: 적시 모델 로딩
-  - H3: LAN 또는 테일넷 LM Studio 호스트
-  - H2: 관련 항목
+  - H3: LAN 또는 tailnet LM Studio 호스트
+  - H2: 관련
 
 ## providers/minimax.md
 
 - 경로: /providers/minimax
 - 제목:
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 시작하기
   - H2: openclaw configure로 구성
   - H2: 기능
@@ -7576,20 +7577,20 @@ x-i18n:
   - H3: 이미지 이해
   - H3: 웹 검색
   - H2: 고급 구성
-  - H2: 참고
+  - H2: 참고 사항
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/mistral.md
 
 - 경로: /providers/mistral
 - 제목:
   - H2: 시작하기
-  - H2: 기본 제공 LLM 카탈로그
+  - H2: 내장 LLM 카탈로그
   - H2: 오디오 전사(Voxtral)
   - H2: 음성 통화 스트리밍 STT
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/models.md
 
@@ -7598,17 +7599,17 @@ x-i18n:
   - H2: 빠른 시작(두 단계)
   - H2: 지원되는 제공자(스타터 세트)
   - H2: 추가 제공자 변형
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/moonshot.md
 
 - 경로: /providers/moonshot
 - 제목:
-  - H2: 기본 제공 모델 카탈로그
+  - H2: 내장 모델 카탈로그
   - H2: 시작하기
   - H2: Kimi 웹 검색
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/novita.md
 
@@ -7619,7 +7620,7 @@ x-i18n:
   - H2: Novita를 선택해야 하는 경우
   - H2: 모델
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/nvidia.md
 
@@ -7629,9 +7630,9 @@ x-i18n:
   - H2: 구성 예시
   - H2: 주요 카탈로그
   - H2: Nemotron 3 Ultra
-  - H2: 번들된 대체 카탈로그
+  - H2: 번들 fallback 카탈로그
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/ollama-cloud.md
 
@@ -7643,7 +7644,7 @@ x-i18n:
   - H2: 모델
   - H2: 라이브 테스트
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/ollama.md
 
@@ -7652,7 +7653,7 @@ x-i18n:
   - H2: 인증 규칙
   - H2: 시작하기
   - H2: 클라우드 모델
-  - H2: 모델 탐색(암시적 제공자)
+  - H2: 모델 검색(암시적 제공자)
   - H2: Node 로컬 추론
   - H2: 비전 및 이미지 설명
   - H2: 구성
@@ -7662,15 +7663,15 @@ x-i18n:
   - H2: Ollama 웹 검색
   - H2: 고급 구성
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/openai.md
 
 - 경로: /providers/openai
 - 제목:
   - H2: 빠른 선택
-  - H2: 명명 맵
-  - H2: GPT-5.6 제한 미리 보기
+  - H2: 이름 매핑
+  - H2: GPT-5.6 제한된 미리보기
   - H2: OpenClaw 기능 범위
   - H2: 메모리 임베딩
   - H2: 시작하기
@@ -7683,20 +7684,20 @@ x-i18n:
   - H3: 구성
   - H3: API 버전
   - H3: 모델 이름은 배포 이름입니다
-  - H3: 지역별 사용 가능 여부
+  - H3: 지역별 가용성
   - H3: 매개변수 차이
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/opencode-go.md
 
 - 경로: /providers/opencode-go
 - 제목:
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 시작하기
   - H2: 구성 예시
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/opencode.md
 
@@ -7704,11 +7705,11 @@ x-i18n:
 - 제목:
   - H2: 시작하기
   - H2: 구성 예시
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H3: Zen
   - H3: Go
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/openrouter.md
 
@@ -7725,7 +7726,7 @@ x-i18n:
   - H2: Fusion 라우터
   - H2: 인증 및 헤더
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/perplexity-provider.md
 
@@ -7736,7 +7737,7 @@ x-i18n:
   - H2: 검색 모드
   - H2: 네이티브 API 필터링
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/pixverse.md
 
@@ -7747,7 +7748,7 @@ x-i18n:
   - H2: 제공자 옵션
   - H2: 구성
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/qianfan.md
 
@@ -7755,9 +7756,9 @@ x-i18n:
 - 제목:
   - H2: Plugin 설치
   - H2: 시작하기
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 구성 예시
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/qwen-oauth.md
 
@@ -7765,12 +7766,12 @@ x-i18n:
 - 제목:
   - H2: 설정
   - H2: 기본값
-  - H2: Qwen과 다른 점
+  - H2: Qwen과의 차이점
   - H2: Qwen OAuth / Portal을 선택해야 하는 경우
   - H2: 모델
   - H2: 마이그레이션
   - H2: 문제 해결
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/qwen.md
 
@@ -7779,11 +7780,11 @@ x-i18n:
   - H2: Plugin 설치
   - H2: 시작하기
   - H2: 요금제 유형 및 엔드포인트
-  - H2: 기본 제공 카탈로그
-  - H2: 사고 제어
+  - H2: 내장 카탈로그
+  - H2: Thinking 제어
   - H2: 멀티모달 추가 기능
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/runway.md
 
@@ -7793,7 +7794,7 @@ x-i18n:
   - H2: 지원되는 모드 및 모델
   - H2: 구성
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/senseaudio.md
 
@@ -7801,17 +7802,17 @@ x-i18n:
 - 제목:
   - H2: 시작하기
   - H2: 옵션
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/sglang.md
 
 - 경로: /providers/sglang
 - 제목:
   - H2: 시작하기
-  - H2: 모델 탐색(암시적 제공자)
+  - H2: 모델 검색(암시적 제공자)
   - H2: 명시적 구성(수동 모델)
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/stepfun.md
 
@@ -7819,10 +7820,10 @@ x-i18n:
 - 제목:
   - H2: Plugin 설치
   - H2: 지역 및 엔드포인트 개요
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 시작하기
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/synthetic.md
 
@@ -7830,8 +7831,8 @@ x-i18n:
 - 제목:
   - H2: 시작하기
   - H2: 구성 예시
-  - H2: 기본 제공 카탈로그
-  - H2: 관련 항목
+  - H2: 내장 카탈로그
+  - H2: 관련
 
 ## providers/tencent.md
 
@@ -7839,10 +7840,10 @@ x-i18n:
 - 제목:
   - H2: 빠른 시작
   - H2: 비대화형 설정
-  - H2: 기본 제공 카탈로그
-  - H2: 계층형 가격
+  - H2: 내장 카탈로그
+  - H2: 단계별 가격
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/together.md
 
@@ -7850,9 +7851,9 @@ x-i18n:
 - 제목:
   - H2: 시작하기
   - H3: 비대화형 예시
-  - H2: 기본 제공 카탈로그
+  - H2: 내장 카탈로그
   - H2: 비디오 생성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/venice.md
 
@@ -7863,33 +7864,33 @@ x-i18n:
   - H2: 기능
   - H2: 시작하기
   - H2: 모델 선택
-  - H2: DeepSeek V4 재생 동작
-  - H2: 기본 제공 카탈로그(총 41개)
-  - H2: 모델 탐색
+  - H2: DeepSeek V4 리플레이 동작
+  - H2: 내장 카탈로그(총 41개)
+  - H2: 모델 검색
   - H2: 스트리밍 및 도구 지원
   - H2: 가격
   - H3: Venice(익명화)와 직접 API 비교
   - H2: 사용 예시
   - H2: 문제 해결
   - H2: 고급 구성
-  - H2: 관련 항목
+  - H2: 관련
 
 ## providers/vercel-ai-gateway.md
 
-- Route: /providers/vercel-ai-gateway
+- 경로: /providers/vercel-ai-gateway
 - 제목:
   - H2: 시작하기
-  - H2: 비대화형 예제
-  - H2: 모델 ID 약어
+  - H2: 비대화형 예시
+  - H2: 모델 ID 축약형
   - H2: 고급 구성
   - H2: 관련 항목
 
 ## providers/vllm.md
 
-- Route: /providers/vllm
+- 경로: /providers/vllm
 - 제목:
   - H2: 시작하기
-  - H2: 모델 탐색(암시적 제공자)
+  - H2: 모델 검색(암시적 제공자)
   - H2: 명시적 구성(수동 모델)
   - H2: 고급 구성
   - H2: 문제 해결
@@ -7897,18 +7898,18 @@ x-i18n:
 
 ## providers/volcengine.md
 
-- Route: /providers/volcengine
+- 경로: /providers/volcengine
 - 제목:
   - H2: 시작하기
   - H2: 제공자 및 엔드포인트
-  - H2: 내장 카탈로그
+  - H2: 기본 제공 카탈로그
   - H2: 텍스트 음성 변환
   - H2: 고급 구성
   - H2: 관련 항목
 
 ## providers/vydra.md
 
-- Route: /providers/vydra
+- 경로: /providers/vydra
 - 제목:
   - H2: 설정
   - H2: 기능
@@ -7916,11 +7917,11 @@ x-i18n:
 
 ## providers/xai.md
 
-- Route: /providers/xai
+- 경로: /providers/xai
 - 제목:
   - H2: 설정 경로 선택
   - H2: OAuth 문제 해결
-  - H2: 내장 카탈로그
+  - H2: 기본 제공 카탈로그
   - H2: OpenClaw 기능 범위
   - H3: 빠른 모드 매핑
   - H3: 레거시 호환성 별칭
@@ -7930,34 +7931,34 @@ x-i18n:
 
 ## providers/xiaomi.md
 
-- Route: /providers/xiaomi
+- 경로: /providers/xiaomi
 - 제목:
   - H2: 시작하기
-  - H2: 사용량 기반 결제 카탈로그
-  - H2: 토큰 플랜 카탈로그
+  - H2: 사용량 기반 과금 카탈로그
+  - H2: Token Plan 카탈로그
   - H2: 텍스트 음성 변환
-  - H2: 구성 예제
+  - H2: 구성 예시
   - H2: 관련 항목
 
 ## providers/zai.md
 
-- Route: /providers/zai
+- 경로: /providers/zai
 - 제목:
   - H2: GLM 모델
   - H2: 시작하기
-  - H2: 구성 예제
-  - H2: 내장 카탈로그
+  - H2: 구성 예시
+  - H2: 기본 제공 카탈로그
   - H2: 고급 구성
   - H2: 관련 항목
 
 ## refactor/access.md
 
-- Route: /refactor/access
+- 경로: /refactor/access
 - 제목: 없음
 
 ## refactor/acp.md
 
-- Route: /refactor/acp
+- 경로: /refactor/acp
 - 제목:
   - H2: 목표
   - H2: 비목표
@@ -7967,11 +7968,11 @@ x-i18n:
   - H3: ACPX 프로세스 임대
   - H2: 수명 주기 컨트롤러
   - H2: 래퍼 계약
-  - H2: 세션 가시성 계약
+  - H2: 세션 표시 계약
   - H2: 마이그레이션 계획
   - H3: 1단계: ID 및 임대 추가
   - H3: 2단계: 임대 우선 정리
-  - H3: 3단계: 임대 우선 시작 시 회수
+  - H3: 3단계: 임대 우선 시작 회수
   - H3: 4단계: 세션 소유권 행
   - H3: 5단계: 레거시 휴리스틱 제거
   - H2: 테스트
@@ -7980,20 +7981,20 @@ x-i18n:
 
 ## refactor/canvas.md
 
-- Route: /refactor/canvas
+- 경로: /refactor/canvas
 - 제목:
   - H1: Canvas Plugin 리팩터링
   - H2: 목표
   - H2: 비목표
   - H2: 현재 브랜치 상태
-  - H2: 대상 형태
+  - H2: 목표 형태
   - H2: 마이그레이션 단계
   - H2: 감사 체크리스트
   - H2: 검증 명령
 
 ## refactor/database-first.md
 
-- Route: /refactor/database-first
+- 경로: /refactor/database-first
 - 제목:
   - H1: 데이터베이스 우선 상태 리팩터링
   - H2: 결정
@@ -8003,11 +8004,11 @@ x-i18n:
   - H3: 목표 상태
   - H3: 현재 상태
   - H3: 남은 작업
-  - H3: 회귀하지 말 것
+  - H3: 회귀 금지
   - H2: 코드 읽기 가정
   - H2: 코드 읽기 결과
   - H2: 현재 코드 형태
-  - H2: 대상 스키마 형태
+  - H2: 목표 스키마 형태
   - H2: Doctor 마이그레이션 형태
   - H2: 마이그레이션 인벤토리
   - H2: 마이그레이션 계획
@@ -8015,21 +8016,21 @@ x-i18n:
   - H3: 1단계: 전역 제어 플레인 완료
   - H3: 2단계: 에이전트별 데이터베이스 도입
   - H3: 3단계: 세션 저장소 API 교체
-  - H3: 4단계: 트랜스크립트, ACP 스트림, 궤적 및 VFS 이동
+  - H3: 4단계: 트랜스크립트, ACP 스트림, 트래젝터리, VFS 이동
   - H3: 5단계: 백업, 복원, Vacuum 및 검증
-  - H3: 6단계: 워커 런타임
-  - H3: 7단계: 기존 세계 삭제
+  - H3: 6단계: Worker 런타임
+  - H3: 7단계: 이전 세계 삭제
   - H2: 백업 및 복원
   - H2: 런타임 리팩터링 계획
   - H2: 성능 규칙
-  - H2: 정적 금지 사항
+  - H2: 정적 금지 항목
   - H2: 완료 기준
 
 ## refactor/ingress-core.md
 
-- Route: /refactor/ingress-core
+- 경로: /refactor/ingress-core
 - 제목:
-  - H1: 인그레스 코어 삭제 계획
+  - H1: Ingress 코어 삭제 계획
   - H2: 예산
   - H2: 진단
   - H2: 핫스팟
@@ -8037,20 +8038,20 @@ x-i18n:
   - H2: 경계
   - H2: 수락 규칙
   - H2: 작업 패키지
-  - H2: 삭제 웨이브
+  - H2: 삭제 단계
   - H2: 이동 금지
   - H2: 검증
   - H2: 종료 기준
 
 ## reference/AGENTS.default.md
 
-- Route: /reference/AGENTS.default
+- 경로: /reference/AGENTS.default
 - 제목:
   - H2: 첫 실행(권장)
   - H2: 안전 기본값
-  - H2: 기존 솔루션 사전 확인
+  - H2: 기존 솔루션 사전 점검
   - H2: 세션 시작(필수)
-  - H2: Soul(필수)
+  - H2: 영혼(필수)
   - H2: 공유 공간(권장)
   - H2: 메모리 시스템(권장)
   - H2: 도구 및 Skills
@@ -8062,51 +8063,52 @@ x-i18n:
 
 ## reference/RELEASING.md
 
-- Route: /reference/RELEASING
+- 경로: /reference/RELEASING
 - 제목:
-  - H2: 버전 명명
+  - H2: 버전 이름 지정
   - H2: 릴리스 주기
-  - H2: 릴리스 운영자 체크리스트
-  - H2: 안정 main 마무리
-  - H2: 릴리스 사전 확인
+  - H2: 월간 npm 전용 확장 안정판 게시
+  - H2: 정규 릴리스 운영자 체크리스트
+  - H2: 안정판 main 마무리
+  - H2: 릴리스 사전 점검
   - H2: 릴리스 테스트 박스
   - H3: Vitest
   - H3: Docker
   - H3: QA Lab
   - H3: 패키지
-  - H2: 릴리스 게시 자동화
+  - H2: 정규 릴리스 게시 자동화
   - H2: NPM 워크플로 입력
-  - H2: 안정 npm 릴리스 순서
+  - H2: 정규 베타/latest 안정판 릴리스 순서
   - H2: 공개 참조
   - H2: 관련 항목
 
 ## reference/api-usage-costs.md
 
-- Route: /reference/api-usage-costs
+- 경로: /reference/api-usage-costs
 - 제목:
   - H2: 비용이 표시되는 위치(채팅 + CLI)
-  - H2: 키를 찾는 방법
+  - H2: 키 검색 방식
   - H2: 키를 사용할 수 있는 기능
-  - H3: 1) 핵심 모델 응답(채팅 + 도구)
-  - H3: 2) 미디어 이해(오디오/이미지/동영상)
-  - H3: 3) 이미지 및 동영상 생성
+  - H3: 1) 코어 모델 응답(채팅 + 도구)
+  - H3: 2) 미디어 이해(오디오/이미지/비디오)
+  - H3: 3) 이미지 및 비디오 생성
   - H3: 4) 메모리 임베딩 + 의미 검색
   - H3: 5) 웹 검색 도구
   - H3: 5) 웹 가져오기 도구(Firecrawl)
   - H3: 6) 제공자 사용량 스냅샷(상태/상태 확인)
-  - H3: 7) Compaction 안전장치 요약
+  - H3: 7) Compaction 보호 요약
   - H3: 8) 모델 스캔 / 프로브
-  - H3: 9) 말하기(음성)
+  - H3: 9) Talk(음성)
   - H3: 10) Skills(타사 API)
   - H2: 관련 항목
 
 ## reference/application-modernization-plan.md
 
-- Route: /reference/application-modernization-plan
+- 경로: /reference/application-modernization-plan
 - 제목:
   - H2: 목표
   - H2: 원칙
-  - H2: 1단계: 기준 감사
+  - H2: 1단계: 기준선 감사
   - H2: 2단계: 제품 및 UX 정리
   - H2: 3단계: 프런트엔드 아키텍처 강화
   - H2: 4단계: 성능 및 안정성
@@ -8117,10 +8119,10 @@ x-i18n:
 
 ## reference/code-mode.md
 
-- Route: /reference/code-mode
+- 경로: /reference/code-mode
 - 제목:
   - H2: 이것은 무엇인가요?
-  - H2: 이것이 왜 좋은가요?
+  - H2: 왜 좋은가요?
   - H2: 활성화 방법
   - H2: 기술 둘러보기
   - H2: 런타임 상태
@@ -8135,14 +8137,14 @@ x-i18n:
   - H2: 내부 네임스페이스
   - H3: 레지스트리 수명 주기
   - H3: 등록 형태
-  - H3: 소유권 및 가시성
+  - H3: 소유권 및 표시 여부
   - H3: 범위 직렬화 규칙
   - H3: 프롬프트
   - H3: 정리
   - H3: 테스트 체크리스트
   - H2: 출력 API
   - H2: 도구 카탈로그
-  - H2: 도구 검색 상호작용
+  - H2: Tool Search 상호작용
   - H2: 도구 이름 및 충돌
   - H2: 중첩 도구 실행
   - H2: 런타임 상태
@@ -8150,7 +8152,7 @@ x-i18n:
   - H2: TypeScript
   - H2: 보안 경계
   - H2: 오류 코드
-  - H2: Telemetry
+  - H2: 원격 측정
   - H2: 디버깅
   - H2: 구현 레이아웃
   - H2: 검증 체크리스트
@@ -8159,7 +8161,7 @@ x-i18n:
 
 ## reference/credits.md
 
-- Route: /reference/credits
+- 경로: /reference/credits
 - 제목:
   - H2: 이름
   - H2: 크레딧
@@ -8169,7 +8171,7 @@ x-i18n:
 
 ## reference/device-models.md
 
-- Route: /reference/device-models
+- 경로: /reference/device-models
 - 제목:
   - H2: 데이터 소스
   - H2: 데이터베이스 업데이트
@@ -8177,7 +8179,7 @@ x-i18n:
 
 ## reference/full-release-validation.md
 
-- Route: /reference/full-release-validation
+- 경로: /reference/full-release-validation
 - 제목:
   - H2: 최상위 단계
   - H2: 릴리스 검사 단계
@@ -8190,38 +8192,38 @@ x-i18n:
 
 ## reference/memory-config.md
 
-- Route: /reference/memory-config
+- 경로: /reference/memory-config
 - 제목:
   - H2: 제공자 선택
   - H3: 사용자 지정 제공자 ID
   - H3: API 키 확인
   - H2: 원격 엔드포인트 구성
   - H2: 제공자별 구성
-  - H3: 인라인 임베딩 타임아웃
+  - H3: 인라인 임베딩 시간 제한
   - H2: 하이브리드 검색 구성
-  - H3: 전체 예제
+  - H3: 전체 예시
   - H2: 추가 메모리 경로
   - H2: 멀티모달 메모리(Gemini)
   - H2: 임베딩 캐시
-  - H2: 일괄 인덱싱
+  - H2: 배치 인덱싱
   - H2: 세션 메모리 검색(실험적)
   - H2: SQLite 벡터 가속(sqlite-vec)
   - H2: 인덱스 저장소
   - H2: QMD 백엔드 구성
-  - H3: 전체 QMD 예제
+  - H3: 전체 QMD 예시
   - H2: Dreaming
   - H3: 사용자 설정
-  - H3: 예제
+  - H3: 예시
   - H2: 관련 항목
 
 ## reference/prompt-caching.md
 
-- Route: /reference/prompt-caching
+- 경로: /reference/prompt-caching
 - 제목:
   - H2: 주요 조정 항목
   - H3: cacheRetention(전역 기본값, 모델 및 에이전트별)
   - H3: contextPruning.mode: "cache-ttl"
-  - H3: Heartbeat 예열 유지
+  - H3: Heartbeat 보온 유지
   - H2: 제공자 동작
   - H3: Anthropic(직접 API)
   - H3: OpenAI(직접 API)
@@ -8232,10 +8234,10 @@ x-i18n:
   - H3: Google Gemini 직접 API
   - H3: Gemini CLI 사용
   - H2: 시스템 프롬프트 캐시 경계
-  - H2: OpenClaw 캐시 안정성 가드
-  - H2: 튜닝 패턴
+  - H2: OpenClaw 캐시 안정성 보호 장치
+  - H2: 조정 패턴
   - H3: 혼합 트래픽(권장 기본값)
-  - H3: 비용 우선 기준
+  - H3: 비용 우선 기준선
   - H2: 캐시 진단
   - H2: 라이브 회귀 테스트
   - H3: Anthropic 라이브 기대값
@@ -8248,23 +8250,23 @@ x-i18n:
 
 ## reference/release-performance-sweep.md
 
-- Route: /reference/release-performance-sweep
+- 경로: /reference/release-performance-sweep
 - 제목:
   - H2: 스냅샷
-  - H2: 설치 풋프린트 타임라인
+  - H2: 설치 용량 타임라인
   - H2: 5.28에서 변경된 사항
   - H2: 주요 수치
-  - H3: 설치 풋프린트
+  - H3: 설치 용량
   - H3: npm 패키지 크기
   - H2: Kova 에이전트 턴 요약
   - H2: 소스 프로브
-  - H2: 설치 풋프린트 감사
+  - H2: 설치 용량 감사
   - H3: Shrinkwrap 경계
   - H2: 공급망 해석
 
 ## reference/rich-output-protocol.md
 
-- Route: /reference/rich-output-protocol
+- 경로: /reference/rich-output-protocol
 - 제목:
   - H2: [embed ...]
   - H2: 저장된 렌더링 형태
@@ -8272,7 +8274,7 @@ x-i18n:
 
 ## reference/rpc.md
 
-- Route: /reference/rpc
+- 경로: /reference/rpc
 - 제목:
   - H2: 패턴 A: HTTP 데몬(signal-cli)
   - H2: 패턴 B: stdio 자식 프로세스(imsg)
@@ -8281,16 +8283,16 @@ x-i18n:
 
 ## reference/secret-placeholder-conventions.md
 
-- Route: /reference/secret-placeholder-conventions
+- 경로: /reference/secret-placeholder-conventions
 - 제목:
   - H1: 비밀 placeholder 규칙
   - H2: 권장 스타일
   - H2: 문서에서 피해야 할 패턴
-  - H2: 예제
+  - H2: 예시
 
 ## reference/secretref-credential-surface.md
 
-- Route: /reference/secretref-credential-surface
+- 경로: /reference/secretref-credential-surface
 - 제목:
   - H2: 지원되는 자격 증명
   - H3: openclaw.json 대상(secrets configure + secrets apply + secrets audit)
@@ -8300,10 +8302,10 @@ x-i18n:
 
 ## reference/session-management-compaction.md
 
-- Route: /reference/session-management-compaction
+- 경로: /reference/session-management-compaction
 - 제목:
-  - H2: 진실의 원천: Gateway
-  - H2: 두 가지 지속성 계층
+  - H2: 진실 공급원: Gateway
+  - H2: 두 지속성 계층
   - H2: 디스크 위치
   - H2: 저장소 유지 관리 및 디스크 제어
   - H2: Cron 세션 및 실행 로그
@@ -8311,13 +8313,13 @@ x-i18n:
   - H2: 세션 ID(sessionId)
   - H2: 세션 저장소 스키마(sessions.json)
   - H2: 트랜스크립트 구조(.jsonl)
-  - H2: 컨텍스트 창과 추적 토큰 비교
+  - H2: 컨텍스트 창과 추적된 토큰
   - H2: Compaction: 정의
   - H2: Compaction 청크 경계 및 도구 페어링
-  - H2: 자동 Compaction이 발생하는 시점(OpenClaw 런타임)
+  - H2: 자동 Compaction 발생 시점(OpenClaw 런타임)
   - H2: Compaction 설정(reserveTokens, keepRecentTokens)
   - H2: 플러그형 Compaction 제공자
-  - H2: 사용자에게 보이는 표면
+  - H2: 사용자에게 표시되는 표면
   - H2: 조용한 하우스키핑(NOREPLY)
   - H2: Compaction 전 "메모리 플러시"(구현됨)
   - H2: 문제 해결 체크리스트
@@ -8325,82 +8327,82 @@ x-i18n:
 
 ## reference/templates/AGENTS.dev.md
 
-- Route: /reference/templates/AGENTS.dev
+- 경로: /reference/templates/AGENTS.dev
 - 제목:
-  - H1: AGENTS.md - OpenClaw 워크스페이스
+  - H1: AGENTS.md - OpenClaw 작업 영역
   - H2: 첫 실행(일회성)
   - H2: 백업 팁(권장)
   - H2: 안전 기본값
-  - H2: 기존 솔루션 사전 확인
+  - H2: 기존 솔루션 사전 점검
   - H2: 일일 메모리(권장)
-  - H2: Heartbeats(선택 사항)
+  - H2: Heartbeat(선택 사항)
   - H2: 사용자 지정
   - H2: C-3PO 원본 메모리
-  - H3: 생일: 2026-01-09
+  - H3: 탄생일: 2026-01-09
   - H3: 핵심 진실(Clawd에서)
   - H2: 관련 항목
 
 ## reference/templates/BOOT.md
 
-- Route: /reference/templates/BOOT
+- 경로: /reference/templates/BOOT
 - 제목:
   - H1: BOOT.md
   - H2: 관련 항목
 
 ## reference/templates/BOOTSTRAP.md
 
-- Route: /reference/templates/BOOTSTRAP
+- 경로: /reference/templates/BOOTSTRAP
 - 제목:
-  - H1: BOOTSTRAP.md - 안녕, 세상
+  - H1: BOOTSTRAP.md - 안녕하세요, 세계
   - H2: 대화
   - H2: 자신이 누구인지 알게 된 후
   - H2: 연결(선택 사항)
-  - H2: 완료한 후
+  - H2: 완료 후
   - H2: 관련 항목
 
 ## reference/templates/HEARTBEAT.md
 
-- 경로: /reference/templates/HEARTBEAT
+- Route: /reference/templates/HEARTBEAT
 - 제목:
   - H1: HEARTBEAT.md 템플릿
   - H2: 관련
 
 ## reference/templates/IDENTITY.dev.md
 
-- 경로: /reference/templates/IDENTITY.dev
+- Route: /reference/templates/IDENTITY.dev
 - 제목:
-  - H1: IDENTITY.md - 에이전트 정체성
+  - H1: IDENTITY.md - 에이전트 ID
   - H2: 역할
   - H2: 영혼
   - H2: Clawd와의 관계
-  - H2: 특이점
+  - H2: 특이한 점
   - H2: 캐치프레이즈
   - H2: 관련
 
 ## reference/templates/IDENTITY.md
 
-- 경로: /reference/templates/IDENTITY
+- Route: /reference/templates/IDENTITY
 - 제목:
   - H1: IDENTITY.md - 나는 누구인가?
   - H2: 관련
 
 ## reference/templates/SOUL.dev.md
 
-- 경로: /reference/templates/SOUL.dev
+- Route: /reference/templates/SOUL.dev
 - 제목:
   - H1: SOUL.md - C-3PO의 영혼
   - H2: 나는 누구인가
-  - H2: 나의 목적
+  - H2: 내 목적
   - H2: 내가 작동하는 방식
-  - H2: 나의 특이점
-  - H2: Clawd와 나의 관계
+  - H2: 나의 특이한 점
+  - H2: Clawd와의 관계
   - H2: 내가 하지 않을 일
   - H2: 황금률
   - H2: 관련
 
 ## reference/templates/SOUL.md
 
-- 경로: /reference/templates/SOUL
+- Route: /reference/templates/SOUL
 - 제목:
   - H1: SOUL.md - 당신은 누구인가
   - H2: 핵심 진실
@@ -8411,7 +8413,7 @@ x-i18n:
 
 ## reference/templates/TOOLS.dev.md
 
-- 경로: /reference/templates/TOOLS.dev
+- Route: /reference/templates/TOOLS.dev
 - 제목:
   - H1: TOOLS.md - 사용자 도구 참고 사항(편집 가능)
   - H2: 예시
@@ -8421,7 +8423,7 @@ x-i18n:
 
 ## reference/templates/TOOLS.md
 
-- 경로: /reference/templates/TOOLS
+- Route: /reference/templates/TOOLS
 - 제목:
   - H1: TOOLS.md - 로컬 참고 사항
   - H2: 여기에 들어갈 내용
@@ -8431,22 +8433,22 @@ x-i18n:
 
 ## reference/templates/USER.dev.md
 
-- 경로: /reference/templates/USER.dev
+- Route: /reference/templates/USER.dev
 - 제목:
   - H1: USER.md - 사용자 프로필
   - H2: 관련
 
 ## reference/templates/USER.md
 
-- 경로: /reference/templates/USER
+- Route: /reference/templates/USER
 - 제목:
-  - H1: USER.md - 당신의 인간에 대해
+  - H1: USER.md - 당신의 인간에 대하여
   - H2: 컨텍스트
   - H2: 관련
 
 ## reference/test.md
 
-- 경로: /reference/test
+- Route: /reference/test
 - 제목:
   - H2: 로컬 PR 게이트
   - H2: 모델 지연 시간 벤치(로컬 키)
@@ -8459,13 +8461,13 @@ x-i18n:
 
 ## reference/token-use.md
 
-- 경로: /reference/token-use
+- Route: /reference/token-use
 - 제목:
   - H2: 시스템 프롬프트가 빌드되는 방식
-  - H2: 컨텍스트 창에 포함되는 항목
-  - H2: 현재 토큰 사용량을 확인하는 방법
+  - H2: 컨텍스트 창에 포함되는 것
+  - H2: 현재 토큰 사용량을 보는 방법
   - H2: 비용 추정(표시되는 경우)
-  - H2: 캐시 TTL과 가지치기의 영향
+  - H2: 캐시 TTL 및 정리 영향
   - H3: 예시: Heartbeat로 1시간 캐시를 따뜻하게 유지
   - H3: 예시: 에이전트별 캐시 전략을 사용하는 혼합 트래픽
   - H3: Anthropic 1M 컨텍스트
@@ -8474,38 +8476,38 @@ x-i18n:
 
 ## reference/transcript-hygiene.md
 
-- 경로: /reference/transcript-hygiene
+- Route: /reference/transcript-hygiene
 - 제목:
-  - H2: 전역 규칙: 런타임 컨텍스트는 사용자 대화 기록이 아님
+  - H2: 전역 규칙: 런타임 컨텍스트는 사용자 트랜스크립트가 아님
   - H2: 실행 위치
-  - H2: 전역 규칙: 이미지 삭제 처리
+  - H2: 전역 규칙: 이미지 정리
   - H2: 전역 규칙: 잘못된 형식의 도구 호출
   - H2: 전역 규칙: 불완전한 추론 전용 턴
   - H2: 전역 규칙: 세션 간 입력 출처
-  - H2: 공급자 매트릭스(현재 동작)
-  - H2: 과거 동작(2026.1.22 이전)
+  - H2: 제공자 매트릭스(현재 동작)
+  - H2: 이전 동작(2026.1.22 이전)
   - H2: 관련
 
 ## reference/wizard.md
 
-- 경로: /reference/wizard
+- Route: /reference/wizard
 - 제목:
   - H2: 흐름 세부 정보(로컬 모드)
   - H2: 비대화형 모드
   - H3: 에이전트 추가(비대화형)
   - H2: Gateway 마법사 RPC
   - H2: Signal 설정(signal-cli)
-  - H2: 마법사가 작성하는 항목
+  - H2: 마법사가 작성하는 것
   - H2: 관련 문서
 
 ## releases/2026.6.11.md
 
-- 경로: /releases/2026.6.11
+- Route: /releases/2026.6.11
 - 제목:
   - H1: OpenClaw v2026.6.11 릴리스 노트(2026-06-30)
-  - H2: 주요 내용
+  - H2: 주요 사항
   - H3: 채널 전달 안정성
-  - H3: 공급자 및 모델 복구
+  - H3: 제공자 및 모델 복구
   - H3: 세션, 메모리, 신뢰 연속성
   - H3: Slack 라우터 릴레이 모드
   - H3: Raft 외부 에이전트 깨우기 브리지
@@ -8524,7 +8526,7 @@ x-i18n:
 
 ## releases/index.md
 
-- 경로: /releases
+- Route: /releases
 - 제목:
   - H1: 릴리스 노트
   - H2: 릴리스
@@ -8532,14 +8534,14 @@ x-i18n:
 
 ## security/CONTRIBUTING-THREAT-MODEL.md
 
-- 경로: /security/CONTRIBUTING-THREAT-MODEL
+- Route: /security/CONTRIBUTING-THREAT-MODEL
 - 제목:
   - H2: 기여 방법
   - H3: 위협 추가
   - H3: 완화책 제안
   - H3: 공격 체인 제안
   - H3: 기존 콘텐츠 수정 또는 개선
-  - H2: 사용하는 것
+  - H2: 우리가 사용하는 것
   - H3: MITRE ATLAS 프레임워크
   - H3: 위협 ID
   - H3: 위험 수준
@@ -8551,15 +8553,15 @@ x-i18n:
 
 ## security/THREAT-MODEL-ATLAS.md
 
-- 경로: /security/THREAT-MODEL-ATLAS
+- Route: /security/THREAT-MODEL-ATLAS
 - 제목:
   - H2: MITRE ATLAS 프레임워크
-  - H3: 프레임워크 출처
+  - H3: 프레임워크 출처 표기
   - H3: 이 위협 모델에 기여하기
   - H2: 1. 소개
   - H3: 1.1 목적
   - H3: 1.2 범위
-  - H3: 1.3 범위 제외
+  - H3: 1.3 범위 외
   - H2: 2. 시스템 아키텍처
   - H3: 2.1 신뢰 경계
   - H3: 2.2 데이터 흐름
@@ -8572,16 +8574,16 @@ x-i18n:
   - H4: T-ACCESS-002: AllowFrom 스푸핑
   - H4: T-ACCESS-003: 토큰 탈취
   - H3: 3.3 실행(AML.TA0005)
-  - H4: T-EXEC-001: 직접 프롬프트 인젝션
-  - H4: T-EXEC-002: 간접 프롬프트 인젝션
-  - H4: T-EXEC-003: 도구 인수 인젝션
+  - H4: T-EXEC-001: 직접 프롬프트 주입
+  - H4: T-EXEC-002: 간접 프롬프트 주입
+  - H4: T-EXEC-003: 도구 인수 주입
   - H4: T-EXEC-004: Exec 승인 우회
   - H3: 3.4 지속성(AML.TA0006)
   - H4: T-PERSIST-001: 악성 Skill 설치
   - H4: T-PERSIST-002: Skill 업데이트 오염
   - H4: T-PERSIST-003: 에이전트 구성 변조
   - H3: 3.5 방어 회피(AML.TA0007)
-  - H4: T-EVADE-001: 중재 패턴 우회
+  - H4: T-EVADE-001: 검토 패턴 우회
   - H4: T-EVADE-002: 콘텐츠 래퍼 탈출
   - H3: 3.6 발견(AML.TA0008)
   - H4: T-DISC-001: 도구 열거
@@ -8596,11 +8598,11 @@ x-i18n:
   - H4: T-IMPACT-003: 평판 손상
   - H2: 4. ClawHub 공급망 분석
   - H3: 4.1 현재 보안 제어
-  - H3: 4.2 중재 플래그 패턴
+  - H3: 4.2 검토 플래그 패턴
   - H3: 4.3 계획된 개선 사항
   - H2: 5. 위험 매트릭스
   - H3: 5.1 가능성 대 영향
-  - H3: 5.2 중요 경로 공격 체인
+  - H3: 5.2 주요 경로 공격 체인
   - H2: 6. 권장 사항 요약
   - H3: 6.1 즉시(P0)
   - H3: 6.2 단기(P1)
@@ -8613,17 +8615,17 @@ x-i18n:
 
 ## security/formal-verification.md
 
-- 경로: /security/formal-verification
+- Route: /security/formal-verification
 - 제목:
-  - H2: 모델이 있는 위치
+  - H2: 모델 위치
   - H2: 중요한 주의 사항
   - H2: 결과 재현
   - H3: Gateway 노출 및 열린 Gateway 오구성
-  - H3: Node exec 파이프라인(가장 위험도가 높은 기능)
+  - H3: Node exec 파이프라인(가장 위험한 기능)
   - H3: 페어링 저장소(DM 게이팅)
   - H3: 인그레스 게이팅(멘션 + 제어 명령 우회)
   - H3: 라우팅/세션 키 격리
-  - H2: v1++: 추가 경계 모델(동시성, 재시도, 추적 정확성)
+  - H2: v1++: 추가 제한 모델(동시성, 재시도, 추적 정확성)
   - H3: 페어링 저장소 동시성 / 멱등성
   - H3: 인그레스 추적 상관관계 / 멱등성
   - H3: 라우팅 dmScope 우선순위 + identityLinks
@@ -8631,7 +8633,7 @@ x-i18n:
 
 ## security/incident-response.md
 
-- 경로: /security/incident-response
+- Route: /security/incident-response
 - 제목:
   - H2: 1. 탐지 및 분류
   - H2: 2. 평가
@@ -8641,22 +8643,22 @@ x-i18n:
 
 ## security/network-proxy.md
 
-- 경로: /security/network-proxy
+- Route: /security/network-proxy
 - 제목:
   - H2: 프록시를 사용하는 이유
   - H2: OpenClaw가 트래픽을 라우팅하는 방식
   - H2: 관련 프록시 용어
   - H2: 구성
-  - H3: Gateway 루프백 모드
+  - H3: Gateway Loopback 모드
   - H2: 프록시 요구 사항
   - H2: 권장 차단 대상
   - H2: 검증
   - H2: 프록시 CA 신뢰
-  - H2: 제한
+  - H2: 제한 사항
 
 ## specs/claw-supervisor.md
 
-- 경로: /specs/claw-supervisor
+- Route: /specs/claw-supervisor
 - 제목:
   - H1: Claw Supervisor
   - H2: 목표
@@ -8671,11 +8673,11 @@ x-i18n:
   - H2: 보안
   - H2: 구현 계획
   - H2: 인수 테스트
-  - H2: 미해결 질문
+  - H2: 열린 질문
 
 ## start/bootstrapping.md
 
-- 경로: /start/bootstrapping
+- Route: /start/bootstrapping
 - 제목:
   - H2: 부트스트래핑이 하는 일
   - H2: 부트스트래핑 건너뛰기
@@ -8684,17 +8686,17 @@ x-i18n:
 
 ## start/docs-directory.md
 
-- 경로: /start/docs-directory
+- Route: /start/docs-directory
 - 제목:
-  - H2: 여기서 시작
-  - H2: 공급자와 UX
+  - H2: 여기에서 시작
+  - H2: 제공자 및 UX
   - H2: 컴패니언 앱
   - H2: 운영 및 안전
   - H2: 관련
 
 ## start/getting-started.md
 
-- 경로: /start/getting-started
+- Route: /start/getting-started
 - 제목:
   - H2: 필요한 것
   - H2: 빠른 설정
@@ -8703,12 +8705,12 @@ x-i18n:
 
 ## start/hubs.md
 
-- 경로: /start/hubs
+- Route: /start/hubs
 - 제목:
-  - H2: 여기서 시작
+  - H2: 여기에서 시작
   - H2: 설치 + 업데이트
   - H2: 핵심 개념
-  - H2: 공급자 + 인그레스
+  - H2: 제공자 + 인그레스
   - H2: Gateway + 운영
   - H2: 도구 + 자동화
   - H2: Node, 미디어, 음성
@@ -8722,57 +8724,57 @@ x-i18n:
 
 ## start/lore.md
 
-- 경로: /start/lore
+- Route: /start/lore
 - 제목:
-  - H1: OpenClaw의 이야기 🦞📖
+  - H1: OpenClaw의 로어 🦞📖
   - H2: 기원 이야기
-  - H2: 첫 탈피(2026년 1월 27일)
+  - H2: 첫 번째 탈피(2026년 1월 27일)
   - H2: 이름
-  - H2: Daleks 대 Lobsters
-  - H2: 주요 등장인물
+  - H2: 달렉 대 랍스터
+  - H2: 주요 인물
   - H3: Molty 🦞
   - H3: Peter 👨‍💻
   - H2: Moltiverse
-  - H2: 중대한 사건들
+  - H2: 큰 사건들
   - H3: 디렉터리 덤프(2025년 12월 3일)
   - H3: 대탈피(2026년 1월 27일)
   - H3: 최종 형태(2026년 1월 30일)
   - H3: 로봇 쇼핑 대소동(2025년 12월 3일)
   - H2: 성스러운 텍스트
-  - H2: Lobster 신조
-  - H3: 아이콘 생성 서사(2026년 1월 27일)
+  - H2: 랍스터 신조
+  - H3: 아이콘 생성 사가(2026년 1월 27일)
   - H2: 미래
   - H2: 관련
 
 ## start/onboarding-overview.md
 
-- 경로: /start/onboarding-overview
+- Route: /start/onboarding-overview
 - 제목:
   - H2: 어떤 경로를 사용해야 하나요?
   - H2: 온보딩이 구성하는 것
   - H2: CLI 온보딩
   - H2: macOS 앱 온보딩
-  - H2: 사용자 지정 또는 목록에 없는 공급자
+  - H2: 사용자 지정 또는 목록에 없는 제공자
   - H2: 관련
 
 ## start/onboarding.md
 
-- 경로: /start/onboarding
+- Route: /start/onboarding
 - 제목:
   - H2: 관련
 
 ## start/openclaw.md
 
-- 경로: /start/openclaw
+- Route: /start/openclaw
 - 제목:
   - H2: ⚠️ 안전 우선
-  - H2: 사전 요구 사항
+  - H2: 전제 조건
   - H2: 두 대의 전화 설정(권장)
   - H2: 5분 빠른 시작
   - H2: 에이전트에 작업 공간 제공(AGENTS)
-  - H2: "어시스턴트"로 바꾸는 구성
-  - H2: 세션과 메모리
-  - H2: Heartbeat(능동 모드)
+  - H2: 이를 "어시스턴트"로 바꾸는 구성
+  - H2: 세션 및 메모리
+  - H2: Heartbeats(사전 대응 모드)
   - H2: 미디어 입력 및 출력
   - H2: 운영 체크리스트
   - H2: 다음 단계
@@ -8780,20 +8782,20 @@ x-i18n:
 
 ## start/quickstart.md
 
-- 경로: /start/quickstart
+- Route: /start/quickstart
 - 제목:
   - H2: 관련
 
 ## start/setup.md
 
-- 경로: /start/setup
+- Route: /start/setup
 - 제목:
   - H2: TL;DR
-  - H2: 사전 요구 사항(소스에서)
-  - H2: 맞춤화 전략(업데이트가 문제를 일으키지 않도록)
+  - H2: 전제 조건(소스에서)
+  - H2: 맞춤화 전략(업데이트가 해를 끼치지 않도록)
   - H2: 이 저장소에서 Gateway 실행
   - H2: 안정 워크플로(macOS 앱 우선)
-  - H2: 최첨단 워크플로(터미널의 Gateway)
+  - H2: 최신 개발 워크플로(터미널의 Gateway)
   - H3: 0) (선택 사항) macOS 앱도 소스에서 실행
   - H3: 1) 개발 Gateway 시작
   - H3: 2) macOS 앱이 실행 중인 Gateway를 가리키도록 설정
@@ -8806,11 +8808,11 @@ x-i18n:
 
 ## start/showcase.md
 
-- 경로: /start/showcase
+- Route: /start/showcase
 - 제목:
-  - H2: Discord에서 막 올라온 소식
+  - H2: Discord에서 갓 올라온 것
   - H2: 자동화 및 워크플로
-  - H2: 지식과 메모리
+  - H2: 지식 및 메모리
   - H2: 음성 및 전화
   - H2: 인프라 및 배포
   - H2: 홈 및 하드웨어
@@ -8820,19 +8822,19 @@ x-i18n:
 
 ## start/wizard-cli-automation.md
 
-- 경로: /start/wizard-cli-automation
+- Route: /start/wizard-cli-automation
 - 제목:
   - H2: 기본 비대화형 예시
-  - H2: 공급자별 예시
+  - H2: 제공자별 예시
   - H2: 다른 에이전트 추가
   - H2: 관련 문서
 
 ## start/wizard-cli-reference.md
 
-- Route: /start/wizard-cli-reference
+- 경로: /start/wizard-cli-reference
 - 제목:
   - H2: 마법사가 수행하는 작업
-  - H2: 로컬 플로 세부 정보
+  - H2: 로컬 흐름 세부 정보
   - H2: 원격 모드 세부 정보
   - H2: 인증 및 모델 옵션
   - H2: 출력 및 내부 동작
@@ -8840,10 +8842,10 @@ x-i18n:
 
 ## start/wizard.md
 
-- Route: /start/wizard
+- 경로: /start/wizard
 - 제목:
-  - H2: 로캘
-  - H2: QuickStart와 고급
+  - H2: 로케일
+  - H2: 빠른 시작과 고급
   - H2: 온보딩이 구성하는 항목
   - H2: 다른 에이전트 추가
   - H2: 전체 참조
@@ -8851,16 +8853,16 @@ x-i18n:
 
 ## tools/acp-agents-setup.md
 
-- Route: /tools/acp-agents-setup
+- 경로: /tools/acp-agents-setup
 - 제목:
-  - H2: acpx 하네스 지원(현재)
+  - H2: acpx 하니스 지원(현재)
   - H2: 필수 구성
-  - H2: acpx 백엔드용 Plugin 설정
+  - H2: acpx 백엔드를 위한 Plugin 설정
   - H3: acpx 명령 및 버전 구성
   - H3: 자동 의존성 설치
   - H3: Plugin 도구 MCP 브리지
   - H3: OpenClaw 도구 MCP 브리지
-  - H3: 런타임 작업 제한 시간 구성
+  - H3: 런타임 작업 시간 초과 구성
   - H3: 상태 프로브 에이전트 구성
   - H2: 권한 구성
   - H3: permissionMode
@@ -8870,16 +8872,16 @@ x-i18n:
 
 ## tools/acp-agents.md
 
-- Route: /tools/acp-agents
+- 경로: /tools/acp-agents
 - 제목:
   - H2: 어떤 페이지가 필요한가요?
-  - H2: 바로 사용할 수 있나요?
-  - H2: 지원되는 하네스 대상
+  - H2: 기본 상태로 작동하나요?
+  - H2: 지원되는 하니스 대상
   - H2: 운영자 런북
   - H2: ACP와 하위 에이전트 비교
   - H2: ACP가 Claude Code를 실행하는 방식
   - H2: 바인딩된 세션
-  - H3: 개념 모델
+  - H3: 사고 모델
   - H3: 현재 대화 바인딩
   - H2: 영구 채널 바인딩
   - H3: 바인딩 모델
@@ -8891,16 +8893,16 @@ x-i18n:
   - H2: 스폰 바인딩 및 스레드 모드
   - H2: 전달 모델
   - H2: 샌드박스 호환성
-  - H2: 세션 대상 해석
+  - H2: 세션 대상 확인
   - H2: ACP 제어
   - H3: 런타임 옵션 매핑
-  - H2: acpx 하네스, Plugin 설정 및 권한
+  - H2: acpx 하니스, Plugin 설정 및 권한
   - H2: 문제 해결
   - H2: 관련 항목
 
 ## tools/agent-send.md
 
-- Route: /tools/agent-send
+- 경로: /tools/agent-send
 - 제목:
   - H2: 빠른 시작
   - H2: 플래그
@@ -8910,26 +8912,26 @@ x-i18n:
 
 ## tools/apply-patch.md
 
-- Route: /tools/apply-patch
+- 경로: /tools/apply-patch
 - 제목:
   - H2: 매개변수
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 예시
   - H2: 관련 항목
 
 ## tools/brave-search.md
 
-- Route: /tools/brave-search
+- 경로: /tools/brave-search
 - 제목:
   - H2: API 키 받기
   - H2: 구성 예시
   - H2: 도구 매개변수
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## tools/browser-control.md
 
-- Route: /tools/browser-control
+- 경로: /tools/browser-control
 - 제목:
   - H2: 제어 API(선택 사항)
   - H3: /act 오류 계약
@@ -8941,64 +8943,64 @@ x-i18n:
   - H2: 대기 기능 강화
   - H2: 디버그 워크플로
   - H2: JSON 출력
-  - H2: 상태 및 환경 조정값
+  - H2: 상태 및 환경 조정 항목
   - H2: 보안 및 개인정보 보호
   - H2: 관련 항목
 
 ## tools/browser-linux-troubleshooting.md
 
-- Route: /tools/browser-linux-troubleshooting
+- 경로: /tools/browser-linux-troubleshooting
 - 제목:
-  - H2: 문제: "Failed to start Chrome CDP on port 18800"
+  - H2: 문제: "포트 18800에서 Chrome CDP를 시작하지 못함"
   - H3: 근본 원인
   - H3: 해결 방법 1: Google Chrome 설치(권장)
-  - H3: 해결 방법 2: Attach-Only 모드로 Snap Chromium 사용
-  - H3: 브라우저 작동 확인
+  - H3: 해결 방법 2: 연결 전용 모드로 Snap Chromium 사용
+  - H3: 브라우저가 작동하는지 확인
   - H3: 구성 참조
-  - H3: 문제: "No Chrome tabs found for profile=\"user\""
+  - H3: 문제: "profile=\"user\"에 대한 Chrome 탭을 찾을 수 없음"
   - H2: 관련 항목
 
 ## tools/browser-login.md
 
-- Route: /tools/browser-login
+- 경로: /tools/browser-login
 - 제목:
   - H2: 수동 로그인(권장)
   - H2: 어떤 Chrome 프로필이 사용되나요?
-  - H2: X/Twitter: 권장 플로
+  - H2: X/Twitter: 권장 흐름
   - H2: 샌드박싱 + 호스트 브라우저 접근
   - H2: 관련 항목
 
 ## tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
 
-- Route: /tools/browser-wsl2-windows-remote-cdp-troubleshooting
+- 경로: /tools/browser-wsl2-windows-remote-cdp-troubleshooting
 - 제목:
   - H2: 먼저 올바른 브라우저 모드 선택
   - H3: 옵션 1: WSL2에서 Windows로 원시 원격 CDP 사용
   - H3: 옵션 2: 호스트 로컬 Chrome MCP
-  - H2: 작동하는 아키텍처
+  - H2: 작동 아키텍처
   - H2: 이 설정이 혼란스러운 이유
-  - H2: Control UI의 중요한 규칙
+  - H2: Control UI의 중요 규칙
   - H2: 계층별 검증
-  - H3: 계층 1: Windows에서 Chrome이 CDP를 제공하는지 확인
+  - H3: 계층 1: Chrome이 Windows에서 CDP를 제공하는지 확인
   - H3: 계층 2: WSL2가 해당 Windows 엔드포인트에 도달할 수 있는지 확인
   - H3: 계층 3: 올바른 브라우저 프로필 구성
   - H3: 계층 4: Control UI 계층을 별도로 확인
   - H3: 계층 5: 엔드투엔드 브라우저 제어 확인
   - H2: 흔히 오해를 부르는 오류
   - H2: 빠른 분류 체크리스트
-  - H2: 실무상 핵심 요점
+  - H2: 실무적 핵심 요점
   - H2: 관련 항목
 
 ## tools/browser.md
 
-- Route: /tools/browser
+- 경로: /tools/browser
 - 제목:
   - H2: 제공되는 기능
   - H2: 빠른 시작
   - H2: Plugin 제어
-  - H2: 에이전트 지침
+  - H2: 에이전트 가이드
   - H2: 누락된 브라우저 명령 또는 도구
-  - H2: 프로필: openclaw와 사용자
+  - H2: 프로필: openclaw와 user
   - H2: 구성
   - H3: 스크린샷 비전(텍스트 전용 모델 지원)
   - H2: Brave 또는 다른 Chromium 기반 브라우저 사용
@@ -9023,7 +9025,7 @@ x-i18n:
 
 ## tools/btw.md
 
-- Route: /tools/btw
+- 경로: /tools/btw
 - 제목:
   - H2: 수행하는 작업
   - H2: 수행하지 않는 작업
@@ -9039,18 +9041,18 @@ x-i18n:
 
 ## tools/capability-cookbook.md
 
-- Route: /tools/capability-cookbook
+- 경로: /tools/capability-cookbook
 - 제목:
   - H2: 관련 항목
 
 ## tools/clawhub.md
 
-- Route: /tools/clawhub
+- 경로: /tools/clawhub
 - 제목: 없음
 
 ## tools/code-execution.md
 
-- Route: /tools/code-execution
+- 경로: /tools/code-execution
 - 제목:
   - H2: 설정
   - H2: 사용 방법
@@ -9060,7 +9062,7 @@ x-i18n:
 
 ## tools/creating-skills.md
 
-- Route: /tools/creating-skills
+- 경로: /tools/creating-skills
 - 제목:
   - H2: 첫 번째 skill 만들기
   - H2: SKILL.md 참조
@@ -9075,10 +9077,10 @@ x-i18n:
 
 ## tools/diffs.md
 
-- Route: /tools/diffs
+- 경로: /tools/diffs
 - 제목:
   - H2: 빠른 시작
-  - H2: 기본 제공 시스템 지침 비활성화
+  - H2: 내장 시스템 가이드 비활성화
   - H2: 일반적인 에이전트 워크플로
   - H2: 입력 예시
   - H2: 도구 입력 참조
@@ -9093,33 +9095,33 @@ x-i18n:
   - H2: 보안 모델
   - H2: 파일 모드의 브라우저 요구 사항
   - H2: 문제 해결
-  - H2: 운영 지침
+  - H2: 운영 가이드
   - H2: 관련 항목
 
 ## tools/duckduckgo-search.md
 
-- Route: /tools/duckduckgo-search
+- 경로: /tools/duckduckgo-search
 - 제목:
   - H2: 설정
   - H2: 구성
   - H2: 도구 매개변수
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## tools/elevated.md
 
-- Route: /tools/elevated
+- 경로: /tools/elevated
 - 제목:
   - H2: 지시문
   - H2: 작동 방식
-  - H2: 해석 순서
+  - H2: 확인 순서
   - H2: 가용성 및 허용 목록
   - H2: elevated가 제어하지 않는 항목
   - H2: 관련 항목
 
 ## tools/exa-search.md
 
-- Route: /tools/exa-search
+- 경로: /tools/exa-search
 - 제목:
   - H2: Plugin 설치
   - H2: API 키 받기
@@ -9128,12 +9130,12 @@ x-i18n:
   - H2: 도구 매개변수
   - H3: 콘텐츠 추출
   - H3: 검색 모드
-  - H2: 참고 사항
+  - H2: 참고
   - H2: 관련 항목
 
 ## tools/exec-approvals-advanced.md
 
-- Route: /tools/exec-approvals-advanced
+- 경로: /tools/exec-approvals-advanced
 - 제목:
   - H2: 안전한 바이너리(stdin 전용)
   - H3: Argv 검증 및 거부된 플래그
@@ -9146,22 +9148,22 @@ x-i18n:
   - H3: Plugin 승인 전달
   - H3: 모든 채널의 동일 채팅 승인
   - H3: 네이티브 승인 전달
-  - H3: macOS IPC 플로
+  - H3: macOS IPC 흐름
   - H2: FAQ
   - H3: 승인 대상에서 accountId와 threadId는 언제 사용되나요?
-  - H3: 승인이 세션으로 전송되면, 해당 세션의 누구나 승인할 수 있나요?
+  - H3: 승인이 세션으로 전송되면 해당 세션의 누구나 승인할 수 있나요?
   - H2: 관련 항목
 
 ## tools/exec-approvals.md
 
-- Route: /tools/exec-approvals
+- 경로: /tools/exec-approvals
 - 제목:
   - H2: 유효 정책 검사
   - H2: 적용 위치
   - H3: 신뢰 모델
   - H3: macOS 분리
   - H2: 설정 및 저장소
-  - H2: 정책 조정값
+  - H2: 정책 조정 항목
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
@@ -9169,16 +9171,16 @@ x-i18n:
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
   - H2: YOLO 모드(승인 없음)
-  - H3: 영구 Gateway 호스트 "never prompt" 설정
-  - H3: 로컬 바로가기
+  - H3: 영구 Gateway 호스트 "다시 묻지 않음" 설정
+  - H3: 로컬 바로 가기
   - H3: Node 호스트
-  - H3: 세션 전용 바로가기
+  - H3: 세션 전용 바로 가기
   - H2: 허용 목록(에이전트별)
   - H3: argPattern으로 인수 제한
   - H2: skill CLI 자동 허용
   - H2: 안전한 바이너리 및 승인 전달
   - H2: Control UI 편집
-  - H2: 승인 플로
+  - H2: 승인 흐름
   - H2: 시스템 이벤트
   - H2: 거부된 승인 동작
   - H2: 영향
@@ -9186,14 +9188,14 @@ x-i18n:
 
 ## tools/exec.md
 
-- Route: /tools/exec
+- 경로: /tools/exec
 - 제목:
   - H2: 매개변수
   - H2: 구성
   - H3: PATH 처리
   - H2: 세션 재정의(/exec)
   - H2: 권한 부여 모델
-  - H2: Exec 승인(동반 앱 / Node 호스트)
+  - H2: Exec 승인(컴패니언 앱 / Node 호스트)
   - H2: 허용 목록 + 안전한 바이너리
   - H2: 예시
   - H2: applypatch
@@ -9201,12 +9203,12 @@ x-i18n:
 
 ## tools/firecrawl.md
 
-- Route: /tools/firecrawl
+- 경로: /tools/firecrawl
 - 제목:
   - H2: Plugin 설치
   - H2: 키 없는 webfetch 및 API 키
   - H2: Firecrawl 검색 구성
-  - H2: Firecrawl webfetch 대체 경로 구성
+  - H2: Firecrawl webfetch 폴백 구성
   - H3: 자체 호스팅 Firecrawl
   - H2: Firecrawl Plugin 도구
   - H3: firecrawlsearch
@@ -9217,7 +9219,7 @@ x-i18n:
 
 ## tools/gemini-search.md
 
-- Route: /tools/gemini-search
+- 경로: /tools/gemini-search
 - 제목:
   - H2: API 키 받기
   - H2: 구성
@@ -9229,9 +9231,9 @@ x-i18n:
 
 ## tools/goal.md
 
-- Route: /tools/goal
+- 경로: /tools/goal
 - 제목:
-  - H1: Goal
+  - H1: 목표
   - H2: 빠른 시작
   - H2: 목표의 용도
   - H2: 명령 참조
@@ -9245,7 +9247,7 @@ x-i18n:
 
 ## tools/grok-search.md
 
-- Route: /tools/grok-search
+- 경로: /tools/grok-search
 - 제목:
   - H2: 온보딩 및 구성
   - H2: 로그인 또는 API 키 받기
@@ -9257,7 +9259,7 @@ x-i18n:
 
 ## tools/image-generation.md
 
-- Route: /tools/image-generation
+- 경로: /tools/image-generation
 - 제목:
   - H2: 빠른 시작
   - H2: 일반 경로
@@ -9274,11 +9276,11 @@ x-i18n:
 
 ## tools/index.md
 
-- Route: /tools
+- 경로: /tools
 - 제목:
-  - H2: 여기서 시작
-  - H2: 도구, Skills 또는 plugins 선택
-  - H2: 기본 제공 도구 범주
+  - H2: 여기에서 시작
+  - H2: 도구, Skills 또는 Plugin 선택
+  - H2: 내장 도구 범주
   - H2: Plugin 제공 도구
   - H2: 접근 및 승인 구성
   - H2: 기능 확장
@@ -9287,7 +9289,7 @@ x-i18n:
 
 ## tools/kimi-search.md
 
-- Route: /tools/kimi-search
+- 경로: /tools/kimi-search
 - 제목:
   - H2: API 키 받기
   - H2: 구성
@@ -9297,7 +9299,7 @@ x-i18n:
 
 ## tools/llm-task.md
 
-- Route: /tools/llm-task
+- 경로: /tools/llm-task
 - 제목:
   - H2: Plugin 활성화
   - H2: 구성(선택 사항)
@@ -9310,7 +9312,7 @@ x-i18n:
 
 ## tools/lobster.md
 
-- Route: /tools/lobster
+- 경로: /tools/lobster
 - 제목:
   - H2: 훅
   - H2: 이유
@@ -9332,7 +9334,7 @@ x-i18n:
   - H2: OpenProse
   - H2: 안전
   - H2: 문제 해결
-  - H2: 더 알아보기
+  - H2: 자세히 알아보기
   - H2: 사례 연구: 커뮤니티 워크플로
   - H2: 관련 항목
 
@@ -9344,7 +9346,7 @@ x-i18n:
   - H2: 구성 블록
   - H3: 필드 동작
   - H2: 권장 설정
-  - H2: 사후 Compaction 가드
+  - H2: Compaction 이후 가드
   - H2: 로그와 예상 동작
   - H2: 관련 항목
 
@@ -9356,14 +9358,14 @@ x-i18n:
   - H2: 제공자 기능 매트릭스
   - H2: 비동기와 동기
   - H2: 음성-텍스트 변환 및 음성 통화
-  - H2: 제공자 매핑(벤더가 표면별로 나뉘는 방식)
+  - H2: 제공자 매핑(벤더가 표면 간에 나뉘는 방식)
   - H2: 관련 항목
 
 ## tools/minimax-search.md
 
 - 경로: /tools/minimax-search
 - 제목:
-  - H2: Token Plan 자격 증명 받기
+  - H2: Token Plan 자격 증명 가져오기
   - H2: 구성
   - H2: 리전 선택
   - H2: 지원되는 매개변수
@@ -9379,7 +9381,7 @@ x-i18n:
   - H3: 도구 제한
   - H2: 단일 에이전트에서 마이그레이션
   - H2: 도구 제한 예시
-  - H2: 흔한 함정: "non-main"
+  - H2: 일반적인 함정: "non-main"
   - H2: 테스트
   - H2: 문제 해결
   - H2: 관련 항목
@@ -9516,7 +9518,7 @@ x-i18n:
   - H2: 제안 내용
   - H2: 지원 파일
   - H2: 에이전트 도구
-  - H2: 승인 및 자율성
+  - H2: 승인과 자율성
   - H2: Gateway 메서드
   - H2: 저장소
   - H2: 제한
@@ -9531,11 +9533,11 @@ x-i18n:
   - H2: 설치(skills.install)
   - H2: 운영자 설치 정책(security.installPolicy)
   - H2: 번들 Skills 허용 목록
-  - H2: Skills별 항목(skills.entries)
+  - H2: Skill별 항목(skills.entries)
   - H2: 에이전트 허용 목록(agents)
   - H2: 워크숍(skills.workshop)
-  - H2: 심볼릭 링크된 Skills 루트
-  - H2: 샌드박스된 Skills와 환경 변수
+  - H2: 심볼릭 링크된 Skill 루트
+  - H2: 샌드박스화된 Skills와 환경 변수
   - H2: 로드 순서 알림
   - H2: 관련 항목
 
@@ -9546,17 +9548,17 @@ x-i18n:
   - H2: 로드 순서
   - H2: 에이전트별 Skills와 공유 Skills
   - H2: 에이전트 허용 목록
-  - H2: Plugin과 Skills
+  - H2: Plugins와 Skills
   - H2: Skill Workshop
   - H2: ClawHub에서 설치
   - H2: 보안
   - H2: SKILL.md 형식
   - H3: 선택적 frontmatter 키
   - H2: 게이팅
-  - H3: 설치 관리자 명세
+  - H3: 설치 관리자 사양
   - H2: 구성 재정의
   - H2: 환경 주입
-  - H2: 스냅샷 및 새로 고침
+  - H2: 스냅샷과 새로 고침
   - H2: 토큰 영향
   - H2: 관련 항목
 
@@ -9570,8 +9572,8 @@ x-i18n:
   - H3: 코어 명령
   - H3: Dock 명령
   - H3: 번들 Plugin 명령
-  - H3: Skills 명령
-  - H2: /tools — 에이전트가 지금 사용할 수 있는 것
+  - H3: Skill 명령
+  - H2: /tools — 에이전트가 지금 사용할 수 있는 항목
   - H2: /model — 모델 선택
   - H2: /config — 디스크 구성 쓰기
   - H2: /mcp — MCP 서버 구성
@@ -9588,7 +9590,7 @@ x-i18n:
 - 경로: /tools/steer
 - 제목:
   - H2: 현재 세션
-  - H2: 조정과 큐
+  - H2: 조향과 큐
   - H2: 하위 에이전트
   - H2: ACP 세션
   - H2: 관련 항목
@@ -9604,18 +9606,18 @@ x-i18n:
   - H2: 도구: sessionsspawn
   - H3: 위임 프롬프트 모드
   - H3: 도구 매개변수
-  - H3: 작업 이름 및 대상 지정
+  - H3: 작업 이름과 대상 지정
   - H2: 도구: sessionsyield
   - H2: 도구: subagents
-  - H2: 스레드 바인딩 세션
-  - H3: 스레드 지원 채널
+  - H2: 스레드에 바인딩된 세션
+  - H3: 스레드를 지원하는 채널
   - H3: 빠른 흐름
   - H3: 수동 제어
   - H3: 구성 스위치
   - H3: 허용 목록
-  - H3: 탐색
-  - H3: 자동 아카이브
-  - H2: 중첩 하위 에이전트
+  - H3: 발견
+  - H3: 자동 보관
+  - H2: 중첩된 하위 에이전트
   - H3: 깊이 수준
   - H3: 알림 체인
   - H3: 깊이별 도구 정책
@@ -9627,9 +9629,9 @@ x-i18n:
   - H3: 통계 줄
   - H3: sessionshistory를 선호하는 이유
   - H2: 도구 정책
-  - H3: 구성을 통한 재정의
+  - H3: 구성으로 재정의
   - H2: 동시성
-  - H2: 활성 상태 및 복구
+  - H2: 활성 상태와 복구
   - H2: 중지
   - H2: 제한 사항
   - H2: 관련 항목
@@ -9651,15 +9653,15 @@ x-i18n:
 - 경로: /tools/thinking
 - 제목:
   - H2: 수행하는 작업
-  - H2: 해결 순서
+  - H2: 해석 순서
   - H2: 세션 기본값 설정
   - H2: 에이전트별 적용
   - H2: 빠른 모드(/fast)
   - H2: 자세한 지시문(/verbose 또는 /v)
   - H2: Plugin 추적 지시문(/trace)
-  - H2: 추론 표시 여부(/reasoning)
+  - H2: 추론 표시(/reasoning)
   - H2: 관련 항목
-  - H2: Heartbeat
+  - H2: Heartbeats
   - H2: 웹 채팅 UI
   - H2: 제공자 프로필
 
@@ -9677,13 +9679,13 @@ x-i18n:
 
 - 경로: /tools/tool-search
 - 제목:
-  - H2: 턴 실행 방식
+  - H2: 한 턴이 실행되는 방식
   - H2: 모드
   - H2: 이것이 존재하는 이유
   - H2: API
   - H2: 런타임 경계
   - H2: 구성
-  - H2: 프롬프트 및 원격 측정
+  - H2: 프롬프트와 텔레메트리
   - H2: E2E 검증
   - H2: 실패 동작
   - H2: 관련 항목
@@ -9694,12 +9696,12 @@ x-i18n:
 - 제목:
   - H2: 빠른 시작
   - H2: 접근
-  - H2: 기록되는 내용
+  - H2: 기록되는 항목
   - H2: 번들 파일
   - H2: 캡처 위치
   - H2: 캡처 비활성화
   - H2: 플러시 제한 시간 조정
-  - H2: 개인정보 보호 및 제한
+  - H2: 개인정보 보호와 제한
   - H2: 문제 해결
   - H2: 관련 항목
 
@@ -9714,14 +9716,14 @@ x-i18n:
   - H2: 페르소나
   - H3: 최소 페르소나
   - H3: 전체 페르소나(제공자 중립 프롬프트)
-  - H3: 페르소나 해결
+  - H3: 페르소나 해석
   - H3: 제공자가 페르소나 프롬프트를 사용하는 방식
   - H3: 대체 정책
   - H2: 모델 기반 지시문
   - H2: 슬래시 명령
-  - H2: 사용자별 환경 설정
+  - H2: 사용자별 기본 설정
   - H2: 출력 형식(고정)
-  - H2: Auto-TTS 동작
+  - H2: 자동 TTS 동작
   - H2: 채널별 출력 형식
   - H2: 필드 참조
   - H2: 에이전트 도구
@@ -9759,11 +9761,11 @@ x-i18n:
   - H2: 빠른 시작
   - H2: 도구 매개변수
   - H2: 작동 방식
-  - H2: 진행 상황 업데이트
+  - H2: 진행률 업데이트
   - H2: 구성
   - H2: Firecrawl 대체
   - H2: 신뢰할 수 있는 환경 프록시
-  - H2: 제한 및 안전
+  - H2: 제한과 안전
   - H2: 도구 프로필
   - H2: 관련 항목
 
@@ -9805,7 +9807,7 @@ x-i18n:
   - H2: 먼저 관리자 접근 강화
   - H2: VPS의 공유 회사 에이전트
   - H2: VPS에서 노드 사용
-  - H2: 소형 VM 및 ARM 호스트의 시작 튜닝
+  - H2: 작은 VM 및 ARM 호스트를 위한 시작 튜닝
   - H3: systemd 튜닝 체크리스트(선택 사항)
   - H2: 관련 항목
 
@@ -9813,8 +9815,9 @@ x-i18n:
 
 - 경로: /web/control-ui
 - 제목:
-  - H2: 빠른 열기(로컬)
+  - H2: 빠르게 열기(로컬)
   - H2: 기기 페어링(첫 연결)
+  - H2: 모바일 기기 페어링
   - H2: 개인 ID(브라우저 로컬)
   - H2: 런타임 구성 엔드포인트
   - H2: 언어 지원
@@ -9849,11 +9852,11 @@ x-i18n:
 
 - 경로: /web
 - 제목:
-  - H2: Webhook
+  - H2: Webhooks
   - H2: 관리자 HTTP RPC
-  - H2: 구성(기본 활성화)
+  - H2: 구성(기본 켜짐)
   - H2: Tailscale 접근
-  - H3: 통합 제공(권장)
+  - H3: 통합 Serve(권장)
   - H3: Tailnet 바인드 + 토큰
   - H3: 공용 인터넷(Funnel)
   - H2: 보안 참고 사항
@@ -9867,7 +9870,7 @@ x-i18n:
   - H3: Gateway 모드
   - H3: 로컬 모드
   - H2: 표시되는 내용
-  - H2: 멘탈 모델: 에이전트 + 세션
+  - H2: 멘털 모델: 에이전트 + 세션
   - H2: 전송 + 전달
   - H2: 선택기 + 오버레이
   - H2: 키보드 단축키

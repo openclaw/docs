@@ -1,40 +1,40 @@
 ---
 read_when:
     - Gateway-WS-clients implementeren of bijwerken
-    - Protocolmismatches of verbindingsfouten debuggen
-    - Protocolschema/-modellen opnieuw genereren
+    - Fouten opsporen bij protocolmismatches of verbindingsfouten
+    - Protocolschema en -modellen opnieuw genereren
 summary: 'Gateway WebSocket-protocol: handshake, frames, versiebeheer'
 title: Gateway-protocol
 x-i18n:
-    generated_at: "2026-07-03T13:39:30Z"
+    generated_at: "2026-07-04T18:07:50Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 815ac729824587579d112d665df2060d84d2894b4d46235e210804ca8a07082d
+    source_hash: 763dd5cba2f1aa0de95243a4996b4da1b4aa32c5c1a4b5b6c112d605e677bd70
     source_path: gateway/protocol.md
     workflow: 16
 ---
 
-Het Gateway WS-protocol is het **enige control plane + node-transport** voor
+Het Gateway WS-protocol is het **enige besturingsvlak + node-transport** voor
 OpenClaw. Alle clients (CLI, web-UI, macOS-app, iOS/Android-nodes, headless
-nodes) verbinden via WebSocket en declareren hun **rol** + **scope** tijdens de
-handshake.
+nodes) verbinden via WebSocket en declareren hun **rol** + **scope** tijdens
+de handshake.
 
 ## Transport
 
 - WebSocket, tekstframes met JSON-payloads.
-- Het eerste frame **moet** een `connect`-request zijn.
-- Pre-connect-frames zijn begrensd op 64 KiB. Na een succesvolle handshake moeten clients
+- Het eerste frame **moet** een `connect`-verzoek zijn.
+- Pre-connect-frames zijn beperkt tot 64 KiB. Na een geslaagde handshake moeten clients
   de limieten `hello-ok.policy.maxPayload` en
   `hello-ok.policy.maxBufferedBytes` volgen. Met diagnostiek ingeschakeld
-  versturen te grote inkomende frames en trage uitgaande buffers `payload.large`-events
-  voordat de gateway het getroffen frame sluit of laat vallen. Deze events bewaren
-  groottes, limieten, oppervlakken en veilige reden-codes. Ze bewaren niet de berichttekst,
-  attachment-inhoud, raw frame body, tokens, cookies of geheime waarden.
+  zenden te grote inkomende frames en trage uitgaande buffers `payload.large`-events
+  uit voordat de Gateway het betrokken frame sluit of laat vallen. Deze events bewaren
+  groottes, limieten, oppervlakken en veilige redencodes. Ze bewaren niet de berichttekst,
+  inhoud van bijlagen, ruwe framebody, tokens, cookies of geheime waarden.
 
 ## Handshake (connect)
 
-Gateway → Client (pre-connect-uitdaging):
+Gateway → Client (pre-connect-challenge):
 
 ```json
 {
@@ -105,22 +105,22 @@ Gateway → Client:
 }
 ```
 
-Terwijl de Gateway nog bezig is met het afronden van startup-sidecars, kan de `connect`-request
+Terwijl de Gateway startup-sidecars nog afrondt, kan het `connect`-verzoek
 een opnieuw te proberen `UNAVAILABLE`-fout retourneren met `details.reason` ingesteld op
 `"startup-sidecars"` en `retryAfterMs`. Clients moeten die respons opnieuw proberen
 binnen hun totale verbindingsbudget in plaats van deze als terminale
-handshake-fout te tonen.
+handshakefout te tonen.
 
 `server`, `features`, `snapshot` en `policy` zijn allemaal vereist door het schema
 (`packages/gateway-protocol/src/schema/frames.ts`). `auth` is ook vereist en rapporteert
-de onderhandelde rol/scopes. `pluginSurfaceUrls` is optioneel en koppelt Plugin-oppervlaknamen,
-zoals `canvas`, aan gescopete gehoste URL's.
+de onderhandelde rol/scopes. `pluginSurfaceUrls` is optioneel en koppelt Plugin-
+oppervlaknamen, zoals `canvas`, aan gescopete gehoste URL's.
 
-Gescopete Plugin-oppervlak-URL's kunnen verlopen. Nodes kunnen
+Gescopete URL's voor Plugin-oppervlakken kunnen verlopen. Nodes kunnen
 `node.pluginSurface.refresh` aanroepen met `{ "surface": "canvas" }` om een verse
-entry in `pluginSurfaceUrls` te ontvangen. De experimentele Canvas Plugin-refactor ondersteunt niet
-het verouderde compatibiliteitspad `canvasHostUrl`, `canvasCapability` of
-`node.canvas.capability.refresh`; huidige native clients en
+vermelding in `pluginSurfaceUrls` te ontvangen. De experimentele refactor van de Canvas-Plugin
+ondersteunt het verouderde compatibiliteitspad `canvasHostUrl`, `canvasCapability` of
+`node.canvas.capability.refresh` niet; huidige native clients en
 gateways moeten Plugin-oppervlakken gebruiken.
 
 Wanneer er geen devicetoken wordt uitgegeven, rapporteert `hello-ok.auth` de onderhandelde
@@ -137,13 +137,13 @@ machtigingen zonder tokenvelden:
 
 Vertrouwde backendclients in hetzelfde proces (`client.id: "gateway-client"`,
 `client.mode: "backend"`) mogen `device` weglaten op directe loopback-verbindingen wanneer
-ze authenticeren met het gedeelde gateway-token/wachtwoord. Dit pad is gereserveerd
-voor interne control-plane-RPC's en voorkomt dat verouderde CLI/device-pairingbaselines
-lokaal backendwerk blokkeren, zoals updates van subagentsessies. Remote clients,
-browser-origin-clients, node-clients en expliciete device-token/device-identity-clients
-gebruiken nog steeds de normale pairing- en scope-upgradecontroles.
+ze authenticeren met het gedeelde Gateway-token/wachtwoord. Dit pad is gereserveerd
+voor interne RPC's van het besturingsvlak en voorkomt dat verouderde CLI/device-koppelingsbaselines
+lokaal backendwerk blokkeren, zoals updates van subagentsessies. Externe clients,
+clients met browser-origin, nodeclients en expliciete device-token/device-identity-
+clients gebruiken nog steeds de normale koppelings- en scope-upgradecontroles.
 
-Wanneer er een devicetoken wordt uitgegeven, bevat `hello-ok` ook:
+Wanneer een devicetoken wordt uitgegeven, bevat `hello-ok` ook:
 
 ```json
 {
@@ -155,9 +155,9 @@ Wanneer er een devicetoken wordt uitgegeven, bevat `hello-ok` ook:
 }
 ```
 
-Ingebouwde bootstrap via QR/setup-code is een vers mobiel overdrachtspad. Een succesvolle
-connect met baseline-setup-code retourneert een primaire node-token plus één begrensde
-operator-token:
+Ingebouwde QR/setup-code-bootstrap is een vers pad voor mobiele overdracht. Een geslaagde
+basisverbinding met setup-code retourneert een primair nodetoken plus één begrensd
+operatortoken:
 
 ```json
 {
@@ -176,16 +176,16 @@ operator-token:
 }
 ```
 
-De operator-overdracht is bewust begrensd zodat QR-onboarding de
-mobiele operatorlus kan starten en native setup kan voltooien zonder pairing-
-mutatiescopes of `operator.admin` te verlenen. Deze bevat `operator.talk.secrets` zodat de
-native client de Talk-configuratie kan lezen die hij na bootstrap nodig heeft. Bredere
-pairing- en admin-toegang vereist een aparte goedgekeurde operator-pairing of tokenflow.
+De operatoroverdracht is opzettelijk begrensd zodat QR-onboarding de
+mobiele operatorloop kan starten en native setup kan voltooien zonder koppelings-
+mutatiescopes of `operator.admin` te verlenen. Het omvat `operator.talk.secrets` zodat de
+native client de Talk-configuratie kan lezen die na bootstrap nodig is. Bredere
+koppeling en admintoegang vereisen een aparte goedgekeurde operatorkoppeling of tokenflow.
 Clients moeten `hello-ok.auth.deviceTokens` alleen bewaren
 wanneer de connect bootstrap-auth gebruikte op vertrouwd transport zoals `wss://` of
-loopback/lokale pairing.
+loopback/lokale koppeling.
 
-### Node-voorbeeld
+### Nodevoorbeeld
 
 ```json
 {
@@ -222,25 +222,25 @@ loopback/lokale pairing.
 
 ## Framing
 
-- **Request**: `{type:"req", id, method, params}`
-- **Response**: `{type:"res", id, ok, payload|error}`
+- **Verzoek**: `{type:"req", id, method, params}`
+- **Respons**: `{type:"res", id, ok, payload|error}`
 - **Event**: `{type:"event", event, payload, seq?, stateVersion?}`
 
-Methoden met side-effects vereisen **idempotency keys** (zie schema).
+Methoden met neveneffecten vereisen **idempotentiesleutels** (zie schema).
 
 ## Rollen + scopes
 
-Zie [Operatorscopes](/nl/gateway/operator-scopes) voor het volledige operator-scopemodel,
-controles op goedkeuringstijd en semantiek voor gedeelde secrets.
+Voor het volledige operator-scope-model, controles tijdens goedkeuring en semantiek
+voor gedeelde geheimen, zie [Operator-scopes](/nl/gateway/operator-scopes).
 
 ### Rollen
 
-- `operator` = control plane-client (CLI/UI/automatisering).
+- `operator` = client van het besturingsvlak (CLI/UI/automatisering).
 - `node` = capability-host (camera/screen/canvas/system.run).
 
 ### Scopes (operator)
 
-Veelvoorkomende scopes:
+Veelgebruikte scopes:
 
 - `operator.read`
 - `operator.write`
@@ -251,50 +251,50 @@ Veelvoorkomende scopes:
 
 `talk.config` met `includeSecrets: true` vereist `operator.talk.secrets`
 (of `operator.admin`).
-Wanneer secrets zijn opgenomen, moeten clients de actieve Talk-providercredential
-lezen uit `talk.resolved.config.apiKey`; `talk.providers.<id>.apiKey`
-blijft source-shaped en kan een SecretRef-object of een geredigeerde string zijn.
+Wanneer geheimen zijn opgenomen, moeten clients de actieve Talk-providercredential lezen
+uit `talk.resolved.config.apiKey`; `talk.providers.<id>.apiKey`
+blijft bronvormig en kan een SecretRef-object of een geredigeerde tekenreeks zijn.
 
-Door Plugins geregistreerde gateway-RPC-methoden kunnen hun eigen operator-scope vragen, maar
+Door Plugins geregistreerde Gateway RPC-methoden kunnen hun eigen operator-scope aanvragen, maar
 gereserveerde core-adminprefixen (`config.*`, `exec.approvals.*`, `wizard.*`,
-`update.*`) resolven altijd naar `operator.admin`.
+`update.*`) worden altijd opgelost naar `operator.admin`.
 
-Methodescope is alleen de eerste poort. Sommige slash-commando's die via
-`chat.send` worden bereikt, passen daarbovenop strengere controles op commandoniveau toe. Bijvoorbeeld: persistente
-`/config set`- en `/config unset`-writes vereisen `operator.admin`.
+Methodescope is alleen de eerste poort. Sommige slashcommando's die via
+`chat.send` worden bereikt, passen daarbovenop strengere controles op commandoniveau toe. Persistente
+schrijfbewerkingen met `/config set` en `/config unset` vereisen bijvoorbeeld `operator.admin`.
 
-`node.pair.approve` heeft ook een extra scopecontrole op goedkeuringstijd boven op de
-basismethodescope:
+`node.pair.approve` heeft ook een extra scopecontrole tijdens goedkeuring bovenop de
+basisscope van de methode:
 
-- requests zonder commando: `operator.pairing`
-- requests met non-exec node-commando's: `operator.pairing` + `operator.write`
-- requests die `system.run`, `system.run.prepare` of `system.which` bevatten:
+- verzoeken zonder commando: `operator.pairing`
+- verzoeken met niet-exec-nodecommando's: `operator.pairing` + `operator.write`
+- verzoeken die `system.run`, `system.run.prepare` of `system.which` bevatten:
   `operator.pairing` + `operator.admin`
 
 ### Caps/commands/permissions (node)
 
-Nodes declareren capability-claims tijdens connect:
+Nodes declareren capability-claims tijdens het verbinden:
 
 - `caps`: capability-categorieën op hoog niveau zoals `camera`, `canvas`, `screen`,
   `location`, `voice` en `talk`.
-- `commands`: allowlist voor commando's voor invoke.
-- `permissions`: granulaire toggles (bijv. `screen.record`, `camera.capture`).
+- `commands`: allowlist met commando's voor invoke.
+- `permissions`: granulaire schakelaars (bijv. `screen.record`, `camera.capture`).
 
 De Gateway behandelt deze als **claims** en handhaaft server-side allowlists.
 
-## Presence
+## Aanwezigheid
 
-- `system-presence` retourneert entries met device-identiteit als sleutel.
-- Presence-entries bevatten `deviceId`, `roles` en `scopes`, zodat UI's één rij per device kunnen tonen
+- `system-presence` retourneert vermeldingen met device-identiteit als sleutel.
+- Aanwezigheidsvermeldingen bevatten `deviceId`, `roles` en `scopes` zodat UI's één rij per device kunnen tonen,
   zelfs wanneer het verbindt als zowel **operator** als **node**.
 - `node.list` bevat optionele velden `lastSeenAtMs` en `lastSeenReason`. Verbonden nodes rapporteren
-  hun huidige verbindingstijd als `lastSeenAtMs` met reden `connect`; gepairde nodes kunnen ook
-  duurzame achtergrond-presence rapporteren wanneer een vertrouwd node-event hun pairingmetadata bijwerkt.
+  hun huidige verbindingstijd als `lastSeenAtMs` met reden `connect`; gekoppelde nodes kunnen ook
+  duurzame achtergrondaanwezigheid rapporteren wanneer een vertrouwd node-event hun koppelingsmetadata bijwerkt.
 
 ### Achtergrond-alive-event voor nodes
 
-Nodes mogen `node.event` aanroepen met `event: "node.presence.alive"` om vast te leggen dat een gepairde node
-alive was tijdens een background wake zonder deze als verbonden te markeren.
+Nodes mogen `node.event` aanroepen met `event: "node.presence.alive"` om vast te leggen dat een gekoppelde node
+actief was tijdens een achtergrondwake zonder deze als verbonden te markeren.
 
 ```json
 {
@@ -304,11 +304,11 @@ alive was tijdens een background wake zonder deze als verbonden te markeren.
 ```
 
 `trigger` is een gesloten enum: `background`, `silent_push`, `bg_app_refresh`,
-`significant_location`, `manual` of `connect`. Onbekende triggerstrings worden door de gateway
+`significant_location`, `manual` of `connect`. Onbekende triggertekenreeksen worden door de Gateway
 genormaliseerd naar `background` vóór persistentie. Het event is alleen duurzaam voor geauthenticeerde node-
-devicesessies; sessies zonder device of zonder pairing retourneren `handled: false`.
+devicesessies; sessies zonder device of zonder koppeling retourneren `handled: false`.
 
-Succesvolle gateways retourneren een gestructureerd resultaat:
+Geslaagde gateways retourneren een gestructureerd resultaat:
 
 ```json
 {
@@ -319,89 +319,89 @@ Succesvolle gateways retourneren een gestructureerd resultaat:
 }
 ```
 
-Oudere gateways kunnen voor `node.event` nog steeds `{ "ok": true }` retourneren; clients moeten dat behandelen als een
-bevestigde RPC, niet als duurzame presence-persistentie.
+Oudere gateways kunnen nog steeds `{ "ok": true }` retourneren voor `node.event`; clients moeten dit behandelen als een
+bevestigde RPC, niet als duurzame persistentie van aanwezigheid.
 
-## Scoping van broadcast-events
+## Scoping van broadcastevents
 
-Door de server gepushte WebSocket-broadcast-events zijn scope-gated zodat pairing-gescopete of node-only sessies niet passief sessie-inhoud ontvangen.
+Door de server gepushte WebSocket-broadcastevents zijn scope-gated zodat sessies met alleen koppelingsscope of alleen node-sessies niet passief sessie-inhoud ontvangen.
 
-- **Chat-, agent- en tool-result-frames** (inclusief gestreamde `agent`-events en resultaten van tool-calls) vereisen minimaal `operator.read`. Sessies zonder `operator.read` slaan deze frames volledig over.
-- **Door Plugins gedefinieerde `plugin.*`-broadcasts** zijn gated op `operator.write` of `operator.admin`, afhankelijk van hoe de Plugin ze heeft geregistreerd.
-- **Status- en transportevents** (`heartbeat`, `presence`, `tick`, connect/disconnect-lifecycle, enz.) blijven onbeperkt zodat transportgezondheid zichtbaar blijft voor elke geauthenticeerde sessie.
-- **Onbekende broadcast-eventfamilies** zijn standaard scope-gated (fail-closed), tenzij een geregistreerde handler ze expliciet versoepelt.
+- **Chat-, agent- en tool-result-frames** (inclusief gestreamde `agent`-events en resultaten van toolcalls) vereisen minimaal `operator.read`. Sessies zonder `operator.read` slaan deze frames volledig over.
+- **Door Plugins gedefinieerde `plugin.*`-broadcasts** zijn beperkt tot `operator.write` of `operator.admin`, afhankelijk van hoe de Plugin ze heeft geregistreerd.
+- **Status- en transportevents** (`heartbeat`, `presence`, `tick`, connect/disconnect-levenscyclus, enz.) blijven onbeperkt zodat transportstatus zichtbaar blijft voor elke geauthenticeerde sessie.
+- **Onbekende broadcasteventfamilies** zijn standaard scope-gated (fail-closed), tenzij een geregistreerde handler ze expliciet versoepelt.
 
-Elke clientverbinding houdt haar eigen per-client-volgnummer bij, zodat broadcasts monotone ordening op die socket behouden, zelfs wanneer verschillende clients verschillende scope-gefilterde subsets van de eventstream zien.
+Elke clientverbinding behoudt zijn eigen sequentienummer per client, zodat broadcasts monotone ordening op die socket behouden, zelfs wanneer verschillende clients verschillende scope-gefilterde subsets van de eventstream zien.
 
-## Veelvoorkomende RPC-methodefamilies
+## Veelgebruikte RPC-methodefamilies
 
-Het publieke WS-oppervlak is breder dan de handshake/auth-voorbeelden hierboven. Dit
+Het openbare WS-oppervlak is breder dan de handshake-/auth-voorbeelden hierboven. Dit
 is geen gegenereerde dump — `hello-ok.features.methods` is een conservatieve
-discoverylijst die is opgebouwd uit `src/gateway/server-methods-list.ts` plus geladen
-exports van Plugin-/kanaalmethoden. Behandel deze als feature-discovery, niet als een volledige
+discoverlijst die is opgebouwd uit `src/gateway/server-methods-list.ts` plus geladen
+methode-exports van Plugins/kanalen. Behandel het als featurediscovery, niet als een volledige
 opsomming van `src/gateway/server-methods/*.ts`.
 
   <AccordionGroup>
-  <Accordion title="System and identity">
-    - `health` retourneert de in de cache opgeslagen of zojuist gepeilde momentopname van de Gateway-gezondheid.
-    - `diagnostics.stability` retourneert de recente begrensde recorder voor diagnostische stabiliteit. Deze bewaart operationele metadata zoals gebeurtenisnamen, aantallen, bytegroottes, geheugenuitlezingen, wachtrij-/sessiestatus, kanaal-/Plugin-namen en sessie-id's. Deze bewaart geen chattekst, Webhook-bodies, tooluitvoer, onbewerkte aanvraag- of responsbodies, tokens, cookies of geheime waarden. Leesbereik voor operators is vereist.
-    - `status` retourneert de Gateway-samenvatting in `/status`-stijl; gevoelige velden worden alleen opgenomen voor operatorclients met adminbereik.
+  <Accordion title="Systeem en identiteit">
+    - `health` retourneert de gecachte of zojuist gepeilde gateway-gezondheidssnapshot.
+    - `diagnostics.stability` retourneert de recente begrensde recorder voor diagnostische stabiliteit. Deze bewaart operationele metadata zoals gebeurtenisnamen, aantallen, bytegroottes, geheugenmetingen, wachtrij-/sessiestatus, kanaal-/pluginnamen en sessie-id's. Deze bewaart geen chattekst, webhook-bodies, tooluitvoer, ruwe request- of response-bodies, tokens, cookies of geheime waarden. Leesbereik voor operators is vereist.
+    - `status` retourneert de Gateway-samenvatting in `/status`-stijl; gevoelige velden worden alleen opgenomen voor operatorclients met admin-bereik.
     - `gateway.identity.get` retourneert de Gateway-apparaatidentiteit die wordt gebruikt door relay- en koppelingsflows.
-    - `system-presence` retourneert de huidige aanwezigheidsmomentopname voor verbonden operator-/node-apparaten.
+    - `system-presence` retourneert de huidige aanwezigheidssnapshot voor verbonden operator-/Node-apparaten.
     - `system-event` voegt een systeemgebeurtenis toe en kan aanwezigheidscontext bijwerken/uitzenden.
-    - `last-heartbeat` retourneert de laatst bewaarde Heartbeat-gebeurtenis.
+    - `last-heartbeat` retourneert de laatst bewaarde heartbeat-gebeurtenis.
     - `set-heartbeats` schakelt Heartbeat-verwerking op de Gateway in of uit.
 
   </Accordion>
 
-  <Accordion title="Models and usage">
-    - `models.list` retourneert de modelcatalogus die tijdens runtime is toegestaan. Geef `{ "view": "configured" }` door voor geconfigureerde modellen op pickerformaat (eerst `agents.defaults.models`, daarna `models.providers.*.models`), of `{ "view": "all" }` voor de volledige catalogus.
-    - `usage.status` retourneert providergebruikvensters/samenvattingen van resterende quota.
-    - `usage.cost` retourneert geaggregeerde kostenoverzichten voor een datumbereik.
+  <Accordion title="Modellen en gebruik">
+    - `models.list` retourneert de modelcatalogus die tijdens runtime is toegestaan. Geef `{ "view": "configured" }` door voor geconfigureerde modellen op picker-formaat (`agents.defaults.models` eerst, daarna `models.providers.*.models`), of `{ "view": "all" }` voor de volledige catalogus.
+    - `usage.status` retourneert gebruiksvensters/resterende-quotumsamenvattingen per provider.
+    - `usage.cost` retourneert geaggregeerde kostengebruikssamenvattingen voor een datumbereik.
       Geef `agentId` door voor één agent, of `agentScope: "all"` om geconfigureerde agents te aggregeren.
-    - `doctor.memory.status` retourneert gereedheid van vectorgeheugen / gecachete embeddings voor de actieve standaardagentwerkruimte. Geef `{ "probe": true }` of `{ "deep": true }` alleen door wanneer de aanroeper expliciet een live ping naar de embeddingprovider wil. Dreaming-bewuste clients kunnen ook `{ "agentId": "agent-id" }` doorgeven om Dreaming-storestatistieken te beperken tot een geselecteerde agentwerkruimte; als `agentId` wordt weggelaten, blijft de fallback naar de standaardagent behouden en worden geconfigureerde Dreaming-werkruimten geaggregeerd.
-    - `doctor.memory.dreamDiary`, `doctor.memory.backfillDreamDiary`, `doctor.memory.resetDreamDiary`, `doctor.memory.resetGroundedShortTerm`, `doctor.memory.repairDreamingArtifacts` en `doctor.memory.dedupeDreamDiary` accepteren optionele `{ "agentId": "agent-id" }`-parameters voor Dreaming-weergaven/-acties voor geselecteerde agents. Wanneer `agentId` wordt weggelaten, werken ze op de geconfigureerde standaardagentwerkruimte.
-    - `doctor.memory.remHarness` retourneert een begrensde, alleen-lezen REM-harnesspreview voor externe control-plane-clients. Deze kan werkruimtepaden, geheugenfragmenten, gerenderde gegronde Markdown en kandidaten voor diepe promotie bevatten, dus aanroepers hebben `operator.read` nodig.
+    - `doctor.memory.status` retourneert gereedheid van vectorgeheugen / gecachte embeddings voor de actieve standaard-agentwerkruimte. Geef `{ "probe": true }` of `{ "deep": true }` alleen door wanneer de caller expliciet een live ping naar de embeddingprovider wil. Dreaming-bewuste clients kunnen ook `{ "agentId": "agent-id" }` doorgeven om statistieken van de Dreaming-store te beperken tot een geselecteerde agentwerkruimte; als `agentId` wordt weggelaten, blijft de fallback naar de standaardagent behouden en worden geconfigureerde Dreaming-werkruimten geaggregeerd.
+    - `doctor.memory.dreamDiary`, `doctor.memory.backfillDreamDiary`, `doctor.memory.resetDreamDiary`, `doctor.memory.resetGroundedShortTerm`, `doctor.memory.repairDreamingArtifacts` en `doctor.memory.dedupeDreamDiary` accepteren optionele parameters `{ "agentId": "agent-id" }` voor Dreaming-weergaven/acties van een geselecteerde agent. Wanneer `agentId` wordt weggelaten, werken ze op de geconfigureerde standaard-agentwerkruimte.
+    - `doctor.memory.remHarness` retourneert een begrensde, alleen-lezen REM-harnesspreview voor externe control-plane-clients. Deze kan werkruimtepaden, geheugenfragmenten, gerenderde grounded markdown en kandidaten voor diepe promotie bevatten, dus callers hebben `operator.read` nodig.
     - `sessions.usage` retourneert gebruikssamenvattingen per sessie. Geef `agentId` door voor één
-      agent, of `agentScope: "all"` om geconfigureerde agents samen weer te geven.
+      agent, of `agentScope: "all"` om geconfigureerde agents samen te tonen.
     - `sessions.usage.timeseries` retourneert tijdreeksgebruik voor één sessie.
-    - `sessions.usage.logs` retourneert gebruikslogboekitems voor één sessie.
+    - `sessions.usage.logs` retourneert gebruikslogitems voor één sessie.
 
   </Accordion>
 
-  <Accordion title="Channels and login helpers">
-    - `channels.status` retourneert statusoverzichten van ingebouwde + gebundelde kanalen/Plugins.
-    - `channels.logout` meldt een specifiek kanaal/account af wanneer het kanaal afmelden ondersteunt.
-    - `web.login.start` start een QR-/webinlogflow voor de huidige webkanaalprovider met QR-ondersteuning.
-    - `web.login.wait` wacht tot die QR-/webinlogflow is voltooid en start het kanaal bij succes.
-    - `push.test` verzendt een test-APNs-push naar een geregistreerde iOS-node.
+  <Accordion title="Kanalen en loginhelpers">
+    - `channels.status` retourneert statusoverzichten voor ingebouwde + gebundelde kanalen/Plugins.
+    - `channels.logout` logt een specifiek kanaal/account uit wanneer het kanaal uitloggen ondersteunt.
+    - `web.login.start` start een QR-/webloginflow voor de huidige webkanaalprovider die QR ondersteunt.
+    - `web.login.wait` wacht tot die QR-/webloginflow is voltooid en start het kanaal bij succes.
+    - `push.test` verstuurt een test-APNs-push naar een geregistreerde iOS-node.
     - `voicewake.get` retourneert de opgeslagen wake-word-triggers.
     - `voicewake.set` werkt wake-word-triggers bij en zendt de wijziging uit.
 
   </Accordion>
 
-  <Accordion title="Messaging and logs">
-    - `send` is de directe RPC voor uitgaande aflevering voor verzenden gericht op kanaal/account/thread buiten de chatrunner.
-    - `logs.tail` retourneert de geconfigureerde Gateway-bestandslogtail met cursor-/limiet- en max-bytebesturing.
+  <Accordion title="Berichten en logs">
+    - `send` is de directe RPC voor uitgaande aflevering voor kanaal-/account-/threadgerichte verzendingen buiten de chatrunner.
+    - `logs.tail` retourneert de geconfigureerde Gateway-bestandslogtail met cursor-/limiet- en max-byte-instellingen.
 
   </Accordion>
 
-  <Accordion title="Talk and TTS">
-    - `talk.catalog` retourneert de alleen-lezen Talk-providercatalogus voor spraak, streamingtranscriptie en realtime stem. Deze bevat canonieke provider-id's, registeraliassen, labels, geconfigureerde status, een optioneel groepsniveau-`ready`-resultaat, blootgestelde model-/stem-id's, canonieke modi, transporten, brain-strategieën en realtime audio-/capability-vlaggen, zonder providergeheimen te retourneren of globale config te muteren. Huidige Gateways zetten `ready` na toepassing van providerselectie tijdens runtime; clients moeten afwezigheid ervan behandelen als niet-geverifieerd voor compatibiliteit met oudere Gateways.
+  <Accordion title="Talk en TTS">
+    - `talk.catalog` retourneert de alleen-lezen Talk-providercatalogus voor spraak, streamingtranscriptie en realtime spraak. Deze bevat canonieke provider-id's, registry-aliassen, labels, geconfigureerde status, een optioneel `ready`-resultaat op groepsniveau, blootgestelde model-/spraak-id's, canonieke modi, transports, brain-strategieën en realtime audio-/capability-vlaggen zonder providergeheimen te retourneren of globale config te wijzigen. Huidige Gateways zetten `ready` nadat runtimeproviderselectie is toegepast; clients moeten afwezigheid ervan behandelen als niet-geverifieerd voor compatibiliteit met oudere Gateways.
     - `talk.config` retourneert de effectieve Talk-configpayload; `includeSecrets` vereist `operator.talk.secrets` (of `operator.admin`).
-    - `talk.session.create` maakt een door de Gateway beheerde Talk-sessie voor `realtime/gateway-relay`, `transcription/gateway-relay` of `stt-tts/managed-room`. Voor `stt-tts/managed-room` moeten aanroepers met `operator.write` die `sessionKey` doorgeven ook `spawnedBy` doorgeven voor zichtbaarheid van sessiesleutels met bereik; aanmaken van een `sessionKey` zonder bereik en `brain: "direct-tools"` vereisen `operator.admin`.
-    - `talk.session.join` valideert een sessietoken voor een beheerde ruimte, emitteert waar nodig `session.ready`- of `session.replaced`-gebeurtenissen, en retourneert ruimte-/sessiemetadata plus recente Talk-gebeurtenissen zonder de token in platte tekst of opgeslagen tokenhash.
-    - `talk.session.appendAudio` voegt base64-PCM-invoeraudio toe aan door de Gateway beheerde realtime relay- en transcriptiesessies.
-    - `talk.session.startTurn`, `talk.session.endTurn` en `talk.session.cancelTurn` sturen de beurtlevenscyclus van beheerde ruimtes aan met verwerping van verlopen beurten voordat de status wordt gewist.
-    - `talk.session.cancelOutput` stopt audio-uitvoer van de assistant, vooral voor door VAD begrensde barge-in in Gateway-relaysessies.
-    - `talk.session.submitToolResult` voltooit een providertoolaanroep die is geëmitteerd door een door de Gateway beheerde realtime relaysessie. Geef `options: { willContinue: true }` door voor tussentijdse tooluitvoer wanneer een eindresultaat volgt, of `options: { suppressResponse: true }` wanneer het toolresultaat de provideraanroep moet vervullen zonder een nieuwe realtime assistant-respons te starten.
-    - `talk.session.steer` stuurt spraakbesturing voor een actieve run naar een door de Gateway beheerde, agentondersteunde Talk-sessie. Deze accepteert `{ sessionId, text, mode? }`, waarbij `mode` `status`, `steer`, `cancel` of `followup` is; weggelaten modus wordt geclassificeerd op basis van de uitgesproken tekst.
-    - `talk.session.close` sluit een door de Gateway beheerde relay-, transcriptie- of beheerde-ruimtesessie en emitteert terminale Talk-gebeurtenissen.
+    - `talk.session.create` maakt een Talk-sessie die eigendom is van de Gateway voor `realtime/gateway-relay`, `transcription/gateway-relay` of `stt-tts/managed-room`. Voor `stt-tts/managed-room` moeten callers met `operator.write` die `sessionKey` doorgeven ook `spawnedBy` doorgeven voor zichtbaarheid van sessiesleutels binnen het bereik; het maken van een `sessionKey` zonder bereik en `brain: "direct-tools"` vereisen `operator.admin`.
+    - `talk.session.join` valideert een managed-room-sessietoken, emit `session.ready`- of `session.replaced`-gebeurtenissen waar nodig, en retourneert room-/sessiemetadata plus recente Talk-gebeurtenissen zonder het plaintext-token of de opgeslagen tokenhash.
+    - `talk.session.appendAudio` voegt base64 PCM-invoeraudio toe aan realtime relay- en transcriptiesessies die eigendom zijn van de Gateway.
+    - `talk.session.startTurn`, `talk.session.endTurn` en `talk.session.cancelTurn` sturen de turn-levenscyclus van managed-room aan met afwijzing van verouderde turns voordat de status wordt gewist.
+    - `talk.session.cancelOutput` stopt audio-uitvoer van de assistant, primair voor VAD-gated barge-in in Gateway-relaysessies.
+    - `talk.session.submitToolResult` voltooit een provider-toolcall die is geëmit door een realtime relaysessie die eigendom is van de Gateway. Geef `options: { willContinue: true }` door voor tussentijdse tooluitvoer wanneer er nog een definitief resultaat volgt, of `options: { suppressResponse: true }` wanneer het toolresultaat de providercall moet afhandelen zonder nog een realtime assistant-response te starten.
+    - `talk.session.steer` stuurt actieve-run-spraakbesturing naar een agent-ondersteunde Talk-sessie die eigendom is van de Gateway. Deze accepteert `{ sessionId, text, mode? }`, waarbij `mode` `status`, `steer`, `cancel` of `followup` is; een weggelaten modus wordt geclassificeerd op basis van de gesproken tekst.
+    - `talk.session.close` sluit een relay-, transcriptie- of managed-room-sessie die eigendom is van de Gateway en emit terminale Talk-gebeurtenissen.
     - `talk.mode` stelt de huidige Talk-modusstatus in voor WebChat-/Control UI-clients en zendt deze uit.
-    - `talk.client.create` maakt een door de client beheerde realtime providersessie met `webrtc` of `provider-websocket`, terwijl de Gateway eigenaar blijft van config, referenties, instructies en toolbeleid.
-    - `talk.client.toolCall` laat door de client beheerde realtime transporten providertoolaanroepen doorsturen naar Gateway-beleid. De eerste ondersteunde tool is `openclaw_agent_consult`; clients ontvangen een run-id en wachten op normale chatlevenscyclusgebeurtenissen voordat ze het providerspecifieke toolresultaat indienen.
-    - `talk.client.steer` verzendt spraakbesturing voor een actieve run voor door de client beheerde realtime transporten. De Gateway lost de actieve embedded run op uit `sessionKey` en retourneert een gestructureerd geaccepteerd/geweigerd resultaat in plaats van sturing stilzwijgend te negeren.
-    - `talk.event` is het enkele Talk-gebeurteniskanaal voor realtime, transcriptie, STT/TTS, beheerde ruimtes, telefonie en vergaderadapters.
+    - `talk.client.create` maakt een realtime providersessie die eigendom is van de client met `webrtc` of `provider-websocket`, terwijl de Gateway eigenaar blijft van config, credentials, instructies en toolbeleid.
+    - `talk.client.toolCall` laat realtime transports die eigendom zijn van clients provider-toolcalls doorsturen naar Gateway-beleid. De eerste ondersteunde tool is `openclaw_agent_consult`; clients ontvangen een run-id en wachten op normale chatlevenscyclusgebeurtenissen voordat ze het provider-specifieke toolresultaat indienen.
+    - `talk.client.steer` verstuurt actieve-run-spraakbesturing voor realtime transports die eigendom zijn van clients. De Gateway herleidt de actieve embedded run uit `sessionKey` en retourneert een gestructureerd geaccepteerd/afgewezen resultaat in plaats van sturing stilzwijgend te laten vallen.
+    - `talk.event` is het enkele Talk-gebeurteniskanaal voor realtime, transcriptie, STT/TTS, managed-room, telefonie en meetingadapters.
     - `talk.speak` synthetiseert spraak via de actieve Talk-spraakprovider.
     - `tts.status` retourneert de ingeschakelde TTS-status, actieve provider, fallbackproviders en providerconfigstatus.
     - `tts.providers` retourneert de zichtbare TTS-providerinventaris.
@@ -411,120 +411,124 @@ opsomming van `src/gateway/server-methods/*.ts`.
 
   </Accordion>
 
-  <Accordion title="Secrets, config, update, and wizard">
-    - `secrets.reload` lost actieve SecretRefs opnieuw op en vervangt de runtimegeheimstatus alleen bij volledig succes.
-    - `secrets.resolve` lost geheime toewijzingen voor opdrachttargets op voor een specifieke opdracht-/targetset.
-    - `config.get` retourneert de huidige configmomentopname en hash.
+  <Accordion title="Geheimen, config, update en wizard">
+    - `secrets.reload` lost actieve SecretRefs opnieuw op en wisselt runtimegeheimstatus alleen bij volledig succes.
+    - `secrets.resolve` lost geheime toewijzingen voor commandotargets op voor een specifieke commando-/targetset.
+    - `config.get` retourneert de huidige configsnapshot en hash.
     - `config.set` schrijft een gevalideerde configpayload.
-    - `config.patch` voegt een gedeeltelijke configupdate samen. Destructieve arrayvervanging
-      vereist het betrokken pad in `replacePaths`; geneste arrays
+    - `config.patch` voegt een gedeeltelijke configupdate samen. Destructieve array-
+      vervanging vereist het betrokken pad in `replacePaths`; geneste arrays
       onder array-items gebruiken `[]`-paden zoals `agents.list[].skills`.
     - `config.apply` valideert + vervangt de volledige configpayload.
-    - `config.schema` retourneert de live configschemapayload die wordt gebruikt door Control UI- en CLI-tooling: schema, `uiHints`, versie en generatiemetadata, inclusief Plugin- + kanaalschemametadata wanneer de runtime die kan laden. Het schema bevat veldmetadata `title` / `description` die is afgeleid van dezelfde labels en helptekst die door de UI worden gebruikt, inclusief geneste object-, wildcard-, array-item- en `anyOf` / `oneOf` / `allOf`-compositietakken wanneer bijpassende velddocumentatie bestaat.
-    - `config.schema.lookup` retourneert een padgebonden lookuppayload voor één configpad: genormaliseerd pad, een oppervlakkige schemanode, overeenkomende hint + `hintPath`, optionele `reloadKind` en directe kindsamenvattingen voor UI-/CLI-drill-down. `reloadKind` is een van `restart`, `hot` of `none` en weerspiegelt de Gateway-configherlaadplanner voor het aangevraagde pad. Lookupschemanodes behouden de gebruikersgerichte docs en gangbare validatievelden (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, grenzen voor numeriek/string/array/object, en vlaggen zoals `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Kindsamenvattingen tonen `key`, genormaliseerd `path`, `type`, `required`, `hasChildren`, optionele `reloadKind`, plus de overeenkomende `hint` / `hintPath`.
-    - `update.run` voert de Gateway-updateflow uit en plant alleen een herstart wanneer de update zelf is geslaagd; aanroepers met een sessie kunnen `continuationMessage` opnemen zodat het opstarten één vervolgbeurt van de agent hervat via de wachtrij voor herstartvoortzetting. Package-manager-updates en gecontroleerde git-checkout-updates vanuit de control plane gebruiken een losgekoppelde overdracht aan een beheerde service in plaats van de pakketboom te vervangen of checkout-/builduitvoer binnen de live Gateway te muteren. Een gestarte overdracht retourneert `ok: true` met `result.reason: "managed-service-handoff-started"` en `handoff.status: "started"`; niet-beschikbare of mislukte overdrachten retourneren `ok: false` met `managed-service-handoff-unavailable` of `managed-service-handoff-failed`, plus `handoff.command` wanneer een handmatige shellupdate vereist is. Een niet-beschikbare overdracht betekent dat OpenClaw geen veilige supervisorgrens of duurzame service-identiteit heeft, zoals `OPENCLAW_SYSTEMD_UNIT` voor systemd. Tijdens een gestarte overdracht kan de herstartsentinel kort `stats.reason: "restart-health-pending"` rapporteren; de voortzetting wordt uitgesteld totdat de CLI de herstarte Gateway verifieert en de definitieve `ok`-sentinel schrijft.
-    - `update.status` vernieuwt en retourneert de nieuwste update-herstartsentinel, inclusief de draaiende versie na herstart wanneer beschikbaar.
+    - `config.schema` retourneert de live configschemapayload die wordt gebruikt door Control UI en CLI-tooling: schema, `uiHints`, versie en generatiemetadata, inclusief Plugin- + kanaalschemametadata wanneer de runtime deze kan laden. Het schema bevat veldmetadata `title` / `description` die is afgeleid van dezelfde labels en helptekst die door de UI worden gebruikt, inclusief geneste object-, wildcard-, array-item- en `anyOf` / `oneOf` / `allOf`-compositietakken wanneer overeenkomende velddocumentatie bestaat.
+    - `config.schema.lookup` retourneert een padgerichte lookup-payload voor één configpad: genormaliseerd pad, een oppervlakkig schemaknooppunt, overeenkomende hint + `hintPath`, optionele `reloadKind` en directe child-samenvattingen voor UI-/CLI-drilldown. `reloadKind` is een van `restart`, `hot` of `none` en weerspiegelt de Gateway-configherlaadplanner voor het gevraagde pad. Lookup-schemaknooppunten behouden de gebruikersgerichte docs en algemene validatievelden (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, numerieke/string-/array-/objectgrenzen en vlaggen zoals `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Child-samenvattingen tonen `key`, genormaliseerd `path`, `type`, `required`, `hasChildren`, optionele `reloadKind`, plus de overeenkomende `hint` / `hintPath`.
+    - `update.run` voert de Gateway-updateflow uit en plant alleen een herstart wanneer de update zelf is geslaagd; callers met een sessie kunnen `continuationMessage` opnemen zodat startup één vervolgturn van de agent hervat via de herstart-continuation-wachtrij. Package-manager-updates en supervised git-checkout-updates vanuit de control plane gebruiken een losgekoppelde managed-service-handoff in plaats van de package tree te vervangen of checkout-/builduitvoer binnen de live Gateway te wijzigen. Een gestarte handoff retourneert `ok: true` met `result.reason: "managed-service-handoff-started"` en `handoff.status: "started"`; niet-beschikbare of mislukte handoffs retourneren `ok: false` met `managed-service-handoff-unavailable` of `managed-service-handoff-failed`, plus `handoff.command` wanneer een handmatige shell-update vereist is. Een niet-beschikbare handoff betekent dat OpenClaw geen veilige supervisorgrens of duurzame service-identiteit heeft, zoals `OPENCLAW_SYSTEMD_UNIT` voor systemd. Tijdens een gestarte handoff kan de herstartsentinel kort `stats.reason: "restart-health-pending"` rapporteren; de continuation wordt uitgesteld totdat de CLI de herstarte Gateway verifieert en de definitieve `ok`-sentinel schrijft.
+    - `update.status` ververst en retourneert de nieuwste update-herstartsentinel, inclusief de draaiende versie na de herstart wanneer beschikbaar.
     - `wizard.start`, `wizard.next`, `wizard.status` en `wizard.cancel` stellen de onboardingwizard beschikbaar via WS RPC.
 
   </Accordion>
 
-  <Accordion title="Helpers voor agents en werkruimten">
-    - `agents.list` retourneert geconfigureerde agentvermeldingen, inclusief effectief model en runtimemetagegevens.
-    - `agents.create`, `agents.update` en `agents.delete` beheren agentrecords en werkruimtebedrading.
-    - `agents.files.list`, `agents.files.get` en `agents.files.set` beheren de bootstrap-werkruimtebestanden die voor een agent beschikbaar zijn.
+  <Accordion title="Agent- en werkruimtehelpers">
+    - `agents.list` retourneert geconfigureerde agentvermeldingen, inclusief effectief model en runtimemetadata.
+    - `agents.create`, `agents.update` en `agents.delete` beheren agentrecords en werkruimtekoppeling.
+    - `agents.files.list`, `agents.files.get` en `agents.files.set` beheren de bootstrap-werkruimtebestanden die voor een agent beschikbaar worden gemaakt.
     - `tasks.list`, `tasks.get` en `tasks.cancel` stellen het Gateway-taakregister beschikbaar aan SDK- en operatorclients.
-    - `artifacts.list`, `artifacts.get` en `artifacts.download` stellen uit transcripties afgeleide artifactsamenvattingen en downloads beschikbaar voor een expliciete `sessionKey`-, `runId`- of `taskId`-scope. Run- en taakquery's lossen de eigenaarsessie server-side op en retourneren alleen transcriptiemedia met overeenkomende herkomst; onveilige of lokale URL-bronnen retourneren niet-ondersteunde downloads in plaats van server-side ophalen.
-    - `environments.list` en `environments.status` stellen alleen-lezen Gateway-lokale en node-omgevingsdetectie beschikbaar voor SDK-clients.
+    - `artifacts.list`, `artifacts.get` en `artifacts.download` stellen uit transcripties afgeleide artifactsamenvattingen en downloads beschikbaar voor een expliciet bereik van `sessionKey`, `runId` of `taskId`. Run- en taakquery's lossen de bijbehorende sessie aan serverzijde op en retourneren alleen transcriptiemedia met overeenkomende herkomst; onveilige of lokale URL-bronnen retourneren niet-ondersteunde downloads in plaats van ze aan serverzijde op te halen.
+    - `environments.list` en `environments.status` stellen alleen-lezen Gateway-lokale en Node-omgevingsdetectie beschikbaar aan SDK-clients.
     - `agent.identity.get` retourneert de effectieve assistentidentiteit voor een agent of sessie.
     - `agent.wait` wacht tot een run is voltooid en retourneert de terminale snapshot wanneer beschikbaar.
 
   </Accordion>
 
-  <Accordion title="Sessiebeheer">
-    - `sessions.list` retourneert de huidige sessie-index, inclusief `agentRuntime`-metagegevens per rij wanneer een agentruntimebackend is geconfigureerd.
-    - `sessions.subscribe` en `sessions.unsubscribe` schakelen abonnementen op sessiewijzigingsgebeurtenissen voor de huidige WS-client in of uit.
-    - `sessions.messages.subscribe` en `sessions.messages.unsubscribe` schakelen abonnementen op transcriptie-/berichtgebeurtenissen voor één sessie in of uit.
+  <Accordion title="Sessiebesturing">
+    - `sessions.list` retourneert de huidige sessie-index, inclusief `agentRuntime`-metadata per rij wanneer een agent-runtimebackend is geconfigureerd.
+    - `sessions.subscribe` en `sessions.unsubscribe` schakelen abonnementen op sessiewijzigingsgebeurtenissen in of uit voor de huidige WS-client.
+    - `sessions.messages.subscribe` en `sessions.messages.unsubscribe` schakelen abonnementen op transcriptie-/berichtgebeurtenissen in of uit voor één sessie.
     - `sessions.preview` retourneert begrensde transcriptievoorbeelden voor specifieke sessiesleutels.
     - `sessions.describe` retourneert één Gateway-sessierij voor een exacte sessiesleutel.
-    - `sessions.resolve` lost een sessiedoel op of canonicaliseert het.
+    - `sessions.resolve` lost een sessiedoel op of canoniseert het.
     - `sessions.create` maakt een nieuwe sessievermelding.
-    - `sessions.send` stuurt een bericht naar een bestaande sessie.
-    - `sessions.steer` is de variant voor onderbreken en bijsturen voor een actieve sessie.
-    - `sessions.abort` breekt actief werk voor een sessie af. Een aanroeper kan `key` plus optionele `runId` doorgeven, of alleen `runId` doorgeven voor actieve runs die de Gateway naar een sessie kan herleiden.
-    - `sessions.patch` werkt sessiemetagegevens/-overrides bij en rapporteert het opgeloste canonieke model plus effectieve `agentRuntime`.
+    - `sessions.send` verzendt een bericht naar een bestaande sessie.
+    - `sessions.steer` is de variant voor onderbreken-en-bijsturen voor een actieve sessie.
+    - `sessions.abort` breekt actief werk voor een sessie af. Een aanroeper kan `key` plus optioneel `runId` doorgeven, of alleen `runId` doorgeven voor actieve runs die de Gateway naar een sessie kan herleiden.
+    - `sessions.patch` werkt sessiemetadata/-overrides bij en rapporteert het opgeloste canonieke model plus de effectieve `agentRuntime`.
     - `sessions.reset`, `sessions.delete` en `sessions.compact` voeren sessieonderhoud uit.
     - `sessions.get` retourneert de volledige opgeslagen sessierij.
-    - Chatuitvoering gebruikt nog steeds `chat.history`, `chat.send`, `chat.abort` en `chat.inject`. `chat.history` is display-genormaliseerd voor UI-clients: inline directive-tags worden uit zichtbare tekst gestript, XML-payloads van tool-calls in platte tekst (inclusief `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` en afgekorte tool-call-blokken) en gelekte ASCII-/full-width-modelcontroletokens worden gestript, pure silent-token-assistentrijen zoals exacte `NO_REPLY` / `no_reply` worden weggelaten, en te grote rijen kunnen worden vervangen door placeholders.
-    - `chat.message.get` is de additieve begrensde lezer voor volledige berichten voor één zichtbare transcriptievermelding. Clients geven `sessionKey`, optioneel `agentId` wanneer de sessieselectie agent-scoped is, plus een transcriptie-`messageId` door die eerder via `chat.history` beschikbaar is gemaakt, en de Gateway retourneert dezelfde display-genormaliseerde projectie zonder de lichte afkappingslimiet van history wanneer de opgeslagen vermelding nog beschikbaar is en niet te groot is.
-    - `chat.send` accepteert een one-turn `fastMode: "auto"` om snelle modus te gebruiken voor modelaanroepen die vóór de automatische cutoff worden gestart, en vervolgens latere retry-, fallback-, tool-result- of continuation-aanroepen zonder snelle modus te starten. De cutoff is standaard 60 seconden en kan per model worden geconfigureerd met `agents.defaults.models["<provider>/<model>"].params.fastAutoOnSeconds`. Een `chat.send`-aanroeper kan one-turn `fastAutoOnSeconds` doorgeven om de cutoff voor die aanvraag te overschrijven.
+    - Chatuitvoering gebruikt nog steeds `chat.history`, `chat.send`, `chat.abort` en `chat.inject`. `chat.history` is weergavegenormaliseerd voor UI-clients: inline richtlijntags worden uit zichtbare tekst verwijderd, plattetekst-XML-payloads voor tool-calls (inclusief `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` en afgekorte tool-callblokken) en gelekte ASCII-/full-width-modelbesturingstokens worden verwijderd, zuivere stille-tokenassistentrijen zoals exact `NO_REPLY` / `no_reply` worden weggelaten, en te grote rijen kunnen worden vervangen door placeholders.
+    - `chat.message.get` is de additieve begrensde lezer voor volledige berichten voor één zichtbare transcriptievermelding. Clients geven `sessionKey`, optioneel `agentId` wanneer de sessieselectie agent-scoped is, plus een transcriptie-`messageId` dat eerder via `chat.history` is getoond door, en de Gateway retourneert dezelfde weergavegenormaliseerde projectie zonder de lichte afkaplimiet van de geschiedenis wanneer de opgeslagen vermelding nog beschikbaar is en niet te groot is.
+    - `chat.send` accepteert voor één beurt `fastMode: "auto"` om snelle modus te gebruiken voor modelaanroepen die vóór de automatische afkapgrens zijn gestart, en daarna latere retry-, fallback-, tool-resultaat- of vervolgaanroepen zonder snelle modus te starten. De afkapgrens is standaard 60 seconden en kan per model worden geconfigureerd met `agents.defaults.models["<provider>/<model>"].params.fastAutoOnSeconds`. Een `chat.send`-aanroeper kan voor één beurt `fastAutoOnSeconds` doorgeven om de afkapgrens voor die aanvraag te overschrijven.
 
   </Accordion>
 
   <Accordion title="Apparaatkoppeling en apparaattokens">
     - `device.pair.list` retourneert wachtende en goedgekeurde gekoppelde apparaten.
-    - `device.pair.approve`, `device.pair.reject` en `device.pair.remove` beheren apparaatkoppelingsrecords.
-    - `device.token.rotate` roteert een gekoppeld apparaattoken binnen de grenzen van de goedgekeurde rol en aanroeperscope.
-    - `device.token.revoke` trekt een gekoppeld apparaattoken in binnen de grenzen van de goedgekeurde rol en aanroeperscope.
+    - `device.pair.setupCode` maakt een mobiele setupcode en standaard een PNG-QR-data-URL. Dit vereist `operator.admin` en wordt bewust weggelaten uit geadverteerde detectie. Het resultaat bevat `setupCode`, optioneel `qrDataUrl`, `gatewayUrl`, het niet-geheime `auth`-label en `urlSource`.
+    - `device.pair.approve`, `device.pair.reject` en `device.pair.remove` beheren records voor apparaatkoppeling.
+    - `device.token.rotate` roteert een gekoppeld apparaattoken binnen de grenzen van de goedgekeurde rol en het aanroepersbereik.
+    - `device.token.revoke` trekt een gekoppeld apparaattoken in binnen de grenzen van de goedgekeurde rol en het aanroepersbereik.
+
+    De setupcode bevat een kortlevende bootstrapreferentie. Clients mogen deze niet
+    loggen of bewaren buiten de koppelingsflow.
 
   </Accordion>
 
-  <Accordion title="Node-koppeling, invoke en wachtend werk">
-    - `node.pair.request`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove` en `node.pair.verify` dekken node-koppeling en bootstrap-verificatie.
-    - `node.list` en `node.describe` retourneren bekende/verbonden node-status.
-    - `node.rename` werkt een gekoppeld nodelabel bij.
-    - `node.invoke` stuurt een opdracht door naar een verbonden node.
-    - `node.invoke.result` retourneert het resultaat voor een invoke-aanvraag.
-    - `node.event` draagt node-afkomstige gebeurtenissen terug naar de gateway.
-    - `node.pending.pull` en `node.pending.ack` zijn de API's voor de verbonden-nodewachtrij.
-    - `node.pending.enqueue` en `node.pending.drain` beheren duurzaam wachtend werk voor offline/losgekoppelde nodes.
+  <Accordion title="Node-koppeling, aanroepen en wachtend werk">
+    - `node.pair.request`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove` en `node.pair.verify` dekken Node-koppeling en bootstrapverificatie.
+    - `node.list` en `node.describe` retourneren bekende/verbonden Node-status.
+    - `node.rename` werkt een gekoppeld Node-label bij.
+    - `node.invoke` stuurt een opdracht door naar een verbonden Node.
+    - `node.invoke.result` retourneert het resultaat voor een aanroepaanvraag.
+    - `node.event` draagt door Nodes afkomstige gebeurtenissen terug naar de gateway.
+    - `node.pending.pull` en `node.pending.ack` zijn de wachtrij-API's voor verbonden Nodes.
+    - `node.pending.enqueue` en `node.pending.drain` beheren duurzaam wachtend werk voor offline/losgekoppelde Nodes.
 
   </Accordion>
 
   <Accordion title="Goedkeuringsfamilies">
-    - `exec.approval.request`, `exec.approval.get`, `exec.approval.list` en `exec.approval.resolve` dekken eenmalige exec-goedkeuringsaanvragen plus lookup/replay van wachtende goedkeuringen.
-    - `exec.approval.waitDecision` wacht op één wachtende exec-goedkeuring en retourneert de definitieve beslissing (of `null` bij timeout).
-    - `exec.approvals.get` en `exec.approvals.set` beheren snapshots van Gateway-exec-goedkeuringsbeleid.
-    - `exec.approvals.node.get` en `exec.approvals.node.set` beheren node-lokaal exec-goedkeuringsbeleid via node-relayopdrachten.
+    - `exec.approval.request`, `exec.approval.get`, `exec.approval.list` en `exec.approval.resolve` dekken eenmalige exec-goedkeuringsaanvragen plus opzoeken/herhalen van wachtende goedkeuringen.
+    - `exec.approval.waitDecision` wacht op één wachtende exec-goedkeuring en retourneert de definitieve beslissing (of `null` bij time-out).
+    - `exec.approvals.get` en `exec.approvals.set` beheren snapshots van het Gateway-beleid voor exec-goedkeuring.
+    - `exec.approvals.node.get` en `exec.approvals.node.set` beheren Node-lokaal beleid voor exec-goedkeuring via Node-relayopdrachten.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` en `plugin.approval.resolve` dekken door plugins gedefinieerde goedkeuringsflows.
 
   </Accordion>
 
   <Accordion title="Automatisering, Skills en tools">
-    - Automatisering: `wake` plant een directe of volgende-heartbeat wake-tekstinjectie; `cron.get`, `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` beheren gepland werk.
+    - Automatisering: `wake` plant een onmiddellijke of volgende-Heartbeat wake-tekstinjectie; `cron.get`, `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` beheren gepland werk.
     - `cron.run` blijft een enqueue-achtige RPC voor handmatige runs. Clients die voltooiingssemantiek nodig hebben, moeten de geretourneerde `runId` lezen en `cron.runs` pollen.
-    - `cron.runs` accepteert een optioneel niet-leeg `runId`-filter zodat clients één in de wachtrij geplaatste handmatige run kunnen volgen zonder race met andere history-vermeldingen voor dezelfde job.
+    - `cron.runs` accepteert een optioneel niet-leeg `runId`-filter, zodat clients één in de wachtrij geplaatste handmatige run kunnen volgen zonder te racen met andere geschiedenisvermeldingen voor dezelfde taak.
     - Skills en tools: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`, `tools.invoke`.
 
   </Accordion>
 </AccordionGroup>
 
-### Algemene gebeurtenisfamilies
+### Veelvoorkomende gebeurtenisfamilies
 
-- `chat`: UI-chatupdates zoals `chat.inject` en andere transcriptie-only chat
-  gebeurtenissen. In protocol v4 dragen delta-payloads `deltaText`; `message` blijft
+- `chat`: UI-chatupdates zoals `chat.inject` en andere uitsluitend-transcriptiechat-
+  gebeurtenissen. In protocol v4 dragen deltapayloads `deltaText`; `message` blijft
   de cumulatieve assistentsnapshot. Niet-prefixvervangingen zetten `replace=true`
-  en gebruiken `deltaText` als de vervangende tekst.
-- `session.message`, `session.operation` en `session.tool`: transcriptie-,
-  lopende sessiebewerking- en event-streamupdates voor een geabonneerde
+  en gebruiken `deltaText` als vervangende tekst.
+- `session.message`, `session.operation` en `session.tool`: transcriptie,
+  lopende sessiebewerking en event-streamupdates voor een geabonneerde
   sessie.
-- `sessions.changed`: sessie-index of metagegevens gewijzigd.
+- `sessions.changed`: sessie-index of metadata gewijzigd.
 - `presence`: updates van systeempresentiesnapshots.
 - `tick`: periodieke keepalive-/livenessgebeurtenis.
 - `health`: update van gateway-gezondheidssnapshot.
-- `heartbeat`: update van heartbeat-gebeurtenisstroom.
-- `cron`: wijzigingsgebeurtenis voor cron-run/job.
-- `shutdown`: melding van gateway-afsluiting.
-- `node.pair.requested` / `node.pair.resolved`: levenscyclus van node-koppeling.
-- `node.invoke.request`: broadcast van node-invoke-aanvraag.
+- `heartbeat`: update van Heartbeat-gebeurtenisstroom.
+- `cron`: wijzigingsgebeurtenis voor Cron-run/taak.
+- `shutdown`: gateway-afsluitmelding.
+- `node.pair.requested` / `node.pair.resolved`: levenscyclus van Node-koppeling.
+- `node.invoke.request`: broadcast van Node-aanroepaanvraag.
 - `device.pair.requested` / `device.pair.resolved`: levenscyclus van gekoppeld apparaat.
-- `voicewake.changed`: triggerconfiguratie voor wake-word gewijzigd.
+- `voicewake.changed`: wake-word-triggerconfiguratie gewijzigd.
 - `exec.approval.requested` / `exec.approval.resolved`: levenscyclus van exec-goedkeuring.
 - `plugin.approval.requested` / `plugin.approval.resolved`: levenscyclus van plugin-goedkeuring.
 
 ### Node-helpermethoden
 
-- Nodes kunnen `skills.bins` aanroepen om de huidige lijst met uitvoerbare Skills
-  voor auto-allow-controles op te halen.
+- Nodes kunnen `skills.bins` aanroepen om de huidige lijst met uitvoerbare Skill-bestanden
+  op te halen voor auto-allow-controles.
 
 ### RPC's voor taakregister
 
@@ -533,15 +537,15 @@ de RPC's voor het taakregister. Deze methoden retourneren opgeschoonde taaksamen
 runtimestatus.
 
 - `tasks.list` vereist `operator.read`.
-  - Params: optionele `status` (`"queued"`, `"running"`, `"completed"`,
+  - Params: optioneel `status` (`"queued"`, `"running"`, `"completed"`,
     `"failed"`, `"cancelled"` of `"timed_out"`) of een array van die statussen,
-    optionele `agentId`, optionele `sessionKey`, optionele `limit` van `1` tot
+    optioneel `agentId`, optioneel `sessionKey`, optioneel `limit` van `1` tot
     `500`, en optionele string `cursor`.
   - Resultaat: `{ "tasks": TaskSummary[], "nextCursor"?: string }`.
 - `tasks.get` vereist `operator.read`.
   - Params: `{ "taskId": string }`.
   - Resultaat: `{ "task": TaskSummary }`.
-  - Ontbrekende taak-id's retourneren de Gateway not-found-foutvorm.
+  - Ontbrekende taak-id's retourneren de Gateway-foutvorm voor niet gevonden.
 - `tasks.cancel` vereist `operator.write`.
   - Params: `{ "taskId": string, "reason"?: string }`.
   - Resultaat:
@@ -549,94 +553,95 @@ runtimestatus.
   - `found` rapporteert of het register een overeenkomende taak had. `cancelled`
     rapporteert of de runtime annulering heeft geaccepteerd of vastgelegd.
 
-`TaskSummary` bevat `id`, `status` en optionele metagegevens zoals `kind`,
+`TaskSummary` bevat `id`, `status` en optionele metadata zoals `kind`,
 `runtime`, `title`, `agentId`, `sessionKey`, `childSessionKey`, `ownerKey`,
 `runId`, `taskId`, `flowId`, `parentTaskId`, `sourceId`, tijdstempels, voortgang,
 terminale samenvatting en opgeschoonde fouttekst. `agentId` identificeert de agent
-die de taak uitvoert; `sessionKey` en `ownerKey` behouden de aanvrager- en controlecontext.
+die de taak uitvoert; `sessionKey` en `ownerKey` behouden aanvrager- en besturings-
+context.
 
 ### Operator-helpermethoden
 
 - Operators kunnen `commands.list` (`operator.read`) aanroepen om de runtime
-  opdrachtinventaris voor een agent op te halen.
+  opdrachteninventaris voor een agent op te halen.
   - `agentId` is optioneel; laat dit weg om de standaard agentwerkruimte te lezen.
-  - `scope` bepaalt op welk oppervlak de primaire `name` is gericht:
+  - `scope` bepaalt welk oppervlak de primaire `name` aanstuurt:
     - `text` retourneert het primaire tekstopdrachttoken zonder de voorafgaande `/`
     - `native` en het standaardpad `both` retourneren providerbewuste native namen
       wanneer beschikbaar
   - `textAliases` bevat exacte slash-aliassen zoals `/model` en `/m`.
   - `nativeName` bevat de providerbewuste native opdrachtnaam wanneer die bestaat.
-  - `provider` is optioneel en heeft alleen invloed op native naamgeving plus beschikbaarheid van native Plugin-
-    opdrachten.
+  - `provider` is optioneel en beïnvloedt alleen native naamgeving plus
+    beschikbaarheid van native Plugin-opdrachten.
   - `includeArgs=false` laat geserialiseerde argumentmetadata weg uit de respons.
 - Operators kunnen `tools.catalog` (`operator.read`) aanroepen om de runtime-toolcatalogus voor een
   agent op te halen. De respons bevat gegroepeerde tools en herkomstmetadata:
   - `source`: `core` of `plugin`
   - `pluginId`: Plugin-eigenaar wanneer `source="plugin"`
   - `optional`: of een Plugin-tool optioneel is
-- Operators kunnen `tools.effective` (`operator.read`) aanroepen om de runtime-effectieve tool-
-  inventaris voor een sessie op te halen.
-  - `sessionKey` is vereist.
-  - De Gateway leidt vertrouwde runtimecontext af van de sessie aan serverzijde in plaats van door de
-    aanroeper geleverde auth- of aflevercontext te accepteren.
-  - De respons is een sessiegebonden, door de server afgeleide projectie van de actieve inventaris,
+- Operators kunnen `tools.effective` (`operator.read`) aanroepen om de runtime-effectieve
+  toolinventaris voor een sessie op te halen.
+  - `sessionKey` is verplicht.
+  - De Gateway leidt vertrouwde runtimecontext server-side af uit de sessie in plaats van
+    door de aanroeper aangeleverde auth- of aflevercontext te accepteren.
+  - De respons is een sessiegebonden, server-afgeleide projectie van de actieve inventaris,
     inclusief core-, Plugin-, kanaal- en al ontdekte MCP-servertools.
-  - `tools.effective` is alleen-lezen voor MCP: het kan een warme sessie-MCP-catalogus projecteren via het
-    uiteindelijke toolbeleid, maar het maakt geen MCP-runtimes aan, verbindt geen transports en voert geen
+  - `tools.effective` is alleen-lezen voor MCP: het kan een warme MCP-catalogus van een sessie projecteren via het
+    uiteindelijke toolbeleid, maar het maakt geen MCP-runtimes aan, verbindt geen transporten en geeft geen
     `tools/list` uit. Als er geen overeenkomende warme catalogus bestaat, kan de respons een melding bevatten zoals
     `mcp-not-yet-connected`, `mcp-not-yet-listed` of `mcp-stale-catalog`.
   - Effectieve toolvermeldingen gebruiken `source="core"`, `source="plugin"`, `source="channel"` of
     `source="mcp"`.
 - Operators kunnen `tools.invoke` (`operator.write`) aanroepen om één beschikbare tool uit te voeren via hetzelfde
   Gateway-beleidspad als `/tools/invoke`.
-  - `name` is vereist. `args`, `sessionKey`, `agentId`, `confirm` en
+  - `name` is verplicht. `args`, `sessionKey`, `agentId`, `confirm` en
     `idempotencyKey` zijn optioneel.
   - Als zowel `sessionKey` als `agentId` aanwezig zijn, moet de opgeloste sessieagent overeenkomen met
     `agentId`.
-  - Core-wrappers die alleen voor eigenaars zijn, zoals `cron`, `gateway` en `nodes`, vereisen
-    eigenaar-/adminidentiteit (`operator.admin`), ook al is de methode `tools.invoke`
-    zelf `operator.write`.
-  - De respons is een SDK-gerichte envelop met `ok`, `toolName`, optionele `output` en getypeerde
+  - Core-wrappers die alleen voor eigenaren zijn, zoals `cron`, `gateway` en `nodes`, vereisen
+    eigenaar-/adminidentiteit (`operator.admin`), ook al is de methode
+    `tools.invoke` zelf `operator.write`.
+  - De respons is een SDK-gerichte envelope met `ok`, `toolName`, optioneel `output` en getypeerde
     `error`-velden. Goedkeurings- of beleidsweigeringen retourneren `ok:false` in de payload in plaats van
     de Gateway-toolbeleidspijplijn te omzeilen.
 - Operators kunnen `skills.status` (`operator.read`) aanroepen om de zichtbare
-  skillinventaris voor een agent op te halen.
+  Skills-inventaris voor een agent op te halen.
   - `agentId` is optioneel; laat dit weg om de standaard agentwerkruimte te lezen.
-  - De respons bevat geschiktheid, ontbrekende vereisten, configuratiecontroles en
+  - De respons bevat geschiktheid, ontbrekende vereisten, configcontroles en
     opgeschoonde installatieopties zonder ruwe geheime waarden bloot te leggen.
 - Operators kunnen `skills.search` en `skills.detail` (`operator.read`) aanroepen voor
   ClawHub-ontdekkingsmetadata.
 - Operators kunnen `skills.upload.begin`, `skills.upload.chunk` en
-  `skills.upload.commit` (`operator.admin`) aanroepen om een privé-skillarchief te stagen
-  voordat het wordt geïnstalleerd. Dit is een apart adminuploadpad voor vertrouwde clients,
-  niet de normale ClawHub-skillinstallatiestroom, en is standaard uitgeschakeld tenzij
+  `skills.upload.commit` (`operator.admin`) aanroepen om een privé-Skill-archief te stagen
+  voordat het wordt geïnstalleerd. Dit is een afzonderlijk admin-uploadpad voor vertrouwde clients,
+  niet de normale ClawHub-Skill-installatiestroom, en is standaard uitgeschakeld tenzij
   `skills.install.allowUploadedArchives` is ingeschakeld.
   - `skills.upload.begin({ kind: "skill-archive", slug, sizeBytes, sha256?, force?, idempotencyKey? })`
-    maakt een upload die aan die slug en force-waarde is gebonden.
+    maakt een upload aan die aan die slug en force-waarde is gekoppeld.
   - `skills.upload.chunk({ uploadId, offset, dataBase64 })` voegt bytes toe op
     de exacte gedecodeerde offset.
   - `skills.upload.commit({ uploadId, sha256? })` verifieert de uiteindelijke grootte en
-    SHA-256. Commit voltooit alleen de upload; het installeert de skill niet.
-  - Geüploade skillarchieven zijn ziparchieven met een `SKILL.md`-root. De
+    SHA-256. Commit rondt alleen de upload af; het installeert de Skill niet.
+  - Geüploade Skill-archieven zijn ziparchieven met een `SKILL.md`-root. De
     interne mapnaam van het archief selecteert nooit het installatiedoel.
 - Operators kunnen `skills.install` (`operator.admin`) in drie modi aanroepen:
   - ClawHub-modus: `{ source: "clawhub", slug, version?, force? }` installeert een
-    skillmap in de standaard `skills/`-map van de agentwerkruimte.
+    Skill-map in de standaard `skills/`-directory van de agentwerkruimte.
   - Uploadmodus: `{ source: "upload", uploadId, slug, force?, sha256?, timeoutMs? }`
-    installeert een gecommitte upload in de map `skills/<slug>` van de standaard agentwerkruimte.
-    De slug en force-waarde moeten overeenkomen met het oorspronkelijke
-    `skills.upload.begin`-verzoek. Deze modus wordt geweigerd tenzij
+    installeert een gecommitte upload in de directory `skills/<slug>` van de
+    standaard agentwerkruimte. De slug en force-waarde moeten overeenkomen met de oorspronkelijke
+    `skills.upload.begin`-aanvraag. Deze modus wordt geweigerd tenzij
     `skills.install.allowUploadedArchives` is ingeschakeld. De instelling heeft geen
     invloed op ClawHub-installaties.
   - Gateway-installatiemodus: `{ name, installId, timeoutMs? }`
     voert een gedeclareerde `metadata.openclaw.install`-actie uit op de Gateway-host.
-    Oudere clients kunnen nog steeds `dangerouslyForceUnsafeInstall` verzenden; dit veld is
+    Oudere clients kunnen nog steeds `dangerouslyForceUnsafeInstall` sturen; dit veld is
     verouderd, wordt alleen geaccepteerd voor protocolcompatibiliteit en wordt genegeerd. Gebruik
     `security.installPolicy` voor installatiebeslissingen die door de operator worden beheerd.
 - Operators kunnen `skills.update` (`operator.admin`) in twee modi aanroepen:
-  - ClawHub-modus werkt één gevolgde slug of alle gevolgde ClawHub-installaties bij in
+  - ClawHub-modus werkt één gevolgde slug bij of alle gevolgde ClawHub-installaties in
     de standaard agentwerkruimte.
-  - Configuratiemodus patcht `skills.entries.<skillKey>`-waarden zoals `enabled`,
+  - Configmodus patcht waarden van `skills.entries.<skillKey>`, zoals `enabled`,
     `apiKey` en `env`.
 
 ### `models.list`-weergaven
@@ -644,25 +649,25 @@ die de taak uitvoert; `sessionKey` en `ownerKey` behouden de aanvrager- en contr
 `models.list` accepteert een optionele parameter `view`:
 
 - Weggelaten of `"default"`: huidig runtimegedrag. Als `agents.defaults.models` is geconfigureerd, is de respons de toegestane catalogus, inclusief dynamisch ontdekte modellen voor `provider/*`-vermeldingen. Anders is de respons de volledige Gateway-catalogus.
-- `"configured"`: gedrag met picker-formaat. Als `agents.defaults.models` is geconfigureerd, blijft dit voorrang hebben, inclusief providergebonden ontdekking voor `provider/*`-vermeldingen. Zonder allowlist gebruikt de respons expliciete `models.providers.*.models`-vermeldingen, met terugval naar de volledige catalogus alleen wanneer er geen geconfigureerde modelrijen bestaan.
+- `"configured"`: gedrag met picker-grootte. Als `agents.defaults.models` is geconfigureerd, heeft dat nog steeds voorrang, inclusief providergebonden ontdekking voor `provider/*`-vermeldingen. Zonder allowlist gebruikt de respons expliciete `models.providers.*.models`-vermeldingen, met terugval naar de volledige catalogus alleen wanneer er geen geconfigureerde modelrijen bestaan.
 - `"all"`: volledige Gateway-catalogus, waarbij `agents.defaults.models` wordt omzeild. Gebruik dit voor diagnostiek en ontdekkings-UI's, niet voor normale modelpickers.
 
 ## Exec-goedkeuringen
 
-- Wanneer een exec-verzoek goedkeuring nodig heeft, broadcast de Gateway `exec.approval.requested`.
-- Operatorclients lossen dit op door `exec.approval.resolve` aan te roepen (vereist `operator.approvals`-scope).
-- Voor `host=node` moet `exec.approval.request` `systemRunPlan` bevatten (canonieke `argv`/`cwd`/`rawCommand`/sessiemetadata). Verzoeken zonder `systemRunPlan` worden geweigerd.
-- Na goedkeuring hergebruiken doorgestuurde `node.invoke system.run`-aanroepen dat canonieke
-  `systemRunPlan` als de gezaghebbende opdracht-/cwd-/sessiecontext.
+- Wanneer een exec-aanvraag goedkeuring nodig heeft, broadcast de Gateway `exec.approval.requested`.
+- Operatorclients lossen dit op door `exec.approval.resolve` aan te roepen (vereist scope `operator.approvals`).
+- Voor `host=node` moet `exec.approval.request` `systemRunPlan` bevatten (canonieke `argv`/`cwd`/`rawCommand`/sessiemetadata). Aanvragen zonder `systemRunPlan` worden geweigerd.
+- Na goedkeuring gebruiken doorgestuurde `node.invoke system.run`-aanroepen dat canonieke
+  `systemRunPlan` opnieuw als de gezaghebbende opdracht-/cwd-/sessiecontext.
 - Als een aanroeper `command`, `rawCommand`, `cwd`, `agentId` of
-  `sessionKey` wijzigt tussen voorbereiden en de uiteindelijke goedgekeurde `system.run`-doorsturing, weigert de
+  `sessionKey` wijzigt tussen voorbereiding en de uiteindelijke goedgekeurde `system.run`-doorsturing, weigert de
   Gateway de run in plaats van de gewijzigde payload te vertrouwen.
 
-## Terugval voor agentaflevering
+## Fallback voor agentaflevering
 
-- `agent`-verzoeken kunnen `deliver=true` bevatten om uitgaande aflevering aan te vragen.
+- `agent`-aanvragen kunnen `deliver=true` bevatten om uitgaande aflevering aan te vragen.
 - `bestEffortDeliver=false` behoudt strikt gedrag: onopgeloste of alleen-interne afleverdoelen retourneren `INVALID_REQUEST`.
-- `bestEffortDeliver=true` staat terugval naar sessie-only uitvoering toe wanneer geen externe afleverbare route kan worden opgelost (bijvoorbeeld interne/webchatsessies of ambigue multikanaalconfiguraties).
+- `bestEffortDeliver=true` staat fallback naar uitvoering alleen binnen de sessie toe wanneer geen extern afleverbare route kan worden opgelost (bijvoorbeeld interne/webchat-sessies of dubbelzinnige multi-channel-configuraties).
 - Uiteindelijke `agent`-resultaten kunnen `result.deliveryStatus` bevatten wanneer aflevering is
   aangevraagd, met dezelfde statussen `sent`, `suppressed`, `partial_failed` en `failed`
   die zijn gedocumenteerd voor [`openclaw agent --json --deliver`](/nl/cli/agent#json-delivery-status).
@@ -670,7 +675,7 @@ die de taak uitvoert; `sessionKey` en `ownerKey` behouden de aanvrager- en contr
 ## Versiebeheer
 
 - `PROTOCOL_VERSION` staat in `packages/gateway-protocol/src/version.ts`.
-- Clients verzenden `minProtocol` + `maxProtocol`; de server weigert bereiken die
+- Clients sturen `minProtocol` + `maxProtocol`; de server weigert bereiken die
   het huidige protocol niet bevatten. Huidige clients en servers vereisen
   protocol v4.
 - Schema's + modellen worden gegenereerd uit TypeBox-definities:
@@ -681,132 +686,132 @@ die de taak uitvoert; `sessionKey` en `ownerKey` behouden de aanvrager- en contr
 ### Clientconstanten
 
 De referentieclient in `src/gateway/client.ts` gebruikt deze standaardwaarden. Waarden zijn
-stabiel binnen protocol v4 en vormen de verwachte basislijn voor clients van derden.
+stabiel binnen protocol v4 en vormen de verwachte baseline voor clients van derden.
 
 | Constante                                 | Standaard                                             | Bron                                                                                       |
 | ----------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | `PROTOCOL_VERSION`                        | `4`                                                   | `packages/gateway-protocol/src/version.ts`                                                 |
 | `MIN_CLIENT_PROTOCOL_VERSION`             | `4`                                                   | `packages/gateway-protocol/src/version.ts`                                                 |
-| Verzoektime-out (per RPC)                 | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)                                               |
+| Aanvraag-time-out (per RPC)               | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)                                               |
 | Preauth-/connect-challenge-time-out       | `15_000` ms                                           | `src/gateway/handshake-timeouts.ts` (config/env kan het gekoppelde server-/clientbudget verhogen) |
 | Initiële reconnect-backoff                | `1_000` ms                                            | `src/gateway/client.ts` (`backoffMs`)                                                      |
 | Maximale reconnect-backoff                | `30_000` ms                                           | `src/gateway/client.ts` (`scheduleReconnect`)                                              |
-| Fast-retry-klem na sluiten van device-token | `250` ms                                            | `src/gateway/client.ts`                                                                    |
-| Force-stop-grace vóór `terminate()`       | `250` ms                                              | `FORCE_STOP_TERMINATE_GRACE_MS`                                                            |
-| Standaardtime-out van `stopAndWait()`     | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                                                 |
-| Standaard tickinterval (vóór `hello-ok`)  | `30_000` ms                                           | `src/gateway/client.ts`                                                                    |
-| Sluiten bij tick-time-out                 | code `4000` wanneer stilte langer is dan `tickIntervalMs * 2` | `src/gateway/client.ts`                                                                    |
+| Fast-retry-klem na device-token-close     | `250` ms                                              | `src/gateway/client.ts`                                                                    |
+| Graceperiode voor force-stop vóór `terminate()` | `250` ms                                         | `FORCE_STOP_TERMINATE_GRACE_MS`                                                            |
+| Standaard-time-out voor `stopAndWait()`   | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                                                 |
+| Standaard tick-interval (vóór `hello-ok`) | `30_000` ms                                           | `src/gateway/client.ts`                                                                    |
+| Sluiting bij tick-time-out                | code `4000` wanneer stilte langer is dan `tickIntervalMs * 2` | `src/gateway/client.ts`                                                             |
 | `MAX_PAYLOAD_BYTES`                       | `25 * 1024 * 1024` (25 MB)                            | `src/gateway/server-constants.ts`                                                          |
 
-De server adverteert de effectieve `policy.tickIntervalMs`, `policy.maxPayload`
+De server adverteert de effectieve waarden `policy.tickIntervalMs`, `policy.maxPayload`
 en `policy.maxBufferedBytes` in `hello-ok`; clients moeten die waarden respecteren
 in plaats van de standaardwaarden van vóór de handshake.
 
 ## Auth
 
-- Shared-secret Gateway-authenticatie gebruikt `connect.params.auth.token` of
+- Gedeelde-geheim Gateway-authenticatie gebruikt `connect.params.auth.token` of
   `connect.params.auth.password`, afhankelijk van de geconfigureerde authenticatiemodus.
-- Modi die identiteit bevatten, zoals Tailscale Serve
+- Modi met identiteit, zoals Tailscale Serve
   (`gateway.auth.allowTailscale: true`) of niet-loopback
-  `gateway.auth.mode: "trusted-proxy"`, voldoen aan de connect-authenticatiecontrole via
+  `gateway.auth.mode: "trusted-proxy"` voldoen aan de connect-authenticatiecontrole via
   requestheaders in plaats van `connect.params.auth.*`.
-- Private-ingress `gateway.auth.mode: "none"` slaat shared-secret connect-authenticatie
-  volledig over; stel die modus niet bloot op publieke/niet-vertrouwde ingress.
-- Na koppeling geeft de Gateway een **device token** uit dat is beperkt tot de verbindingsrol
-  + scopes. Het wordt teruggegeven in `hello-ok.auth.deviceToken` en moet door de
-  client worden bewaard voor toekomstige verbindingen.
+- Private-ingress `gateway.auth.mode: "none"` slaat gedeelde-geheim connect-authenticatie
+  volledig over; stel die modus niet bloot via publieke/niet-vertrouwde ingress.
+- Na het koppelen geeft de Gateway een **apparaat-token** uit dat is beperkt tot de verbindingsrol
+  + scopes. Het wordt geretourneerd in `hello-ok.auth.deviceToken` en moet door de client
+  worden bewaard voor toekomstige verbindingen.
 - Clients moeten de primaire `hello-ok.auth.deviceToken` bewaren na elke
-  succesvolle verbinding.
-- Opnieuw verbinden met dat **opgeslagen** device token moet ook de opgeslagen
+  geslaagde verbinding.
+- Opnieuw verbinden met dat **opgeslagen** apparaat-token moet ook de opgeslagen
   goedgekeurde scopeset voor dat token hergebruiken. Dit behoudt lees-/probe-/status-toegang
-  die al was toegekend en voorkomt dat reconnects stilzwijgend worden teruggebracht tot een
+  die al was verleend en voorkomt dat reconnects stilzwijgend worden teruggebracht tot een
   smallere impliciete admin-only scope.
 - Client-side samenstelling van connect-authenticatie (`selectConnectAuth` in
   `src/gateway/client.ts`):
   - `auth.password` is orthogonaal en wordt altijd doorgestuurd wanneer ingesteld.
-  - `auth.token` wordt in prioriteitsvolgorde ingevuld: eerst een expliciet gedeeld token,
-    daarna een expliciete `deviceToken`, daarna een opgeslagen per-device token (gekeyed op
+  - `auth.token` wordt gevuld in prioriteitsvolgorde: eerst een expliciet gedeeld token,
+    daarna een expliciete `deviceToken`, daarna een opgeslagen per-apparaat-token (gesleuteld op
     `deviceId` + `role`).
   - `auth.bootstrapToken` wordt alleen verzonden wanneer geen van bovenstaande een
-    `auth.token` heeft opgeleverd. Een gedeeld token of een opgelost device token onderdrukt dit.
-  - Automatische promotie van een opgeslagen device token bij de eenmalige
-    `AUTH_TOKEN_MISMATCH`-retry is beperkt tot **alleen vertrouwde endpoints**:
-    loopback, of `wss://` met een gepinde `tlsFingerprint`. Publieke `wss://`
-    zonder pinning kwalificeert niet.
-- Ingebouwde setup-code bootstrap retourneert de primaire node
+    `auth.token` heeft opgeleverd. Een gedeeld token of een opgelost apparaat-token onderdrukt dit.
+  - Automatische promotie van een opgeslagen apparaat-token bij de eenmalige
+    `AUTH_TOKEN_MISMATCH`-retry is beperkt tot **vertrouwde endpoints**:
+    loopback, of `wss://` met een vastgezette `tlsFingerprint`. Publieke `wss://`
+    zonder pinning komt niet in aanmerking.
+- Ingebouwde bootstrap met installatiecode retourneert het primaire node
   `hello-ok.auth.deviceToken` plus een begrensd operator-token in
   `hello-ok.auth.deviceTokens` voor vertrouwde mobiele overdracht. Het operator-token
-  bevat `operator.talk.secrets` voor native Talk-configuratielezingen, maar
-  sluit pairing-mutatiescopes en `operator.admin` uit.
-- Terwijl een niet-baseline setup-code bootstrap op goedkeuring wacht, bevatten `PAIRING_REQUIRED`
-  details `recommendedNextStep: "wait_then_retry"`, `retryable: true`,
-  en `pauseReconnect: false`. Clients moeten blijven reconnecten met hetzelfde
-  bootstrap-token totdat de aanvraag is goedgekeurd of het token ongeldig wordt.
+  bevat `operator.talk.secrets` voor native leesacties van Talk-configuratie, maar
+  sluit scopes voor koppelingsmutaties en `operator.admin` uit.
+- Terwijl een niet-baseline bootstrap met installatiecode wacht op goedkeuring, bevatten
+  `PAIRING_REQUIRED`-details `recommendedNextStep: "wait_then_retry"`, `retryable: true`,
+  en `pauseReconnect: false`. Clients moeten met hetzelfde
+  bootstrap-token blijven reconnecten totdat het verzoek is goedgekeurd of het token ongeldig wordt.
 - Bewaar `hello-ok.auth.deviceTokens` alleen wanneer de verbinding bootstrap-authenticatie gebruikte
-  op een vertrouwd transport zoals `wss://` of loopback/lokale koppeling.
-- Als een client een **expliciete** `deviceToken` of expliciete `scopes` aanlevert, blijft die
-  door de caller aangevraagde scopeset leidend; gecachte scopes worden alleen
-  hergebruikt wanneer de client het opgeslagen per-device token hergebruikt.
-- Device tokens kunnen worden geroteerd/ingetrokken via `device.token.rotate` en
-  `device.token.revoke` (vereist `operator.pairing`-scope). Het roteren of
-  intrekken van een node of andere niet-operatorrol vereist ook `operator.admin`.
+  via een vertrouwd transport zoals `wss://` of loopback/lokale koppeling.
+- Als een client een **expliciete** `deviceToken` of expliciete `scopes` opgeeft, blijft die
+  door de aanroeper gevraagde scopeset gezaghebbend; gecachte scopes worden alleen
+  hergebruikt wanneer de client het opgeslagen per-apparaat-token hergebruikt.
+- Apparaat-tokens kunnen worden geroteerd/ingetrokken via `device.token.rotate` en
+  `device.token.revoke` (vereist de scope `operator.pairing`). Het roteren of
+  intrekken van een node- of andere niet-operatorrol vereist ook `operator.admin`.
 - `device.token.rotate` retourneert rotatiemetadata. Het echoot het vervangende
-  bearer-token alleen voor same-device calls die al met dat device token zijn geauthenticeerd,
+  bearer-token alleen voor same-device calls die al met dat apparaat-token zijn geauthenticeerd,
   zodat token-only clients hun vervanging kunnen bewaren voordat ze opnieuw verbinden.
-  Shared/admin-rotaties echoën het bearer-token niet.
-- Tokenuitgifte, rotatie en intrekking blijven beperkt tot de goedgekeurde rollenset
-  die is vastgelegd in de pairing-entry van dat device; tokenmutatie kan geen device-rol
-  uitbreiden of targeten die nooit door pairing-goedkeuring is verleend.
-- Voor paired-device tokensessies is devicebeheer self-scoped tenzij de
-  caller ook `operator.admin` heeft: niet-admin callers kunnen alleen het
-  operator-token voor hun **eigen** device-entry beheren. Beheer van node- en andere
-  niet-operator-tokens is admin-only, zelfs voor het eigen device van de caller.
-- `device.token.rotate` en `device.token.revoke` controleren ook de beoogde operator-
-  token-scopeset tegen de huidige sessiescopes van de caller. Niet-admin callers
+  Gedeelde/admin-rotaties echoën het bearer-token niet.
+- Tokenuitgifte, rotatie en intrekking blijven begrensd tot de goedgekeurde rollenset
+  die in de koppelingsvermelding van dat apparaat is vastgelegd; tokenmutatie kan geen
+  apparaatrol uitbreiden of targeten die nooit door koppelingsgoedkeuring is verleend.
+- Voor token-sessies van gekoppelde apparaten is apparaatbeheer self-scoped tenzij de
+  aanroeper ook `operator.admin` heeft: niet-admin aanroepers kunnen alleen het
+  operator-token voor hun **eigen** apparaatvermelding beheren. Node- en ander
+  niet-operator-tokenbeheer is admin-only, zelfs voor het eigen apparaat van de aanroeper.
+- `device.token.rotate` en `device.token.revoke` controleren ook de doel-operator
+  token-scopeset tegen de huidige sessiescopes van de aanroeper. Niet-admin aanroepers
   kunnen geen breder operator-token roteren of intrekken dan ze zelf al hebben.
 - Authenticatiefouten bevatten `error.details.code` plus herstelhints:
   - `error.details.canRetryWithDeviceToken` (boolean)
   - `error.details.recommendedNextStep` (`retry_with_device_token`, `update_auth_configuration`, `update_auth_credentials`, `wait_then_retry`, `review_auth_configuration`)
 - Clientgedrag voor `AUTH_TOKEN_MISMATCH`:
-  - Vertrouwde clients mogen een begrensde retry proberen met een gecacht per-device token.
-  - Als die retry mislukt, moeten clients automatische reconnect-loops stoppen en guidance voor operatoractie tonen.
-- `AUTH_SCOPE_MISMATCH` betekent dat het device token werd herkend maar de
-  aangevraagde rol/scopes niet dekt. Clients moeten dit niet presenteren als een slecht token;
+  - Vertrouwde clients mogen één begrensde retry proberen met een gecacht per-apparaat-token.
+  - Als die retry mislukt, moeten clients automatische reconnect-lussen stoppen en guidance voor operatoractie tonen.
+- `AUTH_SCOPE_MISMATCH` betekent dat het apparaat-token is herkend maar niet dekt
+  wat voor de gevraagde rol/scopes nodig is. Clients moeten dit niet presenteren als een verkeerd token;
   vraag de operator om opnieuw te koppelen of het smallere/bredere scopecontract goed te keuren.
 
-## Device-identiteit + pairing
+## Apparaatidentiteit + koppeling
 
-- Nodes moeten een stabiele device-identiteit (`device.id`) opnemen die is afgeleid van een
-  keypair-fingerprint.
-- Gateways geven tokens uit per device + rol.
-- Pairing-goedkeuringen zijn vereist voor nieuwe device-ID's, tenzij lokale auto-goedkeuring
+- Nodes moeten een stabiele apparaatidentiteit (`device.id`) opnemen die is afgeleid van een
+  keypair-vingerafdruk.
+- Gateways geven tokens uit per apparaat + rol.
+- Koppelingsgoedkeuringen zijn vereist voor nieuwe apparaat-ID's, tenzij lokale automatische goedkeuring
   is ingeschakeld.
-- Pairing-auto-goedkeuring is gecentreerd rond directe local loopback-verbindingen.
-- OpenClaw heeft ook een smal backend/container-lokaal self-connect-pad voor
-  vertrouwde shared-secret helperflows.
-- Same-host tailnet- of LAN-verbindingen worden nog steeds als remote behandeld voor pairing en
+- Automatische koppelingsgoedkeuring is gericht op directe local loopback-verbindingen.
+- OpenClaw heeft ook een smal backend/container-local self-connect-pad voor
+  vertrouwde helperflows met gedeeld geheim.
+- Same-host tailnet- of LAN-verbindingen worden nog steeds als remote behandeld voor koppeling en
   vereisen goedkeuring.
 - WS-clients nemen normaal gesproken `device`-identiteit op tijdens `connect` (operator +
-  node). De enige device-less operator-uitzonderingen zijn expliciete vertrouwenspaden:
+  node). De enige operatoruitzonderingen zonder apparaat zijn expliciete vertrouwenspaden:
   - `gateway.controlUi.allowInsecureAuth=true` voor localhost-only onveilige HTTP-compatibiliteit.
-  - succesvolle `gateway.auth.mode: "trusted-proxy"` operator Control UI-authenticatie.
-  - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (break-glass, ernstige security-downgrade).
+  - geslaagde `gateway.auth.mode: "trusted-proxy"` operator Control UI-authenticatie.
+  - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (break-glass, ernstige beveiligingsverlaging).
   - direct-loopback `gateway-client` backend-RPC's op het gereserveerde interne
     helperpad.
-- Het weglaten van device-identiteit heeft scopegevolgen. Wanneer een device-less operator-
-  verbinding wordt toegestaan via een expliciet vertrouwenspad, wist OpenClaw nog steeds
+- Het weglaten van apparaatidentiteit heeft scopegevolgen. Wanneer een apparaatloze operatorverbinding
+  via een expliciet vertrouwenspad wordt toegestaan, wist OpenClaw nog steeds
   zelfverklaarde scopes naar een lege set, tenzij dat pad een benoemde
-  scopebehoud-uitzondering heeft. Scope-gated methoden falen dan met
+  uitzondering voor scopebehoud heeft. Scope-gated methoden falen dan met
   `missing scope`.
 - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` is een Control UI
-  break-glass scopebehoud-pad. Het kent geen scopes toe aan willekeurige
+  break-glass-pad voor scopebehoud. Het kent geen scopes toe aan willekeurige
   aangepaste backend- of CLI-vormige WebSocket-clients.
 - Het gereserveerde direct-loopback `gateway-client` backend-helperpad behoudt
   scopes alleen voor interne lokale control-plane RPC's; aangepaste backend-ID's krijgen
   deze uitzondering niet.
-- Alle verbindingen moeten de door de server geleverde `connect.challenge` nonce ondertekenen.
+- Alle verbindingen moeten de door de server verstrekte `connect.challenge`-nonce ondertekenen.
 
-### Diagnostiek voor device-authenticatiemigratie
+### Diagnostiek voor apparaat-authenticatiemigratie
 
 Voor legacy clients die nog pre-challenge ondertekeningsgedrag gebruiken, retourneert `connect` nu
 `DEVICE_AUTH_*`-detailcodes onder `error.details.code` met een stabiele `error.details.reason`.
@@ -817,31 +822,31 @@ Veelvoorkomende migratiefouten:
 | --------------------------- | -------------------------------- | ------------------------ | -------------------------------------------------- |
 | `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | Client liet `device.nonce` weg (of stuurde leeg).  |
 | `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | Client ondertekende met een verouderde/verkeerde nonce. |
-| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | Signature-payload komt niet overeen met v2-payload. |
-| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | Ondertekende timestamp valt buiten de toegestane skew. |
-| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id` komt niet overeen met de public key-fingerprint. |
-| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | Public key-indeling/canonicalisatie is mislukt.    |
+| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | Ondertekeningspayload komt niet overeen met v2-payload. |
+| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | Ondertekende tijdstempel valt buiten toegestane skew. |
+| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id` komt niet overeen met vingerafdruk van publieke sleutel. |
+| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | Indeling/canonicalisatie van publieke sleutel mislukt. |
 
 Migratiedoel:
 
 - Wacht altijd op `connect.challenge`.
-- Onderteken de v2-payload die de servernonce bevat.
+- Onderteken de v2-payload die de server-nonce bevat.
 - Stuur dezelfde nonce in `connect.params.device.nonce`.
-- De voorkeurs-signature-payload is `v3`, die `platform` en `deviceFamily`
-  bindt naast device/client/role/scopes/token/nonce-velden.
-- Legacy `v2`-signatures blijven geaccepteerd voor compatibiliteit, maar paired-device
-  metadata-pinning blijft commandbeleid bij reconnect bepalen.
+- De voorkeurs-ondertekeningspayload is `v3`, die `platform` en `deviceFamily`
+  bindt naast de velden voor apparaat/client/rol/scopes/token/nonce.
+- Legacy `v2`-handtekeningen blijven geaccepteerd voor compatibiliteit, maar metadata-pinning
+  van gekoppelde apparaten blijft commandobeleid bij reconnects bepalen.
 
 ## TLS + pinning
 
 - TLS wordt ondersteund voor WS-verbindingen.
-- Clients kunnen optioneel de gateway-certificaatfingerprint pinnen (zie `gateway.tls`-
-  configuratie plus `gateway.remote.tlsFingerprint` of CLI `--tls-fingerprint`).
+- Clients kunnen optioneel de cert-vingerafdruk van de gateway pinnen (zie `gateway.tls`
+  config plus `gateway.remote.tlsFingerprint` of CLI `--tls-fingerprint`).
 
 ## Scope
 
-Dit protocol stelt de **volledige Gateway-API** bloot (status, channels, models, chat,
-agent, sessions, nodes, approvals, enz.). Het exacte oppervlak wordt gedefinieerd door de
+Dit protocol stelt de **volledige gateway-API** beschikbaar (status, kanalen, modellen, chat,
+agent, sessies, nodes, goedkeuringen, enz.). Het exacte oppervlak wordt gedefinieerd door de
 TypeBox-schema's in `packages/gateway-protocol/src/schema.ts`.
 
 ## Gerelateerd

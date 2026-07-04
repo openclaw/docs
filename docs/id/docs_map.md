@@ -1,30 +1,30 @@
 ---
 read_when: Finding which docs page covers a topic before reading the page
 summary: Peta judul yang dihasilkan untuk halaman dokumentasi OpenClaw
-title: Peta dokumentasi
+title: Peta dokumen
 x-i18n:
-    generated_at: "2026-07-04T15:35:45Z"
+    generated_at: "2026-07-04T18:23:25Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4e180b7c652be24b73af51fecc5cf9a566184c1eff65ca0acdc0133bbc49c332
+    source_hash: 1135c12d026e49607a993d8f5c92de350dc60bc315fa4bb3d7fdbdce5cf44fae
     source_path: docs_map.md
     workflow: 16
 ---
 
-# Peta dokumen OpenClaw
+# Peta dokumentasi OpenClaw
 
-File ini dibuat dari judul `docs/**/*.md` dan `docs/**/*.mdx` untuk membantu agen menavigasi pohon dokumentasi.
-Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
+File ini dihasilkan dari judul `docs/**/*.md` dan `docs/**/*.mdx` untuk membantu agen menavigasi pohon dokumentasi.
+Jangan mengeditnya secara manual; jalankan `pnpm docs:map:gen`.
 
 ## agent-runtime-architecture.md
 
 - Rute: /agent-runtime-architecture
 - Judul:
-  - H2: Tata letak runtime
+  - H2: Tata Letak Runtime
   - H2: Batasan
   - H2: Manifes
-  - H2: Pemilihan runtime
+  - H2: Pemilihan Runtime
   - H2: Terkait
 
 ## announcements/bluebubbles-imessage.md
@@ -32,8 +32,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /announcements/bluebubbles-imessage
 - Judul:
   - H1: Penghapusan BlueBubbles dan jalur imsg iMessage
-  - H2: Apa yang berubah
-  - H2: Apa yang harus dilakukan
+  - H2: Yang berubah
+  - H2: Yang perlu dilakukan
   - H2: Catatan migrasi
   - H2: Lihat juga
 
@@ -41,7 +41,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /auth-credential-semantics
 - Judul:
-  - H2: Kode alasan probe stabil
+  - H2: Kode alasan probe yang stabil
   - H2: Kredensial token
   - H3: Aturan kelayakan
   - H3: Aturan resolusi
@@ -50,7 +50,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Pemfilteran urutan autentikasi eksplisit
   - H2: Resolusi target probe
   - H2: Penemuan kredensial CLI eksternal
-  - H2: Penjaga Kebijakan SecretRef OAuth
+  - H2: Penjaga Kebijakan OAuth SecretRef
   - H2: Pesan Kompatibel Legacy
   - H2: Terkait
 
@@ -77,8 +77,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Gaya eksekusi
   - H3: Payload perintah
   - H3: Opsi payload untuk pekerjaan terisolasi
-  - H2: Pengiriman dan keluaran
-  - H2: Bahasa keluaran
+  - H2: Pengiriman dan output
+  - H2: Bahasa output
   - H2: Contoh CLI
   - H2: Webhook
   - H3: Autentikasi
@@ -86,7 +86,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Penyiapan wizard (direkomendasikan)
   - H3: Mulai otomatis Gateway
   - H3: Penyiapan manual satu kali
-  - H3: Penggantian model Gmail
+  - H3: Override model Gmail
   - H2: Mengelola pekerjaan
   - H2: Konfigurasi
   - H2: Pemecahan masalah
@@ -144,9 +144,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Konsep inti
   - H3: Tugas terjadwal (cron)
   - H3: Tugas
-  - H3: Komitmen tersimpul
-  - H3: Alur Tugas
-  - H3: Perintah tetap
+  - H3: Komitmen tersimpulkan
+  - H3: Task Flow
+  - H3: Instruksi tetap
   - H3: Hook
   - H3: Heartbeat
   - H2: Cara semuanya bekerja bersama
@@ -162,10 +162,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /automation/standing-orders
 - Judul:
-  - H2: Mengapa perintah tetap
+  - H2: Mengapa instruksi tetap
   - H2: Cara kerjanya
-  - H2: Anatomi perintah tetap
-  - H2: Perintah tetap plus pekerjaan cron
+  - H2: Anatomi instruksi tetap
+  - H2: Instruksi tetap plus pekerjaan cron
   - H2: Contoh
   - H3: Contoh 1: konten dan media sosial (siklus mingguan)
   - H3: Contoh 2: operasi keuangan (dipicu peristiwa)
@@ -182,10 +182,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /automation/taskflow
 - Judul:
   - H2: Kapan menggunakan Task Flow
-  - H2: Pola alur kerja terjadwal yang andal
+  - H2: Pola workflow terjadwal yang andal
   - H2: Mode sinkronisasi
   - H3: Mode terkelola
-  - H3: Mode tercermin
+  - H3: Mode cermin
   - H2: Status tahan lama dan pelacakan revisi
   - H2: Perilaku pembatalan
   - H2: Perintah CLI
@@ -234,10 +234,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /channels/access-groups
 - Judul:
   - H2: Grup pengirim pesan statis
-  - H2: Grup referensi dari daftar izin
-  - H2: Jalur saluran pesan yang didukung
+  - H2: Grup referensi dari allowlist
+  - H2: Jalur kanal pesan yang didukung
   - H2: Diagnostik Plugin
-  - H2: Audiens saluran Discord
+  - H2: Audiens kanal Discord
   - H2: Catatan keamanan
   - H2: Pemecahan masalah
 
@@ -251,7 +251,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Contoh Slack
   - H2: Contoh Telegram
   - H2: Kebijakan khusus agen
-  - H2: Mode balasan yang terlihat
+  - H2: Mode balasan terlihat
   - H2: Riwayat
   - H2: Pemecahan masalah
   - H2: Terkait
@@ -263,8 +263,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Perlindungan loop bot
   - H2: Default
   - H2: Konfigurasikan default bersama
-  - H2: Timpa per saluran atau akun
-  - H2: Dukungan saluran
+  - H2: Override per kanal atau akun
+  - H2: Dukungan kanal
 
 ## channels/broadcast-groups.md
 
@@ -283,28 +283,28 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Praktik terbaik
   - H2: Kompatibilitas
   - H3: Penyedia
-  - H3: Perutean
+  - H3: Routing
   - H2: Pemecahan masalah
   - H2: Contoh
   - H2: Referensi API
   - H3: Skema konfigurasi
   - H3: Bidang
   - H2: Batasan
-  - H2: Penyempurnaan mendatang
+  - H2: Peningkatan mendatang
   - H2: Terkait
 
 ## channels/channel-routing.md
 
 - Rute: /channels/channel-routing
 - Judul:
-  - H1: Saluran &amp; perutean
-  - H2: Istilah kunci
+  - H1: Kanal &amp; routing
+  - H2: Istilah utama
   - H2: Prefiks target keluar
   - H2: Bentuk kunci sesi (contoh)
   - H2: Penyematan rute DM utama
-  - H2: Perekaman masuk yang dijaga
-  - H2: Aturan perutean (bagaimana agen dipilih)
-  - H2: Grup siaran (menjalankan beberapa agen)
+  - H2: Perekaman masuk terlindungi
+  - H2: Aturan routing (cara agen dipilih)
+  - H2: Grup broadcast (menjalankan beberapa agen)
   - H2: Ikhtisar konfigurasi
   - H2: Penyimpanan sesi
   - H2: Perilaku WebChat
@@ -328,21 +328,21 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Penyiapan cepat
   - H2: Direkomendasikan: Siapkan workspace guild
   - H2: Model runtime
-  - H2: Saluran forum
+  - H2: Kanal forum
   - H2: Komponen interaktif
-  - H2: Kontrol akses dan perutean
-  - H3: Perutean agen berbasis peran
+  - H2: Kontrol akses dan routing
+  - H3: Routing agen berbasis peran
   - H2: Perintah native dan autentikasi perintah
   - H2: Detail fitur
   - H2: Alat dan gerbang tindakan
   - H2: UI Components v2
   - H2: Suara
-  - H3: Saluran suara
-  - H3: Ikuti pengguna dalam suara
+  - H3: Kanal suara
+  - H3: Ikuti pengguna di suara
   - H3: Pesan suara
   - H2: Pemecahan masalah
   - H2: Referensi konfigurasi
-  - H2: Keselamatan dan operasi
+  - H2: Keamanan dan operasi
   - H2: Terkait
 
 ## channels/feishu.md
@@ -355,8 +355,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Chat grup
   - H2: Contoh konfigurasi grup
   - H3: Izinkan semua grup, tidak perlu @mention
-  - H3: Izinkan semua grup, tetap wajibkan @mention
-  - H3: Hanya izinkan grup tertentu
+  - H3: Izinkan semua grup, tetap perlu @mention
+  - H3: Izinkan hanya grup tertentu
   - H3: Batasi pengirim dalam grup
   - H2: Dapatkan ID grup/pengguna
   - H3: ID grup (chatid, format: ocxxx)
@@ -371,11 +371,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Beberapa akun
   - H3: Batas pesan
   - H3: Streaming
-  - H3: Optimasi kuota
+  - H3: Optimalisasi kuota
   - H3: Sesi ACP
   - H4: Binding ACP persisten
   - H4: Spawn ACP dari chat
-  - H3: Perutean multi-agen
+  - H3: Routing multi-agen
   - H2: Isolasi agen per pengguna (Pembuatan Agen Dinamis)
   - H3: Penyiapan cepat
   - H3: Cara kerjanya
@@ -398,7 +398,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Instal
   - H2: Penyiapan cepat (pemula)
   - H2: Tambahkan ke Google Chat
-  - H2: URL publik (khusus Webhook)
+  - H2: URL publik (hanya Webhook)
   - H3: Opsi A: Tailscale Funnel (Direkomendasikan)
   - H3: Opsi B: Reverse Proxy (Caddy)
   - H3: Opsi C: Cloudflare Tunnel
@@ -416,7 +416,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Perilaku
   - H2: Contoh konfigurasi (WhatsApp)
-  - H3: Perintah aktivasi (hanya pemilik)
+  - H3: Perintah aktivasi (khusus pemilik)
   - H2: Cara menggunakan
   - H2: Pengujian / verifikasi
   - H2: Pertimbangan yang diketahui
@@ -428,16 +428,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Pengantar pemula (2 menit)
   - H2: Balasan terlihat
-  - H2: Visibilitas konteks dan daftar izin
+  - H2: Visibilitas konteks dan allowlist
   - H2: Kunci sesi
-  - H2: Pola: DM pribadi + grup publik (agen tunggal)
+  - H2: Pola: DM pribadi + grup publik (satu agen)
   - H2: Label tampilan
   - H2: Kebijakan grup
   - H2: Gerbang mention (default)
-  - H2: Pola mention yang dikonfigurasi per cakupan
-  - H2: Pembatasan alat grup/saluran (opsional)
-  - H2: Daftar izin grup
-  - H2: Aktivasi (hanya pemilik)
+  - H2: Cakupan pola mention yang dikonfigurasi
+  - H2: Pembatasan alat grup/kanal (opsional)
+  - H2: Allowlist grup
+  - H2: Aktivasi (khusus pemilik)
   - H2: Bidang konteks
   - H2: Spesifik iMessage
   - H2: Prompt sistem WhatsApp
@@ -451,13 +451,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Checklist migrasi
   - H2: Kapan migrasi ini masuk akal
   - H2: Apa yang dilakukan imsg
-  - H2: Sebelum Anda mulai
+  - H2: Sebelum Anda memulai
   - H2: Terjemahan konfigurasi
   - H2: Jebakan registry grup
   - H2: Langkah demi langkah
   - H2: Paritas tindakan sekilas
   - H2: Pairing, sesi, dan binding ACP
-  - H2: Tidak ada saluran rollback
+  - H2: Tidak ada kanal rollback
   - H2: Terkait
 
 ## channels/imessage.md
@@ -469,19 +469,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mengaktifkan API privat imsg
   - H3: Penyiapan
   - H3: Saat Anda tidak dapat menonaktifkan SIP
-  - H2: Kontrol akses dan perutean
+  - H2: Kontrol akses dan routing
   - H2: Binding percakapan ACP
   - H2: Pola deployment
   - H2: Media, pemotongan, dan target pengiriman
   - H2: Tindakan API privat
   - H2: Penulisan konfigurasi
   - H2: Menggabungkan DM kirim-terpisah (perintah + URL dalam satu komposisi)
-  - H3: Skenario dan apa yang dilihat agen
-  - H2: Pemulihan masuk setelah bridge atau gateway dimulai ulang
-  - H3: Sinyal yang terlihat operator
+  - H3: Skenario dan yang dilihat agen
+  - H2: Pemulihan inbound setelah bridge atau gateway dimulai ulang
+  - H3: Sinyal terlihat operator
   - H3: Migrasi
   - H2: Pemecahan masalah
-  - H2: Petunjuk referensi konfigurasi
+  - H2: Penunjuk referensi konfigurasi
   - H2: Terkait
 
 ## channels/index.md
@@ -489,7 +489,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /channels
 - Judul:
   - H2: Catatan pengiriman
-  - H2: Saluran yang didukung
+  - H2: Kanal yang didukung
   - H2: Catatan
 
 ## channels/irc.md
@@ -499,10 +499,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H2: Default keamanan
   - H2: Kontrol akses
-  - H3: Hal yang sering keliru: allowFrom untuk DM, bukan saluran
+  - H3: Kesalahan umum: allowFrom untuk DM, bukan kanal
   - H2: Pemicu balasan (mention)
-  - H2: Catatan keamanan (direkomendasikan untuk saluran publik)
-  - H3: Alat yang sama untuk semua orang di saluran
+  - H2: Catatan keamanan (direkomendasikan untuk kanal publik)
+  - H3: Alat yang sama untuk semua orang di kanal
   - H3: Alat berbeda per pengirim (pemilik mendapat lebih banyak kuasa)
   - H2: NickServ
   - H2: Variabel lingkungan
@@ -537,17 +537,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /channels/matrix-migration
 - Judul:
-  - H2: Yang dilakukan migrasi secara otomatis
-  - H2: Yang tidak dapat dilakukan migrasi secara otomatis
+  - H2: Apa yang dilakukan migrasi secara otomatis
+  - H2: Apa yang tidak dapat dilakukan migrasi secara otomatis
   - H2: Alur peningkatan yang direkomendasikan
   - H2: Cara kerja migrasi terenkripsi
   - H2: Pesan umum dan artinya
   - H3: Pesan peningkatan dan deteksi
   - H3: Pesan pemulihan status terenkripsi
   - H3: Pesan pemulihan manual
-  - H3: Pesan instalasi plugin khusus
+  - H3: Pesan instal Plugin kustom
   - H2: Jika riwayat terenkripsi masih belum kembali
-  - H2: Jika Anda ingin memulai baru untuk pesan mendatang
+  - H2: Jika Anda ingin memulai dari awal untuk pesan mendatang
   - H2: Terkait
 
 ## channels/matrix-presentation.md
@@ -566,7 +566,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /channels/matrix-push-rules
 - Judul:
   - H2: Prasyarat
-  - H2: Langkah
+  - H2: Langkah-langkah
   - H2: Catatan multi-bot
   - H2: Catatan homeserver
   - H2: Terkait
@@ -579,7 +579,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Penyiapan
   - H3: Penyiapan interaktif
   - H3: Konfigurasi minimal
-  - H3: Bergabung otomatis
+  - H3: Gabung otomatis
   - H3: Format target allowlist
   - H3: Normalisasi ID akun
   - H3: Kredensial cache
@@ -596,25 +596,25 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Verifikasi perangkat ini dengan kunci pemulihan
   - H3: Bootstrap atau perbaiki cross-signing
   - H3: Cadangan kunci ruang
-  - H3: Mencantumkan, meminta, dan merespons verifikasi
+  - H3: Mencantumkan, meminta, dan menanggapi verifikasi
   - H3: Catatan multi-akun
   - H2: Manajemen profil
   - H2: Thread
   - H3: Perutean sesi (sessionScope)
   - H3: Thread balasan (threadReplies)
-  - H3: Pewarisan thread dan slash command
-  - H2: Binding percakapan ACP
-  - H3: Konfigurasi binding thread
+  - H3: Pewarisan thread dan perintah slash
+  - H2: Pengikatan percakapan ACP
+  - H3: Konfigurasi pengikatan thread
   - H2: Reaksi
   - H2: Konteks riwayat
   - H2: Visibilitas konteks
   - H2: Kebijakan DM dan ruang
   - H2: Perbaikan ruang langsung
-  - H2: Persetujuan exec
-  - H2: Slash command
+  - H2: Persetujuan eksekusi
+  - H2: Perintah slash
   - H2: Multi-akun
   - H2: Homeserver privat/LAN
-  - H2: Mem-proxy traffic Matrix
+  - H2: Memproksi lalu lintas Matrix
   - H2: Resolusi target
   - H2: Referensi konfigurasi
   - H3: Akun dan koneksi
@@ -623,7 +623,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Perilaku balasan
   - H3: Pengaturan reaksi
   - H3: Tooling dan override per ruang
-  - H3: Pengaturan persetujuan exec
+  - H3: Pengaturan persetujuan eksekusi
   - H2: Terkait
 
 ## channels/mattermost.md
@@ -632,19 +632,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Instal
   - H2: Penyiapan cepat
-  - H2: Slash command native
+  - H2: Perintah slash native
   - H2: Variabel lingkungan (akun default)
   - H2: Mode chat
   - H2: Threading dan sesi
   - H2: Kontrol akses (DM)
   - H2: Channel (grup)
   - H2: Target untuk pengiriman keluar
-  - H2: Percobaan ulang channel DM
+  - H2: Coba ulang channel DM
   - H2: Streaming pratinjau
   - H2: Reaksi (alat pesan)
   - H2: Tombol interaktif (alat pesan)
   - H3: Integrasi API langsung (skrip eksternal)
-  - H2: Adapter direktori
+  - H2: Adaptor direktori
   - H2: Multi-akun
   - H2: Pemecahan masalah
   - H2: Terkait
@@ -661,12 +661,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Cara kerjanya
   - H3: Langkah 1: Buat Azure Bot
   - H3: Langkah 2: Dapatkan Kredensial
-  - H3: Langkah 3: Konfigurasikan Endpoint Messaging
+  - H3: Langkah 3: Konfigurasi Endpoint Perpesanan
   - H3: Langkah 4: Aktifkan Channel Teams
-  - H3: Langkah 5: Bangun Manifest Aplikasi Teams
-  - H3: Langkah 6: Konfigurasikan OpenClaw
+  - H3: Langkah 5: Buat Manifes Aplikasi Teams
+  - H3: Langkah 6: Konfigurasi OpenClaw
   - H3: Langkah 7: Jalankan Gateway
-  - H2: Autentikasi terfederasi (sertifikat plus identitas terkelola)
+  - H2: Autentikasi federasi (sertifikat plus identitas terkelola)
   - H3: Opsi A: Autentikasi berbasis sertifikat
   - H3: Opsi B: Azure Managed Identity
   - H3: Penyiapan AKS Workload Identity
@@ -676,13 +676,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Variabel lingkungan
   - H2: Tindakan info anggota
   - H2: Konteks riwayat
-  - H2: Izin RSC Teams saat ini (manifest)
-  - H2: Contoh manifest Teams (disunting)
-  - H3: Catatan manifest (bidang wajib)
-  - H3: Memperbarui aplikasi yang ada
-  - H2: Kapabilitas: RSC saja vs Graph
-  - H3: Dengan Teams RSC saja (aplikasi terinstal, tanpa izin Graph API)
-  - H3: Dengan Teams RSC + izin Microsoft Graph Application
+  - H2: Izin RSC Teams saat ini (manifes)
+  - H2: Contoh manifes Teams (disensor)
+  - H3: Catatan manifes (bidang wajib)
+  - H3: Memperbarui aplikasi yang sudah ada
+  - H2: Kapabilitas: hanya RSC vs Graph
+  - H3: Dengan hanya RSC Teams (aplikasi terinstal, tanpa izin Graph API)
+  - H3: Dengan RSC Teams + izin Aplikasi Microsoft Graph
   - H3: RSC vs Graph API
   - H2: Media + riwayat yang diaktifkan Graph (wajib untuk channel)
   - H2: Batasan yang diketahui
@@ -691,25 +691,25 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Pemformatan
   - H2: Konfigurasi
   - H2: Perutean dan sesi
-  - H2: Gaya balasan: thread vs postingan
+  - H2: Gaya balasan: thread vs posting
   - H3: Prioritas resolusi
-  - H3: Pelestarian konteks thread
+  - H3: Pemeliharaan konteks thread
   - H2: Lampiran dan gambar
-  - H2: Mengirim file di chat grup
-  - H3: Mengapa chat grup memerlukan SharePoint
+  - H2: Mengirim file dalam chat grup
+  - H3: Mengapa chat grup membutuhkan SharePoint
   - H3: Penyiapan
   - H3: Perilaku berbagi
   - H3: Perilaku fallback
-  - H3: Lokasi penyimpanan file
+  - H3: Lokasi file disimpan
   - H2: Polling (Adaptive Cards)
   - H2: Kartu presentasi
   - H2: Format target
-  - H2: Pesan proaktif
-  - H2: ID Tim dan Channel (Kesalahan Umum)
+  - H2: Perpesanan proaktif
+  - H2: ID Tim dan Channel (Jebakan Umum)
   - H2: Channel privat
   - H2: Pemecahan masalah
   - H3: Masalah umum
-  - H3: Kesalahan unggah manifest
+  - H3: Kesalahan unggah manifes
   - H3: Izin RSC tidak berfungsi
   - H2: Referensi
   - H2: Terkait
@@ -758,15 +758,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /channels/pairing
 - Judul:
-  - H2: 1) Pairing DM (akses chat masuk)
+  - H2: 1) Penyandingan DM (akses chat masuk)
   - H3: Setujui pengirim
-  - H3: Grup pengirim yang dapat digunakan ulang
+  - H3: Grup pengirim yang dapat digunakan kembali
   - H3: Lokasi status disimpan
-  - H2: 2) Pairing perangkat Node (node iOS/Android/macOS/headless)
-  - H3: Pair melalui Telegram (direkomendasikan untuk iOS)
+  - H2: 2) Penyandingan perangkat Node (node iOS/Android/macOS/headless)
+  - H3: Sandingkan dari Control UI (direkomendasikan)
+  - H3: Sandingkan melalui Telegram
   - H3: Setujui perangkat node
   - H3: Persetujuan otomatis node trusted-CIDR opsional
-  - H3: Penyimpanan status pairing Node
+  - H3: Penyimpanan status penyandingan Node
   - H3: Catatan
   - H2: Dokumen terkait
 
@@ -774,7 +775,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /channels/qa-channel
 - Judul:
-  - H2: Fungsinya
+  - H2: Apa yang dilakukannya
   - H2: Konfigurasi
   - H2: Runner
   - H2: Terkait
@@ -790,8 +791,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Chat grup
   - H3: Suara (STT / TTS)
   - H2: Format target
-  - H2: Slash command
-  - H2: Arsitektur mesin
+  - H2: Perintah slash
+  - H2: Arsitektur engine
   - H2: Onboarding kode QR
   - H2: Pemecahan masalah
   - H2: Terkait
@@ -820,11 +821,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Jalur penyiapan A: tautkan akun Signal yang ada (QR)
   - H2: Jalur penyiapan B: daftarkan nomor bot khusus (SMS, Linux)
   - H2: Mode daemon eksternal (httpUrl)
-  - H2: Mode container (bbernhard/signal-cli-rest-api)
+  - H2: Mode kontainer (bbernhard/signal-cli-rest-api)
   - H2: Kontrol akses (DM + grup)
   - H2: Cara kerjanya (perilaku)
-  - H2: Media + batas
-  - H2: Pengetikan + tanda baca
+  - H2: Media + batasan
+  - H2: Mengetik + tanda terima baca
   - H2: Reaksi status siklus hidup
   - H2: Reaksi (alat pesan)
   - H2: Reaksi persetujuan
@@ -843,33 +844,33 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Mode relay
   - H2: Instal
   - H2: Penyiapan cepat
-  - H2: Penyetelan transport Socket Mode
-  - H2: Checklist manifest dan scope
-  - H3: Pengaturan manifest tambahan
+  - H2: Penyesuaian transport Socket Mode
+  - H2: Checklist manifes dan cakupan
+  - H3: Pengaturan manifes tambahan
   - H2: Model token
   - H2: Tindakan dan gate
   - H2: Kontrol akses dan perutean
   - H2: Threading, sesi, dan tag balasan
   - H2: Reaksi ack
   - H3: Emoji (ackReaction)
-  - H3: Scope (messages.ackReactionScope)
+  - H3: Cakupan (messages.ackReactionScope)
   - H2: Streaming teks
   - H2: Fallback reaksi mengetik
   - H2: Media, chunking, dan pengiriman
-  - H2: Command dan perilaku slash
+  - H2: Perintah dan perilaku slash
   - H2: Balasan interaktif
-  - H3: Pengiriman modal milik plugin
+  - H3: Pengiriman modal milik Plugin
   - H2: Persetujuan native di Slack
   - H2: Event dan perilaku operasional
   - H2: Referensi konfigurasi
   - H2: Pemecahan masalah
-  - H2: Referensi vision lampiran
+  - H2: Referensi visi lampiran
   - H3: Jenis media yang didukung
   - H3: Pipeline masuk
   - H3: Pewarisan lampiran root thread
   - H3: Penanganan multi-lampiran
-  - H3: Ukuran, unduhan, dan batas model
-  - H3: Batas yang diketahui
+  - H3: Ukuran, unduhan, dan batasan model
+  - H3: Batasan yang diketahui
   - H3: Dokumentasi terkait
   - H2: Terkait
 
@@ -894,7 +895,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Konfigurasi multi-akun
   - H2: Pemecahan masalah
   - H3: Twilio mengembalikan 403 atau OpenClaw menolak Webhook
-  - H3: Tidak ada permintaan pairing yang muncul
+  - H3: Tidak ada permintaan penyandingan yang muncul
   - H3: Pengiriman keluar gagal
   - H3: Pesan tiba tetapi agen tidak menjawab
 
@@ -922,7 +923,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Identitas bot grup
   - H2: Perilaku runtime
   - H2: Referensi fitur
-  - H2: Kontrol balasan kesalahan
+  - H2: Kontrol balasan error
   - H2: Pemecahan masalah
   - H2: Referensi konfigurasi
   - H2: Terkait
@@ -950,24 +951,24 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /channels/troubleshooting
 - Judul:
-  - H2: Tangga command
+  - H2: Tangga perintah
   - H2: Setelah pembaruan
   - H2: WhatsApp
-  - H3: Signature kegagalan WhatsApp
+  - H3: Tanda kegagalan WhatsApp
   - H2: Telegram
-  - H3: Signature kegagalan Telegram
+  - H3: Tanda kegagalan Telegram
   - H2: Discord
-  - H3: Signature kegagalan Discord
+  - H3: Tanda kegagalan Discord
   - H2: Slack
-  - H3: Signature kegagalan Slack
+  - H3: Tanda kegagalan Slack
   - H2: iMessage
-  - H3: Signature kegagalan iMessage
+  - H3: Tanda kegagalan iMessage
   - H2: Signal
-  - H3: Signature kegagalan Signal
+  - H3: Tanda kegagalan Signal
   - H2: QQ Bot
-  - H3: Signature kegagalan QQ Bot
+  - H3: Tanda kegagalan QQ Bot
   - H2: Matrix
-  - H3: Signature kegagalan Matrix
+  - H3: Tanda kegagalan Matrix
   - H2: Terkait
 
 ## channels/twitch.md
@@ -979,8 +980,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Apa ini
   - H2: Penyiapan (terperinci)
   - H3: Buat kredensial
-  - H3: Konfigurasi bot
-  - H3: Kontrol akses (direkomendasikan)
+  - H3: Konfigurasikan bot
+  - H3: Kontrol akses (disarankan)
   - H2: Penyegaran token (opsional)
   - H2: Dukungan multi-akun
   - H2: Kontrol akses
@@ -988,9 +989,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Konfigurasi
   - H3: Konfigurasi akun
   - H3: Opsi penyedia
-  - H2: Aksi alat
+  - H2: Tindakan alat
   - H2: Keamanan dan operasi
-  - H2: Batasan
+  - H2: Batas
   - H2: Terkait
 
 ## channels/wechat.md
@@ -1005,30 +1006,30 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Kompatibilitas
   - H2: Proses sidecar
   - H2: Pemecahan masalah
-  - H2: Dokumen terkait
+  - H2: Dokumentasi terkait
 
 ## channels/whatsapp.md
 
 - Rute: /channels/whatsapp
 - Judul:
-  - H2: Instal (sesuai kebutuhan)
+  - H2: Instal (sesuai permintaan)
   - H2: Penyiapan cepat
-  - H2: Panggil pemohon saat ini dengan MeowCaller (eksperimental)
+  - H2: Panggil peminta saat ini dengan MeowCaller (eksperimental)
   - H2: Pola deployment
   - H2: Model runtime
   - H2: Prompt persetujuan
   - H2: Hook Plugin dan privasi
   - H2: Kontrol akses dan aktivasi
   - H2: Binding ACP yang dikonfigurasi
-  - H2: Perilaku nomor pribadi dan obrolan sendiri
+  - H2: Perilaku nomor pribadi dan obrolan diri
   - H2: Normalisasi pesan dan konteks
   - H2: Pengiriman, pemotongan, dan media
-  - H2: Pengutipan balasan
+  - H2: Kutipan balasan
   - H2: Tingkat reaksi
   - H2: Reaksi pengakuan
   - H2: Reaksi status siklus hidup
   - H2: Multi-akun dan kredensial
-  - H2: Alat, aksi, dan penulisan konfigurasi
+  - H2: Alat, tindakan, dan penulisan konfigurasi
   - H2: Pemecahan masalah
   - H2: Prompt sistem
   - H2: Penunjuk referensi konfigurasi
@@ -1048,10 +1049,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Batasi DM ke pengguna tertentu
   - H3: Nonaktifkan persyaratan @mention di grup
   - H3: Optimalkan pengiriman pesan keluar
-  - H3: Sesuaikan strategi penggabungan teks
+  - H3: Sesuaikan strategi merge-text
   - H2: Perintah umum
   - H2: Pemecahan masalah
-  - H3: Bot tidak merespons di obrolan grup
+  - H3: Bot tidak merespons dalam obrolan grup
   - H3: Bot tidak menerima pesan
   - H3: Bot mengirim balasan kosong atau fallback
   - H3: App Secret bocor
@@ -1060,7 +1061,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Batas pesan
   - H3: Streaming
   - H3: Konteks riwayat obrolan grup
-  - H3: Mode reply-to
+  - H3: Mode balas-ke
   - H3: Injeksi petunjuk Markdown
   - H3: Mode debug
   - H3: Perutean multi-agen
@@ -1080,13 +1081,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Apa ini
   - H2: Penyiapan (jalur cepat)
   - H3: 1) Buat token bot (Zalo Bot Platform)
-  - H3: 2) Konfigurasi token (env atau config)
+  - H3: 2) Konfigurasikan token (env atau config)
   - H2: Cara kerjanya (perilaku)
-  - H2: Batasan
+  - H2: Batas
   - H2: Kontrol akses (DM)
   - H3: Akses DM
   - H2: Kontrol akses (Grup)
-  - H2: Long-polling vs Webhook
+  - H2: Long-polling vs webhook
   - H2: Jenis pesan yang didukung
   - H2: Kapabilitas
   - H2: Target pengiriman (CLI/cron)
@@ -1100,12 +1101,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Kompatibilitas
   - H2: Prasyarat
-  - H2: Instal dengan onboard (direkomendasikan)
+  - H2: Instal dengan onboard (disarankan)
   - H2: Instalasi Manual
   - H3: 1. Instal Plugin
-  - H3: 2. Aktifkan Plugin dalam config
+  - H3: 2. Aktifkan Plugin dalam konfigurasi
   - H3: 3. Buat kode QR dan login
-  - H3: 4. Mulai ulang Gateway
+  - H3: 4. Mulai ulang gateway
   - H2: Cara Kerjanya
   - H2: Di Balik Layar
   - H2: Pemecahan masalah
@@ -1119,7 +1120,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Apa ini
   - H2: Penamaan
   - H2: Menemukan ID (direktori)
-  - H2: Batasan
+  - H2: Batas
   - H2: Kontrol akses (DM)
   - H2: Akses grup (opsional)
   - H3: Pembatasan mention grup
@@ -1153,9 +1154,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Contoh
   - H2: Smoke instalasi
   - H2: E2E Docker lokal
-  - H3: Pengaturan
+  - H3: Parameter penyesuaian
   - H3: Workflow live/E2E yang dapat digunakan ulang
-  - H3: Potongan jalur rilis
+  - H3: Chunk jalur rilis
   - H2: Prarilis Plugin
   - H2: QA Lab
   - H2: CodeQL
@@ -1163,10 +1164,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Shard keamanan khusus platform
   - H3: Kategori Kualitas Kritis
   - H2: Workflow pemeliharaan
-  - H3: Agen Dokumen
-  - H3: Agen Performa Tes
+  - H3: Agen Docs
+  - H3: Agen Performa Pengujian
   - H3: PR Duplikat Setelah Merge
-  - H2: Gerbang pemeriksaan lokal dan perutean perubahan
+  - H2: Gate pemeriksaan lokal dan perutean perubahan
   - H2: Validasi Testbox
   - H2: Terkait
 
@@ -1186,16 +1187,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Publikasi di ClawHub
   - H2: Pemilik
   - H2: Skills
-  - H2: Plugin
+  - H2: Plugins
   - H2: Alur Rilis
   - H2: FAQ
-  - H3: Scope paket harus cocok dengan pemilik yang dipilih
+  - H3: Cakupan paket harus cocok dengan pemilik yang dipilih
 
 ## cli/acp.md
 
 - Rute: /cli/acp
 - Judul:
-  - H2: Yang bukan ini
+  - H2: Ini bukan apa
   - H2: Matriks Kompatibilitas
   - H2: Batasan yang Diketahui
   - H2: Penggunaan
@@ -1203,7 +1204,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Pengujian smoke protokol
   - H2: Cara menggunakan ini
   - H2: Memilih agen
-  - H2: Gunakan dari acpx (Codex, Claude, klien ACP lain)
+  - H2: Gunakan dari acpx (Codex, Claude, klien ACP lainnya)
   - H2: Penyiapan editor Zed
   - H2: Pemetaan sesi
   - H2: Opsi
@@ -1250,7 +1251,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: openclaw exec-policy
   - H2: Perintah umum
   - H2: Ganti persetujuan dari file
-  - H2: Contoh "Jangan pernah minta konfirmasi" / YOLO
+  - H2: Contoh "Never prompt" / YOLO
   - H2: Helper allowlist
   - H2: Opsi umum
   - H2: Catatan
@@ -1267,8 +1268,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw backup
   - H2: Catatan
-  - H2: Yang dicadangkan
-  - H2: Perilaku config tidak valid
+  - H2: Apa yang dicadangkan
+  - H2: Perilaku konfigurasi tidak valid
   - H2: Ukuran dan performa
   - H2: Terkait
 
@@ -1284,10 +1285,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Jika perintah tidak ada
   - H2: Profil
   - H2: Tab
-  - H2: Snapshot / tangkapan layar / aksi
+  - H2: Snapshot / tangkapan layar / tindakan
   - H2: Status dan penyimpanan
   - H2: Debugging
-  - H2: Chrome yang sudah ada melalui MCP
+  - H2: Chrome yang ada melalui MCP
   - H2: Kontrol browser jarak jauh (proxy host node)
   - H2: Terkait
 
@@ -1302,7 +1303,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Login dan logout (interaktif)
   - H2: Pemecahan masalah
   - H2: Probe kapabilitas
-  - H2: Resolve nama menjadi ID
+  - H2: Resolve nama ke ID
   - H2: Terkait
 
 ## cli/clawbot.md
@@ -1339,12 +1340,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Opsi root
   - H2: Contoh
-  - H3: config schema
+  - H3: skema config
   - H3: Jalur
   - H2: Nilai
   - H2: mode config set
   - H2: config patch
-  - H2: Flag builder penyedia
+  - H2: Flag pembuat penyedia
   - H2: Dry run
   - H3: Bentuk output JSON
   - H2: Keamanan penulisan
@@ -1366,7 +1367,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /cli/crestodian
 - Judul:
   - H1: openclaw crestodian
-  - H2: Yang ditampilkan Crestodian
+  - H2: Apa yang ditampilkan Crestodian
   - H2: Contoh
   - H2: Startup aman
   - H2: Operasi dan persetujuan
@@ -1393,9 +1394,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Model
   - H3: Presedensi model cron terisolasi
   - H3: Mode cepat
-  - H3: Percobaan ulang peralihan model live
-  - H2: Output eksekusi dan penolakan
-  - H3: Supresi pengakuan usang
+  - H3: Percobaan ulang pengalihan model live
+  - H2: Output run dan penolakan
+  - H3: Supresi pengakuan kedaluwarsa
   - H3: Supresi token senyap
   - H3: Penolakan terstruktur
   - H2: Retensi
@@ -1412,7 +1413,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Penggunaan
   - H2: Subperintah
   - H2: Opsi umum
-  - H2: Lebih disukai
+  - H2: Preferensi
   - H2: Terkait
 
 ## cli/dashboard.md
@@ -1432,13 +1433,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: openclaw devices remove &lt;deviceId&gt;
   - H3: openclaw devices clear --yes [--pending]
   - H3: openclaw devices approve [requestId] [--latest]
-  - H2: Persetujuan first-run Paperclip / openclawgateway
+  - H2: Persetujuan pertama kali Paperclip / openclawgateway
   - H3: openclaw devices reject &lt;requestId&gt;
   - H3: openclaw devices rotate --device &lt;id&gt; --role &lt;role&gt; [--scope &lt;scope...&gt;]
   - H3: openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt;
   - H2: Opsi umum
   - H2: Catatan
-  - H2: Checklist pemulihan drift token
+  - H2: Daftar periksa pemulihan drift token
   - H2: Terkait
 
 ## cli/directory.md
@@ -1450,7 +1451,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Catatan
   - H2: Menggunakan hasil dengan pengiriman pesan
   - H2: Format ID (berdasarkan channel)
-  - H2: Diri sendiri ("me")
+  - H2: Diri ("me")
   - H2: Peer (kontak/pengguna)
   - H2: Grup
   - H2: Terkait
@@ -1537,7 +1538,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /cli/hooks
 - Judul:
   - H1: openclaw hooks
-  - H2: Cantumkan semua hook
+  - H2: Daftar semua hook
   - H2: Dapatkan informasi hook
   - H2: Periksa kelayakan hook
   - H2: Aktifkan Hook
@@ -1581,7 +1582,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Web
   - H2: Embedding
   - H2: Output JSON
-  - H2: Kendala umum
+  - H2: Jebakan umum
   - H2: Catatan
   - H2: Terkait
 
@@ -1612,17 +1613,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Notifikasi kanal Claude
   - H3: Konfigurasi klien MCP
   - H3: Opsi
-  - H3: Batas keamanan dan kepercayaan
+  - H3: Keamanan dan batas kepercayaan
   - H3: Pengujian
   - H3: Pemecahan masalah
   - H2: OpenClaw sebagai registri klien MCP
   - H3: Definisi server MCP tersimpan
   - H3: Resep server umum
   - H3: Bentuk output JSON
-  - H3: Transport stdio
-  - H3: Transport SSE / HTTP
+  - H3: Transpor Stdio
+  - H3: Transpor SSE / HTTP
   - H3: Alur kerja OAuth
-  - H3: Transport HTTP streamable
+  - H3: Transpor HTTP streamable
   - H2: UI Kontrol
   - H2: Batas saat ini
   - H2: Terkait
@@ -1663,7 +1664,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw migrate
   - H2: Perintah
-  - H2: Model keselamatan
+  - H2: Model keamanan
   - H2: Penyedia Claude
   - H3: Apa yang diimpor Claude
   - H3: Status arsip dan tinjauan manual
@@ -1673,8 +1674,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Penyedia Hermes
   - H3: Apa yang diimpor Hermes
   - H3: Kunci .env yang didukung
-  - H3: Status hanya arsip
-  - H3: Setelah diterapkan
+  - H3: Status khusus arsip
+  - H3: Setelah menerapkan
   - H2: Kontrak Plugin
   - H2: Integrasi onboarding
   - H2: Terkait
@@ -1697,12 +1698,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw node
   - H2: Mengapa menggunakan host node?
-  - H2: Proxy browser (tanpa konfigurasi)
+  - H2: Proksi browser (zero-config)
   - H2: Jalankan (foreground)
   - H2: Auth Gateway untuk host node
   - H2: Layanan (background)
   - H2: Pairing
-  - H2: Persetujuan exec
+  - H2: Persetujuan eksekusi
   - H2: Terkait
 
 ## cli/nodes.md
@@ -1725,7 +1726,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Pilihan endpoint Z.AI noninteraktif
   - H2: Flag noninteraktif tambahan
   - H2: Catatan alur
-  - H2: Perintah tindak lanjut umum
+  - H2: Perintah lanjutan umum
 
 ## cli/pairing.md
 
@@ -1733,8 +1734,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw pairing
   - H2: Perintah
-  - H2: pairing list
-  - H2: pairing approve
+  - H2: daftar pairing
+  - H2: setujui pairing
   - H2: Catatan
   - H2: Terkait
 
@@ -1744,15 +1745,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw path
   - H2: Mengapa menggunakannya
-  - H2: Cara digunakan
+  - H2: Cara penggunaannya
   - H2: Cara kerjanya
   - H2: Subperintah
   - H2: Flag global
   - H2: Sintaks oc://
-  - H2: Pengalamatan menurut jenis file
+  - H2: Pengalamatan berdasarkan jenis file
   - H2: Kontrak mutasi
   - H2: Contoh
-  - H2: Resep menurut jenis file
+  - H2: Resep berdasarkan jenis file
   - H3: Markdown
   - H3: JSONC
   - H3: JSONL
@@ -1773,17 +1774,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /cli/plugins
 - Judul:
   - H2: Perintah
-  - H3: Author
-  - H3: Scaffold penyedia
+  - H3: Penulis
+  - H3: Scaffold Penyedia
   - H3: Instal
   - H4: Singkatan marketplace
   - H3: Daftar
   - H3: Indeks Plugin
-  - H3: Hapus instalasi
+  - H3: Copot instalasi
   - H3: Perbarui
   - H3: Inspeksi
   - H3: Doctor
-  - H3: Registry
+  - H3: Registri
   - H3: Marketplace
   - H2: Terkait
 
@@ -1794,7 +1795,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: openclaw policy
   - H2: Mulai cepat
   - H3: Referensi aturan kebijakan
-  - H4: Overlay tercakup
+  - H4: Overlay berlingkup
   - H4: Kanal
   - H4: Server MCP
   - H4: Penyedia model
@@ -1803,13 +1804,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H4: Gateway
   - H4: Workspace agen
   - H4: Postur sandbox
-  - H4: Penanganan data
+  - H4: Penanganan Data
   - H4: Rahasia
-  - H4: Persetujuan exec
+  - H4: Persetujuan eksekusi
   - H4: Profil auth
   - H4: Metadata alat
   - H4: Postur alat
-  - H2: Konfigurasikan kebijakan
+  - H2: Konfigurasi kebijakan
   - H2: Terima status kebijakan
   - H2: Temuan
   - H2: Perbaikan
@@ -1856,12 +1857,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Kasus penggunaan
   - H3: Setelah memperbarui image Docker
   - H3: Setelah mengubah konfigurasi sandbox
-  - H3: Setelah mengubah target SSH atau materi auth SSH
+  - H3: Setelah mengubah target SSH atau material auth SSH
   - H3: Setelah mengubah sumber, kebijakan, atau mode OpenShell
   - H3: Setelah mengubah setupCommand
   - H3: Hanya untuk agen tertentu
   - H2: Mengapa ini diperlukan
-  - H2: Migrasi registry
+  - H2: Migrasi registri
   - H2: Konfigurasi
   - H2: Terkait
 
@@ -1872,7 +1873,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: openclaw secrets
   - H2: Muat ulang snapshot runtime
   - H2: Audit
-  - H2: Konfigurasikan (helper interaktif)
+  - H2: Konfigurasi (helper interaktif)
   - H2: Terapkan rencana tersimpan
   - H2: Mengapa tidak ada cadangan rollback
   - H2: Contoh
@@ -1885,7 +1886,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: openclaw security
   - H2: Audit
   - H2: Output JSON
-  - H2: Yang diubah --fix
+  - H2: Apa yang diubah --fix
   - H2: Terkait
 
 ## cli/sessions.md
@@ -1894,7 +1895,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw sessions
   - H2: Pemeliharaan pembersihan
-  - H2: Compact sesi
+  - H2: Padatkan sesi
   - H3: RPC sessions.compact
   - H2: Terkait
 
@@ -1915,7 +1916,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: openclaw skills
   - H2: Perintah
-  - H2: Workshop Skill
+  - H2: Skill Workshop
   - H2: Terkait
 
 ## cli/status.md
@@ -1941,7 +1942,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /cli/tasks
 - Judul:
   - H2: Penggunaan
-  - H2: Opsi root
+  - H2: Opsi Root
   - H2: Subperintah
   - H3: list
   - H3: show
@@ -1990,7 +1991,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: update status
   - H2: update repair
   - H2: update wizard
-  - H2: Yang dilakukannya
+  - H2: Apa yang dilakukannya
   - H3: Bentuk respons control-plane
   - H2: Alur checkout Git
   - H3: Pemilihan kanal
@@ -2036,7 +2037,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Eksposur Tailscale
   - H3: Output
   - H2: webhooks gmail run
-  - H2: Alur menyeluruh
+  - H2: Alur end-to-end
   - H2: Terkait
 
 ## cli/wiki.md
@@ -2044,7 +2045,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /cli/wiki
 - Judul:
   - H1: openclaw wiki
-  - H2: Untuk apa ini
+  - H2: Untuk apa ini digunakan
   - H2: Perintah umum
   - H2: Perintah
   - H3: wiki status
@@ -2076,7 +2077,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Paritas Perintah Slash
   - H2: Izin
   - H2: Pemecahan masalah
-  - H3: Tidak Ada Kartu Muncul
+  - H3: Tidak Ada Kartu yang Muncul
   - H3: Dispatch Mengatakan Data-Only
   - H3: Dispatch Tidak Memulai Apa Pun
   - H2: Terkait
@@ -2130,14 +2131,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Stream peristiwa (hari ini)
   - H2: Penanganan kanal chat
   - H2: Timeout
-  - H2: Tempat hal dapat berakhir lebih awal
+  - H2: Tempat sesuatu dapat berakhir lebih awal
   - H2: Terkait
 
 ## concepts/agent-runtimes.md
 
 - Rute: /concepts/agent-runtimes
 - Judul:
-  - H2: Surface Codex
+  - H2: Permukaan Codex
   - H2: Kepemilikan runtime
   - H2: Pemilihan runtime
   - H2: Runtime agen GitHub Copilot
@@ -2148,12 +2149,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/agent-workspace.md
 
 - Rute: /concepts/agent-workspace
-- Judul:
+- Heading:
   - H2: Lokasi default
   - H2: Folder workspace tambahan
   - H2: Peta file workspace
-  - H2: Apa yang TIDAK ada di workspace
-  - H2: Cadangan Git (disarankan, privat)
+  - H2: Yang TIDAK ada di workspace
+  - H2: Cadangan Git (direkomendasikan, privat)
   - H2: Jangan commit rahasia
   - H2: Memindahkan workspace ke mesin baru
   - H2: Catatan lanjutan
@@ -2162,7 +2163,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/agent.md
 
 - Rute: /concepts/agent
-- Judul:
+- Heading:
   - H2: Workspace (wajib)
   - H2: File bootstrap (diinjeksikan)
   - H2: Alat bawaan
@@ -2177,14 +2178,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/architecture.md
 
 - Rute: /concepts/architecture
-- Judul:
+- Heading:
   - H2: Gambaran umum
   - H2: Komponen dan alur
   - H3: Gateway (daemon)
-  - H3: Klien (aplikasi Mac / CLI / admin web)
+  - H3: Klien (aplikasi mac / CLI / admin web)
   - H3: Node (macOS / iOS / Android / headless)
   - H3: WebChat
-  - H2: Siklus hidup koneksi (satu klien)
+  - H2: Siklus hidup koneksi (klien tunggal)
   - H2: Protokol wire (ringkasan)
   - H2: Pairing + kepercayaan lokal
   - H2: Pengetikan protokol dan codegen
@@ -2196,7 +2197,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/channel-docking.md
 
 - Rute: /concepts/channel-docking
-- Judul:
+- Heading:
   - H2: Contoh
   - H2: Mengapa menggunakannya
   - H2: Konfigurasi wajib
@@ -2208,7 +2209,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/commitments.md
 
 - Rute: /concepts/commitments
-- Judul:
+- Heading:
   - H2: Aktifkan komitmen
   - H2: Cara kerjanya
   - H2: Cakupan
@@ -2221,14 +2222,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/compaction.md
 
 - Rute: /concepts/compaction
-- Judul:
+- Heading:
   - H2: Cara kerjanya
   - H2: Compaction otomatis
   - H2: Compaction manual
   - H2: Konfigurasi
-  - H3: Menggunakan model berbeda
+  - H3: Menggunakan model yang berbeda
   - H3: Pelestarian pengenal
-  - H3: Penjaga byte transkrip aktif
+  - H3: Pelindung byte transkrip aktif
   - H3: Transkrip penerus
   - H3: Pemberitahuan Compaction
   - H3: Flush memori
@@ -2240,27 +2241,27 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/context-engine.md
 
 - Rute: /concepts/context-engine
-- Judul:
+- Heading:
   - H2: Mulai cepat
   - H2: Cara kerjanya
   - H3: Siklus hidup subagen (opsional)
   - H3: Penambahan prompt sistem
-  - H2: Engine lama
-  - H2: Engine Plugin
+  - H2: Mesin lama
+  - H2: Mesin Plugin
   - H3: Antarmuka ContextEngine
   - H3: Pengaturan runtime
   - H3: Persyaratan host
   - H3: Isolasi kegagalan
   - H3: ownsCompaction
   - H2: Referensi konfigurasi
-  - H2: Hubungan dengan compaction dan memori
+  - H2: Hubungan dengan Compaction dan memori
   - H2: Tips
   - H2: Terkait
 
 ## concepts/context.md
 
 - Rute: /concepts/context
-- Judul:
+- Heading:
   - H2: Mulai cepat (periksa konteks)
   - H2: Contoh output
   - H3: /context list
@@ -2272,19 +2273,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Skills: diinjeksikan vs dimuat sesuai permintaan
   - H2: Alat: ada dua biaya
   - H2: Perintah, direktif, dan "pintasan inline"
-  - H2: Sesi, compaction, dan pruning (apa yang bertahan)
+  - H2: Sesi, Compaction, dan pruning (apa yang bertahan)
   - H2: Apa yang sebenarnya dilaporkan /context
   - H2: Terkait
 
 ## concepts/delegate-architecture.md
 
 - Rute: /concepts/delegate-architecture
-- Judul:
+- Heading:
   - H2: Apa itu delegasi?
   - H2: Mengapa delegasi?
   - H2: Tingkat kapabilitas
   - H3: Tingkat 1: Hanya Baca + Draf
-  - H3: Tingkat 2: Kirim atas Nama
+  - H3: Tingkat 2: Kirim Atas Nama
   - H3: Tingkat 3: Proaktif
   - H2: Prasyarat: isolasi dan pengerasan
   - H3: Blokir keras (tidak dapat dinegosiasikan)
@@ -2293,7 +2294,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Jejak audit
   - H2: Menyiapkan delegasi
   - H3: 1. Buat agen delegasi
-  - H3: 2. Konfigurasikan delegasi penyedia identitas
+  - H3: 2. Konfigurasi delegasi penyedia identitas
   - H4: Microsoft 365
   - H4: Google Workspace
   - H3: 3. Ikat delegasi ke channel
@@ -2305,18 +2306,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/dreaming.md
 
 - Rute: /concepts/dreaming
-- Judul:
+- Heading:
   - H2: Apa yang ditulis Dreaming
   - H2: Model fase
-  - H2: Penyerapan transkrip sesi
+  - H2: Ingesti transkrip sesi
   - H2: Dream Diary
-  - H2: Sinyal peringkat mendalam
+  - H2: Sinyal pemeringkatan mendalam
   - H2: Cakupan laporan uji bayangan QA
   - H2: Penjadwalan
   - H2: Mulai cepat
   - H2: Perintah slash
   - H2: Alur kerja CLI
-  - H2: Default kunci
+  - H2: Default utama
   - H2: UI Dreams
   - H2: Dreaming tidak pernah berjalan: status menunjukkan diblokir
   - H2: Terkait
@@ -2324,20 +2325,20 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/experimental-features.md
 
 - Rute: /concepts/experimental-features
-- Judul:
-  - H2: Flag yang saat ini terdokumentasi
-  - H2: Mode lean model lokal
-  - H3: Mengapa ketiga alat ini
-  - H3: Kapan mengaktifkannya
-  - H3: Kapan membiarkannya nonaktif
+- Heading:
+  - H2: Flag yang saat ini didokumentasikan
+  - H2: Mode ramping model lokal
+  - H3: Mengapa tiga alat ini
+  - H3: Kapan menyalakannya
+  - H3: Kapan membiarkannya mati
   - H3: Aktifkan
-  - H2: Eksperimental bukan berarti tersembunyi
+  - H2: Eksperimental tidak berarti tersembunyi
   - H2: Terkait
 
 ## concepts/features.md
 
 - Rute: /concepts/features
-- Judul:
+- Heading:
   - H2: Sorotan
   - H2: Daftar lengkap
   - H2: Terkait
@@ -2345,27 +2346,27 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/mantis-slack-desktop-runbook.md
 
 - Rute: /concepts/mantis-slack-desktop-runbook
-- Judul:
+- Heading:
   - H2: Model penyimpanan
   - H2: Dispatch GitHub
   - H2: CLI lokal
   - H2: Mode hydrate
-  - H2: Interpretasi waktu
-  - H2: Daftar periksa bukti
+  - H2: Interpretasi timing
+  - H2: Checklist bukti
   - H2: Penanganan kegagalan
   - H2: Terkait
 
 ## concepts/mantis.md
 
 - Rute: /concepts/mantis
-- Judul:
-  - H2: Sasaran
-  - H2: Bukan sasaran
+- Heading:
+  - H2: Tujuan
+  - H2: Non-tujuan
   - H2: Kepemilikan
   - H2: Bentuk perintah
   - H2: Siklus hidup run
   - H2: MVP Discord
-  - H2: Komponen QA yang ada
+  - H2: Bagian QA yang ada
   - H2: Model bukti
   - H2: Browser dan VNC
   - H2: Mesin
@@ -2379,8 +2380,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/markdown-formatting.md
 
 - Rute: /concepts/markdown-formatting
-- Judul:
-  - H2: Sasaran
+- Heading:
+  - H2: Tujuan
   - H2: Pipeline
   - H2: Contoh IR
   - H2: Tempat penggunaannya
@@ -2395,11 +2396,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/memory-builtin.md
 
 - Rute: /concepts/memory-builtin
-- Judul:
-  - H2: Apa yang disediakannya
+- Heading:
+  - H2: Apa yang disediakan
   - H2: Memulai
   - H2: Penyedia embedding yang didukung
-  - H2: Cara kerja pengindeksan
+  - H2: Cara indexing bekerja
   - H2: Kapan digunakan
   - H2: Pemecahan masalah
   - H2: Konfigurasi
@@ -2408,8 +2409,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/memory-honcho.md
 
 - Rute: /concepts/memory-honcho
-- Judul:
-  - H2: Apa yang disediakannya
+- Heading:
+  - H2: Apa yang disediakan
   - H2: Alat yang tersedia
   - H2: Memulai
   - H2: Konfigurasi
@@ -2417,14 +2418,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Cara kerjanya
   - H2: Honcho vs memori bawaan
   - H2: Perintah CLI
-  - H2: Bacaan lebih lanjut
+  - H2: Bacaan lanjutan
   - H2: Terkait
 
 ## concepts/memory-qmd.md
 
 - Rute: /concepts/memory-qmd
-- Judul:
-  - H2: Apa yang ditambahkannya di atas bawaan
+- Heading:
+  - H2: Yang ditambahkan dibanding bawaan
   - H2: Memulai
   - H3: Prasyarat
   - H3: Aktifkan
@@ -2434,7 +2435,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mengindeks path tambahan
   - H2: Mengindeks transkrip sesi
   - H2: Cakupan pencarian
-  - H2: Kutipan
+  - H2: Sitasi
   - H2: Kapan digunakan
   - H2: Pemecahan masalah
   - H2: Konfigurasi
@@ -2443,10 +2444,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/memory-search.md
 
 - Rute: /concepts/memory-search
-- Judul:
+- Heading:
   - H2: Mulai cepat
   - H2: Penyedia yang didukung
-  - H2: Cara kerja pencarian
+  - H2: Cara pencarian bekerja
   - H2: Meningkatkan kualitas pencarian
   - H3: Peluruhan temporal
   - H3: MMR (keragaman)
@@ -2454,17 +2455,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Memori multimodal
   - H2: Pencarian memori sesi
   - H2: Pemecahan masalah
-  - H2: Bacaan lebih lanjut
+  - H2: Bacaan lanjutan
   - H2: Terkait
 
 ## concepts/memory.md
 
 - Rute: /concepts/memory
-- Judul:
+- Heading:
   - H2: Cara kerjanya
-  - H2: Apa masuk ke mana
-  - H2: Memori peka tindakan
-  - H2: Komitmen tersimpulkan
+  - H2: Apa ditempatkan di mana
+  - H2: Memori peka aksi
+  - H2: Komitmen yang disimpulkan
   - H2: Alat memori
   - H2: Plugin pendamping Memory Wiki
   - H2: Pencarian memori
@@ -2472,18 +2473,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Lapisan wiki pengetahuan
   - H2: Flush memori otomatis
   - H2: Dreaming
-  - H2: Backfill berbasis fakta dan promosi live
+  - H2: Backfill berbasis bukti dan promosi live
   - H2: CLI
-  - H2: Bacaan lebih lanjut
+  - H2: Bacaan lanjutan
   - H2: Terkait
 
 ## concepts/message-lifecycle-refactor.md
 
 - Rute: /concepts/message-lifecycle-refactor
-- Judul:
+- Heading:
   - H2: Masalah
-  - H2: Sasaran
-  - H2: Bukan sasaran
+  - H2: Tujuan
+  - H2: Non-tujuan
   - H2: Model referensi
   - H2: Model inti
   - H2: Istilah pesan
@@ -2504,7 +2505,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Pemetaan channel
   - H2: Rencana migrasi
   - H3: Fase 1: Domain Pesan Internal
-  - H3: Fase 2: Inti Kirim Tahan Lama
+  - H3: Fase 2: Inti Kirim Durable
   - H3: Fase 3: Bridge Inbound Channel
   - H3: Fase 4: Bridge Dispatcher yang Disiapkan
   - H3: Fase 5: Siklus Hidup Live Terpadu
@@ -2519,64 +2520,64 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/messages.md
 
 - Rute: /concepts/messages
-- Judul:
+- Heading:
   - H2: Alur pesan (tingkat tinggi)
-  - H2: Deduplikasi inbound
+  - H2: Dedupe inbound
   - H2: Debouncing inbound
   - H2: Sesi dan perangkat
   - H2: Metadata hasil alat
-  - H2: Isi inbound dan konteks riwayat
+  - H2: Body inbound dan konteks riwayat
   - H2: Antrean dan tindak lanjut
   - H2: Kepemilikan run channel
   - H2: Streaming, chunking, dan batching
-  - H2: Visibilitas penalaran dan token
+  - H2: Visibilitas reasoning dan token
   - H2: Prefiks, threading, dan balasan
-  - H2: Balasan diam
+  - H2: Balasan senyap
   - H2: Terkait
 
 ## concepts/model-failover.md
 
 - Rute: /concepts/model-failover
-- Judul:
+- Heading:
   - H2: Alur runtime
-  - H2: Kebijakan sumber pemilihan
+  - H2: Kebijakan sumber seleksi
   - H2: Cache lewati kegagalan auth
   - H2: Pemberitahuan fallback yang terlihat pengguna
   - H2: Penyimpanan auth (kunci + OAuth)
   - H2: ID profil
   - H2: Urutan rotasi
-  - H3: Kelengketan sesi (ramah cache)
-  - H3: Langganan OpenAI Codex plus cadangan API key
+  - H3: Stickiness sesi (ramah cache)
+  - H3: Langganan OpenAI Codex plus cadangan kunci API
   - H2: Cooldown
-  - H2: Penagihan menonaktifkan
+  - H2: Penonaktifan penagihan
   - H2: Fallback model
   - H3: Aturan rantai kandidat
   - H3: Error mana yang memajukan fallback
   - H3: Perilaku lewati cooldown vs probe
-  - H2: Override sesi dan pergantian model live
+  - H2: Override sesi dan pengalihan model live
   - H2: Observabilitas dan ringkasan kegagalan
   - H2: Konfigurasi terkait
 
 ## concepts/model-providers.md
 
 - Rute: /concepts/model-providers
-- Judul:
+- Heading:
   - H2: Aturan cepat
   - H2: Perilaku penyedia milik Plugin
-  - H2: Rotasi API key
+  - H2: Rotasi kunci API
   - H2: Plugin penyedia resmi
   - H3: OpenAI
   - H3: Anthropic
   - H3: OpenAI ChatGPT/Codex OAuth
   - H3: Opsi hosted bergaya langganan lainnya
   - H3: OpenCode
-  - H3: Google Gemini (API key)
+  - H3: Google Gemini (kunci API)
   - H3: Google Vertex dan Gemini CLI
   - H3: Z.AI (GLM)
   - H3: Vercel AI Gateway
-  - H3: Plugin penyedia bundled lainnya
+  - H3: Plugin penyedia bawaan lainnya
   - H4: Keunikan yang perlu diketahui
-  - H2: Penyedia melalui models.providers (custom/base URL)
+  - H2: Penyedia melalui models.providers (URL custom/base)
   - H3: Moonshot AI (Kimi)
   - H3: Kimi coding
   - H3: Volcano Engine (Doubao)
@@ -2594,36 +2595,36 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## concepts/models.md
 
 - Rute: /concepts/models
-- Judul:
-  - H2: Cara kerja pemilihan model
-  - H2: Sumber pemilihan dan perilaku fallback
+- Heading:
+  - H2: Cara seleksi model bekerja
+  - H2: Sumber seleksi dan perilaku fallback
   - H2: Kebijakan model cepat
-  - H2: Onboarding (disarankan)
-  - H2: Kunci konfigurasi (gambaran umum)
-  - H3: Edit allowlist aman
+  - H2: Onboarding (direkomendasikan)
+  - H2: Kunci config (gambaran umum)
+  - H3: Edit allowlist yang aman
   - H2: "Model tidak diizinkan" (dan mengapa balasan berhenti)
   - H2: Mengganti model di chat (/model)
   - H2: Perintah CLI
   - H3: models list
   - H3: models status
   - H2: Pemindaian (model gratis OpenRouter)
-  - H2: Registri model (models.json)
+  - H2: Registry model (models.json)
   - H2: Terkait
 
 ## concepts/multi-agent.md
 
 - Rute: /concepts/multi-agent
-- Judul:
+- Heading:
   - H2: Apa itu "satu agen"?
   - H2: Path (peta cepat)
   - H3: Mode agen tunggal (default)
   - H2: Pembantu agen
   - H2: Mulai cepat
-  - H2: Banyak agen = banyak orang, banyak kepribadian
+  - H2: Beberapa agen = beberapa orang, beberapa kepribadian
   - H2: Pencarian memori QMD lintas agen
-  - H2: Satu nomor WhatsApp, banyak orang (pemisahan DM)
-  - H2: Aturan routing (bagaimana pesan memilih agen)
-  - H2: Banyak akun / nomor telepon
+  - H2: Satu nomor WhatsApp, beberapa orang (pemisahan DM)
+  - H2: Aturan routing (cara pesan memilih agen)
+  - H2: Beberapa akun / nomor telepon
   - H2: Konsep
   - H2: Contoh platform
   - H2: Pola umum
@@ -2636,12 +2637,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Penampung token (mengapa ada)
   - H2: Penyimpanan (tempat token berada)
-  - H2: Kompatibilitas token lama Anthropic
-  - H2: Migrasi Anthropic Claude CLI
+  - H2: Kompatibilitas token warisan Anthropic
+  - H2: Migrasi CLI Anthropic Claude
   - H2: Pertukaran OAuth (cara login bekerja)
   - H3: setup-token Anthropic
-  - H3: OpenAI Codex (ChatGPT OAuth)
-  - H2: Refresh + kedaluwarsa
+  - H3: OpenAI Codex (OAuth ChatGPT)
+  - H2: Penyegaran + kedaluwarsa
   - H2: Beberapa akun (profil) + perutean
   - H3: 1) Disarankan: agen terpisah
   - H3: 2) Lanjutan: beberapa profil dalam satu agen
@@ -2651,12 +2652,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /concepts/parallel-specialist-lanes
 - Judul:
-  - H2: Prinsip dasar
+  - H2: Prinsip pertama
   - H2: Peluncuran yang disarankan
-  - H3: Fase 1: kontrak lane + pekerjaan berat di latar belakang
+  - H3: Fase 1: kontrak jalur + pekerjaan berat di latar belakang
   - H3: Fase 2: kontrol prioritas dan konkurensi
   - H3: Fase 3: koordinator / pengendali lalu lintas
-  - H2: Templat kontrak lane minimal
+  - H2: Templat kontrak jalur minimal
   - H2: Terkait
 
 ## concepts/personal-agent-benchmark-pack.md
@@ -2675,15 +2676,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Produsen (dari mana presence berasal)
   - H3: 1) Entri mandiri Gateway
   - H3: 2) Koneksi WebSocket
-  - H4: Mengapa perintah CLI sekali jalan tidak muncul
-  - H3: 3) beacon system-event
+  - H4: Mengapa perintah CLI sekali pakai tidak muncul
+  - H3: 3) Beacon system-event
   - H3: 4) Node terhubung (peran: node)
   - H2: Aturan penggabungan + deduplikasi (mengapa instanceId penting)
   - H2: TTL dan ukuran terbatas
   - H2: Catatan remote/tunnel (IP loopback)
   - H2: Konsumen
   - H3: Tab Instance macOS
-  - H2: Tips debugging
+  - H2: Kiat debugging
   - H2: Terkait
 
 ## concepts/progress-drafts.md
@@ -2706,7 +2707,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Permukaan perintah
   - H2: Alur operator
-  - H2: Cakupan transport live
+  - H2: Cakupan transport langsung
   - H2: Referensi QA Telegram, Discord, Slack, dan WhatsApp
   - H3: Flag CLI bersama
   - H3: QA Telegram
@@ -2716,8 +2717,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: QA WhatsApp
   - H3: Pool kredensial Convex
   - H2: Seed berbasis repo
-  - H2: Lane mock provider
-  - H2: Adapter transport
+  - H2: Jalur mock provider
+  - H2: Adaptor transport
   - H3: Menambahkan channel
   - H3: Nama helper skenario
   - H2: Pelaporan
@@ -2728,7 +2729,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /concepts/qa-matrix
 - Judul:
   - H2: Mulai cepat
-  - H2: Apa yang dilakukan lane
+  - H2: Apa yang dilakukan jalur
   - H2: CLI
   - H3: Flag umum
   - H3: Flag provider
@@ -2736,8 +2737,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Skenario
   - H2: Variabel lingkungan
   - H2: Artefak output
-  - H2: Tips triase
-  - H2: Kontrak transport live
+  - H2: Kiat triase
+  - H2: Kontrak transport langsung
   - H2: Terkait
 
 ## concepts/queue-steering.md
@@ -2760,7 +2761,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Default
   - H2: Mode antrean
   - H2: Opsi antrean
-  - H2: Pengarahan dan streaming
+  - H2: Arahkan dan streaming
   - H2: Presedensi
   - H2: Override per sesi
   - H2: Cakupan dan jaminan
@@ -2787,11 +2788,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Mengapa ini penting
   - H2: Cara kerjanya
-  - H2: Pembersihan gambar lama
+  - H2: Pembersihan gambar warisan
   - H2: Default cerdas
   - H2: Aktifkan atau nonaktifkan
   - H2: Pruning vs compaction
-  - H2: Bacaan lanjutan
+  - H2: Bacaan lebih lanjut
   - H2: Terkait
 
 ## concepts/session-tool.md
@@ -2804,21 +2805,21 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Helper status dan orkestrasi
   - H2: Membuat sub-agen
   - H2: Visibilitas
-  - H2: Bacaan lanjutan
+  - H2: Bacaan lebih lanjut
   - H2: Terkait
 
 ## concepts/session.md
 
 - Rute: /concepts/session
 - Judul:
-  - H2: Cara pesan dirutekan
+  - H2: Bagaimana pesan dirutekan
   - H2: Isolasi DM
-  - H3: Channel yang ditautkan dock
+  - H3: Channel tertaut Dock
   - H2: Siklus hidup sesi
   - H2: Tempat state berada
   - H2: Pemeliharaan sesi
   - H2: Memeriksa sesi
-  - H2: Bacaan lanjutan
+  - H2: Bacaan lebih lanjut
   - H2: Terkait
 
 ## concepts/soul.md
@@ -2838,15 +2839,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Streaming blok (pesan channel)
   - H3: Pengiriman media dengan streaming blok
-  - H2: Algoritma pemotongan chunk (batas rendah/tinggi)
-  - H2: Penggabungan (gabungkan blok streaming)
-  - H2: Jeda mirip manusia antarblok
+  - H2: Algoritma chunking (batas rendah/tinggi)
+  - H2: Coalescing (gabungkan blok yang di-stream)
+  - H2: Jeda antarbblok yang terasa seperti manusia
   - H2: "Stream chunk atau semuanya"
   - H2: Mode streaming pratinjau
   - H3: Pemetaan channel
   - H3: Perilaku runtime
   - H3: Pembaruan pratinjau progres tool
-  - H3: Lane progres commentary
+  - H3: Jalur progres commentary
   - H2: Terkait
 
 ## concepts/system-prompt.md
@@ -2878,14 +2879,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Model mental (30 detik)
   - H2: Tempat skema berada
   - H2: Pipeline saat ini
-  - H2: Cara skema digunakan saat runtime
+  - H2: Bagaimana skema digunakan saat runtime
   - H2: Contoh frame
   - H2: Klien minimal (Node.js)
   - H2: Contoh lengkap: menambahkan metode dari awal hingga akhir
   - H2: Perilaku codegen Swift
   - H2: Versioning + kompatibilitas
   - H2: Pola dan konvensi skema
-  - H2: JSON skema live
+  - H2: JSON skema langsung
   - H2: Saat Anda mengubah skema
   - H2: Terkait
 
@@ -2908,14 +2909,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mode footer penggunaan default
   - H3: Tiga state sesi yang berbeda
   - H3: Presedensi
-  - H3: Mengatur ulang vs. mematikan
+  - H3: Mereset vs. menonaktifkan
   - H3: Perilaku toggle
-  - H3: Konfigurasi
-  - H2: Footer lengkap /usage kustom
+  - H3: Config
+  - H2: Footer lengkap /usage khusus
   - H3: Bentuk
-  - H3: Path kontrak
-  - H3: Verba
-  - H3: Bentuk bagian
+  - H3: Jalur Kontrak
+  - H3: Verb
+  - H3: Bentuk potongan
   - H3: Contoh
   - H2: Provider + kredensial
   - H2: Terkait
@@ -2959,7 +2960,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Override env (sekali pakai)
   - H2: Flag profiling
   - H2: Artefak timeline
-  - H2: Tempat log berada
+  - H2: Tempat log ditulis
   - H2: Ekstrak log
   - H2: Catatan
   - H2: Terkait
@@ -2969,13 +2970,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/authentication
 - Judul:
   - H2: Penyiapan yang disarankan (API key, provider apa pun)
-  - H2: Anthropic: kompatibilitas Claude CLI dan token
+  - H2: Anthropic: CLI Claude dan kompatibilitas token
   - H2: Catatan Anthropic
   - H2: Memeriksa status auth model
   - H2: Perilaku rotasi API key (gateway)
   - H2: Menghapus auth provider saat gateway berjalan
   - H2: Mengontrol kredensial mana yang digunakan
-  - H3: OpenAI dan id openai-codex lama
+  - H3: OpenAI dan id openai-codex warisan
   - H3: Saat login (CLI)
   - H3: Per sesi (perintah chat)
   - H3: Per agen (override CLI)
@@ -2989,7 +2990,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/background-process
 - Judul:
   - H2: tool exec
-  - H2: Bridging proses child
+  - H2: Bridging proses turunan
   - H2: tool process
   - H2: Contoh
   - H2: Terkait
@@ -3011,8 +3012,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Debugging di node iOS
   - H2: Kapan mengaktifkan Bonjour
   - H2: Kapan menonaktifkan Bonjour
-  - H2: Kendala Docker
-  - H2: Memecahkan masalah Bonjour yang dinonaktifkan
+  - H2: Masalah umum Docker
+  - H2: Pemecahan masalah Bonjour yang dinonaktifkan
   - H2: Mode kegagalan umum
   - H2: Nama instance yang di-escape (\032)
   - H2: Mengaktifkan / menonaktifkan / konfigurasi
@@ -3022,7 +3023,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /gateway/bridge-protocol
 - Judul:
-  - H2: Mengapa ini ada
+  - H2: Mengapa dulu ada
   - H2: Transport
   - H2: Handshake + pairing
   - H2: Frame
@@ -3047,7 +3048,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Default (dimiliki Plugin)
   - H2: Default yang dimiliki Plugin
   - H2: Kepemilikan compaction native
-  - H2: Overlay MCP bundle
+  - H2: Overlay Bundle MCP
   - H2: Batas reseed riwayat
   - H2: Batasan
   - H2: Pemecahan masalah
@@ -3068,7 +3069,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: agents.defaults.bootstrapTotalMaxChars
   - H3: Override profil bootstrap per agen
   - H3: agents.defaults.bootstrapPromptTruncationWarning
-  - H3: Peta kepemilikan budget konteks
+  - H3: Peta kepemilikan anggaran konteks
   - H4: agents.defaults.startupContext
   - H4: agents.defaults.contextLimits
   - H4: agents.list[].contextLimits
@@ -3087,7 +3088,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: agents.defaults.runRetries
   - H3: agents.defaults.contextPruning
   - H3: Streaming blok
-  - H3: Indikator mengetik
+  - H3: Indikator pengetikan
   - H3: agents.defaults.sandbox
   - H3: agents.list (override per agen)
   - H2: Perutean multi-agen
@@ -3095,7 +3096,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Profil akses per agen
   - H2: Sesi
   - H2: Pesan
-  - H3: Prefix respons
+  - H3: Prefiks respons
   - H3: Reaksi ack
   - H3: Debounce inbound
   - H3: TTS (text-to-speech)
@@ -3108,7 +3109,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Kanal
   - H3: Akses DM dan grup
-  - H3: Override model kanal
+  - H3: Penimpaan model kanal
   - H3: Default kanal dan Heartbeat
   - H3: WhatsApp
   - H3: Telegram
@@ -3123,9 +3124,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: IRC
   - H3: Multi-akun (semua kanal)
   - H3: Kanal Plugin lainnya
-  - H3: Pembatasan penyebutan di obrolan grup
+  - H3: Pembatasan penyebutan obrolan grup
   - H4: Batas riwayat DM
-  - H4: Mode obrolan mandiri
+  - H4: Mode obrolan sendiri
   - H3: Perintah (penanganan perintah obrolan)
   - H2: Terkait
 
@@ -3151,7 +3152,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: tools.sessionsspawn
   - H3: tools.experimental
   - H3: agents.defaults.subagents
-  - H2: Penyedia khusus dan URL dasar
+  - H2: Penyedia kustom dan URL dasar
   - H3: Detail bidang penyedia
   - H3: Contoh penyedia
   - H2: Terkait
@@ -3162,13 +3163,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Mulai cepat
   - H3: Minimum absolut
-  - H3: Starter yang direkomendasikan
-  - H2: Contoh diperluas (opsi utama)
-  - H3: Repo skill saudara yang disymlink
+  - H3: Pemula yang direkomendasikan
+  - H2: Contoh yang diperluas (opsi utama)
+  - H3: Repo skill saudara yang di-symlink
   - H2: Pola umum
-  - H3: Baseline skill bersama dengan satu override
+  - H3: Baseline skill bersama dengan satu penimpaan
   - H3: Penyiapan multi-platform
-  - H3: Persetujuan otomatis jaringan Node tepercaya
+  - H3: Persetujuan otomatis jaringan node tepercaya
   - H3: Mode DM aman (kotak masuk bersama / DM multi-pengguna)
   - H3: Kunci API Anthropic + fallback MiniMax
   - H3: Bot kerja (akses terbatas)
@@ -3182,14 +3183,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Kanal
   - H2: Default agen, multi-agen, sesi, dan pesan
-  - H2: Alat dan penyedia khusus
+  - H2: Alat dan penyedia kustom
   - H2: Model
   - H2: MCP
   - H2: Skills
-  - H2: Plugin
+  - H2: Plugins
   - H3: Konfigurasi Plugin harness Codex
   - H2: Komitmen
-  - H2: Peramban
+  - H2: Browser
   - H2: UI
   - H2: Gateway
   - H3: Endpoint yang kompatibel dengan OpenAI
@@ -3224,22 +3225,22 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: cron.failureAlert
   - H3: cron.failureDestination
   - H2: Variabel templat model media
-  - H2: Penyertaan config ($include)
+  - H2: Penyertaan konfigurasi ($include)
   - H2: Terkait
 
 ## gateway/configuration.md
 
 - Rute: /gateway/configuration
 - Judul:
-  - H2: Config minimal
-  - H2: Mengedit config
+  - H2: Konfigurasi minimal
+  - H2: Mengedit konfigurasi
   - H2: Validasi ketat
   - H2: Tugas umum
-  - H2: Hot reload config
+  - H2: Hot reload konfigurasi
   - H3: Mode reload
-  - H3: Apa yang berlaku secara hot-apply vs apa yang perlu restart
+  - H3: Apa yang diterapkan panas vs apa yang perlu restart
   - H3: Perencanaan reload
-  - H2: RPC config (pembaruan programatis)
+  - H2: RPC konfigurasi (pembaruan programatik)
   - H2: Variabel lingkungan
   - H2: Referensi lengkap
   - H2: Terkait
@@ -3266,11 +3267,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Input penemuan (cara klien mengetahui lokasi gateway)
   - H3: 1) Penemuan Bonjour / DNS-SD
   - H4: Detail beacon layanan
-  - H3: 2) Tailnet (lintas-jaringan)
+  - H3: 2) Tailnet (lintas jaringan)
   - H3: 3) Target manual / SSH
   - H2: Pemilihan transport (kebijakan klien)
-  - H2: Pairing + auth (transport direct)
-  - H2: Tanggung jawab per komponen
+  - H2: Pairing + auth (transport langsung)
+  - H2: Tanggung jawab menurut komponen
   - H2: Terkait
 
 ## gateway/doctor.md
@@ -3280,9 +3281,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H3: Mode headless dan otomatisasi
   - H2: Mode lint hanya-baca
-  - H2: Yang dilakukan (ringkasan)
+  - H2: Yang dilakukannya (ringkasan)
   - H2: Backfill dan reset UI Dreams
-  - H2: Perilaku terperinci dan alasan
+  - H2: Perilaku dan alasan terperinci
   - H2: Terkait
 
 ## gateway/external-apps.md
@@ -3300,7 +3301,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Alasan
   - H2: Mekanisme
-  - H2: Permukaan error
+  - H2: Permukaan kesalahan
   - H2: Catatan operasional
   - H2: Terkait
 
@@ -3310,11 +3311,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Pemeriksaan cepat
   - H2: Diagnostik mendalam
-  - H2: Konfigurasi pemantau kesehatan
+  - H2: Konfigurasi monitor kesehatan
   - H2: Pemantauan uptime
   - H3: Contoh penyiapan layanan pemantauan
-  - H2: Saat ada sesuatu yang gagal
-  - H2: Perintah khusus "health"
+  - H2: Saat terjadi kegagalan
+  - H2: Perintah "health" khusus
   - H2: Terkait
 
 ## gateway/heartbeat.md
@@ -3325,7 +3326,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Default
   - H2: Tujuan prompt Heartbeat
   - H2: Kontrak respons
-  - H2: Config
+  - H2: Konfigurasi
   - H3: Cakupan dan presedensi
   - H3: Heartbeat per agen
   - H3: Contoh jam aktif
@@ -3338,12 +3339,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Contoh per-kanal vs per-akun
   - H3: Pola umum
   - H2: HEARTBEAT.md (opsional)
-  - H3: blok tasks:
-  - H3: Bisakah agen memperbarui HEARTBEAT.md?
+  - H3: Blok tasks:
+  - H3: Dapatkah agen memperbarui HEARTBEAT.md?
   - H2: Bangun manual (sesuai permintaan)
-  - H2: Pengiriman reasoning (opsional)
+  - H2: Pengiriman penalaran (opsional)
   - H2: Kesadaran biaya
-  - H2: Overflow konteks setelah Heartbeat
+  - H2: Luapan konteks setelah Heartbeat
   - H2: Terkait
 
 ## gateway/index.md
@@ -3356,7 +3357,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Presedensi port dan bind
   - H3: Mode hot reload
   - H2: Set perintah operator
-  - H2: Beberapa Gateway (host yang sama)
+  - H2: Beberapa gateway (host yang sama)
   - H2: Akses jarak jauh
   - H2: Supervisi dan siklus hidup layanan
   - H2: Jalur cepat profil dev
@@ -3365,8 +3366,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Liveness
   - H3: Readiness
   - H3: Pemulihan gap
-  - H2: Signature kegagalan umum
-  - H2: Jaminan keselamatan
+  - H2: Tanda kegagalan umum
+  - H2: Jaminan keamanan
   - H2: Terkait
 
 ## gateway/local-model-services.md
@@ -3374,7 +3375,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/local-model-services
 - Judul:
   - H2: Cara kerjanya
-  - H2: Bentuk config
+  - H2: Bentuk konfigurasi
   - H2: Bidang
   - H2: Contoh Inferrs
   - H2: Contoh ds4
@@ -3388,10 +3389,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Batas minimum perangkat keras
   - H2: Pilih backend
   - H2: Direkomendasikan: LM Studio + model lokal besar (Responses API)
-  - H3: Config hybrid: primer hosted, fallback lokal
-  - H3: Lokal lebih dulu dengan jaring pengaman hosted
+  - H3: Konfigurasi hibrida: primer hosted, fallback lokal
+  - H3: Utamakan lokal dengan jaring pengaman hosted
   - H3: Hosting regional / perutean data
-  - H2: Proxy lokal lain yang kompatibel dengan OpenAI
+  - H2: Proksi lokal lain yang kompatibel dengan OpenAI
   - H2: Backend yang lebih kecil atau lebih ketat
   - H2: Pemecahan masalah
   - H2: Terkait
@@ -3414,13 +3415,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/multiple-gateways
 - Judul:
   - H2: Penyiapan terbaik yang direkomendasikan
-  - H2: Mulai Cepat Rescue-Bot
-  - H2: Mengapa ini bekerja
-  - H2: Apa yang Diubah --profile rescue onboard
-  - H2: Penyiapan multi-Gateway umum
-  - H2: Checklist isolasi
+  - H2: Mulai cepat Rescue-Bot
+  - H2: Mengapa ini berfungsi
+  - H2: Perubahan dari --profile rescue onboard
+  - H2: Penyiapan multi-gateway umum
+  - H2: Daftar periksa isolasi
   - H2: Pemetaan port (diturunkan)
-  - H2: Catatan Browser/CDP (footgun umum)
+  - H2: Catatan Browser/CDP (jebakan umum)
   - H2: Contoh env manual
   - H2: Pemeriksaan cepat
   - H2: Terkait
@@ -3438,7 +3439,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Autentikasi
   - H2: Batas keamanan (penting)
   - H2: Kapan menggunakan endpoint ini
-  - H2: Kontrak model agent-first
+  - H2: Kontrak model yang mengutamakan agen
   - H2: Mengaktifkan endpoint
   - H2: Menonaktifkan endpoint
   - H2: Perilaku sesi
@@ -3469,10 +3470,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Alat (alat fungsi sisi klien)
   - H2: Gambar (inputimage)
   - H2: File (inputfile)
-  - H2: Batas file + gambar (config)
+  - H2: Batas file + gambar (konfigurasi)
   - H2: Streaming (SSE)
   - H2: Penggunaan
-  - H2: Error
+  - H2: Kesalahan
   - H2: Contoh
   - H2: Terkait
 
@@ -3482,7 +3483,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Prasyarat
   - H2: Mulai cepat
-  - H2: Mode workspace
+  - H2: Mode ruang kerja
   - H3: mirror
   - H3: remote
   - H3: Memilih mode
@@ -3490,7 +3491,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Contoh
   - H3: Penyiapan remote minimal
   - H3: Mode mirror dengan GPU
-  - H3: OpenShell per agen dengan Gateway khusus
+  - H3: OpenShell per agen dengan gateway kustom
   - H2: Manajemen siklus hidup
   - H3: Kapan membuat ulang
   - H2: Pengerasan keamanan
@@ -3502,7 +3503,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /gateway/opentelemetry
 - Judul:
-  - H2: Cara semuanya terhubung
+  - H2: Bagaimana semuanya terhubung
   - H2: Mulai cepat
   - H2: Sinyal yang diekspor
   - H2: Referensi konfigurasi
@@ -3512,7 +3513,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Metrik yang diekspor
   - H3: Penggunaan model
   - H3: Alur pesan
-  - H3: Bicara
+  - H3: Talk
   - H3: Antrean dan sesi
   - H3: Telemetri liveness sesi
   - H3: Siklus hidup harness
@@ -3520,8 +3521,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Exec
   - H3: Internal diagnostik (memori dan loop alat)
   - H2: Span yang diekspor
-  - H2: Katalog event diagnostik
-  - H2: Tanpa exporter
+  - H2: Katalog peristiwa diagnostik
+  - H2: Tanpa eksportir
   - H2: Nonaktifkan
   - H2: Terkait
 
@@ -3531,7 +3532,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Peran
   - H2: Tingkat cakupan
-  - H2: Cakupan metode hanya gate pertama
+  - H2: Cakupan metode hanya gerbang pertama
   - H2: Persetujuan pairing perangkat
   - H2: Persetujuan pairing Node
   - H2: Auth shared-secret
@@ -3541,15 +3542,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/pairing
 - Judul:
   - H2: Konsep
-  - H2: Cara kerja pairing
+  - H2: Cara pairing bekerja
   - H2: Alur kerja CLI (ramah headless)
-  - H2: Permukaan API (protokol Gateway)
+  - H2: Permukaan API (protokol gateway)
   - H2: Pembatasan perintah Node (2026.3.31+)
-  - H2: Batas kepercayaan event Node (2026.3.31+)
+  - H2: Batas kepercayaan peristiwa Node (2026.3.31+)
   - H2: Persetujuan otomatis (aplikasi macOS)
   - H2: Persetujuan otomatis perangkat Trusted-CIDR
-  - H2: Persetujuan otomatis upgrade metadata
-  - H2: Helper pairing QR
+  - H2: Persetujuan otomatis peningkatan metadata
+  - H2: Pembantu pairing QR
   - H2: Lokalitas dan header yang diteruskan
   - H2: Penyimpanan (lokal, privat)
   - H2: Perilaku transport
@@ -3578,15 +3579,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Peran + cakupan
   - H3: Peran
   - H3: Cakupan (operator)
-  - H3: Caps/perintah/izin (Node)
+  - H3: Caps/commands/permissions (node)
   - H2: Presence
-  - H3: Event Node background alive
-  - H2: Pencakupan event broadcast
+  - H3: Peristiwa Node background alive
+  - H2: Cakupan peristiwa broadcast
   - H2: Keluarga metode RPC umum
-  - H3: Keluarga event umum
-  - H3: Metode helper Node
+  - H3: Keluarga peristiwa umum
+  - H3: Metode pembantu Node
   - H3: RPC ledger tugas
-  - H3: Metode helper operator
+  - H3: Metode pembantu operator
   - H3: Tampilan models.list
   - H2: Persetujuan exec
   - H2: Fallback pengiriman agen
@@ -3608,13 +3609,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Penyiapan cepat
   - H3: Langkah 1: Tambahkan Konfigurasi SSH
   - H3: Langkah 2: Salin Kunci SSH
-  - H3: Langkah 3: Konfigurasi Autentikasi Gateway Jarak Jauh
+  - H3: Langkah 3: Konfigurasikan Autentikasi Gateway Jarak Jauh
   - H3: Langkah 4: Mulai Tunnel SSH
-  - H3: Langkah 5: Mulai Ulang OpenClaw.app
+  - H3: Langkah 5: Mulai ulang OpenClaw.app
   - H2: Mulai Otomatis Tunnel saat Login
   - H3: Buat file PLIST
   - H3: Muat Launch Agent
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Cara kerjanya
   - H2: Terkait
 
@@ -3627,17 +3628,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Gateway yang selalu aktif di tailnet Anda
   - H3: Desktop rumah menjalankan Gateway
   - H3: Laptop menjalankan Gateway
-  - H2: Alur perintah (apa yang berjalan di mana)
+  - H2: Alur perintah (apa berjalan di mana)
   - H2: Tunnel SSH (CLI + alat)
   - H2: Default jarak jauh CLI
   - H2: Prioritas kredensial
-  - H2: Akses jarak jauh UI obrolan
+  - H2: Akses jarak jauh UI chat
   - H2: Mode jarak jauh aplikasi macOS
   - H2: Aturan keamanan (jarak jauh/VPN)
   - H3: macOS: tunnel SSH persisten melalui LaunchAgent
   - H4: Langkah 1: tambahkan konfigurasi SSH
-  - H4: Langkah 2: salin kunci SSH (satu kali)
-  - H4: Langkah 3: konfigurasi token gateway
+  - H4: Langkah 2: salin kunci SSH (sekali saja)
+  - H4: Langkah 3: konfigurasikan token gateway
   - H4: Langkah 4: buat LaunchAgent
   - H4: Langkah 5: muat LaunchAgent
   - H4: Pemecahan masalah
@@ -3652,17 +3653,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Bind mount (pemeriksaan keamanan cepat)
   - H2: Kebijakan alat: alat mana yang ada/dapat dipanggil
   - H3: Grup alat (singkatan)
-  - H2: Elevated: exec-only "jalankan di host"
-  - H2: Perbaikan umum "sandbox jail"
+  - H2: Elevated: "jalankan di host" khusus exec
+  - H2: Perbaikan umum "kurungan sandbox"
   - H3: "Alat X diblokir oleh kebijakan alat sandbox"
-  - H3: "Saya kira ini main, mengapa ini di-sandbox?"
+  - H3: "Saya kira ini main, mengapa disandbox?"
   - H2: Terkait
 
 ## gateway/sandboxing.md
 
 - Rute: /gateway/sandboxing
 - Judul:
-  - H2: Apa yang dimasukkan ke sandbox
+  - H2: Apa yang disandbox
   - H2: Mode
   - H2: Cakupan
   - H2: Backend
@@ -3673,11 +3674,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H4: Mode workspace
   - H4: Siklus hidup OpenShell
   - H2: Akses workspace
-  - H2: Bind mount kustom
+  - H2: Bind mount khusus
   - H2: Image dan penyiapan
-  - H2: setupCommand (penyiapan container satu kali)
-  - H2: Kebijakan alat dan escape hatch
-  - H2: Override multi-agent
+  - H2: setupCommand (penyiapan container sekali saja)
+  - H2: Kebijakan alat dan celah keluar
+  - H2: Override multi-agen
   - H2: Contoh pengaktifan minimal
   - H2: Terkait
 
@@ -3686,12 +3687,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/secrets-plan-contract
 - Judul:
   - H2: Bentuk file rencana
-  - H2: Upsert dan penghapusan provider
+  - H2: Upsert dan penghapusan penyedia
   - H2: Cakupan target yang didukung
-  - H2: Perilaku jenis target
+  - H2: Perilaku tipe target
   - H2: Aturan validasi path
   - H2: Perilaku kegagalan
-  - H2: Perilaku persetujuan provider exec
+  - H2: Perilaku persetujuan penyedia exec
   - H2: Catatan cakupan runtime dan audit
   - H2: Pemeriksaan operator
   - H2: Dokumen terkait
@@ -3701,25 +3702,25 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/secrets
 - Judul:
   - H2: Tujuan dan model runtime
-  - H2: Batas akses agent
+  - H2: Batas akses agen
   - H2: Pemfilteran permukaan aktif
   - H2: Diagnostik permukaan autentikasi Gateway
   - H2: Preflight referensi onboarding
   - H2: Kontrak SecretRef
-  - H2: Konfigurasi provider
+  - H2: Konfigurasi penyedia
   - H2: Kunci API berbasis file
   - H2: Contoh integrasi exec
   - H2: Variabel lingkungan server MCP
-  - H2: Material autentikasi SSH sandbox
+  - H2: Materi autentikasi SSH sandbox
   - H2: Permukaan kredensial yang didukung
-  - H2: Perilaku dan prioritas yang diperlukan
+  - H2: Perilaku dan prioritas wajib
   - H2: Pemicu aktivasi
   - H2: Sinyal terdegradasi dan pulih
-  - H2: Resolusi path perintah
+  - H2: Resolusi jalur perintah
   - H2: Alur kerja audit dan konfigurasi
-  - H2: Kebijakan keselamatan satu arah
+  - H2: Kebijakan keamanan satu arah
   - H2: Catatan kompatibilitas autentikasi lama
-  - H2: Catatan UI Web
+  - H2: Catatan UI web
   - H2: Terkait
 
 ## gateway/security/audit-checks.md
@@ -3732,37 +3733,37 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /gateway/security/exposure-runbook
 - Judul:
-  - H2: Pilih pola eksposur
-  - H2: Inventaris pra-penerbangan
+  - H2: Pilih pola paparan
+  - H2: Inventaris pra-pemeriksaan
   - H2: Pemeriksaan baseline
   - H2: Baseline aman minimum
-  - H2: Eksposur DM dan grup
+  - H2: Paparan DM dan grup
   - H2: Pemeriksaan reverse proxy
   - H2: Tinjauan alat dan sandbox
-  - H2: Validasi pasca-perubahan
+  - H2: Validasi setelah perubahan
   - H2: Rencana rollback
-  - H2: Checklist tinjauan
+  - H2: Daftar periksa tinjauan
 
 ## gateway/security/index.md
 
 - Rute: /gateway/security
 - Judul:
-  - H2: Cakupan dulu: model keamanan asisten pribadi
+  - H2: Cakupan dahulu: model keamanan asisten pribadi
   - H2: Pemeriksaan cepat: audit keamanan openclaw
-  - H3: Kunci dependensi paket yang dipublikasikan
+  - H3: Lock dependensi paket terpublikasi
   - H3: Kepercayaan deployment dan host
-  - H3: Operasi file yang aman
+  - H3: Operasi file aman
   - H3: Workspace Slack bersama: risiko nyata
-  - H3: Agent bersama perusahaan: pola yang dapat diterima
+  - H3: Agen bersama perusahaan: pola yang dapat diterima
   - H2: Konsep kepercayaan Gateway dan node
   - H2: Matriks batas kepercayaan
   - H2: Bukan kerentanan secara desain
-  - H2: Baseline yang diperkuat dalam 60 detik
+  - H2: Baseline yang diperkeras dalam 60 detik
   - H2: Aturan cepat inbox bersama
   - H2: Model visibilitas konteks
   - H2: Apa yang diperiksa audit (tingkat tinggi)
   - H2: Peta penyimpanan kredensial
-  - H2: Checklist audit keamanan
+  - H2: Daftar periksa audit keamanan
   - H2: Glosarium audit keamanan
   - H2: Control UI melalui HTTP
   - H2: Ringkasan flag tidak aman atau berbahaya
@@ -3780,18 +3781,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Isolasi sesi DM (mode multi-pengguna)
   - H3: Mode DM aman (direkomendasikan)
   - H2: Allowlist untuk DM dan grup
-  - H2: Prompt injection (apa itu, mengapa penting)
+  - H2: Injeksi prompt (apa itu, mengapa penting)
   - H2: Sanitasi token khusus konten eksternal
   - H2: Flag bypass konten eksternal tidak aman
-  - H3: Prompt injection tidak memerlukan DM publik
+  - H3: Injeksi prompt tidak memerlukan DM publik
   - H3: Backend LLM yang di-host sendiri
   - H3: Kekuatan model (catatan keamanan)
   - H2: Reasoning dan output verbose di grup
   - H2: Contoh pengerasan konfigurasi
   - H3: Izin file
-  - H3: Eksposur jaringan (bind, port, firewall)
+  - H3: Paparan jaringan (bind, port, firewall)
   - H3: Publikasi port Docker dengan UFW
-  - H3: Discovery mDNS/Bonjour
+  - H3: Penemuan mDNS/Bonjour
   - H3: Kunci WebSocket Gateway (autentikasi lokal)
   - H3: Header identitas Tailscale Serve
   - H3: Kontrol browser melalui host node (direkomendasikan)
@@ -3799,21 +3800,21 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: File .env workspace
   - H3: Log dan transkrip (redaksi dan retensi)
   - H3: DM: pairing secara default
-  - H3: Grup: wajibkan mention di mana-mana
+  - H3: Grup: wajibkan mention di semua tempat
   - H3: Nomor terpisah (WhatsApp, Signal, Telegram)
   - H3: Mode hanya-baca (melalui sandbox dan alat)
   - H3: Baseline aman (salin/tempel)
   - H2: Sandboxing (direkomendasikan)
-  - H3: Guardrail delegasi sub-agent
+  - H3: Guardrail delegasi sub-agen
   - H2: Risiko kontrol browser
   - H3: Kebijakan SSRF browser (ketat secara default)
-  - H2: Profil akses per-agent (multi-agent)
+  - H2: Profil akses per agen (multi-agen)
   - H3: Contoh: akses penuh (tanpa sandbox)
   - H3: Contoh: alat hanya-baca + workspace hanya-baca
-  - H3: Contoh: tanpa akses filesystem/shell (pesan provider diizinkan)
+  - H3: Contoh: tanpa akses filesystem/shell (pesan penyedia diizinkan)
   - H2: Respons insiden
-  - H3: Contain
-  - H3: Rotate (anggap kompromi jika rahasia bocor)
+  - H3: Batasi
+  - H3: Rotasi (anggap kompromi jika rahasia bocor)
   - H3: Audit
   - H3: Kumpulkan untuk laporan
   - H2: Pemindaian rahasia
@@ -3843,14 +3844,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mode
   - H2: Autentikasi
   - H2: Contoh konfigurasi
-  - H3: Hanya-tailnet (Serve)
-  - H3: Hanya-tailnet (bind ke IP Tailnet)
+  - H3: Hanya tailnet (Serve)
+  - H3: Hanya tailnet (bind ke IP Tailnet)
   - H3: Internet publik (Funnel + kata sandi bersama)
   - H2: Contoh CLI
   - H2: Catatan
   - H2: Kontrol browser (Gateway jarak jauh + browser lokal)
-  - H2: Prasyarat + batas Tailscale
-  - H2: Pelajari lebih lanjut
+  - H2: Prasyarat + batasan Tailscale
+  - H2: Pelajari selengkapnya
   - H2: Terkait
 
 ## gateway/tools-invoke-http-api.md
@@ -3859,7 +3860,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Autentikasi
   - H2: Batas keamanan (penting)
-  - H2: Body permintaan
+  - H2: Isi permintaan
   - H2: Perilaku kebijakan + routing
   - H2: Respons
   - H2: Contoh
@@ -3870,26 +3871,26 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /gateway/troubleshooting
 - Judul:
   - H2: Tangga perintah
-  - H2: Setelah update
-  - H2: Instalasi split brain dan guard konfigurasi lebih baru
+  - H2: Setelah pembaruan
+  - H2: Instalasi split brain dan penjaga konfigurasi yang lebih baru
   - H2: Ketidakcocokan protokol setelah rollback
-  - H2: Symlink Skill dilewati sebagai path escape
+  - H2: Symlink Skill dilewati sebagai pelarian path
   - H2: Anthropic 429 memerlukan penggunaan ekstra untuk konteks panjang
   - H2: Respons upstream 403 diblokir
-  - H2: Backend lokal yang kompatibel dengan OpenAI lulus probe langsung tetapi run agent gagal
+  - H2: Backend lokal kompatibel OpenAI lolos probe langsung tetapi run agen gagal
   - H2: Tidak ada balasan
-  - H2: Konektivitas dashboard Control UI
+  - H2: Konektivitas Control UI dasbor
   - H3: Peta cepat kode detail autentikasi
   - H2: Layanan Gateway tidak berjalan
-  - H2: Gateway macOS diam-diam berhenti merespons, lalu pulih saat Anda menyentuh dashboard
-  - H2: Gateway keluar saat penggunaan memori tinggi
+  - H2: Gateway macOS diam-diam berhenti merespons, lalu pulih saat Anda menyentuh dasbor
+  - H2: Gateway keluar selama penggunaan memori tinggi
   - H2: Gateway menolak konfigurasi tidak valid
   - H2: Peringatan probe Gateway
-  - H2: Channel terhubung, pesan tidak mengalir
+  - H2: Channel tersambung, pesan tidak mengalir
   - H2: Pengiriman Cron dan Heartbeat
   - H2: Node dipasangkan, alat gagal
   - H2: Alat browser gagal
-  - H2: Jika Anda melakukan upgrade dan sesuatu tiba-tiba rusak
+  - H2: Jika Anda meningkatkan versi dan sesuatu tiba-tiba rusak
   - H2: Terkait
 
 ## gateway/trusted-proxy-auth.md
@@ -3907,7 +3908,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Contoh penyiapan proxy
   - H2: Konfigurasi token campuran
   - H2: Header cakupan operator
-  - H2: Checklist keamanan
+  - H2: Daftar periksa keamanan
   - H2: Audit keamanan
   - H2: Pemecahan masalah
   - H2: Migrasi dari autentikasi token
@@ -3920,12 +3921,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Override debug runtime
   - H2: Output trace sesi
   - H2: Trace siklus hidup Plugin
-  - H2: Startup CLI dan profiling perintah
+  - H2: Profiling startup dan perintah CLI
   - H2: Mode watch Gateway
   - H2: Profil dev + gateway dev (--dev)
   - H2: Logging stream mentah (OpenClaw)
-  - H2: Logging chunk mentah yang kompatibel dengan OpenAI
-  - H2: Catatan keselamatan
+  - H2: Logging chunk mentah kompatibel OpenAI
+  - H2: Catatan keamanan
   - H2: Debugging di VSCode
   - H3: Penyiapan
   - H3: Catatan
@@ -3936,14 +3937,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /help/environment
 - Judul:
   - H2: Prioritas (tertinggi → terendah)
-  - H2: Kredensial provider dan .env workspace
+  - H2: Kredensial penyedia dan .env workspace
   - H2: Blok env konfigurasi
   - H2: Impor env shell
   - H2: Snapshot shell exec
-  - H2: Variabel env yang disuntikkan runtime
+  - H2: Variabel env yang diinjeksi runtime
   - H2: Variabel env UI
   - H2: Substitusi variabel env dalam konfigurasi
-  - H2: Ref rahasia vs string ${ENV}
+  - H2: Referensi rahasia vs string ${ENV}
   - H2: Variabel env terkait path
   - H2: Logging
   - H3: OPENCLAWHOME
@@ -3955,14 +3956,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /help/faq-first-run
 - Judul:
-  - H2: Mulai cepat dan penyiapan pertama kali
+  - H2: Mulai cepat dan penyiapan pertama
   - H2: Terkait
 
 ## help/faq-models.md
 
 - Rute: /help/faq-models
 - Judul:
-  - H2: Model: default, pemilihan, alias, peralihan
+  - H2: Model: default, pemilihan, alias, pergantian
   - H2: Failover model dan "Semua model gagal"
   - H2: Profil autentikasi: apa itu dan cara mengelolanya
   - H2: Terkait
@@ -3971,16 +3972,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /help/faq
 - Judul:
-  - H2: 60 detik pertama jika ada sesuatu yang rusak
-  - H2: Mulai cepat dan penyiapan pertama kali
+  - H2: 60 detik pertama jika ada yang rusak
+  - H2: Mulai cepat dan penyiapan pertama
   - H2: Apa itu OpenClaw?
-  - H2: Skills dan otomatisasi
+  - H2: Skills dan automasi
   - H2: Sandboxing dan memori
-  - H2: Tempat berbagai hal berada di disk
+  - H2: Di mana berbagai hal berada di disk
   - H2: Dasar-dasar konfigurasi
   - H2: Gateway dan node jarak jauh
   - H2: Variabel env dan pemuatan .env
-  - H2: Sesi dan beberapa obrolan
+  - H2: Sesi dan beberapa chat
   - H2: Model, failover, dan profil autentikasi
   - H2: Gateway: port, "sudah berjalan", dan mode jarak jauh
   - H2: Logging dan debugging
@@ -4013,29 +4014,29 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /help/testing-live
 - Judul:
-  - H2: Langsung: perintah uji asap lokal
-  - H2: Langsung: sapuan kapabilitas node Android
-  - H2: Langsung: uji asap model (kunci profil)
+  - H2: Live: perintah smoke lokal
+  - H2: Live: sweep kapabilitas node Android
+  - H2: Live: smoke model (kunci profil)
   - H3: Lapisan 1: Penyelesaian model langsung (tanpa Gateway)
-  - H3: Lapisan 2: Gateway + uji asap agen dev (yang sebenarnya dilakukan "@openclaw")
-  - H2: Langsung: uji asap backend CLI (Claude, Gemini, atau CLI lokal lainnya)
-  - H2: Langsung: keterjangkauan proxy HTTP/2 APNs
-  - H2: Langsung: uji asap pengikatan ACP (/acp spawn ... --bind here)
-  - H2: Langsung: uji asap harness server aplikasi Codex
-  - H3: Resep langsung yang direkomendasikan
-  - H2: Langsung: matriks model (yang kami cakup)
-  - H3: Kumpulan uji asap modern (pemanggilan alat + gambar)
-  - H3: Dasar: pemanggilan alat (Read + Exec opsional)
-  - H3: Visi: pengiriman gambar (lampiran → pesan multimodal)
+  - H3: Lapisan 2: Smoke Gateway + agen dev (yang sebenarnya dilakukan "@openclaw")
+  - H2: Live: smoke backend CLI (Claude, Gemini, atau CLI lokal lain)
+  - H2: Live: keterjangkauan proxy HTTP/2 APNs
+  - H2: Live: smoke bind ACP (/acp spawn ... --bind here)
+  - H2: Live: smoke harness app-server Codex
+  - H3: Resep live yang direkomendasikan
+  - H2: Live: matriks model (yang kami cakup)
+  - H3: Set smoke modern (pemanggilan tool + gambar)
+  - H3: Baseline: pemanggilan tool (Read + Exec opsional)
+  - H3: Vision: pengiriman gambar (lampiran → pesan multimodal)
   - H3: Agregator / Gateway alternatif
   - H2: Kredensial (jangan pernah commit)
-  - H2: Deepgram langsung (transkripsi audio)
-  - H2: Rencana coding BytePlus langsung
-  - H2: Media alur kerja ComfyUI langsung
-  - H2: Pembuatan gambar langsung
-  - H2: Pembuatan musik langsung
-  - H2: Pembuatan video langsung
-  - H2: Harness media langsung
+  - H2: Live Deepgram (transkripsi audio)
+  - H2: Live rencana coding BytePlus
+  - H2: Live media workflow ComfyUI
+  - H2: Live pembuatan gambar
+  - H2: Live pembuatan musik
+  - H2: Live pembuatan video
+  - H2: Harness live media
   - H2: Terkait
 
 ## help/testing-updates-plugins.md
@@ -4044,7 +4045,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Yang kami lindungi
   - H2: Bukti lokal selama pengembangan
-  - H2: Jalur Docker
+  - H2: Lane Docker
   - H2: Penerimaan Paket
   - H2: Default rilis
   - H2: Kompatibilitas lama
@@ -4059,24 +4060,24 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Direktori Sementara Pengujian
   - H2: Runner khusus QA
   - H3: Kredensial Telegram bersama melalui Convex (v1)
-  - H3: Menambahkan saluran ke QA
-  - H2: Rangkaian pengujian (apa yang berjalan di mana)
+  - H3: Menambahkan channel ke QA
+  - H2: Suite pengujian (yang berjalan di mana)
   - H3: Unit / integrasi (default)
   - H3: Stabilitas (Gateway)
   - H3: E2E (agregat repo)
-  - H3: E2E (uji asap Gateway)
-  - H3: E2E (browser tiruan Control UI)
-  - H3: E2E: uji asap backend OpenShell
-  - H3: Langsung (penyedia nyata + model nyata)
-  - H2: Rangkaian mana yang harus saya jalankan?
-  - H2: Pengujian langsung (menyentuh jaringan)
+  - H3: E2E (smoke Gateway)
+  - H3: E2E (browser Control UI yang di-mock)
+  - H3: E2E: smoke backend OpenShell
+  - H3: Live (penyedia nyata + model nyata)
+  - H2: Suite mana yang harus saya jalankan?
+  - H2: Pengujian Live (menyentuh jaringan)
   - H2: Runner Docker (pemeriksaan opsional "berfungsi di Linux")
-  - H2: Kewarasan dokumen
+  - H2: Sanity docs
   - H2: Regresi offline (aman untuk CI)
-  - H2: Evaluasi keandalan agen (Skills)
-  - H2: Pengujian kontrak (bentuk Plugin dan saluran)
+  - H2: Evaluasi keandalan agen (skills)
+  - H2: Pengujian kontrak (bentuk plugin dan channel)
   - H3: Perintah
-  - H3: Kontrak saluran
+  - H3: Kontrak channel
   - H3: Kontrak status penyedia
   - H3: Kontrak penyedia
   - H3: Kapan menjalankan
@@ -4088,12 +4089,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /help/troubleshooting
 - Judul:
   - H2: 60 detik pertama
-  - H2: Asisten terasa terbatas atau alat hilang
+  - H2: Asisten terasa terbatas atau kehilangan tool
   - H2: Konteks panjang Anthropic 429
   - H2: Backend lokal yang kompatibel dengan OpenAI berfungsi langsung tetapi gagal di OpenClaw
-  - H2: Pemasangan Plugin gagal karena ekstensi openclaw hilang
-  - H2: Kebijakan pemasangan memblokir pemasangan atau pembaruan Plugin
-  - H2: Plugin ada tetapi diblokir oleh kepemilikan yang mencurigakan
+  - H2: Instalasi Plugin gagal karena ekstensi openclaw hilang
+  - H2: Kebijakan instalasi memblokir instalasi atau pembaruan Plugin
+  - H2: Plugin ada tetapi diblokir karena kepemilikan mencurigakan
   - H2: Pohon keputusan
   - H2: Terkait
 
@@ -4118,11 +4119,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Prasyarat
   - H2: Yang Anda dapatkan
   - H2: Mulai cepat
-  - H2: Yang dipasang
-  - H2: Penyiapan Pasca-Pemasangan
+  - H2: Yang diinstal
+  - H2: Penyiapan Pasca-Instalasi
   - H3: Perintah cepat
   - H2: Arsitektur keamanan
-  - H2: Pemasangan manual
+  - H2: Instalasi manual
   - H2: Memperbarui
   - H2: Pemecahan masalah
   - H2: Konfigurasi lanjutan
@@ -4133,10 +4134,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /install/azure
 - Judul:
   - H2: Yang akan Anda lakukan
-  - H2: Yang Anda butuhkan
+  - H2: Yang Anda perlukan
   - H2: Konfigurasikan deployment
   - H2: Deploy sumber daya Azure
-  - H2: Pasang OpenClaw
+  - H2: Instal OpenClaw
   - H2: Pertimbangan biaya
   - H2: Pembersihan
   - H2: Langkah berikutnya
@@ -4146,20 +4147,20 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /install/bun
 - Judul:
-  - H2: Pasang
+  - H2: Instal
   - H2: Skrip siklus hidup
-  - H2: Catatan kehati-hatian
+  - H2: Catatan penting
   - H2: Terkait
 
 ## install/clawdock.md
 
 - Rute: /install/clawdock
 - Judul:
-  - H2: Pasang
+  - H2: Instal
   - H2: Yang Anda dapatkan
   - H3: Operasi dasar
   - H3: Akses kontainer
-  - H3: UI web dan pemasangan
+  - H3: UI web dan pairing
   - H3: Penyiapan dan pemeliharaan
   - H3: Utilitas
   - H2: Alur pertama kali
@@ -4170,12 +4171,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /install/development-channels
 - Judul:
-  - H2: Mengganti saluran
-  - H2: Penargetan versi atau tag sekali pakai
-  - H2: Uji jalan
-  - H2: Plugin dan saluran
+  - H2: Berpindah channel
+  - H2: Menargetkan versi atau tag satu kali
+  - H2: Dry run
+  - H2: Plugin dan channel
   - H2: Memeriksa status saat ini
-  - H2: Praktik terbaik pemberian tag
+  - H2: Praktik terbaik tagging
   - H2: Ketersediaan aplikasi macOS
   - H2: Terkait
 
@@ -4195,9 +4196,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /install/docker-vm-runtime
 - Judul:
-  - H2: Panggang biner yang diperlukan ke dalam citra
-  - H2: Bangun dan luncurkan
-  - H2: Apa yang persisten di mana
+  - H2: Masukkan biner wajib ke dalam image
+  - H2: Build dan jalankan
+  - H2: Yang persisten dan lokasinya
   - H2: Pembaruan
   - H2: Terkait
 
@@ -4214,11 +4215,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Pemeriksaan kesehatan
   - H3: LAN vs loopback
   - H3: Penyedia Lokal Host
-  - H3: Backend CLI Claude di Docker
+  - H3: Backend Claude CLI di Docker
   - H3: Bonjour / mDNS
   - H3: Penyimpanan dan persistensi
-  - H3: Pembantu shell (opsional)
-  - H3: Berjalan di VPS?
+  - H3: Helper shell (opsional)
+  - H3: Menjalankan di VPS?
   - H2: Sandbox agen
   - H3: Aktifkan cepat
   - H2: Pemecahan masalah
@@ -4229,15 +4230,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /install/exe-dev
 - Judul:
   - H2: Jalur cepat pemula
-  - H2: Yang Anda butuhkan
-  - H2: Pemasangan otomatis dengan Shelley
-  - H2: Pemasangan manual
+  - H2: Yang Anda perlukan
+  - H2: Instalasi otomatis dengan Shelley
+  - H2: Instalasi manual
   - H2: 1) Buat VM
-  - H2: 2) Pasang prasyarat (di VM)
-  - H2: 3) Pasang OpenClaw
-  - H2: 4) Siapkan nginx untuk memproksi OpenClaw ke port 8000
+  - H2: 2) Instal prasyarat (di VM)
+  - H2: 3) Instal OpenClaw
+  - H2: 4) Siapkan nginx untuk mem-proxy OpenClaw ke port 8000
   - H2: 5) Akses OpenClaw dan berikan hak istimewa
-  - H2: Penyiapan saluran jarak jauh
+  - H2: Penyiapan channel jarak jauh
   - H2: Akses jarak jauh
   - H2: Memperbarui
   - H2: Terkait
@@ -4246,18 +4247,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /install/fly
 - Judul:
-  - H2: Yang Anda butuhkan
+  - H2: Yang Anda perlukan
   - H2: Jalur cepat pemula
   - H2: Pemecahan masalah
-  - H3: "Aplikasi tidak mendengarkan pada alamat yang diharapkan"
+  - H3: "Aplikasi tidak mendengarkan di alamat yang diharapkan"
   - H3: Pemeriksaan kesehatan gagal / koneksi ditolak
   - H3: OOM / Masalah Memori
-  - H3: Masalah kunci Gateway
-  - H3: Konfigurasi tidak terbaca
+  - H3: Masalah lock Gateway
+  - H3: Konfigurasi tidak dibaca
   - H3: Menulis konfigurasi melalui SSH
-  - H3: Status tidak persisten
+  - H3: State tidak persisten
   - H2: Pembaruan
-  - H3: Perintah memperbarui mesin
+  - H3: Memperbarui perintah mesin
   - H2: Deployment privat (diperkeras)
   - H3: Kapan menggunakan deployment privat
   - H3: Penyiapan
@@ -4275,7 +4276,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Apa yang kita lakukan (istilah sederhana)?
   - H2: Jalur cepat (operator berpengalaman)
-  - H2: Yang Anda butuhkan
+  - H2: Yang Anda perlukan
   - H2: Pemecahan masalah
   - H2: Akun layanan (praktik terbaik keamanan)
   - H2: Langkah berikutnya
@@ -4288,8 +4289,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Tujuan
   - H2: Apa yang kita lakukan (istilah sederhana)?
   - H2: Jalur cepat (operator berpengalaman)
-  - H2: Yang Anda butuhkan
-  - H2: Infrastruktur sebagai Kode (Terraform)
+  - H2: Yang Anda perlukan
+  - H2: Infrastructure as Code (Terraform)
   - H2: Langkah berikutnya
   - H2: Terkait
 
@@ -4310,16 +4311,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /install
 - Judul:
   - H2: Persyaratan sistem
-  - H2: Direkomendasikan: skrip pemasang
-  - H2: Metode pemasangan alternatif
-  - H3: Pemasang prefiks lokal (install-cli.sh)
+  - H2: Direkomendasikan: skrip installer
+  - H2: Metode instalasi alternatif
+  - H3: Installer prefix lokal (install-cli.sh)
   - H3: npm, pnpm, atau bun
   - H3: Dari sumber
-  - H3: Pasang dari checkout main GitHub
+  - H3: Instal dari checkout main GitHub
   - H3: Kontainer dan manajer paket
-  - H2: Verifikasi pemasangan
+  - H2: Verifikasi instalasi
   - H2: Hosting dan deployment
-  - H2: Perbarui, migrasi, atau copot pemasangan
+  - H2: Perbarui, migrasikan, atau hapus instalasi
   - H2: Pemecahan masalah: openclaw tidak ditemukan
 
 ## install/installer.md
@@ -4346,7 +4347,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /install/kubernetes
 - Judul:
   - H2: Mengapa bukan Helm?
-  - H2: Yang Anda butuhkan
+  - H2: Yang Anda perlukan
   - H2: Mulai cepat
   - H2: Pengujian lokal dengan Kind
   - H2: Langkah demi langkah
@@ -4358,8 +4359,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Konfigurasi Gateway
   - H3: Tambahkan penyedia
   - H3: Namespace kustom
-  - H3: Citra kustom
-  - H3: Ekspos di luar port-forward
+  - H3: Image kustom
+  - H3: Ekspos melampaui port-forward
   - H2: Deploy ulang
   - H2: Bongkar
   - H2: Catatan arsitektur
@@ -4372,29 +4373,29 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Default yang direkomendasikan (sebagian besar pengguna)
   - H2: Opsi VM macOS
-  - H3: VM lokal di Mac Apple Silicon Anda (Lume)
-  - H3: Penyedia Mac terhosting (cloud)
+  - H3: VM lokal di Apple Silicon Mac Anda (Lume)
+  - H3: Penyedia Mac ter-hosting (cloud)
   - H2: Jalur cepat (Lume, pengguna berpengalaman)
-  - H2: Yang Anda butuhkan (Lume)
-  - H2: 1) Pasang Lume
+  - H2: Yang Anda perlukan (Lume)
+  - H2: 1) Instal Lume
   - H2: 2) Buat VM macOS
-  - H2: 3) Selesaikan Asisten Penyiapan
+  - H2: 3) Selesaikan Setup Assistant
   - H2: 4) Dapatkan alamat IP VM
   - H2: 5) SSH ke VM
-  - H2: 6) Pasang OpenClaw
-  - H2: 7) Konfigurasikan saluran
-  - H2: 8) Jalankan VM tanpa kepala
+  - H2: 6) Instal OpenClaw
+  - H2: 7) Konfigurasikan channel
+  - H2: 8) Jalankan VM tanpa head
   - H2: Bonus: integrasi iMessage
-  - H2: Simpan citra emas
+  - H2: Simpan golden image
   - H2: Berjalan 24/7
   - H2: Pemecahan masalah
-  - H2: Dokumen terkait
+  - H2: Docs terkait
 
 ## install/migrating-claude.md
 
 - Rute: /install/migrating-claude
 - Judul:
-  - H2: Dua cara mengimpor
+  - H2: Dua cara untuk mengimpor
   - H2: Yang diimpor
   - H2: Yang tetap hanya arsip
   - H2: Pemilihan sumber
@@ -4408,7 +4409,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /install/migrating-hermes
 - Judul:
-  - H2: Dua cara mengimpor
+  - H2: Dua cara untuk mengimpor
   - H2: Yang diimpor
   - H2: Yang tetap hanya arsip
   - H2: Alur yang direkomendasikan
@@ -4425,9 +4426,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Impor dari sistem agen lain
   - H2: Pindahkan OpenClaw ke mesin baru
   - H3: Langkah migrasi
-  - H3: Kesalahan umum
-  - H3: Daftar periksa verifikasi
-  - H2: Tingkatkan Plugin di tempat
+  - H3: Masalah umum
+  - H3: Checklist verifikasi
+  - H2: Upgrade Plugin di tempat
   - H2: Terkait
 
 ## install/nix.md
@@ -4438,7 +4439,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H2: Perilaku runtime mode Nix
   - H3: Yang berubah dalam mode Nix
-  - H3: Jalur konfigurasi dan status
+  - H3: Jalur konfigurasi dan state
   - H3: Penemuan PATH layanan
   - H2: Terkait
 
@@ -4447,7 +4448,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /install/node
 - Judul:
   - H2: Periksa versi Anda
-  - H2: Pasang Node
+  - H2: Instal Node
   - H2: Pemecahan masalah
   - H3: openclaw: perintah tidak ditemukan
   - H3: Kesalahan izin pada npm install -g (Linux)
@@ -4460,7 +4461,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Northflank
   - H2: Cara memulai
   - H2: Yang Anda dapatkan
-  - H2: Hubungkan saluran
+  - H2: Hubungkan channel
   - H2: Langkah berikutnya
 
 ## install/oracle.md
@@ -4495,21 +4496,21 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /install/railway
 - Judul:
   - H1: Railway
-  - H2: Daftar periksa cepat (pengguna baru)
-  - H2: Deploy sekali klik
+  - H2: Checklist cepat (pengguna baru)
+  - H2: Deploy satu klik
   - H2: Yang Anda dapatkan
-  - H2: Pengaturan Railway yang diperlukan
+  - H2: Pengaturan Railway yang wajib
   - H3: Jaringan Publik
   - H3: Volume (wajib)
   - H3: Variabel
-  - H2: Hubungkan saluran
+  - H2: Hubungkan channel
   - H2: Cadangan &amp; migrasi
   - H2: Langkah berikutnya
 
 ## install/raspberry-pi.md
 
 - Rute: /install/raspberry-pi
-- Heading:
+- Judul:
   - H2: Kompatibilitas perangkat keras
   - H2: Prasyarat
   - H2: Penyiapan
@@ -4524,7 +4525,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## install/render.mdx
 
 - Rute: /install/render
-- Heading:
+- Judul:
   - H1: Render
   - H2: Prasyarat
   - H2: Deploy dengan Render Blueprint
@@ -4537,22 +4538,22 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Akses shell
   - H3: Variabel lingkungan
   - H3: Deploy otomatis
-  - H2: Domain kustom
-  - H2: Scaling
+  - H2: Domain khusus
+  - H2: Penskalaan
   - H2: Cadangan dan migrasi
   - H2: Pemecahan masalah
   - H3: Layanan tidak dapat dimulai
   - H3: Cold start lambat (tingkat gratis)
   - H3: Kehilangan data setelah redeploy
-  - H3: Kegagalan health check
+  - H3: Kegagalan pemeriksaan kesehatan
   - H2: Langkah berikutnya
 
 ## install/uninstall.md
 
 - Rute: /install/uninstall
-- Heading:
-  - H2: Jalur mudah (CLI masih terpasang)
-  - H2: Penghapusan layanan manual (CLI tidak terpasang)
+- Judul:
+  - H2: Jalur mudah (CLI masih terinstal)
+  - H2: Penghapusan layanan manual (CLI tidak terinstal)
   - H3: macOS (launchd)
   - H3: Linux (unit pengguna systemd)
   - H3: Windows (Scheduled Task)
@@ -4564,13 +4565,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## install/updating.md
 
 - Rute: /install/updating
-- Heading:
+- Judul:
   - H2: Direkomendasikan: openclaw update
   - H2: Beralih antara instalasi npm dan git
-  - H2: Alternatif: jalankan ulang installer
+  - H2: Alternatif: jalankan ulang penginstal
   - H2: Alternatif: npm, pnpm, atau bun manual
-  - H3: Topik instalasi npm tingkat lanjut
-  - H2: Pembaru otomatis
+  - H3: Topik instalasi npm lanjutan
+  - H2: Pembaruan otomatis
   - H2: Setelah memperbarui
   - H3: Jalankan doctor
   - H3: Mulai ulang gateway
@@ -4578,13 +4579,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Rollback
   - H3: Sematkan versi (npm)
   - H3: Sematkan commit (sumber)
-  - H2: Jika Anda buntu
+  - H2: Jika Anda macet
   - H2: Terkait
 
 ## install/upstash.md
 
 - Rute: /install/upstash
-- Heading:
+- Judul:
   - H2: Prasyarat
   - H2: Buat Box
   - H2: Hubungkan dengan tunnel SSH
@@ -4598,8 +4599,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## logging.md
 
 - Rute: /logging
-- Heading:
-  - H2: Tempat log berada
+- Judul:
+  - H2: Lokasi log
   - H2: Cara membaca log
   - H3: CLI: tail langsung (direkomendasikan)
   - H3: Control UI (web)
@@ -4610,7 +4611,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Log WebSocket Gateway
   - H2: Mengonfigurasi logging
   - H3: Level log
-  - H3: Diagnostik transport model yang ditargetkan
+  - H3: Diagnostik transport model tertarget
   - H3: Korelasi trace
   - H3: Ukuran dan waktu panggilan model
   - H3: Gaya konsol
@@ -4622,19 +4623,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## maturity/scorecard.md
 
 - Rute: /maturity/scorecard
-- Heading:
+- Judul:
   - H1: Kartu skor kematangan
   - H2: Kegunaan halaman ini
   - H2: Sekilas
   - H2: Rentang skor
   - H2: Penjelajah surface
   - H2: Ringkasan bukti QA
-  - H3: Kesiapan berdasarkan area
+  - H3: Kesiapan menurut area
 
 ## maturity/taxonomy.md
 
 - Rute: /maturity/taxonomy
-- Heading:
+- Judul:
   - H1: Taksonomi kematangan
   - H2: Cara membaca halaman ini
   - H2: Tingkat kematangan
@@ -4648,7 +4649,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## network.md
 
 - Rute: /network
-- Heading:
+- Judul:
   - H2: Model inti
   - H2: Pairing + identitas
   - H2: Discovery + transport
@@ -4659,16 +4660,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/audio.md
 
 - Rute: /nodes/audio
-- Heading:
+- Judul:
   - H2: Yang berfungsi
   - H2: Deteksi otomatis (default)
   - H2: Contoh konfigurasi
-  - H3: Fallback provider + CLI (OpenAI + Whisper CLI)
-  - H3: Hanya provider dengan gating scope
-  - H3: Hanya provider (Deepgram)
-  - H3: Hanya provider (Mistral Voxtral)
-  - H3: Hanya provider (SenseAudio)
-  - H3: Echo transkrip ke chat (opt-in)
+  - H3: Provider + fallback CLI (OpenAI + Whisper CLI)
+  - H3: Khusus provider dengan gating scope
+  - H3: Khusus provider (Deepgram)
+  - H3: Khusus provider (Mistral Voxtral)
+  - H3: Khusus provider (SenseAudio)
+  - H3: Gema transkrip ke chat (opt-in)
   - H2: Catatan dan batasan
   - H3: Dukungan lingkungan proxy
   - H2: Deteksi mention dalam grup
@@ -4678,7 +4679,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/camera.md
 
 - Rute: /nodes/camera
-- Heading:
+- Judul:
   - H2: Node iOS
   - H3: Pengaturan pengguna (default aktif)
   - H3: Perintah (melalui Gateway node.invoke)
@@ -4694,34 +4695,34 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Pengaturan pengguna (default nonaktif)
   - H3: Helper CLI (node invoke)
   - H2: Keamanan + batasan praktis
-  - H2: Video layar macOS (level OS)
+  - H2: Video layar macOS (tingkat OS)
   - H2: Terkait
 
 ## nodes/images.md
 
 - Rute: /nodes/images
-- Heading:
+- Judul:
   - H2: Tujuan
   - H2: Surface CLI
   - H2: Perilaku channel WhatsApp Web
-  - H2: Pipeline Balasan Otomatis
-  - H2: Media Masuk ke Perintah
+  - H2: Pipeline balasan otomatis
+  - H2: Media masuk ke perintah
   - H2: Batasan dan error
-  - H2: Catatan untuk Tes
+  - H2: Catatan untuk pengujian
   - H2: Terkait
 
 ## nodes/index.md
 
 - Rute: /nodes
-- Heading:
+- Judul:
   - H2: Pairing + status
   - H2: Host node jarak jauh (system.run)
-  - H3: Apa yang berjalan di mana
+  - H3: Yang berjalan di lokasi mana
   - H3: Mulai host node (foreground)
-  - H3: Gateway jarak jauh melalui tunnel SSH (bind loopback)
+  - H3: Gateway jarak jauh via tunnel SSH (bind loopback)
   - H3: Mulai host node (layanan)
-  - H3: Pair + nama
-  - H3: Allowlist perintah
+  - H3: Pair + beri nama
+  - H3: Masukkan perintah ke allowlist
   - H3: Arahkan exec ke node
   - H3: Inferensi model lokal
   - H2: Memanggil perintah
@@ -4734,7 +4735,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Rekaman layar (node)
   - H2: Lokasi (node)
   - H2: SMS (node Android)
-  - H2: Perangkat Android + perintah data pribadi
+  - H2: Perintah perangkat Android + data pribadi
   - H2: Perintah sistem (host node / node Mac)
   - H2: Binding node exec
   - H2: Peta izin
@@ -4744,7 +4745,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/location-command.md
 
 - Rute: /nodes/location-command
-- Heading:
+- Judul:
   - H2: TL;DR
   - H2: Mengapa selector (bukan sekadar switch)
   - H2: Model pengaturan
@@ -4758,10 +4759,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/media-understanding.md
 
 - Rute: /nodes/media-understanding
-- Heading:
+- Judul:
   - H2: Tujuan
   - H2: Perilaku tingkat tinggi
-  - H2: Ringkasan konfigurasi
+  - H2: Ikhtisar konfigurasi
   - H3: Entri model
   - H3: Kredensial provider (apiKey)
   - H2: Default dan batasan
@@ -4779,7 +4780,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/talk.md
 
 - Rute: /nodes/talk
-- Heading:
+- Judul:
   - H2: Perilaku (macOS)
   - H2: Direktif suara dalam balasan
   - H2: Konfigurasi (/.openclaw/openclaw.json)
@@ -4791,7 +4792,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/troubleshooting.md
 
 - Rute: /nodes/troubleshooting
-- Heading:
+- Judul:
   - H2: Tangga perintah
   - H2: Persyaratan foreground
   - H2: Matriks izin
@@ -4803,7 +4804,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## nodes/voicewake.md
 
 - Rute: /nodes/voicewake
-- Heading:
+- Judul:
   - H2: Penyimpanan (host Gateway)
   - H2: Protokol
   - H3: Metode
@@ -4818,9 +4819,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## openclaw-agent-runtime.md
 
 - Rute: /openclaw-agent-runtime
-- Heading:
+- Judul:
   - H2: Pemeriksaan tipe dan linting
-  - H2: Menjalankan Tes Agent Runtime
+  - H2: Menjalankan Pengujian Agent Runtime
   - H2: Pengujian manual
   - H2: Reset dari awal
   - H2: Referensi
@@ -4829,13 +4830,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## perplexity.md
 
 - Rute: /perplexity
-- Heading:
+- Judul:
   - H2: Terkait
 
 ## plan/codex-context-engine-harness.md
 
 - Rute: /plan/codex-context-engine-harness
-- Heading:
+- Judul:
   - H2: Status
   - H2: Tujuan
   - H2: Bukan tujuan
@@ -4843,12 +4844,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Kesenjangan saat ini
   - H2: Perilaku yang diinginkan
   - H2: Batasan desain
-  - H3: Codex app-server tetap kanonis untuk status thread native
+  - H3: Server aplikasi Codex tetap kanonis untuk status thread native
   - H3: Perakitan context engine harus diproyeksikan ke input Codex
   - H3: Stabilitas prompt-cache penting
   - H3: Semantik pemilihan runtime tidak berubah
   - H2: Rencana implementasi
-  - H3: 1. Ekspor atau relokasi helper percobaan context-engine yang dapat digunakan ulang
+  - H3: 1. Ekspor atau relokasi helper percobaan context-engine yang dapat digunakan kembali
   - H3: 2. Tambahkan helper proyeksi konteks Codex
   - H3: 3. Hubungkan bootstrap sebelum startup thread Codex
   - H3: 4. Hubungkan assemble sebelum thread/start / thread/resume dan turn/start
@@ -4863,7 +4864,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Rencana pengujian
   - H3: Pengujian unit
   - H3: Pengujian yang ada untuk diperbarui
-  - H3: Pengujian integrasi / langsung
+  - H3: Pengujian integrasi / live
   - H2: Observabilitas
   - H2: Migrasi / kompatibilitas
   - H2: Pertanyaan terbuka
@@ -4872,7 +4873,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## plan/ui-channels.md
 
 - Rute: /plan/ui-channels
-- Heading:
+- Judul:
   - H2: Status
   - H2: Masalah
   - H2: Tujuan
@@ -4881,7 +4882,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Metadata pengiriman
   - H2: Kontrak kapabilitas runtime
   - H2: Pemetaan channel
-  - H2: Langkah refactor
+  - H2: Langkah refaktor
   - H2: Pengujian
   - H2: Pertanyaan terbuka
   - H2: Terkait
@@ -4889,37 +4890,37 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## platforms/android.md
 
 - Rute: /platforms/android
-- Heading:
-  - H2: Snapshot dukungan
+- Judul:
+  - H2: Ringkasan dukungan
   - H2: Kontrol sistem
   - H2: Runbook koneksi
   - H3: Prasyarat
   - H3: 1) Mulai Gateway
   - H3: 2) Verifikasi discovery (opsional)
-  - H4: Discovery Tailnet (Vienna ⇄ London) melalui DNS-SD unicast
+  - H4: Discovery Tailnet (Vienna ⇄ London) via DNS-SD unicast
   - H3: 3) Hubungkan dari Android
   - H3: Beacon presence alive
   - H3: 4) Setujui pairing (CLI)
   - H3: 5) Verifikasi node terhubung
   - H3: 6) Chat + riwayat
   - H3: 7) Canvas + kamera
-  - H4: Gateway Canvas Host (direkomendasikan untuk konten web)
-  - H3: 8) Voice + surface perintah Android yang diperluas
-  - H2: Titik masuk asisten
+  - H4: Host Canvas Gateway (direkomendasikan untuk konten web)
+  - H3: 8) Suara + surface perintah Android yang diperluas
+  - H2: Entry point asisten
   - H2: Penerusan notifikasi
   - H2: Terkait
 
 ## platforms/digitalocean.md
 
 - Rute: /platforms/digitalocean
-- Heading:
+- Judul:
   - H2: Terkait
 
 ## platforms/easyrunner.md
 
 - Rute: /platforms/easyrunner
-- Heading:
-  - H2: Sebelum Anda mulai
+- Judul:
+  - H2: Sebelum memulai
   - H2: Aplikasi Compose
   - H2: Konfigurasikan OpenClaw
   - H2: Verifikasi
@@ -4929,7 +4930,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## platforms/index.md
 
 - Rute: /platforms
-- Heading:
+- Judul:
   - H2: Pilih OS Anda
   - H2: VPS dan hosting
   - H2: Tautan umum
@@ -4939,8 +4940,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## platforms/ios.md
 
 - Rute: /platforms/ios
-- Heading:
-  - H2: Fungsinya
+- Judul:
+  - H2: Yang dilakukannya
   - H2: Persyaratan
   - H2: Mulai cepat (pair + hubungkan)
   - H2: Push berbasis relay untuk build resmi
@@ -4952,7 +4953,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Host/port manual
   - H2: Canvas + A2UI
   - H2: Hubungan Computer Use
-  - H3: Eval / snapshot canvas
+  - H3: Evaluasi / snapshot Canvas
   - H2: Voice wake + mode talk
   - H2: Error umum
   - H2: Dokumen terkait
@@ -4960,24 +4961,24 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## platforms/linux.md
 
 - Rute: /platforms/linux
-- Heading:
+- Judul:
   - H2: Jalur cepat pemula (VPS)
   - H2: Instal
   - H2: Gateway
   - H2: Instalasi layanan Gateway (CLI)
   - H2: Kontrol sistem (unit pengguna systemd)
-  - H2: Tekanan memori dan OOM kills
+  - H2: Tekanan memori dan OOM kill
   - H2: Terkait
 
 ## platforms/mac/bundled-gateway.md
 
 - Rute: /platforms/mac/bundled-gateway
-- Heading:
+- Judul:
   - H2: Penyiapan otomatis
   - H2: Pemulihan manual
   - H2: Launchd (Gateway sebagai LaunchAgent)
   - H2: Kompatibilitas versi
-  - H2: Direktori status di macOS
+  - H2: Direktori state di macOS
   - H2: Debug konektivitas aplikasi
   - H2: Pemeriksaan smoke
   - H2: Terkait
@@ -4985,25 +4986,25 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 ## platforms/mac/canvas.md
 
 - Rute: /platforms/mac/canvas
-- Heading:
-  - H2: Tempat Canvas berada
+- Judul:
+  - H2: Lokasi Canvas
   - H2: Perilaku panel
   - H2: Surface API agen
   - H2: A2UI di Canvas
   - H3: Perintah A2UI (v0.8)
-  - H2: Memicu run agen dari Canvas
+  - H2: Memicu agent run dari Canvas
   - H2: Catatan keamanan
   - H2: Terkait
 
 ## platforms/mac/child-process.md
 
 - Rute: /platforms/mac/child-process
-- Heading:
+- Judul:
   - H2: Perilaku default (launchd)
-  - H2: Build dev tak bertanda tangan
-  - H2: Mode hanya-lampirkan
+  - H2: Build dev tidak bertanda tangan
+  - H2: Mode attach-only
   - H2: Mode jarak jauh
-  - H2: Mengapa kami memilih launchd
+  - H2: Mengapa kami lebih memilih launchd
   - H2: Terkait
 
 ## platforms/mac/dev-setup.md
@@ -5013,12 +5014,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Penyiapan pengembang macOS
   - H2: Prasyarat
   - H2: 1. Instal Dependensi
-  - H2: 2. Build dan Kemas Aplikasi
+  - H2: 2. Build dan Paketkan Aplikasi
   - H2: 3. Instal CLI dan Gateway
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H3: Build gagal: toolchain atau SDK tidak cocok
   - H3: Aplikasi crash saat izin diberikan
-  - H3: Gateway "Memulai..." tanpa batas
+  - H3: Gateway "Starting..." tanpa batas waktu
   - H2: Terkait
 
 ## platforms/mac/health.md
@@ -5028,8 +5029,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Pemeriksaan Kesehatan di macOS
   - H2: Bilah menu
   - H2: Pengaturan
-  - H2: Cara probe bekerja
-  - H2: Jika ragu
+  - H2: Cara kerja probe
+  - H2: Saat ragu
   - H2: Terkait
 
 ## platforms/mac/icon.md
@@ -5056,12 +5057,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Yang ditampilkan
   - H2: Model status
-  - H2: enum IconState (Swift)
+  - H2: Enum IconState (Swift)
   - H3: ActivityKind → glyph
   - H3: Pemetaan visual
   - H2: Submenu konteks
   - H2: Teks baris status (menu)
-  - H2: Ingesti peristiwa
+  - H2: Penyerapan event
   - H2: Override debug
   - H2: Daftar periksa pengujian
   - H2: Terkait
@@ -5070,13 +5071,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /platforms/mac/peekaboo
 - Judul:
-  - H2: Apa ini (dan bukan apa)
-  - H2: Hubungan dengan Computer Use
+  - H2: Apa ini (dan bukan)
+  - H2: Hubungan dengan Penggunaan Komputer
   - H2: Aktifkan bridge
   - H2: Urutan penemuan klien
   - H2: Keamanan dan izin
   - H2: Perilaku snapshot (otomasi)
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Terkait
 
 ## platforms/mac/permissions.md
@@ -5094,14 +5095,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /platforms/mac/remote
 - Judul:
   - H2: Mode
-  - H2: Transport jarak jauh
-  - H2: Prasyarat pada host jarak jauh
+  - H2: Transport remote
+  - H2: Prasyarat di host remote
   - H2: Penyiapan aplikasi macOS
-  - H2: Chat Web
+  - H2: Obrolan Web
   - H2: Izin
   - H2: Catatan keamanan
-  - H2: Alur login WhatsApp (jarak jauh)
-  - H2: Pemecahan masalah
+  - H2: Alur login WhatsApp (remote)
+  - H2: Pemecahan Masalah
   - H2: Suara notifikasi
   - H2: Terkait
 
@@ -5109,11 +5110,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /platforms/mac/signing
 - Judul:
-  - H1: penandatanganan mac (build debug)
+  - H1: Penandatanganan mac (build debug)
   - H2: Penggunaan
   - H3: Catatan Penandatanganan Ad-hoc
-  - H2: Metadata build untuk About
-  - H2: Alasan
+  - H2: Metadata build untuk Tentang
+  - H2: Mengapa
   - H2: Terkait
 
 ## platforms/mac/skills.md
@@ -5121,9 +5122,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /platforms/mac/skills
 - Judul:
   - H2: Sumber data
-  - H2: Tindakan instal
-  - H2: Kunci Env/API
-  - H2: Mode jarak jauh
+  - H2: Tindakan instalasi
+  - H2: Kunci env/API
+  - H2: Mode remote
   - H2: Terkait
 
 ## platforms/mac/voice-overlay.md
@@ -5131,7 +5132,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /platforms/mac/voice-overlay
 - Judul:
   - H1: Siklus Hidup Overlay Suara (macOS)
-  - H2: Maksud saat ini
+  - H2: Tujuan saat ini
   - H2: Diimplementasikan (9 Des 2025)
   - H2: Langkah berikutnya
   - H2: Daftar periksa debugging
@@ -5145,9 +5146,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Voice Wake &amp; Push-to-Talk
   - H2: Persyaratan
   - H2: Mode
-  - H2: Perilaku runtime (kata pemicu)
+  - H2: Perilaku runtime (wake-word)
   - H2: Invarian siklus hidup
-  - H2: Mode kegagalan overlay lengket (sebelumnya)
+  - H2: Mode kegagalan overlay sticky (sebelumnya)
   - H2: Detail khusus push-to-talk
   - H2: Pengaturan yang terlihat pengguna
   - H2: Perilaku penerusan
@@ -5160,9 +5161,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /platforms/mac/webchat
 - Judul:
   - H2: Peluncuran dan debugging
-  - H2: Cara pengkabelannya
+  - H2: Cara wiring-nya
   - H2: Permukaan keamanan
-  - H2: Keterbatasan yang diketahui
+  - H2: Batasan yang diketahui
   - H2: Terkait
 
 ## platforms/mac/xpc.md
@@ -5176,7 +5177,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Layanan Node + IPC aplikasi
   - H3: PeekabooBridge (otomasi UI)
   - H2: Alur operasional
-  - H2: Catatan pengerasan
+  - H2: Catatan hardening
   - H2: Terkait
 
 ## platforms/macos.md
@@ -5184,7 +5185,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /platforms/macos
 - Judul:
   - H2: Unduh
-  - H2: Jalankan pertama
+  - H2: Penggunaan pertama
   - H2: Pilih mode Gateway
   - H2: Yang dimiliki aplikasi
   - H2: Halaman detail macOS
@@ -5215,11 +5216,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Gateway WSL2
   - H2: Mulai otomatis Gateway sebelum login Windows
   - H2: Ekspos layanan WSL melalui LAN
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H3: Ikon tray tidak muncul
   - H3: Penyiapan lokal gagal
-  - H3: Aplikasi mengatakan pairing diperlukan
-  - H3: Chat web tidak dapat menjangkau Gateway jarak jauh
+  - H3: Aplikasi menyatakan pairing diperlukan
+  - H3: Obrolan web tidak dapat menjangkau Gateway remote
   - H3: Perintah screen.snapshot, kamera, atau audio gagal
   - H3: Konektivitas Git atau GitHub gagal
   - H2: Terkait
@@ -5230,7 +5231,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Kapan membuat kapabilitas
   - H2: Urutan standar
-  - H2: Apa diletakkan di mana
+  - H2: Apa ditempatkan di mana
   - H2: Seam provider dan harness
   - H2: Daftar periksa file
   - H2: Contoh lengkap: pembuatan gambar
@@ -5247,11 +5248,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Verifikasi rute
   - H2: Autentikasi
   - H2: Model keamanan
-  - H2: Permintaan
-  - H2: Respons
+  - H2: Request
+  - H2: Response
   - H2: Metode yang diizinkan
   - H2: Perbandingan WebSocket
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Terkait
 
 ## plugins/agent-tools.md
@@ -5268,7 +5269,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Perilaku manifest-first
   - H3: Batas cache Plugin
   - H2: Model registry
-  - H2: Callback pengikatan percakapan
+  - H2: Callback binding percakapan
   - H2: Hook runtime provider
   - H3: Urutan dan penggunaan hook
   - H3: Contoh provider
@@ -5276,18 +5277,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Helper runtime
   - H3: api.runtime.imageGeneration
   - H2: Rute HTTP Gateway
-  - H2: Jalur impor SDK Plugin
+  - H2: Jalur import SDK Plugin
   - H2: Skema tool pesan
   - H2: Resolusi target channel
   - H2: Direktori berbasis config
   - H2: Katalog provider
-  - H2: Inspeksi channel hanya-baca
+  - H2: Inspeksi channel read-only
   - H2: Paket package
   - H3: Metadata katalog channel
   - H2: Plugin mesin konteks
   - H2: Menambahkan kapabilitas baru
   - H3: Daftar periksa kapabilitas
-  - H3: Templat kapabilitas
+  - H3: Template kapabilitas
   - H2: Terkait
 
 ## plugins/architecture.md
@@ -5307,7 +5308,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Pelapisan kapabilitas
   - H3: Contoh Plugin perusahaan multi-kapabilitas
   - H3: Contoh kapabilitas: pemahaman video
-  - H2: Kontrak dan penegakan
+  - H2: Kontrak dan enforcement
   - H3: Yang termasuk dalam kontrak
   - H2: Model eksekusi
   - H2: Batas ekspor
@@ -5328,8 +5329,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Pilih bentuk plugin
   - H2: Quickstart
   - H2: Mendaftarkan tool
-  - H2: Konvensi impor
-  - H2: Daftar periksa pra-pengiriman
+  - H2: Konvensi import
+  - H2: Daftar periksa sebelum pengiriman
   - H2: Uji terhadap rilis beta
   - H2: Langkah berikutnya
   - H2: Terkait
@@ -5341,29 +5342,29 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mengapa bundle ada
   - H2: Instal bundle
   - H2: Yang dipetakan OpenClaw dari bundle
-  - H3: Didukung sekarang
+  - H3: Didukung saat ini
   - H4: Konten Skill
   - H4: Paket hook
-  - H4: MCP untuk OpenClaw tersemat
-  - H4: Pengaturan OpenClaw tersemat
-  - H4: LSP OpenClaw tersemat
-  - H3: Terdeteksi tetapi tidak dijalankan
+  - H4: MCP untuk OpenClaw tertanam
+  - H4: Pengaturan OpenClaw tertanam
+  - H4: LSP OpenClaw tertanam
+  - H3: Terdeteksi tetapi tidak dieksekusi
   - H2: Format bundle
   - H2: Prioritas deteksi
   - H2: Dependensi runtime dan pembersihan
   - H2: Keamanan
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Terkait
 
 ## plugins/cli-backend-plugins.md
 
 - Rute: /plugins/cli-backend-plugins
 - Judul:
-  - H2: Yang dimiliki Plugin
+  - H2: Yang dimiliki plugin
   - H2: Plugin backend minimal
   - H2: Bentuk config
   - H2: Hook backend lanjutan
-  - H3: ownsNativeCompaction: memilih keluar dari Compaction OpenClaw
+  - H3: ownsNativeCompaction: opt-out dari Compaction OpenClaw
   - H2: Bridge tool MCP
   - H2: Konfigurasi pengguna
   - H2: Verifikasi
@@ -5381,11 +5382,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Perintah
   - H2: Pilihan marketplace
   - H2: Marketplace macOS bawaan
-  - H2: Batas katalog jarak jauh
+  - H2: Batas katalog remote
   - H2: Referensi konfigurasi
   - H2: Yang diperiksa OpenClaw
   - H2: Izin macOS
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Terkait
 
 ## plugins/codex-harness-reference.md
@@ -5394,14 +5395,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Permukaan config Plugin
   - H2: Transport app-server
-  - H2: Mode persetujuan dan sandbox
+  - H2: Mode approval dan sandbox
   - H2: Eksekusi native dalam sandbox
-  - H2: Autentikasi dan isolasi lingkungan
+  - H2: Isolasi auth dan environment
   - H2: Tool dinamis
   - H2: Timeout
   - H2: Penemuan model
   - H2: File bootstrap workspace
-  - H2: Override lingkungan
+  - H2: Override environment
   - H2: Terkait
 
 ## plugins/codex-harness-runtime.md
@@ -5415,7 +5416,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Kontrak dukungan V1
   - H2: Izin native dan elisitasi MCP
   - H2: Pengarahan antrean
-  - H2: Unggah umpan balik Codex
+  - H2: Upload umpan balik Codex
   - H2: Compaction dan mirror transkrip
   - H2: Media dan pengiriman
   - H2: Terkait
@@ -5438,9 +5439,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Perintah dan diagnostik
   - H3: Inspeksi thread Codex secara lokal
   - H2: Plugin Codex native
-  - H2: Computer Use
+  - H2: Penggunaan Komputer
   - H2: Batas runtime
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Terkait
 
 ## plugins/codex-native-plugins.md
@@ -5450,12 +5451,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Persyaratan
   - H2: Quickstart
   - H2: Kelola plugin dari chat
-  - H2: Cara penyiapan plugin native bekerja
+  - H2: Cara kerja penyiapan plugin native
   - H2: Batas dukungan V1
   - H2: Inventaris aplikasi dan kepemilikan
   - H2: Config aplikasi thread
   - H2: Kebijakan tindakan destruktif
-  - H2: Pemecahan masalah
+  - H2: Pemecahan Masalah
   - H2: Terkait
 
 ## plugins/community.md
@@ -5471,12 +5472,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/compatibility
 - Judul:
   - H2: Registry kompatibilitas
-  - H2: Paket inspektor Plugin
+  - H2: Package inspector Plugin
   - H3: Jalur penerimaan maintainer
-  - H2: Kebijakan deprekasi
+  - H2: Kebijakan deprecation
   - H2: Area kompatibilitas saat ini
-  - H3: Alias Datar Callback Masuk WhatsApp
-  - H3: Kolom Penerimaan Masuk WhatsApp
+  - H3: Alias Datar Callback Inbound WhatsApp
+  - H3: Field Admission Inbound WhatsApp
   - H2: Catatan rilis
 
 ## plugins/copilot.md
@@ -5520,9 +5521,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Transport
   - H3: Chrome
   - H3: Twilio
-  - H2: OAuth dan preflight
+  - H2: OAuth dan prapemeriksaan
   - H3: Buat kredensial Google
-  - H3: Buat refresh token
+  - H3: Buat token refresh
   - H3: Verifikasi OAuth dengan doctor
   - H2: Konfigurasi
   - H2: Alat
@@ -5530,7 +5531,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Daftar periksa pengujian langsung
   - H2: Pemecahan masalah
   - H3: Agen tidak dapat melihat alat Google Meet
-  - H3: Tidak ada Node terhubung yang mendukung Google Meet
+  - H3: Tidak ada node berkemampuan Google Meet yang terhubung
   - H3: Browser terbuka tetapi agen tidak dapat bergabung
   - H3: Pembuatan rapat gagal
   - H3: Agen bergabung tetapi tidak berbicara
@@ -5552,7 +5553,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Hook prompt dan model
   - H3: Ekstensi sesi dan injeksi giliran berikutnya
   - H2: Hook pesan
-  - H2: Pasang hook
+  - H2: Hook instalasi
   - H2: Siklus hidup Gateway
   - H2: Penghentian mendatang
   - H2: Terkait
@@ -5563,24 +5564,24 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Lingkungan
   - H2: Perilaku
-  - H2: E2E paket
+  - H2: Paket E2E
 
 ## plugins/llama-cpp.md
 
 - Rute: /plugins/llama-cpp
 - Judul:
   - H2: Konfigurasi
-  - H2: Runtime native
+  - H2: Runtime Native
 
 ## plugins/manage-plugins.md
 
 - Rute: /plugins/manage-plugins
 - Judul:
   - H2: Daftar dan cari plugin
-  - H2: Pasang plugin
-  - H2: Mulai ulang dan periksa
+  - H2: Instal plugin
+  - H2: Mulai ulang dan inspeksi
   - H2: Perbarui plugin
-  - H2: Hapus plugin
+  - H2: Hapus instalasi plugin
   - H2: Pilih sumber
   - H2: Publikasikan plugin
   - H2: Terkait
@@ -5591,7 +5592,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Fungsi file ini
   - H2: Contoh minimal
-  - H2: Contoh kaya
+  - H2: Contoh lengkap
   - H2: Referensi field tingkat atas
   - H2: Referensi metadata penyedia generasi
   - H2: Referensi metadata alat
@@ -5606,7 +5607,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Referensi contracts
   - H2: Referensi mediaUnderstandingProviderMetadata
   - H2: Referensi channelConfigs
-  - H3: Mengganti plugin kanal lain
+  - H3: Mengganti plugin channel lain
   - H2: Referensi modelSupport
   - H2: Referensi modelCatalog
   - H2: Referensi modelIdNormalization
@@ -5614,10 +5615,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Referensi providerRequest
   - H2: Referensi secretProviderIntegrations
   - H2: Referensi modelPricing
-  - H3: Indeks Penyedia OpenClaw
+  - H3: OpenClaw Provider Index
   - H2: Manifest versus package.json
-  - H3: Field package.json yang memengaruhi penemuan
-  - H2: Prioritas penemuan (id plugin duplikat)
+  - H3: Field package.json yang memengaruhi discovery
+  - H2: Prioritas discovery (id plugin duplikat)
   - H2: Persyaratan JSON Schema
   - H2: Perilaku validasi
   - H2: Catatan
@@ -5629,9 +5630,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Instalasi
   - H2: Mulai cepat
-  - H2: Embedding yang didukung penyedia
+  - H2: Embedding berbasis penyedia
   - H2: Embedding Ollama
-  - H2: Penyedia yang kompatibel dengan OpenAI
+  - H2: Penyedia kompatibel OpenAI
   - H2: Batas recall dan capture
   - H2: Perintah
   - H2: Penyimpanan
@@ -5647,23 +5648,23 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/memory-wiki
 - Judul:
   - H2: Yang ditambahkan
-  - H2: Cara integrasinya dengan memori
+  - H2: Kesesuaiannya dengan memori
   - H2: Pola hibrida yang direkomendasikan
   - H2: Mode vault
-  - H3: isolated
+  - H3: terisolasi
   - H3: bridge
   - H3: unsafe-local
   - H2: Tata letak vault
   - H2: Impor Open Knowledge Format
   - H2: Klaim dan bukti terstruktur
-  - H2: Metadata entitas untuk agen
+  - H2: Metadata entitas yang dihadapkan ke agen
   - H2: Pipeline kompilasi
   - H2: Dasbor dan laporan kesehatan
   - H2: Pencarian dan pengambilan
   - H2: Alat agen
   - H2: Perilaku prompt dan konteks
   - H2: Konfigurasi
-  - H3: Contoh: mode QMD + bridge
+  - H3: Contoh: QMD + mode bridge
   - H2: CLI
   - H2: Dukungan Obsidian
   - H2: Alur kerja yang direkomendasikan
@@ -5680,20 +5681,20 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Aturan degradasi
   - H3: Visibilitas fallback nilai tombol
   - H2: Pemetaan penyedia
-  - H2: Presentasi vs InteractiveReply
+  - H2: Presentation vs InteractiveReply
   - H2: Pin pengiriman
-  - H2: Daftar periksa penulis Plugin
+  - H2: Daftar periksa penulis plugin
   - H2: Dokumen terkait
 
 ## plugins/oc-path.md
 
 - Rute: /plugins/oc-path
 - Judul:
-  - H2: Alasan mengaktifkannya
+  - H2: Mengapa mengaktifkannya
   - H2: Tempat dijalankan
   - H2: Aktifkan
   - H2: Dependensi
-  - H2: Yang disediakannya
+  - H2: Yang disediakan
   - H2: Hubungan dengan plugin lain
   - H2: Keamanan
   - H2: Terkait
@@ -5702,9 +5703,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /plugins/plugin-inventory
 - Judul:
-  - H1: Inventaris Plugin
+  - H1: Inventaris plugin
   - H2: Definisi
-  - H2: Pasang plugin
+  - H2: Instal plugin
   - H2: Paket npm inti
   - H2: Paket eksternal resmi
   - H2: Hanya checkout sumber
@@ -6735,7 +6736,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Twitch
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/venice.md
 
@@ -6744,7 +6745,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Venice
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/vercel-ai-gateway.md
 
@@ -6753,7 +6754,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Vercel AI Gateway
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/vllm.md
 
@@ -6762,7 +6763,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin vLLM
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/voice-call.md
 
@@ -6771,7 +6772,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Voice Call
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/volcengine.md
 
@@ -6780,7 +6781,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Volcengine
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/voyage.md
 
@@ -6797,7 +6798,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Vydra
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/web-readability.md
 
@@ -6814,7 +6815,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Webhooks
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/whatsapp.md
 
@@ -6823,7 +6824,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin WhatsApp
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/workboard.md
 
@@ -6832,7 +6833,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Workboard
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/xai.md
 
@@ -6841,7 +6842,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin xAI
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/xiaomi.md
 
@@ -6850,7 +6851,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Xiaomi
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/zai.md
 
@@ -6859,7 +6860,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Z.AI
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/zalo.md
 
@@ -6868,7 +6869,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Zalo
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/reference/zalouser.md
 
@@ -6877,14 +6878,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Plugin Zalo Personal
   - H2: Distribusi
   - H2: Permukaan
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/sdk-agent-harness.md
 
 - Rute: /plugins/sdk-agent-harness
 - Judul:
   - H2: Kapan menggunakan harness
-  - H2: Apa yang tetap dimiliki inti
+  - H2: Apa yang masih dimiliki inti
   - H2: Mendaftarkan harness
   - H2: Kebijakan pemilihan
   - H2: Pemasangan penyedia plus harness
@@ -6892,9 +6893,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Klasifikasi hasil terminal
   - H3: Efek samping akhir agen
   - H3: Input pengguna dan permukaan alat
-  - H3: Mode harness Codex native
-  - H2: Kekakuan runtime
-  - H2: Sesi native dan cermin transkrip
+  - H3: Mode harness Codex asli
+  - H2: Ketatnya runtime
+  - H2: Sesi asli dan cermin transkrip
   - H2: Hasil alat dan media
   - H2: Batasan saat ini
   - H2: Terkait
@@ -6903,19 +6904,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /plugins/sdk-channel-inbound
 - Judul:
-  - H2: Helper Inti
+  - H2: Helper inti
   - H2: Migrasi
 
 ## plugins/sdk-channel-ingress.md
 
 - Rute: /plugins/sdk-channel-ingress
 - Judul:
-  - H1: API ingress kanal
-  - H2: Resolver Runtime
+  - H1: API masuk kanal
+  - H2: Penyelesai runtime
   - H2: Hasil
-  - H2: Grup Akses
-  - H2: Mode Peristiwa
-  - H2: Rute dan Aktivasi
+  - H2: Grup akses
+  - H2: Mode peristiwa
+  - H2: Rute dan aktivasi
   - H2: Redaksi
   - H2: Verifikasi
 
@@ -6928,10 +6929,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /plugins/sdk-channel-outbound
 - Judul:
-  - H2: Adaptor
-  - H2: Adaptor Outbound yang Ada
-  - H2: Pengiriman Tahan Lama
-  - H2: Dispatch Kompatibilitas
+  - H2: Adapter
+  - H2: Adapter keluar yang ada
+  - H2: Pengiriman tahan lama
+  - H2: Pengiriman kompatibilitas
 
 ## plugins/sdk-channel-plugins.md
 
@@ -6939,9 +6940,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Cara kerja Plugin kanal
   - H2: Persetujuan dan kapabilitas kanal
-  - H2: Kebijakan mention inbound
+  - H2: Kebijakan sebutan masuk
   - H2: Panduan langkah demi langkah
-  - H2: Struktur file
+  - H2: Struktur berkas
   - H2: Topik lanjutan
   - H2: Langkah berikutnya
   - H2: Terkait
@@ -6972,10 +6973,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Rencana migrasi bicara dan suara realtime
   - H2: Kebijakan kompatibilitas
   - H2: Cara bermigrasi
-  - H2: Referensi path impor
-  - H2: Depresiasi aktif
+  - H2: Referensi jalur impor
+  - H2: Penghentian aktif
   - H2: Linimasa penghapusan
-  - H2: Menekan peringatan sementara
+  - H2: Menekan peringatan untuk sementara
   - H2: Terkait
 
 ## plugins/sdk-overview.md
@@ -6983,7 +6984,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/sdk-overview
 - Judul:
   - H2: Konvensi impor
-  - H2: Referensi subpath
+  - H2: Referensi subjalur
   - H2: API pendaftaran
   - H3: Pendaftaran kapabilitas
   - H3: Alat dan perintah
@@ -6993,10 +6994,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Metadata pendaftaran CLI
   - H3: Pendaftaran backend CLI
   - H3: Slot eksklusif
-  - H3: Adaptor embedding memori yang usang
+  - H3: Adapter embedding memori yang dihentikan
   - H3: Peristiwa dan siklus hidup
   - H3: Semantik keputusan hook
-  - H3: Field objek API
+  - H3: Bidang objek API
   - H2: Konvensi modul internal
   - H2: Terkait
 
@@ -7005,8 +7006,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/sdk-provider-plugins
 - Judul:
   - H2: Panduan langkah demi langkah
-  - H2: Publikasikan ke ClawHub
-  - H2: Struktur file
+  - H2: Terbitkan ke ClawHub
+  - H2: Struktur berkas
   - H2: Referensi urutan katalog
   - H2: Langkah berikutnya
   - H2: Terkait
@@ -7016,10 +7017,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/sdk-runtime
 - Judul:
   - H2: Pemuatan dan penulisan konfigurasi
-  - H2: Utilitas runtime yang dapat digunakan kembali
+  - H2: Utilitas runtime yang dapat digunakan ulang
   - H2: Namespace runtime
   - H2: Menyimpan referensi runtime
-  - H2: Field api tingkat atas lainnya
+  - H2: Bidang api tingkat atas lainnya
   - H2: Terkait
 
 ## plugins/sdk-setup.md
@@ -7027,19 +7028,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/sdk-setup
 - Judul:
   - H2: Metadata paket
-  - H3: Field openclaw
+  - H3: Bidang openclaw
   - H3: openclaw.channel
   - H3: openclaw.install
   - H3: Pemuatan penuh yang ditangguhkan
-  - H2: Manifest Plugin
+  - H2: Manifes Plugin
   - H2: Penerbitan ClawHub
-  - H2: Entri setup
-  - H3: Impor helper setup yang sempit
+  - H2: Entri penyiapan
+  - H3: Impor helper penyiapan yang sempit
   - H3: Promosi akun tunggal milik kanal
   - H2: Skema konfigurasi
   - H3: Membangun skema konfigurasi kanal
-  - H2: Wizard setup
-  - H2: Menerbitkan dan menginstal
+  - H2: Wizard penyiapan
+  - H2: Menerbitkan dan memasang
   - H2: Terkait
 
 ## plugins/sdk-subpaths.md
@@ -7047,8 +7048,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/sdk-subpaths
 - Judul:
   - H2: Entri Plugin
-  - H3: Kompatibilitas dan helper pengujian yang usang
-  - H3: Subpath helper Plugin bundel yang dicadangkan
+  - H3: Helper kompatibilitas dan pengujian yang dihentikan
+  - H3: Subjalur helper Plugin bawaan yang dicadangkan
   - H2: Terkait
 
 ## plugins/sdk-testing.md
@@ -7064,10 +7065,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Menguji akses konfigurasi runtime
   - H3: Pengujian unit Plugin kanal
   - H3: Pengujian unit Plugin penyedia
-  - H3: Membuat mock runtime Plugin
+  - H3: Membuat tiruan runtime Plugin
   - H3: Menguji dengan stub per instans
   - H2: Pengujian kontrak (Plugin dalam repo)
-  - H3: Menjalankan pengujian terbatas cakupan
+  - H3: Menjalankan pengujian berskop
   - H2: Penegakan lint (Plugin dalam repo)
   - H2: Konfigurasi pengujian
   - H2: Terkait
@@ -7079,21 +7080,21 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Persyaratan
   - H2: Mulai cepat
   - H2: Menulis alat
-  - H2: Alat opsional dan factory
-  - H2: Nilai pengembalian
+  - H2: Alat opsional dan pabrik
+  - H2: Nilai balik
   - H2: Konfigurasi
   - H2: Metadata yang dihasilkan
   - H2: Metadata paket
   - H2: Validasi di CI
-  - H2: Instal dan inspeksi secara lokal
-  - H2: Publikasikan
+  - H2: Pasang dan inspeksi secara lokal
+  - H2: Terbitkan
   - H2: Pemecahan masalah
   - H3: entri Plugin tidak ditemukan: ./dist/index.js
   - H3: entri Plugin tidak mengekspos metadata defineToolPlugin
   - H3: metadata yang dihasilkan openclaw.plugin.json sudah usang
   - H3: openclaw.extensions package.json harus menyertakan ./dist/index.js
   - H3: Tidak dapat menemukan paket 'typebox'
-  - H3: Alat tidak muncul setelah instalasi
+  - H3: Alat tidak muncul setelah pemasangan
   - H2: Lihat juga
 
 ## plugins/voice-call.md
@@ -7111,38 +7112,38 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Contoh penyedia streaming
   - H2: TTS untuk panggilan
   - H3: Contoh TTS
-  - H2: Panggilan inbound
-  - H3: Perutean Per Nomor
-  - H3: Kontrak output lisan
-  - H3: Perilaku startup percakapan
-  - H3: Masa tenggang pemutusan stream Twilio
-  - H2: Pembersih panggilan kedaluwarsa
+  - H2: Panggilan masuk
+  - H3: Perutean per nomor
+  - H3: Kontrak keluaran lisan
+  - H3: Perilaku awal percakapan
+  - H3: Tenggang pemutusan stream Twilio
+  - H2: Pembersih panggilan usang
   - H2: Keamanan Webhook
   - H2: CLI
   - H2: Alat agen
   - H2: RPC Gateway
   - H2: Pemecahan masalah
-  - H3: Setup gagal mengekspos webhook
+  - H3: Penyiapan gagal mengekspos webhook
   - H3: Kredensial penyedia gagal
   - H3: Panggilan dimulai tetapi webhook penyedia tidak tiba
   - H3: Verifikasi tanda tangan gagal
-  - H3: Google Meet Twilio gagal bergabung
-  - H3: Panggilan realtime tidak memiliki suara
+  - H3: Gabung Google Meet Twilio gagal
+  - H3: Panggilan realtime tidak memiliki ujaran
   - H2: Terkait
 
 ## plugins/webhooks.md
 
 - Rute: /plugins/webhooks
 - Judul:
-  - H2: Tempatnya berjalan
-  - H2: Konfigurasi rute
+  - H2: Tempat ini berjalan
+  - H2: Konfigurasikan rute
   - H2: Model keamanan
   - H2: Format permintaan
   - H2: Tindakan yang didukung
   - H3: createflow
   - H3: runtask
   - H2: Bentuk respons
-  - H2: Dokumentasi terkait
+  - H2: Dokumen terkait
 
 ## plugins/workboard.md
 
@@ -7152,19 +7153,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Isi kartu
   - H2: Eksekusi kartu dan tugas
   - H2: Koordinasi agen
-  - H3: Pemilihan worker dispatch
-  - H3: Prompt dan siklus hidup worker
+  - H3: Pemilihan pekerja dispatch
+  - H3: Prompt pekerja dan siklus hidup
   - H3: Titik masuk dispatch
   - H2: CLI dan perintah slash
   - H2: Sinkronisasi siklus hidup sesi
-  - H2: Alur kerja dashboard
+  - H2: Alur kerja dasbor
   - H2: Izin
   - H2: Konfigurasi
   - H2: Pemecahan masalah
   - H3: Tab mengatakan Workboard tidak tersedia
   - H3: Kartu tidak tersimpan
   - H3: Memulai kartu tidak membuka sesi yang diharapkan
-  - H3: Dispatch tidak memulai worker
+  - H3: Dispatch tidak memulai pekerja
   - H2: Terkait
 
 ## plugins/zalouser.md
@@ -7172,10 +7173,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /plugins/zalouser
 - Judul:
   - H2: Penamaan
-  - H2: Tempatnya berjalan
-  - H2: Instal
-  - H3: Opsi A: instal dari npm
-  - H3: Opsi B: instal dari folder lokal (dev)
+  - H2: Tempat ini berjalan
+  - H2: Pasang
+  - H3: Opsi A: pasang dari npm
+  - H3: Opsi B: pasang dari folder lokal (dev)
   - H2: Konfigurasi
   - H2: CLI
   - H2: Alat agen
@@ -7185,12 +7186,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /prose
 - Judul:
-  - H2: Instal
+  - H2: Pasang
   - H2: Perintah slash
-  - H2: Yang dapat dilakukannya
-  - H2: Contoh: riset paralel dan sintesis
+  - H2: Yang dapat dilakukan
+  - H2: Contoh: riset dan sintesis paralel
   - H2: Pemetaan runtime OpenClaw
-  - H2: Lokasi file
+  - H2: Lokasi berkas
   - H2: Backend status
   - H2: Keamanan
   - H2: Terkait
@@ -7210,7 +7211,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/anthropic
 - Judul:
   - H2: Memulai
-  - H2: Default thinking (Claude Fable 5, 4.8, dan 4.6)
+  - H2: Default pemikiran (Claude Fable 5, 4.8, dan 4.6)
   - H2: Fallback penolakan keamanan (Claude Fable 5)
   - H3: Mengapa ini ada
   - H3: Cara kerjanya
@@ -7225,9 +7226,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /providers/arcee
 - Judul:
-  - H2: Instal Plugin
+  - H2: Pasang Plugin
   - H2: Memulai
-  - H2: Setup non-interaktif
+  - H2: Penyiapan noninteraktif
   - H2: Katalog bawaan
   - H2: Fitur yang didukung
   - H2: Terkait
@@ -7258,7 +7259,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Memulai
   - H2: Penemuan model otomatis
-  - H2: Setup cepat (path AWS)
+  - H2: Penyiapan cepat (jalur AWS)
   - H2: Konfigurasi lanjutan
   - H2: Terkait
 
@@ -7266,9 +7267,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /providers/cerebras
 - Judul:
-  - H2: Instal Plugin
+  - H2: Pasang Plugin
   - H2: Memulai
-  - H2: Setup non-interaktif
+  - H2: Penyiapan noninteraktif
   - H2: Katalog bawaan
   - H2: Konfigurasi manual
   - H2: Terkait
@@ -7282,7 +7283,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Perilaku penemuan
   - H2: Alias default
   - H2: Katalog awal bawaan
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Terkait
 
 ## providers/claude-max-api-proxy.md
@@ -7335,7 +7336,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Memulai
   - H2: Konfigurasi
   - H3: Kunci bersama
-  - H3: Kunci per kapabilitas
+  - H3: Kunci per kemampuan
   - H2: Detail alur kerja
   - H2: Terkait
 
@@ -7345,7 +7346,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Memulai
   - H2: Opsi konfigurasi
-  - H2: STT streaming panggilan suara
+  - H2: STT streaming Panggilan Suara
   - H2: Catatan
   - H2: Terkait
 
@@ -7356,8 +7357,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Instal Plugin
   - H2: Mendapatkan kunci API
   - H2: Penyiapan CLI
-  - H2: Cuplikan konfigurasi
-  - H2: Permukaan OpenClaw yang didukung
+  - H2: Cuplikan config
+  - H2: Surface OpenClaw yang didukung
   - H2: Model yang tersedia
   - H2: Catatan
   - H2: Terkait
@@ -7369,9 +7370,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Instal Plugin
   - H2: Memulai
   - H2: Katalog bawaan
-  - H2: Pemikiran dan alat
+  - H2: Berpikir dan alat
   - H2: Pengujian langsung
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Terkait
 
 ## providers/ds4.md
@@ -7380,7 +7381,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Persyaratan
   - H2: Mulai cepat
-  - H2: Konfigurasi lengkap
+  - H2: Config lengkap
   - H2: Startup sesuai permintaan
   - H2: Think Max
   - H2: Uji
@@ -7425,7 +7426,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Flag opsional
   - H2: Onboarding non-interaktif
   - H2: Embedding pencarian memori
-  - H3: Konfigurasi
+  - H3: Config
   - H3: Cara kerjanya
   - H2: Terkait
 
@@ -7445,7 +7446,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/google
 - Judul:
   - H2: Memulai
-  - H2: Kapabilitas
+  - H2: Kemampuan
   - H2: Pencarian web
   - H2: Pembuatan gambar
   - H2: Pembuatan video
@@ -7461,9 +7462,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Instal Plugin
   - H2: Penyiapan
-  - H2: Konfigurasi
+  - H2: Config
   - H2: Suara
-  - H3: Penggantian suara per pesan
+  - H3: Override suara per pesan
   - H2: Output
   - H2: Urutan pemilihan otomatis
   - H2: Terkait
@@ -7474,7 +7475,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Instal Plugin
   - H2: Memulai
-  - H3: Contoh file konfigurasi
+  - H3: Contoh file config
   - H2: Katalog bawaan
   - H2: Model penalaran
   - H2: Transkripsi audio
@@ -7496,7 +7497,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Mulai cepat
   - H2: Dokumentasi penyedia
-  - H2: Halaman ikhtisar bersama
+  - H2: Halaman ringkasan bersama
   - H2: Penyedia transkripsi
   - H2: Alat komunitas
 
@@ -7505,7 +7506,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/inferrs
 - Judul:
   - H2: Memulai
-  - H2: Contoh konfigurasi lengkap
+  - H2: Contoh config lengkap
   - H2: Startup sesuai permintaan
   - H2: Konfigurasi lanjutan
   - H2: Pemecahan masalah
@@ -7529,7 +7530,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Memulai
   - H2: Model default
   - H2: Katalog bawaan
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Terkait
 
 ## providers/litellm.md
@@ -7539,7 +7540,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H2: Konfigurasi
   - H3: Variabel lingkungan
-  - H3: File konfigurasi
+  - H3: File config
   - H2: Konfigurasi lanjutan
   - H3: Pembuatan gambar
   - H2: Terkait
@@ -7552,12 +7553,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Onboarding non-interaktif
   - H2: Konfigurasi
   - H3: Kompatibilitas penggunaan streaming
-  - H3: Kompatibilitas pemikiran
+  - H3: Kompatibilitas berpikir
   - H3: Konfigurasi eksplisit
   - H2: Pemecahan masalah
   - H3: LM Studio tidak terdeteksi
   - H3: Kesalahan autentikasi (HTTP 401)
-  - H3: Pemuatan model tepat waktu
+  - H3: Pemuatan model just-in-time
   - H3: Host LM Studio LAN atau tailnet
   - H2: Terkait
 
@@ -7568,7 +7569,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Katalog bawaan
   - H2: Memulai
   - H2: Konfigurasikan melalui openclaw configure
-  - H2: Kapabilitas
+  - H2: Kemampuan
   - H3: Pembuatan gambar
   - H3: Teks-ke-ucapan
   - H3: Pembuatan musik
@@ -7587,7 +7588,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Memulai
   - H2: Katalog LLM bawaan
   - H2: Transkripsi audio (Voxtral)
-  - H2: STT streaming panggilan suara
+  - H2: STT streaming Panggilan Suara
   - H2: Konfigurasi lanjutan
   - H2: Terkait
 
@@ -7626,10 +7627,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/nvidia
 - Judul:
   - H2: Memulai
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Katalog unggulan
   - H2: Nemotron 3 Ultra
-  - H2: Katalog fallback terbundel
+  - H2: Katalog fallback bawaan
   - H2: Konfigurasi lanjutan
   - H2: Terkait
 
@@ -7649,17 +7650,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /providers/ollama
 - Judul:
-  - H2: Aturan autentikasi
+  - H2: Aturan auth
   - H2: Memulai
   - H2: Model cloud
   - H2: Penemuan model (penyedia implisit)
   - H2: Inferensi lokal Node
-  - H2: Penglihatan dan deskripsi gambar
+  - H2: Visi dan deskripsi gambar
   - H2: Konfigurasi
   - H2: Resep umum
   - H3: Pemilihan model
   - H3: Verifikasi cepat
-  - H2: Pencarian Web Ollama
+  - H2: Ollama Web Search
   - H2: Konfigurasi lanjutan
   - H2: Pemecahan masalah
   - H2: Terkait
@@ -7674,7 +7675,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Cakupan fitur OpenClaw
   - H2: Embedding memori
   - H2: Memulai
-  - H2: Autentikasi app-server Codex native
+  - H2: Auth app-server Codex native
   - H2: Pembuatan gambar
   - H2: Pembuatan video
   - H2: Kontribusi prompt GPT-5
@@ -7694,7 +7695,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Katalog bawaan
   - H2: Memulai
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Konfigurasi lanjutan
   - H2: Terkait
 
@@ -7703,7 +7704,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/opencode
 - Judul:
   - H2: Memulai
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Katalog bawaan
   - H3: Zen
   - H3: Go
@@ -7715,7 +7716,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/openrouter
 - Judul:
   - H2: Memulai
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Referensi model
   - H2: Pembuatan gambar
   - H2: Pembuatan video
@@ -7756,7 +7757,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Instal Plugin
   - H2: Memulai
   - H2: Katalog bawaan
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Terkait
 
 ## providers/qwen-oauth.md
@@ -7780,7 +7781,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Memulai
   - H2: Jenis paket dan endpoint
   - H2: Katalog bawaan
-  - H2: Kontrol Pemikiran
+  - H2: Kontrol Berpikir
   - H2: Add-on multimodal
   - H2: Konfigurasi lanjutan
   - H2: Terkait
@@ -7818,7 +7819,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/stepfun
 - Judul:
   - H2: Instal Plugin
-  - H2: Ikhtisar region dan endpoint
+  - H2: Ikhtisar wilayah dan endpoint
   - H2: Katalog bawaan
   - H2: Memulai
   - H2: Konfigurasi lanjutan
@@ -7829,7 +7830,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/synthetic
 - Judul:
   - H2: Memulai
-  - H2: Contoh konfigurasi
+  - H2: Contoh config
   - H2: Katalog bawaan
   - H2: Terkait
 
@@ -7911,7 +7912,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/vydra
 - Judul:
   - H2: Penyiapan
-  - H2: Kemampuan
+  - H2: Kapabilitas
   - H2: Terkait
 
 ## providers/xai.md
@@ -7923,9 +7924,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Katalog bawaan
   - H2: Cakupan fitur OpenClaw
   - H3: Pemetaan mode cepat
-  - H3: Alias kompatibilitas lama
+  - H3: Alias kompatibilitas legacy
   - H2: Fitur
-  - H2: Pengujian langsung
+  - H2: Pengujian live
   - H2: Terkait
 
 ## providers/xiaomi.md
@@ -7933,8 +7934,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /providers/xiaomi
 - Judul:
   - H2: Memulai
-  - H2: Katalog bayar sesuai pemakaian
-  - H2: Katalog Paket Token
+  - H2: Katalog bayar sesuai penggunaan
+  - H2: Katalog Token Plan
   - H2: Teks-ke-ucapan
   - H2: Contoh konfigurasi
   - H2: Terkait
@@ -7959,71 +7960,71 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /refactor/acp
 - Judul:
-  - H2: Tujuan
-  - H2: Bukan tujuan
-  - H2: Model Target
-  - H3: Identitas Instance Gateway
-  - H3: Kepemilikan Sesi ACP
-  - H3: Lease Proses ACPX
-  - H2: Pengontrol Siklus Hidup
-  - H2: Kontrak Wrapper
-  - H2: Kontrak Visibilitas Sesi
-  - H2: Rencana Migrasi
-  - H3: Fase 1: Tambahkan Identitas dan Lease
-  - H3: Fase 2: Pembersihan Berbasis Lease
-  - H3: Fase 3: Reaping Startup Berbasis Lease
-  - H3: Fase 4: Baris Kepemilikan Sesi
-  - H3: Fase 5: Hapus Heuristik Lama
+  - H2: Sasaran
+  - H2: Bukan sasaran
+  - H2: Model target
+  - H3: Identitas instans Gateway
+  - H3: Kepemilikan sesi ACP
+  - H3: Sewa proses ACPX
+  - H2: Pengontrol siklus hidup
+  - H2: Kontrak wrapper
+  - H2: Kontrak visibilitas sesi
+  - H2: Rencana migrasi
+  - H3: Fase 1: Tambahkan identitas dan sewa
+  - H3: Fase 2: Pembersihan yang mendahulukan sewa
+  - H3: Fase 3: Penuaian startup yang mendahulukan sewa
+  - H3: Fase 4: Baris kepemilikan sesi
+  - H3: Fase 5: Hapus heuristik legacy
   - H2: Pengujian
-  - H2: Catatan Kompatibilitas
-  - H2: Kriteria Keberhasilan
+  - H2: Catatan kompatibilitas
+  - H2: Kriteria keberhasilan
 
 ## refactor/canvas.md
 
 - Rute: /refactor/canvas
 - Judul:
   - H1: Refactor Plugin Canvas
-  - H2: Tujuan
-  - H2: Bukan tujuan
+  - H2: Sasaran
+  - H2: Bukan sasaran
   - H2: Status branch saat ini
   - H2: Bentuk target
   - H2: Langkah migrasi
-  - H2: Checklist audit
+  - H2: Daftar periksa audit
   - H2: Perintah verifikasi
 
 ## refactor/database-first.md
 
 - Rute: /refactor/database-first
 - Judul:
-  - H1: Refactor State Database-First
+  - H1: Refactor status yang mendahulukan database
   - H2: Keputusan
-  - H2: Kontrak Keras
-  - H2: Status tujuan dan progres
-  - H3: Tujuan keras
-  - H3: Status tujuan
+  - H2: Kontrak keras
+  - H2: Status sasaran dan progres
+  - H3: Sasaran keras
+  - H3: Status sasaran
   - H3: Status saat ini
   - H3: Pekerjaan tersisa
   - H3: Jangan regresi
-  - H2: Asumsi Pembacaan Kode
-  - H2: Temuan Pembacaan Kode
-  - H2: Bentuk Kode Saat Ini
-  - H2: Bentuk Skema Target
-  - H2: Bentuk Migrasi Doctor
-  - H2: Inventaris Migrasi
-  - H2: Rencana Migrasi
-  - H3: Fase 0: Bekukan Batas
-  - H3: Fase 1: Selesaikan Control Plane Global
-  - H3: Fase 2: Perkenalkan Database Per Agen
-  - H3: Fase 3: Ganti API Penyimpanan Sesi
-  - H3: Fase 4: Pindahkan Transkrip, Stream ACP, Trajektori, dan VFS
-  - H3: Fase 5: Backup, Restore, Vacuum, dan Verifikasi
-  - H3: Fase 6: Runtime Worker
-  - H3: Fase 7: Hapus Dunia Lama
-  - H2: Backup dan Restore
-  - H2: Rencana Refactor Runtime
-  - H2: Aturan Performa
-  - H2: Larangan Statis
-  - H2: Kriteria Selesai
+  - H2: Asumsi pembacaan kode
+  - H2: Temuan pembacaan kode
+  - H2: Bentuk kode saat ini
+  - H2: Bentuk skema target
+  - H2: Bentuk migrasi Doctor
+  - H2: Inventaris migrasi
+  - H2: Rencana migrasi
+  - H3: Fase 0: Bekukan batas
+  - H3: Fase 1: Selesaikan control plane global
+  - H3: Fase 2: Perkenalkan database per agen
+  - H3: Fase 3: Ganti API penyimpanan sesi
+  - H3: Fase 4: Pindahkan transkrip, stream ACP, trajectory, dan VFS
+  - H3: Fase 5: Cadangkan, pulihkan, vacuum, dan verifikasi
+  - H3: Fase 6: Runtime worker
+  - H3: Fase 7: Hapus dunia lama
+  - H2: Pencadangan dan pemulihan
+  - H2: Rencana refactor runtime
+  - H2: Aturan performa
+  - H2: Larangan statis
+  - H2: Kriteria selesai
 
 ## refactor/ingress-core.md
 
@@ -8033,28 +8034,28 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Anggaran
   - H2: Diagnosis
   - H2: Hotspot
-  - H2: Pembacaan Kode Saat Ini
+  - H2: Pembacaan kode saat ini
   - H2: Batas
-  - H2: Aturan Penerimaan
-  - H2: Paket Kerja
-  - H2: Gelombang Penghapusan
-  - H2: Jangan Pindahkan
+  - H2: Aturan penerimaan
+  - H2: Paket kerja
+  - H2: Gelombang penghapusan
+  - H2: Jangan pindahkan
   - H2: Verifikasi
-  - H2: Kriteria Keluar
+  - H2: Kriteria keluar
 
 ## reference/AGENTS.default.md
 
 - Rute: /reference/AGENTS.default
 - Judul:
-  - H2: Jalankan pertama kali (direkomendasikan)
-  - H2: Default keamanan
+  - H2: Jalankan pertama kali (disarankan)
+  - H2: Default keselamatan
   - H2: Preflight solusi yang ada
   - H2: Awal sesi (wajib)
   - H2: Jiwa (wajib)
-  - H2: Ruang bersama (direkomendasikan)
-  - H2: Sistem memori (direkomendasikan)
+  - H2: Ruang bersama (disarankan)
+  - H2: Sistem memori (disarankan)
   - H2: Alat dan Skills
-  - H2: Tips backup (direkomendasikan)
+  - H2: Kiat pencadangan (disarankan)
   - H2: Apa yang dilakukan OpenClaw
   - H2: Skills inti (aktifkan di Settings → Skills)
   - H2: Catatan penggunaan
@@ -8066,17 +8067,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Penamaan versi
   - H2: Irama rilis
-  - H2: Checklist operator rilis
+  - H2: Publikasi extended-stable bulanan khusus npm
+  - H2: Daftar periksa operator rilis reguler
   - H2: Penutupan main stabil
   - H2: Preflight rilis
-  - H2: Kotak uji rilis
+  - H2: Kotak pengujian rilis
   - H3: Vitest
   - H3: Docker
-  - H3: QA Lab
+  - H3: Lab QA
   - H3: Paket
-  - H2: Otomatisasi publikasi rilis
+  - H2: Otomatisasi publikasi rilis reguler
   - H2: Input workflow NPM
-  - H2: Urutan rilis npm stabil
+  - H2: Urutan rilis beta/reguler stabil terbaru
   - H2: Referensi publik
   - H2: Terkait
 
@@ -8084,17 +8086,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /reference/api-usage-costs
 - Judul:
-  - H2: Di mana biaya muncul (chat + CLI)
-  - H2: Cara kunci ditemukan
-  - H2: Fitur yang dapat membelanjakan kunci
+  - H2: Tempat biaya muncul (chat + CLI)
+  - H2: Bagaimana key ditemukan
+  - H2: Fitur yang dapat menggunakan key berbayar
   - H3: 1) Respons model inti (chat + alat)
   - H3: 2) Pemahaman media (audio/gambar/video)
   - H3: 3) Pembuatan gambar dan video
   - H3: 4) Embedding memori + pencarian semantik
   - H3: 5) Alat pencarian web
-  - H3: 5) Alat fetch web (Firecrawl)
+  - H3: 5) Alat pengambilan web (Firecrawl)
   - H3: 6) Snapshot penggunaan penyedia (status/kesehatan)
-  - H3: 7) Ringkasan pengaman Compaction
+  - H3: 7) Perangkuman pengaman Compaction
   - H3: 8) Pemindaian / probe model
   - H3: 9) Bicara (ucapan)
   - H3: 10) Skills (API pihak ketiga)
@@ -8104,15 +8106,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /reference/application-modernization-plan
 - Judul:
-  - H2: Tujuan
+  - H2: Sasaran
   - H2: Prinsip
   - H2: Fase 1: Audit baseline
   - H2: Fase 2: Pembersihan produk dan UX
-  - H2: Fase 3: Pengetatan arsitektur frontend
+  - H2: Fase 3: Penguatan arsitektur frontend
   - H2: Fase 4: Performa dan keandalan
   - H2: Fase 5: Penguatan tipe, kontrak, dan pengujian
   - H2: Fase 6: Dokumentasi dan kesiapan rilis
-  - H2: Irisan pertama yang direkomendasikan
+  - H2: Irisan pertama yang disarankan
   - H2: Pembaruan skill frontend
 
 ## reference/code-mode.md
@@ -8120,7 +8122,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /reference/code-mode
 - Judul:
   - H2: Apa ini?
-  - H2: Mengapa ini baik?
+  - H2: Mengapa ini bagus?
   - H2: Cara mengaktifkannya
   - H2: Tur teknis
   - H2: Status runtime
@@ -8131,7 +8133,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Alat yang terlihat oleh model
   - H2: exec
   - H2: wait
-  - H2: API runtime tamu
+  - H2: API runtime guest
   - H2: Namespace internal
   - H3: Siklus hidup registry
   - H3: Bentuk registrasi
@@ -8139,13 +8141,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Aturan serialisasi cakupan
   - H3: Prompt
   - H3: Pembersihan
-  - H3: Checklist pengujian
+  - H3: Daftar periksa pengujian
   - H2: API output
   - H2: Katalog alat
   - H2: Interaksi Tool Search
-  - H2: Nama alat dan benturan
-  - H2: Eksekusi alat bersarang
-  - H2: State runtime
+  - H2: Nama alat dan collision
+  - H2: Eksekusi alat bertingkat
+  - H2: Status runtime
   - H2: Runtime QuickJS-WASI
   - H2: TypeScript
   - H2: Batas keamanan
@@ -8153,7 +8155,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Telemetri
   - H2: Debugging
   - H2: Tata letak implementasi
-  - H2: Checklist validasi
+  - H2: Daftar periksa validasi
   - H2: Rencana pengujian E2E
   - H2: Terkait
 
@@ -8194,11 +8196,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Pemilihan penyedia
   - H3: ID penyedia kustom
-  - H3: Resolusi kunci API
+  - H3: Resolusi API key
   - H2: Konfigurasi endpoint jarak jauh
-  - H2: Konfigurasi spesifik penyedia
+  - H2: Konfigurasi khusus penyedia
   - H3: Timeout embedding inline
-  - H2: Konfigurasi pencarian hibrida
+  - H2: Konfigurasi pencarian hybrid
   - H3: Contoh lengkap
   - H2: Jalur memori tambahan
   - H2: Memori multimodal (Gemini)
@@ -8218,7 +8220,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /reference/prompt-caching
 - Judul:
-  - H2: Kenop utama
+  - H2: Knob utama
   - H3: cacheRetention (default global, model, dan per agen)
   - H3: contextPruning.mode: "cache-ttl"
   - H3: Heartbeat keep-warm
@@ -8232,17 +8234,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: API langsung Google Gemini
   - H3: Penggunaan Gemini CLI
   - H2: Batas cache prompt sistem
-  - H2: Guard stabilitas cache OpenClaw
-  - H2: Pola penyetelan
-  - H3: Traffic campuran (default yang direkomendasikan)
-  - H3: Baseline biaya dahulu
+  - H2: Penjaga stabilitas cache OpenClaw
+  - H2: Pola tuning
+  - H3: Traffic campuran (default yang disarankan)
+  - H3: Baseline mengutamakan biaya
   - H2: Diagnostik cache
-  - H2: Pengujian regresi langsung
-  - H3: Ekspektasi langsung Anthropic
-  - H3: Ekspektasi langsung OpenAI
+  - H2: Pengujian regresi live
+  - H3: Ekspektasi live Anthropic
+  - H3: Ekspektasi live OpenAI
   - H3: Konfigurasi diagnostics.cacheTrace
-  - H3: Toggle env (debugging sekali jalan)
-  - H3: Apa yang perlu diperiksa
+  - H3: Toggle env (debugging sekali pakai)
+  - H3: Yang perlu diperiksa
   - H2: Pemecahan masalah cepat
   - H2: Terkait
 
@@ -8251,16 +8253,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /reference/release-performance-sweep
 - Judul:
   - H2: Snapshot
-  - H2: Linimasa Jejak Instalasi
-  - H2: Apa yang Berubah di 5.28
-  - H2: Angka Utama
-  - H3: Jejak instalasi
+  - H2: Timeline footprint instalasi
+  - H2: Yang berubah di 5.28
+  - H2: Angka utama
+  - H3: Footprint instalasi
   - H3: Ukuran paket npm
   - H2: Ringkasan giliran agen Kova
   - H2: Probe sumber
-  - H2: Audit jejak instalasi
+  - H2: Audit footprint instalasi
   - H3: Batas shrinkwrap
-  - H2: Interpretasi rantai pasok
+  - H2: Interpretasi supply chain
 
 ## reference/rich-output-protocol.md
 
@@ -8284,8 +8286,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /reference/secret-placeholder-conventions
 - Judul:
   - H1: Konvensi placeholder rahasia
-  - H2: Gaya yang direkomendasikan
-  - H2: Hindari pola ini di docs
+  - H2: Gaya yang disarankan
+  - H2: Hindari pola ini dalam dokumentasi
   - H2: Contoh
 
 ## reference/secretref-credential-surface.md
@@ -8293,8 +8295,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /reference/secretref-credential-surface
 - Judul:
   - H2: Kredensial yang didukung
-  - H3: target openclaw.json (secrets configure + secrets apply + secrets audit)
-  - H3: target auth-profiles.json (secrets configure + secrets apply + secrets audit)
+  - H3: Target openclaw.json (secrets configure + secrets apply + secrets audit)
+  - H3: Target auth-profiles.json (secrets configure + secrets apply + secrets audit)
   - H2: Kredensial yang tidak didukung
   - H2: Terkait
 
@@ -8307,20 +8309,20 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Lokasi di disk
   - H2: Pemeliharaan penyimpanan dan kontrol disk
   - H2: Sesi Cron dan log run
-  - H2: Kunci sesi (sessionKey)
+  - H2: Key sesi (sessionKey)
   - H2: ID sesi (sessionId)
   - H2: Skema penyimpanan sesi (sessions.json)
   - H2: Struktur transkrip (.jsonl)
-  - H2: Jendela konteks vs token terlacak
+  - H2: Jendela konteks vs token yang dilacak
   - H2: Compaction: apa itu
   - H2: Batas chunk Compaction dan pemasangan alat
   - H2: Kapan auto-Compaction terjadi (runtime OpenClaw)
   - H2: Pengaturan Compaction (reserveTokens, keepRecentTokens)
   - H2: Penyedia Compaction yang dapat dipasang
-  - H2: Permukaan yang terlihat pengguna
-  - H2: Housekeeping senyap (NOREPLY)
+  - H2: Permukaan yang terlihat oleh pengguna
+  - H2: Pemeliharaan diam-diam (NOREPLY)
   - H2: "Memory flush" pra-Compaction (diimplementasikan)
-  - H2: Checklist pemecahan masalah
+  - H2: Daftar periksa pemecahan masalah
   - H2: Terkait
 
 ## reference/templates/AGENTS.dev.md
@@ -8329,15 +8331,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: AGENTS.md - Workspace OpenClaw
   - H2: Jalankan pertama kali (sekali saja)
-  - H2: Tips backup (direkomendasikan)
-  - H2: Default keamanan
+  - H2: Kiat pencadangan (disarankan)
+  - H2: Default keselamatan
   - H2: Preflight solusi yang ada
-  - H2: Memori harian (direkomendasikan)
+  - H2: Memori harian (disarankan)
   - H2: Heartbeat (opsional)
-  - H2: Sesuaikan
-  - H2: Memori Asal C-3PO
-  - H3: Hari Lahir: 2026-01-09
-  - H3: Kebenaran Inti (dari Clawd)
+  - H2: Kustomisasi
+  - H2: Memori asal C-3PO
+  - H3: Hari kelahiran: 2026-01-09
+  - H3: Kebenaran inti (dari Clawd)
   - H2: Terkait
 
 ## reference/templates/BOOT.md
@@ -8353,8 +8355,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: BOOTSTRAP.md - Halo, Dunia
   - H2: Percakapan
-  - H2: Setelah Anda Tahu Siapa Diri Anda
-  - H2: Hubungkan (Opsional)
+  - H2: Setelah Anda tahu siapa diri Anda
+  - H2: Hubungkan (opsional)
   - H2: Setelah selesai
   - H2: Terkait
 
@@ -8374,7 +8376,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Jiwa
   - H2: Hubungan dengan Clawd
   - H2: Keunikan
-  - H2: Slogan khas
+  - H2: Slogan
   - H2: Terkait
 
 ## reference/templates/IDENTITY.md
@@ -8394,7 +8396,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Cara Saya Beroperasi
   - H2: Keunikan Saya
   - H2: Hubungan Saya dengan Clawd
-  - H2: Yang tidak akan saya lakukan
+  - H2: Yang Tidak Akan Saya Lakukan
   - H2: Aturan Emas
   - H2: Terkait
 
@@ -8406,7 +8408,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Kebenaran Inti
   - H2: Batasan
   - H2: Nuansa
-  - H2: Kontinuitas
+  - H2: Kesinambungan
   - H2: Terkait
 
 ## reference/templates/TOOLS.dev.md
@@ -8424,7 +8426,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /reference/templates/TOOLS
 - Judul:
   - H1: TOOLS.md - Catatan Lokal
-  - H2: Yang Dimasukkan di Sini
+  - H2: Yang Ditulis di Sini
   - H2: Contoh
   - H2: Mengapa Dipisahkan?
   - H2: Terkait
@@ -8453,7 +8455,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Tolok ukur startup CLI
   - H2: Tolok ukur startup Gateway
   - H2: Tolok ukur restart Gateway
-  - H2: E2E onboarding (Docker)
+  - H2: Onboarding E2E (Docker)
   - H2: Smoke impor QR (Docker)
   - H2: Terkait
 
@@ -8461,14 +8463,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /reference/token-use
 - Judul:
-  - H2: Cara prompt sistem dibuat
+  - H2: Cara prompt sistem dibangun
   - H2: Yang dihitung dalam jendela konteks
   - H2: Cara melihat penggunaan token saat ini
-  - H2: Estimasi biaya (saat ditampilkan)
+  - H2: Estimasi biaya (jika ditampilkan)
   - H2: Dampak TTL cache dan pemangkasan
-  - H3: Contoh: menjaga cache 1 jam tetap hangat dengan Heartbeat
+  - H3: Contoh: menjaga cache 1 jam tetap hangat dengan heartbeat
   - H3: Contoh: lalu lintas campuran dengan strategi cache per agen
-  - H3: Konteks 1M Anthropic
+  - H3: Konteks Anthropic 1M
   - H2: Tips untuk mengurangi tekanan token
   - H2: Terkait
 
@@ -8479,10 +8481,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Aturan global: konteks runtime bukan transkrip pengguna
   - H2: Tempat ini berjalan
   - H2: Aturan global: sanitasi gambar
-  - H2: Aturan global: panggilan alat yang tidak valid
-  - H2: Aturan global: giliran khusus penalaran yang tidak lengkap
-  - H2: Aturan global: asal-usul input antarsesi
-  - H2: Matriks penyedia (perilaku saat ini)
+  - H2: Aturan global: panggilan alat yang salah bentuk
+  - H2: Aturan global: giliran hanya penalaran yang tidak lengkap
+  - H2: Aturan global: asal input antar-sesi
+  - H2: Matriks provider (perilaku saat ini)
   - H2: Perilaku historis (pra-2026.1.22)
   - H2: Terkait
 
@@ -8492,7 +8494,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Detail alur (mode lokal)
   - H2: Mode non-interaktif
-  - H3: Tambahkan agen (non-interaktif)
+  - H3: Tambah agen (non-interaktif)
   - H2: RPC wizard Gateway
   - H2: Penyiapan Signal (signal-cli)
   - H2: Yang ditulis wizard
@@ -8505,16 +8507,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H1: Catatan Rilis OpenClaw v2026.6.11 (2026-06-30)
   - H2: Sorotan
   - H3: Keandalan pengiriman channel
-  - H3: Pemulihan penyedia dan model
-  - H3: Kontinuitas sesi, memori, dan kepercayaan
+  - H3: Pemulihan provider dan model
+  - H3: Kesinambungan sesi, memori, dan kepercayaan
   - H3: Mode relay router Slack
   - H3: Jembatan bangun Raft External Agent
   - H3: Instalasi dan perbaikan plugin resmi
-  - H2: Channel dan Pesan
+  - H2: Channel dan Perpesanan
   - H3: Perbaikan channel tambahan
   - H2: Gateway, Keamanan, dan Kepercayaan
   - H3: Pemulihan restart dan kesiapan
-  - H3: Pengiriman hasil jarak jauh dan media
+  - H3: Hasil jarak jauh dan pengiriman media
   - H2: Klien dan Antarmuka
   - H3: Pengiriman klien dan koneksi ulang
   - H3: Perbaikan antarmuka, pengaturan, dan onboarding
@@ -8543,7 +8545,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Kerangka kerja MITRE ATLAS
   - H3: ID ancaman
   - H3: Tingkat risiko
-  - H2: Proses peninjauan
+  - H2: Proses tinjauan
   - H2: Sumber daya
   - H2: Kontak
   - H2: Pengakuan
@@ -8564,12 +8566,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: 2.1 Batas Kepercayaan
   - H3: 2.2 Alur Data
   - H2: 3. Analisis Ancaman berdasarkan Taktik ATLAS
-  - H3: 3.1 Pengintaian (AML.TA0002)
+  - H3: 3.1 Rekonesans (AML.TA0002)
   - H4: T-RECON-001: Penemuan Endpoint Agen
-  - H4: T-RECON-002: Probing Integrasi Channel
+  - H4: T-RECON-002: Pengujian Integrasi Channel
   - H3: 3.2 Akses Awal (AML.TA0004)
   - H4: T-ACCESS-001: Intersepsi Kode Pairing
-  - H4: T-ACCESS-002: Spoofing AllowFrom
+  - H4: T-ACCESS-002: Pemalsuan AllowFrom
   - H4: T-ACCESS-003: Pencurian Token
   - H3: 3.3 Eksekusi (AML.TA0005)
   - H4: T-EXEC-001: Injeksi Prompt Langsung
@@ -8582,22 +8584,22 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H4: T-PERSIST-003: Perusakan Konfigurasi Agen
   - H3: 3.5 Penghindaran Pertahanan (AML.TA0007)
   - H4: T-EVADE-001: Bypass Pola Moderasi
-  - H4: T-EVADE-002: Pelolosan Pembungkus Konten
+  - H4: T-EVADE-002: Escape Pembungkus Konten
   - H3: 3.6 Penemuan (AML.TA0008)
   - H4: T-DISC-001: Enumerasi Alat
   - H4: T-DISC-002: Ekstraksi Data Sesi
   - H3: 3.7 Pengumpulan &amp; Eksfiltrasi (AML.TA0009, AML.TA0010)
   - H4: T-EXFIL-001: Pencurian Data melalui webfetch
-  - H4: T-EXFIL-002: Pengiriman Pesan Tidak Sah
+  - H4: T-EXFIL-002: Pengiriman Pesan Tanpa Izin
   - H4: T-EXFIL-003: Pengumpulan Kredensial
   - H3: 3.8 Dampak (AML.TA0011)
-  - H4: T-IMPACT-001: Eksekusi Perintah Tidak Sah
+  - H4: T-IMPACT-001: Eksekusi Perintah Tanpa Izin
   - H4: T-IMPACT-002: Kehabisan Sumber Daya (DoS)
   - H4: T-IMPACT-003: Kerusakan Reputasi
   - H2: 4. Analisis Rantai Pasok ClawHub
   - H3: 4.1 Kontrol Keamanan Saat Ini
   - H3: 4.2 Pola Flag Moderasi
-  - H3: 4.3 Perbaikan yang Direncanakan
+  - H3: 4.3 Peningkatan yang Direncanakan
   - H2: 5. Matriks Risiko
   - H3: 5.1 Kemungkinan vs Dampak
   - H3: 5.2 Rantai Serangan Jalur Kritis
@@ -8616,9 +8618,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /security/formal-verification
 - Judul:
   - H2: Tempat model berada
-  - H2: Peringatan penting
+  - H2: Catatan penting
   - H2: Mereproduksi hasil
-  - H3: Paparan Gateway dan miskonfigurasi gateway terbuka
+  - H3: Paparan Gateway dan salah konfigurasi gateway terbuka
   - H3: Pipeline exec Node (kapabilitas berisiko tertinggi)
   - H3: Penyimpanan pairing (gating DM)
   - H3: Gating ingress (mention + bypass perintah kontrol)
@@ -8626,7 +8628,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: v1++: model berbatas tambahan (konkurensi, percobaan ulang, kebenaran trace)
   - H3: Konkurensi / idempotensi penyimpanan pairing
   - H3: Korelasi trace ingress / idempotensi
-  - H3: Presedensi dmScope routing + identityLinks
+  - H3: Prioritas routing dmScope + identityLinks
   - H2: Terkait
 
 ## security/incident-response.md
@@ -8644,12 +8646,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /security/network-proxy
 - Judul:
   - H2: Mengapa menggunakan proxy
-  - H2: Cara OpenClaw merutekan lalu lintas
+  - H2: Cara OpenClaw merutekan traffic
   - H2: Istilah proxy terkait
   - H2: Konfigurasi
-  - H3: Mode Gateway Loopback
+  - H3: Mode Loopback Gateway
   - H2: Persyaratan Proxy
-  - H2: Tujuan terblokir yang direkomendasikan
+  - H2: Destinasi terblokir yang direkomendasikan
   - H2: Validasi
   - H2: Kepercayaan CA proxy
   - H2: Batasan
@@ -8659,7 +8661,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /specs/claw-supervisor
 - Judul:
   - H1: Claw Supervisor
-  - H2: Tujuan
+  - H2: Sasaran
   - H2: Model Produk
   - H2: Arsitektur
   - H2: Kontrak Codex App-Server
@@ -8670,7 +8672,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Deployment
   - H2: Keamanan
   - H2: Rencana Implementasi
-  - H2: Pengujian Penerimaan
+  - H2: Uji Penerimaan
   - H2: Pertanyaan Terbuka
 
 ## start/bootstrapping.md
@@ -8679,7 +8681,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Yang dilakukan bootstrapping
   - H2: Melewati bootstrapping
-  - H2: Tempat ini berjalan
+  - H2: Tempat dijalankan
   - H2: Dokumen terkait
 
 ## start/docs-directory.md
@@ -8687,7 +8689,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /start/docs-directory
 - Judul:
   - H2: Mulai di sini
-  - H2: Penyedia dan UX
+  - H2: Provider dan UX
   - H2: Aplikasi pendamping
   - H2: Operasi dan keselamatan
   - H2: Terkait
@@ -8696,7 +8698,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /start/getting-started
 - Judul:
-  - H2: Yang Anda perlukan
+  - H2: Yang Anda butuhkan
   - H2: Penyiapan cepat
   - H2: Yang harus dilakukan berikutnya
   - H2: Terkait
@@ -8708,14 +8710,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai di sini
   - H2: Instalasi + pembaruan
   - H2: Konsep inti
-  - H2: Penyedia + ingress
+  - H2: Provider + ingress
   - H2: Gateway + operasi
-  - H2: Alat + automasi
+  - H2: Alat + otomasi
   - H2: Node, media, suara
   - H2: Platform
   - H2: Aplikasi pendamping macOS (lanjutan)
   - H2: Plugin
-  - H2: Ruang kerja + templat
+  - H2: Workspace + templat
   - H2: Proyek
   - H2: Pengujian + rilis
   - H2: Terkait
@@ -8724,12 +8726,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /start/lore
 - Judul:
-  - H1: Kisah OpenClaw 🦞📖
-  - H2: Cerita Asal-Usul
+  - H1: Lore OpenClaw 🦞📖
+  - H2: Kisah Asal
   - H2: Molt Pertama (27 Januari 2026)
   - H2: Nama
-  - H2: Daleks vs Lobster
-  - H2: Karakter Utama
+  - H2: Dalek vs Lobster
+  - H2: Tokoh Utama
   - H3: Molty 🦞
   - H3: Peter 👨‍💻
   - H2: Moltiverse
@@ -8748,11 +8750,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /start/onboarding-overview
 - Judul:
-  - H2: Jalur mana yang harus saya gunakan?
+  - H2: Jalur mana yang sebaiknya saya gunakan?
   - H2: Yang dikonfigurasi onboarding
   - H2: Onboarding CLI
   - H2: Onboarding aplikasi macOS
-  - H2: Penyedia khusus atau tidak terdaftar
+  - H2: Provider khusus atau tidak tercantum
   - H2: Terkait
 
 ## start/onboarding.md
@@ -8765,16 +8767,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /start/openclaw
 - Judul:
-  - H2: ⚠️ Keselamatan dahulu
+  - H2: ⚠️ Utamakan keselamatan
   - H2: Prasyarat
   - H2: Penyiapan dua ponsel (direkomendasikan)
   - H2: Mulai cepat 5 menit
-  - H2: Berikan agen sebuah ruang kerja (AGENTS)
+  - H2: Beri agen workspace (AGENTS)
   - H2: Konfigurasi yang mengubahnya menjadi "asisten"
   - H2: Sesi dan memori
   - H2: Heartbeat (mode proaktif)
   - H2: Media masuk dan keluar
-  - H2: Daftar periksa operasi
+  - H2: Checklist operasi
   - H2: Langkah berikutnya
   - H2: Terkait
 
@@ -8808,22 +8810,22 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /start/showcase
 - Judul:
-  - H2: Terbaru dari Discord
-  - H2: Automasi dan alur kerja
+  - H2: Baru dari Discord
+  - H2: Otomasi dan alur kerja
   - H2: Pengetahuan dan memori
   - H2: Suara dan telepon
   - H2: Infrastruktur dan deployment
   - H2: Rumah dan perangkat keras
   - H2: Proyek komunitas
-  - H2: Kirim proyek Anda
+  - H2: Kirimkan proyek Anda
   - H2: Terkait
 
 ## start/wizard-cli-automation.md
 
 - Rute: /start/wizard-cli-automation
 - Judul:
-  - H2: Contoh non-interaktif dasar
-  - H2: Contoh khusus penyedia
+  - H2: Contoh non-interaktif baseline
+  - H2: Contoh khusus provider
   - H2: Tambahkan agen lain
   - H2: Dokumen terkait
 
@@ -8831,10 +8833,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /start/wizard-cli-reference
 - Judul:
-  - H2: Yang dilakukan wizard
+  - H2: Apa yang dilakukan wizard
   - H2: Detail alur lokal
   - H2: Detail mode jarak jauh
-  - H2: Opsi auth dan model
+  - H2: Opsi autentikasi dan model
   - H2: Output dan internal
   - H2: Dokumentasi terkait
 
@@ -8843,8 +8845,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /start/wizard
 - Judul:
   - H2: Locale
-  - H2: QuickStart vs Lanjutan
-  - H2: Yang dikonfigurasi onboarding
+  - H2: Mulai Cepat vs Lanjutan
+  - H2: Apa yang dikonfigurasi onboarding
   - H2: Tambahkan agen lain
   - H2: Referensi lengkap
   - H2: Dokumentasi terkait
@@ -8853,15 +8855,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/acp-agents-setup
 - Judul:
-  - H2: Dukungan acpx harness (saat ini)
-  - H2: Konfigurasi yang diperlukan
+  - H2: Dukungan harness acpx (saat ini)
+  - H2: Konfigurasi wajib
   - H2: Penyiapan Plugin untuk backend acpx
   - H3: Konfigurasi perintah dan versi acpx
   - H3: Instalasi dependensi otomatis
   - H3: Bridge MCP alat Plugin
   - H3: Bridge MCP alat OpenClaw
-  - H3: Konfigurasi timeout operasi runtime
-  - H3: Konfigurasi agen health probe
+  - H3: Konfigurasi batas waktu operasi runtime
+  - H3: Konfigurasi agen probe kesehatan
   - H2: Konfigurasi izin
   - H3: permissionMode
   - H3: nonInteractivePermissions
@@ -8880,9 +8882,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Cara ACP menjalankan Claude Code
   - H2: Sesi terikat
   - H3: Model mental
-  - H3: Pengikatan percakapan saat ini
-  - H2: Pengikatan channel persisten
-  - H3: Model pengikatan
+  - H3: Ikatan percakapan saat ini
+  - H2: Ikatan channel persisten
+  - H3: Model ikatan
   - H3: Default runtime per agen
   - H3: Contoh
   - H3: Perilaku
@@ -8894,7 +8896,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Resolusi target sesi
   - H2: Kontrol ACP
   - H3: Pemetaan opsi runtime
-  - H2: acpx harness, penyiapan Plugin, dan izin
+  - H2: Harness acpx, penyiapan Plugin, dan izin
   - H2: Pemecahan masalah
   - H2: Terkait
 
@@ -8921,7 +8923,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/brave-search
 - Judul:
-  - H2: Dapatkan API key
+  - H2: Dapatkan kunci API
   - H2: Contoh konfigurasi
   - H2: Parameter alat
   - H2: Catatan
@@ -8932,16 +8934,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/browser-control
 - Judul:
   - H2: API kontrol (opsional)
-  - H3: Kontrak error /act
+  - H3: Kontrak kesalahan /act
   - H3: Persyaratan Playwright
   - H4: Instalasi Docker Playwright
   - H2: Cara kerjanya (internal)
   - H2: Referensi cepat CLI
-  - H2: Snapshot dan ref
-  - H2: Peningkatan kemampuan tunggu
-  - H2: Workflow debug
+  - H2: Snapshot dan referensi
+  - H2: Peningkatan kemampuan menunggu
+  - H2: Alur kerja debug
   - H2: Output JSON
-  - H2: State dan pengaturan lingkungan
+  - H2: Kenop status dan lingkungan
   - H2: Keamanan dan privasi
   - H2: Terkait
 
@@ -8949,13 +8951,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/browser-linux-troubleshooting
 - Judul:
-  - H2: Masalah: "Failed to start Chrome CDP on port 18800"
-  - H3: Penyebab utama
+  - H2: Masalah: "Gagal memulai Chrome CDP pada port 18800"
+  - H3: Akar penyebab
   - H3: Solusi 1: Instal Google Chrome (Direkomendasikan)
-  - H3: Solusi 2: Gunakan Snap Chromium dengan Mode Attach-Only
-  - H3: Memverifikasi bahwa Browser Berfungsi
+  - H3: Solusi 2: Gunakan Snap Chromium dengan Mode Hanya-Lampirkan
+  - H3: Memverifikasi Browser Berfungsi
   - H3: Referensi konfigurasi
-  - H3: Masalah: "No Chrome tabs found for profile=\"user\""
+  - H3: Masalah: "Tidak ada tab Chrome yang ditemukan untuk profile=\"user\""
   - H2: Terkait
 
 ## tools/browser-login.md
@@ -8974,18 +8976,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Pilih mode browser yang tepat terlebih dahulu
   - H3: Opsi 1: CDP jarak jauh mentah dari WSL2 ke Windows
-  - H3: Opsi 2: Chrome MCP lokal host
-  - H2: Arsitektur kerja
+  - H3: Opsi 2: Chrome MCP lokal-host
+  - H2: Arsitektur yang berfungsi
   - H2: Mengapa penyiapan ini membingungkan
   - H2: Aturan penting untuk UI Kontrol
-  - H2: Validasi secara berlapis
+  - H2: Validasi berlapis
   - H3: Lapisan 1: Verifikasi Chrome menyajikan CDP di Windows
-  - H3: Lapisan 2: Verifikasi WSL2 dapat menjangkau endpoint Windows tersebut
+  - H3: Lapisan 2: Verifikasi WSL2 dapat menjangkau endpoint Windows itu
   - H3: Lapisan 3: Konfigurasikan profil browser yang benar
   - H3: Lapisan 4: Verifikasi lapisan UI Kontrol secara terpisah
   - H3: Lapisan 5: Verifikasi kontrol browser end-to-end
-  - H2: Error umum yang menyesatkan
-  - H2: Checklist triase cepat
+  - H2: Kesalahan umum yang menyesatkan
+  - H2: Daftar periksa triase cepat
   - H2: Kesimpulan praktis
   - H2: Terkait
 
@@ -8997,21 +8999,21 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H2: Kontrol Plugin
   - H2: Panduan agen
-  - H2: Perintah atau alat browser tidak ada
+  - H2: Perintah atau alat browser yang hilang
   - H2: Profil: openclaw vs pengguna
   - H2: Konfigurasi
-  - H3: Visi screenshot (dukungan model teks saja)
+  - H3: Vision tangkapan layar (dukungan model hanya-teks)
   - H2: Gunakan Brave atau browser berbasis Chromium lain
   - H2: Kontrol lokal vs jarak jauh
-  - H2: Proxy browser Node (default tanpa konfigurasi)
-  - H2: Browserless (CDP jarak jauh ter-host)
-  - H3: Docker Browserless di host yang sama
+  - H2: Proksi browser Node (default tanpa konfigurasi)
+  - H2: Browserless (CDP jarak jauh ter-hosting)
+  - H3: Browserless Docker pada host yang sama
   - H2: Penyedia CDP WebSocket langsung
   - H3: Browserbase
   - H3: Notte
   - H2: Keamanan
   - H2: Profil (multi-browser)
-  - H2: Sesi yang ada melalui Chrome DevTools MCP
+  - H2: Sesi yang sudah ada melalui Chrome DevTools MCP
   - H3: Peluncuran Chrome MCP kustom
   - H2: Jaminan isolasi
   - H2: Pemilihan browser
@@ -9025,7 +9027,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/btw
 - Judul:
-  - H2: Yang dilakukannya
+  - H2: Fungsinya
   - H2: Yang tidak dilakukannya
   - H2: Cara kerja konteks
   - H2: Model pengiriman
@@ -9054,8 +9056,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Penyiapan
   - H2: Cara menggunakannya
-  - H2: Error
-  - H2: Batas
+  - H2: Kesalahan
+  - H2: Batasan
   - H2: Terkait
 
 ## tools/creating-skills.md
@@ -9068,7 +9070,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Kunci frontmatter opsional
   - H3: Menggunakan {baseDir}
   - H2: Menambahkan aktivasi bersyarat
-  - H2: Usulkan melalui Skill Workshop
+  - H2: Ajukan melalui Skill Workshop
   - H2: Menerbitkan ke ClawHub
   - H2: Praktik terbaik
   - H2: Terkait
@@ -9079,17 +9081,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Mulai cepat
   - H2: Nonaktifkan panduan sistem bawaan
-  - H2: Workflow agen umum
+  - H2: Alur kerja agen umum
   - H2: Contoh input
   - H2: Referensi input alat
   - H2: Penyorotan sintaks
   - H2: Kontrak detail output
   - H2: Bagian tidak berubah yang diciutkan
   - H2: Default Plugin
-  - H3: Konfigurasi URL viewer persisten
+  - H3: Konfigurasi URL penampil persisten
   - H2: Konfigurasi keamanan
   - H2: Siklus hidup dan penyimpanan artefak
-  - H2: URL viewer dan perilaku jaringan
+  - H2: URL penampil dan perilaku jaringan
   - H2: Model keamanan
   - H2: Persyaratan browser untuk mode file
   - H2: Pemecahan masalah
@@ -9113,7 +9115,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Direktif
   - H2: Cara kerjanya
   - H2: Urutan resolusi
-  - H2: Ketersediaan dan allowlist
+  - H2: Ketersediaan dan daftar izinkan
   - H2: Yang tidak dikontrol elevated
   - H2: Terkait
 
@@ -9122,7 +9124,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/exa-search
 - Judul:
   - H2: Instal Plugin
-  - H2: Dapatkan API key
+  - H2: Dapatkan kunci API
   - H2: Konfigurasi
   - H2: Override URL dasar
   - H2: Parameter alat
@@ -9138,8 +9140,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Bin aman (hanya stdin)
   - H3: Validasi argv dan flag yang ditolak
   - H3: Direktori biner tepercaya
-  - H3: Chaining shell, wrapper, dan multiplexer
-  - H3: Bin aman versus allowlist
+  - H3: Perangkaian shell, wrapper, dan multiplexer
+  - H3: Bin aman versus daftar izinkan
   - H2: Perintah interpreter/runtime
   - H3: Perilaku pengiriman tindak lanjut
   - H2: Penerusan persetujuan ke channel chat
@@ -9148,8 +9150,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Pengiriman persetujuan native
   - H3: Alur IPC macOS
   - H2: FAQ
-  - H3: Kapan accountId dan threadId digunakan pada target persetujuan?
-  - H3: Ketika persetujuan dikirim ke sesi, apakah siapa pun di sesi tersebut dapat menyetujuinya?
+  - H3: Kapan accountId dan threadId akan digunakan pada target persetujuan?
+  - H3: Ketika persetujuan dikirim ke sebuah sesi, bisakah siapa pun dalam sesi itu menyetujuinya?
   - H2: Terkait
 
 ## tools/exec-approvals.md
@@ -9161,7 +9163,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Model kepercayaan
   - H3: Pemisahan macOS
   - H2: Pengaturan dan penyimpanan
-  - H2: Pengaturan kebijakan
+  - H2: Kenop kebijakan
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
@@ -9169,17 +9171,17 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
   - H2: Mode YOLO (tanpa persetujuan)
-  - H3: Penyiapan "never prompt" persisten gateway-host
+  - H3: Penyiapan "jangan pernah minta konfirmasi" host Gateway persisten
   - H3: Pintasan lokal
   - H3: Host Node
-  - H3: Pintasan khusus sesi
-  - H2: Allowlist (per agen)
+  - H3: Pintasan hanya sesi
+  - H2: Daftar izinkan (per agen)
   - H3: Membatasi argumen dengan argPattern
   - H2: Izinkan otomatis CLI skill
   - H2: Bin aman dan penerusan persetujuan
   - H2: Pengeditan UI Kontrol
   - H2: Alur persetujuan
-  - H2: Event sistem
+  - H2: Peristiwa sistem
   - H2: Perilaku persetujuan yang ditolak
   - H2: Implikasi
   - H2: Terkait
@@ -9194,7 +9196,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Override sesi (/exec)
   - H2: Model otorisasi
   - H2: Persetujuan exec (aplikasi pendamping / host node)
-  - H2: Allowlist + bin aman
+  - H2: Daftar izinkan + bin aman
   - H2: Contoh
   - H2: applypatch
   - H2: Terkait
@@ -9204,10 +9206,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/firecrawl
 - Judul:
   - H2: Instal Plugin
-  - H2: webfetch tanpa kunci dan API key
-  - H2: Konfigurasikan pencarian Firecrawl
-  - H2: Konfigurasikan fallback webfetch Firecrawl
-  - H3: Firecrawl self-hosted
+  - H2: webfetch tanpa kunci dan kunci API
+  - H2: Konfigurasi pencarian Firecrawl
+  - H2: Konfigurasi fallback webfetch Firecrawl
+  - H3: Firecrawl yang di-host sendiri
   - H2: Alat Plugin Firecrawl
   - H3: firecrawlsearch
   - H3: firecrawlscrape
@@ -9219,7 +9221,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/gemini-search
 - Judul:
-  - H2: Dapatkan API key
+  - H2: Dapatkan kunci API
   - H2: Konfigurasi
   - H2: Cara kerjanya
   - H2: Parameter yang didukung
@@ -9233,7 +9235,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H1: Tujuan
   - H2: Mulai cepat
-  - H2: Kegunaan goal
+  - H2: Kegunaan tujuan
   - H2: Referensi perintah
   - H2: Status
   - H2: Anggaran token
@@ -9248,7 +9250,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/grok-search
 - Judul:
   - H2: Onboarding dan konfigurasi
-  - H2: Masuk atau dapatkan API key
+  - H2: Masuk atau dapatkan kunci API
   - H2: Konfigurasi
   - H2: Cara kerjanya
   - H2: Parameter yang didukung
@@ -9262,7 +9264,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H2: Rute umum
   - H2: Penyedia yang didukung
-  - H2: Kemampuan penyedia
+  - H2: Kapabilitas penyedia
   - H2: Parameter alat
   - H2: Konfigurasi
   - H3: Pemilihan model
@@ -9277,11 +9279,11 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools
 - Judul:
   - H2: Mulai di sini
-  - H2: Pilih alat, Skills, atau Plugin
+  - H2: Pilih alat, Skills, atau plugins
   - H2: Kategori alat bawaan
   - H2: Alat yang disediakan Plugin
-  - H2: Konfigurasikan akses dan persetujuan
-  - H2: Perluas kemampuan
+  - H2: Konfigurasi akses dan persetujuan
+  - H2: Perluas kapabilitas
   - H2: Pecahkan masalah alat yang hilang
   - H2: Terkait
 
@@ -9289,7 +9291,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/kimi-search
 - Judul:
-  - H2: Dapatkan API key
+  - H2: Dapatkan kunci API
   - H2: Konfigurasi
   - H2: Cara kerjanya
   - H2: Parameter yang didukung
@@ -9303,9 +9305,9 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Konfigurasi (opsional)
   - H2: Parameter alat
   - H2: Output
-  - H2: Contoh: Langkah workflow Lobster
+  - H2: Contoh: Langkah alur kerja Lobster
   - H3: Batasan penting
-  - H2: Catatan keamanan
+  - H2: Catatan keselamatan
   - H2: Terkait
 
 ## tools/lobster.md
@@ -9314,12 +9316,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Hook
   - H2: Mengapa
-  - H2: Mengapa DSL, bukan program biasa?
+  - H2: Mengapa DSL alih-alih program biasa?
   - H2: Cara kerjanya
   - H2: Pola: CLI kecil + pipe JSON + persetujuan
   - H2: Langkah LLM khusus JSON (llm-task)
   - H3: Batasan penting: Lobster tertanam vs openclaw.invoke
-  - H2: File workflow (.lobster)
+  - H2: File alur kerja (.lobster)
   - H2: Instal Lobster
   - H2: Aktifkan alat
   - H2: Contoh: Triase email
@@ -9327,13 +9329,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: run
   - H3: resume
   - H3: Input opsional
-  - H2: Envelope output
+  - H2: Amplop output
   - H2: Persetujuan
   - H2: OpenProse
-  - H2: Keamanan
+  - H2: Keselamatan
   - H2: Pemecahan masalah
   - H2: Pelajari lebih lanjut
-  - H2: Studi kasus: workflow komunitas
+  - H2: Studi kasus: alur kerja komunitas
   - H2: Terkait
 
 ## tools/loop-detection.md
@@ -9344,7 +9346,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Blok konfigurasi
   - H3: Perilaku bidang
   - H2: Penyiapan yang direkomendasikan
-  - H2: Penjaga pasca-Compaction
+  - H2: Pelindung pasca-Compaction
   - H2: Log dan perilaku yang diharapkan
   - H2: Terkait
 
@@ -9355,15 +9357,15 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Kemampuan
   - H2: Matriks kemampuan penyedia
   - H2: Asinkron vs sinkron
-  - H2: Ucapan-ke-teks dan Panggilan Suara
-  - H2: Pemetaan penyedia (bagaimana vendor terbagi di berbagai antarmuka)
+  - H2: Ucapan-ke-teks dan panggilan suara
+  - H2: Pemetaan penyedia (bagaimana vendor terbagi di berbagai permukaan)
   - H2: Terkait
 
 ## tools/minimax-search.md
 
 - Rute: /tools/minimax-search
 - Judul:
-  - H2: Dapatkan kredensial Token Plan
+  - H2: Mendapatkan kredensial rencana token
   - H2: Konfigurasi
   - H2: Pemilihan wilayah
   - H2: Parameter yang didukung
@@ -9416,7 +9418,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/parallel-search
 - Judul:
-  - H2: Instal Plugin
+  - H2: Memasang Plugin
   - H2: Kunci API (penyedia berbayar)
   - H2: Konfigurasi
   - H2: Penggantian URL dasar
@@ -9429,13 +9431,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/pdf
 - Judul:
   - H2: Ketersediaan
-  - H2: Referensi masukan
+  - H2: Referensi input
   - H2: Referensi PDF yang didukung
   - H2: Mode eksekusi
   - H3: Mode penyedia native
   - H3: Mode fallback ekstraksi
   - H2: Konfigurasi
-  - H2: Detail keluaran
+  - H2: Detail output
   - H2: Perilaku kesalahan
   - H2: Contoh
   - H2: Terkait
@@ -9455,13 +9457,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/perplexity-search
 - Judul:
-  - H2: Instal Plugin
+  - H2: Memasang Plugin
   - H2: Mendapatkan kunci API Perplexity
   - H2: Kompatibilitas OpenRouter
   - H2: Contoh konfigurasi
-  - H3: API Pencarian Perplexity Native
+  - H3: API Pencarian Perplexity native
   - H3: Kompatibilitas OpenRouter / Sonar
-  - H2: Tempat menetapkan kunci
+  - H2: Tempat mengatur kunci
   - H2: Parameter alat
   - H3: Aturan filter domain
   - H2: Catatan
@@ -9474,12 +9476,12 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Persyaratan
   - H2: Mulai cepat
   - H2: Konfigurasi
-  - H3: Pilih sumber instalasi
-  - H3: Kebijakan instalasi operator
-  - H3: Konfigurasi kebijakan Plugin
+  - H3: Pilih sumber pemasangan
+  - H3: Kebijakan pemasangan operator
+  - H3: Konfigurasikan kebijakan Plugin
   - H2: Memahami format Plugin
   - H2: Hook Plugin
-  - H2: Verifikasi Gateway aktif
+  - H2: Memverifikasi Gateway aktif
   - H2: Pemecahan masalah
   - H3: Kepemilikan jalur Plugin yang diblokir
   - H3: Penyiapan alat Plugin yang lambat
@@ -9511,7 +9513,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Cara kerjanya
   - H2: Siklus hidup
-  - H2: Chat
+  - H2: Obrolan
   - H2: CLI
   - H2: Konten proposal
   - H2: File pendukung
@@ -9519,7 +9521,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Persetujuan dan otonomi
   - H2: Metode Gateway
   - H2: Penyimpanan
-  - H2: Batasan
+  - H2: Batas
   - H2: Pemecahan masalah
   - H2: Terkait
 
@@ -9528,14 +9530,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/skills-config
 - Judul:
   - H2: Pemuatan (skills.load)
-  - H2: Instalasi (skills.install)
-  - H2: Kebijakan Instalasi Operator (security.installPolicy)
-  - H2: Daftar Skills bawaan yang diizinkan
-  - H2: Entri per-Skills (skills.entries)
-  - H2: Daftar agen yang diizinkan (agents)
+  - H2: Pemasangan (skills.install)
+  - H2: Kebijakan Pemasangan Operator (security.installPolicy)
+  - H2: Daftar izin skill bawaan
+  - H2: Entri per-skill (skills.entries)
+  - H2: Daftar izin agen (agents)
   - H2: Workshop (skills.workshop)
-  - H2: Root Skills yang ditautkan dengan symlink
-  - H2: Skills dalam sandbox dan variabel env
+  - H2: Root skill yang disymlink
+  - H2: Skills bersandbox dan variabel lingkungan
   - H2: Pengingat urutan pemuatan
   - H2: Terkait
 
@@ -9544,16 +9546,16 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/skills
 - Judul:
   - H2: Urutan pemuatan
-  - H2: Skills per agen vs bersama
-  - H2: Daftar agen yang diizinkan
+  - H2: Skills per-agen vs bersama
+  - H2: Daftar izin agen
   - H2: Plugin dan Skills
   - H2: Skill Workshop
-  - H2: Menginstal dari ClawHub
+  - H2: Memasang dari ClawHub
   - H2: Keamanan
   - H2: Format SKILL.md
   - H3: Kunci frontmatter opsional
   - H2: Gating
-  - H3: Spesifikasi penginstal
+  - H3: Spesifikasi installer
   - H2: Penggantian konfigurasi
   - H2: Injeksi lingkungan
   - H2: Snapshot dan penyegaran
@@ -9568,18 +9570,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Konfigurasi
   - H2: Daftar perintah
   - H3: Perintah inti
-  - H3: Perintah Dock
+  - H3: Perintah dock
   - H3: Perintah Plugin bawaan
-  - H3: Perintah Skills
+  - H3: Perintah skill
   - H2: /tools — apa yang dapat digunakan agen sekarang
   - H2: /model — pemilihan model
   - H2: /config — penulisan konfigurasi di disk
   - H2: /mcp — konfigurasi server MCP
   - H2: /debug — penggantian khusus runtime
-  - H2: /plugins — manajemen Plugin
-  - H2: /trace — keluaran trace Plugin
+  - H2: /plugins — pengelolaan Plugin
+  - H2: /trace — output trace Plugin
   - H2: /btw — pertanyaan sampingan
-  - H2: Catatan antarmuka
+  - H2: Catatan permukaan
   - H2: Penggunaan dan status penyedia
   - H2: Terkait
 
@@ -9612,14 +9614,14 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Alur cepat
   - H3: Kontrol manual
   - H3: Sakelar konfigurasi
-  - H3: Daftar yang diizinkan
+  - H3: Daftar izin
   - H3: Penemuan
   - H3: Arsip otomatis
   - H2: Sub-agen bersarang
   - H3: Tingkat kedalaman
   - H3: Rantai pengumuman
   - H3: Kebijakan alat berdasarkan kedalaman
-  - H3: Batas spawn per agen
+  - H3: Batas spawn per-agen
   - H3: Penghentian berantai
   - H2: Autentikasi
   - H2: Pengumuman
@@ -9627,10 +9629,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H3: Baris statistik
   - H3: Mengapa lebih memilih sessionshistory
   - H2: Kebijakan alat
-  - H3: Ganti melalui konfigurasi
-  - H2: Konkruensi
-  - H2: Keaktifan dan pemulihan
-  - H2: Penghentian
+  - H3: Penggantian melalui konfigurasi
+  - H2: Konkurensi
+  - H2: Liveness dan pemulihan
+  - H2: Menghentikan
   - H2: Batasan
   - H2: Terkait
 
@@ -9650,34 +9652,34 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 - Rute: /tools/thinking
 - Judul:
-  - H2: Apa yang dilakukannya
+  - H2: Fungsinya
   - H2: Urutan resolusi
-  - H2: Menetapkan default sesi
-  - H2: Penerapan oleh agen
+  - H2: Mengatur default sesi
+  - H2: Penerapan berdasarkan agen
   - H2: Mode cepat (/fast)
   - H2: Direktif verbose (/verbose atau /v)
   - H2: Direktif trace Plugin (/trace)
   - H2: Visibilitas penalaran (/reasoning)
   - H2: Terkait
-  - H2: Heartbeat
-  - H2: UI chat web
+  - H2: Heartbeats
+  - H2: UI obrolan web
   - H2: Profil penyedia
 
 ## tools/tokenjuice.md
 
 - Rute: /tools/tokenjuice
 - Judul:
-  - H2: Aktifkan Plugin
+  - H2: Mengaktifkan Plugin
   - H2: Apa yang diubah tokenjuice
-  - H2: Verifikasi bahwa ini berfungsi
-  - H2: Nonaktifkan Plugin
+  - H2: Memverifikasi bahwa ini berfungsi
+  - H2: Menonaktifkan Plugin
   - H2: Terkait
 
 ## tools/tool-search.md
 
 - Rute: /tools/tool-search
 - Judul:
-  - H2: Bagaimana satu giliran berjalan
+  - H2: Cara sebuah giliran berjalan
   - H2: Mode
   - H2: Mengapa ini ada
   - H2: API
@@ -9696,10 +9698,10 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Akses
   - H2: Apa yang direkam
   - H2: File bundle
-  - H2: Lokasi penangkapan
-  - H2: Nonaktifkan penangkapan
-  - H2: Sesuaikan timeout flush
-  - H2: Privasi dan batasan
+  - H2: Lokasi capture
+  - H2: Menonaktifkan capture
+  - H2: Menyesuaikan timeout flush
+  - H2: Privasi dan batas
   - H2: Pemecahan masalah
   - H2: Terkait
 
@@ -9710,19 +9712,19 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Mulai cepat
   - H2: Penyedia yang didukung
   - H2: Konfigurasi
-  - H3: Penggantian suara per agen
+  - H3: Penggantian suara per-agen
   - H2: Persona
   - H3: Persona minimal
-  - H3: Persona lengkap (prompt netral penyedia)
+  - H3: Persona lengkap (prompt netral-penyedia)
   - H3: Resolusi persona
-  - H3: Bagaimana penyedia menggunakan prompt persona
+  - H3: Cara penyedia menggunakan prompt persona
   - H3: Kebijakan fallback
   - H2: Direktif berbasis model
   - H2: Perintah slash
-  - H2: Preferensi per pengguna
-  - H2: Format keluaran (tetap)
+  - H2: Preferensi per-pengguna
+  - H2: Format output (tetap)
   - H2: Perilaku Auto-TTS
-  - H2: Format keluaran berdasarkan kanal
+  - H2: Format output berdasarkan kanal
   - H2: Referensi bidang
   - H2: Alat agen
   - H2: RPC Gateway
@@ -9734,13 +9736,13 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Rute: /tools/video-generation
 - Judul:
   - H2: Mulai cepat
-  - H2: Cara kerja generasi asinkron
+  - H2: Cara kerja pembuatan asinkron
   - H3: Siklus hidup tugas
   - H2: Penyedia yang didukung
   - H3: Matriks kemampuan
   - H2: Parameter alat
   - H3: Wajib
-  - H3: Masukan konten
+  - H3: Input konten
   - H3: Kontrol gaya
   - H3: Lanjutan
   - H4: Fallback dan opsi bertipe
@@ -9762,8 +9764,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Pembaruan progres
   - H2: Konfigurasi
   - H2: Fallback Firecrawl
-  - H2: Proxy env tepercaya
-  - H2: Batasan dan keamanan
+  - H2: Proksi env tepercaya
+  - H2: Batas dan keselamatan
   - H2: Profil alat
   - H2: Terkait
 
@@ -9815,17 +9817,18 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 - Judul:
   - H2: Buka cepat (lokal)
   - H2: Pemasangan perangkat (koneksi pertama)
-  - H2: Identitas pribadi (lokal browser)
+  - H2: Pasangkan perangkat seluler
+  - H2: Identitas pribadi (lokal-browser)
   - H2: Endpoint konfigurasi runtime
   - H2: Dukungan bahasa
   - H2: Tema tampilan
   - H2: Apa yang dapat dilakukannya (hari ini)
   - H2: Halaman MCP
   - H2: Tab aktivitas
-  - H2: Perilaku chat
-  - H2: Instalasi PWA dan web push
-  - H2: Embed terhosting
-  - H2: Lebar pesan chat
+  - H2: Perilaku obrolan
+  - H2: Pemasangan PWA dan web push
+  - H2: Embed yang dihosting
+  - H2: Lebar pesan obrolan
   - H2: Akses Tailnet (direkomendasikan)
   - H2: HTTP tidak aman
   - H2: Kebijakan keamanan konten
@@ -9853,7 +9856,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: RPC HTTP admin
   - H2: Konfigurasi (aktif secara default)
   - H2: Akses Tailscale
-  - H3: Serve Terintegrasi (direkomendasikan)
+  - H3: Serve terintegrasi (direkomendasikan)
   - H3: Bind Tailnet + token
   - H3: Internet publik (Funnel)
   - H2: Catatan keamanan
@@ -9873,8 +9876,8 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
   - H2: Pintasan keyboard
   - H2: Perintah slash
   - H2: Perintah shell lokal
-  - H2: Perbaiki konfigurasi dari TUI lokal
-  - H2: Keluaran alat
+  - H2: Memperbaiki konfigurasi dari TUI lokal
+  - H2: Output alat
   - H2: Warna terminal
   - H2: Riwayat + streaming
   - H2: Detail koneksi
@@ -9885,7 +9888,7 @@ Jangan edit secara manual; jalankan `pnpm docs:map:gen`.
 
 ## web/webchat.md
 
-  - Rute: /web/webchat
+  - Route: /web/webchat
   - Judul:
   - H2: Apa itu
   - H2: Mulai cepat
