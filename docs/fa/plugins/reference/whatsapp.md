@@ -1,21 +1,21 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی، یا ممیزی Plugin واتساپ هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin WhatsApp هستید
 summary: Plugin کانال WhatsApp در OpenClaw برای چت‌های WhatsApp Web.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-06-27T18:30:02Z"
+    generated_at: "2026-07-04T15:27:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
+    source_hash: 2fed1a21b859b7d3bd2798d013faaf7460cd6984c4b06b70e59e3ac85c5327fb
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
-# Plugin ‏WhatsApp
+# Plugin WhatsApp
 
-Plugin کانال WhatsApp در OpenClaw برای گفت‌وگوهای WhatsApp Web.
+Plugin کانال WhatsApp در OpenClaw برای چت‌های WhatsApp Web.
 
 ## توزیع
 
@@ -24,7 +24,7 @@ Plugin کانال WhatsApp در OpenClaw برای گفت‌وگوهای WhatsApp
 
 ## سطح
 
-کانال‌ها: whatsapp؛ Skills
+کانال‌ها: whatsapp؛ قراردادها: ابزارها؛ Skills
 
 ## اسناد مرتبط
 

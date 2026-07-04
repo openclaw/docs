@@ -3,18 +3,18 @@ read_when: Finding which docs page covers a topic before reading the page
 summary: Generierte Überschriftenzuordnung für OpenClaw-Dokumentationsseiten
 title: Dokumentationsübersicht
 x-i18n:
-    generated_at: "2026-07-04T10:33:38Z"
+    generated_at: "2026-07-04T15:11:32Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9ec366b8fddc45897436eeffb2af38cb4f161e77cf1e75c2f5aeb4a05e5d7063
+    source_hash: 4e180b7c652be24b73af51fecc5cf9a566184c1eff65ca0acdc0133bbc49c332
     source_path: docs_map.md
     workflow: 16
 ---
 
-# OpenClaw-Dokumentationsübersicht
+# OpenClaw-Dokumentationskarte
 
-Diese Datei wird aus den Überschriften von `docs/**/*.md` und `docs/**/*.mdx` generiert, damit Agenten durch den Dokumentationsbaum navigieren können.
+Diese Datei wird aus den Überschriften in `docs/**/*.md` und `docs/**/*.mdx` generiert, damit Agenten im Dokumentationsbaum navigieren können.
 Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 ## agent-runtime-architecture.md
@@ -41,15 +41,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /auth-credential-semantics
 - Überschriften:
-  - H2: Stabile Probe-Ursachencodes
+  - H2: Stabile Reason-Codes für Prüfungen
   - H2: Token-Anmeldedaten
-  - H3: Berechtigungsregeln
+  - H3: Eignungsregeln
   - H3: Auflösungsregeln
   - H2: Portabilität von Agent-Kopien
-  - H2: Reine-Konfigurations-Auth-Routen
-  - H2: Explizite Auth-Reihenfolgenfilterung
-  - H2: Probe-Zielauflösung
-  - H2: Erkennung externer CLI-Anmeldedaten
+  - H2: Authentifizierungsrouten nur über Konfiguration
+  - H2: Explizite Filterung der Authentifizierungsreihenfolge
+  - H2: Auflösung des Prüfungsziels
+  - H2: Erkennung von Anmeldedaten über externe CLI
   - H2: OAuth SecretRef Policy Guard
   - H2: Legacy-kompatible Nachrichten
   - H2: Verwandte Themen
@@ -71,7 +71,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /automation/cron-jobs
 - Überschriften:
   - H2: Schnellstart
-  - H2: Wie Cron funktioniert
+  - H2: So funktioniert Cron
   - H2: Zeitplantypen
   - H3: Tag des Monats und Wochentag verwenden ODER-Logik
   - H2: Ausführungsarten
@@ -83,10 +83,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Webhooks
   - H3: Authentifizierung
   - H2: Gmail PubSub-Integration
-  - H3: Wizard-Einrichtung (empfohlen)
+  - H3: Einrichtung per Assistent (empfohlen)
   - H3: Automatischer Gateway-Start
   - H3: Manuelle einmalige Einrichtung
-  - H3: Gmail-Modellüberschreibung
+  - H3: Gmail-Modell-Override
   - H2: Jobs verwalten
   - H2: Konfiguration
   - H2: Fehlerbehebung
@@ -116,7 +116,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Hook-Struktur
   - H3: HOOK.md-Format
   - H3: Handler-Implementierung
-  - H3: Highlights des Ereigniskontexts
+  - H3: Wichtige Aspekte des Ereigniskontexts
   - H2: Hook-Erkennung
   - H3: Hook-Pakete
   - H2: Gebündelte Hooks
@@ -131,7 +131,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Best Practices
   - H2: Fehlerbehebung
   - H3: Hook nicht erkannt
-  - H3: Hook nicht berechtigt
+  - H3: Hook nicht zulässig
   - H3: Hook wird nicht ausgeführt
   - H2: Verwandte Themen
 
@@ -164,16 +164,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Warum Daueraufträge
   - H2: Wie sie funktionieren
-  - H2: Anatomie eines Dauerauftrags
+  - H2: Aufbau eines Dauerauftrags
   - H2: Daueraufträge plus Cron-Jobs
   - H2: Beispiele
   - H3: Beispiel 1: Inhalte und soziale Medien (wöchentlicher Zyklus)
   - H3: Beispiel 2: Finanzabläufe (ereignisgesteuert)
-  - H3: Beispiel 3: Monitoring und Warnungen (kontinuierlich)
+  - H3: Beispiel 3: Überwachung und Warnmeldungen (kontinuierlich)
   - H2: Ausführen-Prüfen-Berichten-Muster
-  - H2: Mehrprogrammarchitektur
+  - H2: Mehrprogramm-Architektur
   - H2: Best Practices
-  - H3: Tun
+  - H3: Empfohlen
   - H3: Vermeiden
   - H2: Verwandte Themen
 
@@ -196,7 +196,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /automation/tasks
 - Überschriften:
-  - H2: Kurzfassung
+  - H2: TL;DR
   - H2: Schnellstart
   - H2: Was eine Aufgabe erstellt
   - H2: Aufgabenlebenszyklus
@@ -206,7 +206,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Chat-Aufgabenboard (/tasks)
   - H2: Statusintegration (Aufgabendruck)
   - H2: Speicherung und Wartung
-  - H3: Wo Aufgaben gespeichert werden
+  - H3: Wo Aufgaben gespeichert sind
   - H3: Automatische Wartung
   - H2: Wie Aufgaben mit anderen Systemen zusammenhängen
   - H2: Verwandte Themen
@@ -233,10 +233,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/access-groups
 - Überschriften:
-  - H2: Statische Gruppen von Nachrichtensendern
+  - H2: Statische Absendergruppen für Nachrichten
   - H2: Gruppen aus Allowlisten referenzieren
-  - H2: Unterstützte Nachrichtenkanalpfade
-  - H2: Plugin-Diagnosen
+  - H2: Unterstützte Pfade für Nachrichtenkanäle
+  - H2: Plugin-Diagnose
   - H2: Discord-Kanalzielgruppen
   - H2: Sicherheitshinweise
   - H2: Fehlerbehebung
@@ -260,7 +260,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/bot-loop-protection
 - Überschriften:
-  - H1: Bot-Schleifenschutz
+  - H1: Schutz vor Bot-Schleifen
   - H2: Standardwerte
   - H2: Gemeinsame Standardwerte konfigurieren
   - H2: Pro Kanal oder Konto überschreiben
@@ -270,13 +270,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/broadcast-groups
 - Überschriften:
-  - H2: Übersicht
+  - H2: Überblick
   - H2: Anwendungsfälle
   - H2: Konfiguration
   - H3: Grundeinrichtung
   - H3: Verarbeitungsstrategie
   - H3: Vollständiges Beispiel
-  - H2: Wie es funktioniert
+  - H2: So funktioniert es
   - H3: Nachrichtenfluss
   - H3: Sitzungsisolation
   - H3: Beispiel: isolierte Sitzungen
@@ -290,7 +290,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Konfigurationsschema
   - H3: Felder
   - H2: Einschränkungen
-  - H2: Zukünftige Erweiterungen
+  - H2: Zukünftige Verbesserungen
   - H2: Verwandte Themen
 
 ## channels/channel-routing.md
@@ -301,12 +301,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schlüsselbegriffe
   - H2: Präfixe für ausgehende Ziele
   - H2: Formen von Sitzungsschlüsseln (Beispiele)
-  - H2: Anheften der Haupt-DM-Route
-  - H2: Geschützte eingehende Aufzeichnung
+  - H2: Pinning der Haupt-DM-Route
+  - H2: Geschützte Aufzeichnung eingehender Nachrichten
   - H2: Routingregeln (wie ein Agent ausgewählt wird)
   - H2: Broadcast-Gruppen (mehrere Agenten ausführen)
-  - H2: Konfigurationsübersicht
-  - H2: Sitzungsspeicherung
+  - H2: Konfigurationsüberblick
+  - H2: Sitzungsspeicher
   - H2: WebChat-Verhalten
   - H2: Antwortkontext
   - H2: Verwandte Themen
@@ -315,7 +315,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/clickclack
 - Überschriften:
-  - H2: Schnelleinrichtung
+  - H2: Schnelle Einrichtung
   - H2: Mehrere Bots
   - H2: Ziele
   - H2: Berechtigungen
@@ -325,17 +325,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/discord
 - Überschriften:
-  - H2: Schnelleinrichtung
-  - H2: Empfohlen: Guild-Arbeitsbereich einrichten
+  - H2: Schnelle Einrichtung
+  - H2: Empfohlen: Guild-Workspace einrichten
   - H2: Runtime-Modell
-  - H2: Forumskanäle
+  - H2: Forumkanäle
   - H2: Interaktive Komponenten
   - H2: Zugriffskontrolle und Routing
   - H3: Rollenbasiertes Agent-Routing
-  - H2: Native Befehle und Befehls-Auth
+  - H2: Native Befehle und Befehlsauthentifizierung
   - H2: Funktionsdetails
-  - H2: Tools und Aktions-Gates
-  - H2: Components-v2-UI
+  - H2: Tools und Action-Gates
+  - H2: Components v2-UI
   - H2: Sprache
   - H3: Sprachkanäle
   - H3: Benutzern in Sprache folgen
@@ -354,10 +354,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Direktnachrichten
   - H3: Gruppenchats
   - H2: Beispiele für Gruppenkonfiguration
-  - H3: Alle Gruppen zulassen, keine @mention erforderlich
-  - H3: Alle Gruppen zulassen, @mention weiterhin erforderlich
-  - H3: Nur bestimmte Gruppen zulassen
-  - H3: Sender innerhalb einer Gruppe einschränken
+  - H3: Alle Gruppen erlauben, keine @mention erforderlich
+  - H3: Alle Gruppen erlauben, @mention weiterhin erforderlich
+  - H3: Nur bestimmte Gruppen erlauben
+  - H3: Absender innerhalb einer Gruppe einschränken
   - H2: Gruppen-/Benutzer-IDs abrufen
   - H3: Gruppen-IDs (chatid, Format: ocxxx)
   - H3: Benutzer-IDs (openid, Format: ouxxx)
@@ -365,8 +365,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung
   - H3: Bot antwortet nicht in Gruppenchats
   - H3: Bot empfängt keine Nachrichten
-  - H3: QR-Einrichtung reagiert nicht in der Feishu-Mobile-App
-  - H3: App Secret geleakt
+  - H3: QR-Einrichtung reagiert nicht in der mobilen Feishu-App
+  - H3: App Secret offengelegt
   - H2: Erweiterte Konfiguration
   - H3: Mehrere Konten
   - H3: Nachrichtenlimits
@@ -374,15 +374,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Kontingentoptimierung
   - H3: ACP-Sitzungen
   - H4: Persistente ACP-Bindung
-  - H4: ACP aus dem Chat starten
+  - H4: ACP aus Chat starten
   - H3: Multi-Agent-Routing
-  - H2: Pro-Benutzer-Agent-Isolation (dynamische Agent-Erstellung)
-  - H3: Schnelleinrichtung
-  - H3: Wie es funktioniert
+  - H2: Agent-Isolation pro Benutzer (dynamische Agent-Erstellung)
+  - H3: Schnelle Einrichtung
+  - H3: So funktioniert es
   - H3: Konfigurationsoptionen
   - H3: Sitzungsumfang
-  - H3: Typisches Mehrbenutzer-Deployment
-  - H3: Prüfung
+  - H3: Typische Bereitstellung für mehrere Benutzer
+  - H3: Verifizierung
   - H3: Hinweise
   - H2: Konfigurationsreferenz
   - H2: Unterstützte Nachrichtentypen
@@ -396,18 +396,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/googlechat
 - Überschriften:
   - H2: Installieren
-  - H2: Schnelleinrichtung (Einsteiger)
+  - H2: Schnelle Einrichtung (Einsteiger)
   - H2: Zu Google Chat hinzufügen
   - H2: Öffentliche URL (nur Webhook)
   - H3: Option A: Tailscale Funnel (empfohlen)
   - H3: Option B: Reverse Proxy (Caddy)
   - H3: Option C: Cloudflare Tunnel
-  - H2: Wie es funktioniert
+  - H2: So funktioniert es
   - H2: Ziele
   - H2: Konfigurationshighlights
   - H2: Fehlerbehebung
   - H3: 405 Method Not Allowed
-  - H3: Weitere Probleme
+  - H3: Andere Probleme
   - H2: Verwandte Themen
 
 ## channels/group-messages.md
@@ -416,9 +416,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Verhalten
   - H2: Konfigurationsbeispiel (WhatsApp)
-  - H3: Aktivierungsbefehl (nur Owner)
+  - H3: Aktivierungsbefehl (nur Besitzer)
   - H2: Verwendung
-  - H2: Testen / Prüfung
+  - H2: Testen / Verifizierung
   - H2: Bekannte Überlegungen
   - H2: Verwandte Themen
 
@@ -426,18 +426,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/groups
 - Überschriften:
-  - H2: Einsteiger-Einführung (2 Minuten)
+  - H2: Einführung für Einsteiger (2 Minuten)
   - H2: Sichtbare Antworten
   - H2: Kontextsichtbarkeit und Allowlisten
   - H2: Sitzungsschlüssel
-  - H2: Muster: persönliche DMs + öffentliche Gruppen (ein Agent)
-  - H2: Anzeigebezeichnungen
+  - H2: Muster: persönliche DMs + öffentliche Gruppen (einzelner Agent)
+  - H2: Anzeigelabels
   - H2: Gruppenrichtlinie
   - H2: Mention-Gating (Standard)
   - H2: Konfigurierte Mention-Muster eingrenzen
   - H2: Tool-Einschränkungen für Gruppen/Kanäle (optional)
   - H2: Gruppen-Allowlisten
-  - H2: Aktivierung (nur Owner)
+  - H2: Aktivierung (nur Besitzer)
   - H2: Kontextfelder
   - H2: iMessage-spezifische Details
   - H2: WhatsApp-Systemprompts
@@ -448,15 +448,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/imessage-from-bluebubbles
 - Überschriften:
-  - H2: Migrationscheckliste
+  - H2: Migrations-Checkliste
   - H2: Wann diese Migration sinnvoll ist
   - H2: Was imsg macht
   - H2: Bevor Sie beginnen
   - H2: Konfigurationsübersetzung
-  - H2: Stolperfalle bei der Gruppenregistrierung
+  - H2: Fallstrick bei der Gruppenregistrierung
   - H2: Schritt für Schritt
   - H2: Aktionsparität auf einen Blick
-  - H2: Pairing, Sitzungen und ACP-Bindungen
+  - H2: Kopplung, Sitzungen und ACP-Bindungen
   - H2: Kein Rollback-Kanal
   - H2: Verwandte Themen
 
@@ -464,21 +464,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/imessage
 - Überschriften:
-  - H2: Schnelleinrichtung
+  - H2: Schnelle Einrichtung
   - H2: Anforderungen und Berechtigungen (macOS)
   - H2: Aktivieren der privaten imsg-API
   - H3: Einrichtung
   - H3: Wenn Sie SIP nicht deaktivieren können
   - H2: Zugriffskontrolle und Routing
   - H2: ACP-Konversationsbindungen
-  - H2: Deployment-Muster
-  - H2: Medien, Chunking und Zustellungsziele
-  - H2: Private API-Aktionen
+  - H2: Bereitstellungsmuster
+  - H2: Medien, Chunking und Zustellziele
+  - H2: Aktionen der privaten API
   - H2: Konfigurationsschreibvorgänge
   - H2: Zusammenführen geteilter DM-Sendungen (Befehl + URL in einer Komposition)
   - H3: Szenarien und was der Agent sieht
-  - H2: Eingehende Wiederherstellung nach einem Bridge- oder Gateway-Neustart
-  - H3: Für Operator sichtbares Signal
+  - H2: Wiederherstellung eingehender Nachrichten nach einem Bridge- oder Gateway-Neustart
+  - H3: Für Operatoren sichtbares Signal
   - H3: Migration
   - H2: Fehlerbehebung
   - H2: Verweise auf die Konfigurationsreferenz
@@ -488,7 +488,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels
 - Überschriften:
-  - H2: Zustellungshinweise
+  - H2: Zustellhinweise
   - H2: Unterstützte Kanäle
   - H2: Hinweise
 
@@ -499,11 +499,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Sicherheitsstandardwerte
   - H2: Zugriffskontrolle
-  - H3: Häufige Stolperfalle: allowFrom gilt für DMs, nicht für Kanäle
-  - H2: Antwortauslösung (Mentions)
+  - H3: Häufiger Fallstrick: allowFrom gilt für DMs, nicht für Kanäle
+  - H2: Auslösen von Antworten (Mentions)
   - H2: Sicherheitshinweis (empfohlen für öffentliche Kanäle)
-  - H3: Gleiche Tools für alle im Kanal
-  - H3: Unterschiedliche Tools pro Sender (Owner erhält mehr Rechte)
+  - H3: Dieselben Tools für alle im Kanal
+  - H3: Unterschiedliche Tools pro Absender (Besitzer erhält mehr Rechte)
   - H2: NickServ
   - H2: Umgebungsvariablen
   - H2: Fehlerbehebung
@@ -514,11 +514,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/line
 - Überschriften:
   - H2: Installieren
-  - H2: Einrichtung
+  - H2: Einrichten
   - H2: Konfigurieren
   - H2: Zugriffskontrolle
   - H2: Nachrichtenverhalten
-  - H2: Kanaldaten (Rich-Nachrichten)
+  - H2: Kanaldaten (Rich Messages)
   - H2: ACP-Unterstützung
   - H2: Ausgehende Medien
   - H2: Fehlerbehebung
@@ -541,7 +541,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was die Migration nicht automatisch erledigen kann
   - H2: Empfohlener Upgrade-Ablauf
   - H2: So funktioniert die verschlüsselte Migration
-  - H2: Häufige Meldungen und was sie bedeuten
+  - H2: Häufige Meldungen und ihre Bedeutung
   - H3: Upgrade- und Erkennungsmeldungen
   - H3: Meldungen zur Wiederherstellung des verschlüsselten Zustands
   - H3: Meldungen zur manuellen Wiederherstellung
@@ -554,7 +554,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/matrix-presentation
 - Überschriften:
-  - H2: Ereignisinhalte
+  - H2: Ereignisinhalt
   - H2: Fallback-Verhalten
   - H2: Unterstützte Blöcke
   - H2: Interaktionen
@@ -567,8 +567,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Voraussetzungen
   - H2: Schritte
-  - H2: Hinweise für mehrere Bots
-  - H2: Homeserver-Hinweise
+  - H2: Hinweise zu mehreren Bots
+  - H2: Hinweise zum Homeserver
   - H2: Verwandte Themen
 
 ## channels/matrix.md
@@ -576,7 +576,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/matrix
 - Überschriften:
   - H2: Installieren
-  - H2: Einrichtung
+  - H2: Einrichten
   - H3: Interaktive Einrichtung
   - H3: Minimale Konfiguration
   - H3: Automatischer Beitritt
@@ -588,13 +588,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Streaming-Vorschauen
   - H2: Sprachnachrichten
   - H2: Genehmigungsmetadaten
-  - H3: Selbst gehostete Push-Regeln für ruhige abgeschlossene Vorschauen
+  - H3: Selbst gehostete Push-Regeln für stille finalisierte Vorschauen
   - H2: Bot-zu-Bot-Räume
   - H2: Verschlüsselung und Verifizierung
   - H3: Verschlüsselung aktivieren
   - H3: Status- und Vertrauenssignale
   - H3: Dieses Gerät mit einem Wiederherstellungsschlüssel verifizieren
-  - H3: Cross-Signing initialisieren oder reparieren
+  - H3: Cross-Signing einrichten oder reparieren
   - H3: Raum-Schlüssel-Backup
   - H3: Verifizierungen auflisten, anfordern und beantworten
   - H3: Hinweise zu mehreren Konten
@@ -608,13 +608,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Reaktionen
   - H2: Verlaufskontext
   - H2: Kontextsichtbarkeit
-  - H2: DM- und Raumrichtlinie
+  - H2: Richtlinie für Direktnachrichten und Räume
   - H2: Reparatur direkter Räume
-  - H2: Exec-Genehmigungen
+  - H2: Ausführungsgenehmigungen
   - H2: Slash-Befehle
   - H2: Mehrere Konten
   - H2: Private/LAN-Homeserver
-  - H2: Matrix-Datenverkehr über Proxy weiterleiten
+  - H2: Matrix-Datenverkehr proxyn
   - H2: Zielauflösung
   - H2: Konfigurationsreferenz
   - H3: Konto und Verbindung
@@ -623,7 +623,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Antwortverhalten
   - H3: Reaktionseinstellungen
   - H3: Tooling und raumspezifische Überschreibungen
-  - H3: Einstellungen für Exec-Genehmigungen
+  - H3: Einstellungen für Ausführungsgenehmigungen
   - H2: Verwandte Themen
 
 ## channels/mattermost.md
@@ -631,18 +631,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/mattermost
 - Überschriften:
   - H2: Installieren
-  - H2: Schnelleinrichtung
+  - H2: Schnelle Einrichtung
   - H2: Native Slash-Befehle
   - H2: Umgebungsvariablen (Standardkonto)
-  - H2: Chat-Modi
+  - H2: Chatmodi
   - H2: Threading und Sitzungen
-  - H2: Zugriffskontrolle (DMs)
+  - H2: Zugriffskontrolle (Direktnachrichten)
   - H2: Kanäle (Gruppen)
   - H2: Ziele für ausgehende Zustellung
-  - H2: DM-Kanal-Wiederholung
+  - H2: Wiederholung für Direktnachrichtenkanäle
   - H2: Vorschau-Streaming
-  - H2: Reaktionen (Nachrichtentool)
-  - H2: Interaktive Schaltflächen (Nachrichtentool)
+  - H2: Reaktionen (Nachrichten-Tool)
+  - H2: Interaktive Buttons (Nachrichten-Tool)
   - H3: Direkte API-Integration (externe Skripte)
   - H2: Verzeichnisadapter
   - H2: Mehrere Konten
@@ -653,11 +653,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/msteams
 - Überschriften:
-  - H2: Mitgeliefertes Plugin
-  - H2: Schnelleinrichtung
+  - H2: Gebündeltes Plugin
+  - H2: Schnelle Einrichtung
   - H2: Ziele
-  - H2: Konfigurationsschreibvorgänge
-  - H2: Zugriffskontrolle (DMs + Gruppen)
+  - H2: Konfigurationsänderungen
+  - H2: Zugriffskontrolle (Direktnachrichten + Gruppen)
   - H3: So funktioniert es
   - H3: Schritt 1: Azure Bot erstellen
   - H3: Schritt 2: Zugangsdaten abrufen
@@ -674,26 +674,26 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Lokale Entwicklung (Tunneling)
   - H2: Bot testen
   - H2: Umgebungsvariablen
-  - H2: Aktion für Mitgliedsinformationen
+  - H2: Aktion für Mitgliederinformationen
   - H2: Verlaufskontext
   - H2: Aktuelle Teams-RSC-Berechtigungen (Manifest)
   - H2: Beispiel für ein Teams-Manifest (redigiert)
   - H3: Manifest-Hinweise (Pflichtfelder)
   - H3: Eine vorhandene App aktualisieren
-  - H2: Fähigkeiten: nur RSC im Vergleich zu Graph
-  - H3: Nur mit Teams RSC (App installiert, keine Graph-API-Berechtigungen)
+  - H2: Funktionen: Nur RSC vs. Graph
+  - H3: Nur mit Teams RSC (App installiert, keine Graph API-Berechtigungen)
   - H3: Mit Teams RSC + Microsoft Graph-Anwendungsberechtigungen
-  - H3: RSC im Vergleich zur Graph API
-  - H2: Graph-gestützte Medien + Verlauf (für Kanäle erforderlich)
+  - H3: RSC vs. Graph API
+  - H2: Graph-aktivierte Medien + Verlauf (für Kanäle erforderlich)
   - H2: Bekannte Einschränkungen
-  - H3: Webhook-Timeouts
+  - H3: Webhook-Zeitüberschreitungen
   - H3: Unterstützung für Teams-Cloud und Dienst-URL
   - H3: Formatierung
   - H2: Konfiguration
   - H2: Routing und Sitzungen
-  - H2: Antwortstil: Threads im Vergleich zu Beiträgen
-  - H3: Auflösungsrangfolge
-  - H3: Beibehaltung des Thread-Kontexts
+  - H2: Antwortstil: Threads vs. Beiträge
+  - H3: Auflösungsreihenfolge
+  - H3: Bewahrung des Thread-Kontexts
   - H2: Anhänge und Bilder
   - H2: Dateien in Gruppenchats senden
   - H3: Warum Gruppenchats SharePoint benötigen
@@ -705,7 +705,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Präsentationskarten
   - H2: Zielformate
   - H2: Proaktives Messaging
-  - H2: Team- und Kanal-IDs (häufiger Stolperstein)
+  - H2: Team- und Kanal-IDs (häufige Stolperfalle)
   - H2: Private Kanäle
   - H2: Fehlerbehebung
   - H3: Häufige Probleme
@@ -718,12 +718,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/nextcloud-talk
 - Überschriften:
-  - H2: Mitgeliefertes Plugin
-  - H2: Schnelleinrichtung (Einsteiger)
+  - H2: Gebündeltes Plugin
+  - H2: Schnelle Einrichtung (Einsteiger)
   - H2: Hinweise
-  - H2: Zugriffskontrolle (DMs)
+  - H2: Zugriffskontrolle (Direktnachrichten)
   - H2: Räume (Gruppen)
-  - H2: Fähigkeiten
+  - H2: Funktionen
   - H2: Konfigurationsreferenz (Nextcloud Talk)
   - H2: Verwandte Themen
 
@@ -731,24 +731,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/nostr
 - Überschriften:
-  - H2: Mitgeliefertes Plugin
+  - H2: Gebündeltes Plugin
   - H3: Ältere/benutzerdefinierte Installationen
   - H3: Nicht interaktive Einrichtung
-  - H2: Schnelleinrichtung
+  - H2: Schnelle Einrichtung
   - H2: Konfigurationsreferenz
   - H2: Profilmetadaten
   - H2: Zugriffskontrolle
-  - H3: DM-Richtlinien
+  - H3: Richtlinien für Direktnachrichten
   - H3: Allowlist-Beispiel
   - H2: Schlüsselformate
   - H2: Relays
   - H2: Protokollunterstützung
-  - H2: Tests
-  - H3: Lokaler Relay
+  - H2: Testen
+  - H3: Lokales Relay
   - H3: Manueller Test
   - H2: Fehlerbehebung
-  - H3: Nachrichten werden nicht empfangen
-  - H3: Antworten werden nicht gesendet
+  - H3: Keine Nachrichten empfangen
+  - H3: Keine Antworten senden
   - H3: Doppelte Antworten
   - H2: Sicherheit
   - H2: Einschränkungen (MVP)
@@ -758,15 +758,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/pairing
 - Überschriften:
-  - H2: 1) DM-Pairing (eingehender Chat-Zugriff)
-  - H3: Einen Absender genehmigen
+  - H2: 1) Direktnachrichten-Pairing (eingehender Chat-Zugriff)
+  - H3: Absender genehmigen
   - H3: Wiederverwendbare Absendergruppen
-  - H3: Wo der Zustand gespeichert wird
+  - H3: Wo der Zustand gespeichert ist
   - H2: 2) Node-Geräte-Pairing (iOS/Android/macOS/headless Nodes)
   - H3: Pairing über Telegram (für iOS empfohlen)
-  - H3: Ein Node-Gerät genehmigen
-  - H3: Optionale automatische Genehmigung für vertrauenswürdige CIDR-Nodes
-  - H3: Zustandsspeicher für Node-Pairing
+  - H3: Node-Gerät genehmigen
+  - H3: Optionale automatische Genehmigung vertrauenswürdiger CIDR-Nodes
+  - H3: Zustandsspeicherung für Node-Pairing
   - H3: Hinweise
   - H2: Verwandte Dokumentation
 
@@ -774,7 +774,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/qa-channel
 - Überschriften:
-  - H2: Was es macht
+  - H2: Was es tut
   - H2: Konfiguration
   - H2: Runner
   - H2: Verwandte Themen
@@ -784,7 +784,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/qqbot
 - Überschriften:
   - H2: Installieren
-  - H2: Einrichtung
+  - H2: Einrichten
   - H2: Konfigurieren
   - H3: Einrichtung mehrerer Konten
   - H3: Gruppenchats
@@ -813,23 +813,23 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/signal
 - Überschriften:
   - H2: Voraussetzungen
-  - H2: Schnelleinrichtung (Einsteiger)
+  - H2: Schnelle Einrichtung (Einsteiger)
   - H2: Was es ist
-  - H2: Konfigurationsschreibvorgänge
+  - H2: Konfigurationsänderungen
   - H2: Das Nummernmodell (wichtig)
-  - H2: Einrichtungspfad A: vorhandenes Signal-Konto verknüpfen (QR)
-  - H2: Einrichtungspfad B: dedizierte Bot-Nummer registrieren (SMS, Linux)
+  - H2: Einrichtungspfad A: Vorhandenes Signal-Konto verknüpfen (QR)
+  - H2: Einrichtungspfad B: Dedizierte Bot-Nummer registrieren (SMS, Linux)
   - H2: Externer Daemon-Modus (httpUrl)
   - H2: Container-Modus (bbernhard/signal-cli-rest-api)
-  - H2: Zugriffskontrolle (DMs + Gruppen)
+  - H2: Zugriffskontrolle (Direktnachrichten + Gruppen)
   - H2: So funktioniert es (Verhalten)
   - H2: Medien + Limits
   - H2: Tippen + Lesebestätigungen
-  - H2: Lebenszyklusstatus-Reaktionen
-  - H2: Reaktionen (Nachrichtentool)
+  - H2: Statusreaktionen im Lebenszyklus
+  - H2: Reaktionen (Nachrichten-Tool)
   - H2: Genehmigungsreaktionen
   - H2: Zustellziele (CLI/Cron)
-  - H2: Aliase
+  - H2: Aliasse
   - H2: Fehlerbehebung
   - H2: Sicherheitshinweise
   - H2: Konfigurationsreferenz (Signal)
@@ -842,8 +842,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Socket Mode oder HTTP Request URLs auswählen
   - H3: Relay-Modus
   - H2: Installieren
-  - H2: Schnelleinrichtung
-  - H2: Transportabstimmung für Socket Mode
+  - H2: Schnelle Einrichtung
+  - H2: Transport-Tuning für Socket Mode
   - H2: Checkliste für Manifest und Scopes
   - H3: Zusätzliche Manifest-Einstellungen
   - H2: Token-Modell
@@ -854,7 +854,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Emoji (ackReaction)
   - H3: Scope (messages.ackReactionScope)
   - H2: Text-Streaming
-  - H2: Fallback für Tipp-Reaktion
+  - H2: Fallback für Tippreaktion
   - H2: Medien, Chunking und Zustellung
   - H2: Befehle und Slash-Verhalten
   - H2: Interaktive Antworten
@@ -863,10 +863,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Ereignisse und Betriebsverhalten
   - H2: Konfigurationsreferenz
   - H2: Fehlerbehebung
-  - H2: Referenz für Attachment Vision
+  - H2: Referenz für Vision bei Anhängen
   - H3: Unterstützte Medientypen
   - H3: Eingehende Pipeline
-  - H3: Vererbung von Anhängen des Thread-Roots
+  - H3: Vererbung von Anhängen des Thread-Stamms
   - H3: Umgang mit mehreren Anhängen
   - H3: Größen-, Download- und Modelllimits
   - H3: Bekannte Limits
@@ -878,13 +878,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/sms
 - Überschriften:
   - H2: Bevor Sie beginnen
-  - H2: Schnelleinrichtung
+  - H2: Schnelle Einrichtung
   - H2: Konfigurationsbeispiele
   - H3: Konfigurationsdatei
   - H3: Umgebungsvariablen
-  - H3: SecretRef-Authentifizierungstoken
-  - H3: Private Nummer nur per Allowlist
-  - H3: Messaging-Service-Absender
+  - H3: SecretRef-Auth-Token
+  - H3: Private Nummer nur mit Allowlist
+  - H3: Absender des Messaging Service
   - H3: Standardziel für ausgehende Nachrichten
   - H2: Zugriffskontrolle
   - H2: SMS senden
@@ -895,17 +895,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung
   - H3: Twilio gibt 403 zurück oder OpenClaw lehnt den Webhook ab
   - H3: Keine Pairing-Anfrage erscheint
-  - H3: Ausgehende Sendevorgänge schlagen fehl
+  - H3: Ausgehendes Senden schlägt fehl
   - H3: Nachrichten kommen an, aber der Agent antwortet nicht
 
 ## channels/synology-chat.md
 
 - Route: /channels/synology-chat
 - Überschriften:
-  - H2: Mitgeliefertes Plugin
-  - H2: Schnelleinrichtung
+  - H2: Gebündeltes Plugin
+  - H2: Schnelle Einrichtung
   - H2: Umgebungsvariablen
-  - H2: DM-Richtlinie und Zugriffskontrolle
+  - H2: Direktnachrichten-Richtlinie und Zugriffskontrolle
   - H2: Ausgehende Zustellung
   - H2: Mehrere Konten
   - H2: Sicherheitshinweise
@@ -916,7 +916,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/telegram
 - Überschriften:
-  - H2: Schnelleinrichtung
+  - H2: Schnelle Einrichtung
   - H2: Telegram-seitige Einstellungen
   - H2: Zugriffskontrolle und Aktivierung
   - H3: Gruppen-Bot-Identität
@@ -931,16 +931,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /channels/tlon
 - Überschriften:
-  - H2: Mitgeliefertes Plugin
+  - H2: Gebündeltes Plugin
   - H2: Einrichtung
-  - H2: Private/LAN-Schiffe
+  - H2: Private/LAN-Ships
   - H2: Gruppenkanäle
   - H2: Zugriffskontrolle
-  - H2: Owner- und Genehmigungssystem
+  - H2: Eigentümer- und Genehmigungssystem
   - H2: Einstellungen für automatische Annahme
   - H2: Zustellziele (CLI/Cron)
-  - H2: Mitgelieferte Skill
-  - H2: Fähigkeiten
+  - H2: Gebündelte Skill
+  - H2: Funktionen
   - H2: Fehlerbehebung
   - H2: Konfigurationsreferenz
   - H2: Hinweise
@@ -953,21 +953,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Befehlsleiter
   - H2: Nach einem Update
   - H2: WhatsApp
-  - H3: WhatsApp-Fehlersignaturen
+  - H3: Fehlersignaturen von WhatsApp
   - H2: Telegram
-  - H3: Telegram-Fehlersignaturen
+  - H3: Fehlersignaturen von Telegram
   - H2: Discord
-  - H3: Discord-Fehlersignaturen
+  - H3: Fehlersignaturen von Discord
   - H2: Slack
-  - H3: Slack-Fehlersignaturen
+  - H3: Fehlersignaturen von Slack
   - H2: iMessage
-  - H3: iMessage-Fehlersignaturen
+  - H3: Fehlersignaturen von iMessage
   - H2: Signal
-  - H3: Signal-Fehlersignaturen
+  - H3: Fehlersignaturen von Signal
   - H2: QQ Bot
-  - H3: QQ Bot-Fehlersignaturen
+  - H3: Fehlersignaturen von QQ Bot
   - H2: Matrix
-  - H3: Matrix-Fehlersignaturen
+  - H3: Fehlersignaturen von Matrix
   - H2: Verwandte Themen
 
 ## channels/twitch.md
@@ -975,7 +975,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/twitch
 - Überschriften:
   - H2: Gebündeltes Plugin
-  - H2: Schnelle Einrichtung (für Einsteiger)
+  - H2: Schnelleinrichtung (Einsteiger)
   - H2: Was es ist
   - H2: Einrichtung (detailliert)
   - H3: Zugangsdaten generieren
@@ -990,8 +990,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Provider-Optionen
   - H2: Tool-Aktionen
   - H2: Sicherheit und Betrieb
-  - H2: Limits
-  - H2: Verwandt
+  - H2: Grenzen
+  - H2: Verwandte Themen
 
 ## channels/wechat.md
 
@@ -1012,19 +1012,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/whatsapp
 - Überschriften:
   - H2: Installation (bei Bedarf)
-  - H2: Schnelle Einrichtung
+  - H2: Schnelleinrichtung
   - H2: Den aktuellen Anfragenden mit MeowCaller anrufen (experimentell)
   - H2: Bereitstellungsmuster
   - H2: Laufzeitmodell
-  - H2: Genehmigungsabfragen
+  - H2: Genehmigungsaufforderungen
   - H2: Plugin-Hooks und Datenschutz
   - H2: Zugriffskontrolle und Aktivierung
-  - H2: Konfigurierte ACP-Bindings
+  - H2: Konfigurierte ACP-Bindungen
   - H2: Verhalten bei persönlicher Nummer und Selbst-Chat
   - H2: Nachrichtennormalisierung und Kontext
-  - H2: Zustellung, Chunking und Medien
+  - H2: Zustellung, Aufteilung und Medien
   - H2: Antwortzitate
-  - H2: Reaktionsstufe
+  - H2: Reaktionsebene
   - H2: Bestätigungsreaktionen
   - H2: Lebenszyklus-Statusreaktionen
   - H2: Mehrere Konten und Zugangsdaten
@@ -1032,7 +1032,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung
   - H2: System-Prompts
   - H2: Verweise zur Konfigurationsreferenz
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## channels/yuanbao.md
 
@@ -1051,7 +1051,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Merge-Text-Strategie abstimmen
   - H2: Häufige Befehle
   - H2: Fehlerbehebung
-  - H3: Bot antwortet in Gruppenchats nicht
+  - H3: Bot antwortet nicht in Gruppenchats
   - H3: Bot empfängt keine Nachrichten
   - H3: Bot sendet leere Antworten oder Fallback-Antworten
   - H3: App Secret offengelegt
@@ -1059,9 +1059,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Mehrere Konten
   - H3: Nachrichtenlimits
   - H3: Streaming
-  - H3: Kontext des Gruppenchatverlaufs
+  - H3: Verlaufskontext für Gruppenchats
   - H3: Reply-to-Modus
-  - H3: Markdown-Hinweisinjektion
+  - H3: Markdown-Hinweis-Injektion
   - H3: Debug-Modus
   - H3: Multi-Agent-Routing
   - H2: Konfigurationsreferenz
@@ -1069,30 +1069,30 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Empfangen
   - H3: Senden
   - H3: Threads und Antworten
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## channels/zalo.md
 
 - Route: /channels/zalo
 - Überschriften:
   - H2: Gebündeltes Plugin
-  - H2: Schnelle Einrichtung (für Einsteiger)
+  - H2: Schnelleinrichtung (Einsteiger)
   - H2: Was es ist
-  - H2: Einrichtung (schneller Pfad)
+  - H2: Einrichtung (Schnellweg)
   - H3: 1) Bot-Token erstellen (Zalo Bot Platform)
   - H3: 2) Token konfigurieren (env oder config)
   - H2: Funktionsweise (Verhalten)
-  - H2: Limits
+  - H2: Grenzen
   - H2: Zugriffskontrolle (DMs)
   - H3: DM-Zugriff
   - H2: Zugriffskontrolle (Gruppen)
-  - H2: Long-Polling vs. Webhook
+  - H2: Long-Polling vs Webhook
   - H2: Unterstützte Nachrichtentypen
   - H2: Fähigkeiten
-  - H2: Zustellungsziele (CLI/Cron)
+  - H2: Zustellziele (CLI/cron)
   - H2: Fehlerbehebung
   - H2: Konfigurationsreferenz (Zalo)
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## channels/zaloclawbot.md
 
@@ -1100,7 +1100,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Kompatibilität
   - H2: Voraussetzungen
-  - H2: Mit Onboard installieren (empfohlen)
+  - H2: Mit onboard installieren (empfohlen)
   - H2: Manuelle Installation
   - H3: 1. Plugin installieren
   - H3: 2. Plugin in der Konfiguration aktivieren
@@ -1115,34 +1115,34 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /channels/zalouser
 - Überschriften:
   - H2: Gebündeltes Plugin
-  - H2: Schnelle Einrichtung (für Einsteiger)
+  - H2: Schnelleinrichtung (Einsteiger)
   - H2: Was es ist
   - H2: Benennung
   - H2: IDs finden (Verzeichnis)
-  - H2: Limits
+  - H2: Grenzen
   - H2: Zugriffskontrolle (DMs)
   - H2: Gruppenzugriff (optional)
-  - H3: Gruppen-Mention-Gating
+  - H3: Gruppenerwähnungs-Gating
   - H2: Mehrere Konten
   - H2: Umgebungsvariablen
   - H2: Tippen, Reaktionen und Zustellbestätigungen
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## ci.md
 
 - Route: /ci
 - Überschriften:
   - H2: Pipeline-Übersicht
-  - H2: Fail-Fast-Reihenfolge
+  - H2: Fail-fast-Reihenfolge
   - H2: PR-Kontext und Nachweise
-  - H2: Scope und Routing
-  - H2: Weiterleitung von ClawSweeper-Aktivitäten
-  - H2: Manuelle Dispatches
+  - H2: Umfang und Routing
+  - H2: ClawSweeper-Aktivitätsweiterleitung
+  - H2: Manuelle Auslösungen
   - H2: Runner
-  - H2: Budget für Runner-Registrierung
+  - H2: Runner-Registrierungsbudget
   - H2: Lokale Entsprechungen
-  - H2: OpenClaw Performance
+  - H2: OpenClaw-Leistung
   - H2: Vollständige Release-Validierung
   - H2: Live- und E2E-Shards
   - H2: Paketakzeptanz
@@ -1153,11 +1153,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Beispiele
   - H2: Installations-Smoke-Test
   - H2: Lokales Docker-E2E
-  - H3: Abstimmungsoptionen
+  - H3: Einstellparameter
   - H3: Wiederverwendbarer Live/E2E-Workflow
-  - H3: Release-Pfad-Chunks
+  - H3: Release-Pfad-Blöcke
   - H2: Plugin-Prerelease
-  - H2: QA-Lab
+  - H2: QA Lab
   - H2: CodeQL
   - H3: Sicherheitskategorien
   - H3: Plattformspezifische Sicherheits-Shards
@@ -1165,10 +1165,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wartungsworkflows
   - H3: Docs Agent
   - H3: Test Performance Agent
-  - H3: Doppelte PRs nach dem Merge
-  - H2: Lokale Prüf-Gates und Changed-Routing
+  - H3: Doppelte PRs nach Merge
+  - H2: Lokale Prüf-Gates und Änderungsrouting
   - H2: Testbox-Validierung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## clawhub/cli.md
 
@@ -1176,20 +1176,20 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: ClawHub CLI
   - H2: Entdecken und installieren
-  - H2: Veröffentlichen und warten
-  - H2: Verwandt
+  - H2: Veröffentlichen und pflegen
+  - H2: Verwandte Themen
 
 ## clawhub/publishing.md
 
 - Route: /clawhub/publishing
 - Überschriften:
   - H1: Veröffentlichung auf ClawHub
-  - H2: Eigentümer
+  - H2: Besitzer
   - H2: Skills
   - H2: Plugins
-  - H2: Release-Ablauf
+  - H2: Release-Flow
   - H2: FAQ
-  - H3: Paket-Scope muss dem ausgewählten Eigentümer entsprechen
+  - H3: Paket-Scope muss mit dem ausgewählten Besitzer übereinstimmen
 
 ## cli/acp.md
 
@@ -1200,15 +1200,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Bekannte Einschränkungen
   - H2: Verwendung
   - H2: ACP-Client (Debug)
-  - H2: Protokoll-Smoke-Testing
+  - H2: Protokoll-Smoke-Test
   - H2: So verwenden Sie dies
   - H2: Agents auswählen
-  - H2: Verwendung aus acpx (Codex, Claude, andere ACP-Clients)
-  - H2: Einrichtung des Zed-Editors
+  - H2: Verwendung über acpx (Codex, Claude, andere ACP-Clients)
+  - H2: Zed-Editor-Einrichtung
   - H2: Sitzungszuordnung
   - H2: Optionen
-  - H3: ACP-Client-Optionen
-  - H2: Verwandt
+  - H3: acp-Client-Optionen
+  - H2: Verwandte Themen
 
 ## cli/agent.md
 
@@ -1219,7 +1219,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Beispiele
   - H2: Hinweise
   - H2: JSON-Zustellstatus
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/agents.md
 
@@ -1227,9 +1227,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw agents
   - H2: Beispiele
-  - H2: Routing-Bindings
+  - H2: Routing-Bindungen
   - H3: --bind-Format
-  - H3: Verhalten des Binding-Scopes
+  - H3: Verhalten des Bindungsumfangs
   - H2: Befehlsoberfläche
   - H3: agents
   - H3: agents list
@@ -1240,7 +1240,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: agents delete &lt;id&gt;
   - H2: Identitätsdateien
   - H2: Identität festlegen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/approvals.md
 
@@ -1254,7 +1254,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Allowlist-Helfer
   - H2: Häufige Optionen
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/attach.md
 
@@ -1270,7 +1270,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was gesichert wird
   - H2: Verhalten bei ungültiger Konfiguration
   - H2: Größe und Leistung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/browser.md
 
@@ -1285,11 +1285,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Profile
   - H2: Tabs
   - H2: Snapshot / Screenshot / Aktionen
-  - H2: Zustand und Speicher
+  - H2: Status und Speicher
   - H2: Debugging
   - H2: Vorhandenes Chrome über MCP
   - H2: Remote-Browsersteuerung (Node-Host-Proxy)
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/channels.md
 
@@ -1299,11 +1299,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Häufige Befehle
   - H2: Status / Fähigkeiten / Auflösen / Logs
   - H2: Konten hinzufügen / entfernen
-  - H2: Anmeldung und Abmeldung (interaktiv)
+  - H2: Anmelden und abmelden (interaktiv)
   - H2: Fehlerbehebung
-  - H2: Fähigkeitsprobe
+  - H2: Fähigkeitsprüfung
   - H2: Namen in IDs auflösen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/clawbot.md
 
@@ -1311,7 +1311,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw clawbot
   - H2: Migration
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/commitments.md
 
@@ -1321,7 +1321,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Optionen
   - H2: Beispiele
   - H2: Ausgabe
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/completion.md
 
@@ -1331,7 +1331,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Verwendung
   - H2: Optionen
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/config.md
 
@@ -1339,18 +1339,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Root-Optionen
   - H2: Beispiele
-  - H3: config schema
+  - H3: config-Schema
   - H3: Pfade
   - H2: Werte
-  - H2: config set-Modi
+  - H2: config-set-Modi
   - H2: config patch
   - H2: Provider-Builder-Flags
-  - H2: Testlauf
+  - H2: Probelauf
   - H3: JSON-Ausgabeform
   - H2: Schreibsicherheit
   - H2: Unterbefehle
   - H2: Validieren
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/configure.md
 
@@ -1359,7 +1359,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: openclaw configure
   - H2: Optionen
   - H2: Beispiele
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/crestodian.md
 
@@ -1369,12 +1369,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was Crestodian zeigt
   - H2: Beispiele
   - H2: Sicherer Start
-  - H2: Betrieb und Genehmigung
-  - H2: Setup-Bootstrap
+  - H2: Vorgänge und Genehmigung
+  - H2: Einrichtungs-Bootstrap
   - H2: Modellgestützter Planer
   - H2: Zu einem Agent wechseln
   - H2: Nachrichtenrettungsmodus
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/cron.md
 
@@ -1391,7 +1391,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Wiederkehrende Jobs
   - H3: Manuelle Ausführungen
   - H2: Modelle
-  - H3: Vorrang des isolierten Cron-Modells
+  - H3: Priorität des isolierten Cron-Modells
   - H3: Schnellmodus
   - H3: Wiederholungen beim Live-Modellwechsel
   - H2: Ausführungsausgabe und Ablehnungen
@@ -1400,9 +1400,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Strukturierte Ablehnungen
   - H2: Aufbewahrung
   - H2: Ältere Jobs migrieren
-  - H2: Häufige Änderungen
+  - H2: Häufige Bearbeitungen
   - H2: Häufige Admin-Befehle
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/daemon.md
 
@@ -1413,14 +1413,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Unterbefehle
   - H2: Häufige Optionen
   - H2: Bevorzugen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/dashboard.md
 
 - Route: /cli/dashboard
 - Überschriften:
   - H1: openclaw dashboard
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/devices.md
 
@@ -1438,8 +1438,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt;
   - H2: Häufige Optionen
   - H2: Hinweise
-  - H2: Checkliste zur Wiederherstellung bei Token-Drift
-  - H2: Verwandt
+  - H2: Checkliste zur Wiederherstellung bei Token-Abweichung
+  - H2: Verwandte Themen
 
 ## cli/directory.md
 
@@ -1453,7 +1453,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Selbst („me“)
   - H2: Peers (Kontakte/Benutzer)
   - H2: Gruppen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/dns.md
 
@@ -1462,7 +1462,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: openclaw dns
   - H2: Einrichtung
   - H2: dns setup
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/docs.md
 
@@ -1474,7 +1474,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Funktionsweise
   - H2: Ausgabe
   - H2: Exit-Codes
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/doctor.md
 
@@ -1485,11 +1485,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Beispiele
   - H2: Optionen
   - H2: Lint-Modus
-  - H2: Strukturierte Zustandsprüfungen
-  - H2: Prüfungsauswahl
+  - H2: Strukturierte Health Checks
+  - H2: Prüfauswahl
   - H2: Post-Upgrade-Modus
   - H2: macOS: launchctl-env-Overrides
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/flows.md
 
@@ -1499,7 +1499,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Unterbefehle
   - H3: Statusfilterwerte
   - H2: Beispiele
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/gateway.md
 
@@ -1516,13 +1516,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: gateway diagnostics export
   - H3: gateway status
   - H3: gateway probe
-  - H4: Remote über SSH (Parität mit Mac-App)
+  - H4: Remote über SSH (Mac-App-Parität)
   - H3: gateway call &lt;method&gt;
   - H2: Gateway-Dienst verwalten
   - H3: Mit einem Wrapper installieren
-  - H2: Gateways erkennen (Bonjour)
+  - H2: Gateways entdecken (Bonjour)
   - H3: gateway discover
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/health.md
 
@@ -1530,7 +1530,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw health
   - H2: Optionen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## cli/hooks.md
 
@@ -1545,12 +1545,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Hinweise
   - H2: Hook-Pakete installieren
   - H2: Hook-Pakete aktualisieren
-  - H2: Gebündelte Hooks
+  - H2: Mitgelieferte Hooks
   - H3: session-memory
   - H3: bootstrap-extra-files
   - H3: command-logger
   - H3: boot-md
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/index.md
 
@@ -1562,7 +1562,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Befehlsbaum
   - H2: Chat-Slash-Befehle
   - H2: Nutzungsverfolgung
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/infer.md
 
@@ -1579,11 +1579,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: TTS
   - H2: Video
   - H2: Web
-  - H2: Embedding
+  - H2: Einbettung
   - H2: JSON-Ausgabe
-  - H2: Häufige Fallstricke
+  - H2: Häufige Stolperfallen
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/logs.md
 
@@ -1594,7 +1594,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Gemeinsame Gateway-RPC-Optionen
   - H2: Beispiele
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/mcp.md
 
@@ -1602,30 +1602,30 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Den richtigen MCP-Pfad wählen
   - H2: OpenClaw als MCP-Server
-  - H3: Wann serve verwendet werden sollte
-  - H3: So funktioniert es
-  - H3: Einen Client-Modus wählen
+  - H3: Wann serve verwendet wird
+  - H3: Funktionsweise
+  - H3: Clientmodus wählen
   - H3: Was serve bereitstellt
-  - H3: Nutzung
+  - H3: Verwendung
   - H3: Bridge-Tools
   - H3: Ereignismodell
   - H3: Claude-Kanalbenachrichtigungen
-  - H3: MCP-Client-Konfiguration
+  - H3: MCP-Clientkonfiguration
   - H3: Optionen
   - H3: Sicherheits- und Vertrauensgrenze
-  - H3: Tests
+  - H3: Testen
   - H3: Fehlerbehebung
-  - H2: OpenClaw als MCP-Client-Registry
+  - H2: OpenClaw als MCP-Clientregistrierung
   - H3: Gespeicherte MCP-Serverdefinitionen
   - H3: Häufige Serverrezepte
   - H3: JSON-Ausgabeformen
   - H3: Stdio-Transport
   - H3: SSE-/HTTP-Transport
   - H3: OAuth-Workflow
-  - H3: Streambarer HTTP-Transport
+  - H3: Streamable-HTTP-Transport
   - H2: Control UI
   - H2: Aktuelle Einschränkungen
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/memory.md
 
@@ -1635,14 +1635,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Beispiele
   - H2: Optionen
   - H2: Dreaming
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/message.md
 
 - Route: /cli/message
 - Überschriften:
   - H1: openclaw message
-  - H2: Nutzung
+  - H2: Verwendung
   - H2: Häufige Flags
   - H2: SecretRef-Verhalten
   - H2: Aktionen
@@ -1650,12 +1650,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Threads
   - H3: Emojis
   - H3: Sticker
-  - H3: Rollen / Kanäle / Mitglieder / Voice
+  - H3: Rollen / Kanäle / Mitglieder / Sprache
   - H3: Ereignisse
   - H3: Moderation (Discord)
   - H3: Broadcast
   - H2: Beispiele
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/migrate.md
 
@@ -1669,15 +1669,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Archiv- und manueller Prüfstatus
   - H2: Codex-Provider
   - H3: Was Codex importiert
-  - H3: Codex-Status für manuelle Prüfung
+  - H3: Manuell zu prüfender Codex-Status
   - H2: Hermes-Provider
   - H3: Was Hermes importiert
   - H3: Unterstützte .env-Schlüssel
   - H3: Nur-Archiv-Status
-  - H3: Nach dem Anwenden
+  - H3: Nach der Anwendung
   - H2: Plugin-Vertrag
   - H2: Onboarding-Integration
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/models.md
 
@@ -1685,11 +1685,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw models
   - H2: Häufige Befehle
-  - H3: Modelle scannen
+  - H3: Modellscan
   - H3: Modellstatus
-  - H2: Aliase + Fallbacks
+  - H2: Aliasse + Fallbacks
   - H2: Auth-Profile
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/node.md
 
@@ -1697,13 +1697,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw node
   - H2: Warum einen Node-Host verwenden?
-  - H2: Browser-Proxy (Zero-Config)
+  - H2: Browser-Proxy (ohne Konfiguration)
   - H2: Ausführen (Vordergrund)
-  - H2: Gateway-Auth für Node-Host
+  - H2: Gateway-Authentifizierung für Node-Host
   - H2: Dienst (Hintergrund)
   - H2: Pairing
   - H2: Exec-Genehmigungen
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/nodes.md
 
@@ -1712,7 +1712,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: openclaw nodes
   - H2: Häufige Befehle
   - H2: Aufrufen
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/onboard.md
 
@@ -1722,10 +1722,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Verwandte Leitfäden
   - H2: Beispiele
   - H2: Gebietsschema
-  - H3: Nicht interaktive Z.AI-Endpunktauswahl
-  - H2: Zusätzliche nicht interaktive Flags
+  - H3: Nicht-interaktive Z.AI-Endpunktauswahl
+  - H2: Zusätzliche nicht-interaktive Flags
   - H2: Ablaufhinweise
-  - H2: Häufige Folge-Befehle
+  - H2: Häufige Folgebefehle
 
 ## cli/pairing.md
 
@@ -1736,16 +1736,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: pairing list
   - H2: pairing approve
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/path.md
 
 - Route: /cli/path
 - Überschriften:
   - H1: openclaw path
-  - H2: Warum es verwenden
+  - H2: Warum es verwendet wird
   - H2: Wie es verwendet wird
-  - H2: So funktioniert es
+  - H2: Funktionsweise
   - H2: Unterbefehle
   - H2: Globale Flags
   - H2: oc://-Syntax
@@ -1766,7 +1766,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Exit-Codes
   - H2: Ausgabemodus
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/plugins.md
 
@@ -1774,18 +1774,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Befehle
   - H3: Autor
-  - H3: Provider-Scaffold
-  - H3: Installieren
+  - H3: Provider-Gerüst
+  - H3: Installation
   - H4: Marketplace-Kurzform
-  - H3: Auflisten
+  - H3: Liste
   - H3: Plugin-Index
-  - H3: Deinstallieren
-  - H3: Aktualisieren
-  - H3: Prüfen
+  - H3: Deinstallation
+  - H3: Aktualisierung
+  - H3: Inspizieren
   - H3: Doctor
   - H3: Registry
   - H3: Marketplace
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/policy.md
 
@@ -1793,7 +1793,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw policy
   - H2: Schnellstart
-  - H3: Referenz für Richtlinienregeln
+  - H3: Richtlinienregel-Referenz
   - H4: Bereichsbezogene Overlays
   - H4: Kanäle
   - H4: MCP-Server
@@ -1804,7 +1804,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H4: Agent-Arbeitsbereich
   - H4: Sandbox-Haltung
   - H4: Datenverarbeitung
-  - H4: Secrets
+  - H4: Geheimnisse
   - H4: Exec-Genehmigungen
   - H4: Auth-Profile
   - H4: Tool-Metadaten
@@ -1814,7 +1814,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Befunde
   - H2: Reparatur
   - H2: Exit-Codes
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/proxy.md
 
@@ -1825,24 +1825,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Validieren
   - H2: Abfrage-Presets
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/qr.md
 
 - Route: /cli/qr
 - Überschriften:
   - H1: openclaw qr
-  - H2: Nutzung
+  - H2: Verwendung
   - H2: Optionen
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/reset.md
 
 - Route: /cli/reset
 - Überschriften:
   - H1: openclaw reset
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/sandbox.md
 
@@ -1854,16 +1854,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
   - H2: Anwendungsfälle
-  - H3: Nach dem Aktualisieren eines Docker-Images
-  - H3: Nach dem Ändern der Sandbox-Konfiguration
-  - H3: Nach dem Ändern des SSH-Ziels oder SSH-Auth-Materials
-  - H3: Nach dem Ändern von OpenShell-Quelle, Richtlinie oder Modus
-  - H3: Nach dem Ändern von setupCommand
+  - H3: Nach der Aktualisierung eines Docker-Images
+  - H3: Nach Änderung der Sandbox-Konfiguration
+  - H3: Nach Änderung des SSH-Ziels oder SSH-Auth-Materials
+  - H3: Nach Änderung von OpenShell-Quelle, Richtlinie oder Modus
+  - H3: Nach Änderung von setupCommand
   - H3: Nur für einen bestimmten Agent
   - H2: Warum dies erforderlich ist
   - H2: Registry-Migration
   - H2: Konfiguration
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/secrets.md
 
@@ -1876,7 +1876,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Einen gespeicherten Plan anwenden
   - H2: Warum keine Rollback-Backups
   - H2: Beispiel
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/security.md
 
@@ -1886,7 +1886,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Audit
   - H2: JSON-Ausgabe
   - H2: Was --fix ändert
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/sessions.md
 
@@ -1894,9 +1894,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: openclaw sessions
   - H2: Cleanup-Wartung
-  - H2: Eine Sitzung verdichten
-  - H3: sessions.compact-RPC
-  - H2: Verwandt
+  - H2: Eine Sitzung komprimieren
+  - H3: sessions.compact RPC
+  - H2: Siehe auch
 
 ## cli/setup.md
 
@@ -1907,7 +1907,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Baseline-Modus
   - H2: Beispiele
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/skills.md
 
@@ -1916,13 +1916,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: openclaw skills
   - H2: Befehle
   - H2: Skill Workshop
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/status.md
 
 - Route: /cli/status
 - Überschriften:
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/system.md
 
@@ -1934,13 +1934,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: system heartbeat last|enable|disable
   - H2: system presence
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/tasks.md
 
 - Route: /cli/tasks
 - Überschriften:
-  - H2: Nutzung
+  - H2: Verwendung
   - H2: Root-Optionen
   - H2: Unterbefehle
   - H3: list
@@ -1950,7 +1950,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: audit
   - H3: maintenance
   - H3: flow
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/transcripts.md
 
@@ -1970,33 +1970,33 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: openclaw tui
   - H2: Optionen
   - H2: Beispiele
-  - H2: Config-Reparaturschleife
-  - H2: Verwandt
+  - H2: Konfigurations-Reparaturschleife
+  - H2: Siehe auch
 
 ## cli/uninstall.md
 
 - Route: /cli/uninstall
 - Überschriften:
   - H1: openclaw uninstall
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/update.md
 
 - Route: /cli/update
 - Überschriften:
   - H1: openclaw update
-  - H2: Nutzung
+  - H2: Verwendung
   - H2: Optionen
   - H2: update status
   - H2: update repair
   - H2: update wizard
   - H2: Was es tut
-  - H3: Antwortform der Steuerungsebene
+  - H3: Antwortform der Control Plane
   - H2: Git-Checkout-Ablauf
   - H3: Kanalauswahl
   - H3: Aktualisierungsschritte
   - H2: --update-Kurzform
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/voicecall.md
 
@@ -2007,7 +2007,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Einrichtung und Smoke-Test
   - H3: setup
   - H3: smoke
-  - H2: Anruflebenszyklus
+  - H2: Anruf-Lebenszyklus
   - H3: call
   - H3: start
   - H3: continue
@@ -2018,9 +2018,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Logs und Metriken
   - H3: tail
   - H3: latency
-  - H2: Webhooks bereitstellen
+  - H2: Webhooks freigeben
   - H3: expose
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/webhooks.md
 
@@ -2033,11 +2033,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Pub/Sub-Optionen
   - H3: OpenClaw-Zustelloptionen
   - H3: gog watch serve-Optionen
-  - H3: Tailscale-Bereitstellung
+  - H3: Tailscale-Freigabe
   - H3: Ausgabe
   - H2: webhooks gmail run
   - H2: End-to-End-Ablauf
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/wiki.md
 
@@ -2062,24 +2062,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: wiki obsidian ...
   - H2: Praktische Nutzungshinweise
   - H2: Konfigurationsverknüpfungen
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## cli/workboard.md
 
 - Route: /cli/workboard
 - Überschriften:
-  - H2: Nutzung
+  - H2: Verwendung
   - H2: list
   - H2: create
   - H2: show
   - H2: dispatch
-  - H2: Parität von Slash-Befehlen
+  - H2: Parität mit Slash-Befehlen
   - H2: Berechtigungen
   - H2: Fehlerbehebung
-  - H3: Es erscheinen keine Karten
-  - H3: Dispatch meldet Data-Only
+  - H3: Keine Karten werden angezeigt
+  - H3: Dispatch meldet nur Daten
   - H3: Dispatch startet nichts
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## concepts/active-memory.md
 
@@ -2089,21 +2089,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Geschwindigkeitsempfehlungen
   - H3: Cerebras-Einrichtung
   - H2: So sehen Sie es
-  - H2: Sitzungsumschaltung
+  - H2: Sitzungsumschalter
   - H2: Wann es ausgeführt wird
   - H2: Sitzungstypen
   - H2: Wo es ausgeführt wird
-  - H2: Warum es verwenden
-  - H2: So funktioniert es
+  - H2: Warum es verwendet wird
+  - H2: Funktionsweise
   - H2: Abfragemodi
   - H2: Prompt-Stile
   - H2: Modell-Fallback-Richtlinie
-  - H2: Memory-Tools
-  - H3: Integrierter memory-core
-  - H3: LanceDB-Memory
+  - H2: Speicher-Tools
+  - H3: Integriertes memory-core
+  - H3: LanceDB-Speicher
   - H3: Lossless Claw
-  - H2: Erweiterte Escape-Hatches
-  - H2: Transkriptpersistenz
+  - H2: Erweiterte Ausweichmöglichkeiten
+  - H2: Transcript-Persistenz
   - H2: Konfiguration
   - H2: Empfohlene Einrichtung
   - H3: Cold-Start-Kulanz
@@ -2116,63 +2116,63 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /concepts/agent-loop
 - Überschriften:
   - H2: Einstiegspunkte
-  - H2: So funktioniert es (allgemein)
-  - H2: Warteschlangen + Nebenläufigkeit
-  - H2: Sitzungs- + Arbeitsbereichsvorbereitung
+  - H2: Funktionsweise (allgemein)
+  - H2: Warteschlangen + Parallelität
+  - H2: Sitzungs- und Arbeitsbereichsvorbereitung
   - H2: Prompt-Zusammenstellung + System-Prompt
-  - H2: Hook-Punkte (wo Sie eingreifen können)
+  - H2: Hook-Punkte (an denen Sie eingreifen können)
   - H3: Interne Hooks (Gateway-Hooks)
-  - H3: Plugin-Hooks (Agent- + Gateway-Lebenszyklus)
+  - H3: Plugin-Hooks (Agent- und Gateway-Lebenszyklus)
   - H2: Streaming + Teilantworten
   - H2: Tool-Ausführung + Messaging-Tools
   - H2: Antwortformung + Unterdrückung
   - H2: Compaction + Wiederholungen
-  - H2: Ereignisstreams (heute)
-  - H2: Chat-Kanalbehandlung
-  - H2: Timeouts
-  - H2: Wo Dinge frühzeitig enden können
-  - H2: Verwandt
+  - H2: Ereignis-Streams (heute)
+  - H2: Chatkanalverarbeitung
+  - H2: Zeitüberschreitungen
+  - H2: Wo Dinge vorzeitig enden können
+  - H2: Siehe auch
 
 ## concepts/agent-runtimes.md
 
 - Route: /concepts/agent-runtimes
 - Überschriften:
   - H2: Codex-Oberflächen
-  - H2: Runtime-Zuständigkeit
+  - H2: Runtime-Verantwortung
   - H2: Runtime-Auswahl
   - H2: GitHub Copilot-Agent-Runtime
   - H2: Kompatibilitätsvertrag
   - H2: Statuslabels
-  - H2: Verwandt
+  - H2: Siehe auch
 
 ## concepts/agent-workspace.md
 
 - Route: /concepts/agent-workspace
 - Überschriften:
   - H2: Standardspeicherort
-  - H2: Zusätzliche Workspace-Ordner
-  - H2: Dateikarte des Workspace
-  - H2: Was NICHT im Workspace ist
+  - H2: Zusätzliche Arbeitsbereichsordner
+  - H2: Dateizuordnung des Arbeitsbereichs
+  - H2: Was NICHT im Arbeitsbereich enthalten ist
   - H2: Git-Backup (empfohlen, privat)
   - H2: Keine Secrets committen
-  - H2: Den Workspace auf einen neuen Rechner verschieben
+  - H2: Den Arbeitsbereich auf einen neuen Rechner verschieben
   - H2: Erweiterte Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/agent.md
 
 - Route: /concepts/agent
 - Überschriften:
-  - H2: Workspace (erforderlich)
+  - H2: Arbeitsbereich (erforderlich)
   - H2: Bootstrap-Dateien (injiziert)
   - H2: Integrierte Tools
   - H2: Skills
-  - H2: Runtime-Grenzen
+  - H2: Laufzeitgrenzen
   - H2: Sitzungen
   - H2: Steuerung während des Streamings
   - H2: Modellreferenzen
   - H2: Konfiguration (minimal)
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/architecture.md
 
@@ -2182,7 +2182,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Komponenten und Abläufe
   - H3: Gateway (Daemon)
   - H3: Clients (Mac-App / CLI / Web-Admin)
-  - H3: Nodes (macOS / iOS / Android / Headless)
+  - H3: Knoten (macOS / iOS / Android / headless)
   - H3: WebChat
   - H2: Verbindungslebenszyklus (einzelner Client)
   - H2: Wire-Protokoll (Zusammenfassung)
@@ -2191,7 +2191,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Remote-Zugriff
   - H2: Betriebsübersicht
   - H2: Invarianten
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/channel-docking.md
 
@@ -2209,14 +2209,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /concepts/commitments
 - Überschriften:
-  - H2: Verpflichtungen aktivieren
+  - H2: Zusagen aktivieren
   - H2: Funktionsweise
-  - H2: Umfang
-  - H2: Verpflichtungen vs. Erinnerungen
-  - H2: Verpflichtungen verwalten
+  - H2: Geltungsbereich
+  - H2: Zusagen vs. Erinnerungen
+  - H2: Zusagen verwalten
   - H2: Datenschutz und Kosten
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/compaction.md
 
@@ -2227,15 +2227,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Manuelle Compaction
   - H2: Konfiguration
   - H3: Ein anderes Modell verwenden
-  - H3: Beibehaltung von Kennungen
+  - H3: Beibehaltung von Bezeichnern
   - H3: Byte-Schutz für aktives Transkript
   - H3: Nachfolge-Transkripte
   - H3: Compaction-Hinweise
   - H3: Memory-Flush
   - H2: Austauschbare Compaction-Provider
-  - H2: Compaction vs. Pruning
+  - H2: Compaction vs. Bereinigung
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/context-engine.md
 
@@ -2248,14 +2248,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Die Legacy-Engine
   - H2: Plugin-Engines
   - H3: Die ContextEngine-Schnittstelle
-  - H3: Runtime-Einstellungen
+  - H3: Laufzeiteinstellungen
   - H3: Host-Anforderungen
   - H3: Fehlerisolation
   - H3: ownsCompaction
   - H2: Konfigurationsreferenz
-  - H2: Beziehung zu Compaction und Memory
+  - H2: Beziehung zu Compaction und Speicher
   - H2: Tipps
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/context.md
 
@@ -2268,13 +2268,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: /context map
   - H2: Was zum Kontextfenster zählt
   - H2: Wie OpenClaw den System-Prompt erstellt
-  - H2: Injizierte Workspace-Dateien (Projektkontext)
+  - H2: Injizierte Arbeitsbereichsdateien (Projektkontext)
   - H2: Skills: injiziert vs. bei Bedarf geladen
-  - H2: Tools: Es gibt zwei Kosten
+  - H2: Tools: Es gibt zwei Kostenarten
   - H2: Befehle, Direktiven und „Inline-Shortcuts“
-  - H2: Sitzungen, Compaction und Pruning (was bestehen bleibt)
+  - H2: Sitzungen, Compaction und Bereinigung (was bestehen bleibt)
   - H2: Was /context tatsächlich meldet
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/delegate-architecture.md
 
@@ -2283,24 +2283,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was ist ein Delegat?
   - H2: Warum Delegaten?
   - H2: Fähigkeitsstufen
-  - H3: Stufe 1: Schreibgeschützt + Entwurf
+  - H3: Stufe 1: Nur Lesen + Entwurf
   - H3: Stufe 2: Im Auftrag senden
   - H3: Stufe 3: Proaktiv
   - H2: Voraussetzungen: Isolation und Härtung
   - H3: Harte Sperren (nicht verhandelbar)
   - H3: Tool-Einschränkungen
   - H3: Sandbox-Isolation
-  - H3: Audit-Protokoll
+  - H3: Audit-Trail
   - H2: Einen Delegaten einrichten
   - H3: 1. Den Delegaten-Agenten erstellen
-  - H3: 2. Delegierung beim Identitätsprovider konfigurieren
+  - H3: 2. Delegierung des Identitäts-Providers konfigurieren
   - H4: Microsoft 365
   - H4: Google Workspace
   - H3: 3. Den Delegaten an Kanäle binden
-  - H3: 4. Zugangsdaten zum Delegaten-Agenten hinzufügen
+  - H3: 4. Anmeldeinformationen zum Delegaten-Agenten hinzufügen
   - H2: Beispiel: Organisationsassistent
   - H2: Skalierungsmuster
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/dreaming.md
 
@@ -2310,29 +2310,29 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Phasenmodell
   - H2: Aufnahme von Sitzungstranskripten
   - H2: Traumtagebuch
-  - H2: Tiefgehende Ranking-Signale
-  - H2: Abdeckung von QA-Schattenversuchsberichten
+  - H2: Tiefe Ranking-Signale
+  - H2: Abdeckung des QA-Schattenlaufberichts
   - H2: Zeitplanung
   - H2: Schnellstart
   - H2: Slash-Befehl
   - H2: CLI-Workflow
-  - H2: Wichtige Standardeinstellungen
+  - H2: Wichtige Standardwerte
   - H2: Dreams-UI
   - H2: Dreaming wird nie ausgeführt: Status zeigt blockiert
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/experimental-features.md
 
 - Route: /concepts/experimental-features
 - Überschriften:
   - H2: Derzeit dokumentierte Flags
-  - H2: Lean-Modus für lokale Modelle
+  - H2: Schlanker Modus für lokale Modelle
   - H3: Warum diese drei Tools
   - H3: Wann Sie ihn einschalten sollten
   - H3: Wann Sie ihn ausgeschaltet lassen sollten
   - H3: Aktivieren
   - H2: Experimentell bedeutet nicht versteckt
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/features.md
 
@@ -2340,7 +2340,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Highlights
   - H2: Vollständige Liste
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/mantis-slack-desktop-runbook.md
 
@@ -2349,11 +2349,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Speichermodell
   - H2: GitHub-Dispatch
   - H2: Lokale CLI
-  - H2: Hydratisierungsmodi
+  - H2: Hydrate-Modi
   - H2: Timing-Interpretation
   - H2: Evidenz-Checkliste
   - H2: Fehlerbehandlung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/mantis.md
 
@@ -2361,11 +2361,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Ziele
   - H2: Nicht-Ziele
-  - H2: Zuständigkeit
+  - H2: Eigentümerschaft
   - H2: Befehlsform
   - H2: Lauflebenszyklus
   - H2: Discord-MVP
-  - H2: Vorhandene QA-Bausteine
+  - H2: Bestehende QA-Bausteine
   - H2: Evidenzmodell
   - H2: Browser und VNC
   - H2: Maschinen
@@ -2389,21 +2389,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Link-Richtlinie
   - H2: Spoiler
   - H2: Einen Kanal-Formatter hinzufügen oder aktualisieren
-  - H2: Häufige Stolperfallen
-  - H2: Verwandt
+  - H2: Häufige Fallstricke
+  - H2: Verwandte Themen
 
 ## concepts/memory-builtin.md
 
 - Route: /concepts/memory-builtin
 - Überschriften:
   - H2: Was es bereitstellt
-  - H2: Einstieg
+  - H2: Erste Schritte
   - H2: Unterstützte Embedding-Provider
-  - H2: Wie die Indexierung funktioniert
+  - H2: Funktionsweise der Indizierung
   - H2: Wann verwenden
   - H2: Fehlerbehebung
   - H2: Konfiguration
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/memory-honcho.md
 
@@ -2411,34 +2411,34 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Was es bereitstellt
   - H2: Verfügbare Tools
-  - H2: Einstieg
+  - H2: Erste Schritte
   - H2: Konfiguration
-  - H2: Vorhandenes Memory migrieren
+  - H2: Bestehenden Speicher migrieren
   - H2: Funktionsweise
-  - H2: Honcho vs. integriertes Memory
+  - H2: Honcho vs. integrierter Speicher
   - H2: CLI-Befehle
   - H2: Weiterführende Lektüre
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/memory-qmd.md
 
 - Route: /concepts/memory-qmd
 - Überschriften:
-  - H2: Was es gegenüber dem integrierten Memory ergänzt
-  - H2: Einstieg
+  - H2: Was es gegenüber dem integrierten Speicher hinzufügt
+  - H2: Erste Schritte
   - H3: Voraussetzungen
   - H3: Aktivieren
-  - H2: Wie der Sidecar funktioniert
+  - H2: Funktionsweise des Sidecars
   - H2: Suchleistung und Kompatibilität
-  - H2: Modell-Overrides
-  - H2: Zusätzliche Pfade indexieren
-  - H2: Sitzungstranskripte indexieren
+  - H2: Modellüberschreibungen
+  - H2: Zusätzliche Pfade indizieren
+  - H2: Sitzungstranskripte indizieren
   - H2: Suchumfang
-  - H2: Zitationen
+  - H2: Zitate
   - H2: Wann verwenden
   - H2: Fehlerbehebung
   - H2: Konfiguration
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/memory-search.md
 
@@ -2448,14 +2448,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Unterstützte Provider
   - H2: Funktionsweise der Suche
   - H2: Suchqualität verbessern
-  - H3: Zeitlicher Verfall
+  - H3: Zeitlicher Abfall
   - H3: MMR (Diversität)
   - H3: Beides aktivieren
-  - H2: Multimodales Memory
+  - H2: Multimodaler Speicher
   - H2: Sitzungsspeichersuche
   - H2: Fehlerbehebung
   - H2: Weiterführende Lektüre
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/memory.md
 
@@ -2464,18 +2464,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Funktionsweise
   - H2: Was wohin gehört
   - H2: Aktionssensitive Erinnerungen
-  - H2: Abgeleitete Verpflichtungen
-  - H2: Memory-Tools
-  - H2: Begleitendes Plugin für Memory-Wiki
-  - H2: Memory-Suche
-  - H2: Memory-Backends
-  - H2: Knowledge-Wiki-Ebene
+  - H2: Abgeleitete Zusagen
+  - H2: Speicher-Tools
+  - H2: Memory-Wiki-Begleit-Plugin
+  - H2: Speichersuche
+  - H2: Speicher-Backends
+  - H2: Wissens-Wiki-Schicht
   - H2: Automatischer Memory-Flush
   - H2: Dreaming
-  - H2: Fundiertes Backfill und Live-Promotion
+  - H2: Fundierte Rückbefüllung und Live-Promotion
   - H2: CLI
   - H2: Weiterführende Lektüre
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/message-lifecycle-refactor.md
 
@@ -2495,87 +2495,87 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Empfangskontext
   - H2: Sendekontext
   - H2: Live-Kontext
-  - H2: Adapteroberfläche
-  - H2: Reduzierung des öffentlichen SDK
-  - H2: Beziehung zum Kanaleingang
+  - H2: Adapter-Oberfläche
+  - H2: Reduktion des öffentlichen SDK
+  - H2: Beziehung zu eingehenden Kanalnachrichten
   - H2: Kompatibilitätsleitplanken
-  - H2: Interne Speicherung
+  - H2: Interner Speicher
   - H2: Fehlerklassen
   - H2: Kanalzuordnung
   - H2: Migrationsplan
   - H3: Phase 1: Interne Nachrichtendomäne
   - H3: Phase 2: Dauerhafter Sendekern
-  - H3: Phase 3: Bridge für Kanaleingang
-  - H3: Phase 4: Bridge für vorbereiteten Dispatcher
-  - H3: Phase 5: Vereinheitlichter Live-Lebenszyklus
+  - H3: Phase 3: Brücke für eingehende Kanalnachrichten
+  - H3: Phase 4: Brücke für vorbereiteten Dispatcher
+  - H3: Phase 5: Einheitlicher Live-Lebenszyklus
   - H3: Phase 6: Öffentliches SDK
   - H3: Phase 7: Alle Sender
   - H3: Phase 8: Turn-benannte Kompatibilität entfernen
   - H2: Testplan
   - H2: Offene Fragen
   - H2: Akzeptanzkriterien
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/messages.md
 
 - Route: /concepts/messages
 - Überschriften:
-  - H2: Nachrichtenfluss (allgemein)
+  - H2: Nachrichtenfluss (übergeordnet)
   - H2: Deduplizierung eingehender Nachrichten
   - H2: Debouncing eingehender Nachrichten
   - H2: Sitzungen und Geräte
   - H2: Metadaten von Tool-Ergebnissen
   - H2: Eingehende Inhalte und Verlaufskontext
-  - H2: Warteschlangen und Folgeaktionen
-  - H2: Zuständigkeit für Kanalläufe
+  - H2: Warteschlangen und Follow-ups
+  - H2: Eigentümerschaft für Kanalläufe
   - H2: Streaming, Chunking und Batching
-  - H2: Sichtbarkeit von Reasoning und Tokens
+  - H2: Sichtbarkeit des Reasonings und Tokens
   - H2: Präfixe, Threading und Antworten
   - H2: Stille Antworten
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/model-failover.md
 
 - Route: /concepts/model-failover
 - Überschriften:
-  - H2: Runtime-Ablauf
-  - H2: Richtlinie zur Auswahlquelle
-  - H2: Skip-Cache bei Authentifizierungsfehlern
+  - H2: Laufzeitablauf
+  - H2: Richtlinie für Auswahlquellen
+  - H2: Skip-Cache bei Auth-Fehlern
   - H2: Für Benutzer sichtbare Fallback-Hinweise
-  - H2: Authentifizierungsspeicher (Schlüssel + OAuth)
+  - H2: Auth-Speicher (Schlüssel + OAuth)
   - H2: Profil-IDs
   - H2: Rotationsreihenfolge
-  - H3: Sitzungsbindung (cachefreundlich)
-  - H3: OpenAI-Codex-Abonnement plus API-Schlüssel-Backup
+  - H3: Sitzungsbindung (cache-freundlich)
+  - H3: OpenAI Codex-Abonnement plus API-Schlüssel-Backup
   - H2: Cooldowns
   - H2: Abrechnung deaktiviert
   - H2: Modell-Fallback
   - H3: Regeln für Kandidatenketten
-  - H3: Welche Fehler Fallback auslösen
+  - H3: Welche Fehler den Fallback voranbringen
   - H3: Cooldown-Skip vs. Probe-Verhalten
-  - H2: Sitzungs-Overrides und Live-Modellwechsel
-  - H2: Observability und Fehlerzusammenfassungen
+  - H2: Sitzungsüberschreibungen und Live-Modellwechsel
+  - H2: Beobachtbarkeit und Fehlerzusammenfassungen
   - H2: Verwandte Konfiguration
 
 ## concepts/model-providers.md
 
 - Route: /concepts/model-providers
 - Überschriften:
-  - H2: Kurzregeln
+  - H2: Schnellregeln
   - H2: Plugin-eigenes Provider-Verhalten
   - H2: API-Schlüsselrotation
   - H2: Offizielle Provider-Plugins
   - H3: OpenAI
   - H3: Anthropic
   - H3: OpenAI ChatGPT/Codex OAuth
-  - H3: Andere gehostete Optionen im Abonnementstil
+  - H3: Weitere gehostete Optionen im Abonnementstil
   - H3: OpenCode
   - H3: Google Gemini (API-Schlüssel)
   - H3: Google Vertex und Gemini CLI
   - H3: Z.AI (GLM)
   - H3: Vercel AI Gateway
-  - H3: Andere gebündelte Provider-Plugins
-  - H4: Wissenswerte Besonderheiten
+  - H3: Weitere gebündelte Provider-Plugins
+  - H4: Wissenswerte Eigenheiten
   - H2: Provider über models.providers (benutzerdefinierte/base URL)
   - H3: Moonshot AI (Kimi)
   - H3: Kimi Coding
@@ -2589,7 +2589,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: SGLang
   - H3: Lokale Proxys (LM Studio, vLLM, LiteLLM usw.)
   - H2: CLI-Beispiele
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/models.md
 
@@ -2597,10 +2597,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Wie die Modellauswahl funktioniert
   - H2: Auswahlquelle und Fallback-Verhalten
-  - H2: Kurze Modellrichtlinie
+  - H2: Schnelle Modellrichtlinie
   - H2: Onboarding (empfohlen)
   - H2: Konfigurationsschlüssel (Überblick)
-  - H3: Sichere Allowlist-Bearbeitungen
+  - H3: Sichere Änderungen an der Allowlist
   - H2: „Model is not allowed“ (und warum Antworten stoppen)
   - H2: Modelle im Chat wechseln (/model)
   - H2: CLI-Befehle
@@ -2608,7 +2608,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: models status
   - H2: Scanning (kostenlose OpenRouter-Modelle)
   - H2: Modellregistrierung (models.json)
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/multi-agent.md
 
@@ -2617,35 +2617,35 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was ist „ein Agent“?
   - H2: Pfade (Kurzüberblick)
   - H3: Einzelagentenmodus (Standard)
-  - H2: Agentenhelfer
+  - H2: Agenten-Helfer
   - H2: Schnellstart
   - H2: Mehrere Agenten = mehrere Personen, mehrere Persönlichkeiten
-  - H2: Agentenübergreifende QMD-Memory-Suche
+  - H2: Agentenübergreifende QMD-Speichersuche
   - H2: Eine WhatsApp-Nummer, mehrere Personen (DM-Aufteilung)
   - H2: Routing-Regeln (wie Nachrichten einen Agenten auswählen)
   - H2: Mehrere Konten / Telefonnummern
   - H2: Konzepte
   - H2: Plattformbeispiele
   - H2: Häufige Muster
-  - H2: Sandbox- und Tool-Konfiguration pro Agent
-  - H2: Verwandt
+  - H2: Sandbox und Tool-Konfiguration pro Agent
+  - H2: Verwandte Themen
 
 ## concepts/oauth.md
 
 - Route: /concepts/oauth
 - Überschriften:
   - H2: Die Token-Senke (warum sie existiert)
-  - H2: Speicherung (wo Tokens liegen)
+  - H2: Speicherung (wo Tokens abgelegt werden)
   - H2: Kompatibilität mit Anthropic-Legacy-Tokens
-  - H2: Anthropic-Claude-CLI-Migration
+  - H2: Migration der Anthropic Claude CLI
   - H2: OAuth-Austausch (wie die Anmeldung funktioniert)
-  - H3: Anthropic-Setup-Token
+  - H3: Anthropic setup-token
   - H3: OpenAI Codex (ChatGPT OAuth)
   - H2: Aktualisierung + Ablauf
   - H2: Mehrere Konten (Profile) + Routing
-  - H3: 1) Bevorzugt: separate Agenten
+  - H3: 1) Bevorzugt: getrennte Agenten
   - H3: 2) Erweitert: mehrere Profile in einem Agenten
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/parallel-specialist-lanes.md
 
@@ -2653,11 +2653,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Grundprinzipien
   - H2: Empfohlene Einführung
-  - H3: Phase 1: Lane-Verträge + schwere Hintergrundarbeit
-  - H3: Phase 2: Prioritäts- und Nebenläufigkeitssteuerung
-  - H3: Phase 3: Koordinator / Traffic-Controller
-  - H2: Minimale Lane-Vertragsvorlage
-  - H2: Verwandt
+  - H3: Phase 1: Lane-Verträge + umfangreiche Hintergrundarbeit
+  - H3: Phase 2: Prioritäts- und Parallelitätssteuerung
+  - H3: Phase 3: Koordinator / Traffic Controller
+  - H2: Minimale Vorlage für Lane-Verträge
+  - H2: Verwandte Themen
 
 ## concepts/personal-agent-benchmark-pack.md
 
@@ -2665,26 +2665,26 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Szenarien
   - H2: Datenschutzmodell
-  - H2: Pack erweitern
+  - H2: Das Pack erweitern
 
 ## concepts/presence.md
 
 - Route: /concepts/presence
 - Überschriften:
-  - H2: Präsenzfelder (was angezeigt wird)
-  - H2: Producer (woher Präsenz kommt)
+  - H2: Presence-Felder (was angezeigt wird)
+  - H2: Produzenten (woher Presence stammt)
   - H3: 1) Gateway-Selbsteintrag
   - H3: 2) WebSocket-Verbindung
   - H4: Warum einmalige CLI-Befehle nicht angezeigt werden
   - H3: 3) system-event-Beacons
   - H3: 4) Node-Verbindungen (Rolle: node)
-  - H2: Regeln zum Zusammenführen + Deduplizieren (warum instanceId wichtig ist)
+  - H2: Zusammenführungs- + Deduplizierungsregeln (warum instanceId wichtig ist)
   - H2: TTL und begrenzte Größe
-  - H2: Hinweis zu Remote/Tunnel (Loopback-IPs)
-  - H2: Consumer
-  - H3: Tab „macOS-Instanzen“
+  - H2: Einschränkung für Remote/Tunnel (Loopback-IPs)
+  - H2: Konsumenten
+  - H3: macOS-Tab „Instanzen“
   - H2: Debugging-Tipps
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/progress-drafts.md
 
@@ -2698,7 +2698,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Kanalverhalten
   - H2: Finalisierung
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/qa-e2e-automation.md
 
@@ -2706,7 +2706,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Befehlsoberfläche
   - H2: Operator-Ablauf
-  - H2: Abdeckung für Live-Transporte
+  - H2: Live-Transportabdeckung
   - H2: QA-Referenz für Telegram, Discord, Slack und WhatsApp
   - H3: Gemeinsame CLI-Flags
   - H3: Telegram-QA
@@ -2715,12 +2715,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H4: Slack-Workspace einrichten
   - H3: WhatsApp-QA
   - H3: Convex-Anmeldeinformationspool
-  - H2: Repository-gestützte Seeds
+  - H2: Repo-gestützte Seeds
   - H2: Provider-Mock-Lanes
   - H2: Transportadapter
   - H3: Kanal hinzufügen
   - H3: Namen von Szenario-Helfern
-  - H2: Berichterstellung
+  - H2: Berichte
   - H2: Verwandte Dokumentation
 
 ## concepts/qa-matrix.md
@@ -2728,28 +2728,28 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /concepts/qa-matrix
 - Überschriften:
   - H2: Schnellstart
-  - H2: Was die Lane tut
+  - H2: Was die Lane macht
   - H2: CLI
-  - H3: Gemeinsame Flags
+  - H3: Allgemeine Flags
   - H3: Provider-Flags
   - H2: Profile
   - H2: Szenarien
   - H2: Umgebungsvariablen
   - H2: Ausgabeartefakte
   - H2: Triage-Tipps
-  - H2: Live-Transport-Vertrag
-  - H2: Verwandt
+  - H2: Live-Transportvertrag
+  - H2: Verwandte Themen
 
 ## concepts/queue-steering.md
 
 - Route: /concepts/queue-steering
 - Überschriften:
-  - H2: Runtime-Grenze
+  - H2: Laufzeitgrenze
   - H2: Modi
   - H2: Burst-Beispiel
   - H2: Geltungsbereich
   - H2: Debounce
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/queue.md
 
@@ -2758,14 +2758,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Warum
   - H2: Funktionsweise
   - H2: Standardwerte
-  - H2: Queue-Modi
-  - H2: Queue-Optionen
+  - H2: Warteschlangenmodi
+  - H2: Warteschlangenoptionen
   - H2: Steuern und Streaming
-  - H2: Rangfolge
-  - H2: Sitzungsbezogene Überschreibungen
+  - H2: Vorrang
+  - H2: Überschreibungen pro Sitzung
   - H2: Geltungsbereich und Garantien
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/retry.md
 
@@ -2779,7 +2779,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Telegram
   - H2: Konfiguration
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/session-pruning.md
 
@@ -2787,12 +2787,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Warum es wichtig ist
   - H2: Funktionsweise
-  - H2: Legacy-Bildbereinigung
+  - H2: Bereinigung von Legacy-Bildern
   - H2: Intelligente Standardwerte
   - H2: Aktivieren oder deaktivieren
   - H2: Pruning vs. Compaction
-  - H2: Weiterführende Informationen
-  - H2: Verwandt
+  - H2: Weiterführende Lektüre
+  - H2: Verwandte Themen
 
 ## concepts/session-tool.md
 
@@ -2804,8 +2804,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Status- und Orchestrierungshelfer
   - H2: Sub-Agenten starten
   - H2: Sichtbarkeit
-  - H2: Weiterführende Informationen
-  - H2: Verwandt
+  - H2: Weiterführende Lektüre
+  - H2: Verwandte Themen
 
 ## concepts/session.md
 
@@ -2815,11 +2815,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: DM-Isolation
   - H3: Dock-verknüpfte Kanäle
   - H2: Sitzungslebenszyklus
-  - H2: Wo Zustand liegt
+  - H2: Wo Statusdaten gespeichert werden
   - H2: Sitzungswartung
   - H2: Sitzungen inspizieren
-  - H2: Weiterführende Informationen
-  - H2: Verwandt
+  - H2: Weiterführende Lektüre
+  - H2: Verwandte Themen
 
 ## concepts/soul.md
 
@@ -2828,9 +2828,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was in SOUL.md gehört
   - H2: Warum das funktioniert
   - H2: Der Molty-Prompt
-  - H2: Wie gut aussieht
+  - H2: Wie gute Qualität aussieht
   - H2: Eine Warnung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/streaming.md
 
@@ -2840,14 +2840,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Medienzustellung mit Block-Streaming
   - H2: Chunking-Algorithmus (untere/obere Grenzen)
   - H2: Zusammenführen (gestreamte Blöcke zusammenführen)
-  - H2: Menschlich wirkende Pausen zwischen Blöcken
+  - H2: Menschenähnliches Timing zwischen Blöcken
   - H2: „Chunks oder alles streamen“
-  - H2: Vorschau-Streaming-Modi
+  - H2: Preview-Streaming-Modi
   - H3: Kanalzuordnung
-  - H3: Runtime-Verhalten
-  - H3: Vorschauaktualisierungen für Tool-Fortschritt
+  - H3: Laufzeitverhalten
+  - H3: Preview-Aktualisierungen für Tool-Fortschritt
   - H3: Commentary-Fortschritts-Lane
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/system-prompt.md
 
@@ -2857,10 +2857,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Prompt-Modi
   - H2: Prompt-Snapshots
   - H2: Workspace-Bootstrap-Injektion
-  - H2: Zeitbehandlung
+  - H2: Zeitverarbeitung
   - H2: Skills
   - H2: Dokumentation
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/timezone.md
 
@@ -2869,7 +2869,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Drei Zeitzonen-Oberflächen
   - H2: Benutzerzeitzone festlegen
   - H2: Wann überschrieben werden sollte
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/typebox.md
 
@@ -2881,13 +2881,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wie die Schemas zur Laufzeit verwendet werden
   - H2: Beispiel-Frames
   - H2: Minimaler Client (Node.js)
-  - H2: Durchgearbeitetes Beispiel: eine Methode Ende-zu-Ende hinzufügen
+  - H2: Ausgearbeitetes Beispiel: eine Methode durchgängig hinzufügen
   - H2: Swift-Codegen-Verhalten
   - H2: Versionierung + Kompatibilität
   - H2: Schema-Muster und Konventionen
   - H2: Live-Schema-JSON
   - H2: Wenn Sie Schemas ändern
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/typing-indicators.md
 
@@ -2897,7 +2897,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Modi
   - H2: Konfiguration
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## concepts/usage-tracking.md
 
@@ -2906,9 +2906,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was es ist
   - H2: Wo es angezeigt wird
   - H2: Standardmodus für Nutzungs-Footer
-  - H3: Drei verschiedene Sitzungszustände
-  - H3: Rangfolge
-  - H3: Zurücksetzen vs. Abschalten
+  - H3: Drei unterschiedliche Sitzungszustände
+  - H3: Vorrang
+  - H3: Zurücksetzen vs. Deaktivieren
   - H3: Umschaltverhalten
   - H3: Konfiguration
   - H2: Benutzerdefinierter vollständiger /usage-Footer
@@ -2918,7 +2918,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Teilformen
   - H3: Beispiel
   - H2: Provider + Anmeldeinformationen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## date-time.md
 
@@ -2929,7 +2929,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: System-Prompt: aktuelles Datum und aktuelle Uhrzeit
   - H2: Systemereigniszeilen (standardmäßig lokal)
   - H3: Benutzerzeitzone + Format konfigurieren
-  - H2: Zeitformaterkennung (automatisch)
+  - H2: Erkennung des Zeitformats (automatisch)
   - H2: Tool-Payloads + Connectors (rohe Provider-Zeit + normalisierte Felder)
   - H2: Verwandte Dokumentation
 
@@ -2937,18 +2937,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /debug/node-issue
 - Überschriften:
-  - H1: Node + tsx-Absturz „\\name is not a function“
+  - H1: Absturz bei Node + tsx „\\name is not a function“
   - H2: Zusammenfassung
   - H2: Umgebung
-  - H2: Repro (nur Node)
-  - H2: Minimale Repro im Repository
-  - H2: Node-Version prüfen
+  - H2: Reproduktion (nur Node)
+  - H2: Minimale Reproduktion im Repo
+  - H2: Node-Versionsprüfung
   - H2: Hinweise / Hypothese
   - H2: Regressionshistorie
   - H2: Workarounds
   - H2: Referenzen
   - H2: Nächste Schritte
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## diagnostics/flags.md
 
@@ -2956,33 +2956,33 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Funktionsweise
   - H2: Per Konfiguration aktivieren
-  - H2: Env-Überschreibung (einmalig)
+  - H2: Env-Override (einmalig)
   - H2: Profiling-Flags
   - H2: Timeline-Artefakte
-  - H2: Wo Logs gespeichert werden
+  - H2: Wo Logs abgelegt werden
   - H2: Logs extrahieren
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## gateway/authentication.md
 
 - Route: /gateway/authentication
 - Überschriften:
-  - H2: Empfohlene Einrichtung (API-Schlüssel, beliebiger Provider)
+  - H2: Empfohlenes Setup (API-Schlüssel, beliebiger Provider)
   - H2: Anthropic: Claude CLI und Token-Kompatibilität
   - H2: Anthropic-Hinweis
-  - H2: Modell-Authentifizierungsstatus prüfen
+  - H2: Status der Modellauthentifizierung prüfen
   - H2: Verhalten bei API-Schlüsselrotation (Gateway)
   - H2: Provider-Authentifizierung entfernen, während der Gateway läuft
-  - H2: Steuern, welche Anmeldeinformation verwendet wird
+  - H2: Steuern, welche Anmeldeinformationen verwendet werden
   - H3: OpenAI und Legacy-openai-codex-IDs
   - H3: Während der Anmeldung (CLI)
   - H3: Pro Sitzung (Chat-Befehl)
-  - H3: Pro Agent (CLI-Überschreibung)
+  - H3: Pro Agent (CLI-Override)
   - H2: Fehlerbehebung
   - H3: „No credentials found“
   - H3: Token läuft ab/ist abgelaufen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## gateway/background-process.md
 
@@ -2992,7 +2992,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Child-Process-Bridging
   - H2: process-Tool
   - H2: Beispiele
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## gateway/bonjour.md
 
@@ -3003,8 +3003,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Einmalige DNS-Server-Einrichtung (Gateway-Host)
   - H3: Tailscale-DNS-Einstellungen
   - H3: Gateway-Listener-Sicherheit (empfohlen)
-  - H2: Was annoncierte Dienste sendet
-  - H2: Diensttypen
+  - H2: Was advertised wird
+  - H2: Servicetypen
   - H2: TXT-Schlüssel (nicht geheime Hinweise)
   - H2: Debugging unter macOS
   - H2: Debugging in Gateway-Logs
@@ -3015,7 +3015,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung bei deaktiviertem Bonjour
   - H2: Häufige Fehlermodi
   - H2: Escaped-Instanznamen (\032)
-  - H2: Aktivierung / Deaktivierung / Konfiguration
+  - H2: Aktivieren / Deaktivieren / Konfiguration
   - H2: Verwandte Dokumentation
 
 ## gateway/bridge-protocol.md
@@ -3024,12 +3024,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Warum es existierte
   - H2: Transport
-  - H2: Handshake + Kopplung
+  - H2: Handshake + Pairing
   - H2: Frames
-  - H2: Exec-Lifecycle-Ereignisse
+  - H2: Exec-Lebenszyklusereignisse
   - H2: Historische Tailnet-Nutzung
   - H2: Versionierung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## gateway/cli-backends.md
 
@@ -3042,16 +3042,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Funktionsweise
   - H2: Sitzungen
   - H2: Fallback-Präludium aus claude-cli-Sitzungen
-  - H2: Bilder (Durchreichen)
+  - H2: Bilder (Durchleitung)
   - H2: Eingaben / Ausgaben
   - H2: Standardwerte (Plugin-eigen)
   - H2: Plugin-eigene Standardwerte
   - H2: Native Compaction-Verantwortung
   - H2: Bundle-MCP-Overlays
-  - H2: Obergrenze für Reseed-Historie
+  - H2: Reseed-Verlaufslimit
   - H2: Einschränkungen
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## gateway/config-agents.md
 
@@ -3079,7 +3079,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: agents.defaults.userTimezone
   - H3: agents.defaults.timeFormat
   - H3: agents.defaults.model
-  - H3: Runtime-Policy
+  - H3: Laufzeitrichtlinie
   - H3: agents.defaults.cliBackends
   - H3: agents.defaults.promptOverlays
   - H3: agents.defaults.heartbeat
@@ -3087,11 +3087,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: agents.defaults.runRetries
   - H3: agents.defaults.contextPruning
   - H3: Block-Streaming
-  - H3: Typing-Indikatoren
+  - H3: Tippindikatoren
   - H3: agents.defaults.sandbox
   - H3: agents.list (Überschreibungen pro Agent)
   - H2: Multi-Agent-Routing
-  - H3: Binding-Abgleichfelder
+  - H3: Binding-Übereinstimmungsfelder
   - H3: Zugriffsprofile pro Agent
   - H2: Sitzung
   - H2: Nachrichten
@@ -3100,7 +3100,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Inbound-Debounce
   - H3: TTS (Text-to-Speech)
   - H2: Talk
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## gateway/config-channels.md
 
@@ -3108,8 +3108,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Kanäle
   - H3: DM- und Gruppenzugriff
-  - H3: Kanalspezifische Modellüberschreibungen
-  - H3: Kanalstandards und Heartbeat
+  - H3: Kanal-Modellüberschreibungen
+  - H3: Kanal-Standardwerte und Heartbeat
   - H3: WhatsApp
   - H3: Telegram
   - H3: Discord
@@ -3123,10 +3123,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: IRC
   - H3: Mehrere Konten (alle Kanäle)
   - H3: Andere Plugin-Kanäle
-  - H3: Erwähnungs-Gating in Gruppenchats
+  - H3: Mention-Gating in Gruppenchats
   - H4: DM-Verlaufslimits
   - H4: Selbstchat-Modus
-  - H3: Befehle (Chat-Befehlsverarbeitung)
+  - H3: Befehle (Verarbeitung von Chatbefehlen)
   - H2: Verwandte Themen
 
 ## gateway/config-tools.md
@@ -3152,7 +3152,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: tools.experimental
   - H3: agents.defaults.subagents
   - H2: Benutzerdefinierte Provider und Basis-URLs
-  - H3: Details zum Provider-Feld
+  - H3: Provider-Felddetails
   - H3: Provider-Beispiele
   - H2: Verwandte Themen
 
@@ -3165,7 +3165,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Empfohlener Einstieg
   - H2: Erweitertes Beispiel (wichtige Optionen)
   - H3: Per Symlink eingebundenes benachbartes Skill-Repository
-  - H2: Häufige Muster
+  - H2: Gängige Muster
   - H3: Gemeinsame Skill-Basis mit einer Überschreibung
   - H3: Einrichtung für mehrere Plattformen
   - H3: Automatische Genehmigung für vertrauenswürdiges Node-Netzwerk
@@ -3181,14 +3181,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/configuration-reference
 - Überschriften:
   - H2: Kanäle
-  - H2: Agent-Standards, Multi-Agent, Sitzungen und Nachrichten
+  - H2: Agent-Standardwerte, Multi-Agent, Sitzungen und Nachrichten
   - H2: Tools und benutzerdefinierte Provider
   - H2: Modelle
   - H2: MCP
   - H2: Skills
   - H2: Plugins
   - H3: Konfiguration des Codex-Harness-Plugins
-  - H2: Verpflichtungen
+  - H2: Zusagen
   - H2: Browser
   - H2: UI
   - H2: Gateway
@@ -3199,16 +3199,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Hooks
   - H3: Gmail-Integration
   - H2: Canvas-Plugin-Host
-  - H2: Erkennung
+  - H2: Discovery
   - H3: mDNS (Bonjour)
   - H3: Weitbereich (DNS-SD)
   - H2: Umgebung
   - H3: env (Inline-Umgebungsvariablen)
   - H3: Ersetzung von Umgebungsvariablen
-  - H2: Geheimnisse
+  - H2: Secrets
   - H3: SecretRef
-  - H3: Unterstützte Anmeldedaten-Oberfläche
-  - H3: Konfiguration für Geheimnis-Provider
+  - H3: Unterstützte Anmeldeinformationsoberfläche
+  - H3: Konfiguration von Secret-Providern
   - H2: Auth-Speicher
   - H3: auth.cooldowns
   - H2: Logging
@@ -3218,13 +3218,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: CLI
   - H2: Assistent
   - H2: Identität
-  - H2: Bridge (Legacy, entfernt)
+  - H2: Bridge (veraltet, entfernt)
   - H2: Cron
   - H3: cron.retry
   - H3: cron.failureAlert
   - H3: cron.failureDestination
   - H2: Template-Variablen für Medienmodelle
-  - H2: Konfigurations-Includes ($include)
+  - H2: Config-Includes ($include)
   - H2: Verwandte Themen
 
 ## gateway/configuration.md
@@ -3234,12 +3234,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Minimale Konfiguration
   - H2: Konfiguration bearbeiten
   - H2: Strikte Validierung
-  - H2: Häufige Aufgaben
+  - H2: Gängige Aufgaben
   - H2: Hot Reload der Konfiguration
   - H3: Reload-Modi
-  - H3: Was hot-angewendet wird und was einen Neustart benötigt
+  - H3: Was per Hot Reload angewendet wird und was einen Neustart benötigt
   - H3: Reload-Planung
-  - H2: Konfigurations-RPC (programmatische Updates)
+  - H2: Config-RPC (programmatische Updates)
   - H2: Umgebungsvariablen
   - H2: Vollständige Referenz
   - H2: Verwandte Themen
@@ -3249,7 +3249,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/diagnostics
 - Überschriften:
   - H2: Schnellstart
-  - H2: Chat-Befehl
+  - H2: Chatbefehl
   - H2: Was der Export enthält
   - H2: Datenschutzmodell
   - H2: Stabilitätsrekorder
@@ -3262,9 +3262,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/discovery
 - Überschriften:
   - H2: Begriffe
-  - H2: Warum wir sowohl direkt als auch SSH beibehalten
-  - H2: Erkennungseingaben (wie Clients erfahren, wo sich das Gateway befindet)
-  - H3: 1) Bonjour- / DNS-SD-Erkennung
+  - H2: Warum wir sowohl Direktverbindung als auch SSH beibehalten
+  - H2: Discovery-Eingaben (wie Clients erfahren, wo sich das Gateway befindet)
+  - H3: 1) Bonjour- / DNS-SD-Discovery
   - H4: Details zum Service-Beacon
   - H3: 2) Tailnet (netzwerkübergreifend)
   - H3: 3) Manuelles / SSH-Ziel
@@ -3281,7 +3281,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Headless- und Automatisierungsmodi
   - H2: Schreibgeschützter Lint-Modus
   - H2: Was es tut (Zusammenfassung)
-  - H2: Backfill und Reset der Dreams-UI
+  - H2: Dreams-UI-Backfill und Zurücksetzen
   - H2: Detailliertes Verhalten und Begründung
   - H2: Verwandte Themen
 
@@ -3301,7 +3301,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Warum
   - H2: Mechanismus
   - H2: Fehleroberfläche
-  - H2: Betriebsnotizen
+  - H2: Betriebshinweise
   - H2: Verwandte Themen
 
 ## gateway/health.md
@@ -3310,11 +3310,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Schnellprüfungen
   - H2: Tiefgehende Diagnose
-  - H2: Konfiguration des Zustandsmonitors
-  - H2: Uptime-Monitoring
-  - H3: Beispiele für die Einrichtung eines Monitoring-Dienstes
+  - H2: Konfiguration des Health-Monitors
+  - H2: Uptime-Überwachung
+  - H3: Einrichtungsbeispiele für Monitoring-Dienste
   - H2: Wenn etwas fehlschlägt
-  - H2: Dedizierter "health"-Befehl
+  - H2: Dedizierter „health“-Befehl
   - H2: Verwandte Themen
 
 ## gateway/heartbeat.md
@@ -3322,25 +3322,25 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/heartbeat
 - Überschriften:
   - H2: Schnellstart (Einsteiger)
-  - H2: Standards
+  - H2: Standardwerte
   - H2: Wofür der Heartbeat-Prompt gedacht ist
   - H2: Antwortvertrag
   - H2: Konfiguration
   - H3: Geltungsbereich und Vorrang
-  - H3: Pro-Agent-Heartbeats
+  - H3: Heartbeats pro Agent
   - H3: Beispiel für aktive Stunden
   - H3: 24/7-Einrichtung
-  - H3: Beispiel für mehrere Konten
+  - H3: Beispiel mit mehreren Konten
   - H3: Feldnotizen
   - H2: Zustellverhalten
   - H2: Sichtbarkeitssteuerungen
-  - H3: Was jedes Flag tut
+  - H3: Was jedes Flag bewirkt
   - H3: Beispiele pro Kanal vs. pro Konto
-  - H3: Häufige Muster
+  - H3: Gängige Muster
   - H2: HEARTBEAT.md (optional)
   - H3: tasks:-Blöcke
   - H3: Kann der Agent HEARTBEAT.md aktualisieren?
-  - H2: Manuelles Wecken (bei Bedarf)
+  - H2: Manuelles Aufwecken (bei Bedarf)
   - H2: Reasoning-Zustellung (optional)
   - H2: Kostenbewusstsein
   - H2: Kontextüberlauf nach Heartbeat
@@ -3353,19 +3353,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Lokaler Start in 5 Minuten
   - H2: Laufzeitmodell
   - H2: OpenAI-kompatible Endpunkte
-  - H3: Vorrang von Port und Bind-Adresse
+  - H3: Vorrang von Port und Bindung
   - H3: Hot-Reload-Modi
-  - H2: Befehlssatz für Operatoren
-  - H2: Mehrere Gateways (derselbe Host)
+  - H2: Operator-Befehlssatz
+  - H2: Mehrere Gateways (gleicher Host)
   - H2: Remote-Zugriff
   - H2: Überwachung und Service-Lebenszyklus
-  - H2: Schneller Weg für das Dev-Profil
-  - H2: Protokoll-Kurzreferenz (Operatoransicht)
+  - H2: Schnellpfad für Entwicklungsprofil
+  - H2: Protokoll-Kurzreferenz (Operator-Ansicht)
   - H2: Betriebsprüfungen
   - H3: Liveness
   - H3: Readiness
-  - H3: Lückenwiederherstellung
-  - H2: Häufige Fehlersignaturen
+  - H3: Wiederherstellung nach Lücken
+  - H2: Gängige Fehlersignaturen
   - H2: Sicherheitsgarantien
   - H2: Verwandte Themen
 
@@ -3373,23 +3373,23 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /gateway/local-model-services
 - Überschriften:
-  - H2: Wie es funktioniert
+  - H2: Funktionsweise
   - H2: Konfigurationsform
   - H2: Felder
   - H2: Inferrs-Beispiel
   - H2: ds4-Beispiel
-  - H2: Betriebsnotizen
+  - H2: Betriebshinweise
   - H2: Verwandte Themen
 
 ## gateway/local-models.md
 
 - Route: /gateway/local-models
 - Überschriften:
-  - H2: Mindest-Hardware
+  - H2: Hardware-Mindestanforderungen
   - H2: Backend auswählen
   - H2: Empfohlen: LM Studio + großes lokales Modell (Responses API)
   - H3: Hybridkonfiguration: gehostetes Primärmodell, lokaler Fallback
-  - H3: Local-first mit gehostetem Sicherheitsnetz
+  - H3: Lokal zuerst mit gehostetem Sicherheitsnetz
   - H3: Regionales Hosting / Datenrouting
   - H2: Andere OpenAI-kompatible lokale Proxys
   - H2: Kleinere oder strengere Backends
@@ -3405,7 +3405,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konsolenerfassung
   - H2: Schwärzung
   - H2: Gateway-WebSocket-Logs
-  - H3: WS-Log-Stil
+  - H3: WS-Logstil
   - H2: Konsolenformatierung (Subsystem-Logging)
   - H2: Verwandte Themen
 
@@ -3413,14 +3413,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /gateway/multiple-gateways
 - Überschriften:
-  - H2: Bestes empfohlenes Setup
+  - H2: Beste empfohlene Einrichtung
   - H2: Rescue-Bot-Schnellstart
   - H2: Warum das funktioniert
   - H2: Was --profile rescue onboard ändert
-  - H2: Allgemeine Einrichtung mehrerer Gateways
+  - H2: Allgemeine Multi-Gateway-Einrichtung
   - H2: Isolations-Checkliste
-  - H2: Portzuordnung (abgeleitet)
-  - H2: Browser-/CDP-Hinweise (häufige Fehlerquelle)
+  - H2: Port-Zuordnung (abgeleitet)
+  - H2: Browser-/CDP-Hinweise (häufige Stolperfalle)
   - H2: Manuelles env-Beispiel
   - H2: Schnellprüfungen
   - H2: Verwandte Themen
@@ -3438,7 +3438,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Authentifizierung
   - H2: Sicherheitsgrenze (wichtig)
   - H2: Wann Sie diesen Endpunkt verwenden sollten
-  - H2: Agent-first-Modellvertrag
+  - H2: Agent-First-Modellvertrag
   - H2: Endpunkt aktivieren
   - H2: Endpunkt deaktivieren
   - H2: Sitzungsverhalten
@@ -3464,9 +3464,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Anfrageform (unterstützt)
   - H2: Elemente (Eingabe)
   - H3: message
-  - H3: functioncalloutput (turn-basierte Tools)
+  - H3: functioncalloutput (rundenbasierte Tools)
   - H3: reasoning und itemreference
-  - H2: Tools (clientseitige Funktions-Tools)
+  - H2: Tools (clientseitige Function-Tools)
   - H2: Bilder (inputimage)
   - H2: Dateien (inputfile)
   - H2: Datei- und Bildlimits (Konfiguration)
@@ -3482,20 +3482,20 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Voraussetzungen
   - H2: Schnellstart
-  - H2: Workspace-Modi
+  - H2: Arbeitsbereichsmodi
   - H3: mirror
   - H3: remote
-  - H3: Einen Modus auswählen
+  - H3: Modus auswählen
   - H2: Konfigurationsreferenz
   - H2: Beispiele
   - H3: Minimale Remote-Einrichtung
   - H3: Spiegelmodus mit GPU
-  - H3: Pro-Agent-OpenShell mit benutzerdefiniertem Gateway
+  - H3: OpenShell pro Agent mit benutzerdefiniertem Gateway
   - H2: Lebenszyklusverwaltung
   - H3: Wann neu erstellt werden sollte
-  - H2: Sicherheits-Hardening
+  - H2: Sicherheitshärtung
   - H2: Aktuelle Einschränkungen
-  - H2: Wie es funktioniert
+  - H2: Funktionsweise
   - H2: Verwandte Themen
 
 ## gateway/opentelemetry.md
@@ -3508,7 +3508,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konfigurationsreferenz
   - H3: Umgebungsvariablen
   - H2: Datenschutz und Inhaltserfassung
-  - H2: Sampling und Flushing
+  - H2: Sampling und Flushes
   - H2: Exportierte Metriken
   - H3: Modellnutzung
   - H3: Nachrichtenfluss
@@ -3534,7 +3534,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Methoden-Scope ist nur die erste Schranke
   - H2: Genehmigungen für Geräte-Pairing
   - H2: Genehmigungen für Node-Pairing
-  - H2: Authentifizierung mit gemeinsamem Geheimnis
+  - H2: Authentifizierung mit gemeinsamem Secret
 
 ## gateway/pairing.md
 
@@ -3542,14 +3542,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Konzepte
   - H2: Wie Pairing funktioniert
-  - H2: CLI-Workflow (headless-freundlich)
+  - H2: CLI-Workflow (Headless-freundlich)
   - H2: API-Oberfläche (Gateway-Protokoll)
   - H2: Node-Befehls-Gating (2026.3.31+)
   - H2: Vertrauensgrenzen für Node-Ereignisse (2026.3.31+)
   - H2: Automatische Genehmigung (macOS-App)
-  - H2: Automatische Genehmigung für Geräte in vertrauenswürdigen CIDR-Bereichen
+  - H2: Automatische Genehmigung für Trusted-CIDR-Geräte
   - H2: Automatische Genehmigung bei Metadaten-Upgrade
-  - H2: QR-Pairing-Helfer
+  - H2: QR-Pairing-Hilfen
   - H2: Lokalität und weitergeleitete Header
   - H2: Speicher (lokal, privat)
   - H2: Transportverhalten
@@ -3563,7 +3563,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Exportierte Metriken
   - H2: Label-Richtlinie
   - H2: PromQL-Rezepte
-  - H2: Zwischen Prometheus- und OpenTelemetry-Export wählen
+  - H2: Auswahl zwischen Prometheus- und OpenTelemetry-Export
   - H2: Fehlerbehebung
   - H2: Verwandte Themen
 
@@ -3572,7 +3572,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/protocol
 - Überschriften:
   - H2: Transport
-  - H2: Handshake (Verbindung)
+  - H2: Handshake (Verbindung herstellen)
   - H3: Node-Beispiel
   - H2: Framing
   - H2: Rollen + Scopes
@@ -3580,10 +3580,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Scopes (Operator)
   - H3: Caps/Befehle/Berechtigungen (Node)
   - H2: Präsenz
-  - H3: Hintergrund-Alive-Ereignis von Node
+  - H3: Node-Hintergrund-Alive-Ereignis
   - H2: Scoping von Broadcast-Ereignissen
-  - H2: Häufige RPC-Methodenfamilien
-  - H3: Häufige Ereignisfamilien
+  - H2: Gängige RPC-Methodenfamilien
+  - H3: Gängige Ereignisfamilien
   - H3: Node-Hilfsmethoden
   - H3: Task-Ledger-RPCs
   - H3: Operator-Hilfsmethoden
@@ -3594,7 +3594,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Client-Konstanten
   - H2: Auth
   - H2: Geräteidentität + Pairing
-  - H3: Diagnose zur Geräte-Auth-Migration
+  - H3: Diagnose für Geräte-Auth-Migration
   - H2: TLS + Pinning
   - H2: Scope
   - H2: Verwandte Themen
@@ -3608,10 +3608,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnelle Einrichtung
   - H3: Schritt 1: SSH-Konfiguration hinzufügen
   - H3: Schritt 2: SSH-Schlüssel kopieren
-  - H3: Schritt 3: Remote-Gateway-Auth konfigurieren
+  - H3: Schritt 3: Authentifizierung für das Remote-Gateway konfigurieren
   - H3: Schritt 4: SSH-Tunnel starten
   - H3: Schritt 5: OpenClaw.app neu starten
-  - H2: Tunnel bei Anmeldung automatisch starten
+  - H2: Tunnel beim Anmelden automatisch starten
   - H3: PLIST-Datei erstellen
   - H3: Launch Agent laden
   - H2: Fehlerbehebung
@@ -3623,8 +3623,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/remote
 - Überschriften:
   - H2: Die Grundidee
-  - H2: Häufige VPN- und Tailnet-Setups
-  - H3: Immer aktives Gateway in Ihrem Tailnet
+  - H2: Häufige VPN- und Tailnet-Einrichtungen
+  - H3: Always-on-Gateway in Ihrem Tailnet
   - H3: Heim-Desktop führt das Gateway aus
   - H3: Laptop führt das Gateway aus
   - H2: Befehlsfluss (was wo ausgeführt wird)
@@ -3650,12 +3650,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnelles Debugging
   - H2: Sandbox: wo Tools ausgeführt werden
   - H3: Bind-Mounts (schneller Sicherheitscheck)
-  - H2: Tool-Policy: welche Tools existieren/aufrufbar sind
+  - H2: Tool-Richtlinie: welche Tools existieren/aufrufbar sind
   - H3: Tool-Gruppen (Kurzformen)
-  - H2: Erhöht: nur für exec „auf Host ausführen“
-  - H2: Häufige Korrekturen für „Sandbox-Jail“
-  - H3: „Tool X durch Sandbox-Tool-Policy blockiert“
-  - H3: „Ich dachte, das wäre main, warum ist es sandboxed?“
+  - H2: Erhöht: nur exec „auf Host ausführen“
+  - H2: Häufige Korrekturen für „Sandbox-Gefängnis“
+  - H3: „Tool X durch Sandbox-Tool-Richtlinie blockiert“
+  - H3: „Ich dachte, das sei main, warum ist es in der Sandbox?“
   - H2: Verwandte Themen
 
 ## gateway/sandboxing.md
@@ -3676,8 +3676,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Benutzerdefinierte Bind-Mounts
   - H2: Images und Einrichtung
   - H2: setupCommand (einmalige Container-Einrichtung)
-  - H2: Tool-Policy und Escape-Hatches
-  - H2: Multi-Agent-Überschreibungen
+  - H2: Tool-Richtlinie und Ausweichmöglichkeiten
+  - H2: Multi-Agent-Overrides
   - H2: Minimales Aktivierungsbeispiel
   - H2: Verwandte Themen
 
@@ -3685,11 +3685,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /gateway/secrets-plan-contract
 - Überschriften:
-  - H2: Form der Plan-Datei
+  - H2: Form der Plandatei
   - H2: Provider-Upserts und Löschungen
   - H2: Unterstützter Zielumfang
   - H2: Verhalten des Zieltyps
-  - H2: Regeln zur Pfadvalidierung
+  - H2: Regeln für Pfadvalidierung
   - H2: Fehlerverhalten
   - H2: Zustimmungsverhalten des Exec-Providers
   - H2: Hinweise zu Runtime- und Audit-Umfang
@@ -3701,21 +3701,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/secrets
 - Überschriften:
   - H2: Ziele und Runtime-Modell
-  - H2: Agent-Zugriffsgrenze
+  - H2: Grenze für Agent-Zugriff
   - H2: Filterung aktiver Oberflächen
-  - H2: Diagnosen zur Gateway-Auth-Oberfläche
+  - H2: Diagnosen zur Gateway-Authentifizierungsoberfläche
   - H2: Onboarding-Referenz-Preflight
   - H2: SecretRef-Vertrag
   - H2: Provider-Konfiguration
   - H2: Dateibasierte API-Schlüssel
   - H2: Beispiele für Exec-Integration
-  - H2: Umgebungsvariablen des MCP-Servers
-  - H2: SSH-Auth-Material für die Sandbox
-  - H2: Unterstützte Anmeldedaten-Oberfläche
+  - H2: Umgebungsvariablen für MCP-Server
+  - H2: Sandbox-SSH-Authentifizierungsmaterial
+  - H2: Unterstützte Anmeldedatenoberfläche
   - H2: Erforderliches Verhalten und Vorrang
   - H2: Aktivierungsauslöser
-  - H2: Signale für beeinträchtigt und wiederhergestellt
-  - H2: Auflösung von Befehlspfaden
+  - H2: Signale für Degradation und Wiederherstellung
+  - H2: Auflösung des Befehlspfads
   - H2: Audit- und Konfigurationsworkflow
   - H2: Einweg-Sicherheitsrichtlinie
   - H2: Hinweise zur Legacy-Auth-Kompatibilität
@@ -3736,9 +3736,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Preflight-Inventar
   - H2: Baseline-Prüfungen
   - H2: Minimale sichere Baseline
-  - H2: DM- und Gruppenexposition
+  - H2: Exposition von DMs und Gruppen
   - H2: Reverse-Proxy-Prüfungen
-  - H2: Tool- und Sandbox-Review
+  - H2: Tool- und Sandbox-Überprüfung
   - H2: Validierung nach der Änderung
   - H2: Rollback-Plan
   - H2: Review-Checkliste
@@ -3747,42 +3747,42 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /gateway/security
 - Überschriften:
-  - H2: Zuerst der Umfang: Sicherheitsmodell für persönliche Assistenten
-  - H2: Schnellcheck: openclaw security audit
-  - H3: Dependency-Lock für veröffentlichte Pakete
-  - H3: Deployment- und Host-Vertrauen
+  - H2: Zuerst der Umfang: Sicherheitsmodell für persönliche Assistenz
+  - H2: Schnellprüfung: openclaw security audit
+  - H3: Abhängigkeitssperre für veröffentlichte Pakete
+  - H3: Deployment und Host-Vertrauen
   - H3: Sichere Dateioperationen
-  - H3: Gemeinsam genutzter Slack-Workspace: echtes Risiko
+  - H3: Geteilter Slack-Workspace: echtes Risiko
   - H3: Unternehmensweit geteilter Agent: akzeptables Muster
   - H2: Vertrauenskonzept für Gateway und Node
   - H2: Matrix der Vertrauensgrenzen
-  - H2: Absichtlich keine Schwachstellen
+  - H2: Konstruktionsbedingt keine Schwachstellen
   - H2: Gehärtete Baseline in 60 Sekunden
-  - H2: Schnellregel für gemeinsam genutzte Posteingänge
-  - H2: Modell für Kontext-Sichtbarkeit
-  - H2: Was der Audit prüft (allgemein)
-  - H2: Speicherübersicht für Anmeldedaten
-  - H2: Checkliste für Sicherheitsaudits
-  - H2: Glossar zum Sicherheitsaudit
-  - H2: Control-UI über HTTP
+  - H2: Schnellregel für geteilte Posteingänge
+  - H2: Modell für Kontextsichtbarkeit
+  - H2: Was das Audit prüft (allgemein)
+  - H2: Speicherkarte für Anmeldedaten
+  - H2: Checkliste für Sicherheits-Audit
+  - H2: Glossar zum Sicherheits-Audit
+  - H2: Control UI über HTTP
   - H2: Zusammenfassung unsicherer oder gefährlicher Flags
   - H2: Reverse-Proxy-Konfiguration
-  - H2: Hinweise zu HSTS und Ursprung
-  - H2: Lokale Sitzungsprotokolle liegen auf dem Datenträger
+  - H2: HSTS- und Origin-Hinweise
+  - H2: Lokale Sitzungslogs liegen auf der Festplatte
   - H2: Node-Ausführung (system.run)
   - H2: Dynamische Skills (Watcher / Remote-Nodes)
   - H2: Das Bedrohungsmodell
   - H2: Kernkonzept: Zugriffskontrolle vor Intelligenz
-  - H2: Modell für Befehlsautorisierung
+  - H2: Modell der Befehlsautorisierung
   - H2: Risiko von Control-Plane-Tools
   - H2: Plugins
   - H2: DM-Zugriffsmodell: Pairing, Allowlist, offen, deaktiviert
-  - H2: DM-Sitzungsisolation (Multi-User-Modus)
+  - H2: DM-Sitzungsisolation (Mehrbenutzermodus)
   - H3: Sicherer DM-Modus (empfohlen)
   - H2: Allowlists für DMs und Gruppen
-  - H2: Prompt-Injection (was sie ist, warum sie wichtig ist)
-  - H2: Bereinigung externer Inhalte von Sondertokens
-  - H2: Unsichere Bypass-Flags für externe Inhalte
+  - H2: Prompt-Injection (was es ist, warum es wichtig ist)
+  - H2: Bereinigung externer Inhalte von Special Tokens
+  - H2: Bypass-Flags für unsichere externe Inhalte
   - H3: Prompt-Injection erfordert keine öffentlichen DMs
   - H3: Selbst gehostete LLM-Backends
   - H3: Modellstärke (Sicherheitshinweis)
@@ -3792,14 +3792,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Netzwerkexposition (Bind, Port, Firewall)
   - H3: Docker-Portveröffentlichung mit UFW
   - H3: mDNS/Bonjour-Erkennung
-  - H3: Gateway-WebSocket absichern (lokale Auth)
-  - H3: Tailscale Serve-Identitätsheader
+  - H3: Gateway-WebSocket absichern (lokale Authentifizierung)
+  - H3: Tailscale Serve-Identity-Header
   - H3: Browsersteuerung über Node-Host (empfohlen)
-  - H3: Secrets auf Datenträger
+  - H3: Secrets auf der Festplatte
   - H3: Workspace-.env-Dateien
-  - H3: Protokolle und Transkripte (Schwärzung und Aufbewahrung)
+  - H3: Logs und Transkripte (Redaktion und Aufbewahrung)
   - H3: DMs: standardmäßig Pairing
-  - H3: Gruppen: überall Erwähnung verlangen
+  - H3: Gruppen: überall Erwähnung erforderlich
   - H3: Separate Nummern (WhatsApp, Signal, Telegram)
   - H3: Schreibgeschützter Modus (über Sandbox und Tools)
   - H3: Sichere Baseline (kopieren/einfügen)
@@ -3807,16 +3807,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Leitplanke für Sub-Agent-Delegation
   - H2: Risiken der Browsersteuerung
   - H3: Browser-SSRF-Richtlinie (standardmäßig strikt)
-  - H2: Zugriffprofile pro Agent (Multi-Agent)
+  - H2: Zugriffsprofile pro Agent (Multi-Agent)
   - H3: Beispiel: Vollzugriff (keine Sandbox)
   - H3: Beispiel: schreibgeschützte Tools + schreibgeschützter Workspace
   - H3: Beispiel: kein Dateisystem-/Shell-Zugriff (Provider-Messaging erlaubt)
-  - H2: Reaktion auf Vorfälle
+  - H2: Incident Response
   - H3: Eindämmen
-  - H3: Rotieren (bei geleakten Secrets Kompromittierung annehmen)
+  - H3: Rotieren (Kompromittierung annehmen, wenn Secrets offengelegt wurden)
   - H3: Audit
   - H3: Für einen Bericht sammeln
-  - H2: Secret-Scanning
+  - H2: Secret Scanning
   - H2: Sicherheitsprobleme melden
 
 ## gateway/security/secure-file-operations.md
@@ -3826,7 +3826,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Standard: kein Python-Helfer
   - H2: Was ohne Python geschützt bleibt
   - H2: Was Python hinzufügt
-  - H2: Leitlinien für Plugin und Core
+  - H2: Anleitung für Plugin und Kern
 
 ## gateway/security/shrinkwrap.md
 
@@ -3841,15 +3841,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /gateway/tailscale
 - Überschriften:
   - H2: Modi
-  - H2: Auth
+  - H2: Authentifizierung
   - H2: Konfigurationsbeispiele
   - H3: Nur Tailnet (Serve)
   - H3: Nur Tailnet (an Tailnet-IP binden)
-  - H3: Öffentliches Internet (Funnel + gemeinsames Passwort)
+  - H3: Öffentliches Internet (Funnel + geteiltes Passwort)
   - H2: CLI-Beispiele
   - H2: Hinweise
   - H2: Browsersteuerung (Remote-Gateway + lokaler Browser)
-  - H2: Tailscale-Voraussetzungen + Limits
+  - H2: Tailscale-Voraussetzungen + Grenzen
   - H2: Mehr erfahren
   - H2: Verwandte Themen
 
@@ -3860,7 +3860,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Authentifizierung
   - H2: Sicherheitsgrenze (wichtig)
   - H2: Request-Body
-  - H2: Policy + Routing-Verhalten
+  - H2: Richtlinien- und Routing-Verhalten
   - H2: Antworten
   - H2: Beispiel
   - H2: Verwandte Themen
@@ -3875,21 +3875,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Protokollabweichung nach Rollback
   - H2: Skill-Symlink als Pfadausbruch übersprungen
   - H2: Anthropic 429: zusätzliche Nutzung für langen Kontext erforderlich
-  - H2: Upstream-403-blockierte Antworten
-  - H2: Lokales OpenAI-kompatibles Backend besteht direkte Prüfungen, aber Agent-Läufe schlagen fehl
+  - H2: Upstream-403: blockierte Antworten
+  - H2: Lokales OpenAI-kompatibles Backend besteht direkte Probes, aber Agent-Ausführungen schlagen fehl
   - H2: Keine Antworten
   - H2: Konnektivität der Dashboard-Control-UI
-  - H3: Schnellzuordnung für Auth-Detailcodes
+  - H3: Schnelltabelle für Auth-Detailcodes
   - H2: Gateway-Dienst läuft nicht
-  - H2: macOS-Gateway reagiert still nicht mehr und wird wieder aktiv, wenn Sie das Dashboard berühren
-  - H2: Gateway beendet sich bei hoher Speichernutzung
+  - H2: macOS-Gateway reagiert stillschweigend nicht mehr und wird fortgesetzt, wenn Sie das Dashboard berühren
+  - H2: Gateway beendet sich bei hohem Speicherverbrauch
   - H2: Gateway hat ungültige Konfiguration abgelehnt
-  - H2: Gateway-Prüfwarnungen
+  - H2: Gateway-Probe-Warnungen
   - H2: Kanal verbunden, Nachrichten fließen nicht
   - H2: Cron- und Heartbeat-Zustellung
   - H2: Node gekoppelt, Tool schlägt fehl
   - H2: Browser-Tool schlägt fehl
-  - H2: Wenn Sie aktualisiert haben und plötzlich etwas nicht mehr funktioniert
+  - H2: Wenn Sie aktualisiert haben und plötzlich etwas kaputt ist
   - H2: Verwandte Themen
 
 ## gateway/trusted-proxy-auth.md
@@ -3899,32 +3899,32 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wann verwenden
   - H2: Wann NICHT verwenden
   - H2: Funktionsweise
-  - H2: Pairing-Verhalten der Control-UI
+  - H2: Pairing-Verhalten der Control UI
   - H2: Konfiguration
   - H3: Konfigurationsreferenz
   - H2: TLS-Terminierung und HSTS
-  - H3: Rollout-Leitlinien
+  - H3: Rollout-Anleitung
   - H2: Beispiele für Proxy-Einrichtung
   - H2: Gemischte Token-Konfiguration
   - H2: Header für Operator-Scopes
   - H2: Sicherheitscheckliste
-  - H2: Sicherheitsaudit
+  - H2: Sicherheits-Audit
   - H2: Fehlerbehebung
-  - H2: Migration von Token-Auth
+  - H2: Migration von Token-Authentifizierung
   - H2: Verwandte Themen
 
 ## help/debugging.md
 
 - Route: /help/debugging
 - Überschriften:
-  - H2: Runtime-Debug-Überschreibungen
-  - H2: Ausgabe des Sitzungs-Traces
-  - H2: Trace des Plugin-Lebenszyklus
+  - H2: Runtime-Debug-Overrides
+  - H2: Ausgabe von Sitzungs-Traces
+  - H2: Trace für Plugin-Lebenszyklus
   - H2: CLI-Start und Befehlsprofiling
   - H2: Gateway-Watch-Modus
   - H2: Dev-Profil + Dev-Gateway (--dev)
   - H2: Raw-Stream-Logging (OpenClaw)
-  - H2: Raw-Chunk-Logging für OpenAI-kompatible Backends
+  - H2: Raw-Chunk-Logging für OpenAI-kompatible Anbieter
   - H2: Sicherheitshinweise
   - H2: Debugging in VSCode
   - H3: Einrichtung
@@ -3940,10 +3940,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Config-env-Block
   - H2: Shell-env-Import
   - H2: Exec-Shell-Snapshots
-  - H2: Von der Runtime injizierte env vars
+  - H2: Zur Runtime injizierte env vars
   - H2: UI-env vars
-  - H2: env var-Ersetzung in der Konfiguration
-  - H2: Secret-Refs vs ${ENV}-Strings
+  - H2: Env-var-Ersetzung in der Konfiguration
+  - H2: Secret refs vs. ${ENV}-Strings
   - H2: Pfadbezogene env vars
   - H2: Logging
   - H3: OPENCLAWHOME
@@ -3955,7 +3955,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /help/faq-first-run
 - Überschriften:
-  - H2: Schnellstart und Einrichtung beim ersten Lauf
+  - H2: Schnellstart und Einrichtung beim ersten Start
   - H2: Verwandte Themen
 
 ## help/faq-models.md
@@ -3963,7 +3963,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /help/faq-models
 - Überschriften:
   - H2: Modelle: Standardwerte, Auswahl, Aliasse, Wechsel
-  - H2: Modell-Failover und „All models failed“
+  - H2: Modell-Failover und „Alle Modelle fehlgeschlagen“
   - H2: Auth-Profile: was sie sind und wie Sie sie verwalten
   - H2: Verwandte Themen
 
@@ -3971,22 +3971,22 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /help/faq
 - Überschriften:
-  - H2: Die ersten 60 Sekunden, wenn etwas defekt ist
-  - H2: Schnellstart und Einrichtung beim ersten Lauf
+  - H2: Erste 60 Sekunden, wenn etwas defekt ist
+  - H2: Schnellstart und Einrichtung beim ersten Start
   - H2: Was ist OpenClaw?
   - H2: Skills und Automatisierung
   - H2: Sandboxing und Speicher
-  - H2: Wo Dinge auf dem Datenträger liegen
-  - H2: Grundlagen der Konfiguration
+  - H2: Wo Dinge auf der Festplatte liegen
+  - H2: Konfigurationsgrundlagen
   - H2: Remote-Gateways und Nodes
-  - H2: env vars und .env-Laden
+  - H2: Env vars und .env-Laden
   - H2: Sitzungen und mehrere Chats
   - H2: Modelle, Failover und Auth-Profile
-  - H2: Gateway: Ports, „bereits ausgeführt“ und Remote-Modus
+  - H2: Gateway: Ports, „läuft bereits“ und Remote-Modus
   - H2: Logging und Debugging
   - H2: Medien und Anhänge
   - H2: Sicherheit und Zugriffskontrolle
-  - H2: Chat-Befehle, Aufgaben abbrechen und „es stoppt nicht“
+  - H2: Chatbefehle, Aufgaben abbrechen und „es hört nicht auf“
   - H2: Verschiedenes
   - H2: Verwandte Themen
 
@@ -3996,7 +3996,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: FAQ
   - H2: Diagnosen
-  - H2: Tests
+  - H2: Testen
   - H2: Community und Meta
 
 ## help/scripts.md
@@ -4004,7 +4004,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /help/scripts
 - Überschriften:
   - H2: Konventionen
-  - H2: Auth-Monitoring-Skripte
+  - H2: Skripte für Auth-Überwachung
   - H2: GitHub-Lesehelfer
   - H2: Beim Hinzufügen von Skripten
   - H2: Verwandte Themen
@@ -4014,27 +4014,27 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /help/testing-live
 - Überschriften:
   - H2: Live: lokale Smoke-Befehle
-  - H2: Live: Fähigkeitsdurchlauf für Android-Node
+  - H2: Live: Capability-Durchlauf für Android-Knoten
   - H2: Live: Modell-Smoke-Test (Profilschlüssel)
   - H3: Ebene 1: Direkte Modellvervollständigung (kein Gateway)
-  - H3: Ebene 2: Gateway + Entwicklungs-Agent-Smoke-Test (was "@openclaw" tatsächlich tut)
+  - H3: Ebene 2: Gateway + Dev-Agent-Smoke-Test (was "@openclaw" tatsächlich tut)
   - H2: Live: CLI-Backend-Smoke-Test (Claude, Gemini oder andere lokale CLIs)
-  - H2: Live: Erreichbarkeit des APNs-HTTP/2-Proxys
+  - H2: Live: APNs-HTTP/2-Proxy-Erreichbarkeit
   - H2: Live: ACP-Bind-Smoke-Test (/acp spawn ... --bind here)
   - H2: Live: Codex-App-Server-Harness-Smoke-Test
   - H3: Empfohlene Live-Rezepte
   - H2: Live: Modellmatrix (was wir abdecken)
-  - H3: Modernes Smoke-Test-Set (Tool-Aufrufe + Bild)
-  - H3: Baseline: Tool-Aufrufe (Read + optional Exec)
-  - H3: Vision: Bildversand (Anhang → multimodale Nachricht)
+  - H3: Modernes Smoke-Set (Tool-Aufrufe + Bild)
+  - H3: Basis: Tool-Aufrufe (Read + optional Exec)
+  - H3: Vision: Bild senden (Anhang → multimodale Nachricht)
   - H3: Aggregatoren / alternative Gateways
   - H2: Zugangsdaten (niemals committen)
-  - H2: Deepgram live (Audiotranskription)
-  - H2: BytePlus-Coding-Plan live
-  - H2: ComfyUI-Workflow-Medien live
-  - H2: Bildgenerierung live
-  - H2: Musikgenerierung live
-  - H2: Videogenerierung live
+  - H2: Deepgram Live (Audiotranskription)
+  - H2: BytePlus-Coding-Plan Live
+  - H2: ComfyUI-Workflow-Medien Live
+  - H2: Bildgenerierung Live
+  - H2: Musikgenerierung Live
+  - H2: Videogenerierung Live
   - H2: Medien-Live-Harness
   - H2: Verwandte Themen
 
@@ -4045,11 +4045,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was wir schützen
   - H2: Lokaler Nachweis während der Entwicklung
   - H2: Docker-Lanes
-  - H2: Paketabnahme
+  - H2: Paketakzeptanz
   - H2: Release-Standard
   - H2: Legacy-Kompatibilität
-  - H2: Abdeckung hinzufügen
-  - H2: Fehlersuche
+  - H2: Coverage hinzufügen
+  - H2: Fehlertriage
 
 ## help/testing.md
 
@@ -4058,29 +4058,29 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Test-Temp-Verzeichnisse
   - H2: QA-spezifische Runner
-  - H3: Gemeinsame Telegram-Zugangsdaten über Convex (v1)
-  - H3: Einen Channel zu QA hinzufügen
-  - H2: Test-Suites (was wo läuft)
+  - H3: Geteilte Telegram-Zugangsdaten über Convex (v1)
+  - H3: Einen Kanal zu QA hinzufügen
+  - H2: Testsuiten (was wo läuft)
   - H3: Unit / Integration (Standard)
   - H3: Stabilität (Gateway)
   - H3: E2E (Repo-Aggregat)
   - H3: E2E (Gateway-Smoke-Test)
-  - H3: E2E (Control-UI mit gemocktem Browser)
+  - H3: E2E (Control UI im gemockten Browser)
   - H3: E2E: OpenShell-Backend-Smoke-Test
   - H3: Live (echte Provider + echte Modelle)
   - H2: Welche Suite sollte ich ausführen?
   - H2: Live-Tests (mit Netzwerkzugriff)
-  - H2: Docker-Runner (optionale „funktioniert unter Linux“-Prüfungen)
-  - H2: Docs-Sanity
+  - H2: Docker-Runner (optionale „funktioniert unter Linux“-Checks)
+  - H2: Docs-Plausibilitätsprüfung
   - H2: Offline-Regression (CI-sicher)
-  - H2: Agent-Zuverlässigkeitsevaluierungen (Skills)
-  - H2: Vertragstests (Plugin- und Channel-Form)
+  - H2: Agent-Zuverlässigkeits-Evaluierungen (Skills)
+  - H2: Vertragstests (Plugin- und Kanalform)
   - H3: Befehle
-  - H3: Channel-Verträge
+  - H3: Kanalverträge
   - H3: Provider-Statusverträge
   - H3: Provider-Verträge
   - H3: Wann ausführen
-  - H2: Regressionen hinzufügen (Leitlinien)
+  - H2: Regressionen hinzufügen (Anleitung)
   - H2: Verwandte Themen
 
 ## help/troubleshooting.md
@@ -4088,11 +4088,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /help/troubleshooting
 - Überschriften:
   - H2: Die ersten 60 Sekunden
-  - H2: Assistent wirkt eingeschränkt oder Tools fehlen
+  - H2: Assistant wirkt eingeschränkt oder Tools fehlen
   - H2: Anthropic langer Kontext 429
   - H2: Lokales OpenAI-kompatibles Backend funktioniert direkt, schlägt aber in OpenClaw fehl
   - H2: Plugin-Installation schlägt wegen fehlender openclaw-Erweiterungen fehl
-  - H2: Installationsrichtlinie blockiert Plugin-Installationen oder -Updates
+  - H2: Installationsrichtlinie blockiert Plugin-Installationen oder Updates
   - H2: Plugin vorhanden, aber durch verdächtige Eigentümerschaft blockiert
   - H2: Entscheidungsbaum
   - H2: Verwandte Themen
@@ -4104,7 +4104,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: OpenClaw 🦞
   - H2: Was ist OpenClaw?
   - H2: Wie es funktioniert
-  - H2: Kernfunktionen
+  - H2: Wichtige Funktionen
   - H2: Schnellstart
   - H2: Dashboard
   - H2: Konfiguration (optional)
@@ -4123,7 +4123,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Schnellbefehle
   - H2: Sicherheitsarchitektur
   - H2: Manuelle Installation
-  - H2: Aktualisierung
+  - H2: Aktualisieren
   - H2: Fehlerbehebung
   - H2: Erweiterte Konfiguration
   - H2: Verwandte Themen
@@ -4134,7 +4134,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Was Sie tun werden
   - H2: Was Sie benötigen
-  - H2: Bereitstellung konfigurieren
+  - H2: Deployment konfigurieren
   - H2: Azure-Ressourcen bereitstellen
   - H2: OpenClaw installieren
   - H2: Kostenüberlegungen
@@ -4146,7 +4146,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/bun
 - Überschriften:
-  - H2: Installation
+  - H2: Installieren
   - H2: Lifecycle-Skripte
   - H2: Einschränkungen
   - H2: Verwandte Themen
@@ -4155,11 +4155,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/clawdock
 - Überschriften:
-  - H2: Installation
+  - H2: Installieren
   - H2: Was Sie erhalten
   - H3: Grundlegende Vorgänge
-  - H3: Containerzugriff
-  - H3: Web-UI und Kopplung
+  - H3: Container-Zugriff
+  - H3: Web-UI und Pairing
   - H3: Einrichtung und Wartung
   - H3: Hilfsprogramme
   - H2: Ablauf beim ersten Start
@@ -4170,10 +4170,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/development-channels
 - Überschriften:
-  - H2: Channels wechseln
-  - H2: Einmalige Versions- oder Tag-Auswahl
-  - H2: Probelauf
-  - H2: Plugins und Channels
+  - H2: Kanäle wechseln
+  - H2: Einmaliges Ziel mit Version oder Tag
+  - H2: Testlauf
+  - H2: Plugins und Kanäle
   - H2: Aktuellen Status prüfen
   - H2: Best Practices für Tagging
   - H2: Verfügbarkeit der macOS-App
@@ -4195,7 +4195,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/docker-vm-runtime
 - Überschriften:
-  - H2: Erforderliche Binärdateien in das Image einbacken
+  - H2: Erforderliche Binärdateien ins Image einbacken
   - H2: Bauen und starten
   - H2: Was wo persistent bleibt
   - H2: Updates
@@ -4211,13 +4211,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Manueller Ablauf
   - H3: Umgebungsvariablen
   - H3: Beobachtbarkeit
-  - H3: Health-Checks
+  - H3: Health Checks
   - H3: LAN vs. Loopback
-  - H3: Lokale Host-Provider
+  - H3: Lokale Provider des Hosts
   - H3: Claude-CLI-Backend in Docker
   - H3: Bonjour / mDNS
-  - H3: Speicherung und Persistenz
-  - H3: Shell-Hilfen (optional)
+  - H3: Speicher und Persistenz
+  - H3: Shell-Helfer (optional)
   - H3: Ausführung auf einem VPS?
   - H2: Agent-Sandbox
   - H3: Schnell aktivieren
@@ -4228,18 +4228,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/exe-dev
 - Überschriften:
-  - H2: Schneller Einstieg für Einsteiger
+  - H2: Schneller Einstieg für Anfänger
   - H2: Was Sie benötigen
   - H2: Automatisierte Installation mit Shelley
   - H2: Manuelle Installation
   - H2: 1) VM erstellen
   - H2: 2) Voraussetzungen installieren (auf der VM)
   - H2: 3) OpenClaw installieren
-  - H2: 4) nginx einrichten, um OpenClaw auf Port 8000 zu proxysieren
+  - H2: 4) nginx einrichten, um OpenClaw an Port 8000 weiterzuleiten
   - H2: 5) Auf OpenClaw zugreifen und Berechtigungen erteilen
-  - H2: Einrichtung von Remote-Channels
+  - H2: Remote-Kanaleinrichtung
   - H2: Remote-Zugriff
-  - H2: Aktualisierung
+  - H2: Aktualisieren
   - H2: Verwandte Themen
 
 ## install/fly.md
@@ -4247,19 +4247,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install/fly
 - Überschriften:
   - H2: Was Sie benötigen
-  - H2: Schneller Einstieg für Einsteiger
+  - H2: Schneller Einstieg für Anfänger
   - H2: Fehlerbehebung
-  - H3: "App lauscht nicht an der erwarteten Adresse"
-  - H3: Health-Checks schlagen fehl / Verbindung abgelehnt
+  - H3: „App lauscht nicht auf der erwarteten Adresse“
+  - H3: Health Checks schlagen fehl / Verbindung abgelehnt
   - H3: OOM / Speicherprobleme
-  - H3: Gateway-Lock-Probleme
+  - H3: Gateway-Sperrprobleme
   - H3: Konfiguration wird nicht gelesen
-  - H3: Konfiguration über SSH schreiben
+  - H3: Konfiguration per SSH schreiben
   - H3: Zustand bleibt nicht persistent
   - H2: Updates
   - H3: Befehl zum Aktualisieren der Maschine
   - H2: Private Bereitstellung (gehärtet)
-  - H3: Wann private Bereitstellung verwendet werden sollte
+  - H3: Wann private Bereitstellung verwenden
   - H3: Einrichtung
   - H3: Zugriff auf eine private Bereitstellung
   - H3: Webhooks mit privater Bereitstellung
@@ -4273,11 +4273,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/gcp
 - Überschriften:
-  - H2: Was tun wir hier (einfach erklärt)?
+  - H2: Was machen wir (einfach erklärt)?
   - H2: Schneller Weg (erfahrene Betreiber)
   - H2: Was Sie benötigen
   - H2: Fehlerbehebung
-  - H2: Dienstkonten (Best Practice für Sicherheit)
+  - H2: Dienstkonten (bewährte Sicherheitsmethode)
   - H2: Nächste Schritte
   - H2: Verwandte Themen
 
@@ -4286,7 +4286,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install/hetzner
 - Überschriften:
   - H2: Ziel
-  - H2: Was tun wir hier (einfach erklärt)?
+  - H2: Was machen wir (einfach erklärt)?
   - H2: Schneller Weg (erfahrene Betreiber)
   - H2: Was Sie benötigen
   - H2: Infrastructure as Code (Terraform)
@@ -4300,7 +4300,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Voraussetzungen
   - H2: Option A: 1-Klick-OpenClaw
   - H2: Option B: OpenClaw auf VPS
-  - H2: Ihre Einrichtung überprüfen
+  - H2: Einrichtung überprüfen
   - H2: Fehlerbehebung
   - H2: Nächste Schritte
   - H2: Verwandte Themen
@@ -4310,15 +4310,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install
 - Überschriften:
   - H2: Systemanforderungen
-  - H2: Empfohlen: Installationsskript
+  - H2: Empfohlen: Installer-Skript
   - H2: Alternative Installationsmethoden
-  - H3: Lokaler Präfix-Installer (install-cli.sh)
+  - H3: Installer mit lokalem Präfix (install-cli.sh)
   - H3: npm, pnpm oder bun
   - H3: Aus dem Quellcode
   - H3: Aus dem GitHub-main-Checkout installieren
   - H3: Container und Paketmanager
   - H2: Installation überprüfen
-  - H2: Hosting und Bereitstellung
+  - H2: Hosting und Deployment
   - H2: Aktualisieren, migrieren oder deinstallieren
   - H2: Fehlerbehebung: openclaw nicht gefunden
 
@@ -4359,7 +4359,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Provider hinzufügen
   - H3: Benutzerdefinierter Namespace
   - H3: Benutzerdefiniertes Image
-  - H3: Über Port-Forward hinaus freigeben
+  - H3: Über Port-Forwarding hinaus verfügbar machen
   - H2: Erneut bereitstellen
   - H2: Entfernen
   - H2: Architekturhinweise
@@ -4372,21 +4372,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Empfohlener Standard (die meisten Benutzer)
   - H2: macOS-VM-Optionen
-  - H3: Lokale VM auf Ihrem Apple-Silicon-Mac (Lume)
+  - H3: Lokale VM auf Ihrem Apple Silicon Mac (Lume)
   - H3: Gehostete Mac-Provider (Cloud)
   - H2: Schneller Weg (Lume, erfahrene Benutzer)
   - H2: Was Sie benötigen (Lume)
   - H2: 1) Lume installieren
   - H2: 2) macOS-VM erstellen
-  - H2: 3) Einrichtungsassistent abschließen
+  - H2: 3) Einrichtungsassistenten abschließen
   - H2: 4) IP-Adresse der VM abrufen
   - H2: 5) Per SSH in die VM einloggen
   - H2: 6) OpenClaw installieren
-  - H2: 7) Channels konfigurieren
+  - H2: 7) Kanäle konfigurieren
   - H2: 8) VM headless ausführen
   - H2: Bonus: iMessage-Integration
   - H2: Golden Image speichern
-  - H2: 24/7-Betrieb
+  - H2: Betrieb rund um die Uhr
   - H2: Fehlerbehebung
   - H2: Verwandte Dokumentation
 
@@ -4394,9 +4394,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/migrating-claude
 - Überschriften:
-  - H2: Zwei Importwege
+  - H2: Zwei Importmöglichkeiten
   - H2: Was importiert wird
-  - H2: Was nur als Archiv erhalten bleibt
+  - H2: Was nur im Archiv bleibt
   - H2: Quellenauswahl
   - H2: Empfohlener Ablauf
   - H2: Konfliktbehandlung
@@ -4408,9 +4408,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /install/migrating-hermes
 - Überschriften:
-  - H2: Zwei Importwege
+  - H2: Zwei Importmöglichkeiten
   - H2: Was importiert wird
-  - H2: Was nur als Archiv erhalten bleibt
+  - H2: Was nur im Archiv bleibt
   - H2: Empfohlener Ablauf
   - H2: Konfliktbehandlung
   - H2: Secrets
@@ -4423,7 +4423,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install/migrating
 - Überschriften:
   - H2: Aus einem anderen Agent-System importieren
-  - H2: OpenClaw auf eine neue Maschine umziehen
+  - H2: OpenClaw auf eine neue Maschine verschieben
   - H3: Migrationsschritte
   - H3: Häufige Fallstricke
   - H3: Verifizierungs-Checkliste
@@ -4458,9 +4458,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install/northflank
 - Überschriften:
   - H1: Northflank
-  - H2: Erste Schritte
+  - H2: Einstieg
   - H2: Was Sie erhalten
-  - H2: Einen Channel verbinden
+  - H2: Einen Kanal verbinden
   - H2: Nächste Schritte
 
 ## install/oracle.md
@@ -4469,7 +4469,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Voraussetzungen
   - H2: Einrichtung
-  - H2: Sicherheitslage überprüfen
+  - H2: Sicherheitsstatus überprüfen
   - H2: ARM-Hinweise
   - H2: Persistenz und Backups
   - H2: Fallback: SSH-Tunnel
@@ -4485,7 +4485,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Podman und Tailscale
   - H2: Systemd (Quadlet, optional)
-  - H2: Konfiguration, env und Speicherung
+  - H2: Konfiguration, env und Speicher
   - H2: Nützliche Befehle
   - H2: Fehlerbehebung
   - H2: Verwandte Themen
@@ -4495,14 +4495,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install/railway
 - Überschriften:
   - H1: Railway
-  - H2: Schnell-Checkliste (neue Benutzer)
-  - H2: One-Click-Deploy
+  - H2: Kurze Checkliste (neue Benutzer)
+  - H2: One-Click-Deployment
   - H2: Was Sie erhalten
   - H2: Erforderliche Railway-Einstellungen
   - H3: Öffentliches Networking
   - H3: Volume (erforderlich)
   - H3: Variablen
-  - H2: Einen Channel verbinden
+  - H2: Einen Kanal verbinden
   - H2: Backups &amp; Migration
   - H2: Nächste Schritte
 
@@ -4519,7 +4519,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Persistenz und Backups
   - H2: Fehlerbehebung
   - H2: Nächste Schritte
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## install/render.mdx
 
@@ -4527,8 +4527,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: Render
   - H2: Voraussetzungen
-  - H2: Mit einer Render-Blueprint bereitstellen
-  - H2: Die Blueprint verstehen
+  - H2: Mit einem Render Blueprint bereitstellen
+  - H2: Den Blueprint verstehen
   - H2: Einen Plan auswählen
   - H2: Nach der Bereitstellung
   - H3: Auf die Control UI zugreifen
@@ -4536,15 +4536,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Logs
   - H3: Shell-Zugriff
   - H3: Umgebungsvariablen
-  - H3: Automatische Bereitstellung
+  - H3: Auto-Deploy
   - H2: Benutzerdefinierte Domain
   - H2: Skalierung
   - H2: Backups und Migration
   - H2: Fehlerbehebung
   - H3: Dienst startet nicht
-  - H3: Langsame Kaltstarts (kostenloser Tarif)
+  - H3: Langsame Kaltstarts (kostenlose Stufe)
   - H3: Datenverlust nach erneuter Bereitstellung
-  - H3: Fehler bei Health Checks
+  - H3: Fehler bei Health-Checks
   - H2: Nächste Schritte
 
 ## install/uninstall.md
@@ -4552,14 +4552,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /install/uninstall
 - Überschriften:
   - H2: Einfacher Weg (CLI noch installiert)
-  - H2: Manuelles Entfernen des Dienstes (CLI nicht installiert)
+  - H2: Manuelle Dienstentfernung (CLI nicht installiert)
   - H3: macOS (launchd)
   - H3: Linux (systemd-Benutzereinheit)
   - H3: Windows (Geplante Aufgabe)
   - H2: Normale Installation vs. Source-Checkout
   - H3: Normale Installation (install.sh / npm / pnpm / bun)
   - H3: Source-Checkout (git clone)
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## install/updating.md
 
@@ -4568,18 +4568,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Empfohlen: openclaw update
   - H2: Zwischen npm- und git-Installationen wechseln
   - H2: Alternative: Installer erneut ausführen
-  - H2: Alternative: manuelles npm, pnpm oder bun
-  - H3: Erweiterte Themen zur npm-Installation
+  - H2: Alternative: manuell mit npm, pnpm oder bun
+  - H3: Erweiterte npm-Installationsthemen
   - H2: Auto-Updater
-  - H2: Nach dem Aktualisieren
+  - H2: Nach der Aktualisierung
   - H3: Doctor ausführen
   - H3: Gateway neu starten
   - H3: Überprüfen
   - H2: Rollback
-  - H3: Eine Version fixieren (npm)
-  - H3: Einen Commit fixieren (Source)
-  - H2: Wenn Sie nicht weiterkommen
-  - H2: Verwandte Themen
+  - H3: Version anheften (npm)
+  - H3: Commit anheften (Source)
+  - H2: Wenn Sie feststecken
+  - H2: Verwandt
 
 ## install/upstash.md
 
@@ -4593,31 +4593,31 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Gateway starten
   - H2: Automatischer Neustart
   - H2: Fehlerbehebung
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## logging.md
 
 - Route: /logging
 - Überschriften:
-  - H2: Speicherort der Logs
+  - H2: Wo Logs liegen
   - H2: Logs lesen
   - H3: CLI: Live-Tail (empfohlen)
   - H3: Control UI (Web)
-  - H3: Nur-Channel-Logs
+  - H3: Nur-Kanal-Logs
   - H2: Logformate
-  - H3: Datei-Logs (JSONL)
+  - H3: Dateilogs (JSONL)
   - H3: Konsolenausgabe
   - H3: Gateway-WebSocket-Logs
   - H2: Logging konfigurieren
-  - H3: Log-Level
-  - H3: Gezielte Model-Transportdiagnose
+  - H3: Logstufen
+  - H3: Gezielte Model-Transport-Diagnose
   - H3: Trace-Korrelation
   - H3: Größe und Timing von Model-Aufrufen
   - H3: Konsolenstile
   - H3: Schwärzung
   - H2: Diagnose und OpenTelemetry
   - H2: Tipps zur Fehlerbehebung
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## maturity/scorecard.md
 
@@ -4627,7 +4627,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wofür diese Seite gedacht ist
   - H2: Auf einen Blick
   - H2: Bewertungsbereiche
-  - H2: Oberflächen-Explorer
+  - H2: Surface-Explorer
   - H2: Zusammenfassung der QA-Nachweise
   - H3: Bereitschaft nach Bereich
 
@@ -4642,19 +4642,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Details
   - H3: Core
   - H3: Plattform
-  - H3: Channel
+  - H3: Kanal
   - H3: Provider und Tool
 
 ## network.md
 
 - Route: /network
 - Überschriften:
-  - H2: Core-Modell
-  - H2: Pairing + Identität
-  - H2: Erkennung + Transporte
+  - H2: Kernmodell
+  - H2: Kopplung + Identität
+  - H2: Discovery + Transporte
   - H2: Nodes + Transporte
   - H2: Sicherheit
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/audio.md
 
@@ -4668,34 +4668,34 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Nur Provider (Deepgram)
   - H3: Nur Provider (Mistral Voxtral)
   - H3: Nur Provider (SenseAudio)
-  - H3: Transkript an Chat ausgeben (Opt-in)
+  - H3: Transkript in Chat spiegeln (Opt-in)
   - H2: Hinweise und Grenzen
   - H3: Unterstützung für Proxy-Umgebungen
-  - H2: Erwähnungserkennung in Gruppen
+  - H2: Mention-Erkennung in Gruppen
   - H2: Fallstricke
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/camera.md
 
 - Route: /nodes/camera
 - Überschriften:
   - H2: iOS-Node
-  - H3: Benutzereinstellung (standardmäßig aktiviert)
+  - H3: Benutzereinstellung (standardmäßig ein)
   - H3: Befehle (über Gateway node.invoke)
   - H3: Vordergrundanforderung
   - H3: CLI-Helfer
   - H2: Android-Node
-  - H3: Android-Benutzereinstellung (standardmäßig aktiviert)
+  - H3: Android-Benutzereinstellung (standardmäßig ein)
   - H3: Berechtigungen
   - H3: Android-Vordergrundanforderung
   - H3: Android-Befehle (über Gateway node.invoke)
   - H3: Payload-Schutz
   - H2: macOS-App
-  - H3: Benutzereinstellung (standardmäßig deaktiviert)
-  - H3: CLI-Helfer (node invoke)
+  - H3: Benutzereinstellung (standardmäßig aus)
+  - H3: CLI-Helfer (Node invoke)
   - H2: Sicherheit + praktische Grenzen
   - H2: macOS-Bildschirmvideo (auf Betriebssystemebene)
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/images.md
 
@@ -4703,27 +4703,27 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Ziele
   - H2: CLI-Oberfläche
-  - H2: Verhalten des WhatsApp-Web-Channels
+  - H2: Verhalten des WhatsApp-Web-Kanals
   - H2: Auto-Reply-Pipeline
   - H2: Eingehende Medien zu Befehlen
   - H2: Grenzen und Fehler
   - H2: Hinweise für Tests
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/index.md
 
 - Route: /nodes
 - Überschriften:
-  - H2: Pairing + Status
+  - H2: Kopplung + Status
   - H2: Remote-Node-Host (system.run)
-  - H3: Was wo läuft
+  - H3: Was wo ausgeführt wird
   - H3: Einen Node-Host starten (Vordergrund)
-  - H3: Remote-Gateway über SSH-Tunnel (Loopback-Bind)
+  - H3: Remote-Gateway über SSH-Tunnel (Loopback-Bindung)
   - H3: Einen Node-Host starten (Dienst)
-  - H3: Pairing + Name
+  - H3: Koppeln + benennen
   - H3: Befehle auf die Allowlist setzen
   - H3: Exec auf den Node richten
-  - H3: Lokale Model-Inferenz
+  - H3: Lokale Modellinferenz
   - H2: Befehle aufrufen
   - H2: Befehlsrichtlinie
   - H2: Konfiguration (openclaw.json)
@@ -4734,10 +4734,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Bildschirmaufzeichnungen (Nodes)
   - H2: Standort (Nodes)
   - H2: SMS (Android-Nodes)
-  - H2: Android-Gerät + Befehle für persönliche Daten
+  - H2: Android-Geräte- + personenbezogene Datenbefehle
   - H2: Systembefehle (Node-Host / Mac-Node)
   - H2: Exec-Node-Bindung
-  - H2: Berechtigungsübersicht
+  - H2: Berechtigungskarte
   - H2: Headless-Node-Host (plattformübergreifend)
   - H2: Mac-Node-Modus
 
@@ -4746,14 +4746,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /nodes/location-command
 - Überschriften:
   - H2: TL;DR
-  - H2: Warum ein Selektor (nicht nur ein Schalter)
+  - H2: Warum ein Selector (nicht nur ein Schalter)
   - H2: Einstellungsmodell
   - H2: Berechtigungszuordnung (node.permissions)
   - H2: Befehl: location.get
   - H2: Hintergrundverhalten
   - H2: Model-/Tooling-Integration
-  - H2: UX-Text (Vorschlag)
-  - H2: Verwandte Themen
+  - H2: UX-Text (vorgeschlagen)
+  - H2: Verwandt
 
 ## nodes/media-understanding.md
 
@@ -4762,19 +4762,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Ziele
   - H2: Verhalten auf hoher Ebene
   - H2: Konfigurationsübersicht
-  - H3: Model-Einträge
-  - H3: Provider-Anmeldedaten (apiKey)
+  - H3: Modelleinträge
+  - H3: Provider-Zugangsdaten (apiKey)
   - H2: Standards und Grenzen
   - H3: Medienverständnis automatisch erkennen (Standard)
-  - H3: Unterstützung für Proxy-Umgebungen (Provider-Models)
-  - H2: Funktionen (optional)
+  - H3: Unterstützung für Proxy-Umgebungen (Provider-Modelle)
+  - H2: Fähigkeiten (optional)
   - H2: Provider-Unterstützungsmatrix (OpenClaw-Integrationen)
-  - H2: Anleitung zur Model-Auswahl
-  - H2: Anhangsrichtlinie
+  - H2: Anleitung zur Modellauswahl
+  - H2: Richtlinie für Anhänge
   - H2: Konfigurationsbeispiele
   - H2: Statusausgabe
   - H2: Hinweise
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/talk.md
 
@@ -4786,7 +4786,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: macOS-UI
   - H2: Android-UI
   - H2: Hinweise
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/troubleshooting.md
 
@@ -4795,10 +4795,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Befehlsleiter
   - H2: Vordergrundanforderungen
   - H2: Berechtigungsmatrix
-  - H2: Pairing versus Genehmigungen
+  - H2: Kopplung versus Genehmigungen
   - H2: Häufige Node-Fehlercodes
   - H2: Schnelle Wiederherstellungsschleife
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## nodes/voicewake.md
 
@@ -4813,24 +4813,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: macOS-App
   - H3: iOS-Node
   - H3: Android-Node
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## openclaw-agent-runtime.md
 
 - Route: /openclaw-agent-runtime
 - Überschriften:
   - H2: Typprüfung und Linting
-  - H2: Agent Runtime Tests ausführen
+  - H2: Agent-Runtime-Tests ausführen
   - H2: Manuelles Testen
-  - H2: Zurücksetzen auf einen sauberen Zustand
+  - H2: Clean-Slate-Reset
   - H2: Referenzen
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## perplexity.md
 
 - Route: /perplexity
 - Überschriften:
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## plan/codex-context-engine-harness.md
 
@@ -4843,13 +4843,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Aktuelle Lücke
   - H2: Gewünschtes Verhalten
   - H2: Designbeschränkungen
-  - H3: Codex-App-Server bleibt kanonisch für nativen Thread-Zustand
-  - H3: Context-Engine-Assembly muss in Codex-Eingaben projiziert werden
+  - H3: Der Codex-App-Server bleibt kanonisch für nativen Thread-Zustand
+  - H3: Die Assembly der Context Engine muss in Codex-Eingaben projiziert werden
   - H3: Prompt-Cache-Stabilität ist wichtig
-  - H3: Semantik der Runtime-Auswahl ändert sich nicht
+  - H3: Die Semantik der Runtime-Auswahl ändert sich nicht
   - H2: Implementierungsplan
-  - H3: 1. Wiederverwendbare Context-Engine-Versuchshelfer exportieren oder verlagern
-  - H3: 2. Einen Codex-Kontextprojektionshelfer hinzufügen
+  - H3: 1. Wiederverwendbare Versuch-Helfer der Context Engine exportieren oder verlagern
+  - H3: 2. Einen Codex-Kontextprojektions-Helfer hinzufügen
   - H3: 3. Bootstrap vor Codex-Thread-Start verdrahten
   - H3: 4. Assembly vor thread/start / thread/resume und turn/start verdrahten
   - H3: 5. Prompt-Cache-stabile Formatierung beibehalten
@@ -4857,13 +4857,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: 7. Nutzung und Prompt-Cache-Runtime-Kontext normalisieren
   - H3: 8. Compaction-Richtlinie
   - H4: /compact und explizite OpenClaw-Compaction
-  - H4: In-Turn-native Codex-contextCompaction-Ereignisse
+  - H4: In-Turn native Codex-contextCompaction-Ereignisse
   - H3: 9. Sitzungs-Reset und Bindungsverhalten
   - H3: 10. Fehlerbehandlung
   - H2: Testplan
   - H3: Unit-Tests
-  - H3: Vorhandene zu aktualisierende Tests
-  - H3: Integrations- / Live-Tests
+  - H3: Bestehende Tests zum Aktualisieren
+  - H3: Integrations-/Live-Tests
   - H2: Beobachtbarkeit
   - H2: Migration / Kompatibilität
   - H2: Offene Fragen
@@ -4878,42 +4878,42 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Ziele
   - H2: Nicht-Ziele
   - H2: Zielmodell
-  - H2: Zustellungsmetadaten
-  - H2: Runtime-Funktionsvertrag
-  - H2: Channel-Zuordnung
+  - H2: Zustellmetadaten
+  - H2: Runtime-Fähigkeitsvertrag
+  - H2: Kanalzuordnung
   - H2: Refactoring-Schritte
   - H2: Tests
   - H2: Offene Fragen
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/android.md
 
 - Route: /platforms/android
 - Überschriften:
-  - H2: Support-Übersicht
+  - H2: Support-Snapshot
   - H2: Systemsteuerung
   - H2: Verbindungs-Runbook
   - H3: Voraussetzungen
   - H3: 1) Gateway starten
-  - H3: 2) Erkennung überprüfen (optional)
-  - H4: Tailnet-Erkennung (Wien ⇄ London) über Unicast-DNS-SD
+  - H3: 2) Discovery überprüfen (optional)
+  - H4: Tailnet-Discovery (Wien ⇄ London) über Unicast DNS-SD
   - H3: 3) Von Android verbinden
   - H3: Presence-Alive-Beacons
-  - H3: 4) Pairing genehmigen (CLI)
+  - H3: 4) Kopplung genehmigen (CLI)
   - H3: 5) Prüfen, ob der Node verbunden ist
   - H3: 6) Chat + Verlauf
   - H3: 7) Canvas + Kamera
-  - H4: Gateway Canvas Host (für Webinhalte empfohlen)
+  - H4: Gateway-Canvas-Host (empfohlen für Webinhalte)
   - H3: 8) Sprache + erweiterte Android-Befehlsoberfläche
   - H2: Assistant-Einstiegspunkte
   - H2: Benachrichtigungsweiterleitung
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/digitalocean.md
 
 - Route: /platforms/digitalocean
 - Überschriften:
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/easyrunner.md
 
@@ -4932,42 +4932,42 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Ihr Betriebssystem auswählen
   - H2: VPS und Hosting
-  - H2: Häufige Links
+  - H2: Allgemeine Links
   - H2: Gateway-Dienstinstallation (CLI)
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/ios.md
 
 - Route: /platforms/ios
 - Überschriften:
-  - H2: Was es tut
+  - H2: Was es macht
   - H2: Anforderungen
-  - H2: Schnellstart (pairen + verbinden)
+  - H2: Schnellstart (koppeln + verbinden)
   - H2: Relay-gestützter Push für offizielle Builds
-  - H2: Hintergrund-Alive-Beacons
-  - H2: Authentifizierung und Vertrauensfluss
-  - H2: Erkennungspfade
+  - H2: Background-Alive-Beacons
+  - H2: Authentifizierungs- und Vertrauensablauf
+  - H2: Discovery-Pfade
   - H3: Bonjour (LAN)
   - H3: Tailnet (netzwerkübergreifend)
   - H3: Manueller Host/Port
   - H2: Canvas + A2UI
   - H2: Beziehung zu Computer Use
-  - H3: Canvas eval / Snapshot
-  - H2: Voice Wake + Sprechmodus
+  - H3: Canvas eval / snapshot
+  - H2: Voice Wake + Talk-Modus
   - H2: Häufige Fehler
-  - H2: Verwandte Dokumentation
+  - H2: Verwandte Dokumente
 
 ## platforms/linux.md
 
 - Route: /platforms/linux
 - Überschriften:
-  - H2: Schneller Einstieg für Anfänger (VPS)
-  - H2: Installieren
+  - H2: Einsteiger-Schnellpfad (VPS)
+  - H2: Installation
   - H2: Gateway
   - H2: Gateway-Dienstinstallation (CLI)
   - H2: Systemsteuerung (systemd-Benutzereinheit)
   - H2: Speicherdruck und OOM-Kills
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/mac/bundled-gateway.md
 
@@ -4979,21 +4979,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Versionskompatibilität
   - H2: Zustandsverzeichnis unter macOS
   - H2: App-Konnektivität debuggen
-  - H2: Smoke Check
-  - H2: Verwandte Themen
+  - H2: Smoke-Check
+  - H2: Verwandt
 
 ## platforms/mac/canvas.md
 
 - Route: /platforms/mac/canvas
 - Überschriften:
-  - H2: Speicherort von Canvas
+  - H2: Wo Canvas lebt
   - H2: Panel-Verhalten
   - H2: Agent-API-Oberfläche
   - H2: A2UI in Canvas
   - H3: A2UI-Befehle (v0.8)
-  - H2: Agent-Läufe aus Canvas auslösen
+  - H2: Agent-Ausführungen aus Canvas auslösen
   - H2: Sicherheitshinweise
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/mac/child-process.md
 
@@ -5004,7 +5004,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Nur-Anhängen-Modus
   - H2: Remote-Modus
   - H2: Warum wir launchd bevorzugen
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## platforms/mac/dev-setup.md
 
@@ -5018,14 +5018,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung
   - H3: Build schlägt fehl: Toolchain- oder SDK-Abweichung
   - H3: App stürzt beim Erteilen von Berechtigungen ab
-  - H3: Gateway bleibt dauerhaft bei „Starting...“
+  - H3: Gateway bleibt unbegrenzt bei „Starting...“
   - H2: Verwandte Themen
 
 ## platforms/mac/health.md
 
 - Route: /platforms/mac/health
 - Überschriften:
-  - H1: Integritätsprüfungen unter macOS
+  - H1: Health Checks unter macOS
   - H2: Menüleiste
   - H2: Einstellungen
   - H2: Funktionsweise der Prüfung
@@ -5036,7 +5036,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /platforms/mac/icon
 - Überschriften:
-  - H1: Zustände des Menüleistensymbols
+  - H1: Zustände des Menüleisten-Icons
   - H2: Verwandte Themen
 
 ## platforms/mac/logging.md
@@ -5044,8 +5044,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /platforms/mac/logging
 - Überschriften:
   - H1: Protokollierung (macOS)
-  - H2: Fortlaufendes Diagnose-Dateiprotokoll (Debug-Bereich)
-  - H2: Private Daten im Unified Logging unter macOS
+  - H2: Rotierendes Diagnose-Dateiprotokoll (Debug-Bereich)
+  - H2: Private Daten in der einheitlichen Protokollierung unter macOS
   - H2: Für OpenClaw aktivieren (ai.openclaw)
   - H2: Nach dem Debugging deaktivieren
   - H2: Verwandte Themen
@@ -5061,8 +5061,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Visuelle Zuordnung
   - H2: Kontext-Untermenü
   - H2: Statuszeilentext (Menü)
-  - H2: Ereignisaufnahme
-  - H2: Debug-Override
+  - H2: Ereigniserfassung
+  - H2: Debug-Überschreibung
   - H2: Test-Checkliste
   - H2: Verwandte Themen
 
@@ -5085,8 +5085,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Anforderungen für stabile Berechtigungen
   - H2: Bedienungshilfen-Freigaben für Node- und CLI-Runtimes
-  - H2: Wiederherstellungs-Checkliste, wenn Aufforderungen verschwinden
-  - H2: Berechtigungen für Dateien und Ordner (Desktop/Dokumente/Downloads)
+  - H2: Wiederherstellungs-Checkliste, wenn Eingabeaufforderungen verschwinden
+  - H2: Datei- und Ordnerberechtigungen (Desktop/Dokumente/Downloads)
   - H2: Verwandte Themen
 
 ## platforms/mac/remote.md
@@ -5097,7 +5097,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Remote-Transporte
   - H2: Voraussetzungen auf dem Remote-Host
   - H2: Einrichtung der macOS-App
-  - H2: Web-Chat
+  - H2: Web Chat
   - H2: Berechtigungen
   - H2: Sicherheitshinweise
   - H2: WhatsApp-Anmeldeablauf (remote)
@@ -5122,7 +5122,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Datenquelle
   - H2: Installationsaktionen
-  - H2: Env/API-Schlüssel
+  - H2: Env-/API-Schlüssel
   - H2: Remote-Modus
   - H2: Verwandte Themen
 
@@ -5130,7 +5130,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /platforms/mac/voice-overlay
 - Überschriften:
-  - H1: Voice-Overlay-Lebenszyklus (macOS)
+  - H1: Lebenszyklus des Voice Overlay (macOS)
   - H2: Aktuelle Absicht
   - H2: Implementiert (9. Dez. 2025)
   - H2: Nächste Schritte
@@ -5145,11 +5145,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: Voice Wake &amp; Push-to-Talk
   - H2: Anforderungen
   - H2: Modi
-  - H2: Laufzeitverhalten (Wake-Word)
+  - H2: Runtime-Verhalten (Wake-Word)
   - H2: Lebenszyklus-Invarianten
-  - H2: Fehlerzustand mit haftendem Overlay (vorher)
+  - H2: Fehlermodus mit fixiertem Overlay (vorherig)
   - H2: Push-to-Talk-spezifische Details
-  - H2: Nutzerseitige Einstellungen
+  - H2: Benutzerseitige Einstellungen
   - H2: Weiterleitungsverhalten
   - H2: Weiterleitungs-Payload
   - H2: Schnelle Verifizierung
@@ -5169,24 +5169,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /platforms/mac/xpc
 - Überschriften:
-  - H1: OpenClaw macOS-IPC-Architektur
+  - H1: macOS-IPC-Architektur von OpenClaw
   - H2: Ziele
   - H2: Funktionsweise
   - H3: Gateway + Node-Transport
   - H3: Node-Dienst + App-IPC
   - H3: PeekabooBridge (UI-Automatisierung)
   - H2: Betriebsabläufe
-  - H2: Härtungshinweise
+  - H2: Hardening-Hinweise
   - H2: Verwandte Themen
 
 ## platforms/macos.md
 
 - Route: /platforms/macos
 - Überschriften:
-  - H2: Download
+  - H2: Herunterladen
   - H2: Erster Start
   - H2: Gateway-Modus auswählen
-  - H2: Wofür die App zuständig ist
+  - H2: Was die App verwaltet
   - H2: macOS-Detailseiten
   - H2: Verwandte Themen
 
@@ -5216,10 +5216,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Gateway-Autostart vor der Windows-Anmeldung
   - H2: WSL-Dienste über LAN bereitstellen
   - H2: Fehlerbehebung
-  - H3: Das Tray-Symbol wird nicht angezeigt
+  - H3: Das Tray-Icon wird nicht angezeigt
   - H3: Lokale Einrichtung schlägt fehl
-  - H3: Die App meldet, dass Kopplung erforderlich ist
-  - H3: Web-Chat kann einen Remote-Gateway nicht erreichen
+  - H3: Die App meldet, dass Pairing erforderlich ist
+  - H3: Web Chat kann keinen Remote-Gateway erreichen
   - H3: screen.snapshot-, Kamera- oder Audiobefehle schlagen fehl
   - H3: Git- oder GitHub-Konnektivität schlägt fehl
   - H2: Verwandte Themen
@@ -5231,7 +5231,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wann eine Capability erstellt werden sollte
   - H2: Die Standardsequenz
   - H2: Was wohin gehört
-  - H2: Provider- und Harness-Seams
+  - H2: Provider- und Harness-Grenzen
   - H2: Datei-Checkliste
   - H2: Ausgearbeitetes Beispiel: Bildgenerierung
   - H2: Embedding-Provider
@@ -5265,26 +5265,26 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/architecture-internals
 - Überschriften:
   - H2: Lade-Pipeline
-  - H3: Manifest-First-Verhalten
+  - H3: Manifest-zuerst-Verhalten
   - H3: Plugin-Cache-Grenze
-  - H2: Registry-Modell
-  - H2: Callbacks für Gesprächsbindung
+  - H2: Registrierungsmodell
+  - H2: Conversation-Binding-Callbacks
   - H2: Provider-Runtime-Hooks
   - H3: Hook-Reihenfolge und Verwendung
   - H3: Provider-Beispiel
   - H3: Integrierte Beispiele
-  - H2: Runtime-Helfer
+  - H2: Runtime-Hilfsfunktionen
   - H3: api.runtime.imageGeneration
   - H2: Gateway-HTTP-Routen
   - H2: Importpfade des Plugin-SDK
-  - H2: Nachrichten-Tool-Schemas
-  - H2: Auflösung von Kanalzielen
+  - H2: Nachrichtentool-Schemas
+  - H2: Channel-Zielauflösung
   - H2: Konfigurationsgestützte Verzeichnisse
   - H2: Provider-Kataloge
-  - H2: Schreibgeschützte Kanalinspektion
+  - H2: Schreibgeschützte Channel-Inspektion
   - H2: Paket-Packs
-  - H3: Metadaten des Kanalkatalogs
-  - H2: Context-Engine-Plugins
+  - H3: Channel-Katalogmetadaten
+  - H2: Kontext-Engine-Plugins
   - H2: Eine neue Capability hinzufügen
   - H3: Capability-Checkliste
   - H3: Capability-Vorlage
@@ -5302,8 +5302,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Architekturübersicht
   - H3: Plugin-Metadaten-Snapshot und Lookup-Tabelle
   - H3: Aktivierungsplanung
-  - H3: Kanal-Plugins und das gemeinsame Nachrichten-Tool
-  - H2: Capability-Zuständigkeitsmodell
+  - H3: Channel-Plugins und das gemeinsame Nachrichtentool
+  - H2: Modell der Capability-Zuständigkeit
   - H3: Capability-Schichtung
   - H3: Beispiel für ein Multi-Capability-Unternehmens-Plugin
   - H3: Capability-Beispiel: Videoverständnis
@@ -5339,14 +5339,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/bundles
 - Überschriften:
   - H2: Warum Bundles existieren
-  - H2: Bundle installieren
-  - H2: Was OpenClaw aus Bundles abbildet
+  - H2: Ein Bundle installieren
+  - H2: Was OpenClaw aus Bundles zuordnet
   - H3: Derzeit unterstützt
   - H4: Skill-Inhalte
   - H4: Hook-Packs
   - H4: MCP für eingebettetes OpenClaw
-  - H4: Eingebettete OpenClaw-Einstellungen
-  - H4: Eingebettetes OpenClaw-LSP
+  - H4: Einstellungen für eingebettetes OpenClaw
+  - H4: LSP für eingebettetes OpenClaw
   - H3: Erkannt, aber nicht ausgeführt
   - H2: Bundle-Formate
   - H2: Erkennungspriorität
@@ -5359,13 +5359,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/cli-backend-plugins
 - Überschriften:
-  - H2: Wofür das Plugin zuständig ist
+  - H2: Was das Plugin verwaltet
   - H2: Minimales Backend-Plugin
   - H2: Konfigurationsform
   - H2: Erweiterte Backend-Hooks
-  - H3: ownsNativeCompaction: Opt-out aus der OpenClaw-Compaction
+  - H3: ownsNativeCompaction: Opt-out von OpenClaw-Compaction
   - H2: MCP-Tool-Bridge
-  - H2: Nutzerkonfiguration
+  - H2: Benutzerkonfiguration
   - H2: Verifizierung
   - H2: Checkliste
   - H2: Verwandte Themen
@@ -5379,9 +5379,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Direktes cua-driver-MCP
   - H2: Schnelle Einrichtung
   - H2: Befehle
-  - H2: Marketplace-Auswahl
+  - H2: Marketplace-Auswahlmöglichkeiten
   - H2: Gebündelter macOS-Marketplace
-  - H2: Remote-Kataloglimit
+  - H2: Limit für Remote-Katalog
   - H2: Konfigurationsreferenz
   - H2: Was OpenClaw prüft
   - H2: macOS-Berechtigungen
@@ -5395,13 +5395,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Plugin-Konfigurationsoberfläche
   - H2: App-Server-Transport
   - H2: Genehmigungs- und Sandbox-Modi
-  - H2: Sandboxed native Ausführung
+  - H2: Native Ausführung in der Sandbox
   - H2: Authentifizierungs- und Umgebungsisolation
   - H2: Dynamische Tools
   - H2: Timeouts
   - H2: Modellerkennung
-  - H2: Workspace-Bootstrap-Dateien
-  - H2: Umgebungs-Overrides
+  - H2: Bootstrap-Dateien für Arbeitsbereiche
+  - H2: Umgebungsüberschreibungen
   - H2: Verwandte Themen
 
 ## plugins/codex-harness-runtime.md
@@ -5409,14 +5409,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/codex-harness-runtime
 - Überschriften:
   - H2: Überblick
-  - H2: Thread-Bindungen und Modelländerungen
+  - H2: Thread-Bindings und Modelländerungen
   - H2: Sichtbare Antworten und Heartbeats
   - H2: Hook-Grenzen
-  - H2: V1-Support-Vertrag
+  - H2: V1-Supportvertrag
   - H2: Native Berechtigungen und MCP-Elicitations
   - H2: Queue-Steuerung
   - H2: Codex-Feedback-Upload
-  - H2: Compaction und Transcript-Spiegelung
+  - H2: Compaction und Transkript-Spiegelung
   - H2: Medien und Zustellung
   - H2: Verwandte Themen
 
@@ -5430,13 +5430,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konfiguration
   - H2: Codex-Runtime verifizieren
   - H2: Routing und Modellauswahl
-  - H2: Bereitstellungsmuster
-  - H3: Einfache Codex-Bereitstellung
-  - H3: Gemischte Provider-Bereitstellung
-  - H3: Fail-closed-Codex-Bereitstellung
+  - H2: Deployment-Muster
+  - H3: Einfaches Codex-Deployment
+  - H3: Gemischtes Provider-Deployment
+  - H3: Fail-Closed-Codex-Deployment
   - H2: App-Server-Richtlinie
   - H2: Befehle und Diagnosen
-  - H3: Codex-Threads lokal prüfen
+  - H3: Codex-Threads lokal inspizieren
   - H2: Native Codex-Plugins
   - H2: Computer Use
   - H2: Runtime-Grenzen
@@ -5451,8 +5451,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Plugins aus dem Chat verwalten
   - H2: Funktionsweise der Einrichtung nativer Plugins
-  - H2: V1-Support-Grenze
-  - H2: App-Inventar und Zuständigkeit
+  - H2: V1-Supportgrenze
+  - H2: App-Bestand und Zuständigkeit
   - H2: Thread-App-Konfiguration
   - H2: Richtlinie für destruktive Aktionen
   - H2: Fehlerbehebung
@@ -5470,13 +5470,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/compatibility
 - Überschriften:
-  - H2: Kompatibilitäts-Registry
-  - H2: Plugin-Inspector-Paket
-  - H3: Maintainer-Akzeptanzlane
-  - H2: Deprecation-Richtlinie
+  - H2: Kompatibilitätsregistrierung
+  - H2: Plugin-Inspektorpaket
+  - H3: Maintainer-Akzeptanz-Lane
+  - H2: Deprecation Policy
   - H2: Aktuelle Kompatibilitätsbereiche
-  - H3: WhatsApp Inbound Callback Flat Aliases
-  - H3: WhatsApp Inbound Admission Fields
+  - H3: Flache Aliase für eingehende WhatsApp-Callbacks
+  - H3: WhatsApp-Felder für eingehende Zulassung
   - H2: Release Notes
 
 ## plugins/copilot.md
@@ -5491,7 +5491,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Auth
   - H2: Konfigurationsoberfläche
   - H2: Compaction
-  - H2: Transcript-Spiegelung
+  - H2: Transkript-Spiegelung
   - H2: Nebenfragen (/btw)
   - H2: Doctor
   - H2: Einschränkungen
@@ -5503,7 +5503,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/dependency-resolution
 - Überschriften:
-  - H2: Aufteilung der Zuständigkeiten
+  - H2: Aufteilung der Verantwortlichkeiten
   - H2: Installations-Roots
   - H2: Lokale Plugins
   - H2: Start und Neuladen
@@ -5520,24 +5520,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Transporte
   - H3: Chrome
   - H3: Twilio
-  - H2: OAuth und Preflight
+  - H2: OAuth und Vorabprüfung
   - H3: Google-Anmeldedaten erstellen
   - H3: Refresh-Token ausstellen
-  - H3: OAuth mit doctor verifizieren
+  - H3: OAuth mit doctor prüfen
   - H2: Konfiguration
-  - H2: Werkzeug
+  - H2: Tool
   - H2: Agent- und Bidi-Modi
   - H2: Checkliste für Live-Tests
   - H2: Fehlerbehebung
-  - H3: Agent kann das Google Meet-Werkzeug nicht sehen
-  - H3: Kein verbundener Google Meet-fähiger Node
+  - H3: Agent kann das Google Meet-Tool nicht sehen
+  - H3: Keine verbundene Google Meet-fähige Node
   - H3: Browser wird geöffnet, aber Agent kann nicht beitreten
   - H3: Meeting-Erstellung schlägt fehl
   - H3: Agent tritt bei, spricht aber nicht
   - H3: Twilio-Einrichtungsprüfungen schlagen fehl
-  - H3: Twilio-Anruf startet, tritt dem Meeting aber nie bei
+  - H3: Twilio-Anruf startet, gelangt aber nie in das Meeting
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## plugins/hooks.md
 
@@ -5546,16 +5546,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Hook-Katalog
   - H2: Runtime-Hooks debuggen
-  - H2: Richtlinie für Werkzeugaufrufe
-  - H3: Hook für Ausführungsumgebung
-  - H3: Persistenz von Werkzeugergebnissen
+  - H2: Richtlinie für Tool-Aufrufe
+  - H3: Hook für Exec-Umgebung
+  - H3: Persistenz von Tool-Ergebnissen
   - H2: Prompt- und Modell-Hooks
   - H3: Sitzungserweiterungen und Injektionen für den nächsten Turn
   - H2: Nachrichten-Hooks
-  - H2: Hooks installieren
+  - H2: Installations-Hooks
   - H2: Gateway-Lebenszyklus
-  - H2: Bevorstehende Veraltungen
-  - H2: Verwandt
+  - H2: Anstehende Veraltungen
+  - H2: Verwandte Themen
 
 ## plugins/install-overrides.md
 
@@ -5570,7 +5570,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/llama-cpp
 - Überschriften:
   - H2: Konfiguration
-  - H2: Native Runtime
+  - H2: Native Laufzeit
 
 ## plugins/manage-plugins.md
 
@@ -5578,12 +5578,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Plugins auflisten und suchen
   - H2: Plugins installieren
-  - H2: Neu starten und inspizieren
+  - H2: Neu starten und prüfen
   - H2: Plugins aktualisieren
   - H2: Plugins deinstallieren
   - H2: Quelle auswählen
   - H2: Plugins veröffentlichen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## plugins/manifest.md
 
@@ -5592,9 +5592,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was diese Datei bewirkt
   - H2: Minimales Beispiel
   - H2: Umfangreiches Beispiel
-  - H2: Referenz für Felder der obersten Ebene
-  - H2: Referenz für Metadaten von Generierungs-Providern
-  - H2: Referenz für Werkzeugmetadaten
+  - H2: Referenz der Felder auf oberster Ebene
+  - H2: Referenz der Metadaten für Generierungs-Provider
+  - H2: Referenz der Tool-Metadaten
   - H2: providerAuthChoices-Referenz
   - H2: commandAliases-Referenz
   - H2: activation-Referenz
@@ -5617,11 +5617,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: OpenClaw Provider Index
   - H2: Manifest im Vergleich zu package.json
   - H3: package.json-Felder, die die Erkennung beeinflussen
-  - H2: Erkennungsrangfolge (doppelte Plugin-IDs)
+  - H2: Erkennungspriorität (doppelte Plugin-IDs)
   - H2: JSON-Schema-Anforderungen
   - H2: Validierungsverhalten
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## plugins/memory-lancedb.md
 
@@ -5632,15 +5632,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Provider-gestützte Embeddings
   - H2: Ollama-Embeddings
   - H2: OpenAI-kompatible Provider
-  - H2: Abruf- und Erfassungslimits
+  - H2: Grenzen für Abruf und Erfassung
   - H2: Befehle
   - H2: Speicher
-  - H2: Runtime-Abhängigkeiten
+  - H2: Laufzeitabhängigkeiten
   - H2: Fehlerbehebung
   - H3: Eingabelänge überschreitet die Kontextlänge
   - H3: Nicht unterstütztes Embedding-Modell
   - H3: Plugin wird geladen, aber es erscheinen keine Erinnerungen
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## plugins/memory-wiki.md
 
@@ -5650,24 +5650,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wie es zu Memory passt
   - H2: Empfohlenes Hybridmuster
   - H2: Vault-Modi
-  - H3: isolated
-  - H3: bridge
-  - H3: unsafe-local
+  - H3: isoliert
+  - H3: Bridge
+  - H3: unsicher-lokal
   - H2: Vault-Layout
-  - H2: Open Knowledge Format-Importe
-  - H2: Strukturierte Behauptungen und Nachweise
+  - H2: Importe im Open Knowledge Format
+  - H2: Strukturierte Aussagen und Evidenz
   - H2: Agent-seitige Entitätsmetadaten
   - H2: Compile-Pipeline
   - H2: Dashboards und Zustandsberichte
-  - H2: Suche und Retrieval
-  - H2: Agent-Werkzeuge
+  - H2: Suche und Abruf
+  - H2: Agent-Tools
   - H2: Prompt- und Kontextverhalten
   - H2: Konfiguration
-  - H3: Beispiel: QMD + bridge-Modus
+  - H3: Beispiel: QMD + Bridge-Modus
   - H2: CLI
   - H2: Obsidian-Unterstützung
   - H2: Empfohlener Workflow
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/message-presentation.md
 
@@ -5676,27 +5676,27 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Vertrag
   - H2: Producer-Beispiele
   - H2: Renderer-Vertrag
-  - H2: Core-Renderfluss
-  - H2: Degradationsregeln
-  - H3: Sichtbarkeit des Button-Wert-Fallbacks
+  - H2: Core-Renderablauf
+  - H2: Regeln für Degradation
+  - H3: Sichtbarkeit des Fallbacks für Button-Werte
   - H2: Provider-Zuordnung
-  - H2: Presentation vs InteractiveReply
-  - H2: Delivery-Pin
+  - H2: Präsentation im Vergleich zu InteractiveReply
+  - H2: Auslieferungs-Pin
   - H2: Checkliste für Plugin-Autoren
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/oc-path.md
 
 - Route: /plugins/oc-path
 - Überschriften:
-  - H2: Warum aktivieren
-  - H2: Wo es läuft
+  - H2: Warum es aktiviert werden sollte
+  - H2: Wo es ausgeführt wird
   - H2: Aktivieren
   - H2: Abhängigkeiten
   - H2: Was es bereitstellt
   - H2: Beziehung zu anderen Plugins
   - H2: Sicherheit
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## plugins/plugin-inventory.md
 
@@ -5704,7 +5704,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: Plugin-Bestand
   - H2: Definitionen
-  - H2: Plugin installieren
+  - H2: Ein Plugin installieren
   - H2: Core-npm-Paket
   - H2: Offizielle externe Pakete
   - H2: Nur Source-Checkout
@@ -5714,12 +5714,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/plugin-permission-requests
 - Überschriften:
   - H2: Das richtige Gate auswählen
-  - H2: Vor einem Werkzeugaufruf Genehmigung anfordern
+  - H2: Vor einem Tool-Aufruf Genehmigung anfordern
   - H2: Entscheidungsverhalten
   - H2: Genehmigungs-Prompts weiterleiten
   - H2: Native Codex-Berechtigungen
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Themen
 
 ## plugins/reference.md
 
@@ -5731,52 +5731,52 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/acpx
 - Überschriften:
-  - H1: ACPx-Plugin
+  - H1: ACPx Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/admin-http-rpc.md
 
 - Route: /plugins/reference/admin-http-rpc
 - Überschriften:
-  - H1: Admin-Http-Rpc-Plugin
+  - H1: Admin Http Rpc Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/alibaba.md
 
 - Route: /plugins/reference/alibaba
 - Überschriften:
-  - H1: Alibaba-Plugin
+  - H1: Alibaba Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/amazon-bedrock-mantle.md
 
 - Route: /plugins/reference/amazon-bedrock-mantle
 - Überschriften:
-  - H1: Amazon Bedrock Mantle-Plugin
+  - H1: Amazon Bedrock Mantle Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/amazon-bedrock.md
 
 - Route: /plugins/reference/amazon-bedrock
 - Überschriften:
-  - H1: Amazon Bedrock-Plugin
+  - H1: Amazon Bedrock Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/anthropic-vertex.md
 
 - Route: /plugins/reference/anthropic-vertex
 - Überschriften:
-  - H1: Anthropic Vertex-Plugin
+  - H1: Anthropic Vertex Plugin
   - H2: Distribution
   - H2: Schnittstelle
   - H2: Claude Fable 5
@@ -5785,34 +5785,34 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/anthropic
 - Überschriften:
-  - H1: Anthropic-Plugin
+  - H1: Anthropic Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/arcee.md
 
 - Route: /plugins/reference/arcee
 - Überschriften:
-  - H1: Arcee-Plugin
+  - H1: Arcee Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/azure-speech.md
 
 - Route: /plugins/reference/azure-speech
 - Überschriften:
-  - H1: Azure Speech-Plugin
+  - H1: Azure Speech Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/bonjour.md
 
 - Route: /plugins/reference/bonjour
 - Überschriften:
-  - H1: Bonjour-Plugin
+  - H1: Bonjour Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -5820,25 +5820,25 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/brave
 - Überschriften:
-  - H1: Brave-Plugin
+  - H1: Brave Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/browser.md
 
 - Route: /plugins/reference/browser
 - Überschriften:
-  - H1: Browser-Plugin
+  - H1: Browser Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/byteplus.md
 
 - Route: /plugins/reference/byteplus
 - Überschriften:
-  - H1: BytePlus-Plugin
+  - H1: BytePlus Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -5846,7 +5846,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/canvas
 - Überschriften:
-  - H1: Canvas-Plugin
+  - H1: Canvas Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -5854,52 +5854,52 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/cerebras
 - Überschriften:
-  - H1: Cerebras-Plugin
+  - H1: Cerebras Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/chutes.md
 
 - Route: /plugins/reference/chutes
 - Überschriften:
-  - H1: Chutes-Plugin
+  - H1: Chutes Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/clawrouter.md
 
 - Route: /plugins/reference/clawrouter
 - Überschriften:
-  - H1: ClawRouter-Plugin
+  - H1: ClawRouter Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/clickclack.md
 
 - Route: /plugins/reference/clickclack
 - Überschriften:
-  - H1: Clickclack-Plugin
+  - H1: Clickclack Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/cloudflare-ai-gateway.md
 
 - Route: /plugins/reference/cloudflare-ai-gateway
 - Überschriften:
-  - H1: Cloudflare AI Gateway-Plugin
+  - H1: Cloudflare AI Gateway Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/codex-supervisor.md
 
 - Route: /plugins/reference/codex-supervisor
 - Überschriften:
-  - H1: Codex Supervisor-Plugin
+  - H1: Codex Supervisor Plugin
   - H2: Distribution
   - H2: Schnittstelle
   - H2: Sitzungsauflistung
@@ -5908,34 +5908,34 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/codex
 - Überschriften:
-  - H1: Codex-Plugin
+  - H1: Codex Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/cohere.md
 
 - Route: /plugins/reference/cohere
 - Überschriften:
-  - H1: Cohere-Plugin
+  - H1: Cohere Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/comfy.md
 
 - Route: /plugins/reference/comfy
 - Überschriften:
-  - H1: ComfyUI-Plugin
+  - H1: ComfyUI Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/copilot-proxy.md
 
 - Route: /plugins/reference/copilot-proxy
 - Überschriften:
-  - H1: Copilot Proxy-Plugin
+  - H1: Copilot Proxy Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -5943,43 +5943,43 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/copilot
 - Überschriften:
-  - H1: Copilot-Plugin
+  - H1: Copilot Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/deepgram.md
 
 - Route: /plugins/reference/deepgram
 - Überschriften:
-  - H1: Deepgram-Plugin
+  - H1: Deepgram Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/deepinfra.md
 
 - Route: /plugins/reference/deepinfra
 - Überschriften:
-  - H1: DeepInfra-Plugin
+  - H1: DeepInfra Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/deepseek.md
 
 - Route: /plugins/reference/deepseek
 - Überschriften:
-  - H1: DeepSeek-Plugin
+  - H1: DeepSeek Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/diagnostics-otel.md
 
 - Route: /plugins/reference/diagnostics-otel
 - Überschriften:
-  - H1: Diagnostics OpenTelemetry-Plugin
+  - H1: Diagnostics OpenTelemetry Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -5987,7 +5987,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/diagnostics-prometheus
 - Überschriften:
-  - H1: Diagnostics Prometheus-Plugin
+  - H1: Diagnostics Prometheus Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -5995,7 +5995,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/diffs-language-pack
 - Überschriften:
-  - H1: Diffs Language Pack-Plugin
+  - H1: Diffs Language Pack Plugin
   - H2: Distribution
   - H2: Schnittstelle
   - H2: Hinzugefügte Sprachen
@@ -6004,7 +6004,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/diffs
 - Überschriften:
-  - H1: Diffs-Plugin
+  - H1: Diffs Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -6012,70 +6012,70 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/discord
 - Überschriften:
-  - H1: Discord-Plugin
+  - H1: Discord Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/document-extract.md
 
 - Route: /plugins/reference/document-extract
 - Überschriften:
-  - H1: Document Extract-Plugin
+  - H1: Document Extract Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/duckduckgo.md
 
 - Route: /plugins/reference/duckduckgo
 - Überschriften:
-  - H1: DuckDuckGo-Plugin
+  - H1: DuckDuckGo Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/elevenlabs.md
 
 - Route: /plugins/reference/elevenlabs
 - Überschriften:
-  - H1: Elevenlabs-Plugin
+  - H1: Elevenlabs Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/exa.md
 
 - Route: /plugins/reference/exa
 - Überschriften:
-  - H1: Exa-Plugin
+  - H1: Exa Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/fal.md
 
 - Route: /plugins/reference/fal
 - Überschriften:
-  - H1: fal-Plugin
+  - H1: fal Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/feishu.md
 
 - Route: /plugins/reference/feishu
 - Überschriften:
-  - H1: Feishu-Plugin
+  - H1: Feishu Plugin
   - H2: Distribution
   - H2: Schnittstelle
-  - H2: Verwandte Dokumentation
+  - H2: Zugehörige Dokumentation
 
 ## plugins/reference/file-transfer.md
 
 - Route: /plugins/reference/file-transfer
 - Überschriften:
-  - H1: File Transfer-Plugin
+  - H1: File Transfer Plugin
   - H2: Distribution
   - H2: Schnittstelle
 
@@ -6083,7 +6083,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/firecrawl
 - Überschriften:
-  - H1: Firecrawl Plugin
+  - H1: Firecrawl-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6092,7 +6092,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/fireworks
 - Überschriften:
-  - H1: Fireworks Plugin
+  - H1: Fireworks-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6101,7 +6101,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/github-copilot
 - Überschriften:
-  - H1: GitHub Copilot Plugin
+  - H1: GitHub Copilot-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6110,7 +6110,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/gmi
 - Überschriften:
-  - H1: Gmi Plugin
+  - H1: Gmi-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6119,7 +6119,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/google-meet
 - Überschriften:
-  - H1: Google Meet Plugin
+  - H1: Google Meet-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6128,7 +6128,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/google
 - Überschriften:
-  - H1: Google Plugin
+  - H1: Google-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6137,7 +6137,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/googlechat
 - Überschriften:
-  - H1: Google Chat Plugin
+  - H1: Google Chat-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6146,7 +6146,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/gradium
 - Überschriften:
-  - H1: Gradium Plugin
+  - H1: Gradium-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6155,7 +6155,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/groq
 - Überschriften:
-  - H1: Groq Plugin
+  - H1: Groq-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6164,7 +6164,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/huggingface
 - Überschriften:
-  - H1: Hugging Face Plugin
+  - H1: Hugging Face-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6173,7 +6173,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/imessage
 - Überschriften:
-  - H1: iMessage Plugin
+  - H1: iMessage-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6182,7 +6182,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/inworld
 - Überschriften:
-  - H1: Inworld Plugin
+  - H1: Inworld-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6191,7 +6191,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/irc
 - Überschriften:
-  - H1: IRC Plugin
+  - H1: IRC-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6200,7 +6200,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/kilocode
 - Überschriften:
-  - H1: Kilocode Plugin
+  - H1: Kilocode-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6209,7 +6209,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/kimi
 - Überschriften:
-  - H1: Kimi Plugin
+  - H1: Kimi-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6218,7 +6218,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/line
 - Überschriften:
-  - H1: LINE Plugin
+  - H1: LINE-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6227,7 +6227,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/litellm
 - Überschriften:
-  - H1: LiteLLM Plugin
+  - H1: LiteLLM-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6236,7 +6236,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/llama-cpp
 - Überschriften:
-  - H1: Llama Cpp Plugin
+  - H1: Llama Cpp-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6245,7 +6245,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/llm-task
 - Überschriften:
-  - H1: LLM Task Plugin
+  - H1: LLM Task-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6253,7 +6253,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/lmstudio
 - Überschriften:
-  - H1: LM Studio Plugin
+  - H1: LM Studio-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6262,7 +6262,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/lobster
 - Überschriften:
-  - H1: Lobster Plugin
+  - H1: Lobster-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6270,7 +6270,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/matrix
 - Überschriften:
-  - H1: Matrix Plugin
+  - H1: Matrix-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6279,7 +6279,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/mattermost
 - Überschriften:
-  - H1: Mattermost Plugin
+  - H1: Mattermost-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6288,7 +6288,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/memory-core
 - Überschriften:
-  - H1: Memory Core Plugin
+  - H1: Memory Core-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6296,7 +6296,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/memory-lancedb
 - Überschriften:
-  - H1: Memory Lancedb Plugin
+  - H1: Memory Lancedb-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6305,7 +6305,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/memory-wiki
 - Überschriften:
-  - H1: Memory Wiki Plugin
+  - H1: Memory Wiki-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6314,19 +6314,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/microsoft-foundry
 - Überschriften:
-  - H1: Microsoft Foundry Plugin
+  - H1: Microsoft Foundry-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Anforderungen
-  - H2: Chatmodelle
-  - H2: MAI-Bildgenerierung
+  - H2: Chat-Modelle
+  - H2: MAI-Bilderzeugung
   - H2: Fehlerbehebung
 
 ## plugins/reference/microsoft.md
 
 - Route: /plugins/reference/microsoft
 - Überschriften:
-  - H1: Microsoft Plugin
+  - H1: Microsoft-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6334,7 +6334,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/migrate-claude
 - Überschriften:
-  - H1: Claude-Migrations-Plugin
+  - H1: Claude-Plugin migrieren
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6342,7 +6342,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/migrate-hermes
 - Überschriften:
-  - H1: Hermes-Migrations-Plugin
+  - H1: Hermes-Plugin migrieren
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6350,7 +6350,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/minimax
 - Überschriften:
-  - H1: MiniMax Plugin
+  - H1: MiniMax-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6359,7 +6359,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/mistral
 - Überschriften:
-  - H1: Mistral Plugin
+  - H1: Mistral-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6368,7 +6368,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/moonshot
 - Überschriften:
-  - H1: Moonshot Plugin
+  - H1: Moonshot-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6377,7 +6377,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/msteams
 - Überschriften:
-  - H1: Microsoft Teams Plugin
+  - H1: Microsoft Teams-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6386,7 +6386,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/nextcloud-talk
 - Überschriften:
-  - H1: Nextcloud Talk Plugin
+  - H1: Nextcloud Talk-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6395,7 +6395,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/nostr
 - Überschriften:
-  - H1: Nostr Plugin
+  - H1: Nostr-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6404,7 +6404,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/novita
 - Überschriften:
-  - H1: Novita Plugin
+  - H1: Novita-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6413,7 +6413,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/nvidia
 - Überschriften:
-  - H1: NVIDIA Plugin
+  - H1: NVIDIA-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6422,7 +6422,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/oc-path
 - Überschriften:
-  - H1: Oc Path Plugin
+  - H1: Oc Path-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6431,7 +6431,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/ollama
 - Überschriften:
-  - H1: Ollama Plugin
+  - H1: Ollama-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6440,7 +6440,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/open-prose
 - Überschriften:
-  - H1: Open Prose Plugin
+  - H1: Open Prose-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6448,7 +6448,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/openai
 - Überschriften:
-  - H1: OpenAI Plugin
+  - H1: OpenAI-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6457,7 +6457,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/opencode-go
 - Überschriften:
-  - H1: OpenCode Go Plugin
+  - H1: OpenCode Go-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6466,7 +6466,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/opencode
 - Überschriften:
-  - H1: OpenCode Plugin
+  - H1: OpenCode-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6475,7 +6475,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/openrouter
 - Überschriften:
-  - H1: OpenRouter Plugin
+  - H1: OpenRouter-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6484,7 +6484,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/openshell
 - Überschriften:
-  - H1: Openshell Plugin
+  - H1: Openshell-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6492,7 +6492,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/perplexity
 - Überschriften:
-  - H1: Perplexity Plugin
+  - H1: Perplexity-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6501,7 +6501,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/pixverse
 - Überschriften:
-  - H1: PixVerse Plugin
+  - H1: PixVerse-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6510,7 +6510,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/policy
 - Überschriften:
-  - H1: Policy Plugin
+  - H1: Policy-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verhalten
@@ -6520,7 +6520,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/qa-channel
 - Überschriften:
-  - H1: QA Channel Plugin
+  - H1: QA Channel-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6529,7 +6529,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/qa-lab
 - Überschriften:
-  - H1: QA Lab Plugin
+  - H1: QA Lab-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6537,7 +6537,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/qa-matrix
 - Überschriften:
-  - H1: QA Matrix Plugin
+  - H1: QA Matrix-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6545,7 +6545,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/qianfan
 - Überschriften:
-  - H1: Qianfan Plugin
+  - H1: Qianfan-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6554,7 +6554,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/qqbot
 - Überschriften:
-  - H1: QQ Bot Plugin
+  - H1: QQ Bot-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6563,7 +6563,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/qwen
 - Überschriften:
-  - H1: Qwen Plugin
+  - H1: Qwen-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6572,7 +6572,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/raft
 - Überschriften:
-  - H1: Raft Plugin
+  - H1: Raft-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6581,7 +6581,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/runway
 - Überschriften:
-  - H1: Runway Plugin
+  - H1: Runway-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6590,7 +6590,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/searxng
 - Überschriften:
-  - H1: SearXNG Plugin
+  - H1: SearXNG-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6598,7 +6598,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/senseaudio
 - Überschriften:
-  - H1: Senseaudio Plugin
+  - H1: Senseaudio-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6607,7 +6607,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/sglang
 - Überschriften:
-  - H1: SGLang Plugin
+  - H1: SGLang-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6616,7 +6616,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/signal
 - Überschriften:
-  - H1: Signal Plugin
+  - H1: Signal-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6625,7 +6625,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/slack
 - Überschriften:
-  - H1: Slack Plugin
+  - H1: Slack-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6634,7 +6634,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/sms
 - Überschriften:
-  - H1: SMS Plugin
+  - H1: Sms-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6643,7 +6643,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/stepfun
 - Überschriften:
-  - H1: StepFun Plugin
+  - H1: StepFun-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6652,7 +6652,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/synology-chat
 - Überschriften:
-  - H1: Synology Chat Plugin
+  - H1: Synology Chat-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6661,7 +6661,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/synthetic
 - Überschriften:
-  - H1: Synthetic Plugin
+  - H1: Synthetic-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6670,7 +6670,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/tavily
 - Überschriften:
-  - H1: Tavily Plugin
+  - H1: Tavily-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6679,7 +6679,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/telegram
 - Überschriften:
-  - H1: Telegram Plugin
+  - H1: Telegram-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6688,7 +6688,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/tencent
 - Überschriften:
-  - H1: Tencent Plugin
+  - H1: Tencent-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6697,7 +6697,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/tlon
 - Überschriften:
-  - H1: Tlon Plugin
+  - H1: Tlon-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6706,7 +6706,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/together
 - Überschriften:
-  - H1: Together Plugin
+  - H1: Together-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6715,7 +6715,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/tokenjuice
 - Überschriften:
-  - H1: Tokenjuice Plugin
+  - H1: Tokenjuice-Plugin
   - H2: Distribution
   - H2: Oberfläche
   - H2: Verwandte Dokumentation
@@ -6724,7 +6724,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/reference/tts-local-cli
 - Überschriften:
-  - H1: TTS Local CLI Plugin
+  - H1: TTS Local CLI-Plugin
   - H2: Distribution
   - H2: Oberfläche
 
@@ -6884,14 +6884,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/sdk-agent-harness
 - Überschriften:
   - H2: Wann Sie ein Harness verwenden sollten
-  - H2: Was weiterhin dem Core gehört
+  - H2: Was der Core weiterhin besitzt
   - H2: Ein Harness registrieren
   - H2: Auswahlrichtlinie
-  - H2: Provider- und Harness-Kopplung
-  - H3: Middleware für Tool-Ergebnisse
+  - H2: Provider-plus-Harness-Kopplung
+  - H3: Tool-Ergebnis-Middleware
   - H3: Klassifizierung des Terminal-Ergebnisses
-  - H3: Nebenwirkungen beim Agentenende
-  - H3: Benutzereingaben und Tool-Oberflächen
+  - H3: Seiteneffekte am Agent-Ende
+  - H3: Benutzereingabe- und Tool-Oberflächen
   - H3: Nativer Codex-Harness-Modus
   - H2: Runtime-Striktheit
   - H2: Native Sitzungen und Transkriptspiegel
@@ -6903,7 +6903,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/sdk-channel-inbound
 - Überschriften:
-  - H2: Core-Hilfsfunktionen
+  - H2: Core-Helfer
   - H2: Migration
 
 ## plugins/sdk-channel-ingress.md
@@ -6937,12 +6937,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/sdk-channel-plugins
 - Überschriften:
-  - H2: Wie Channel-Plugins funktionieren
-  - H2: Genehmigungen und Channel-Fähigkeiten
-  - H2: Inbound-Erwähnungsrichtlinie
+  - H2: So funktionieren Channel-Plugins
+  - H2: Genehmigungen und Channel-Funktionen
+  - H2: Richtlinie für eingehende Erwähnungen
   - H2: Schritt-für-Schritt-Anleitung
   - H2: Dateistruktur
-  - H2: Fortgeschrittene Themen
+  - H2: Erweiterte Themen
   - H2: Nächste Schritte
   - H2: Zugehöriges
 
@@ -6969,12 +6969,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Was sich ändert
   - H2: Warum sich dies geändert hat
-  - H2: Migrationsplan für Sprache und Echtzeit-Voice
+  - H2: Migrationsplan für Talk und Echtzeit-Sprache
   - H2: Kompatibilitätsrichtlinie
   - H2: So migrieren Sie
-  - H2: Importpfadreferenz
+  - H2: Importpfad-Referenz
   - H2: Aktive Veraltungen
-  - H2: Zeitplan für Entfernung
+  - H2: Zeitplan für die Entfernung
   - H2: Warnungen vorübergehend unterdrücken
   - H2: Zugehöriges
 
@@ -6983,9 +6983,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/sdk-overview
 - Überschriften:
   - H2: Importkonvention
-  - H2: Subpfadreferenz
+  - H2: Subpfad-Referenz
   - H2: Registrierungs-API
-  - H3: Fähigkeitsregistrierung
+  - H3: Funktionsregistrierung
   - H3: Tools und Befehle
   - H3: Infrastruktur
   - H3: Host-Hooks für Workflow-Plugins
@@ -6996,7 +6996,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Veraltete Memory-Embedding-Adapter
   - H3: Ereignisse und Lebenszyklus
   - H3: Semantik von Hook-Entscheidungen
-  - H3: Felder des API-Objekts
+  - H3: API-Objektfelder
   - H2: Interne Modulkonvention
   - H2: Zugehöriges
 
@@ -7015,11 +7015,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /plugins/sdk-runtime
 - Überschriften:
-  - H2: Laden und Schreiben der Konfiguration
-  - H2: Wiederverwendbare Runtime-Hilfsprogramme
+  - H2: Konfigurationsladen und Schreibvorgänge
+  - H2: Wiederverwendbare Runtime-Dienstprogramme
   - H2: Runtime-Namespaces
   - H2: Runtime-Referenzen speichern
-  - H2: Weitere API-Felder der obersten Ebene
+  - H2: Andere API-Felder auf oberster Ebene
   - H2: Zugehöriges
 
 ## plugins/sdk-setup.md
@@ -7032,14 +7032,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: openclaw.install
   - H3: Verzögertes vollständiges Laden
   - H2: Plugin-Manifest
-  - H2: Veröffentlichung in ClawHub
+  - H2: ClawHub-Veröffentlichung
   - H2: Setup-Einstieg
-  - H3: Schlanke Setup-Hilfsimporte
-  - H3: Channel-eigene Einzelkonto-Hochstufung
+  - H3: Schmale Setup-Helfer-Imports
+  - H3: Channel-eigene Hochstufung eines Einzelkontos
   - H2: Konfigurationsschema
-  - H3: Channel-Konfigurationsschemas erstellen
+  - H3: Channel-Konfigurationsschemata erstellen
   - H2: Setup-Assistenten
-  - H2: Veröffentlichen und Installieren
+  - H2: Veröffentlichen und installieren
   - H2: Zugehöriges
 
 ## plugins/sdk-subpaths.md
@@ -7047,28 +7047,28 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /plugins/sdk-subpaths
 - Überschriften:
   - H2: Plugin-Einstieg
-  - H3: Veraltete Kompatibilitäts- und Testhilfen
-  - H3: Reservierte Hilfssubpfade für gebündelte Plugins
+  - H3: Veraltete Kompatibilitäts- und Testhelfer
+  - H3: Reservierte Helfer-Subpfade für gebündelte Plugins
   - H2: Zugehöriges
 
 ## plugins/sdk-testing.md
 
 - Route: /plugins/sdk-testing
 - Überschriften:
-  - H2: Testhilfsprogramme
+  - H2: Testdienstprogramme
   - H3: Verfügbare Exporte
   - H3: Typen
   - H2: Zielauflösung testen
   - H2: Testmuster
-  - H3: Registrierungskontrakte testen
-  - H3: Runtime-Konfigurationszugriff testen
-  - H3: Unit-Test eines Channel-Plugins
-  - H3: Unit-Test eines Provider-Plugins
+  - H3: Registrierungsverträge testen
+  - H3: Zugriff auf Runtime-Konfiguration testen
+  - H3: Unit-Testing eines Channel-Plugins
+  - H3: Unit-Testing eines Provider-Plugins
   - H3: Plugin-Runtime mocken
-  - H3: Mit instanzspezifischen Stubs testen
-  - H2: Kontrakttests (repo-interne Plugins)
+  - H3: Testen mit Pro-Instanz-Stubs
+  - H2: Vertragstests (repo-interne Plugins)
   - H3: Bereichsbezogene Tests ausführen
-  - H2: Lint-Erzwingung (repo-interne Plugins)
+  - H2: Lint-Durchsetzung (repo-interne Plugins)
   - H2: Testkonfiguration
   - H2: Zugehöriges
 
@@ -7090,7 +7090,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung
   - H3: Plugin-Einstieg nicht gefunden: ./dist/index.js
   - H3: Plugin-Einstieg stellt keine defineToolPlugin-Metadaten bereit
-  - H3: openclaw.plugin.json-generierte Metadaten sind veraltet
+  - H3: Generierte Metadaten in openclaw.plugin.json sind veraltet
   - H3: package.json openclaw.extensions muss ./dist/index.js enthalten
   - H3: Paket 'typebox' kann nicht gefunden werden
   - H3: Tool wird nach der Installation nicht angezeigt
@@ -7102,10 +7102,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Schnellstart
   - H2: Konfiguration
-  - H2: Sitzungsbereich
+  - H2: Sitzungsumfang
   - H2: Echtzeit-Sprachgespräche
   - H3: Tool-Richtlinie
-  - H3: Agenten-Voice-Kontext
+  - H3: Agent-Sprachkontext
   - H3: Beispiele für Echtzeit-Provider
   - H2: Streaming-Transkription
   - H3: Beispiele für Streaming-Provider
@@ -7113,20 +7113,20 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: TTS-Beispiele
   - H2: Eingehende Anrufe
   - H3: Routing pro Nummer
-  - H3: Kontrakt für gesprochene Ausgabe
-  - H3: Verhalten beim Gesprächsstart
-  - H3: Karenzzeit für Twilio-Stream-Trennung
+  - H3: Vertrag für gesprochene Ausgabe
+  - H3: Startverhalten von Gesprächen
+  - H3: Twilio-Stream-Trenntoleranz
   - H2: Reaper für veraltete Anrufe
   - H2: Webhook-Sicherheit
   - H2: CLI
-  - H2: Agenten-Tool
+  - H2: Agent-Tool
   - H2: Gateway-RPC
   - H2: Fehlerbehebung
-  - H3: Setup schlägt bei Webhook-Verfügbarkeit fehl
+  - H3: Setup schlägt bei Webhook-Freigabe fehl
   - H3: Provider-Anmeldedaten schlagen fehl
   - H3: Anrufe starten, aber Provider-Webhooks kommen nicht an
   - H3: Signaturverifizierung schlägt fehl
-  - H3: Google Meet-Twilio-Beitritte schlagen fehl
+  - H3: Google Meet Twilio-Beitritte schlagen fehl
   - H3: Echtzeitanruf hat keine Sprache
   - H2: Zugehöriges
 
@@ -7151,7 +7151,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Standardzustand
   - H2: Was Karten enthalten
   - H2: Kartenausführungen und Aufgaben
-  - H2: Agentenkoordination
+  - H2: Agent-Koordination
   - H3: Dispatch-Worker-Auswahl
   - H3: Worker-Prompt und Lebenszyklus
   - H3: Dispatch-Einstiegspunkte
@@ -7161,7 +7161,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Berechtigungen
   - H2: Konfiguration
   - H2: Fehlerbehebung
-  - H3: Der Tab sagt, dass Workboard nicht verfügbar ist
+  - H3: Der Tab meldet, dass Workboard nicht verfügbar ist
   - H3: Karten werden nicht gespeichert
   - H3: Das Starten einer Karte öffnet nicht die erwartete Sitzung
   - H3: Dispatch startet keinen Worker
@@ -7178,7 +7178,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Option B: aus einem lokalen Ordner installieren (Entwicklung)
   - H2: Konfiguration
   - H2: CLI
-  - H2: Agenten-Tool
+  - H2: Agent-Tool
   - H2: Zugehöriges
 
 ## prose.md
@@ -7187,11 +7187,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Installieren
   - H2: Slash-Befehl
-  - H2: Was es kann
+  - H2: Was es tun kann
   - H2: Beispiel: parallele Recherche und Synthese
   - H2: OpenClaw-Runtime-Zuordnung
   - H2: Dateispeicherorte
-  - H2: Status-Backends
+  - H2: Zustands-Backends
   - H2: Sicherheit
   - H2: Zugehöriges
 
@@ -7201,7 +7201,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Erste Schritte
   - H2: Integrierte Wan-Modelle
-  - H2: Fähigkeiten und Grenzen
+  - H2: Funktionen und Grenzen
   - H2: Erweiterte Konfiguration
   - H2: Zugehöriges
 
@@ -7209,8 +7209,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /providers/anthropic
 - Überschriften:
-  - H2: Erste Schritte
-  - H2: Denk-Standardeinstellungen (Claude Fable 5, 4.8 und 4.6)
+  - H2: Thinking-Standardeinstellungen (Claude Fable 5, 4.8 und 4.6)
+  - H2: Sicherheitsablehnungs-Fallback (Claude Fable 5)
+  - H3: Warum dies existiert
+  - H3: Wie es funktioniert
+  - H3: Beobachtbarkeit und Abrechnung
+  - H3: Umfang
   - H2: Prompt-Caching
   - H2: Erweiterte Konfiguration
   - H2: Fehlerbehebung
@@ -7222,7 +7226,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Plugin installieren
   - H2: Erste Schritte
-  - H2: Nicht interaktives Setup
+  - H2: Nicht-interaktives Setup
   - H2: Integrierter Katalog
   - H2: Unterstützte Funktionen
   - H2: Zugehöriges
@@ -7253,7 +7257,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Erste Schritte
   - H2: Automatische Modellerkennung
-  - H2: Schnelleinrichtung (AWS-Pfad)
+  - H2: Schnelles Setup (AWS-Pfad)
   - H2: Erweiterte Konfiguration
   - H2: Zugehöriges
 
@@ -7263,7 +7267,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Plugin installieren
   - H2: Erste Schritte
-  - H2: Nicht interaktives Setup
+  - H2: Nicht-interaktives Setup
   - H2: Integrierter Katalog
   - H2: Manuelle Konfiguration
   - H2: Zugehöriges
@@ -7274,17 +7278,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Plugin installieren
   - H2: Erste Schritte
-  - H2: Discovery-Verhalten
+  - H2: Erkennungsverhalten
   - H2: Standardaliase
   - H2: Integrierter Starterkatalog
   - H2: Konfigurationsbeispiel
-  - H2: Zugehöriges
+  - H2: Verwandte Themen
 
 ## providers/claude-max-api-proxy.md
 
 - Route: /providers/claude-max-api-proxy
 - Überschriften:
-  - H2: Warum verwenden?
+  - H2: Warum dies verwenden?
   - H2: Funktionsweise
   - H2: Erste Schritte
   - H2: Integrierter Katalog
@@ -7326,11 +7330,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /providers/comfy
 - Überschriften:
-  - H2: Unterstützter Funktionsumfang
+  - H2: Was unterstützt wird
   - H2: Erste Schritte
   - H2: Konfiguration
   - H3: Gemeinsame Schlüssel
-  - H3: Capability-spezifische Schlüssel
+  - H3: Schlüssel pro Funktion
   - H2: Workflow-Details
   - H2: Verwandte Themen
 
@@ -7340,7 +7344,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Erste Schritte
   - H2: Konfigurationsoptionen
-  - H2: Streaming-STT für Voice Calls
+  - H2: Streaming-STT für Sprachanrufe
   - H2: Hinweise
   - H2: Verwandte Themen
 
@@ -7419,7 +7423,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Drei Möglichkeiten, Copilot in OpenClaw zu verwenden
   - H2: Optionale Flags
   - H2: Nicht interaktives Onboarding
-  - H2: Memory-Sucheinbettungen
+  - H2: Embeddings für die Speichersuche
   - H3: Konfiguration
   - H3: Funktionsweise
   - H2: Verwandte Themen
@@ -7430,7 +7434,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Einrichtung
   - H2: Standardwerte
-  - H2: Wann Sie GMI wählen sollten
+  - H2: Wann GMI gewählt werden sollte
   - H2: Modelle
   - H2: Fehlerbehebung
   - H2: Verwandte Themen
@@ -7440,7 +7444,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /providers/google
 - Überschriften:
   - H2: Erste Schritte
-  - H2: Capabilities
+  - H2: Funktionen
   - H2: Websuche
   - H2: Bildgenerierung
   - H2: Videogenerierung
@@ -7546,14 +7550,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Nicht interaktives Onboarding
   - H2: Konfiguration
-  - H3: Streaming-Nutzungskompatibilität
-  - H3: Thinking-Kompatibilität
+  - H3: Kompatibilität der Streaming-Nutzung
+  - H3: Denkkompatibilität
   - H3: Explizite Konfiguration
   - H2: Fehlerbehebung
   - H3: LM Studio nicht erkannt
   - H3: Authentifizierungsfehler (HTTP 401)
-  - H3: Just-in-time-Modellladen
-  - H3: LAN- oder Tailnet-LM-Studio-Host
+  - H3: Just-in-time-Modellladung
+  - H3: LM Studio-Host im LAN oder Tailnet
   - H2: Verwandte Themen
 
 ## providers/minimax.md
@@ -7563,7 +7567,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Integrierter Katalog
   - H2: Erste Schritte
   - H2: Über openclaw configure konfigurieren
-  - H2: Capabilities
+  - H2: Funktionen
   - H3: Bildgenerierung
   - H3: Text-zu-Sprache
   - H3: Musikgenerierung
@@ -7582,7 +7586,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Erste Schritte
   - H2: Integrierter LLM-Katalog
   - H2: Audiotranskription (Voxtral)
-  - H2: Streaming-STT für Voice Calls
+  - H2: Streaming-STT für Sprachanrufe
   - H2: Erweiterte Konfiguration
   - H2: Verwandte Themen
 
@@ -7591,7 +7595,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /providers/models
 - Überschriften:
   - H2: Schnellstart (zwei Schritte)
-  - H2: Unterstützte Provider (Starterset)
+  - H2: Unterstützte Provider (Starterauswahl)
   - H2: Zusätzliche Provider-Varianten
   - H2: Verwandte Themen
 
@@ -7611,7 +7615,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Einrichtung
   - H2: Standardwerte
-  - H2: Wann Sie Novita wählen sollten
+  - H2: Wann Novita gewählt werden sollte
   - H2: Modelle
   - H2: Fehlerbehebung
   - H2: Verwandte Themen
@@ -7634,7 +7638,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Einrichtung
   - H2: Standardwerte
-  - H2: Wann Sie Ollama Cloud wählen sollten
+  - H2: Wann Ollama Cloud gewählt werden sollte
   - H2: Modelle
   - H2: Live-Test
   - H2: Fehlerbehebung
@@ -7654,7 +7658,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Häufige Rezepte
   - H3: Modellauswahl
   - H3: Schnelle Verifizierung
-  - H2: Ollama Web Search
+  - H2: Ollama-Websuche
   - H2: Erweiterte Konfiguration
   - H2: Fehlerbehebung
   - H2: Verwandte Themen
@@ -7664,10 +7668,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /providers/openai
 - Überschriften:
   - H2: Schnellauswahl
-  - H2: Namenszuordnung
-  - H2: Eingeschränkte Vorschau für GPT-5.6
+  - H2: Benennungszuordnung
+  - H2: Eingeschränkte Vorschau von GPT-5.6
   - H2: OpenClaw-Funktionsabdeckung
-  - H2: Memory-Einbettungen
+  - H2: Memory-Embeddings
   - H2: Erste Schritte
   - H2: Native Codex-App-Server-Authentifizierung
   - H2: Bildgenerierung
@@ -7717,7 +7721,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Musikgenerierung
   - H2: Text-zu-Sprache
   - H2: Sprache-zu-Text (eingehendes Audio)
-  - H2: Fusion Router
+  - H2: Fusion-Router
   - H2: Authentifizierung und Header
   - H2: Erweiterte Konfiguration
   - H2: Verwandte Themen
@@ -7761,7 +7765,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Einrichtung
   - H2: Standardwerte
   - H2: Unterschied zu Qwen
-  - H2: Wann Sie Qwen OAuth / Portal wählen sollten
+  - H2: Wann Qwen OAuth / Portal gewählt werden sollte
   - H2: Modelle
   - H2: Migration
   - H2: Fehlerbehebung
@@ -7775,7 +7779,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Erste Schritte
   - H2: Plantypen und Endpunkte
   - H2: Integrierter Katalog
-  - H2: Thinking Controls
+  - H2: Denksteuerungen
   - H2: Multimodale Add-ons
   - H2: Erweiterte Konfiguration
   - H2: Verwandte Themen
@@ -7813,7 +7817,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /providers/stepfun
 - Überschriften:
   - H2: Plugin installieren
-  - H2: Übersicht über Region und Endpunkt
+  - H2: Regions- und Endpunktübersicht
   - H2: Integrierter Katalog
   - H2: Erste Schritte
   - H2: Erweiterte Konfiguration
@@ -7835,7 +7839,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Nicht interaktive Einrichtung
   - H2: Integrierter Katalog
-  - H2: Preisstaffelung
+  - H2: Gestaffelte Preise
   - H2: Erweiterte Konfiguration
   - H2: Verwandte Themen
 
@@ -7855,7 +7859,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Warum Venice in OpenClaw
   - H2: Datenschutzmodi
-  - H2: Features
+  - H2: Funktionen
   - H2: Erste Schritte
   - H2: Modellauswahl
   - H2: DeepSeek V4-Wiedergabeverhalten
@@ -7875,7 +7879,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Erste Schritte
   - H2: Nicht interaktives Beispiel
-  - H2: Kurzform der Modell-ID
+  - H2: Modell-ID-Kurzform
   - H2: Erweiterte Konfiguration
   - H2: Verwandte Themen
 
@@ -7913,12 +7917,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /providers/xai
 - Überschriften:
-  - H2: Einrichtungspfad auswählen
+  - H2: Einrichtungsweg auswählen
   - H2: OAuth-Fehlerbehebung
   - H2: Integrierter Katalog
   - H2: OpenClaw-Funktionsabdeckung
-  - H3: Fast-Mode-Zuordnungen
-  - H3: Legacy-Kompatibilitätsaliase
+  - H3: Zuordnungen für den Schnellmodus
+  - H3: Veraltete Kompatibilitätsaliasse
   - H2: Funktionen
   - H2: Live-Tests
   - H2: Verwandte Themen
@@ -7958,17 +7962,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Nicht-Ziele
   - H2: Zielmodell
   - H3: Gateway-Instanzidentität
-  - H3: ACP-Sitzungsbesitz
+  - H3: ACP-Sitzungseigentum
   - H3: ACPX-Prozess-Leases
   - H2: Lebenszyklus-Controller
   - H2: Wrapper-Vertrag
-  - H2: Vertrag für Sitzungssichtbarkeit
+  - H2: Vertrag zur Sitzungssichtbarkeit
   - H2: Migrationsplan
   - H3: Phase 1: Identität und Leases hinzufügen
   - H3: Phase 2: Lease-First-Bereinigung
-  - H3: Phase 3: Lease-First-Startup-Reaping
-  - H3: Phase 4: Sitzungsbesitz-Zeilen
-  - H3: Phase 5: Legacy-Heuristiken entfernen
+  - H3: Phase 3: Lease-First-Startup-Bereinigung
+  - H3: Phase 4: Zeilen für Sitzungseigentum
+  - H3: Phase 5: Veraltete Heuristiken entfernen
   - H2: Tests
   - H2: Kompatibilitätshinweise
   - H2: Erfolgskriterien
@@ -7977,10 +7981,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /refactor/canvas
 - Überschriften:
-  - H1: Refaktorierung des Canvas-Plugins
+  - H1: Canvas-Plugin-Refaktorierung
   - H2: Ziel
   - H2: Nicht-Ziele
-  - H2: Aktueller Branch-Status
+  - H2: Aktueller Branch-Stand
   - H2: Zielstruktur
   - H2: Migrationsschritte
   - H2: Audit-Checkliste
@@ -7998,33 +8002,33 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Zielzustände
   - H3: Aktueller Zustand
   - H3: Verbleibende Arbeit
-  - H3: Keine Regression einführen
-  - H2: Annahmen aus dem Code-Read
-  - H2: Erkenntnisse aus dem Code-Read
-  - H2: Aktuelle Codestruktur
+  - H3: Keine Regression verursachen
+  - H2: Code-Read-Annahmen
+  - H2: Code-Read-Erkenntnisse
+  - H2: Aktuelle Code-Struktur
   - H2: Ziel-Schemastruktur
   - H2: Doctor-Migrationsstruktur
   - H2: Migrationsinventar
   - H2: Migrationsplan
   - H3: Phase 0: Grenze einfrieren
-  - H3: Phase 1: Globale Control Plane fertigstellen
+  - H3: Phase 1: Globale Control Plane abschließen
   - H3: Phase 2: Pro-Agent-Datenbanken einführen
   - H3: Phase 3: Session-Store-APIs ersetzen
   - H3: Phase 4: Transkripte, ACP-Streams, Trajektorien und VFS verschieben
-  - H3: Phase 5: Sichern, Wiederherstellen, Vacuum und Verifizieren
-  - H3: Phase 6: Worker-Runtime
-  - H3: Phase 7: Alte Welt löschen
-  - H2: Sichern und Wiederherstellen
-  - H2: Runtime-Refaktorierungsplan
-  - H2: Performance-Regeln
+  - H3: Phase 5: Backup, Wiederherstellung, Vacuum und Verifizierung
+  - H3: Phase 6: Worker-Laufzeit
+  - H3: Phase 7: Die alte Welt löschen
+  - H2: Backup und Wiederherstellung
+  - H2: Laufzeit-Refaktorierungsplan
+  - H2: Leistungsregeln
   - H2: Statische Verbote
-  - H2: Erledigt-Kriterien
+  - H2: Fertigstellungskriterien
 
 ## refactor/ingress-core.md
 
 - Route: /refactor/ingress-core
 - Überschriften:
-  - H1: Löschplan für den Ingress-Core
+  - H1: Löschplan für Ingress-Core
   - H2: Budget
   - H2: Diagnose
   - H2: Hotspots
@@ -8042,16 +8046,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /reference/AGENTS.default
 - Überschriften:
   - H2: Erster Lauf (empfohlen)
-  - H2: Sicherheitsstandards
-  - H2: Vorprüfung vorhandener Lösungen
+  - H2: Sicherheitsvorgaben
+  - H2: Vorabprüfung bestehender Lösungen
   - H2: Sitzungsstart (erforderlich)
   - H2: Seele (erforderlich)
-  - H2: Geteilte Bereiche (empfohlen)
+  - H2: Gemeinsame Bereiche (empfohlen)
   - H2: Speichersystem (empfohlen)
   - H2: Tools und Skills
   - H2: Backup-Tipp (empfohlen)
   - H2: Was OpenClaw macht
-  - H2: Kern-Skills (in Einstellungen → Skills aktivieren)
+  - H2: Core-Skills (in Einstellungen → Skills aktivieren)
   - H2: Nutzungshinweise
   - H2: Verwandte Themen
 
@@ -8060,17 +8064,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /reference/RELEASING
 - Überschriften:
   - H2: Versionsbenennung
-  - H2: Release-Kadenz
-  - H2: Release-Operator-Checkliste
-  - H2: Abschluss für stabiles main
+  - H2: Release-Takt
+  - H2: Checkliste für Release-Operatoren
+  - H2: Abschluss für stabilen main
   - H2: Release-Preflight
   - H2: Release-Testboxen
   - H3: Vitest
   - H3: Docker
   - H3: QA Lab
   - H3: Paket
-  - H2: Automatisierung der Release-Veröffentlichung
-  - H2: Eingaben für den NPM-Workflow
+  - H2: Release-Veröffentlichungsautomatisierung
+  - H2: NPM-Workflow-Eingaben
   - H2: Stabile npm-Release-Sequenz
   - H2: Öffentliche Referenzen
   - H2: Verwandte Themen
@@ -8079,19 +8083,19 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/api-usage-costs
 - Überschriften:
-  - H2: Wo Kosten entstehen (Chat + CLI)
-  - H2: Wie Schlüssel gefunden werden
+  - H2: Wo Kosten auftreten (Chat + CLI)
+  - H2: Wie Schlüssel erkannt werden
   - H2: Funktionen, die Schlüssel verbrauchen können
-  - H3: 1) Kernmodellantworten (Chat + Tools)
+  - H3: 1) Core-Modellantworten (Chat + Tools)
   - H3: 2) Medienverständnis (Audio/Bild/Video)
   - H3: 3) Bild- und Videogenerierung
   - H3: 4) Memory-Embeddings + semantische Suche
-  - H3: 5) Websuchtool
+  - H3: 5) Websuch-Tool
   - H3: 5) Web-Fetch-Tool (Firecrawl)
-  - H3: 6) Provider-Nutzungs-Snapshots (Status/Zustand)
+  - H3: 6) Provider-Nutzungssnapshots (Status/Zustand)
   - H3: 7) Compaction-Schutz-Zusammenfassung
   - H3: 8) Modellscan / Probe
-  - H3: 9) Talk (Sprache)
+  - H3: 9) Sprechen (Sprache)
   - H3: 10) Skills (Drittanbieter-APIs)
   - H2: Verwandte Themen
 
@@ -8104,11 +8108,11 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Phase 1: Baseline-Audit
   - H2: Phase 2: Produkt- und UX-Bereinigung
   - H2: Phase 3: Frontend-Architektur straffen
-  - H2: Phase 4: Performance und Zuverlässigkeit
-  - H2: Phase 5: Typen, Verträge und Tests härten
+  - H2: Phase 4: Leistung und Zuverlässigkeit
+  - H2: Phase 5: Typ-, Vertrags- und Testhärtung
   - H2: Phase 6: Dokumentation und Release-Bereitschaft
-  - H2: Empfohlener erster Abschnitt
-  - H2: Frontend-Skill-Update
+  - H2: Empfohlener erster Ausschnitt
+  - H2: Frontend-Skill-Aktualisierung
 
 ## reference/code-mode.md
 
@@ -8117,21 +8121,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was ist das?
   - H2: Warum ist das gut?
   - H2: So aktivieren Sie es
-  - H2: Technische Tour
-  - H2: Runtime-Status
+  - H2: Technischer Überblick
+  - H2: Laufzeitstatus
   - H2: Umfang
   - H2: Begriffe
   - H2: Konfiguration
   - H2: Aktivierung
-  - H2: Für Modelle sichtbare Tools
+  - H2: Für das Modell sichtbare Tools
   - H2: exec
   - H2: wait
-  - H2: Gast-Runtime-API
+  - H2: Guest-Laufzeit-API
   - H2: Interne Namespaces
   - H3: Registry-Lebenszyklus
   - H3: Registrierungsstruktur
-  - H3: Besitz und Sichtbarkeit
-  - H3: Regeln für Scope-Serialisierung
+  - H3: Eigentum und Sichtbarkeit
+  - H3: Regeln zur Scope-Serialisierung
   - H3: Prompts
   - H3: Bereinigung
   - H3: Test-Checkliste
@@ -8140,14 +8144,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Tool-Search-Interaktion
   - H2: Tool-Namen und Kollisionen
   - H2: Verschachtelte Tool-Ausführung
-  - H2: Runtime-Zustand
-  - H2: QuickJS-WASI-Runtime
+  - H2: Laufzeitzustand
+  - H2: QuickJS-WASI-Laufzeit
   - H2: TypeScript
   - H2: Sicherheitsgrenze
   - H2: Fehlercodes
   - H2: Telemetrie
   - H2: Debugging
-  - H2: Implementierungsstruktur
+  - H2: Implementierungslayout
   - H2: Validierungscheckliste
   - H2: E2E-Testplan
   - H2: Verwandte Themen
@@ -8158,7 +8162,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Der Name
   - H2: Danksagungen
-  - H2: Kernmitwirkende
+  - H2: Core-Mitwirkende
   - H2: Lizenz
   - H2: Verwandte Themen
 
@@ -8174,13 +8178,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/full-release-validation
 - Überschriften:
-  - H2: Übergeordnete Phasen
-  - H2: Phasen der Release-Prüfungen
+  - H2: Stufen auf oberster Ebene
+  - H2: Stufen der Release-Prüfungen
   - H2: Docker-Release-Pfad-Chunks
   - H2: Release-Profile
-  - H2: Full-only-Ergänzungen
+  - H2: Ergänzungen nur für vollständige Läufe
   - H2: Fokussierte Wiederholungen
-  - H2: Aufzubewahrende Evidenz
+  - H2: Aufzubewahrende Nachweise
   - H2: Workflow-Dateien
 
 ## reference/memory-config.md
@@ -8199,7 +8203,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Multimodales Memory (Gemini)
   - H2: Embedding-Cache
   - H2: Batch-Indexierung
-  - H2: Sitzungs-Memory-Suche (experimentell)
+  - H2: Sitzungsspeichersuche (experimentell)
   - H2: SQLite-Vektorbeschleunigung (sqlite-vec)
   - H2: Indexspeicher
   - H2: QMD-Backend-Konfiguration
@@ -8213,10 +8217,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/prompt-caching
 - Überschriften:
-  - H2: Primäre Stellschrauben
+  - H2: Primäre Regler
   - H3: cacheRetention (globaler Standard, Modell und pro Agent)
   - H3: contextPruning.mode: "cache-ttl"
-  - H3: Heartbeat keep-warm
+  - H3: Heartbeat-Warmhalten
   - H2: Provider-Verhalten
   - H3: Anthropic (direkte API)
   - H3: OpenAI (direkte API)
@@ -8224,20 +8228,20 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Amazon Bedrock
   - H3: OpenRouter-Modelle
   - H3: Andere Provider
-  - H3: Google Gemini direkte API
+  - H3: Direkte Google Gemini API
   - H3: Gemini-CLI-Nutzung
   - H2: System-Prompt-Cache-Grenze
   - H2: OpenClaw-Cache-Stabilitätswächter
   - H2: Tuning-Muster
   - H3: Gemischter Traffic (empfohlener Standard)
-  - H3: Kostenorientierte Basislinie
+  - H3: Kostenorientierte Baseline
   - H2: Cache-Diagnose
   - H2: Live-Regressionstests
   - H3: Anthropic-Live-Erwartungen
   - H3: OpenAI-Live-Erwartungen
   - H3: diagnostics.cacheTrace-Konfiguration
   - H3: Env-Umschalter (einmaliges Debugging)
-  - H3: Was zu prüfen ist
+  - H3: Was Sie prüfen sollten
   - H2: Schnelle Fehlerbehebung
   - H2: Verwandte Themen
 
@@ -8246,12 +8250,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /reference/release-performance-sweep
 - Überschriften:
   - H2: Snapshot
-  - H2: Zeitverlauf des Installations-Footprints
+  - H2: Zeitachse des Installations-Footprints
   - H2: Was sich in 5.28 geändert hat
-  - H2: Wichtigste Zahlen
+  - H2: Leitkennzahlen
   - H3: Installations-Footprint
   - H3: npm-Paketgröße
-  - H2: Zusammenfassung der Kova-Agent-Turns
+  - H2: Zusammenfassung des Kova-Agent-Turns
   - H2: Quell-Probes
   - H2: Audit des Installations-Footprints
   - H3: Shrinkwrap-Grenze
@@ -8297,24 +8301,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/session-management-compaction
 - Überschriften:
-  - H2: Single Source of Truth: das Gateway
-  - H2: Zwei Persistenzschichten
-  - H2: Speicherorte auf der Festplatte
-  - H2: Store-Wartung und Festplattensteuerungen
+  - H2: Source of Truth: das Gateway
+  - H2: Zwei Persistenzebenen
+  - H2: Speicherorte auf dem Datenträger
+  - H2: Store-Wartung und Datenträgerkontrollen
   - H2: Cron-Sitzungen und Ausführungsprotokolle
   - H2: Sitzungsschlüssel (sessionKey)
   - H2: Sitzungs-IDs (sessionId)
   - H2: Session-Store-Schema (sessions.json)
   - H2: Transkriptstruktur (.jsonl)
-  - H2: Kontextfenster vs. verfolgte Tokens
+  - H2: Kontextfenster vs. nachverfolgte Tokens
   - H2: Compaction: was es ist
-  - H2: Compaction-Chunk-Grenzen und Tool-Pairing
-  - H2: Wann automatische Compaction erfolgt (OpenClaw-Runtime)
+  - H2: Compaction-Chunk-Grenzen und Tool-Paarung
+  - H2: Wann Auto-Compaction erfolgt (OpenClaw-Laufzeit)
   - H2: Compaction-Einstellungen (reserveTokens, keepRecentTokens)
   - H2: Austauschbare Compaction-Provider
   - H2: Für Benutzer sichtbare Oberflächen
-  - H2: Stille Haushaltsführung (NOREPLY)
-  - H2: Pre-Compaction-"Memory Flush" (implementiert)
+  - H2: Stille Wartung (NOREPLY)
+  - H2: „Memory Flush“ vor der Compaction (implementiert)
   - H2: Checkliste zur Fehlerbehebung
   - H2: Verwandte Themen
 
@@ -8325,12 +8329,12 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: AGENTS.md - OpenClaw-Arbeitsbereich
   - H2: Erster Lauf (einmalig)
   - H2: Backup-Tipp (empfohlen)
-  - H2: Sicherheitsstandards
-  - H2: Vorprüfung vorhandener Lösungen
+  - H2: Sicherheitsvorgaben
+  - H2: Vorabprüfung bestehender Lösungen
   - H2: Tägliches Memory (empfohlen)
   - H2: Heartbeats (optional)
   - H2: Anpassen
-  - H2: C-3PO-Ursprungs-Memory
+  - H2: C-3PO-Ursprungsspeicher
   - H3: Geburtstag: 2026-01-09
   - H3: Kernwahrheiten (von Clawd)
   - H2: Verwandte Themen
@@ -8358,18 +8362,18 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /reference/templates/HEARTBEAT
 - Überschriften:
   - H1: HEARTBEAT.md-Vorlage
-  - H2: Verwandte Themen
+  - H2: Verwandt
 
 ## reference/templates/IDENTITY.dev.md
 
 - Route: /reference/templates/IDENTITY.dev
 - Überschriften:
-  - H1: IDENTITY.md - Agent-Identität
+  - H1: IDENTITY.md - Agentenidentität
   - H2: Rolle
   - H2: Seele
   - H2: Beziehung zu Clawd
   - H2: Eigenheiten
-  - H2: Leitspruch
+  - H2: Schlagwort
   - H2: Verwandt
 
 ## reference/templates/IDENTITY.md
@@ -8400,7 +8404,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H1: SOUL.md - Wer Sie sind
   - H2: Grundwahrheiten
   - H2: Grenzen
-  - H2: Stimmung
+  - H2: Stil
   - H2: Kontinuität
   - H2: Verwandt
 
@@ -8408,7 +8412,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/templates/TOOLS.dev
 - Überschriften:
-  - H1: TOOLS.md - Benutzer-Tool-Notizen (bearbeitbar)
+  - H1: TOOLS.md - Notizen zu Benutzerwerkzeugen (bearbeitbar)
   - H2: Beispiele
   - H3: imsg
   - H3: sag
@@ -8419,7 +8423,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /reference/templates/TOOLS
 - Überschriften:
   - H1: TOOLS.md - Lokale Notizen
-  - H2: Was hier hineingehört
+  - H2: Was hier hingehört
   - H2: Beispiele
   - H2: Warum getrennt?
   - H2: Verwandt
@@ -8443,8 +8447,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/test
 - Überschriften:
-  - H2: Lokaler PR-Gate
-  - H2: Modell-Latenz-Benchmark (lokale Schlüssel)
+  - H2: Lokales PR-Gate
+  - H2: Modelllatenz-Benchmark (lokale Schlüssel)
   - H2: CLI-Start-Benchmark
   - H2: Gateway-Start-Benchmark
   - H2: Gateway-Neustart-Benchmark
@@ -8456,15 +8460,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/token-use
 - Überschriften:
-  - H2: Wie der System-Prompt erstellt wird
+  - H2: Wie der System-Prompt aufgebaut wird
   - H2: Was im Kontextfenster zählt
-  - H2: So sehen Sie die aktuelle Token-Nutzung
+  - H2: Wie Sie die aktuelle Token-Nutzung anzeigen
   - H2: Kostenschätzung (wenn angezeigt)
-  - H2: Auswirkungen von Cache-TTL und Bereinigung
-  - H3: Beispiel: 1-h-Cache mit Heartbeat warm halten
+  - H2: Cache-TTL und Auswirkungen des Bereinigens
+  - H3: Beispiel: 1h-Cache mit Heartbeat warm halten
   - H3: Beispiel: gemischter Traffic mit Cache-Strategie pro Agent
   - H3: Anthropic-1M-Kontext
-  - H2: Tipps zur Reduzierung des Token-Drucks
+  - H2: Tipps zum Reduzieren des Token-Drucks
   - H2: Verwandt
 
 ## reference/transcript-hygiene.md
@@ -8475,7 +8479,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Wo dies ausgeführt wird
   - H2: Globale Regel: Bildbereinigung
   - H2: Globale Regel: fehlerhafte Tool-Aufrufe
-  - H2: Globale Regel: unvollständige reine Reasoning-Turns
+  - H2: Globale Regel: unvollständige Reasoning-only-Turns
   - H2: Globale Regel: Eingabeherkunft zwischen Sitzungen
   - H2: Provider-Matrix (aktuelles Verhalten)
   - H2: Historisches Verhalten (vor 2026.1.22)
@@ -8485,9 +8489,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /reference/wizard
 - Überschriften:
-  - H2: Flow-Details (lokaler Modus)
-  - H2: Nicht interaktiver Modus
-  - H3: Agent hinzufügen (nicht interaktiv)
+  - H2: Ablaufdetails (lokaler Modus)
+  - H2: Nicht-interaktiver Modus
+  - H3: Agent hinzufügen (nicht-interaktiv)
   - H2: Gateway-Wizard-RPC
   - H2: Signal-Einrichtung (signal-cli)
   - H2: Was der Wizard schreibt
@@ -8503,15 +8507,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Provider- und Modellwiederherstellung
   - H3: Sitzungs-, Speicher- und Vertrauenskontinuität
   - H3: Slack-Router-Relay-Modus
-  - H3: Raft External Agent Wake-Bridge
+  - H3: Wake-Bridge für externen Raft-Agenten
   - H3: Installation und Reparatur offizieller Plugins
   - H2: Kanäle und Messaging
-  - H3: Zusätzliche Kanalfehlerbehebungen
+  - H3: Zusätzliche Kanalkorrekturen
   - H2: Gateway, Sicherheit und Vertrauen
-  - H3: Neustart- und Bereitschaftswiederherstellung
+  - H3: Wiederherstellung nach Neustart und Bereitschaft
   - H3: Zustellung von Remote-Ergebnissen und Medien
-  - H2: Clients und Schnittstellen
-  - H3: Client-Sendungen und Wiederverbindungen
+  - H2: Clients und Oberflächen
+  - H3: Client-Sends und Wiederverbindungen
   - H3: Korrekturen an Oberfläche, Einstellungen und Onboarding
   - H2: Dokumentation und Admin-Tools
   - H3: Zuverlässigkeit von Einrichtung und Befehlen
@@ -8523,15 +8527,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H1: Versionshinweise
   - H2: Releases
-  - H2: Unbearbeiteter Release-Verlauf
+  - H2: Rohe Release-Historie
 
 ## security/CONTRIBUTING-THREAT-MODEL.md
 
 - Route: /security/CONTRIBUTING-THREAT-MODEL
 - Überschriften:
-  - H2: Möglichkeiten zur Mitarbeit
+  - H2: Möglichkeiten zur Mitwirkung
   - H3: Bedrohung hinzufügen
-  - H3: Minderung vorschlagen
+  - H3: Abwehrmaßnahme vorschlagen
   - H3: Angriffskette vorschlagen
   - H3: Vorhandene Inhalte korrigieren oder verbessern
   - H2: Was wir verwenden
@@ -8561,21 +8565,21 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: 3. Bedrohungsanalyse nach ATLAS-Taktik
   - H3: 3.1 Aufklärung (AML.TA0002)
   - H4: T-RECON-001: Erkennung von Agent-Endpunkten
-  - H4: T-RECON-002: Sondierung der Kanalintegration
-  - H3: 3.2 Erstzugriff (AML.TA0004)
-  - H4: T-ACCESS-001: Abfangen des Kopplungscodes
+  - H4: T-RECON-002: Sondierung von Kanalintegrationen
+  - H3: 3.2 Initialer Zugriff (AML.TA0004)
+  - H4: T-ACCESS-001: Abfangen von Pairing-Codes
   - H4: T-ACCESS-002: AllowFrom-Spoofing
   - H4: T-ACCESS-003: Token-Diebstahl
   - H3: 3.3 Ausführung (AML.TA0005)
   - H4: T-EXEC-001: Direkte Prompt-Injection
   - H4: T-EXEC-002: Indirekte Prompt-Injection
   - H4: T-EXEC-003: Tool-Argument-Injection
-  - H4: T-EXEC-004: Umgehung der Ausführungsgenehmigung
+  - H4: T-EXEC-004: Umgehung der Exec-Genehmigung
   - H3: 3.4 Persistenz (AML.TA0006)
   - H4: T-PERSIST-001: Installation bösartiger Skills
-  - H4: T-PERSIST-002: Vergiftung von Skill-Updates
+  - H4: T-PERSIST-002: Skill-Update-Vergiftung
   - H4: T-PERSIST-003: Manipulation der Agent-Konfiguration
-  - H3: 3.5 Umgehung der Verteidigung (AML.TA0007)
+  - H3: 3.5 Abwehrumgehung (AML.TA0007)
   - H4: T-EVADE-001: Umgehung von Moderationsmustern
   - H4: T-EVADE-002: Ausbruch aus dem Content-Wrapper
   - H3: 3.6 Discovery (AML.TA0008)
@@ -8583,25 +8587,25 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H4: T-DISC-002: Extraktion von Sitzungsdaten
   - H3: 3.7 Sammlung &amp; Exfiltration (AML.TA0009, AML.TA0010)
   - H4: T-EXFIL-001: Datendiebstahl über webfetch
-  - H4: T-EXFIL-002: Unbefugtes Senden von Nachrichten
+  - H4: T-EXFIL-002: Unautorisiertes Senden von Nachrichten
   - H4: T-EXFIL-003: Abgreifen von Zugangsdaten
-  - H3: 3.8 Auswirkungen (AML.TA0011)
-  - H4: T-IMPACT-001: Unbefugte Befehlsausführung
+  - H3: 3.8 Auswirkung (AML.TA0011)
+  - H4: T-IMPACT-001: Unautorisierte Befehlsausführung
   - H4: T-IMPACT-002: Ressourcenerschöpfung (DoS)
   - H4: T-IMPACT-003: Reputationsschaden
   - H2: 4. ClawHub-Lieferkettenanalyse
   - H3: 4.1 Aktuelle Sicherheitskontrollen
-  - H3: 4.2 Muster für Moderationskennzeichnungen
+  - H3: 4.2 Muster für Moderations-Flags
   - H3: 4.3 Geplante Verbesserungen
   - H2: 5. Risikomatrix
   - H3: 5.1 Wahrscheinlichkeit vs. Auswirkung
-  - H3: 5.2 Angriffsketten auf dem kritischen Pfad
+  - H3: 5.2 Angriffsketten auf kritischen Pfaden
   - H2: 6. Zusammenfassung der Empfehlungen
   - H3: 6.1 Sofort (P0)
   - H3: 6.2 Kurzfristig (P1)
   - H3: 6.3 Mittelfristig (P2)
   - H2: 7. Anhänge
-  - H3: 7.1 Zuordnung von ATLAS-Techniken
+  - H3: 7.1 ATLAS-Technikzuordnung
   - H3: 7.2 Wichtige Sicherheitsdateien
   - H3: 7.3 Glossar
   - H2: Verwandt
@@ -8610,16 +8614,16 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /security/formal-verification
 - Überschriften:
-  - H2: Wo sich die Modelle befinden
+  - H2: Wo die Modelle liegen
   - H2: Wichtige Vorbehalte
   - H2: Ergebnisse reproduzieren
-  - H3: Gateway-Exponierung und Fehlkonfiguration eines offenen Gateways
+  - H3: Gateway-Exposition und Fehlkonfiguration eines offenen Gateways
   - H3: Node-Exec-Pipeline (Fähigkeit mit höchstem Risiko)
-  - H3: Kopplungsspeicher (DM-Gating)
+  - H3: Pairing-Speicher (DM-Gating)
   - H3: Ingress-Gating (Erwähnungen + Umgehung von Steuerbefehlen)
   - H3: Routing-/Sitzungsschlüssel-Isolation
-  - H2: v1++: zusätzliche begrenzte Modelle (Nebenläufigkeit, Wiederholungen, Korrektheit von Traces)
-  - H3: Nebenläufigkeit / Idempotenz des Kopplungsspeichers
+  - H2: v1++: zusätzliche begrenzte Modelle (Nebenläufigkeit, Wiederholungen, Trace-Korrektheit)
+  - H3: Nebenläufigkeit / Idempotenz des Pairing-Speichers
   - H3: Ingress-Trace-Korrelation / Idempotenz
   - H3: Routing-dmScope-Priorität + identityLinks
   - H2: Verwandt
@@ -8632,7 +8636,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: 2. Bewertung
   - H2: 3. Reaktion
   - H2: 4. Kommunikation
-  - H2: 5. Wiederherstellung und Nachbereitung
+  - H2: 5. Wiederherstellung und Nachverfolgung
 
 ## security/network-proxy.md
 
@@ -8658,14 +8662,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Produktmodell
   - H2: Architektur
   - H2: Codex-App-Server-Vertrag
-  - H2: Sitzungsregistrierung
+  - H2: Sitzungsregister
   - H2: MCP-Oberfläche für Codex
   - H2: Claw-Steueroberfläche
   - H2: Startablauf
   - H2: Bereitstellung
   - H2: Sicherheit
   - H2: Implementierungsplan
-  - H2: Akzeptanztests
+  - H2: Abnahmetests
   - H2: Offene Fragen
 
 ## start/bootstrapping.md
@@ -8710,7 +8714,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Plattformen
   - H2: macOS-Begleit-App (fortgeschritten)
   - H2: Plugins
-  - H2: Workspace + Vorlagen
+  - H2: Arbeitsbereich + Vorlagen
   - H2: Projekt
   - H2: Tests + Release
   - H2: Verwandt
@@ -8720,22 +8724,22 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /start/lore
 - Überschriften:
   - H1: Die Lore von OpenClaw 🦞📖
-  - H2: Die Entstehungsgeschichte
+  - H2: Die Ursprungsgeschichte
   - H2: Die erste Häutung (27. Januar 2026)
   - H2: Der Name
-  - H2: Die Daleks vs. die Hummer
-  - H2: Hauptfiguren
+  - H2: Die Daleks gegen die Hummer
+  - H2: Schlüsselfiguren
   - H3: Molty 🦞
   - H3: Peter 👨‍💻
-  - H2: Das Moltiverse
+  - H2: Das Moltiversum
   - H2: Die großen Vorfälle
-  - H3: Der Verzeichnis-Dump (3. Dez. 2025)
+  - H3: Der Directory-Dump (3. Dez. 2025)
   - H3: Die große Häutung (27. Jan. 2026)
-  - H3: Die endgültige Form (30. Januar 2026)
-  - H3: Der Roboter-Einkaufsrausch (3. Dez. 2025)
+  - H3: Die finale Form (30. Januar 2026)
+  - H3: Der Roboter-Shoppingrausch (3. Dez. 2025)
   - H2: Heilige Texte
   - H2: Das Hummer-Credo
-  - H3: Die Saga der Icon-Erstellung (27. Jan. 2026)
+  - H3: Die Saga der Icon-Generierung (27. Jan. 2026)
   - H2: Die Zukunft
   - H2: Verwandt
 
@@ -8746,8 +8750,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Welchen Pfad sollte ich verwenden?
   - H2: Was das Onboarding konfiguriert
   - H2: CLI-Onboarding
-  - H2: macOS-App-Onboarding
-  - H2: Benutzerdefinierte oder nicht aufgeführte Provider
+  - H2: Onboarding der macOS-App
+  - H2: Benutzerdefinierte oder nicht gelistete Provider
   - H2: Verwandt
 
 ## start/onboarding.md
@@ -8762,14 +8766,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: ⚠️ Sicherheit zuerst
   - H2: Voraussetzungen
-  - H2: Das Zwei-Telefone-Setup (empfohlen)
+  - H2: Das Zwei-Telefon-Setup (empfohlen)
   - H2: 5-Minuten-Schnellstart
-  - H2: Dem Agent einen Workspace geben (AGENTS)
+  - H2: Dem Agent einen Arbeitsbereich geben (AGENTS)
   - H2: Die Konfiguration, die daraus „einen Assistenten“ macht
   - H2: Sitzungen und Speicher
   - H2: Heartbeats (proaktiver Modus)
-  - H2: Medien hinein und hinaus
-  - H2: Betriebscheckliste
+  - H2: Medien ein und aus
+  - H2: Betriebs-Checkliste
   - H2: Nächste Schritte
   - H2: Verwandt
 
@@ -8786,15 +8790,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: TL;DR
   - H2: Voraussetzungen (aus dem Quellcode)
   - H2: Anpassungsstrategie (damit Updates nicht schaden)
-  - H2: Gateway aus diesem Repo ausführen
+  - H2: Gateway aus diesem Repository ausführen
   - H2: Stabiler Workflow (macOS-App zuerst)
   - H2: Bleeding-Edge-Workflow (Gateway in einem Terminal)
   - H3: 0) (Optional) Auch die macOS-App aus dem Quellcode ausführen
-  - H3: 1) Dev-Gateway starten
-  - H3: 2) macOS-App auf Ihr laufendes Gateway richten
-  - H3: 3) Überprüfen
+  - H3: 1) Das Dev-Gateway starten
+  - H3: 2) Die macOS-App auf Ihr laufendes Gateway richten
+  - H3: 3) Verifizieren
   - H3: Häufige Stolperfallen
-  - H2: Zuordnung der Zugangsdaten-Speicherung
+  - H2: Zuordnung der Anmeldedatenspeicherung
   - H2: Aktualisieren (ohne Ihre Einrichtung zu zerstören)
   - H2: Linux (systemd-Benutzerdienst)
   - H2: Verwandte Dokumentation
@@ -8817,17 +8821,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /start/wizard-cli-automation
 - Überschriften:
-  - H2: Nicht interaktives Basisbeispiel
+  - H2: Nicht-interaktives Basisbeispiel
   - H2: Provider-spezifische Beispiele
-  - H2: Weiteren Agent hinzufügen
+  - H2: Einen weiteren Agent hinzufügen
   - H2: Verwandte Dokumentation
 
 ## start/wizard-cli-reference.md
 
 - Route: /start/wizard-cli-reference
 - Überschriften:
-  - H2: Was der Wizard tut
-  - H2: Details zum lokalen Flow
+  - H2: Was der Assistent tut
+  - H2: Details zum lokalen Ablauf
   - H2: Details zum Remote-Modus
   - H2: Authentifizierungs- und Modelloptionen
   - H2: Ausgaben und Interna
@@ -8840,7 +8844,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Gebietsschema
   - H2: QuickStart vs. Erweitert
   - H2: Was das Onboarding konfiguriert
-  - H2: Weiteren Agent hinzufügen
+  - H2: Weiteren Agenten hinzufügen
   - H2: Vollständige Referenz
   - H2: Verwandte Dokumentation
 
@@ -8853,10 +8857,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Plugin-Einrichtung für acpx-Backend
   - H3: acpx-Befehl und Versionskonfiguration
   - H3: Automatische Installation von Abhängigkeiten
-  - H3: MCP-Bridge für Plugin-Tools
-  - H3: MCP-Bridge für OpenClaw-Tools
-  - H3: Timeout-Konfiguration für Runtime-Operationen
-  - H3: Agent-Konfiguration für Health Probe
+  - H3: MCP-Brücke für Plugin-Tools
+  - H3: MCP-Brücke für OpenClaw-Tools
+  - H3: Konfiguration des Runtime-Vorgangstimeouts
+  - H3: Konfiguration des Health-Probe-Agenten
   - H2: Berechtigungskonfiguration
   - H3: permissionMode
   - H3: nonInteractivePermissions
@@ -8867,15 +8871,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /tools/acp-agents
 - Überschriften:
-  - H2: Welche Seite benötige ich?
-  - H2: Funktioniert das sofort?
+  - H2: Welche Seite brauche ich?
+  - H2: Funktioniert das sofort einsatzbereit?
   - H2: Unterstützte Harness-Ziele
-  - H2: Operator-Runbook
-  - H2: ACP gegenüber Sub-Agents
+  - H2: Betreiber-Runbook
+  - H2: ACP im Vergleich zu Sub-Agenten
   - H2: Wie ACP Claude Code ausführt
   - H2: Gebundene Sitzungen
   - H3: Mentales Modell
-  - H3: Bindungen für aktuelle Unterhaltungen
+  - H3: Bindungen für die aktuelle Unterhaltung
   - H2: Persistente Kanalbindungen
   - H3: Bindungsmodell
   - H3: Runtime-Standardwerte pro Agent
@@ -8883,15 +8887,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Verhalten
   - H2: ACP-Sitzungen starten
   - H3: sessionsspawn-Parameter
-  - H2: Spawn-Bind- und Thread-Modi
-  - H2: Zustellungsmodell
+  - H2: Spawn-Bindungs- und Thread-Modi
+  - H2: Zustellmodell
   - H2: Sandbox-Kompatibilität
-  - H2: Sitzungsziel-Auflösung
-  - H2: ACP-Steuerungen
+  - H2: Auflösung des Sitzungsziels
+  - H2: ACP-Steuerelemente
   - H3: Zuordnung von Runtime-Optionen
   - H2: acpx-Harness, Plugin-Einrichtung und Berechtigungen
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/agent-send.md
 
@@ -8901,7 +8905,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Flags
   - H2: Verhalten
   - H2: Beispiele
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/apply-patch.md
 
@@ -8910,7 +8914,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Parameter
   - H2: Hinweise
   - H2: Beispiel
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/brave-search.md
 
@@ -8920,38 +8924,38 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konfigurationsbeispiel
   - H2: Tool-Parameter
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/browser-control.md
 
 - Route: /tools/browser-control
 - Überschriften:
-  - H2: Control API (optional)
-  - H3: /act-Fehlervertrag
+  - H2: Steuerungs-API (optional)
+  - H3: Fehlervertrag für /act
   - H3: Playwright-Anforderung
   - H4: Docker-Playwright-Installation
   - H2: Funktionsweise (intern)
   - H2: CLI-Kurzreferenz
-  - H2: Snapshots und refs
-  - H2: Wait-Power-ups
+  - H2: Snapshots und Refs
+  - H2: Wait-Erweiterungen
   - H2: Debug-Workflows
   - H2: JSON-Ausgabe
-  - H2: Status- und Umgebungsoptionen
+  - H2: Schalter für Zustand und Umgebung
   - H2: Sicherheit und Datenschutz
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/browser-linux-troubleshooting.md
 
 - Route: /tools/browser-linux-troubleshooting
 - Überschriften:
-  - H2: Problem: "Chrome-CDP konnte auf Port 18800 nicht gestartet werden"
+  - H2: Problem: „Failed to start Chrome CDP on port 18800“
   - H3: Ursache
   - H3: Lösung 1: Google Chrome installieren (empfohlen)
   - H3: Lösung 2: Snap Chromium mit Attach-Only-Modus verwenden
   - H3: Prüfen, ob der Browser funktioniert
   - H3: Konfigurationsreferenz
-  - H3: Problem: "Keine Chrome-Tabs für profile=\"user\" gefunden"
-  - H2: Verwandt
+  - H3: Problem: „No Chrome tabs found for profile=\"user\"“
+  - H2: Verwandte Dokumentation
 
 ## tools/browser-login.md
 
@@ -8960,8 +8964,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Manuelle Anmeldung (empfohlen)
   - H2: Welches Chrome-Profil wird verwendet?
   - H2: X/Twitter: empfohlener Ablauf
-  - H2: Sandboxing + Host-Browserzugriff
-  - H2: Verwandt
+  - H2: Sandboxing + Zugriff auf Host-Browser
+  - H2: Verwandte Dokumentation
 
 ## tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
 
@@ -8974,15 +8978,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Warum diese Einrichtung verwirrend ist
   - H2: Kritische Regel für die Control UI
   - H2: Schichtweise validieren
-  - H3: Schicht 1: Prüfen, ob Chrome CDP unter Windows bereitstellt
+  - H3: Schicht 1: Prüfen, ob Chrome unter Windows CDP bereitstellt
   - H3: Schicht 2: Prüfen, ob WSL2 diesen Windows-Endpunkt erreichen kann
   - H3: Schicht 3: Das richtige Browserprofil konfigurieren
   - H3: Schicht 4: Die Control-UI-Schicht separat prüfen
   - H3: Schicht 5: End-to-End-Browsersteuerung prüfen
-  - H2: Häufige irreführende Fehler
+  - H2: Häufig irreführende Fehler
   - H2: Schnelle Triage-Checkliste
-  - H2: Praktische Kernaussage
-  - H2: Verwandt
+  - H2: Praktische Erkenntnis
+  - H2: Verwandte Dokumentation
 
 ## tools/browser.md
 
@@ -8992,13 +8996,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Plugin-Steuerung
   - H2: Agent-Anleitung
-  - H2: Fehlender Browserbefehl oder fehlendes Tool
+  - H2: Fehlender Browser-Befehl oder fehlendes Tool
   - H2: Profile: openclaw vs. user
   - H2: Konfiguration
-  - H3: Screenshot-Vision (Unterstützung für reine Textmodelle)
+  - H3: Screenshot-Vision (Unterstützung für rein textbasierte Modelle)
   - H2: Brave oder einen anderen Chromium-basierten Browser verwenden
   - H2: Lokale vs. Remote-Steuerung
-  - H2: Node-Browserproxy (Zero-Config-Standard)
+  - H2: Node-Browser-Proxy (konfigurationsfreier Standard)
   - H2: Browserless (gehostetes Remote-CDP)
   - H3: Browserless Docker auf demselben Host
   - H2: Direkte WebSocket-CDP-Provider
@@ -9006,15 +9010,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Notte
   - H2: Sicherheit
   - H2: Profile (mehrere Browser)
-  - H2: Vorhandene Sitzung über Chrome DevTools MCP
+  - H2: Bestehende Sitzung über Chrome DevTools MCP
   - H3: Benutzerdefinierter Chrome-MCP-Start
   - H2: Isolationsgarantien
   - H2: Browserauswahl
-  - H2: Control API (optional)
+  - H2: Steuerungs-API (optional)
   - H2: Fehlerbehebung
-  - H3: CDP-Startfehler vs. Navigations-SSRF-Block
-  - H2: Agent-Tools + wie die Steuerung funktioniert
-  - H2: Verwandt
+  - H3: CDP-Startfehler vs. SSRF-Blockierung bei Navigation
+  - H2: Agent-Tools + Funktionsweise der Steuerung
+  - H2: Verwandte Dokumentation
 
 ## tools/btw.md
 
@@ -9023,20 +9027,20 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Was es tut
   - H2: Was es nicht tut
   - H2: Wie Kontext funktioniert
-  - H2: Zustellungsmodell
-  - H2: Oberflächenverhalten
+  - H2: Zustellmodell
+  - H2: Verhalten der Oberfläche
   - H3: TUI
   - H3: Externe Kanäle
   - H3: Control UI / Web
-  - H2: Wann Sie BTW verwenden sollten
-  - H2: Wann Sie BTW nicht verwenden sollten
-  - H2: Verwandt
+  - H2: Wann BTW verwendet werden sollte
+  - H2: Wann BTW nicht verwendet werden sollte
+  - H2: Verwandte Dokumentation
 
 ## tools/capability-cookbook.md
 
 - Route: /tools/capability-cookbook
 - Überschriften:
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/clawhub.md
 
@@ -9050,23 +9054,23 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Einrichtung
   - H2: Verwendung
   - H2: Fehler
-  - H2: Limits
-  - H2: Verwandt
+  - H2: Grenzen
+  - H2: Verwandte Dokumentation
 
 ## tools/creating-skills.md
 
 - Route: /tools/creating-skills
 - Überschriften:
-  - H2: Erstellen Sie Ihre erste Skill
+  - H2: Ihren ersten Skill erstellen
   - H2: SKILL.md-Referenz
   - H3: Erforderliche Felder
   - H3: Optionale Frontmatter-Schlüssel
   - H3: {baseDir} verwenden
   - H2: Bedingte Aktivierung hinzufügen
-  - H2: Über Skill Workshop vorschlagen
+  - H2: Über den Skill Workshop vorschlagen
   - H2: In ClawHub veröffentlichen
   - H2: Best Practices
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/diffs.md
 
@@ -9081,15 +9085,15 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Vertrag für Ausgabedetails
   - H2: Eingeklappte unveränderte Abschnitte
   - H2: Plugin-Standardwerte
-  - H3: Konfiguration der persistenten Viewer-URL
+  - H3: Persistente Viewer-URL-Konfiguration
   - H2: Sicherheitskonfiguration
-  - H2: Artefaktlebenszyklus und Speicher
+  - H2: Artefaktlebenszyklus und Speicherung
   - H2: Viewer-URL und Netzwerkverhalten
   - H2: Sicherheitsmodell
   - H2: Browseranforderungen für den Dateimodus
   - H2: Fehlerbehebung
-  - H2: Operative Anleitung
-  - H2: Verwandt
+  - H2: Betriebliche Anleitung
+  - H2: Verwandte Dokumentation
 
 ## tools/duckduckgo-search.md
 
@@ -9099,7 +9103,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konfiguration
   - H2: Tool-Parameter
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/elevated.md
 
@@ -9110,7 +9114,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Auflösungsreihenfolge
   - H2: Verfügbarkeit und Allowlists
   - H2: Was elevated nicht steuert
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/exa-search.md
 
@@ -9119,25 +9123,25 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Plugin installieren
   - H2: API-Schlüssel erhalten
   - H2: Konfiguration
-  - H2: Base-URL überschreiben
+  - H2: Überschreibung der Basis-URL
   - H2: Tool-Parameter
   - H3: Inhaltsextraktion
   - H3: Suchmodi
   - H2: Hinweise
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/exec-approvals-advanced.md
 
 - Route: /tools/exec-approvals-advanced
 - Überschriften:
-  - H2: Sichere Binaries (nur stdin)
+  - H2: Sichere Bins (nur stdin)
   - H3: Argv-Validierung und verweigerte Flags
-  - H3: Vertrauenswürdige Binary-Verzeichnisse
+  - H3: Vertrauenswürdige Binärverzeichnisse
   - H3: Shell-Verkettung, Wrapper und Multiplexer
-  - H3: Sichere Binaries gegenüber Allowlist
+  - H3: Sichere Bins im Vergleich zur Allowlist
   - H2: Interpreter-/Runtime-Befehle
-  - H3: Follow-up-Zustellungsverhalten
-  - H2: Weiterleitung von Genehmigungen an Chatkanäle
+  - H3: Zustellverhalten für Follow-ups
+  - H2: Weiterleitung von Genehmigungen an Chat-Kanäle
   - H3: Plugin-Genehmigungsweiterleitung
   - H3: Genehmigungen im selben Chat auf jedem Kanal
   - H3: Native Genehmigungszustellung
@@ -9145,39 +9149,39 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: FAQ
   - H3: Wann würden accountId und threadId für ein Genehmigungsziel verwendet?
   - H3: Wenn Genehmigungen an eine Sitzung gesendet werden, kann dann jeder in dieser Sitzung sie genehmigen?
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/exec-approvals.md
 
 - Route: /tools/exec-approvals
 - Überschriften:
-  - H2: Die effektive Richtlinie prüfen
+  - H2: Effektive Richtlinie prüfen
   - H2: Wo sie gilt
   - H3: Vertrauensmodell
   - H3: macOS-Aufteilung
-  - H2: Einstellungen und Speicher
-  - H2: Richtlinienoptionen
+  - H2: Einstellungen und Speicherung
+  - H2: Richtlinienschalter
   - H3: tools.exec.mode
   - H3: exec.security
   - H3: exec.ask
   - H3: askFallback
   - H3: tools.exec.strictInlineEval
   - H3: tools.exec.commandHighlighting
-  - H2: YOLO-Modus (ohne Genehmigung)
-  - H3: Persistente gateway-host-Einrichtung mit "nie nachfragen"
+  - H2: YOLO-Modus (keine Genehmigung)
+  - H3: Persistente Gateway-Host-Einrichtung „nie nachfragen“
   - H3: Lokale Abkürzung
   - H3: Node-Host
-  - H3: Nur-Sitzung-Abkürzung
+  - H3: Sitzungsbezogene Abkürzung
   - H2: Allowlist (pro Agent)
   - H3: Argumente mit argPattern einschränken
-  - H2: Skills-CLIs automatisch erlauben
-  - H2: Sichere Binaries und Genehmigungsweiterleitung
+  - H2: Skill-CLIs automatisch erlauben
+  - H2: Sichere Bins und Genehmigungsweiterleitung
   - H2: Bearbeitung in der Control UI
   - H2: Genehmigungsablauf
   - H2: Systemereignisse
   - H2: Verhalten bei verweigerter Genehmigung
   - H2: Auswirkungen
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/exec.md
 
@@ -9185,30 +9189,30 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Parameter
   - H2: Konfiguration
-  - H3: PATH-Behandlung
+  - H3: PATH-Verarbeitung
   - H2: Sitzungsüberschreibungen (/exec)
   - H2: Autorisierungsmodell
   - H2: Exec-Genehmigungen (Begleit-App / Node-Host)
-  - H2: Allowlist + sichere Binaries
+  - H2: Allowlist + sichere Bins
   - H2: Beispiele
   - H2: applypatch
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/firecrawl.md
 
 - Route: /tools/firecrawl
 - Überschriften:
   - H2: Plugin installieren
-  - H2: Schlüsselloses webfetch und API-Schlüssel
+  - H2: Webfetch ohne Schlüssel und API-Schlüssel
   - H2: Firecrawl-Suche konfigurieren
-  - H2: Firecrawl-webfetch-Fallback konfigurieren
+  - H2: Firecrawl-Webfetch-Fallback konfigurieren
   - H3: Selbst gehostetes Firecrawl
   - H2: Firecrawl-Plugin-Tools
   - H3: firecrawlsearch
   - H3: firecrawlscrape
-  - H2: Tarnung / Bot-Umgehung
-  - H2: Wie webfetch Firecrawl verwendet
-  - H2: Verwandt
+  - H2: Stealth / Bot-Umgehung
+  - H2: Wie Webfetch Firecrawl verwendet
+  - H2: Verwandte Dokumentation
 
 ## tools/gemini-search.md
 
@@ -9219,8 +9223,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Funktionsweise
   - H2: Unterstützte Parameter
   - H2: Modellauswahl
-  - H2: Base-URL-Überschreibungen
-  - H2: Verwandt
+  - H2: Überschreibungen der Basis-URL
+  - H2: Verwandte Dokumentation
 
 ## tools/goal.md
 
@@ -9236,7 +9240,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: TUI
   - H2: Kanalverhalten
   - H2: Fehlerbehebung
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/grok-search.md
 
@@ -9247,8 +9251,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konfiguration
   - H2: Funktionsweise
   - H2: Unterstützte Parameter
-  - H2: Base-URL-Überschreibungen
-  - H2: Verwandt
+  - H2: Überschreibungen der Basis-URL
+  - H2: Verwandte Dokumentation
 
 ## tools/image-generation.md
 
@@ -9263,9 +9267,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Modellauswahl
   - H3: Provider-Auswahlreihenfolge
   - H3: Bildbearbeitung
-  - H2: Provider-Deep-Dives
+  - H2: Vertiefungen zu Providern
   - H2: Beispiele
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/index.md
 
@@ -9276,9 +9280,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Integrierte Tool-Kategorien
   - H2: Von Plugins bereitgestellte Tools
   - H2: Zugriff und Genehmigungen konfigurieren
-  - H2: Funktionen erweitern
+  - H2: Fähigkeiten erweitern
   - H2: Fehlende Tools beheben
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/kimi-search.md
 
@@ -9288,7 +9292,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Konfiguration
   - H2: Funktionsweise
   - H2: Unterstützte Parameter
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/llm-task.md
 
@@ -9301,7 +9305,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Beispiel: Lobster-Workflow-Schritt
   - H3: Wichtige Einschränkung
   - H2: Sicherheitshinweise
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/lobster.md
 
@@ -9312,7 +9316,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Warum eine DSL statt einfacher Programme?
   - H2: Funktionsweise
   - H2: Muster: kleine CLI + JSON-Pipes + Genehmigungen
-  - H2: Reine JSON-LLM-Schritte (llm-task)
+  - H2: Nur-JSON-LLM-Schritte (llm-task)
   - H3: Wichtige Einschränkung: eingebettetes Lobster vs. openclaw.invoke
   - H2: Workflow-Dateien (.lobster)
   - H2: Lobster installieren
@@ -9329,36 +9333,36 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Fehlerbehebung
   - H2: Mehr erfahren
   - H2: Fallstudie: Community-Workflows
-  - H2: Verwandt
+  - H2: Verwandte Dokumentation
 
 ## tools/loop-detection.md
 
 - Route: /tools/loop-detection
 - Überschriften:
-  - H2: Warum dies existiert
+  - H2: Warum es das gibt
   - H2: Konfigurationsblock
   - H3: Feldverhalten
   - H2: Empfohlene Einrichtung
   - H2: Schutz nach Compaction
-  - H2: Logs und erwartetes Verhalten
-  - H2: Verwandt
+  - H2: Protokolle und erwartetes Verhalten
+  - H2: Verwandte Themen
 
 ## tools/media-overview.md
 
 - Route: /tools/media-overview
 - Überschriften:
-  - H2: Fähigkeiten
-  - H2: Provider-Fähigkeitsmatrix
+  - H2: Funktionen
+  - H2: Provider-Funktionsmatrix
   - H2: Asynchron vs. synchron
   - H2: Sprache-zu-Text und Sprachanruf
-  - H2: Provider-Zuordnungen (wie Anbieter Oberflächen aufteilen)
+  - H2: Provider-Zuordnungen (wie Anbieter auf Oberflächen aufgeteilt sind)
   - H2: Verwandte Themen
 
 ## tools/minimax-search.md
 
 - Route: /tools/minimax-search
 - Überschriften:
-  - H2: Token-Plan-Zugangsdaten erhalten
+  - H2: Zugangsdaten für einen Token-Plan erhalten
   - H2: Konfiguration
   - H2: Regionsauswahl
   - H2: Unterstützte Parameter
@@ -9374,7 +9378,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Tool-Einschränkungen
   - H2: Migration von einem einzelnen Agenten
   - H2: Beispiele für Tool-Einschränkungen
-  - H2: Häufiger Stolperstein: "non-main"
+  - H2: Häufige Fehlerquelle: „non-main“
   - H2: Tests
   - H2: Fehlerbehebung
   - H2: Verwandte Themen
@@ -9385,7 +9389,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Schnellstart
   - H2: Unterstützte Provider
-  - H3: Fähigkeitsmatrix
+  - H3: Funktionsmatrix
   - H2: Tool-Parameter
   - H2: Asynchrones Verhalten
   - H3: Task-Lebenszyklus
@@ -9394,7 +9398,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H3: Reihenfolge der Provider-Auswahl
   - H2: Provider-Hinweise
   - H2: Den richtigen Pfad wählen
-  - H2: Provider-Fähigkeitsmodi
+  - H2: Provider-Funktionsmodi
   - H2: Live-Tests
   - H2: Verwandte Themen
 
@@ -9414,7 +9418,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Plugin installieren
   - H2: API-Schlüssel (kostenpflichtiger Provider)
   - H2: Konfiguration
-  - H2: Überschreibung der Basis-URL
+  - H2: Basis-URL überschreiben
   - H2: Tool-Parameter
   - H2: Hinweise
   - H2: Verwandte Themen
@@ -9439,7 +9443,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /tools/permission-modes
 - Überschriften:
-  - H2: Empfohlene Standardeinstellung
+  - H2: Empfohlener Standard
   - H2: OpenClaw-Host-Ausführungsmodi
   - H2: Codex Guardian-Zuordnung
   - H2: ACPX-Harness-Berechtigungen
@@ -9455,8 +9459,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: OpenRouter-Kompatibilität
   - H2: Konfigurationsbeispiele
   - H3: Native Perplexity Search API
-  - H3: OpenRouter-/Sonar-Kompatibilität
-  - H2: Wo der Schlüssel festgelegt wird
+  - H3: OpenRouter- / Sonar-Kompatibilität
+  - H2: Wo Sie den Schlüssel festlegen
   - H2: Tool-Parameter
   - H3: Regeln für Domain-Filter
   - H2: Hinweise
@@ -9470,13 +9474,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Konfiguration
   - H3: Installationsquelle wählen
-  - H3: Installationsrichtlinie für Operatoren
+  - H3: Installationsrichtlinie für Betreiber
   - H3: Plugin-Richtlinie konfigurieren
   - H2: Plugin-Formate verstehen
   - H2: Plugin-Hooks
-  - H2: Aktiven Gateway verifizieren
+  - H2: Aktiven Gateway überprüfen
   - H2: Fehlerbehebung
-  - H3: Blockierte Eigentümerschaft des Plugin-Pfads
+  - H3: Blockierte Zuständigkeit für Plugin-Pfade
   - H3: Langsame Einrichtung von Plugin-Tools
   - H2: Verwandte Themen
 
@@ -9509,7 +9513,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Chat
   - H2: CLI
   - H2: Vorschlagsinhalt
-  - H2: Unterstützende Dateien
+  - H2: Unterstützungsdateien
   - H2: Agenten-Tool
   - H2: Genehmigung und Autonomie
   - H2: Gateway-Methoden
@@ -9524,14 +9528,14 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Laden (skills.load)
   - H2: Installieren (skills.install)
-  - H2: Installationsrichtlinie für Operatoren (security.installPolicy)
-  - H2: Allowlist für gebündelte Skills
+  - H2: Installationsrichtlinie für Betreiber (security.installPolicy)
+  - H2: Zulassungsliste für gebündelte Skills
   - H2: Einträge pro Skill (skills.entries)
-  - H2: Agenten-Allowlists (agents)
+  - H2: Agenten-Zulassungslisten (agents)
   - H2: Workshop (skills.workshop)
-  - H2: Per Symlink eingebundene Skill-Roots
+  - H2: Per Symlink eingebundene Skill-Wurzeln
   - H2: Sandboxed Skills und Umgebungsvariablen
-  - H2: Erinnerung zur Ladereihenfolge
+  - H2: Erinnerung an die Ladereihenfolge
   - H2: Verwandte Themen
 
 ## tools/skills.md
@@ -9539,8 +9543,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /tools/skills
 - Überschriften:
   - H2: Ladereihenfolge
-  - H2: Skills pro Agent vs. gemeinsam genutzte Skills
-  - H2: Agenten-Allowlists
+  - H2: Skills pro Agent vs. gemeinsame Skills
+  - H2: Agenten-Zulassungslisten
   - H2: Plugins und Skills
   - H2: Skill Workshop
   - H2: Installation aus ClawHub
@@ -9548,9 +9552,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: SKILL.md-Format
   - H3: Optionale Frontmatter-Schlüssel
   - H2: Gating
-  - H3: Installer-Spezifikationen
+  - H3: Installationsspezifikationen
   - H2: Konfigurationsüberschreibungen
-  - H2: Umgebungseinbindung
+  - H2: Umgebungseinspeisung
   - H2: Snapshots und Aktualisierung
   - H2: Token-Auswirkung
   - H2: Verwandte Themen
@@ -9570,7 +9574,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: /model — Modellauswahl
   - H2: /config — Konfigurationsschreibvorgänge auf Datenträger
   - H2: /mcp — MCP-Serverkonfiguration
-  - H2: /debug — reine Laufzeitüberschreibungen
+  - H2: /debug — nur zur Laufzeit geltende Überschreibungen
   - H2: /plugins — Plugin-Verwaltung
   - H2: /trace — Plugin-Trace-Ausgabe
   - H2: /btw — Nebenfragen
@@ -9593,38 +9597,38 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /tools/subagents
 - Überschriften:
   - H2: Slash-Befehl
-  - H3: Steuerungen für Thread-Bindung
+  - H3: Steuerelemente für Thread-Bindung
   - H3: Spawn-Verhalten
   - H2: Kontextmodi
   - H2: Tool: sessionsspawn
-  - H3: Delegationsprompt-Modus
+  - H3: Delegations-Prompt-Modus
   - H3: Tool-Parameter
   - H3: Task-Namen und Zielauswahl
   - H2: Tool: sessionsyield
   - H2: Tool: subagents
   - H2: Thread-gebundene Sitzungen
   - H3: Thread-unterstützende Kanäle
-  - H3: Schneller Ablauf
-  - H3: Manuelle Steuerungen
+  - H3: Schnellablauf
+  - H3: Manuelle Steuerelemente
   - H3: Konfigurationsschalter
-  - H3: Allowlist
+  - H3: Zulassungsliste
   - H3: Erkennung
   - H3: Automatische Archivierung
   - H2: Verschachtelte Sub-Agenten
-  - H3: Tiefenebenen
+  - H3: Tiefenstufen
   - H3: Ankündigungskette
   - H3: Tool-Richtlinie nach Tiefe
   - H3: Spawn-Limit pro Agent
-  - H3: Kaskadierter Stopp
+  - H3: Kaskadenstopp
   - H2: Authentifizierung
   - H2: Ankündigung
   - H3: Ankündigungskontext
   - H3: Statistikzeile
-  - H3: Warum sessionshistory bevorzugen
+  - H3: Warum sessionshistory bevorzugt wird
   - H2: Tool-Richtlinie
   - H3: Überschreiben per Konfiguration
-  - H2: Parallelität
-  - H2: Liveness und Wiederherstellung
+  - H2: Nebenläufigkeit
+  - H2: Lebendigkeit und Wiederherstellung
   - H2: Stoppen
   - H2: Einschränkungen
   - H2: Verwandte Themen
@@ -9645,17 +9649,17 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /tools/thinking
 - Überschriften:
-  - H2: Was es macht
+  - H2: Was es bewirkt
   - H2: Auflösungsreihenfolge
   - H2: Sitzungsstandard festlegen
-  - H2: Anwendung durch Agent
-  - H2: Schneller Modus (/fast)
+  - H2: Anwendung nach Agent
+  - H2: Schnellmodus (/fast)
   - H2: Ausführliche Direktiven (/verbose oder /v)
   - H2: Plugin-Trace-Direktiven (/trace)
   - H2: Sichtbarkeit des Reasonings (/reasoning)
   - H2: Verwandte Themen
   - H2: Heartbeats
-  - H2: Web-Chat-UI
+  - H2: Webchat-UI
   - H2: Provider-Profile
 
 ## tools/tokenjuice.md
@@ -9664,7 +9668,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Überschriften:
   - H2: Plugin aktivieren
   - H2: Was tokenjuice ändert
-  - H2: Funktion verifizieren
+  - H2: Prüfen, ob es funktioniert
   - H2: Plugin deaktivieren
   - H2: Verwandte Themen
 
@@ -9672,9 +9676,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /tools/tool-search
 - Überschriften:
-  - H2: Wie ein Turn ausgeführt wird
+  - H2: Wie ein Turn abläuft
   - H2: Modi
-  - H2: Warum es dies gibt
+  - H2: Warum es das gibt
   - H2: API
   - H2: Laufzeitgrenze
   - H2: Konfiguration
@@ -9705,7 +9709,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnellstart
   - H2: Unterstützte Provider
   - H2: Konfiguration
-  - H3: Stimmüberschreibungen pro Agent
+  - H3: Sprachüberschreibungen pro Agent
   - H2: Personas
   - H3: Minimale Persona
   - H3: Vollständige Persona (Provider-neutraler Prompt)
@@ -9721,7 +9725,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Feldreferenz
   - H2: Agenten-Tool
   - H2: Gateway-RPC
-  - H2: Dienstlinks
+  - H2: Service-Links
   - H2: Verwandte Themen
 
 ## tools/video-generation.md
@@ -9729,10 +9733,10 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /tools/video-generation
 - Überschriften:
   - H2: Schnellstart
-  - H2: Funktionsweise asynchroner Generierung
+  - H2: Wie asynchrone Generierung funktioniert
   - H3: Task-Lebenszyklus
   - H2: Unterstützte Provider
-  - H3: Fähigkeitsmatrix
+  - H3: Funktionsmatrix
   - H2: Tool-Parameter
   - H3: Erforderlich
   - H3: Inhaltseingaben
@@ -9742,7 +9746,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Aktionen
   - H2: Modellauswahl
   - H2: Provider-Hinweise
-  - H2: Provider-Fähigkeitsmodi
+  - H2: Provider-Funktionsmodi
   - H2: Live-Tests
   - H2: Konfiguration
   - H2: Verwandte Themen
@@ -9795,9 +9799,9 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 - Route: /vps
 - Überschriften:
-  - H2: Einen Provider wählen
-  - H2: Funktionsweise von Cloud-Einrichtungen
-  - H2: Admin-Zugriff zuerst härten
+  - H2: Provider auswählen
+  - H2: Wie Cloud-Einrichtungen funktionieren
+  - H2: Zuerst Admin-Zugriff absichern
   - H2: Gemeinsamer Unternehmensagent auf einem VPS
   - H2: Nodes mit einem VPS verwenden
   - H2: Startoptimierung für kleine VMs und ARM-Hosts
@@ -9811,24 +9815,24 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Schnell öffnen (lokal)
   - H2: Gerätekopplung (erste Verbindung)
   - H2: Persönliche Identität (browserlokal)
-  - H2: Laufzeitkonfigurations-Endpunkt
+  - H2: Laufzeit-Konfigurationsendpunkt
   - H2: Sprachunterstützung
   - H2: Erscheinungsbild-Themes
-  - H2: Was sie kann (heute)
+  - H2: Was es kann (heute)
   - H2: MCP-Seite
-  - H2: Aktivitätstab
+  - H2: Aktivitäts-Tab
   - H2: Chat-Verhalten
   - H2: PWA-Installation und Web-Push
   - H2: Gehostete Einbettungen
-  - H2: Chat-Nachrichtenbreite
+  - H2: Chatnachrichtenbreite
   - H2: Tailnet-Zugriff (empfohlen)
   - H2: Unsicheres HTTP
   - H2: Content Security Policy
-  - H2: Avatar-Routen-Authentifizierung
-  - H2: Medienrouten-Authentifizierung des Assistenten
+  - H2: Authentifizierung für Avatar-Route
+  - H2: Authentifizierung für Assistentenmedien-Route
   - H2: UI erstellen
   - H2: Leere Control-UI-Seite
-  - H2: Debugging/Tests: Dev-Server + Remote-Gateway
+  - H2: Debugging/Tests: Dev-Server + entfernter Gateway
   - H2: Verwandte Themen
 
 ## web/dashboard.md
@@ -9836,8 +9840,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 - Route: /web/dashboard
 - Überschriften:
   - H2: Schneller Pfad (empfohlen)
-  - H2: Authentifizierungsgrundlagen (lokal vs. remote)
-  - H2: Wenn Sie "unauthorized" / 1008 sehen
+  - H2: Auth-Grundlagen (lokal vs. remote)
+  - H2: Wenn „unauthorized“ / 1008 angezeigt wird
   - H2: Verwandte Themen
 
 ## web/index.md
@@ -9848,8 +9852,8 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Admin-HTTP-RPC
   - H2: Konfiguration (standardmäßig aktiviert)
   - H2: Tailscale-Zugriff
-  - H3: Integriertes Serve (empfohlen)
-  - H3: Tailnet-Bind + Token
+  - H3: Integriertes Bereitstellen (empfohlen)
+  - H3: Tailnet-Bindung + Token
   - H3: Öffentliches Internet (Funnel)
   - H2: Sicherheitshinweise
   - H2: UI erstellen
@@ -9865,7 +9869,7 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
   - H2: Mentales Modell: Agenten + Sitzungen
   - H2: Senden + Zustellung
   - H2: Auswahlfelder + Overlays
-  - H2: Tastenkombinationen
+  - H2: Tastenkürzel
   - H2: Slash-Befehle
   - H2: Lokale Shell-Befehle
   - H2: Konfigurationen aus der lokalen TUI reparieren
@@ -9880,13 +9884,13 @@ Bearbeiten Sie sie nicht von Hand; führen Sie `pnpm docs:map:gen` aus.
 
 ## web/webchat.md
 
-- Route: /web/webchat
-- Überschriften:
+  - Route: /web/webchat
+  - Überschriften:
   - H2: Was es ist
   - H2: Schnellstart
   - H2: Funktionsweise (Verhalten)
   - H3: Transkript- und Zustellmodell
-  - H2: Tools-Panel für Control-UI-Agenten
+  - H2: Tools-Panel der Control-UI-Agenten
   - H2: Remote-Nutzung
   - H2: Konfigurationsreferenz (WebChat)
-  - H2: Verwandte Themen
+  - H2: Verwandt

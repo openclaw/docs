@@ -1,21 +1,21 @@
 ---
 read_when:
-    - codex pluginをインストール、構成、または監査している
-summary: OpenClaw Codex アプリサーバーハーネスと、Codex 管理の GPT カタログを備えたモデルプロバイダー Plugin。
+    - codex プラグインをインストール、設定、または監査している
+summary: OpenClaw Codex app-server ハーネスと、Codex 管理の GPT カタログを備えたモデルプロバイダー Plugin。
 title: Codex Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:22:37Z"
+    generated_at: "2026-07-04T15:08:14Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
+    source_hash: 110de9ddfc46f2b0d24a4fce167046206f7a671a82358ee62c7b5a970da7a81f
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Codex Plugin
+# Codex プラグイン
 
-Codex が管理する GPT カタログを備えた OpenClaw Codex app-server ハーネスおよびモデルプロバイダー Plugin。
+OpenClaw Codex app-server ハーネスと、Codex 管理の GPT カタログを備えたモデルプロバイダープラグイン。
 
 ## 配布
 
@@ -24,7 +24,7 @@ Codex が管理する GPT カタログを備えた OpenClaw Codex app-server ハ
 
 ## サーフェス
 
-providers: codex; contracts: mediaUnderstandingProviders, migrationProviders, webSearchProviders
+プロバイダー: codex; コントラクト: mediaUnderstandingProviders, migrationProviders, tools, webSearchProviders
 
 ## 関連ドキュメント
 
