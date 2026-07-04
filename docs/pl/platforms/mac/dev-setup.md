@@ -2,27 +2,27 @@
 read_when:
     - Konfigurowanie środowiska deweloperskiego macOS
 summary: Przewodnik konfiguracji dla deweloperów pracujących nad aplikacją OpenClaw na macOS
-title: Konfiguracja środowiska deweloperskiego w macOS
+title: Konfiguracja środowiska deweloperskiego macOS
 x-i18n:
-    generated_at: "2026-06-27T17:47:18Z"
+    generated_at: "2026-07-04T06:53:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 09212c9b9139dd19867b9286dc43361794a3efd37b2a8d769bb0a8fdd389b816
+    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# Konfiguracja deweloperska macOS
+# Konfiguracja środowiska deweloperskiego macOS
 
-Zbuduj i uruchom aplikację OpenClaw na macOS ze źródeł.
+Zbuduj i uruchom aplikację OpenClaw dla macOS ze źródeł.
 
 ## Wymagania wstępne
 
-Przed zbudowaniem aplikacji upewnij się, że masz zainstalowane następujące elementy:
+Przed zbudowaniem aplikacji upewnij się, że masz zainstalowane:
 
-1. **Xcode 26.2+**: wymagany do programowania w Swift.
-2. **Node.js 24 i pnpm**: zalecane dla Gateway, CLI i skryptów pakowania. Node 22 LTS, obecnie `22.19+`, pozostaje obsługiwany ze względu na zgodność.
+1. **Xcode 26.2+**: Wymagany do programowania w Swift.
+2. **Node.js 24 i pnpm**: Zalecane dla Gateway, CLI i skryptów pakietowania. Node 22 LTS, obecnie `22.19+`, pozostaje obsługiwany ze względów zgodności.
 
 ## 1. Zainstaluj zależności
 
@@ -32,9 +32,9 @@ Zainstaluj zależności dla całego projektu:
 pnpm install
 ```
 
-## 2. Zbuduj i spakuj aplikację
+## 2. Zbuduj i spakietuj aplikację
 
-Aby zbudować aplikację macOS i spakować ją do `dist/OpenClaw.app`, uruchom:
+Aby zbudować aplikację macOS i spakietować ją do `dist/OpenClaw.app`, uruchom:
 
 ```bash
 ./scripts/package-mac-app.sh
@@ -42,22 +42,18 @@ Aby zbudować aplikację macOS i spakować ją do `dist/OpenClaw.app`, uruchom:
 
 Jeśli nie masz certyfikatu Apple Developer ID, skrypt automatycznie użyje **podpisywania ad-hoc** (`-`).
 
-Tryby uruchamiania deweloperskiego, flagi podpisywania i rozwiązywanie problemów z Team ID opisano w pliku README aplikacji macOS:
+Tryby uruchamiania deweloperskiego, flagi podpisywania i rozwiązywanie problemów z Team ID opisuje README aplikacji macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Uwaga**: aplikacje podpisane ad-hoc mogą wyświetlać monity zabezpieczeń. Jeśli aplikacja natychmiast ulega awarii z komunikatem „Abort trap 6”, zobacz sekcję [Rozwiązywanie problemów](#troubleshooting).
+> **Uwaga**: Aplikacje podpisane ad-hoc mogą wywoływać monity bezpieczeństwa. Jeśli aplikacja natychmiast ulega awarii z komunikatem „Abort trap 6”, zobacz sekcję [Rozwiązywanie problemów](#troubleshooting).
 
-## 3. Zainstaluj CLI
+## 3. Zainstaluj CLI i Gateway
 
-Aplikacja macOS oczekuje globalnej instalacji CLI `openclaw` do zarządzania zadaniami w tle.
+Spakietowana aplikacja zawiera kanoniczny instalator `scripts/install-cli.sh`. W
+nowym profilu wybierz **This Mac** podczas wdrażania; aplikacja instaluje
+pasujące CLI i środowisko uruchomieniowe w przestrzeni użytkownika przed uruchomieniem kreatora Gateway.
 
-**Aby ją zainstalować (zalecane):**
-
-1. Otwórz aplikację OpenClaw.
-2. Przejdź do karty ustawień **Ogólne**.
-3. Kliknij **„Install CLI”**.
-
-Możesz też zainstalować ją ręcznie:
+Do ręcznego odzyskiwania środowiska deweloperskiego zainstaluj pasujące CLI samodzielnie:
 
 ```bash
 npm install -g openclaw@<version>
@@ -68,16 +64,16 @@ Dla środowiska uruchomieniowego Gateway zalecaną ścieżką pozostaje Node.
 
 ## Rozwiązywanie problemów
 
-### Kompilacja nie powiodła się: niezgodność toolchainu lub SDK
+### Kompilacja nie powiodła się: niezgodność toolchaina lub SDK
 
-Kompilacja aplikacji macOS oczekuje najnowszego macOS SDK i toolchainu Swift 6.2.
+Kompilacja aplikacji macOS oczekuje najnowszego macOS SDK i toolchaina Swift 6.2.
 
 **Zależności systemowe (wymagane):**
 
-- **Najnowsza wersja macOS dostępna w Uaktualnieniach oprogramowania** (wymagana przez SDK Xcode 26.2)
+- **Najnowsza wersja macOS dostępna w Software Update** (wymagana przez SDK Xcode 26.2)
 - **Xcode 26.2** (toolchain Swift 6.2)
 
-**Sprawdzenia:**
+**Kontrole:**
 
 ```bash
 xcodebuild -version
@@ -86,9 +82,9 @@ xcrun swift --version
 
 Jeśli wersje się nie zgadzają, zaktualizuj macOS/Xcode i ponownie uruchom kompilację.
 
-### Aplikacja ulega awarii podczas przyznawania uprawnień
+### Aplikacja ulega awarii podczas nadawania uprawnień
 
-Jeśli aplikacja ulega awarii, gdy próbujesz zezwolić na dostęp do **Rozpoznawania mowy** lub **Mikrofonu**, przyczyną może być uszkodzona pamięć podręczna TCC albo niezgodność podpisu.
+Jeśli aplikacja ulega awarii podczas próby zezwolenia na dostęp do **Rozpoznawania mowy** lub **Mikrofonu**, przyczyną może być uszkodzona pamięć podręczna TCC albo niezgodność podpisu.
 
 **Poprawka:**
 
@@ -98,11 +94,11 @@ Jeśli aplikacja ulega awarii, gdy próbujesz zezwolić na dostęp do **Rozpozna
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Jeśli to się nie powiedzie, tymczasowo zmień `BUNDLE_ID` w [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), aby wymusić „czysty stan” w macOS.
+2. Jeśli to się nie powiedzie, tymczasowo zmień `BUNDLE_ID` w [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), aby wymusić „czysty stan” z perspektywy macOS.
 
-### Gateway „Starting...” w nieskończoność
+### Gateway „Starting...” bez końca
 
-Jeśli status gateway pozostaje na „Starting...”, sprawdź, czy proces zombie nie zajmuje portu:
+Jeśli status Gateway pozostaje na „Starting...”, sprawdź, czy proces zombie nie zajmuje portu:
 
 ```bash
 openclaw gateway status
@@ -112,7 +108,7 @@ openclaw gateway stop
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Jeśli ręczne uruchomienie zajmuje port, zatrzymaj ten proces (Ctrl+C). W ostateczności zakończ proces o identyfikatorze PID znalezionym powyżej.
+Jeśli ręczne uruchomienie zajmuje port, zatrzymaj ten proces (Ctrl+C). W ostateczności zabij znaleziony powyżej PID.
 
 ## Powiązane
 

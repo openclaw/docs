@@ -2,13 +2,13 @@
 read_when:
     - macOS geliştirme ortamını kurma
 summary: OpenClaw macOS uygulaması üzerinde çalışan geliştiriciler için kurulum kılavuzu
-title: macOS geliştirme kurulumu
+title: macOS geliştirici kurulumu
 x-i18n:
-    generated_at: "2026-06-28T00:48:36Z"
+    generated_at: "2026-07-04T06:47:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 09212c9b9139dd19867b9286dc43361794a3efd37b2a8d769bb0a8fdd389b816
+    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 
 OpenClaw macOS uygulamasını kaynaktan derleyin ve çalıştırın.
 
-## Önkoşullar
+## Ön koşullar
 
 Uygulamayı derlemeden önce aşağıdakilerin yüklü olduğundan emin olun:
 
@@ -45,36 +45,29 @@ Apple Developer ID sertifikanız yoksa betik otomatik olarak **ad-hoc imzalama**
 Geliştirme çalıştırma modları, imzalama bayrakları ve Team ID sorunlarını giderme için macOS uygulaması README dosyasına bakın:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Not**: Ad-hoc imzalanmış uygulamalar güvenlik istemlerini tetikleyebilir. Uygulama "Abort trap 6" ile hemen çöküyorsa [Sorun giderme](#troubleshooting) bölümüne bakın.
+> **Not**: Ad-hoc imzalanmış uygulamalar güvenlik istemlerini tetikleyebilir. Uygulama "Abort trap 6" ile hemen çöküyorsa [Sorun Giderme](#troubleshooting) bölümüne bakın.
 
-## 3. CLI'yi Yükleyin
+## 3. CLI ve Gateway'i Yükleyin
 
-macOS uygulaması, arka plan görevlerini yönetmek için genel bir `openclaw` CLI kurulumuna ihtiyaç duyar.
+Paketlenmiş uygulama kanonik `scripts/install-cli.sh` yükleyicisini gömer. Yeni bir profilde, ilk kurulum sırasında **Bu Mac** seçeneğini seçin; uygulama Gateway sihirbazını başlatmadan önce eşleşen kullanıcı alanı CLI ve çalışma zamanını yükler.
 
-**Yüklemek için (önerilir):**
-
-1. OpenClaw uygulamasını açın.
-2. **Genel** ayarlar sekmesine gidin.
-3. **"CLI'yi Yükle"** düğmesine tıklayın.
-
-Alternatif olarak, elle yükleyin:
+Elle geliştirme kurtarması için eşleşen CLI'yi kendiniz yükleyin:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>` ve `bun add -g openclaw@<version>` da çalışır.
-Gateway çalışma zamanı için Node önerilen yol olmaya devam eder.
+`pnpm add -g openclaw@<version>` ve `bun add -g openclaw@<version>` de çalışır. Gateway çalışma zamanı için Node önerilen yol olmaya devam eder.
 
-## Sorun giderme
+## Sorun Giderme
 
-### Derleme başarısız oluyor: araç zinciri veya SDK uyumsuzluğu
+### Derleme başarısız oluyor: araç zinciri veya SDK uyuşmazlığı
 
 macOS uygulama derlemesi en son macOS SDK'sını ve Swift 6.2 araç zincirini bekler.
 
 **Sistem bağımlılıkları (gerekli):**
 
-- **Yazılım Güncelleme'de mevcut en son macOS sürümü** (Xcode 26.2 SDK'ları tarafından gereklidir)
+- **Yazılım Güncelleme'de kullanılabilen en son macOS sürümü** (Xcode 26.2 SDK'ları için gereklidir)
 - **Xcode 26.2** (Swift 6.2 araç zinciri)
 
 **Kontroller:**
@@ -88,7 +81,7 @@ Sürümler eşleşmiyorsa macOS/Xcode'u güncelleyin ve derlemeyi yeniden çalı
 
 ### Uygulama izin verme sırasında çöküyor
 
-**Konuşma Tanıma** veya **Mikrofon** erişimine izin vermeye çalıştığınızda uygulama çöküyorsa bunun nedeni bozuk bir TCC önbelleği veya imza uyumsuzluğu olabilir.
+**Speech Recognition** veya **Microphone** erişimine izin vermeye çalıştığınızda uygulama çöküyorsa bunun nedeni bozuk bir TCC önbelleği veya imza uyuşmazlığı olabilir.
 
 **Düzeltme:**
 
@@ -98,11 +91,11 @@ Sürümler eşleşmiyorsa macOS/Xcode'u güncelleyin ve derlemeyi yeniden çalı
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Bu başarısız olursa macOS'tan "temiz başlangıç" zorlamak için [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) içinde `BUNDLE_ID` değerini geçici olarak değiştirin.
+2. Bu başarısız olursa macOS'tan "temiz sayfa" zorlamak için [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) içindeki `BUNDLE_ID` değerini geçici olarak değiştirin.
 
 ### Gateway süresiz olarak "Starting..." durumunda
 
-Gateway durumu "Starting..." olarak kalıyorsa bağlantı noktasını bir zombi sürecin tutup tutmadığını kontrol edin:
+Gateway durumu "Starting..." olarak kalıyorsa bir zombi sürecin bağlantı noktasını tutup tutmadığını kontrol edin:
 
 ```bash
 openclaw gateway status
@@ -112,9 +105,9 @@ openclaw gateway stop
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Bağlantı noktasını elle çalıştırılan bir süreç tutuyorsa o süreci durdurun (Ctrl+C). Son çare olarak yukarıda bulduğunuz PID'yi sonlandırın.
+Elle çalıştırma bağlantı noktasını tutuyorsa o süreci durdurun (Ctrl+C). Son çare olarak yukarıda bulduğunuz PID'yi sonlandırın.
 
 ## İlgili
 
 - [macOS uygulaması](/tr/platforms/macos)
-- [Kurulum özeti](/tr/install)
+- [Yükleme genel bakışı](/tr/install)

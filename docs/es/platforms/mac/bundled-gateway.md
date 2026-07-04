@@ -1,56 +1,69 @@
 ---
 read_when:
-    - Empaquetado de OpenClaw.app
-    - Depuración del servicio launchd del gateway de macOS
-    - Instalar la CLI de Gateway para macOS
+    - Empaquetar OpenClaw.app
+    - Depuración del servicio launchd del Gateway de macOS
+    - Instalar la CLI del Gateway para macOS
 summary: Ejecución de Gateway en macOS (servicio launchd externo)
 title: Gateway en macOS
 x-i18n:
-    generated_at: "2026-06-28T00:12:34Z"
+    generated_at: "2026-07-04T06:23:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5317e82435ecf179407116339507a666957a8e23a07a49665233b22f22f5b155
+    source_hash: 7a8b646f4cae43cb66acbf3527ef2af9ccaf4b6f2678a464586a110e5e9b3662
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app ya no incluye Node/Bun ni el tiempo de ejecución de Gateway. La app de macOS
-espera una instalación **externa** de la CLI `openclaw`, no inicia Gateway como
-proceso secundario y gestiona un servicio launchd por usuario para mantener Gateway
+OpenClaw.app ya no incluye Node/Bun ni el runtime del Gateway. La app de macOS
+espera una instalación **externa** de la CLI `openclaw`, no inicia el Gateway como
+proceso hijo y gestiona un servicio launchd por usuario para mantener el Gateway
 en ejecución (o se conecta a un Gateway local existente si ya hay uno en ejecución).
 
-## Instalar la CLI (obligatorio para el modo local)
+## Configuración automática
 
-Node 24 es el tiempo de ejecución predeterminado en Mac. Node 22 LTS, actualmente `22.19+`, sigue funcionando por compatibilidad. Luego instala `openclaw` globalmente:
+En un Mac nuevo, elige **Este Mac** durante la incorporación. La app ejecuta su
+instalador firmado e incluido antes del asistente del Gateway, instala un runtime
+de Node en espacio de usuario y la CLI `openclaw` correspondiente en `~/.openclaw`,
+y luego instala e inicia el servicio launchd por usuario. Esta ruta no requiere
+Terminal, Homebrew ni acceso de administrador.
+
+La app incluye el script del instalador, no la carga útil de Node ni del Gateway.
+Por lo tanto, la configuración necesita una conexión a internet para descargar el
+runtime y el paquete de OpenClaw correspondiente.
+
+## Recuperación manual
+
+Se recomienda Node 24 para una instalación manual. Node 22 LTS, actualmente `22.19+`,
+también funciona. Luego instala `openclaw` globalmente:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-El botón **Instalar CLI** de la app de macOS ejecuta el mismo flujo de instalación global que la app
-usa internamente: prefiere npm primero, luego pnpm y después bun si es el único
-gestor de paquetes detectado. Node sigue siendo el tiempo de ejecución recomendado para Gateway.
+Usa **Reintentar configuración** después de una configuración automática fallida. Si aun así falla, instala
+la CLI manualmente con el comando anterior y luego elige **Comprobar de nuevo** en
+la incorporación. Node sigue siendo el runtime recomendado para el Gateway.
 
 ## Launchd (Gateway como LaunchAgent)
 
 Etiqueta:
 
-- `ai.openclaw.gateway` (o `ai.openclaw.<profile>`; el heredado `com.openclaw.*` puede permanecer)
+- `ai.openclaw.gateway` (o `ai.openclaw.<profile>`; el legado `com.openclaw.*` puede permanecer)
 
 Ubicación del plist (por usuario):
 
 - `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
   (o `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
 
-Administrador:
+Gestor:
 
-- La app de macOS gestiona la instalación/actualización de LaunchAgent en modo local.
+- La app de macOS controla la instalación/actualización del LaunchAgent en modo local.
 - La CLI también puede instalarlo: `openclaw gateway install`.
 
 Comportamiento:
 
-- "OpenClaw Activo" habilita/deshabilita LaunchAgent.
+- "OpenClaw Active" habilita/deshabilita el LaunchAgent.
 - Salir de la app **no** detiene el gateway (launchd lo mantiene activo).
 - Si ya hay un Gateway en ejecución en el puerto configurado, la app se conecta a
   él en lugar de iniciar uno nuevo.
@@ -62,16 +75,18 @@ Registro:
 
 ## Compatibilidad de versiones
 
-La app de macOS comprueba la versión del gateway con respecto a su propia versión. Si son
-incompatibles, actualiza la CLI global para que coincida con la versión de la app.
+La app de macOS comprueba la versión del Gateway frente a su propia versión. La incorporación
+ejecuta automáticamente la configuración gestionada cuando falta una CLI existente o
+es incompatible. Usa **Reintentar configuración** para repetir la instalación o **Comprobar de nuevo**
+después de reparar una CLI externa.
 
 ## Directorio de estado en macOS
 
-Mantén el estado de OpenClaw en un disco local, no sincronizado. Evita iCloud Drive y otras
+Mantén el estado de OpenClaw en un disco local no sincronizado. Evita iCloud Drive y otras
 carpetas sincronizadas con la nube porque la latencia de sincronización y los bloqueos de archivos pueden afectar las sesiones,
-las credenciales y el estado de Gateway.
+las credenciales y el estado del Gateway.
 
-Establece `OPENCLAW_STATE_DIR` en una ruta local solo cuando necesites una anulación.
+Configura `OPENCLAW_STATE_DIR` con una ruta local solo cuando necesites una anulación.
 `openclaw doctor` advierte sobre rutas de estado comunes sincronizadas con la nube y recomienda
 volver al almacenamiento local. Consulta
 [variables de entorno](/es/help/environment#path-related-env-vars) y
@@ -79,8 +94,8 @@ volver al almacenamiento local. Consulta
 
 ## Depurar la conectividad de la app
 
-Usa la CLI de depuración de macOS desde un checkout del código fuente para ejercitar la misma lógica de
-handshake de WebSocket de Gateway y descubrimiento que usa la app:
+Usa la CLI de depuración de macOS desde un checkout de código fuente para ejercitar el mismo protocolo de enlace
+WebSocket del Gateway y la misma lógica de descubrimiento que usa la app:
 
 ```bash
 cd apps/macos
@@ -112,4 +127,4 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ## Relacionado
 
 - [app de macOS](/es/platforms/macos)
-- [runbook de Gateway](/es/gateway)
+- [Runbook del Gateway](/es/gateway)

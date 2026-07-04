@@ -1,91 +1,92 @@
 ---
 read_when:
-    - macOS-App installieren
+    - Installieren der macOS-App
     - Entscheidung zwischen lokalem und Remote-Gateway-Modus unter macOS
     - Suche nach Downloads der macOS-App-Version
-summary: OpenClaw-macOS-Menüleisten-App installieren und verwenden
+summary: OpenClaw-Menüleisten-App für macOS installieren und verwenden
 title: macOS-App
 x-i18n:
-    generated_at: "2026-06-28T00:13:08Z"
+    generated_at: "2026-07-04T06:27:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 42cd610465f2e60736da4681e028bca3ed3ed00b424028554ea098acc8ea980c
+    source_hash: 0b693bb8ebced46bac173f47cdd90d1b69948ccf2388fda449c77a47ae2a4fb4
     source_path: platforms/macos.md
     workflow: 16
 ---
 
-Die macOS-App ist der **Menüleisten-Begleiter** von OpenClaw. Verwenden Sie sie, wenn Sie eine
-native Tray-Benutzeroberfläche, macOS-Berechtigungsaufforderungen, Benachrichtigungen, WebChat, Spracheingabe,
-Canvas oder von einem Mac gehostete Node-Tools wie `system.run` benötigen.
+Die macOS-App ist der OpenClaw-**Menüleistenbegleiter**. Verwenden Sie sie, wenn Sie eine
+native Tray-UI, macOS-Berechtigungsabfragen, Benachrichtigungen, WebChat, Spracheingabe,
+Canvas oder Mac-gehostete Node-Tools wie `system.run` wünschen.
 
 Wenn Sie nur die CLI und den Gateway benötigen, beginnen Sie mit [Erste Schritte](/de/start/getting-started).
 
 ## Download
 
-Laden Sie Builds der macOS-App von den
-[OpenClaw GitHub-Releases](https://github.com/openclaw/openclaw/releases) herunter.
-Wenn ein Release Assets für die macOS-App enthält, suchen Sie nach:
+Laden Sie macOS-App-Builds aus den
+[OpenClaw-GitHub-Releases](https://github.com/openclaw/openclaw/releases) herunter.
+Wenn ein Release macOS-App-Assets enthält, suchen Sie nach:
 
 - `OpenClaw-<version>.dmg` (bevorzugt)
 - `OpenClaw-<version>.zip`
 
 Einige Releases enthalten nur CLI-, Nachweis- oder Windows-Assets. Wenn das neueste
-Release kein Asset für die macOS-App hat, verwenden Sie das neueste Release, das eines enthält, oder erstellen Sie die
-App aus dem Quellcode mit [macOS-Entwicklungseinrichtung](/de/platforms/mac/dev-setup).
+Release kein macOS-App-Asset enthält, verwenden Sie das neueste Release, das eines enthält, oder bauen Sie die
+App aus dem Quellcode mit der [macOS-Entwicklungseinrichtung](/de/platforms/mac/dev-setup).
 
 ## Erster Start
 
 1. Installieren und starten Sie **OpenClaw.app**.
-2. Schließen Sie die macOS-Berechtigungscheckliste ab.
-3. Wählen Sie den Modus **Lokal** oder **Remote**.
-4. Installieren Sie die `openclaw`-CLI, wenn die App Sie dazu auffordert.
-5. Öffnen Sie WebChat über die Menüleiste und senden Sie eine Testnachricht.
+2. Wählen Sie **Dieser Mac** für einen lokalen Gateway aus, oder verbinden Sie sich mit einem Remote-Gateway.
+3. Warten Sie im lokalen Modus, während die App ihre User-Space-Runtime und den Gateway installiert.
+4. Schließen Sie die Provider-Einrichtung und die macOS-Berechtigungscheckliste ab.
+5. Senden Sie die Onboarding-Testnachricht.
 
-Für den Einrichtungsweg von CLI/Gateway verwenden Sie [Erste Schritte](/de/start/getting-started).
+Für den CLI/Gateway-Einrichtungspfad verwenden Sie [Erste Schritte](/de/start/getting-started).
 Für die Wiederherstellung von Berechtigungen verwenden Sie [macOS-Berechtigungen](/de/platforms/mac/permissions).
 
 ## Gateway-Modus auswählen
 
-| Modus  | Verwenden Sie ihn, wenn                                                                                  | Detailseite                                        |
-| ------ | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Lokal  | Dieser Mac den Gateway ausführen und ihn mit launchd aktiv halten soll.                                  | [Gateway auf macOS](/de/platforms/mac/bundled-gateway) |
-| Remote | Ein anderer Host den Gateway ausführt und dieser Mac ihn über SSH, LAN oder Tailnet steuern soll.        | [Remote-Steuerung](/de/platforms/mac/remote)          |
+| Modus  | Verwenden Sie ihn, wenn                                                                  | Detailseite                                        |
+| ------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Lokal  | Dieser Mac den Gateway ausführen und mit launchd am Leben halten soll.                   | [Gateway auf macOS](/de/platforms/mac/bundled-gateway) |
+| Remote | Ein anderer Host den Gateway ausführt und dieser Mac ihn über SSH, LAN oder Tailnet steuern soll. | [Remote-Steuerung](/de/platforms/mac/remote)          |
 
-Der lokale Modus erfordert eine installierte `openclaw`-CLI. Die App kann sie installieren, oder Sie
-können [Gateway auf macOS](/de/platforms/mac/bundled-gateway) folgen.
+Der lokale Modus erfordert eine installierte `openclaw`-CLI. Auf einem frischen Mac installiert die App
+die passende CLI und Runtime automatisch, bevor sie den Gateway-Assistenten startet.
+Siehe [Gateway auf macOS](/de/platforms/mac/bundled-gateway) zur manuellen Wiederherstellung.
 
-## Zuständigkeiten der App
+## Was die App verantwortet
 
-- Status in der Menüleiste, Benachrichtigungen, Health und WebChat.
-- macOS-Berechtigungsaufforderungen für Bildschirm, Mikrofon, Spracherkennung, Automation und Bedienungshilfen.
+- Menüleistenstatus, Benachrichtigungen, Integrität und WebChat.
+- macOS-Berechtigungsabfragen für Bildschirm, Mikrofon, Spracherkennung, Automatisierung und Bedienungshilfen.
 - Lokale Node-Tools wie Canvas, Kamera-/Bildschirmaufnahme, Benachrichtigungen und `system.run`.
-- Exec-Genehmigungsaufforderungen für Mac-gehostete Befehle.
+- Exec-Genehmigungsabfragen für Mac-gehostete Befehle.
 - SSH-Tunnel im Remote-Modus oder direkte Gateway-Verbindungen.
 
-Die App ersetzt **nicht** die Dokumentation zum OpenClaw Gateway oder zur allgemeinen CLI. Zentrale
-Gateway-Konfiguration, Provider, Plugins, Kanäle, Tools und Sicherheit befinden sich in
+Die App ersetzt **nicht** den OpenClaw-Gateway oder die allgemeinen CLI-Dokumente. Die Kernkonfiguration des
+Gateway, Provider, Plugins, Kanäle, Tools und Sicherheit befinden sich in
 ihrer eigenen Dokumentation.
 
 ## macOS-Detailseiten
 
 | Aufgabe                                  | Lesen                                                                                      |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| CLI-/Gateway-Dienst installieren oder debuggen | [Gateway auf macOS](/de/platforms/mac/bundled-gateway)                                    |
-| Zustand aus Cloud-synchronisierten Ordnern heraushalten | [Gateway auf macOS](/de/platforms/mac/bundled-gateway#state-directory-on-macos)    |
+| CLI/Gateway-Dienst installieren oder debuggen | [Gateway auf macOS](/de/platforms/mac/bundled-gateway)                                    |
+| Zustand aus cloud-synchronisierten Ordnern heraushalten | [Gateway auf macOS](/de/platforms/mac/bundled-gateway#state-directory-on-macos)    |
 | App-Erkennung und Konnektivität debuggen | [Gateway auf macOS](/de/platforms/mac/bundled-gateway#debug-app-connectivity)                 |
 | launchd-Verhalten verstehen              | [Gateway-Lebenszyklus](/de/platforms/mac/child-process)                                       |
 | Berechtigungen oder Signierungs-/TCC-Probleme beheben | [macOS-Berechtigungen](/de/platforms/mac/permissions)                              |
 | Mit einem Remote-Gateway verbinden       | [Remote-Steuerung](/de/platforms/mac/remote)                                                  |
-| Menüleistenstatus und Health Checks lesen | [Menüleiste](/de/platforms/mac/menu-bar), [Health Checks](/de/platforms/mac/health)             |
-| Eingebettete Chat-Benutzeroberfläche verwenden | [WebChat](/de/platforms/mac/webchat)                                                     |
+| Menüleistenstatus und Integritätsprüfungen lesen | [Menüleiste](/de/platforms/mac/menu-bar), [Integritätsprüfungen](/de/platforms/mac/health) |
+| Die eingebettete Chat-UI verwenden       | [WebChat](/de/platforms/mac/webchat)                                                          |
 | Voice Wake oder Push-to-Talk verwenden   | [Voice Wake](/de/platforms/mac/voicewake)                                                     |
 | Canvas und Canvas-Deep-Links verwenden   | [Canvas](/de/platforms/mac/canvas)                                                            |
-| PeekabooBridge für UI-Automatisierung hosten | [Peekaboo Bridge](/de/platforms/mac/peekaboo)                                             |
+| PeekabooBridge für UI-Automatisierung hosten | [Peekaboo-Bridge](/de/platforms/mac/peekaboo)                                             |
 | Befehlsfreigaben konfigurieren           | [Exec-Genehmigungen](/de/tools/exec-approvals), [erweiterte Details](/de/tools/exec-approvals-advanced) |
-| Mac-Node-Befehle und App-IPC prüfen      | [macOS-IPC](/de/platforms/mac/xpc)                                                            |
+| Mac-Node-Befehle und App-IPC inspizieren | [macOS-IPC](/de/platforms/mac/xpc)                                                            |
 | Logs erfassen                            | [macOS-Logging](/de/platforms/mac/logging)                                                    |
-| Aus dem Quellcode erstellen              | [macOS-Entwicklungseinrichtung](/de/platforms/mac/dev-setup)                                  |
+| Aus dem Quellcode bauen                  | [macOS-Entwicklungseinrichtung](/de/platforms/mac/dev-setup)                                  |
 
 ## Verwandt
 

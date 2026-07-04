@@ -4,73 +4,69 @@ read_when:
 summary: Guide de configuration pour les développeurs travaillant sur l’application macOS OpenClaw
 title: Configuration de développement macOS
 x-i18n:
-    generated_at: "2026-06-27T17:43:38Z"
+    generated_at: "2026-07-04T06:31:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 09212c9b9139dd19867b9286dc43361794a3efd37b2a8d769bb0a8fdd389b816
+    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
 # Configuration développeur macOS
 
-Compilez et exécutez l’application macOS OpenClaw à partir du code source.
+Compiler et exécuter l’application macOS OpenClaw depuis les sources.
 
 ## Prérequis
 
-Avant de compiler l’app, assurez-vous que les éléments suivants sont installés :
+Avant de compiler l’application, assurez-vous que les éléments suivants sont installés :
 
 1. **Xcode 26.2+** : requis pour le développement Swift.
 2. **Node.js 24 et pnpm** : recommandés pour le Gateway, la CLI et les scripts de packaging. Node 22 LTS, actuellement `22.19+`, reste pris en charge pour la compatibilité.
 
 ## 1. Installer les dépendances
 
-Installez les dépendances de l’ensemble du projet :
+Installez les dépendances de tout le projet :
 
 ```bash
 pnpm install
 ```
 
-## 2. Compiler et packager l’app
+## 2. Compiler et packager l’application
 
-Pour compiler l’app macOS et la packager dans `dist/OpenClaw.app`, exécutez :
+Pour compiler l’application macOS et la packager dans `dist/OpenClaw.app`, exécutez :
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Si vous n’avez pas de certificat Apple Developer ID, le script utilisera automatiquement une **signature ad hoc** (`-`).
+Si vous n’avez pas de certificat Apple Developer ID, le script utilisera automatiquement la **signature ad-hoc** (`-`).
 
-Pour les modes d’exécution de développement, les options de signature et le dépannage de l’identifiant d’équipe, consultez le README de l’app macOS :
+Pour les modes d’exécution de développement, les options de signature et le dépannage de l’ID d’équipe, consultez le README de l’application macOS :
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Remarque** : les apps signées ad hoc peuvent déclencher des invites de sécurité. Si l’app plante immédiatement avec « Abort trap 6 », consultez la section [Dépannage](#troubleshooting).
+> **Remarque** : Les applications signées ad-hoc peuvent déclencher des invites de sécurité. Si l’application plante immédiatement avec « Abort trap 6 », consultez la section [Dépannage](#troubleshooting).
 
-## 3. Installer la CLI
+## 3. Installer la CLI et le Gateway
 
-L’app macOS attend une installation globale de la CLI `openclaw` pour gérer les tâches en arrière-plan.
+L’application packagée embarque l’installateur canonique `scripts/install-cli.sh`. Sur un
+profil neuf, choisissez **Ce Mac** pendant l’onboarding ; l’application installe la
+CLI et le runtime en espace utilisateur correspondants avant de démarrer l’assistant Gateway.
 
-**Pour l’installer (recommandé) :**
-
-1. Ouvrez l’app OpenClaw.
-2. Accédez à l’onglet de paramètres **Général**.
-3. Cliquez sur **« Installer CLI »**.
-
-Vous pouvez aussi l’installer manuellement :
+Pour une récupération manuelle en développement, installez vous-même la CLI correspondante :
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>` et `bun add -g openclaw@<version>` fonctionnent aussi.
-Pour le runtime Gateway, Node reste la méthode recommandée.
+`pnpm add -g openclaw@<version>` et `bun add -g openclaw@<version>` fonctionnent également.
+Pour le runtime Gateway, Node reste l’approche recommandée.
 
 ## Dépannage
 
 ### Échec de la compilation : incompatibilité de chaîne d’outils ou de SDK
 
-La compilation de l’app macOS attend le dernier SDK macOS et la chaîne d’outils Swift 6.2.
+La compilation de l’application macOS attend le dernier SDK macOS et la chaîne d’outils Swift 6.2.
 
 **Dépendances système (requises) :**
 
@@ -86,9 +82,9 @@ xcrun swift --version
 
 Si les versions ne correspondent pas, mettez à jour macOS/Xcode et relancez la compilation.
 
-### L’app plante lors de l’octroi d’une autorisation
+### L’application plante lors de l’autorisation d’accès
 
-Si l’app plante lorsque vous essayez d’autoriser l’accès à la **Reconnaissance vocale** ou au **Microphone**, cela peut être dû à un cache TCC corrompu ou à une incompatibilité de signature.
+Si l’application plante lorsque vous essayez d’autoriser l’accès à la **Reconnaissance vocale** ou au **Microphone**, cela peut être dû à un cache TCC corrompu ou à une incompatibilité de signature.
 
 **Correction :**
 
@@ -98,17 +94,17 @@ Si l’app plante lorsque vous essayez d’autoriser l’accès à la **Reconnai
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Si cela échoue, modifiez temporairement le `BUNDLE_ID` dans [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) pour forcer un « nouvel état propre » depuis macOS.
+2. Si cela échoue, modifiez temporairement le `BUNDLE_ID` dans [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) pour forcer un « état vierge » depuis macOS.
 
-### Le Gateway reste indéfiniment sur « Démarrage... »
+### Gateway « Starting... » indéfiniment
 
-Si l’état du Gateway reste sur « Démarrage... », vérifiez si un processus zombie occupe le port :
+Si l’état du Gateway reste sur « Starting... », vérifiez si un processus zombie occupe le port :
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Si vous n’utilisez pas de LaunchAgent (mode développement / exécutions manuelles), trouvez l’écouteur :
+# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
@@ -116,5 +112,5 @@ Si une exécution manuelle occupe le port, arrêtez ce processus (Ctrl+C). En de
 
 ## Liens associés
 
-- [App macOS](/fr/platforms/macos)
+- [Application macOS](/fr/platforms/macos)
 - [Vue d’ensemble de l’installation](/fr/install)
