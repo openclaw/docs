@@ -3,70 +3,68 @@ doc-schema-version: 1
 read_when:
     - Вы хотите создать новый Plugin OpenClaw
     - Вам нужно краткое руководство по началу разработки Plugin
-    - Вы выбираете между документацией канала, провайдера, CLI-бэкенда, инструмента или хуков
+    - Вы выбираете между документацией по каналу, провайдеру, бэкенду CLI, инструменту или хуку
 sidebarTitle: Getting Started
-summary: Создайте свой первый Plugin OpenClaw за несколько минут
+summary: Создайте свой первый Plugin для OpenClaw за считанные минуты
 title: Создание plugins
 x-i18n:
-    generated_at: "2026-06-28T23:14:30Z"
+    generated_at: "2026-07-04T10:52:46Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8991b9e857af76b4fecc15a5feb9bd6659af91a4b7518f59c83ca091dc7f705c
+    source_hash: 2b5ad271e6a985c3bc8a5a39cfd540af1d8566178fb235fca0e29e4cee083148
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Plugins расширяют OpenClaw без изменения core. Plugin может добавить канал
-обмена сообщениями, поставщика моделей, локальный CLI-бэкенд, агентский
-инструмент, hook, поставщика медиа или другую возможность, принадлежащую
-Plugin.
+Плагины расширяют OpenClaw без изменения ядра. Плагин может добавить канал
+обмена сообщениями, поставщика моделей, локальный CLI-бэкенд, инструмент агента,
+хук, поставщика медиа или другую возможность, принадлежащую плагину.
 
-Вам не нужно добавлять внешний Plugin в репозиторий OpenClaw. Опубликуйте
-пакет в [ClawHub](/ru/clawhub), и пользователи установят его с помощью:
+Вам не нужно добавлять внешний плагин в репозиторий OpenClaw. Опубликуйте
+пакет в [ClawHub](/clawhub), и пользователи установят его с помощью:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
 Спецификации пакетов без префикса по-прежнему устанавливаются из npm во время
-перехода при запуске. Используйте префикс `clawhub:`, когда вам нужно
-разрешение через ClawHub.
+перехода при запуске. Используйте префикс `clawhub:`, когда нужно разрешение
+через ClawHub.
 
 ## Требования
 
-- Используйте Node 22.19 или новее и менеджер пакетов, например `npm` или `pnpm`.
-- Будьте знакомы с TypeScript ESM-модулями.
-- Для работы над встроенным Plugin внутри репозитория клонируйте репозиторий и
-  выполните `pnpm install`. Разработка Plugin из исходного checkout поддерживает
-  только pnpm, потому что OpenClaw загружает встроенные Plugins из workspace-пакетов
-  `extensions/*`.
+- Используйте Node 22.19+, Node 23.11+ или Node 24+ и менеджер пакетов, например `npm` или `pnpm`.
+- Знайте модули TypeScript ESM.
+- Для работы с встроенным плагином внутри репозитория клонируйте репозиторий и выполните `pnpm install`.
+  Разработка плагинов из исходного checkout поддерживает только pnpm, потому что OpenClaw загружает встроенные
+  плагины из workspace-пакетов `extensions/*`.
 
-## Выберите форму Plugin
+## Выберите форму плагина
 
 <CardGroup cols={2}>
-  <Card title="Plugin канала" icon="messages-square" href="/ru/plugins/sdk-channel-plugins">
+  <Card title="Channel plugin" icon="messages-square" href="/ru/plugins/sdk-channel-plugins">
     Подключите OpenClaw к платформе обмена сообщениями.
   </Card>
-  <Card title="Plugin поставщика" icon="cpu" href="/ru/plugins/sdk-provider-plugins">
-    Добавьте поставщика моделей, медиа, поиска, fetch, речи или realtime.
+  <Card title="Provider plugin" icon="cpu" href="/ru/plugins/sdk-provider-plugins">
+    Добавьте поставщика моделей, медиа, поиска, загрузки, речи или realtime.
   </Card>
-  <Card title="Plugin CLI-бэкенда" icon="terminal" href="/ru/plugins/cli-backend-plugins">
-    Запускайте локальный AI CLI через fallback моделей OpenClaw.
+  <Card title="CLI backend plugin" icon="terminal" href="/ru/plugins/cli-backend-plugins">
+    Запускайте локальный AI CLI через резервный выбор модели OpenClaw.
   </Card>
-  <Card title="Plugin инструментов" icon="wrench" href="/ru/plugins/tool-plugins">
-    Регистрируйте агентские инструменты.
+  <Card title="Tool plugin" icon="wrench" href="/ru/plugins/tool-plugins">
+    Регистрируйте инструменты агента.
   </Card>
 </CardGroup>
 
 ## Быстрый старт
 
-Создайте минимальный Plugin инструментов, зарегистрировав один обязательный
-агентский инструмент. Это самая короткая полезная форма Plugin, которая
-показывает пакет, манифест, точку входа и локальное подтверждение.
+Создайте минимальный плагин инструмента, зарегистрировав один обязательный
+инструмент агента. Это самая короткая полезная форма плагина, показывающая
+пакет, манифест, точку входа и локальное подтверждение.
 
 <Steps>
-  <Step title="Создайте метаданные пакета">
+  <Step title="Create package metadata">
     <CodeGroup>
 
 ```json package.json
@@ -108,29 +106,27 @@ openclaw plugins install clawhub:<package-name>
 
     </CodeGroup>
 
-    Опубликованные внешние Plugins должны указывать runtime-точки входа на
-    собранные JavaScript-файлы. Полный контракт точки входа см. в
-    [точках входа SDK](/ru/plugins/sdk-entrypoints).
+    Опубликованные внешние плагины должны указывать runtime-точки входа на собранные файлы JavaScript.
+    Полный контракт точки входа см. в [точках входа SDK](/ru/plugins/sdk-entrypoints).
 
-    Каждому Plugin нужен манифест, даже если у него нет конфигурации.
-    Runtime-инструменты должны быть указаны в `contracts.tools`, чтобы OpenClaw
-    мог обнаруживать владельца без предварительной загрузки runtime каждого
-    Plugin. Задавайте `activation.onStartup` осознанно. Этот пример запускается
-    при запуске Gateway.
+    Каждому плагину нужен манифест, даже если у него нет конфигурации. Runtime-инструменты
+    должны быть указаны в `contracts.tools`, чтобы OpenClaw мог обнаружить владельца без
+    предварительной загрузки runtime каждого плагина. Задавайте `activation.onStartup`
+    осознанно. Этот пример запускается при запуске Gateway.
 
-    Поверхности Plugin, доверенные host, также ограничиваются манифестом и
-    требуют явного включения для установленных Plugins. Если установленный
-    Plugin регистрирует `api.registerAgentToolResultMiddleware(...)`, объявите
-    каждый целевой runtime в `contracts.agentToolResultMiddleware`. Если он
-    регистрирует `api.registerTrustedToolPolicy(...)`, объявите каждый id
-    политики в `contracts.trustedToolPolicies`. Эти объявления синхронизируют
-    проверку при установке и регистрацию runtime.
+    Поверхности плагинов, которым доверяет хост, также ограничиваются манифестом и требуют явного
+    включения для установленных плагинов. Если установленный плагин регистрирует
+    `api.registerAgentToolResultMiddleware(...)`, объявите каждый целевой runtime в
+    `contracts.agentToolResultMiddleware`. Если он регистрирует
+    `api.registerTrustedToolPolicy(...)`, объявите каждый id политики в
+    `contracts.trustedToolPolicies`. Эти объявления синхронизируют проверку при установке
+    и runtime-регистрацию.
 
-    Все поля манифеста см. в [манифесте Plugin](/ru/plugins/manifest).
+    Все поля манифеста см. в [манифесте плагина](/ru/plugins/manifest).
 
   </Step>
 
-  <Step title="Зарегистрируйте инструмент">
+  <Step title="Register the tool">
     ```typescript index.ts
     import { Type } from "typebox";
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -154,25 +150,25 @@ openclaw plugins install clawhub:<package-name>
     });
     ```
 
-    Используйте `definePluginEntry` для Plugins, не являющихся каналами.
-    Plugins каналов используют `defineChannelPluginEntry`.
+    Используйте `definePluginEntry` для плагинов, не являющихся каналами. Плагины каналов используют
+    `defineChannelPluginEntry`.
 
   </Step>
 
-  <Step title="Проверьте runtime">
-    Для установленного или внешнего Plugin проверьте загруженный runtime:
+  <Step title="Test the runtime">
+    Для установленного или внешнего плагина проверьте загруженный runtime:
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    Если Plugin регистрирует CLI-команду, также запустите эту команду.
-    Например, demo-команда должна иметь подтверждение выполнения, такое как
+    Если плагин регистрирует команду CLI, также выполните эту команду. Например,
+    у демонстрационной команды должно быть подтверждение выполнения, такое как
     `openclaw demo-plugin ping`.
 
-    Для встроенного Plugin в этом репозитории OpenClaw обнаруживает пакеты
-    Plugin из исходного checkout в workspace `extensions/*`. Запустите ближайший
-    целевой тест:
+    Для встроенного плагина в этом репозитории OpenClaw обнаруживает пакеты плагинов
+    из исходного checkout в workspace `extensions/*`. Запустите ближайший целевой
+    тест:
 
     ```bash
     pnpm test -- extensions/my-plugin/
@@ -181,7 +177,7 @@ openclaw plugins install clawhub:<package-name>
 
   </Step>
 
-  <Step title="Опубликуйте">
+  <Step title="Publish">
     Проверьте пакет перед публикацией:
 
     ```bash
@@ -193,7 +189,7 @@ openclaw plugins install clawhub:<package-name>
 
   </Step>
 
-  <Step title="Установите">
+  <Step title="Install">
     Установите опубликованный пакет через ClawHub:
 
     ```bash
@@ -207,9 +203,8 @@ openclaw plugins install clawhub:<package-name>
 
 ## Регистрация инструментов
 
-Инструменты могут быть обязательными или опциональными. Обязательные инструменты
-всегда доступны, когда Plugin включен. Опциональные инструменты требуют
-явного согласия пользователя.
+Инструменты могут быть обязательными или необязательными. Обязательные инструменты всегда доступны, когда
+плагин включен. Необязательные инструменты требуют явного согласия пользователя.
 
 ```typescript
 register(api) {
@@ -227,8 +222,8 @@ register(api) {
 }
 ```
 
-Каждый инструмент, зарегистрированный через `api.registerTool(...)`, также
-должен быть объявлен в манифесте Plugin:
+Каждый инструмент, зарегистрированный через `api.registerTool(...)`, также должен быть объявлен в
+манифесте плагина:
 
 ```json
 {
@@ -243,7 +238,7 @@ register(api) {
 }
 ```
 
-Пользователи включают его через `tools.allow`:
+Пользователи включают их через `tools.allow`:
 
 ```json5
 {
@@ -251,38 +246,34 @@ register(api) {
 }
 ```
 
-Опциональные инструменты управляют тем, раскрывается ли инструмент модели.
-Используйте [запросы разрешений Plugin](/ru/plugins/plugin-permission-requests),
-когда инструмент или hook должен запросить подтверждение после выбора моделью и
-до выполнения действия.
+Необязательные инструменты управляют тем, предоставляется ли инструмент модели. Используйте
+[запросы разрешений плагинов](/ru/plugins/plugin-permission-requests), когда инструмент
+или хук должен запросить подтверждение после выбора моделью и до выполнения
+действия.
 
-Используйте опциональные инструменты для побочных эффектов, необычных бинарных
-файлов или возможностей, которые не должны быть раскрыты по умолчанию. Имена
-инструментов не должны конфликтовать с core-инструментами; конфликты
-пропускаются и отображаются в диагностике Plugin. Некорректные регистрации,
-включая дескрипторы инструментов без `parameters`, пропускаются и отображаются
-так же. Зарегистрированные инструменты являются типизированными функциями,
-которые модель может вызывать после прохождения проверок политик и allowlist.
+Используйте необязательные инструменты для побочных эффектов, необычных бинарных файлов или возможностей,
+которые не должны быть доступны по умолчанию. Имена инструментов не должны конфликтовать с инструментами ядра;
+конфликты пропускаются и сообщаются в диагностике плагина. Некорректные
+регистрации, включая дескрипторы инструментов без `parameters`, пропускаются и
+сообщаются тем же способом. Зарегистрированные инструменты — это типизированные функции, которые модель может вызывать
+после успешных проверок политик и allowlist.
 
-Фабрики инструментов получают объект контекста, предоставленный runtime.
-Используйте `ctx.activeModel`, когда инструменту нужно логировать, отображать
-или адаптироваться к активной модели для текущего хода. Объект может включать
-`provider`, `modelId` и `modelRef`. Рассматривайте его как информационные
-runtime-метаданные, а не как границу безопасности против локального оператора,
-кода установленного Plugin или измененного runtime OpenClaw. Чувствительные
-локальные инструменты всё равно должны требовать явного согласия Plugin или
-оператора и завершаться закрытым отказом, когда метаданные активной модели
-отсутствуют или неподходят.
+Фабрики инструментов получают объект контекста, предоставленный runtime. Используйте `ctx.activeModel`,
+когда инструменту нужно логировать, отображать или адаптироваться к активной модели для текущего
+хода. Объект может включать `provider`, `modelId` и `modelRef`. Рассматривайте его как
+информационные runtime-метаданные, а не как границу безопасности против локального
+оператора, установленного кода плагина или измененного runtime OpenClaw. Чувствительные локальные
+инструменты все равно должны требовать явного согласия плагина или оператора и fail closed,
+когда метаданные активной модели отсутствуют или не подходят.
 
-Манифест объявляет владение и обнаружение; выполнение всё равно вызывает
-живую зарегистрированную реализацию инструмента. Держите
-`toolMetadata.<tool>.optional: true` согласованным с
-`api.registerTool(..., { optional: true })`, чтобы OpenClaw мог не загружать
-runtime этого Plugin, пока инструмент не будет явно добавлен в allowlist.
+Манифест объявляет владение и обнаружение; выполнение по-прежнему вызывает живую
+зарегистрированную реализацию инструмента. Держите `toolMetadata.<tool>.optional: true`
+согласованным с `api.registerTool(..., { optional: true })`, чтобы OpenClaw мог избегать
+загрузки runtime этого плагина до явного добавления инструмента в allowlist.
 
 ## Соглашения об импорте
 
-Импортируйте из специализированных подпутей SDK:
+Импортируйте из узких подпутей SDK:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -295,67 +286,66 @@ import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-Внутри пакета вашего Plugin используйте локальные barrel-файлы, такие как
-`api.ts` и `runtime-api.ts`, для внутренних импортов. Не импортируйте собственный
-Plugin через путь SDK. Хелперы, специфичные для поставщика, должны оставаться в
-пакете поставщика, если граница не является действительно общей.
+Внутри пакета плагина используйте локальные barrel-файлы, такие как `api.ts` и
+`runtime-api.ts`, для внутренних импортов. Не импортируйте собственный плагин через
+путь SDK. Вспомогательные средства для конкретного поставщика должны оставаться в пакете поставщика, если только
+стык не является действительно универсальным.
 
-Пользовательские методы Gateway RPC являются продвинутой точкой входа.
-Держите их на префиксе, специфичном для Plugin; core-пространства имен
-администрирования, такие как `config.*`, `exec.approvals.*`,
-`operator.admin.*`, `wizard.*` и `update.*`, остаются зарезервированными и
-разрешаются в `operator.admin`. Мост
-`openclaw/plugin-sdk/gateway-method-runtime` зарезервирован для HTTP-маршрутов
-Plugin, которые объявляют `contracts.gatewayMethodDispatch: ["authenticated-request"]`.
+Пользовательские методы Gateway RPC — это расширенная точка входа. Держите их на
+префиксе конкретного плагина; пространства имен администрирования ядра, такие как `config.*`,
+`exec.approvals.*`, `operator.admin.*`, `wizard.*` и `update.*`, остаются зарезервированными
+и разрешаются в `operator.admin`. Мост
+`openclaw/plugin-sdk/gateway-method-runtime` зарезервирован для HTTP-маршрутов плагина,
+которые объявляют `contracts.gatewayMethodDispatch: ["authenticated-request"]`.
 
 Полную карту импортов см. в [обзоре Plugin SDK](/ru/plugins/sdk-overview).
 
-## Чеклист перед отправкой
+## Контрольный список перед отправкой
 
 <Check>**package.json** содержит корректные метаданные `openclaw`</Check>
 <Check>Манифест **openclaw.plugin.json** присутствует и валиден</Check>
 <Check>Точка входа использует `defineChannelPluginEntry` или `definePluginEntry`</Check>
-<Check>Все импорты используют специализированные пути `plugin-sdk/<subpath>`</Check>
-<Check>Внутренние импорты используют локальные модули, а не self-imports SDK</Check>
+<Check>Все импорты используют узкие пути `plugin-sdk/<subpath>`</Check>
+<Check>Внутренние импорты используют локальные модули, а не SDK self-imports</Check>
 <Check>Тесты проходят (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` проходит (Plugins внутри репозитория)</Check>
+<Check>`pnpm check` проходит (для плагинов в репозитории)</Check>
 
 ## Тестирование на beta-релизах
 
-1. Следите за тегами релизов GitHub в [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) и подпишитесь через `Watch` > `Releases`. Beta-теги выглядят как `v2026.3.N-beta.1`. Также можно включить уведомления для официального X-аккаунта OpenClaw [@openclaw](https://x.com/openclaw), чтобы получать объявления о релизах.
-2. Протестируйте свой Plugin на beta-теге сразу после его появления. Окно до stable обычно составляет всего несколько часов.
-3. После тестирования напишите в ветке своего Plugin в Discord-канале `plugin-forum` либо `all good`, либо что сломалось. Если у вас еще нет ветки, создайте ее.
-4. Если что-то сломалось, откройте или обновите issue с заголовком `Beta blocker: <plugin-name> - <summary>` и примените label `beta-blocker`. Добавьте ссылку на issue в свою ветку.
-5. Откройте PR в `main` с заголовком `fix(<plugin-id>): beta blocker - <summary>` и свяжите issue как в PR, так и в вашей Discord-ветке. Contributors не могут назначать labels PR, поэтому заголовок является сигналом на стороне PR для maintainers и автоматизации. Blockers с PR будут смержены; blockers без PR могут быть выпущены всё равно. Maintainers следят за этими ветками во время beta-тестирования.
-6. Молчание означает зеленый статус. Если вы пропустите окно, ваш fix, скорее всего, попадет в следующий цикл.
+1. Следите за тегами релизов GitHub в [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) и подпишитесь через `Watch` > `Releases`. Beta-теги выглядят как `v2026.3.N-beta.1`. Также можно включить уведомления для официального аккаунта OpenClaw в X [@openclaw](https://x.com/openclaw), чтобы получать объявления о релизах.
+2. Протестируйте свой плагин на beta-теге сразу после его появления. Окно до stable обычно составляет всего несколько часов.
+3. После тестирования напишите в треде своего плагина в Discord-канале `plugin-forum`: либо `all good`, либо что сломалось. Если треда еще нет, создайте его.
+4. Если что-то сломалось, откройте или обновите issue с заголовком `Beta blocker: <plugin-name> - <summary>` и примените метку `beta-blocker`. Поместите ссылку на issue в свой тред.
+5. Откройте PR в `main` с заголовком `fix(<plugin-id>): beta blocker - <summary>` и свяжите issue как в PR, так и в своем Discord-треде. Участники не могут ставить метки на PR, поэтому заголовок — это сигнал на стороне PR для сопровождающих и автоматизации. Блокеры с PR будут объединены; блокеры без PR могут попасть в релиз как есть. Сопровождающие следят за этими тредами во время beta-тестирования.
+6. Молчание означает зеленый статус. Если вы пропустите окно, ваше исправление, скорее всего, попадет в следующий цикл.
 
 ## Следующие шаги
 
 <CardGroup cols={2}>
-  <Card title="Plugins каналов" icon="messages-square" href="/ru/plugins/sdk-channel-plugins">
-    Создайте Plugin канала обмена сообщениями
+  <Card title="Channel Plugins" icon="messages-square" href="/ru/plugins/sdk-channel-plugins">
+    Создайте плагин канала обмена сообщениями
   </Card>
-  <Card title="Plugins поставщиков" icon="cpu" href="/ru/plugins/sdk-provider-plugins">
-    Создайте Plugin поставщика моделей
+  <Card title="Provider Plugins" icon="cpu" href="/ru/plugins/sdk-provider-plugins">
+    Создайте плагин поставщика моделей
   </Card>
-  <Card title="Plugins CLI-бэкендов" icon="terminal" href="/ru/plugins/cli-backend-plugins">
+  <Card title="CLI Backend Plugins" icon="terminal" href="/ru/plugins/cli-backend-plugins">
     Зарегистрируйте локальный AI CLI-бэкенд
   </Card>
-  <Card title="Обзор SDK" icon="book-open" href="/ru/plugins/sdk-overview">
+  <Card title="SDK Overview" icon="book-open" href="/ru/plugins/sdk-overview">
     Карта импортов и справочник API регистрации
   </Card>
-  <Card title="Runtime-хелперы" icon="settings" href="/ru/plugins/sdk-runtime">
+  <Card title="Runtime Helpers" icon="settings" href="/ru/plugins/sdk-runtime">
     TTS, поиск, subagent через api.runtime
   </Card>
-  <Card title="Тестирование" icon="test-tubes" href="/ru/plugins/sdk-testing">
+  <Card title="Testing" icon="test-tubes" href="/ru/plugins/sdk-testing">
     Тестовые утилиты и паттерны
   </Card>
-  <Card title="Манифест Plugin" icon="file-json" href="/ru/plugins/manifest">
+  <Card title="Plugin Manifest" icon="file-json" href="/ru/plugins/manifest">
     Полный справочник схемы манифеста
   </Card>
 </CardGroup>
 
 ## Связанные материалы
 
-- [Hooks Plugin](/ru/plugins/hooks)
-- [Архитектура Plugin](/ru/plugins/architecture)
+- [Хуки плагинов](/ru/plugins/hooks)
+- [Архитектура плагинов](/ru/plugins/architecture)

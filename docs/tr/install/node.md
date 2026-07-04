@@ -6,16 +6,16 @@ read_when:
 summary: OpenClaw için Node.js’i kurma ve yapılandırma - sürüm gereksinimleri, kurulum seçenekleri ve PATH sorunlarını giderme
 title: Node.js
 x-i18n:
-    generated_at: "2026-06-28T00:44:40Z"
+    generated_at: "2026-07-04T10:58:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
+    source_hash: 6c556593982efa7f6fcd6e24787cca7ca6af30d265f54bb927a0608d2efc58d6
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw, **Node 22.19 veya daha yeni** sürüm gerektirir. **Node 24, kurulumlar, CI ve yayın iş akışları için varsayılan ve önerilen çalışma zamanıdır**. Node 22, etkin LTS hattı üzerinden desteklenmeye devam eder. [yükleyici betik](/tr/install#alternative-install-methods) Node'u otomatik olarak algılar ve kurar - bu sayfa, Node'u kendiniz kurmak ve her şeyin doğru şekilde bağlandığından emin olmak istediğiniz durumlar içindir (sürümler, PATH, global kurulumlar).
+OpenClaw, **Node 22.19+, Node 23.11+ veya Node 24+** gerektirir. **Node 24; kurulumlar, CI ve sürüm iş akışları için varsayılan ve önerilen çalışma zamanıdır**. Node 22, etkin LTS hattı üzerinden desteklenmeye devam eder. [Yükleyici betiği](/tr/install#alternative-install-methods) Node’u otomatik olarak algılayıp kurar - bu sayfa, Node’u kendiniz kurmak ve her şeyin doğru bağlandığından emin olmak istediğiniz durumlar içindir (sürümler, PATH, global kurulumlar).
 
 ## Sürümünüzü kontrol edin
 
@@ -23,19 +23,19 @@ OpenClaw, **Node 22.19 veya daha yeni** sürüm gerektirir. **Node 24, kurulumla
 node -v
 ```
 
-Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsayılan sürümdesiniz. `v22.19.x` veya daha yüksek bir sürüm yazdırıyorsa desteklenen Node 22 LTS yolundasınız, ancak uygun olduğunda yine de Node 24'e yükseltmenizi öneririz. Node kurulu değilse veya sürüm çok eskiyse aşağıdaki kurulum yöntemlerinden birini seçin.
+Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsayılan sürümdesiniz. `v22.19.x` veya daha yüksek bir sürüm yazdırıyorsa desteklenen Node 22 LTS yolundasınız, ancak uygun olduğunda yine de Node 24’e yükseltmenizi öneririz. `v23.11.0` öncesindeki Node 23 sürümleri desteklenmez. Node kurulu değilse veya sürüm desteklenen aralığın dışındaysa aşağıdan bir kurulum yöntemi seçin.
 
-## Node'u yükleyin
+## Node’u kurun
 
 <Tabs>
   <Tab title="macOS">
-    **Homebrew** (önerilen):
+    **Homebrew** (önerilir):
 
     ```bash
     brew install node
     ```
 
-    Alternatif olarak macOS yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
+    Ya da macOS yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
 
   </Tab>
   <Tab title="Linux">
@@ -52,11 +52,11 @@ Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsay
     sudo dnf install nodejs
     ```
 
-    Alternatif olarak bir sürüm yöneticisi kullanın (aşağıya bakın).
+    Ya da bir sürüm yöneticisi kullanın (aşağıya bakın).
 
   </Tab>
   <Tab title="Windows">
-    **winget** (önerilen):
+    **winget** (önerilir):
 
     ```powershell
     winget install OpenJS.NodeJS.LTS
@@ -68,13 +68,13 @@ Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsay
     choco install nodejs-lts
     ```
 
-    Alternatif olarak Windows yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
+    Ya da Windows yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
 
   </Tab>
 </Tabs>
 
 <Accordion title="Sürüm yöneticisi kullanma (nvm, fnm, mise, asdf)">
-  Sürüm yöneticileri Node sürümleri arasında kolayca geçiş yapmanızı sağlar. Popüler seçenekler:
+  Sürüm yöneticileri, Node sürümleri arasında kolayca geçiş yapmanızı sağlar. Popüler seçenekler:
 
 - [**fnm**](https://github.com/Schniz/fnm) - hızlı, platformlar arası
 - [**nvm**](https://github.com/nvm-sh/nvm) - macOS/Linux üzerinde yaygın olarak kullanılır
@@ -88,7 +88,7 @@ fnm use 24
 ```
 
   <Warning>
-  Sürüm yöneticinizin kabuk başlangıç dosyanızda (`~/.zshrc` veya `~/.bashrc`) başlatıldığından emin olun. Başlatılmamışsa, PATH Node'un bin dizinini içermeyeceği için yeni terminal oturumlarında `openclaw` bulunamayabilir.
+  Sürüm yöneticinizin kabuk başlangıç dosyanızda (`~/.zshrc` veya `~/.bashrc`) başlatıldığından emin olun. Başlatılmamışsa, PATH Node’un bin dizinini içermeyeceği için yeni terminal oturumlarında `openclaw` bulunamayabilir.
   </Warning>
 </Accordion>
 
@@ -96,15 +96,15 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-Bu neredeyse her zaman npm'in global bin dizininin PATH üzerinde olmadığı anlamına gelir.
+Bu neredeyse her zaman npm’in global bin dizininin PATH’inizde olmadığı anlamına gelir.
 
 <Steps>
-  <Step title="Global npm önekinizi bulun">
+  <Step title="Global npm prefix’inizi bulun">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="PATH üzerinde olup olmadığını kontrol edin">
+  <Step title="PATH’inizde olup olmadığını kontrol edin">
     ```bash
     echo "$PATH"
     ```
@@ -124,7 +124,7 @@ Bu neredeyse her zaman npm'in global bin dizininin PATH üzerinde olmadığı an
         Ardından yeni bir terminal açın (veya zsh içinde `rehash` / bash içinde `hash -r` çalıştırın).
       </Tab>
       <Tab title="Windows">
-        `npm prefix -g` çıktısını Ayarlar → Sistem → Ortam Değişkenleri üzerinden sistem PATH'inize ekleyin.
+        `npm prefix -g` çıktısını Ayarlar → Sistem → Ortam Değişkenleri üzerinden sistem PATH’inize ekleyin.
       </Tab>
     </Tabs>
 
@@ -133,7 +133,7 @@ Bu neredeyse her zaman npm'in global bin dizininin PATH üzerinde olmadığı an
 
 ### `npm install -g` üzerinde izin hataları (Linux)
 
-`EACCES` hataları görüyorsanız npm'in global önekini kullanıcının yazabildiği bir dizine taşıyın:
+`EACCES` hataları görürseniz npm’in global prefix’ini kullanıcı tarafından yazılabilir bir dizine taşıyın:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -146,5 +146,5 @@ Kalıcı hale getirmek için `export PATH=...` satırını `~/.bashrc` veya `~/.
 ## İlgili
 
 - [Kurulum Genel Bakışı](/tr/install) - tüm kurulum yöntemleri
-- [Güncelleme](/tr/install/updating) - OpenClaw'ı güncel tutma
+- [Güncelleme](/tr/install/updating) - OpenClaw’ı güncel tutma
 - [Başlarken](/tr/start/getting-started) - kurulumdan sonraki ilk adımlar
