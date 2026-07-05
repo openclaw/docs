@@ -1,15 +1,15 @@
 ---
 read_when:
     - OpenClaw の更新
-    - アップデート後に何かが壊れる
+    - 更新後に何かが壊れる
 summary: OpenClaw を安全に更新する（グローバルインストールまたはソース）方法とロールバック戦略
-title: 更新中
+title: 更新
 x-i18n:
-    generated_at: "2026-06-27T11:51:14Z"
+    generated_at: "2026-07-05T01:56:49Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a96c5b9b12040fe9bb8b1623c88a9c305d58dc6fcee7003f500e897ded9e7b4a
+    source_hash: aaab9de5c41b8a9ce087a182b9cabe34fbf2e6d14524b10248c5403a2644208a
     source_path: install/updating.md
     workflow: 16
 ---
@@ -18,52 +18,55 @@ OpenClaw を最新の状態に保ちます。
 
 ## 推奨: `openclaw update`
 
-最速の更新方法です。インストール種別（npm または git）を検出し、最新バージョンを取得し、`openclaw doctor` を実行して、Gateway を再起動します。
+更新する最速の方法です。インストール種別（npm または git）を検出し、最新バージョンを取得し、`openclaw doctor` を実行して、Gateway を再起動します。
 
 ```bash
 openclaw update
 ```
 
-チャネルを切り替える、または特定のバージョンを対象にするには:
+チャンネルを切り替える、または特定のバージョンを対象にするには:
 
 ```bash
 openclaw update --channel beta
+openclaw update --channel extended-stable
 openclaw update --channel dev
-openclaw update --dry-run   # preview without applying
+openclaw update --dry-run   # 適用せずにプレビュー
 ```
 
-`openclaw update` は `--verbose` を受け付けません。更新診断には、予定されている操作をプレビューする `--dry-run`、構造化された結果を得る `--json`、またはチャネルと利用可能状態を調べる `openclaw update status --json` を使用します。インストーラーには独自の `--verbose` フラグがありますが、そのフラグは `openclaw update` の一部ではありません。
+`openclaw update` は `--verbose` を受け付けません。更新診断には、計画されたアクションをプレビューする `--dry-run`、構造化された結果を得る `--json`、またはチャンネルと利用可能状態を調べる `openclaw update status --json` を使用します。インストーラーには独自の `--verbose` フラグがありますが、そのフラグは `openclaw update` の一部ではありません。
 
-`--channel beta` は beta を優先しますが、beta タグが存在しない、または最新の stable リリースより古い場合、ランタイムは stable/latest にフォールバックします。一回限りのパッケージ更新で生の npm beta dist-tag を使いたい場合は、`--tag beta` を使用します。
+`--channel beta` は beta を優先しますが、beta タグが存在しない、または最新の stable リリースより古い場合、ランタイムは stable/latest にフォールバックします。一度だけのパッケージ更新で生の npm beta dist-tag を使いたい場合は、`--tag beta` を使用します。
 
-永続的に追従する GitHub `main` チェックアウトには `--channel dev` を使用します。パッケージ更新では、`--tag main` は 1 回の実行に対して `github:openclaw/openclaw#main` に対応し、GitHub/git ソース指定は段階的な npm install の前に一時 tarball へパックされます。
+`--channel extended-stable` はパッケージ専用かつフォアグラウンド専用です。OpenClaw は公開 npm の `extended-stable` セレクターを読み取り、選択された正確なパッケージを検証し、その正確なバージョンをインストールします。レジストリデータが存在しない、または一貫していない場合は fail closed になり、`latest` にはフォールバックしません。選択されたバージョンがインストール済みバージョンより古い場合、通常のダウングレード確認が引き続き適用されます。
 
-管理対象プラグインでは、beta チャネルのフォールバックは警告です。プラグインの beta が利用できないためにプラグインが記録済みの default/latest リリースを使用しても、コア更新は成功する場合があります。
+永続的に移動する GitHub `main` チェックアウトには `--channel dev` を使用します。パッケージ更新では、`--tag main` は 1 回の実行について `github:openclaw/openclaw#main` に対応し、GitHub/git ソース仕様は段階的な npm インストールの前に一時 tarball にパックされます。
 
-チャネルの意味については [開発チャネル](/ja-JP/install/development-channels) を参照してください。
+管理対象 Plugin では、beta チャンネルのフォールバックは警告です。Plugin beta が利用できないため Plugin が記録済みの default/latest リリースを使っていても、core 更新は成功する場合があります。
 
-## npm インストールと git インストールを切り替える
+チャンネルのセマンティクスについては、[開発チャンネル](/ja-JP/install/development-channels)を参照してください。
 
-インストール種別を変更したい場合はチャネルを使用します。アップデーターは `~/.openclaw` 内の状態、設定、認証情報、ワークスペースを保持します。変更するのは、CLI と Gateway が使用する OpenClaw コードのインストールだけです。
+## npm と git インストールを切り替える
+
+インストール種別を変更したい場合はチャンネルを使用します。アップデーターは `~/.openclaw` 内の状態、設定、認証情報、ワークスペースを保持します。変更するのは、CLI と Gateway が使用する OpenClaw コードのインストールだけです。
 
 ```bash
-# npm package install -> editable git checkout
+# npm パッケージインストール -> 編集可能な git チェックアウト
 openclaw update --channel dev
 
-# git checkout -> npm package install
+# git チェックアウト -> npm パッケージインストール
 openclaw update --channel stable
 ```
 
-まず `--dry-run` 付きで実行し、正確なインストールモードの切り替えをプレビューします。
+正確なインストールモード切り替えをプレビューするには、先に `--dry-run` で実行します。
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` チャネルは git チェックアウトを確保し、それをビルドし、そのチェックアウトからグローバル CLI をインストールします。`stable` と `beta` チャネルはパッケージインストールを使用します。Gateway がすでにインストールされている場合、`openclaw update` はサービスメタデータを更新し、`--no-restart` を渡さない限り再起動します。
+`dev` チャンネルは git チェックアウトを確保し、それをビルドし、そのチェックアウトからグローバル CLI をインストールします。`stable`、`extended-stable`、`beta` チャンネルはパッケージインストールを使用します。Extended-stable は Git チェックアウト上では、変更や変換を行わずに拒否されます。Gateway がすでにインストールされている場合、`--no-restart` を渡さない限り、`openclaw update` はサービスメタデータを更新して再起動します。
 
-管理対象 Gateway サービスを伴うパッケージインストールでは、`openclaw update` はそのサービスが使用するパッケージルートを対象にします。シェルの `openclaw` コマンドが別のインストール由来の場合、アップデーターは両方のルートと管理対象サービスの Node パスを出力します。パッケージ更新は、サービスルートを所有するパッケージマネージャーを使用し、パッケージを置き換える前に管理対象サービスの Node を対象リリースのエンジン要件と照合します。
+管理対象 Gateway サービスを伴うパッケージインストールでは、`openclaw update` はそのサービスが使用するパッケージルートを対象にします。シェルの `openclaw` コマンドが別のインストールから来ている場合、アップデーターは両方のルートと管理対象サービスの Node パスを出力します。パッケージ更新はサービスルートを所有するパッケージマネージャーを使用し、パッケージを置き換える前に、対象リリースのエンジンに対して管理対象サービスの Node を確認します。
 
 ## 代替: インストーラーを再実行する
 
@@ -73,7 +76,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 
 オンボーディングをスキップするには `--no-onboard` を追加します。インストーラー経由で特定のインストール種別を強制するには、`--install-method git --no-onboard` または `--install-method npm --no-onboard` を渡します。
 
-npm パッケージのインストール段階の後に `openclaw update` が失敗した場合は、インストーラーを再実行します。インストーラーは古いアップデーターを呼び出しません。グローバルパッケージインストールを直接実行し、部分的に更新された npm インストールを復旧できます。
+npm パッケージインストール段階の後に `openclaw update` が失敗した場合は、インストーラーを再実行します。インストーラーは古いアップデーターを呼び出しません。グローバルパッケージインストールを直接実行し、部分的に更新された npm インストールを復旧できます。
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
@@ -91,9 +94,9 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --ve
 npm i -g openclaw@latest
 ```
 
-監視付きインストールでは `openclaw update` を優先してください。実行中の Gateway サービスとパッケージの入れ替えを調整できるためです。監視付きインストールを手動で更新する場合は、パッケージマネージャーを開始する前に管理対象 Gateway を停止します。パッケージマネージャーはファイルをその場で置き換えるため、Gateway が実行中だと、パッケージツリーが一時的に半分入れ替わった状態でコアまたはプラグインファイルを読み込もうとする可能性があります。パッケージマネージャーの完了後に Gateway を再起動し、サービスが新しいインストールを取得するようにします。
+監視対象インストールでは、実行中の Gateway サービスとパッケージ交換を調整できるため、`openclaw update` を推奨します。監視対象インストールで手動更新する場合は、パッケージマネージャーを開始する前に管理対象 Gateway を停止します。パッケージマネージャーはファイルをその場で置き換えるため、実行中の Gateway が、一時的に半分入れ替わったパッケージツリーから core または Plugin ファイルを読み込もうとする可能性があります。パッケージマネージャー完了後に Gateway を再起動し、サービスが新しいインストールを取得するようにします。
 
-root 所有の Linux システムグローバルインストールで、`openclaw update` が `EACCES` で失敗し、システム npm で復旧する場合は、手動のパッケージ置換中は Gateway を停止したままにします。その Gateway で通常使用しているものと同じ `openclaw` プロファイルフラグまたは環境を使用します。`/usr/bin/npm` は、ホスト上で root 所有のグローバル prefix を所有するシステム npm に置き換えてください。
+root 所有の Linux システムグローバルインストールで、`openclaw update` が `EACCES` で失敗し、システム npm で復旧する場合は、手動パッケージ置き換えの間 Gateway を停止したままにしてください。その Gateway で通常使用している同じ `openclaw` プロファイルフラグまたは環境を使用します。`/usr/bin/npm` は、ホスト上で root 所有のグローバルプレフィックスを所有するシステム npm に置き換えてください。
 
 ```bash
 openclaw gateway stop
@@ -112,9 +115,9 @@ openclaw gateway status --deep --json
 openclaw doctor --lint --json
 ```
 
-`openclaw update` がグローバル npm インストールを管理する場合、最初に対象を一時 npm prefix にインストールし、パッケージ化された `dist` インベントリを検証してから、クリーンなパッケージツリーを実際のグローバル prefix に入れ替えます。これにより、npm が古いパッケージの残存ファイルの上に新しいパッケージを重ねることを防ぎます。インストールコマンドが失敗した場合、OpenClaw は `--omit=optional` 付きで 1 回再試行します。この再試行はネイティブのオプション依存関係をコンパイルできないホストで役立ち、フォールバックも失敗した場合は元の失敗を見える状態に保ちます。
+`openclaw update` がグローバル npm インストールを管理する場合、まず対象を一時 npm プレフィックスにインストールし、パッケージ化された `dist` インベントリを検証してから、クリーンなパッケージツリーを実際のグローバルプレフィックスに入れ替えます。これにより、npm が古いパッケージ由来の古いファイルの上に新しいパッケージを重ねることを避けられます。インストールコマンドが失敗した場合、OpenClaw は `--omit=optional` を付けて 1 回再試行します。この再試行は、ネイティブの任意依存関係をコンパイルできないホストで役立ちます。一方で、フォールバックも失敗した場合は元の失敗が見える状態を保ちます。
 
-OpenClaw 管理の npm 更新コマンドとプラグイン更新コマンドは、子 npm プロセスの npm `min-release-age` 隔離も解除します。npm はそのポリシーを派生した `before` カットオフとして報告する場合があります。どちらも一般的なサプライチェーン隔離ポリシーには有用ですが、明示的な OpenClaw 更新は「選択した OpenClaw リリースを今インストールする」という意味です。
+OpenClaw 管理の npm 更新コマンドと Plugin 更新コマンドは、子 npm プロセスについて npm の `min-release-age` 検疫も解除します。npm はそのポリシーを派生した `before` カットオフとして報告する場合があります。どちらも一般的なサプライチェーン検疫ポリシーには有用ですが、明示的な OpenClaw 更新は「選択された OpenClaw リリースを今インストールする」ことを意味します。
 
 ```bash
 pnpm add -g openclaw@latest
@@ -124,17 +127,17 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### 高度な npm インストールのトピック
+### 高度な npm インストールトピック
 
 <AccordionGroup>
   <Accordion title="読み取り専用パッケージツリー">
-    OpenClaw は、グローバルパッケージディレクトリが現在のユーザーから書き込み可能であっても、パッケージ化されたグローバルインストールをランタイムでは読み取り専用として扱います。プラグインパッケージのインストール先は、ユーザー設定ディレクトリ配下の OpenClaw 所有の npm/git ルートであり、Gateway 起動時に OpenClaw パッケージツリーは変更されません。
+    OpenClaw は、グローバルパッケージディレクトリが現在のユーザーにより書き込み可能な場合でも、パッケージ化されたグローバルインストールをランタイムでは読み取り専用として扱います。Plugin パッケージインストールはユーザー設定ディレクトリ配下の OpenClaw 所有の npm/git ルートに配置され、Gateway 起動は OpenClaw パッケージツリーを変更しません。
 
-    一部の Linux npm セットアップでは、グローバルパッケージを `/usr/lib/node_modules/openclaw` のような root 所有ディレクトリ配下にインストールします。OpenClaw はそのレイアウトをサポートします。プラグインのインストール/更新コマンドは、そのグローバルパッケージディレクトリの外に書き込むためです。
+    一部の Linux npm セットアップでは、グローバルパッケージを `/usr/lib/node_modules/openclaw` のような root 所有ディレクトリ配下にインストールします。Plugin インストール/更新コマンドはそのグローバルパッケージディレクトリの外へ書き込むため、OpenClaw はそのレイアウトをサポートします。
 
   </Accordion>
   <Accordion title="強化された systemd ユニット">
-    明示的なプラグインインストール、プラグイン更新、doctor クリーンアップが変更を永続化できるように、OpenClaw に設定/状態ルートへの書き込みアクセスを付与します。
+    明示的な Plugin インストール、Plugin 更新、doctor クリーンアップが変更を永続化できるように、OpenClaw に設定/状態ルートへの書き込みアクセスを付与します。
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
@@ -142,13 +145,13 @@ bun add -g openclaw@latest
 
   </Accordion>
   <Accordion title="ディスク容量の事前確認">
-    パッケージ更新と明示的なプラグインインストールの前に、OpenClaw は対象ボリュームのディスク容量をベストエフォートで確認します。容量不足の場合は確認したパス付きの警告が出ますが、更新はブロックされません。ファイルシステムのクォータ、スナップショット、ネットワークボリュームは確認後に変化する可能性があるためです。実際のパッケージマネージャーによるインストールとインストール後の検証が引き続き正式な判定になります。
+    パッケージ更新と明示的な Plugin インストールの前に、OpenClaw は対象ボリュームのディスク容量についてベストエフォートの確認を試みます。容量不足の場合、確認したパスを含む警告が出ますが、ファイルシステムクォータ、スナップショット、ネットワークボリュームは確認後に変化する可能性があるため、更新はブロックされません。実際のパッケージマネージャーによるインストールとインストール後の検証が引き続き権威ある結果です。
   </Accordion>
 </AccordionGroup>
 
 ## 自動アップデーター
 
-自動アップデーターはデフォルトで無効です。`~/.openclaw/openclaw.json` で有効にします。
+自動アップデーターはデフォルトでオフです。`~/.openclaw/openclaw.json` で有効にします。
 
 ```json5
 {
@@ -164,16 +167,18 @@ bun add -g openclaw@latest
 }
 ```
 
-| チャネル | 動作 |
-| -------- | ---- |
-| `stable` | `stableDelayHours` 待機し、その後 `stableJitterHours` 全体にわたる決定的なジッター（分散ロールアウト）で適用します。 |
-| `beta`   | `betaCheckIntervalHours` ごと（デフォルト: 1 時間ごと）に確認し、すぐに適用します。 |
-| `dev`    | 自動適用はありません。`openclaw update` を手動で使用します。 |
+| チャンネル | 動作 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------- |
+| `stable` | `stableDelayHours` 待機してから、`stableJitterHours` 全体で決定論的ジッターを使って適用します（分散ロールアウト）。 |
+| `extended-stable` | 起動時確認または自動適用はありません。`openclaw update` または `openclaw update status` を手動で使用します。 |
+| `beta` | `betaCheckIntervalHours` ごと（デフォルト: 1 時間ごと）に確認し、即座に適用します。 |
+| `dev` | 自動適用はありません。`openclaw update` を手動で使用します。 |
 
-Gateway は起動時にも更新ヒントをログに出力します（`update.checkOnStart: false` で無効化）。
-ダウングレードまたはインシデント復旧では、Gateway 環境で `OPENCLAW_NO_AUTO_UPDATE=1` を設定すると、`update.auto.enabled` が設定されていても自動適用をブロックできます。`update.checkOnStart` も無効化しない限り、起動時の更新ヒントは引き続き実行できます。
+Gateway は起動時にも更新ヒントをログに記録します（`update.checkOnStart: false` で無効化）。
+保存済みの extended-stable 選択では、起動時およびバックグラウンドの解決を完全にスキップします。
+ダウングレードまたはインシデント復旧では、Gateway 環境で `OPENCLAW_NO_AUTO_UPDATE=1` を設定すると、`update.auto.enabled` が構成されている場合でも自動適用をブロックできます。起動時更新ヒントは、`update.checkOnStart` も無効化されていない限り、引き続き実行される場合があります。
 
-ライブ Gateway コントロールプレーンハンドラー経由で要求されたパッケージマネージャー更新は、実行中の Gateway プロセス内のパッケージツリーを置き換えません。管理対象サービスインストールでは、Gateway は分離された引き継ぎを開始して終了し、通常の `openclaw update --yes --json` CLI パスに、サービスの停止、パッケージの置換、サービスメタデータの更新、再起動、Gateway バージョンと到達性の検証、可能な場合はインストール済みだが未ロードの macOS LaunchAgent の復旧を任せます。Gateway がその引き継ぎを安全に行えない場合、`update.run` はパッケージマネージャーをプロセス内で実行する代わりに、安全なシェルコマンドを報告します。
+ライブ Gateway コントロールプレーンハンドラーを通じて要求されたパッケージマネージャー更新は、実行中の Gateway プロセス内のパッケージツリーを置き換えません。管理対象サービスインストールでは、Gateway が切り離されたハンドオフを開始して終了し、通常の `openclaw update --yes --json` CLI パスにサービスの停止、パッケージの置き換え、サービスメタデータの更新、再起動、Gateway バージョンと到達性の検証、および可能な場合はインストール済みだが未ロードの macOS LaunchAgent の復旧を任せます。Gateway がそのハンドオフを安全に行えない場合、`update.run` はパッケージマネージャーをプロセス内で実行する代わりに、安全なシェルコマンドを報告します。
 
 ## 更新後
 
@@ -228,8 +233,8 @@ openclaw gateway restart
 
 ## 行き詰まった場合
 
-- `openclaw doctor` を再度実行し、出力を注意深く読みます。
-- ソースチェックアウトで `openclaw update --channel dev` を使用する場合、アップデーターは必要に応じて `pnpm` を自動でブートストラップします。pnpm/corepack のブートストラップエラーが表示された場合は、`pnpm` を手動でインストールする（または `corepack` を再有効化する）し、更新を再実行します。
+- `openclaw doctor` をもう一度実行し、出力を注意深く読んでください。
+- ソースチェックアウト上の `openclaw update --channel dev` では、必要に応じてアップデーターが `pnpm` を自動ブートストラップします。pnpm/corepack のブートストラップエラーが表示された場合は、`pnpm` を手動でインストールする（または `corepack` を再度有効にする）してから、更新を再実行してください。
 - 確認: [トラブルシューティング](/ja-JP/gateway/troubleshooting)
 - Discord で質問する: [https://discord.gg/clawd](https://discord.gg/clawd)
 
