@@ -2,25 +2,25 @@
 read_when:
     - Depuración de la pestaña Instancias
     - Investigación de filas de instancia duplicadas u obsoletas
-    - Cambiar la conexión WS del Gateway o las balizas system-event
+    - Cambiar la conexión WS del gateway o las señales de eventos del sistema
 summary: Cómo se producen, combinan y muestran las entradas de presencia de OpenClaw
 title: Presencia
 x-i18n:
-    generated_at: "2026-05-06T05:31:31Z"
+    generated_at: "2026-07-05T11:15:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
+    source_hash: 2b8a2bf688fd94bd7145ca511fec259b9c868ea9bcbe75b12587f747dfaadf4d
     source_path: concepts/presence.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 OpenClaw "presencia" es una vista ligera y de mejor esfuerzo de:
 
-- el propio **Gateway**, y
-- **clientes conectados al Gateway** (aplicación para Mac, WebChat, CLI, etc.)
+- el **Gateway** en sí, y
+- **clientes conectados al Gateway** (app para Mac, WebChat, CLI, etc.)
 
-La presencia se usa principalmente para representar la pestaña **Instancias** de la aplicación de macOS y para
+La presencia se usa principalmente para renderizar la pestaña **Instancias** de la app de macOS y para
 proporcionar visibilidad rápida al operador.
 
 ## Campos de presencia (lo que aparece)
@@ -31,81 +31,84 @@ Las entradas de presencia son objetos estructurados con campos como:
 - `host`: nombre de host legible para humanos
 - `ip`: dirección IP de mejor esfuerzo
 - `version`: cadena de versión del cliente
-- `deviceFamily` / `modelIdentifier`: indicios de hardware
-- `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
-- `lastInputSeconds`: "segundos desde la última entrada del usuario" (si se conoce)
-- `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
-- `ts`: marca de tiempo de la última actualización (ms desde la época)
+- `deviceFamily` / `modelIdentifier`: pistas de hardware
+- `mode`: `ui`, `webchat`, `cli`, `backend`, `node`, `probe`, `test`
+- `lastInputSeconds`: segundos desde la última entrada del usuario, si se conoce
+- `reason`: cadena de formato libre proporcionada por el cliente; el Gateway en sí solo emite `self`, `connect` y `disconnect`
+- `deviceId`, `roles`, `scopes`: identidad del dispositivo y pistas de rol/alcance del handshake de conexión
+- `ts`: marca de tiempo de la última actualización (ms desde epoch)
 
 ## Productores (de dónde viene la presencia)
 
-Las entradas de presencia son producidas por varias fuentes y se **fusionan**.
+Las entradas de presencia se producen desde varias fuentes y se **fusionan**.
 
 ### 1) Entrada propia del Gateway
 
-El Gateway siempre inicializa una entrada "self" al arrancar para que las IU muestren el host del Gateway
+El Gateway siempre inicializa una entrada "propia" al arrancar para que las interfaces muestren el host del gateway
 incluso antes de que se conecten clientes.
 
 ### 2) Conexión WebSocket
 
-Cada cliente WS comienza con una solicitud `connect`. Tras un protocolo de enlace correcto, el
+Cada cliente WS comienza con una solicitud `connect`. Tras un handshake correcto, el
 Gateway inserta o actualiza una entrada de presencia para esa conexión.
 
-#### Por qué los comandos puntuales de CLI no aparecen
+#### Por qué los comandos puntuales de la CLI no aparecen
 
-La CLI a menudo se conecta para comandos breves y puntuales. Para evitar llenar de ruido la
-lista de Instancias, `client.mode === "cli"` **no** se convierte en una entrada de presencia.
+La CLI suele conectarse para comandos breves y puntuales. Para evitar llenar de ruido la
+lista Instancias, `client.mode === "cli"` **no** se convierte en una entrada de presencia.
 
-### 3) Balizas `system-event`
+### 3) Señales `system-event`
 
-Los clientes pueden enviar balizas periódicas más completas mediante el método `system-event`. La aplicación para Mac
+Los clientes pueden enviar señales periódicas más completas mediante el método `system-event`. La app para Mac
 usa esto para informar el nombre de host, la IP y `lastInputSeconds`.
 
-### 4) Conexiones de Node (role: node)
+### 4) Conexiones de Node (rol: node)
 
-Cuando un Node se conecta a través del WebSocket del Gateway con `role: node`, el Gateway
-inserta o actualiza una entrada de presencia para ese Node (el mismo flujo que otros clientes WS).
+Cuando un nodo se conecta mediante el WebSocket del Gateway con `role: node`, el Gateway
+inserta o actualiza una entrada de presencia para ese nodo (el mismo flujo que otros clientes WS).
 
-## Reglas de fusión y deduplicación (por qué `instanceId` importa)
+## Reglas de fusión y deduplicación (por qué importa `instanceId`)
 
-Las entradas de presencia se almacenan en un único mapa en memoria:
+Las entradas de presencia se almacenan en un único mapa en memoria, con claves sin distinguir
+mayúsculas/minúsculas según el primer valor disponible de, en orden: un id de dispositivo emparejado, `connect.client.instanceId`,
+o el id por conexión como último recurso.
 
-- Las entradas se indexan por una **clave de presencia**.
-- La mejor clave es un `instanceId` estable (de `connect.client.instanceId`) que sobrevive a los reinicios.
-- Las claves no distinguen entre mayúsculas y minúsculas.
+Los clientes CLI se excluyen por completo del seguimiento (ver arriba), por lo que su
+id de conexión nunca se convierte en una clave. Para cualquier otro cliente, el fallback del id de conexión
+significa que un cliente que se reconecta sin un `instanceId` estable aparece
+como una fila **duplicada**.
 
-Si un cliente se reconecta sin un `instanceId` estable, puede aparecer como una fila
-**duplicada**.
-
-## TTL y tamaño limitado
+## TTL y tamaño acotado
 
 La presencia es intencionalmente efímera:
 
-- **TTL:** se eliminan las entradas con más de 5 minutos de antigüedad
+- **TTL:** las entradas de más de 5 minutos se purgan
 - **Entradas máximas:** 200 (las más antiguas se descartan primero)
 
-Esto mantiene la lista actualizada y evita el crecimiento ilimitado de la memoria.
+Esto mantiene la lista actualizada y evita el crecimiento ilimitado de memoria.
 
-## Advertencia sobre remoto/túnel (IP de loopback)
+## Advertencia de remoto/túnel (IP de loopback)
 
-Cuando un cliente se conecta mediante un túnel SSH / reenvío de puerto local, el Gateway puede
-ver la dirección remota como `127.0.0.1`. Para evitar sobrescribir una buena IP informada por el cliente,
-se ignoran las direcciones remotas de loopback.
+Cuando un cliente se conecta mediante un túnel SSH / reenvío de puerto local, el Gateway
+puede ver la dirección remota como `127.0.0.1`. Para evitar registrar esa dirección de túnel
+como la IP del cliente, el manejo de conexión omite `ip` por completo para los clientes
+locales detectados (loopback) en lugar de escribir la dirección de loopback
+en la entrada.
 
 ## Consumidores
 
 ### Pestaña Instancias de macOS
 
-La aplicación de macOS representa la salida de `system-presence` y aplica un pequeño indicador de estado
-(Activo/Inactivo/Obsoleto) según la antigüedad de la última actualización.
+La app de macOS renderiza la salida de `system-presence` y aplica un pequeño indicador
+de estado (Activo/Inactivo/Desactualizado) según la antigüedad de la última actualización.
 
 ## Consejos de depuración
 
 - Para ver la lista sin procesar, llama a `system-presence` contra el Gateway.
 - Si ves duplicados:
-  - confirma que los clientes envíen un `client.instanceId` estable en el protocolo de enlace
-  - confirma que las balizas periódicas usen el mismo `instanceId`
-  - comprueba si a la entrada derivada de la conexión le falta `instanceId` (se esperan duplicados)
+  - confirma que los clientes envían un `client.instanceId` estable en el handshake
+  - confirma que las señales periódicas usan el mismo `instanceId`
+  - comprueba si a la entrada derivada de la conexión le falta `instanceId` (los duplicados son esperados)
 
 ## Relacionado
 

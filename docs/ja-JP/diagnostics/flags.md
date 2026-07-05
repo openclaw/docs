@@ -1,28 +1,38 @@
 ---
 read_when:
-    - グローバルなログレベルを上げずに、対象を絞ったデバッグログが必要です
+    - 対象を絞ったデバッグログが必要だが、グローバルなログレベルは上げたくない
     - サポート用にサブシステム固有のログを取得する必要がある
-summary: ターゲット指定のデバッグログ用診断フラグ
+summary: 対象を絞ったデバッグログ用の診断フラグ
 title: 診断フラグ
 x-i18n:
-    generated_at: "2026-06-27T11:20:09Z"
+    generated_at: "2026-07-05T11:19:22Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
+    source_hash: 9847f464fde89d9e639b089fe54fb933deb9debad2a6d8b120ab01bacff181a8
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-診断フラグを使うと、全体で詳細ログを有効にせずに、対象を絞ったデバッグログを有効にできます。フラグはオプトインであり、サブシステムがそれを確認しない限り効果はありません。
+診断フラグは、`logging.level` をグローバルに上げることなく、1 つのサブシステムに対して追加ログを有効にします。サブシステムがそのフラグを確認しない限り、フラグは効果を持ちません。
 
 ## 仕組み
 
-- フラグは文字列です（大文字と小文字は区別されません）。
-- config または env override でフラグを有効にできます。
-- ワイルドカードがサポートされています。
-  - `telegram.*` は `telegram.http` に一致します
-  - `*` はすべてのフラグを有効にします
+- フラグは大文字と小文字を区別しない文字列で、config 内の `diagnostics.flags` と `OPENCLAW_DIAGNOSTICS` env オーバーライドから解決され、重複排除されて小文字化されます。
+- `name.*` は `name` 自体と `name.` 配下のすべてに一致します（たとえば `telegram.*` は `telegram.http` に一致します）。
+- `*` または `all` はすべてのフラグを有効にします。
+- config の `diagnostics.flags` を変更した後は Gateway を再起動してください。ホットリロードされません。
+
+## 既知のフラグ
+
+| フラグ           | 有効にするもの                                            |
+| ---------------- | --------------------------------------------------------- |
+| `telegram.http`  | Telegram Bot API HTTP エラーログ                          |
+| `brave.http`     | Brave Search リクエスト/レスポンス/キャッシュログ         |
+| `profiler`       | 応答ステージプロファイラーと Codex app-server プロファイラー（両方） |
+| `reply.profiler` | 応答ステージプロファイラーのみ                            |
+| `codex.profiler` | Codex app-server プロファイラーのみ                       |
+| `timeline`       | 構造化 JSONL タイムラインアーティファクト（下記参照）      |
 
 ## config で有効化
 
@@ -44,45 +54,46 @@ x-i18n:
 }
 ```
 
-フラグを変更した後は Gateway を再起動してください。
-
-## Env override（一時的）
+## env オーバーライド（一回限り）
 
 ```bash
-OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
+OPENCLAW_DIAGNOSTICS=telegram.http,brave.http
 ```
 
-すべてのフラグを無効化:
+値はカンマまたは空白で分割されます。特別な値:
 
-```bash
-OPENCLAW_DIAGNOSTICS=0
-```
+| 値                          | 効果                                     |
+| --------------------------- | ---------------------------------------- |
+| `0`, `false`, `off`, `none` | すべてのフラグを無効にし、config も上書きします |
+| `1`, `true`, `all`, `*`     | すべてのフラグを有効にします             |
 
-`OPENCLAW_DIAGNOSTICS=0` はプロセスレベルの無効化 override です。そのプロセスについて、env と config の両方のフラグを無効にします。
+`OPENCLAW_DIAGNOSTICS=0` は、そのプロセスで env と config の両方からのフラグを無効にします。ファイルを編集せずに、config で有効のまま残っているプロファイラーフラグを一時的に静かにする場合に便利です。
 
-## プロファイリングフラグ
+## プロファイラーフラグ
 
-Profiler フラグを使うと、グローバルなログレベルを上げずに、対象を絞ったタイミング span を有効にできます。デフォルトでは無効です。
+プロファイラーフラグは軽量なタイミング span を制御します。オフのときはオーバーヘッドを追加しません。
 
-1 回の Gateway 実行ですべての profiler 制御 span を有効にします。
+1 回の Gateway 実行ですべてのプロファイラー制御 span を有効にする:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
 ```
 
-reply-dispatch profiler span のみを有効にします。
+応答ディスパッチプロファイラー span のみを有効にする:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
 ```
 
-Codex app-server の起動/tool/thread profiler span のみを有効にします。
+Codex app-server の起動/ツール/スレッドプロファイラー span のみを有効にする:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
 ```
 
-config から profiler フラグを有効にします。
+`profiler` は応答プロファイラーと Codex プロファイラーの両方を有効にします。片方だけを有効にするには、スコープ付きフラグ名を使用してください。
+
+または config に設定します:
 
 ```json
 {
@@ -92,15 +103,11 @@ config から profiler フラグを有効にします。
 }
 ```
 
-config フラグを変更した後は Gateway を再起動してください。profiler フラグを無効にするには、`diagnostics.flags` から削除して再起動します。config で profiler フラグが有効になっている場合でも、すべての診断フラグを一時的に無効にするには、次のようにプロセスを開始します。
-
-```bash
-OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
-```
+config フラグを変更した後は Gateway を再起動してください。プロファイラーフラグを無効にするには、`diagnostics.flags` から削除して再起動するか、その実行で `OPENCLAW_DIAGNOSTICS=0` を指定してプロセスを開始し、すべての診断フラグを上書きします。
 
 ## タイムラインアーティファクト
 
-`timeline` フラグは、外部 QA ハーネス向けに構造化された起動時および実行時のタイミングイベントを書き込みます。
+`timeline` フラグ（エイリアス: `diagnostics.timeline`）は、外部 QA ハーネス向けに、構造化された起動時およびランタイムのタイミングイベントを JSONL として書き込みます:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -108,7 +115,7 @@ OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
 openclaw gateway run
 ```
 
-config でも有効にできます。
+または config で有効にします:
 
 ```json
 {
@@ -118,56 +125,58 @@ config でも有効にできます。
 }
 ```
 
-タイムラインファイルのパスは引き続き `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` から取得されます。`timeline` が config からのみ有効にされている場合、OpenClaw はまだ config を読み込んでいないため、最も早い config 読み込み span は出力されません。それ以降の起動 span は config フラグを使用します。
+出力パスは、フラグ自体が config で設定されている場合でも、常に `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` から取得されます。パス用の config キーはありません。`timeline` が config からのみ有効になっている場合、OpenClaw がまだ config を読んでいないため、最初期の config 読み込み span は欠落します。後続の起動 span は通常どおり取得されます。
 
-`OPENCLAW_DIAGNOSTICS=1`、`OPENCLAW_DIAGNOSTICS=all`、`OPENCLAW_DIAGNOSTICS=*` も、すべての診断フラグを有効にするため、タイムラインを有効にします。JSONL タイミングアーティファクトだけが必要な場合は `timeline` を優先してください。
+`OPENCLAW_DIAGNOSTICS=1`、`=all`、`=*` も、すべてのフラグを有効にするため、タイムラインを有効にします。JSONL アーティファクトだけが必要で、他のすべての診断フラグは不要な場合は、スコープ付きの `timeline` フラグを優先してください。
 
-タイムラインレコードは `openclaw.diagnostics.v1` エンベロープを使用します。イベントには、プロセス ID、フェーズ名、span 名、期間、Plugin ID、依存関係数、イベントループ遅延サンプル、プロバイダー操作名、子プロセスの終了状態、起動エラーの名前/メッセージを含めることができます。タイムラインファイルはローカル診断アーティファクトとして扱い、自分のマシンの外部に共有する前に確認してください。
+タイムライン内のイベントループ遅延サンプルには、`timeline` に加えてもう 1 つのオプトインが必要です。タイムラインを有効にしたうえで、`OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1`（または `on`/`true`/`yes`）を設定してください。
+
+タイムラインレコードは `openclaw.diagnostics.v1` エンベロープを使用し、プロセス ID、フェーズ名、span 名、所要時間、Plugin ID、依存関係数、イベントループ遅延サンプル、プロバイダー操作名、子プロセス終了状態、起動エラー名/メッセージを含むことがあります。タイムラインファイルはローカル診断アーティファクトとして扱い、自分のマシンの外部に共有する前に確認してください。
 
 ## ログの出力先
 
-フラグは標準の診断ログファイルにログを出力します。デフォルトは次のとおりです。
+フラグは標準の診断ログファイルにログを出力します。デフォルト:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-`logging.file` を設定している場合は、代わりにそのパスを使用します。ログは JSONL です（1 行につき 1 つの JSON オブジェクト）。`logging.redactSensitive` に基づく秘匿化は引き続き適用されます。
+`logging.file` を設定している場合は、代わりにそのパスを使用します。ログは JSONL（1 行に 1 つの JSON オブジェクト）です。`logging.redactSensitive` に基づく墨消しは引き続き適用されます。ログパス解決、ローテーション、墨消しモデルの全体については [Logging](/ja-JP/logging) を参照してください。
 
-## ログの抽出
+## ログを抽出
 
-最新のログファイルを選択します。
+最新のログファイルを選ぶ:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Telegram HTTP 診断をフィルタリングします。
+Telegram HTTP 診断をフィルターする:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Brave Search HTTP 診断をフィルタリングします。
+Brave Search HTTP 診断をフィルターする:
 
 ```bash
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-または、再現しながら tail します。
+または再現中に tail する:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-リモート Gateway では、`openclaw logs --follow` も使用できます（[/cli/logs](/ja-JP/cli/logs) を参照）。
+リモート Gateway では、代わりに `openclaw logs --follow` を使用してください（[/cli/logs](/ja-JP/cli/logs) を参照）。
 
 ## 注記
 
-- `logging.level` が `warn` より高く設定されている場合、これらのログは抑制されることがあります。デフォルトの `info` で問題ありません。
-- `brave.http` は Brave Search のリクエスト URL/クエリパラメーター、レスポンスステータス/タイミング、キャッシュの hit/miss/write イベントをログに記録します。API キーやレスポンス本文はログに記録しませんが、検索クエリは機密性が高い場合があります。
-- フラグは有効にしたままでも安全です。特定のサブシステムのログ量にのみ影響します。
-- ログの出力先、レベル、秘匿化を変更するには [/logging](/ja-JP/logging) を使用してください。
+- `logging.level` が `warn` より高く設定されている場合、フラグ制御のログが抑制されることがあります。デフォルトの `info` で問題ありません。
+- `brave.http` は Brave Search のリクエスト URL/クエリパラメーター、レスポンスステータス/タイミング、キャッシュヒット/ミス/書き込みイベントをログに記録します。API キー（リクエストヘッダーとして送信）やレスポンス本文はログに記録しませんが、検索クエリは機微な情報になり得ます。
+- フラグは有効のままにしても安全です。特定のサブシステムのログ量にのみ影響します。
+- ログの出力先、レベル、墨消しを変更するには [/logging](/ja-JP/logging) を使用してください。
 
 ## 関連
 

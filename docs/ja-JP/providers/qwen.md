@@ -1,34 +1,36 @@
 ---
 read_when:
-    - OpenClaw で Qwen を使いたい
+    - OpenClaw で Qwen を使用したい
     - 以前に Qwen OAuth を使用しました
-summary: OpenClaw Pluginを通じてQwen Cloudを使用する
+summary: OpenClaw プラグインを通じて Qwen Cloud を使用する
 title: Qwen
 x-i18n:
-    generated_at: "2026-06-27T12:49:33Z"
+    generated_at: "2026-07-05T11:46:06Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4e42a38f3e7f2db54092886f2ef8c3ab27163c3c3d0f9b4d95affd58555f58d3
+    source_hash: 3678ac0e56ee7cae00cb4a7e17a051734b288ebb4dfab47cb99e5b7ab745c3ce
     source_path: providers/qwen.md
     workflow: 16
 ---
 
-OpenClaw は、Qwen を正規 id `qwen` を持つ第一級のプロバイダー Plugin として扱うようになりました。プロバイダー Plugin は Qwen Cloud / Alibaba DashScope と Coding Plan エンドポイントを対象とし、レガシーの `modelstudio` id を互換性エイリアスとして引き続き動作させ、さらに Qwen Portal トークンフローをプロバイダー `qwen-oauth` として公開します。
+Qwen Cloud は、正規 id `qwen` を持つ公式外部 OpenClaw プロバイダー Plugin です。Qwen Cloud / Alibaba DashScope Standard および Coding Plan エンドポイントを対象とし、互換エイリアスとしてレガシーの `modelstudio` id を引き続き動作させ、Qwen Portal トークンフローを別のプロバイダー [`qwen-oauth`](/ja-JP/providers/qwen-oauth) として公開します。
 
-- プロバイダー: `qwen`
-- Portal プロバイダー: [`qwen-oauth`](/ja-JP/providers/qwen-oauth)
-- 推奨環境変数: `QWEN_API_KEY`
-- 互換性のために受け付けるもの: `MODELSTUDIO_API_KEY`、`DASHSCOPE_API_KEY`
-- API スタイル: OpenAI 互換
+| プロパティ           | 値                                         |
+| ---------------------- | ------------------------------------------ |
+| プロバイダー         | `qwen`                                     |
+| Portal プロバイダー  | [`qwen-oauth`](/ja-JP/providers/qwen-oauth)      |
+| 推奨 env var         | `QWEN_API_KEY`                             |
+| 互換で受け付けるもの | `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY` |
+| API スタイル         | OpenAI 互換                                |
 
 <Tip>
-`qwen3.6-plus` を使いたい場合は、**Standard (pay-as-you-go)** エンドポイントを優先してください。Coding Plan のサポートは公開カタログより遅れる場合があります。
+`qwen3.6-plus` には **Standard（従量課金）** エンドポイントを使用してください。Coding Plan エンドポイントでは利用できません。
 </Tip>
 
-## Plugin をインストールする
+## Plugin をインストール
 
-公式 Plugin をインストールしてから、Gateway を再起動します。
+`qwen` は公式外部 Plugin として提供され、core にはバンドルされていません。インストールして Gateway を再起動します。
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
@@ -40,21 +42,21 @@ openclaw gateway restart
 プラン種別を選び、セットアップ手順に従ってください。
 
 <Tabs>
-  <Tab title="Coding Plan (subscription)">
+  <Tab title="Coding Plan（サブスクリプション）">
     **最適な用途:** Qwen Coding Plan 経由のサブスクリプションベースのアクセス。
 
     <Steps>
       <Step title="API キーを取得する">
-        [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) から API キーを作成またはコピーします。
+        [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) で API キーを作成またはコピーします。
       </Step>
       <Step title="オンボーディングを実行する">
-        **Global** エンドポイントの場合:
+        **グローバル** エンドポイントの場合:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key
         ```
 
-        **China** エンドポイントの場合:
+        **中国** エンドポイントの場合:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key-cn
@@ -79,26 +81,26 @@ openclaw gateway restart
     </Steps>
 
     <Note>
-    レガシーの `modelstudio-*` auth-choice id と `modelstudio/...` モデル参照は互換性エイリアスとして引き続き動作しますが、新しいセットアップフローでは正規の `qwen-*` auth-choice id と `qwen/...` モデル参照を優先してください。別の `api` 値を持つ完全一致のカスタム `models.providers.modelstudio` エントリを定義した場合、そのカスタムプロバイダーが Qwen 互換性エイリアスではなく `modelstudio/...` 参照を所有します。
+    レガシーの `modelstudio-*` auth-choice id と `modelstudio/...` model ref は、互換エイリアスとして引き続き動作しますが、新しいセットアップフローでは正規の `qwen-*` auth-choice id と `qwen/...` model ref を優先してください。別の `api` 値を持つ厳密なカスタム `models.providers.modelstudio` エントリを定義した場合、そのカスタムプロバイダーが Qwen 互換エイリアスではなく `modelstudio/...` ref を所有します。
     </Note>
 
   </Tab>
 
-  <Tab title="Standard (pay-as-you-go)">
-    **最適な用途:** Standard Model Studio エンドポイント経由の従量課金アクセス。Coding Plan で利用できない場合がある `qwen3.6-plus` のようなモデルを含みます。
+  <Tab title="Standard（従量課金）">
+    **最適な用途:** Coding Plan では利用できない `qwen3.6-plus` などのモデルを含む、Standard Model Studio エンドポイント経由の従量課金アクセス。
 
     <Steps>
       <Step title="API キーを取得する">
-        [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) から API キーを作成またはコピーします。
+        [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) で API キーを作成またはコピーします。
       </Step>
       <Step title="オンボーディングを実行する">
-        **Global** エンドポイントの場合:
+        **グローバル** エンドポイントの場合:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key
         ```
 
-        **China** エンドポイントの場合:
+        **中国** エンドポイントの場合:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key-cn
@@ -123,7 +125,7 @@ openclaw gateway restart
     </Steps>
 
     <Note>
-    レガシーの `modelstudio-*` auth-choice id と `modelstudio/...` モデル参照は互換性エイリアスとして引き続き動作しますが、新しいセットアップフローでは正規の `qwen-*` auth-choice id と `qwen/...` モデル参照を優先してください。別の `api` 値を持つ完全一致のカスタム `models.providers.modelstudio` エントリを定義した場合、そのカスタムプロバイダーが Qwen 互換性エイリアスではなく `modelstudio/...` 参照を所有します。
+    レガシーの `modelstudio-*` auth-choice id と `modelstudio/...` model ref は、互換エイリアスとして引き続き動作しますが、新しいセットアップフローでは正規の `qwen-*` auth-choice id と `qwen/...` model ref を優先してください。別の `api` 値を持つ厳密なカスタム `models.providers.modelstudio` エントリを定義した場合、そのカスタムプロバイダーが Qwen 互換エイリアスではなく `modelstudio/...` ref を所有します。
     </Note>
 
   </Tab>
@@ -131,10 +133,10 @@ openclaw gateway restart
   <Tab title="Qwen OAuth / Portal">
     **最適な用途:** `https://portal.qwen.ai/v1` に対する Qwen Portal トークン。
 
-    専用プロバイダーページと移行メモについては、[Qwen OAuth / Portal](/ja-JP/providers/qwen-oauth) を参照してください。
+    専用のプロバイダーページと移行メモについては、[Qwen OAuth / Portal](/ja-JP/providers/qwen-oauth) を参照してください。
 
     <Steps>
-      <Step title="Portal トークンを指定する">
+      <Step title="portal トークンを指定する">
         ```bash
         openclaw onboard --auth-choice qwen-oauth
         ```
@@ -158,7 +160,7 @@ openclaw gateway restart
     </Steps>
 
     <Note>
-    `qwen-oauth` は DashScope プロバイダーと同じ `QWEN_API_KEY` 環境変数名を使用しますが、OpenClaw オンボーディングで設定した場合は `qwen-oauth` プロバイダー id の下に認証情報を保存します。
+    `qwen-oauth` は Qwen Cloud プロバイダーと同じ `QWEN_API_KEY` env var 名を使用しますが、OpenClaw オンボーディングで設定された場合は `qwen-oauth` プロバイダー id の下に認証を保存します。
     </Note>
 
   </Tab>
@@ -166,15 +168,15 @@ openclaw gateway restart
 
 ## プラン種別とエンドポイント
 
-| プラン                     | リージョン | 認証の選択               | エンドポイント                                   |
-| -------------------------- | ---------- | ------------------------ | ------------------------------------------------ |
-| Standard (pay-as-you-go)   | China      | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
-| Standard (pay-as-you-go)   | Global     | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan (subscription) | China      | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
-| Coding Plan (subscription) | Global     | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
-| Qwen Portal                | Global     | `qwen-oauth`               | `portal.qwen.ai/v1`                              |
+| プラン                     | リージョン | 認証選択                   | エンドポイント                                   |
+| -------------------------- | ------ | -------------------------- | ------------------------------------------------ |
+| Coding Plan（サブスクリプション） | 中国   | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
+| Coding Plan（サブスクリプション） | グローバル | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
+| Qwen Portal                | グローバル | `qwen-oauth`               | `portal.qwen.ai/v1`                              |
+| Standard（従量課金）       | 中国   | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
+| Standard（従量課金）       | グローバル | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
 
-プロバイダーは認証の選択に基づいてエンドポイントを自動選択します。正規の選択肢は `qwen-*` ファミリーを使用します。`modelstudio-*` は互換性専用として残ります。設定内のカスタム `baseUrl` で上書きできます。
+プロバイダーは認証選択に基づいてエンドポイントを自動選択します。正規の選択は `qwen-*` ファミリーを使用します。`modelstudio-*` は互換専用として残ります。設定内のカスタム `baseUrl` で上書きできます。
 
 <Tip>
 **キーの管理:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
@@ -183,44 +185,39 @@ openclaw gateway restart
 
 ## 組み込みカタログ
 
-OpenClaw は現在、この Qwen 静的カタログを同梱しています。設定されたカタログは
-エンドポイントを認識します。Coding Plan 設定では、Standard エンドポイントでのみ
-動作することが確認されているモデルは省略されます。
+OpenClaw はこの Qwen 静的カタログを提供します。このカタログはエンドポイントを認識します。Coding Plan 設定では、Standard エンドポイントでのみ動作するモデルは省略されます。
 
-| モデル ref                  | 入力        | コンテキスト | メモ                                               |
-| --------------------------- | ----------- | --------- | -------------------------------------------------- |
-| `qwen/qwen3.5-plus`         | テキスト、画像 | 1,000,000 | デフォルトモデル                                   |
-| `qwen/qwen3.6-plus`         | テキスト、画像 | 1,000,000 | このモデルが必要な場合は Standard エンドポイントを推奨 |
-| `qwen/qwen3-max-2026-01-23` | テキスト       | 262,144   | Qwen Max ライン                                    |
-| `qwen/qwen3-coder-next`     | テキスト       | 262,144   | コーディング                                       |
-| `qwen/qwen3-coder-plus`     | テキスト       | 1,000,000 | コーディング                                       |
-| `qwen/MiniMax-M2.5`         | テキスト       | 1,000,000 | 推論が有効                                         |
-| `qwen/glm-5`                | テキスト       | 202,752   | GLM                                                |
-| `qwen/glm-4.7`              | テキスト       | 202,752   | GLM                                                |
-| `qwen/kimi-k2.5`            | テキスト、画像 | 262,144   | Alibaba 経由の Moonshot AI                         |
-| `qwen-oauth/qwen3.5-plus`   | テキスト、画像 | 1,000,000 | Qwen Portal のデフォルト                           |
+| Model ref                   | 入力       | コンテキスト | 注記                    |
+| --------------------------- | ----------- | --------- | ----------------------- |
+| `qwen/qwen3.5-plus`         | テキスト、画像 | 1,000,000 | デフォルトモデル        |
+| `qwen/qwen3.6-plus`         | テキスト、画像 | 1,000,000 | Standard エンドポイントのみ |
+| `qwen/qwen3-max-2026-01-23` | テキスト   | 262,144   | Qwen Max ライン         |
+| `qwen/qwen3-coder-next`     | テキスト   | 262,144   | コーディング            |
+| `qwen/qwen3-coder-plus`     | テキスト   | 1,000,000 | コーディング            |
+| `qwen/MiniMax-M2.5`         | テキスト   | 1,000,000 | 推論有効                |
+| `qwen/glm-5`                | テキスト   | 202,752   | GLM                     |
+| `qwen/glm-4.7`              | テキスト   | 202,752   | GLM                     |
+| `qwen/kimi-k2.5`            | テキスト、画像 | 262,144   | Alibaba 経由の Moonshot AI |
+| `qwen-oauth/qwen3.5-plus`   | テキスト、画像 | 1,000,000 | Qwen Portal デフォルト  |
 
 <Note>
-モデルが静的カタログに存在する場合でも、可用性はエンドポイントと課金プランによって
-変わることがあります。
+モデルが静的カタログに存在する場合でも、利用可否はエンドポイントと課金プランによって変わることがあります。
 </Note>
 
-## 思考制御
+## thinking 制御
 
-推論が有効な Qwen Cloud モデルでは、プロバイダーが OpenClaw の
-思考レベルを DashScope のトップレベル `enable_thinking` リクエストフラグにマッピングします。思考が無効な場合は
-`enable_thinking: false` を送信し、それ以外の思考レベルでは
-`enable_thinking: true` を送信します。
+`qwen/MiniMax-M2.5` は組み込みカタログで唯一の推論有効モデルです。`qwen` ファミリーの推論モデルでは、プロバイダーは OpenClaw の thinking レベルを DashScope のトップレベル `enable_thinking` リクエストフラグにマップします。thinking 無効時は `enable_thinking: false` を送信し、それ以外のレベルでは `enable_thinking: true` を送信します。カスタムモデルは、モデルエントリに `compat.thinkingFormat: "qwen-chat-template"` を設定することで、代替の chat-template thinking ペイロードを選択できます。
 
 ## マルチモーダルアドオン
 
-`qwen` Plugin は、**Standard**
-DashScope エンドポイント（Coding Plan エンドポイントではありません）でもマルチモーダル機能を公開します。
+`qwen` Plugin は、Coding Plan エンドポイントではなく **Standard** DashScope エンドポイントでのみマルチモーダル機能を公開します。
 
-- `qwen-vl-max-latest` による**動画理解**
+- `qwen-vl-max-latest` による **画像と動画の理解**
 - `wan2.6-t2v`（デフォルト）、`wan2.6-i2v`、`wan2.6-r2v`、`wan2.6-r2v-flash`、`wan2.7-r2v` による **Wan 動画生成**
 
-Qwen をデフォルトの動画プロバイダーとして使用するには:
+メディア理解は設定済みの Qwen 認証から自動解決されます。追加設定は不要です。メディア理解を動作させるには、Standard（従量課金）エンドポイントを使用していることを確認してください。
+
+Qwen をデフォルトの動画プロバイダーにするには、次のように設定します。
 
 ```json5
 {
@@ -232,90 +229,39 @@ Qwen をデフォルトの動画プロバイダーとして使用するには:
 }
 ```
 
+動画生成の制限: リクエストごとに出力動画は 1 件、入力画像は最大 1 件（画像から動画）、入力動画は最大 4 件（動画から動画）、最大 duration は 10 秒です。`size`、`aspectRatio`、`resolution`、`audio`、`watermark` をサポートします。参照画像/動画入力にはリモート http(s) URL が必要です。DashScope 動画エンドポイントはこれらの参照用にアップロードされたローカルバッファを受け付けないため、ローカルファイルパスは事前に拒否されます。
+
 <Note>
-共有ツールパラメーター、プロバイダー選択、フェイルオーバー動作については、[動画生成](/ja-JP/tools/video-generation)を参照してください。
+共有ツールパラメーター、プロバイダー選択、フェイルオーバー動作については、[動画生成](/ja-JP/tools/video-generation) を参照してください。
 </Note>
 
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="Image and video understanding">
-    Qwen Plugin は、**Standard** DashScope エンドポイント
-    （Coding Plan エンドポイントではありません）で画像と動画のメディア理解を登録します。
-
-    | プロパティ    | 値                    |
-    | ------------- | --------------------- |
-    | モデル        | `qwen-vl-max-latest`  |
-    | 対応入力      | 画像、動画            |
-
-    メディア理解は、設定済みの Qwen 認証から自動解決されます。追加設定は
-    必要ありません。メディア理解のサポートには、Standard（従量課金）
-    エンドポイントを使用していることを確認してください。
-
-  </Accordion>
-
-  <Accordion title="Qwen 3.6 Plus availability">
-    `qwen3.6-plus` は、Standard（従量課金）Model Studio
-    エンドポイントで利用できます。
+  <Accordion title="Qwen 3.6 Plus の利用可否">
+    `qwen3.6-plus` は Standard（従量課金）エンドポイントで利用できます。
 
     - 中国: `dashscope.aliyuncs.com/compatible-mode/v1`
     - グローバル: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
 
-    Coding Plan エンドポイントが `qwen3.6-plus` に対して
-    "unsupported model" エラーを返す場合は、Coding Plan の
-    エンドポイント/キーの組み合わせではなく Standard（従量課金）に切り替えてください。
+    Coding Plan エンドポイントが `qwen3.6-plus` に対して「unsupported model」エラーを返す場合は、Coding Plan エンドポイント/キーペアではなく Standard（従量課金）に切り替えてください。
 
-    OpenClaw の Qwen 静的カタログは、Coding
-    Plan エンドポイント上で `qwen3.6-plus` を公開しませんが、
-    `models.providers.qwen.models` 配下で明示的に設定された `qwen/qwen3.6-plus` エントリは
-    Coding Plan baseUrls でも尊重されます。そのため、Aliyun がサブスクリプションで有効化した場合は、
-    そのモデルをオプトインできます。呼び出しが成功するかどうかは
-    上流 API が引き続き決定します。
+    OpenClaw の Qwen 静的カタログは Coding Plan エンドポイントで `qwen3.6-plus` を提示しませんが、`models.providers.qwen.models` の下に明示的に設定された `qwen/qwen3.6-plus` エントリは Coding Plan ベース URL でも尊重されるため、Aliyun があなたのサブスクリプションで有効化した場合は、そのモデルを opt in できます。呼び出しが成功するかどうかは、引き続き upstream API が決定します。
 
   </Accordion>
 
-  <Accordion title="Capability plan">
-    `qwen` Plugin は、コーディング/テキストモデルだけでなく、Qwen
-    Cloud 全体のサーフェスに対するベンダーのホームとして位置付けられつつあります。
-
-    - **テキスト/チャットモデル:** Plugin を通じて利用可能
-    - **ツール呼び出し、構造化出力、思考:** OpenAI 互換トランスポートから継承
-    - **画像生成:** プロバイダー Plugin レイヤーで計画中
-    - **画像/動画理解:** Standard エンドポイント上の Plugin を通じて利用可能
-    - **音声/オーディオ:** プロバイダー Plugin レイヤーで計画中
-    - **メモリエンベディング/リランキング:** エンベディングアダプターサーフェスを通じて計画中
-    - **動画生成:** 共有動画生成機能を通じて Plugin から利用可能
-
-  </Accordion>
-
-  <Accordion title="Video generation details">
-    動画生成では、OpenClaw はジョブを送信する前に、設定された Qwen リージョンを対応する
-    DashScope AIGC ホストにマッピングします。
+  <Accordion title="動画生成のリージョンルーティング">
+    OpenClaw は動画ジョブを送信する前に、設定済みの Qwen リージョンを対応する DashScope AIGC ホストにマップします。
 
     - グローバル/Intl: `https://dashscope-intl.aliyuncs.com`
     - 中国: `https://dashscope.aliyuncs.com`
 
-    つまり、Coding Plan または Standard Qwen ホストのいずれかを指す通常の
-    `models.providers.qwen.baseUrl` でも、動画生成は正しい
-    リージョンの DashScope 動画エンドポイントに維持されます。
-
-    現在の Qwen 動画生成の制限:
-
-    - リクエストあたり最大 **1** 本の出力動画
-    - 最大 **1** 枚の入力画像
-    - 最大 **4** 本の入力動画
-    - 最大 **10 秒** の長さ
-    - `size`、`aspectRatio`、`resolution`、`audio`、`watermark` をサポート
-    - 参照画像/動画モードでは現在、**リモート http(s) URL** が必要です。ローカル
-      ファイルパスは、DashScope 動画エンドポイントがそれらの参照用にアップロードされたローカルバッファーを
-      受け付けないため、事前に拒否されます。
+    Coding Plan または Standard の Qwen ホストを指す通常の `models.providers.qwen.baseUrl` でも、動画生成は対応するリージョンの DashScope 動画エンドポイントにルーティングされます。
 
   </Accordion>
 
-  <Accordion title="ストリーミング使用量の互換性">
-    ネイティブ Model Studio エンドポイントは、共有 `openai-completions` トランスポートでストリーミング使用量の互換性を通知します。現在 OpenClaw はそれをエンドポイント機能に基づいて判定するため、同じネイティブホストを対象とする DashScope 互換のカスタムプロバイダー ID は、組み込みの `qwen` プロバイダー ID を明示的に必要とせず、同じストリーミング使用量の動作を継承します。
-
-    ネイティブストリーミング使用量の互換性は、Coding Plan ホストと Standard DashScope 互換ホストの両方に適用されます。
+  <Accordion title="ストリーミング usage 互換性">
+    ネイティブ Qwen エンドポイントは共有 `openai-completions` transport 上でストリーミング usage 互換性を提示するため、同じネイティブホストを対象とする DashScope 互換のカスタムプロバイダー id は、組み込みの `qwen` プロバイダー id を特に必要とせずに同じ動作を継承します。これは Coding Plan と Standard の両方のエンドポイントに適用されます。
 
     - `https://coding.dashscope.aliyuncs.com/v1`
     - `https://coding-intl.dashscope.aliyuncs.com/v1`
@@ -324,20 +270,27 @@ Qwen をデフォルトの動画プロバイダーとして使用するには:
 
   </Accordion>
 
-  <Accordion title="マルチモーダルエンドポイントのリージョン">
-    マルチモーダルサーフェス（動画理解と Wan 動画生成）は、Coding Plan エンドポイントではなく **Standard** DashScope エンドポイントを使用します。
+  <Accordion title="Capability 計画">
+    `qwen` Plugin は、コーディング/テキストモデルだけでなく、Qwen Cloud 全体のベンダーホームとして位置付けられています。
 
-    - Global/Intl Standard ベース URL: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
-    - China Standard ベース URL: `https://dashscope.aliyuncs.com/compatible-mode/v1`
+    - **テキスト/チャットモデル:** プラグインを通じて利用可能
+    - **ツール呼び出し、構造化出力、思考:** OpenAI 互換トランスポートから継承
+    - **画像生成:** プロバイダープラグイン層で予定
+    - **画像/動画理解:** Standard エンドポイントのプラグインを通じて利用可能
+    - **音声/オーディオ:** プロバイダープラグイン層で予定
+    - **メモリエンベディング/再ランキング:** エンベディングアダプターサーフェスを通じて予定
+    - **動画生成:** 共有の動画生成機能を通じてプラグインから利用可能
 
   </Accordion>
 
   <Accordion title="環境とデーモンのセットアップ">
-    Gateway をデーモン（launchd/systemd）として実行する場合は、そのプロセスで `QWEN_API_KEY` を利用できるようにしてください（例: `~/.openclaw/.env` または `env.shellEnv` 経由）。
+    Gateway がデーモン（launchd/systemd）として実行される場合は、`QWEN_API_KEY` が
+    そのプロセスで利用可能であることを確認してください（たとえば、`~/.openclaw/.env` 内、または
+    `env.shellEnv` 経由）。
   </Accordion>
 </AccordionGroup>
 
-## 関連情報
+## 関連
 
 <CardGroup cols={2}>
   <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
@@ -346,8 +299,8 @@ Qwen をデフォルトの動画プロバイダーとして使用するには:
   <Card title="動画生成" href="/ja-JP/tools/video-generation" icon="video">
     共有動画ツールのパラメーターとプロバイダー選択。
   </Card>
-  <Card title="Alibaba (ModelStudio)" href="/ja-JP/providers/alibaba" icon="cloud">
-    レガシー ModelStudio プロバイダーと移行メモ。
+  <Card title="Alibaba Model Studio" href="/ja-JP/providers/alibaba" icon="cloud">
+    同じ DashScope プラットフォーム上のバンドル済み Wan 動画生成プロバイダー。
   </Card>
   <Card title="トラブルシューティング" href="/ja-JP/help/troubleshooting" icon="wrench">
     一般的なトラブルシューティングと FAQ。

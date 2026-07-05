@@ -1,20 +1,20 @@
 ---
-summary: 重定向到任务流程
+summary: 重定向到 Task Flow
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-27T06:01:59Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
-    source_path: automation/clawflow.md
-    workflow: 15
+    generated_at: "2026-07-05T11:00:37Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
+    source_path: automation/clawflow.md
+    workflow: 16
 ---
 
-ClawFlow 已重命名为 [Task flow](/zh-CN/automation/taskflow)。
+ClawFlow 已重命名为 [Task Flow](/zh-CN/automation/taskflow)。请使用该页面进行持久的多步骤流程编排。
 
-## 相关
+## 相关内容
 
-- [Task flow](/zh-CN/automation/taskflow)
-- [Standing orders](/zh-CN/automation/standing-orders)
+- [Task Flow](/zh-CN/automation/taskflow)
+- [常驻指令](/zh-CN/automation/standing-orders)
 - [Hooks](/zh-CN/automation/hooks)

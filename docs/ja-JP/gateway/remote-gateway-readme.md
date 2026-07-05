@@ -1,24 +1,24 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: OpenClaw.app がリモート Gateway に接続するための SSH トンネル設定
+summary: リモート Gateway に接続する OpenClaw.app の SSH トンネル設定
 title: リモート Gateway のセットアップ
 x-i18n:
-    generated_at: "2026-04-30T05:15:11Z"
+    generated_at: "2026-07-05T11:23:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
+    source_hash: 842578eb74e99d115b04abff5e9673a6454fa6d2cf7905d056999469e1c6b66d
     source_path: gateway/remote-gateway-readme.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-> この内容は[リモートアクセス](/ja-JP/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent)に統合されました。現在のガイドはそのページを参照してください。
+<Note>
+この内容は現在、[リモートアクセス](/ja-JP/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent)に移動しています。現在のガイドにはそのページを使用してください。このページはリダイレクト先として残っています。
+</Note>
 
 # リモート Gateway で OpenClaw.app を実行する
 
-OpenClaw.app は SSH トンネリングを使ってリモート Gateway に接続します。このガイドでは、その設定方法を示します。
-
-## 概要
+OpenClaw.app は SSH トンネル経由でリモート Gateway に到達します。SSH の `LocalForward` は、ローカルポートをリモートホスト上の Gateway WebSocket ポートにマップします。
 
 ```mermaid
 flowchart TB
@@ -41,134 +41,26 @@ flowchart TB
     T --> C
 ```
 
-## クイックセットアップ
+## セットアップ
 
-### 手順 1: SSH 設定を追加する
+1. `LocalForward 18789 127.0.0.1:18789` を含む SSH config エントリを追加します（完全な config ブロックについては [リモートアクセス](/ja-JP/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) を参照してください）。
+2. `ssh-copy-id` で SSH キーをリモートホストにコピーします。
+3. `openclaw config set gateway.remote.token "<your-token>"` で `gateway.remote.token`（または `gateway.remote.password`）を設定します。
+4. トンネルを開始します: `ssh -N remote-gateway &`。
+5. OpenClaw.app を終了して再度開きます。
 
-`~/.ssh/config` を編集して、次を追加します。
-
-```ssh
-Host remote-gateway
-    HostName <REMOTE_IP>          # e.g., 172.27.187.184
-    User <REMOTE_USER>            # e.g., jefferson
-    LocalForward 18789 127.0.0.1:18789
-    IdentityFile ~/.ssh/id_rsa
-```
-
-`<REMOTE_IP>` と `<REMOTE_USER>` を自分の値に置き換えてください。
-
-### 手順 2: SSH キーをコピーする
-
-公開鍵をリモートマシンにコピーします（一度だけパスワードを入力します）。
-
-```bash
-ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
-```
-
-### 手順 3: リモート Gateway 認証を設定する
-
-```bash
-openclaw config set gateway.remote.token "<your-token>"
-```
-
-リモート Gateway がパスワード認証を使う場合は、代わりに `gateway.remote.password` を使用します。
-`OPENCLAW_GATEWAY_TOKEN` はシェルレベルの上書きとして引き続き有効ですが、永続的なリモートクライアント設定は `gateway.remote.token` / `gateway.remote.password` です。
-
-### 手順 4: SSH トンネルを開始する
-
-```bash
-ssh -N remote-gateway &
-```
-
-### 手順 5: OpenClaw.app を再起動する
-
-```bash
-# Quit OpenClaw.app (⌘Q), then reopen:
-open /path/to/OpenClaw.app
-```
-
-これでアプリは SSH トンネル経由でリモート Gateway に接続します。
-
----
-
-## ログイン時にトンネルを自動開始する
-
-ログイン時に SSH トンネルを自動的に開始するには、Launch Agent を作成します。
-
-### PLIST ファイルを作成する
-
-これを `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` として保存します。
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>ai.openclaw.ssh-tunnel</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/bin/ssh</string>
-        <string>-N</string>
-        <string>remote-gateway</string>
-    </array>
-    <key>KeepAlive</key>
-    <true/>
-    <key>RunAtLoad</key>
-    <true/>
-</dict>
-</plist>
-```
-
-### Launch Agent を読み込む
-
-```bash
-launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
-```
-
-これでトンネルは次のようになります。
-
-- ログイン時に自動的に開始する
-- クラッシュした場合に再起動する
-- バックグラウンドで実行し続ける
-
-レガシーメモ: 残っている `com.openclaw.ssh-tunnel` LaunchAgent がある場合は削除してください。
-
----
-
-## トラブルシューティング
-
-**トンネルが実行中か確認する:**
-
-```bash
-ps aux | grep "ssh -N remote-gateway" | grep -v grep
-lsof -i :18789
-```
-
-**トンネルを再起動する:**
-
-```bash
-launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
-
-**トンネルを停止する:**
-
-```bash
-launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
-```
-
----
+再起動後も維持され、自動的に再接続されるトンネルには、手動の `ssh -N` ではなく、[リモートアクセス](/ja-JP/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent)ページの LaunchAgent セットアップを使用してください。
 
 ## 仕組み
 
-| コンポーネント                       | 役割                                                         |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | ローカルポート 18789 をリモートポート 18789 に転送する       |
-| `ssh -N`                             | リモートコマンドを実行しない SSH（ポート転送のみ）           |
-| `KeepAlive`                          | クラッシュした場合にトンネルを自動的に再起動する             |
-| `RunAtLoad`                          | エージェントの読み込み時にトンネルを開始する                 |
+| コンポーネント                       | 役割                                                          |
+| ------------------------------------ | ------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | ローカルポート 18789 をリモートポート 18789 に転送します      |
+| `ssh -N`                             | リモートコマンドを実行しない SSH（ポート転送のみ）            |
+| `KeepAlive`                          | クラッシュした場合にトンネルを自動的に再起動します（LaunchAgent） |
+| `RunAtLoad`                          | LaunchAgent の読み込み時にトンネルを開始します（LaunchAgent） |
 
-OpenClaw.app はクライアントマシン上の `ws://127.0.0.1:18789` に接続します。SSH トンネルは、その接続を Gateway が実行されているリモートマシンのポート 18789 に転送します。
+OpenClaw.app はクライアント上の `ws://127.0.0.1:18789` に接続します。トンネルは、その接続を Gateway が動作しているリモートホスト上のポート 18789 に転送します。
 
 ## 関連
 

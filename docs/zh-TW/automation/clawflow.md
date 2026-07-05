@@ -1,20 +1,20 @@
 ---
-summary: 重新導向至任務流程
+summary: 重新導向至工作流程
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-30T02:44:25Z"
+    generated_at: "2026-07-05T11:00:34Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
     source_path: automation/clawflow.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawFlow 已重新命名為 [任務流程](/zh-TW/automation/taskflow)。
+ClawFlow 已重新命名為 [Task Flow](/zh-TW/automation/taskflow)。請使用該頁面進行持久的多步驟流程編排。
 
 ## 相關
 
-- [任務流程](/zh-TW/automation/taskflow)
-- [常設指令](/zh-TW/automation/standing-orders)
+- [Task Flow](/zh-TW/automation/taskflow)
+- [常駐指令](/zh-TW/automation/standing-orders)
 - [掛鉤](/zh-TW/automation/hooks)

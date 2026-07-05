@@ -1,148 +1,80 @@
 ---
 read_when:
-    - 你想询问一个关于当前会话的快速附带问题
+    - 你想询问一个关于当前会话的简短附带问题
     - 你正在跨客户端实现或调试 BTW 行为
-summary: 使用 /btw 的临时旁支问题
+summary: 使用 /btw 提出临时附带问题
 title: 顺便问几个问题
 x-i18n:
-    generated_at: "2026-06-27T03:25:07Z"
+    generated_at: "2026-07-05T11:43:49Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
+    source_hash: c20220c037e4b6963b1708f75dc7f268a76b88b297363e9b65e6d3d8bfa6d26a
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` 让你可以就**当前会话**快速提出一个旁路问题，而不会把这个问题变成普通对话历史。`/side` 是它的别名。
-
-它参考了 Claude Code 的 `/btw` 行为，但适配了 OpenClaw 的 Gateway 网关和多渠道架构。
-
-## 它会做什么
-
-当你发送：
+`/btw`（别名 `/side`）用于询问关于**当前会话**的快速旁路问题，而不会将其加入对话历史。它以 Claude Code 的 `/btw` 为模型，并适配了 OpenClaw 的 Gateway 网关和多渠道架构。
 
 ```text
 /btw what changed?
+/side what does this error mean?
 ```
 
-OpenClaw 会：
+## 它的作用
 
-1. 为当前会话上下文创建快照，
-2. 运行一个独立的临时旁路查询，
-3. 只回答这个旁路问题，
-4. 不影响主运行，
-5. **不会**把 BTW 问题或回答写入会话历史，
-6. 将回答作为**实时旁路结果**发出，而不是普通的助手消息。
+1. 将当前会话快照为后台上下文（包括任何正在进行的主运行提示词）。
+2. 运行一个单独的一次性旁路查询，指示模型只回答这个旁路问题，不要恢复或 Steer 主任务。
+3. 将答案作为实时旁路结果交付，而不是普通的助手消息。
+4. 绝不把问题或答案写入会话历史或 `chat.history`。
 
-重要的心智模型是：
+如果主运行处于活动状态，它会保持不变。
 
-- 相同的会话上下文
-- 独立的一次性旁路查询
-- 当会话使用原生 harness 时，使用相同的原生 harness 传输
-- 不污染未来上下文
-- 不持久化 transcript
+对于 Codex harness 会话，BTW 会将活动的 Codex app-server 线程 fork 到一个临时子线程，而不是运行单独的提供商调用。这会保持 Codex OAuth 以及原生工具/线程行为不变，且 fork 后的线程会保留父线程当前的审批策略、沙箱和原生工具表面。fork 后的线程会获得一个边界提示词，告知模型边界之前的所有内容都是继承的参考上下文，而不是活动指令，并且只有边界之后的消息才是实时的。`/btw` 需要已有的 Codex 线程；请先发送一条普通消息。
 
-对于 Codex harness 会话，BTW 会通过将活动 app-server thread fork 为临时旁路 thread，留在 Codex 内部。这会保持 Codex OAuth 和原生 thread 行为不变，同时仍然把旁路回答与父 transcript 隔离。与 Codex `/side` 一样，旁路 thread 保留当前 Codex 权限和原生工具表面，并带有 guardrails，告诉模型不要把继承的父 thread 工作当作活动指令。
+对于 CLI 运行时别名，BTW 会以一次性旁路问题模式调用所属的 CLI 后端：它会将经过清理的对话上下文注入到一次新的 CLI 调用中，并禁用工具打包和可复用会话状态，同时添加后端支持的任何不恢复/禁用工具标志。直接（非 CLI）运行时则改用直接的一次性提供商调用。
 
-对于 CLI 运行时别名，BTW 会使用所属 CLI 后端的旁路问题模式，而不是回退到直接提供商调用。OpenClaw 会把经过清理的对话上下文注入到一个新的一次性 CLI 调用中，为该调用禁用 OpenClaw MCP 工具打包和可复用 CLI 会话状态，并让后端添加其支持的任何 CLI 原生 no-resume 或 no-tools 标志。直接的非 CLI 运行时会保留直接的一次性路径。
+## 它不做什么
 
-## 它不会做什么
-
-`/btw` **不会**：
-
-- 创建新的持久会话，
-- 继续未完成的主任务，
-- 将 BTW 问题/回答数据写入 transcript 历史，
-- 出现在 `chat.history` 中，
-- 在重新加载后保留。
-
-它有意设计为**临时**。
-
-## 上下文如何工作
-
-BTW 只把当前会话用作**背景上下文**。
-
-如果主运行当前处于活动状态，OpenClaw 会为当前消息状态创建快照，并把正在进行的主提示词作为背景上下文包含进去，同时明确告诉模型：
-
-- 只回答旁路问题，
-- 不要恢复或完成未完成的主任务，
-- 不要 steer 父对话。
-
-这会让 BTW 与主运行隔离，同时仍然了解会话的主题。
+`/btw` 不会创建持久会话、继续未完成的主任务、将问题/答案数据持久化到转录历史，也不会在重新加载后保留。
 
 ## 交付模型
 
-BTW **不会**作为普通助手 transcript 消息交付。
+普通助手聊天使用 Gateway 网关的 `chat` 事件。BTW 使用单独的 `chat.side_result` 事件，因此客户端不会将其误认为常规对话历史。因为它不会从 `chat.history` 重放，所以会在重新加载后消失。
 
-在 Gateway 网关协议层面：
+## 界面行为
 
-- 普通助手聊天使用 `chat` 事件
-- BTW 使用 `chat.side_result` 事件
+| 界面 | 行为 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TUI | 在聊天日志中内联渲染，并且与普通回复有明显区分，可用 `Enter` 或 `Esc` 关闭。 |
+| 外部渠道 | 作为清晰标记的一次性回复交付（Telegram、WhatsApp、Discord 没有本地临时浮层）。 |
+| Control UI / web | Gateway 网关会正确发出 `chat.side_result`，且它会被排除在 `chat.history` 之外，但 Control UI 目前还没有消费者在浏览器中实时渲染它。 |
 
-这种分离是有意设计的。如果 BTW 复用普通 `chat` 事件路径，客户端会把它当作常规对话历史。
+## 何时使用它
 
-因为 BTW 使用独立的实时事件，并且不会从 `chat.history` 重放，所以它会在重新加载后消失。
-
-## 表面行为
-
-### TUI
-
-在 TUI 中，BTW 会以内联方式呈现在当前会话视图中，但它仍然是临时的：
-
-- 与普通助手回复在视觉上明显区分
-- 可用 `Enter` 或 `Esc` 关闭
-- 重新加载后不会重放
-
-### 外部渠道
-
-在 Telegram、WhatsApp 和 Discord 等渠道上，BTW 会作为带有清晰标签的一次性回复交付，因为这些表面没有本地临时叠层概念。
-
-该回答仍然被视为旁路结果，而不是普通会话历史。
-
-### Control UI / web
-
-Gateway 网关会正确地将 BTW 作为 `chat.side_result` 发出，并且 BTW 不包含在 `chat.history` 中，因此 web 的持久化契约已经正确。
-
-当前 Control UI 仍然需要专用的 `chat.side_result` 消费者，以便在浏览器中实时渲染 BTW。在该客户端支持落地之前，BTW 是一个具备完整 TUI 和外部渠道行为的 Gateway 网关级功能，但还不是完整的浏览器 UX。
-
-## 何时使用 BTW
-
-当你想要以下内容时，使用 `/btw`：
-
-- 对当前工作进行快速澄清，
-- 在长时间运行仍在进行时获得事实性旁路回答，
-- 获得一个不应成为未来会话上下文一部分的临时回答。
-
-示例：
+使用 `/btw` 获取快速澄清、在长运行仍在进行时获取事实性旁路答案，或获取一个不应进入未来会话上下文的临时答案。
 
 ```text
 /btw what file are we editing?
-/side what changed while the main run continued?
-/btw what does this error mean?
 /btw summarize the current task in one sentence
 /btw what is 17 * 19?
 ```
 
-## 何时不要使用 BTW
-
-当你希望回答成为会话未来工作上下文的一部分时，不要使用 `/btw`。
-
-在这种情况下，请在主会话中正常提问，而不是使用 BTW。
+对于任何你希望成为会话未来工作上下文一部分的内容，请改为在主会话中正常提问。
 
 ## 相关
 
 <CardGroup cols={2}>
-  <Card title="Slash commands" href="/zh-CN/tools/slash-commands" icon="terminal">
+  <Card title="斜杠命令" href="/zh-CN/tools/slash-commands" icon="terminal">
     原生命令目录和聊天指令。
   </Card>
-  <Card title="Thinking levels" href="/zh-CN/tools/thinking" icon="brain">
-    旁路问题模型调用的推理强度等级。
+  <Card title="思考级别" href="/zh-CN/tools/thinking" icon="brain">
+    旁路问题模型调用的推理强度级别。
   </Card>
-  <Card title="Session" href="/zh-CN/concepts/session" icon="comments">
+  <Card title="会话" href="/zh-CN/concepts/session" icon="comments">
     会话键、历史和持久化语义。
   </Card>
-  <Card title="Steer command" href="/zh-CN/tools/steer" icon="arrow-right">
-    向活动运行注入一条 steering 消息，而不结束它。
+  <Card title="Steer 命令" href="/zh-CN/tools/steer" icon="arrow-right">
+    在不结束活动运行的情况下向其中注入一条转向消息。
   </Card>
 </CardGroup>

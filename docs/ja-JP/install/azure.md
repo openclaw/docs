@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Network Security Group による堅牢化を行い、OpenClaw を Azure 上で24時間365日稼働させたい場合
-    - 自分の Azure Linux VM 上で、本番環境グレードの常時稼働する OpenClaw Gateway を運用したい
-    - Azure Bastion SSH で安全に管理したい場合
-summary: 永続状態を備えた Azure Linux VM で OpenClaw Gateway を24時間365日実行する
+    - Network Security Group の強化を適用して、Azure 上で OpenClaw を 24/7 稼働させたい
+    - 自分の Azure Linux VM 上で、本番環境レベルの常時稼働する OpenClaw Gateway が必要な場合
+    - Azure Bastion SSH によるセキュアな管理が必要な場合
+summary: Azure Linux VM で永続的な状態を保持しながら OpenClaw Gateway を 24 時間 365 日実行する
 title: Azure
 x-i18n:
-    generated_at: "2026-05-06T05:08:42Z"
+    generated_at: "2026-07-05T11:30:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
+    source_hash: e8598014cdc2786a47039ffb42ddd85354da9c87fd55ea46bb6dad7714171a14
     source_path: install/azure.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-このガイドでは、Azure CLI を使用して Azure Linux VM をセットアップし、Network Security Group (NSG) の強化を適用し、SSH アクセス用に Azure Bastion を構成し、OpenClaw をインストールします。
+Azure CLI で Azure Linux VM をセットアップし、Network Security Group (NSG) の強化を適用し、SSH アクセス用に Azure Bastion を構成して、OpenClaw をインストールします。
 
 ## 実施すること
 
 - Azure CLI で Azure ネットワーク (VNet、サブネット、NSG) とコンピューティングリソースを作成する
-- VM SSH が Azure Bastion からのみ許可されるように Network Security Group ルールを適用する
+- VM の SSH を Azure Bastion からのみ許可するように NSG ルールを適用する
 - SSH アクセスに Azure Bastion を使用する (VM にパブリック IP は付けない)
 - インストーラースクリプトで OpenClaw をインストールする
 - Gateway を検証する
 
 ## 必要なもの
 
-- コンピューティングリソースとネットワークリソースを作成する権限を持つ Azure サブスクリプション
-- Azure CLI のインストール (必要に応じて [Azure CLI のインストール手順](https://learn.microsoft.com/cli/azure/install-azure-cli) を参照)
-- SSH キーペア (必要な場合は、このガイドで生成方法を説明します)
-- 約20〜30分
+- コンピューティングリソースとネットワークリソースを作成する権限がある Azure サブスクリプション
+- Azure CLI のインストール (「[Azure CLI インストール手順](https://learn.microsoft.com/cli/azure/install-azure-cli)」を参照)
+- SSH キーペア (必要な場合はこのガイドで生成手順も扱います)
+- 約 20-30 分
 
 ## デプロイを構成する
 
@@ -45,7 +45,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="必要なリソースプロバイダーを登録する (初回のみ)">
+  <Step title="必要なリソースプロバイダーを登録する (一度だけ)">
     ```bash
     az provider register --namespace Microsoft.Compute
     az provider register --namespace Microsoft.Network
@@ -76,18 +76,18 @@ x-i18n:
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    名前と CIDR 範囲は、自分の環境に合わせて調整します。Bastion サブネットは少なくとも `/26` である必要があります。
+    環境に合わせて名前と CIDR 範囲を調整します。Bastion サブネットは少なくとも `/26` である必要があります。
 
   </Step>
 
   <Step title="SSH キーを選択する">
-    既存の公開鍵がある場合は使用します。
+    既存の公開キーがある場合はそれを使用します。
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
     ```
 
-    まだ SSH キーがない場合は生成します。
+    ない場合は生成します。
 
     ```bash
     ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519 -C "you@example.com"
@@ -102,11 +102,9 @@ x-i18n:
     OS_DISK_SIZE_GB=64
     ```
 
-    サブスクリプションとリージョンで利用可能な VM サイズと OS ディスクサイズを選択します。
-
-    - 軽い利用では小さめから始め、後でスケールアップする
-    - より重い自動化、より多くのチャンネル、またはより大きなモデル/ツールのワークロードには、より多くの vCPU/RAM/ディスクを使用する
-    - VM サイズがリージョンまたはサブスクリプションのクォータで利用できない場合は、利用可能な最も近い SKU を選択する
+    - 軽い利用では小さめから始め、後でスケールアップします。
+    - より重い自動化、より多くのチャンネル、またはより大きなモデル/ツールワークロードには、より多くの vCPU/RAM/ディスクを使用します。
+    - リージョンまたはサブスクリプションクォータでサイズが利用できない場合は、利用可能な最も近い SKU を選択します。
 
     対象リージョンで利用可能な VM サイズを一覧表示します。
 
@@ -132,8 +130,8 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="Network Security Group を作成する">
-    NSG を作成し、Bastion サブネットだけが VM に SSH 接続できるようにルールを追加します。
+  <Step title="ネットワークセキュリティグループを作成する">
+    NSG を作成し、Bastion サブネットのみが VM に SSH 接続できるようにルールを追加します。
 
     ```bash
     az network nsg create \
@@ -164,7 +162,7 @@ x-i18n:
       --destination-port-ranges 22
     ```
 
-    ルールは優先度順 (数値が小さいものから) に評価されます。Bastion トラフィックは 100 で許可され、その後、その他すべての SSH は 110 と 120 でブロックされます。
+    ルールは優先度順に評価され、数値が小さいものが先です。Bastion トラフィックは 100 で許可され、その後、他のすべての SSH は 110 と 120 でブロックされます。
 
   </Step>
 
@@ -183,7 +181,7 @@ x-i18n:
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n "${VM_SUBNET_NAME}" --nsg "${NSG_NAME}"
 
-    # AzureBastionSubnet — name is required by Azure
+    # AzureBastionSubnet: this exact name is required by Azure
     az network vnet subnet create \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n AzureBastionSubnet \
@@ -193,7 +191,7 @@ x-i18n:
   </Step>
 
   <Step title="VM を作成する">
-    VM にはパブリック IP がありません。SSH アクセスは Azure Bastion 経由のみです。
+    VM にはパブリック IP が付きません。SSH アクセスは Azure Bastion 経由のみにします。
 
     ```bash
     az vm create \
@@ -210,9 +208,9 @@ x-i18n:
       --nsg ""
     ```
 
-    `--public-ip-address ""` はパブリック IP の割り当てを防ぎます。`--nsg ""` は NIC ごとの NSG 作成をスキップします (セキュリティはサブネットレベルの NSG が処理します)。
+    `--public-ip-address ""` はパブリック IP の割り当てを防ぎます。`--nsg ""` は、サブネットレベルの NSG がすでにセキュリティを扱うため、NIC ごとの NSG をスキップします。
 
-    **再現性:** 上記のコマンドでは Ubuntu イメージに `latest` を使用しています。特定バージョンに固定するには、利用可能なバージョンを一覧表示して `latest` を置き換えます。
+    `latest` ではなく特定の Ubuntu イメージバージョンに固定するには、まず利用可能なバージョンを一覧表示します。
 
     ```bash
     az vm image list \
@@ -223,7 +221,7 @@ x-i18n:
   </Step>
 
   <Step title="Azure Bastion を作成する">
-    Azure Bastion は、パブリック IP を公開せずに VM へのマネージド SSH アクセスを提供します。CLI ベースの `az network bastion ssh` には、トンネリングを有効にした Standard SKU が必要です。
+    Azure Bastion は、VM 上でパブリック IP を公開せずに管理された SSH アクセスを提供します。CLI ベースの `az network bastion ssh` には、トンネリングを有効にした Standard SKU が必要です。
 
     ```bash
     az network public-ip create \
@@ -237,7 +235,7 @@ x-i18n:
       --sku Standard --enable-tunneling true
     ```
 
-    Bastion のプロビジョニングは通常 5〜10 分かかりますが、一部のリージョンでは最大 15〜30 分かかる場合があります。
+    Bastion のプロビジョニングは通常 5-10 分かかりますが、リージョンによっては最大 15-30 分かかることがあります。
 
   </Step>
 </Steps>
@@ -267,7 +265,7 @@ x-i18n:
     rm -f /tmp/install.sh
     ```
 
-    インストーラーは、Node LTS と依存関係がまだ存在しない場合にそれらをインストールし、OpenClaw をインストールして、オンボーディング ウィザードを起動します。詳細は [インストール](/ja-JP/install) を参照してください。
+    インストーラーは、まだ存在しない場合は Node と依存関係をインストールし、OpenClaw をインストールして、オンボーディングを起動します。詳細は「[インストール](/ja-JP/install)」を参照してください。
 
   </Step>
 
@@ -278,30 +276,33 @@ x-i18n:
     openclaw gateway status
     ```
 
-    ほとんどのエンタープライズ Azure チームは、すでに GitHub Copilot ライセンスを持っています。該当する場合は、OpenClaw のオンボーディング ウィザードで GitHub Copilot プロバイダーを選択することを推奨します。[GitHub Copilot プロバイダー](/ja-JP/providers/github-copilot) を参照してください。
+    組織にすでに GitHub Copilot ライセンスがある場合は、オンボーディング中に個別のモデル API キーの代わりに GitHub Copilot プロバイダーを選択できます。「[GitHub Copilot プロバイダー](/ja-JP/providers/github-copilot)」を参照してください。
 
   </Step>
 </Steps>
 
 ## コストに関する考慮事項
 
-Azure Bastion Standard SKU はおおよそ **\$140/月**、VM (Standard_B2as_v2) はおおよそ **\$55/月** で稼働します。
+概算の月額コスト (料金はリージョンによって異なり、時間とともに変更されるため、Azure 料金計算ツールで現在の価格を確認してください):
+
+- Azure Bastion Standard SKU: 約 $140/月
+- VM (`Standard_B2as_v2`): 約 $55/月
 
 コストを削減するには:
 
-- 使用していないときは **VM の割り当てを解除** します (コンピューティング課金は停止し、ディスク料金は残ります)。VM の割り当てが解除されている間、OpenClaw Gateway には到達できません。再びライブで必要になったときに再起動してください。
+- 使用していないときは VM の割り当てを解除します。これによりコンピューティング課金は停止します (ディスク料金は残ります)。割り当て解除中は Gateway に到達できません。
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
   az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- **不要なときは Bastion を削除** し、SSH アクセスが必要になったときに再作成します。Bastion は最大のコスト要素であり、プロビジョニングには数分しかかかりません。
-- Portal ベースの SSH だけが必要で、CLI トンネリング (`az network bastion ssh`) が不要な場合は、**Basic Bastion SKU** (~\$38/月) を使用します。
+- 不要なときは Bastion を削除し、SSH アクセスが再度必要になったときに作成し直します。これは最大のコスト要素であり、数分でプロビジョニングされます。
+- Portal ベースの SSH のみが必要で、CLI トンネリング (`az network bastion ssh`) が不要な場合は、Basic Bastion SKU (約 $38/月) を使用します。
 
 ## クリーンアップ
 
-このガイドで作成したすべてのリソースを削除するには:
+このガイドで作成したすべてのリソースを削除します。
 
 ```bash
 az group delete -n "${RG}" --yes --no-wait
@@ -311,10 +312,10 @@ az group delete -n "${RG}" --yes --no-wait
 
 ## 次のステップ
 
-- メッセージングチャンネルを設定する: [チャンネル](/ja-JP/channels)
-- ローカルデバイスを Node としてペアリングする: [Nodes](/ja-JP/nodes)
+- メッセージングチャンネルをセットアップする: [チャンネル](/ja-JP/channels)
+- ローカルデバイスをノードとしてペアリングする: [ノード](/ja-JP/nodes)
 - Gateway を構成する: [Gateway 構成](/ja-JP/gateway/configuration)
-- GitHub Copilot モデルプロバイダーを使用した OpenClaw の Azure デプロイの詳細: [GitHub Copilot を使用した Azure 上の OpenClaw](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- GitHub Copilot モデルプロバイダーを使用した Azure デプロイの詳細: [GitHub Copilot を使用した Azure 上の OpenClaw](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
 ## 関連
 

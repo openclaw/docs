@@ -1,19 +1,19 @@
 ---
 summary: 重新導向至 /gateway/authentication
-title: 身分驗證監控
+title: 驗證監控
 x-i18n:
-    generated_at: "2026-04-30T02:44:25Z"
+    generated_at: "2026-07-05T11:00:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
+    source_hash: 2d2c52a0082ff90306c61fb33ee2f2dc74b8703c9d8ee7a13581e72d2d564f0a
     source_path: automation/auth-monitoring.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-身份驗證監控位於 [身份驗證](/zh-TW/gateway/authentication) 下。
+此頁面已移動。模型供應商驗證位於 [驗證](/zh-TW/gateway/authentication)；用於監控驗證狀態的維運指令碼位於 [驗證監控指令碼](/zh-TW/help/scripts#auth-monitoring-scripts)。
 
-## 相關內容
+## 相關
 
-- [自動化疑難排解](/zh-TW/automation/cron-jobs)
-- [掛鉤](/zh-TW/automation/hooks)
+- [自動化疑難排解](/zh-TW/automation/cron-jobs#troubleshooting)
+- [鉤子](/zh-TW/automation/hooks)

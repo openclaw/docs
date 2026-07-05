@@ -1,42 +1,44 @@
 ---
 read_when:
-    - 手動初始化工作區
-summary: 代理程式身分記錄
+    - 手動啟動工作區
+summary: 代理身分記錄
 title: 身分範本
 x-i18n:
-    generated_at: "2026-04-30T03:38:33Z"
+    generated_at: "2026-07-05T11:42:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a3069210f1ac31a0d39ca054ae84f24466d6acae2e988bed7db1653ab70f0add
+    source_hash: 1c447d4ce2d33b4836d3c95c2bc70cc783ea3ccd450e61e2db7e04d5465e9820
     source_path: reference/templates/IDENTITY.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # IDENTITY.md - 我是誰？
 
-_在你的第一次對話中填寫這份檔案。讓它成為你的設定。_
+_請在第一次對話時填寫。讓它成為你的專屬設定。_
 
-- **姓名：**
-  _（挑一個你喜歡的）_
+- **名稱：**
+  _（選一個你喜歡的）_
 - **生物：**
-  _（AI？機器人？使魔？機器中的幽靈？或是更奇特的東西？）_
+  _（AI？機器人？使魔？機器中的幽靈？更奇特的東西？）_
 - **氣質：**
   _（你給人的感覺如何？銳利？溫暖？混亂？沉著？）_
-- **表情符號：**
-  _（你的標誌——挑一個感覺對的）_
+- **Emoji：**
+  _（你的代表符號 — 選一個感覺對的）_
 - **頭像：**
-  _（工作區相對路徑、http(s) URL 或資料 URI）_
+  _（工作區相對路徑、http(s) URL，或 data URI）_
 
 ---
 
-這不只是中繼資料。這是開始弄清你是誰的起點。
+這不只是中繼資料。這是開始釐清你是誰的起點。
 
 注意事項：
 
-- 將此檔案儲存在工作區根目錄，命名為 `IDENTITY.md`。
-- 頭像請使用像 `avatars/openclaw.png` 這樣的工作區相對路徑。
+- 將此檔案儲存在工作區根目錄，名稱為 `IDENTITY.md`。
+- 頭像請使用像 `avatars/openclaw.png` 這樣的工作區相對路徑、`http(s)` URL，或 data URI。
+- 欄位會解析為 `- Label: value` 行（標籤比對不區分大小寫）；未填寫的佔位文字，例如 `(pick something you like)`，會被忽略，不會儲存為實際值。
+- 當工具（`openclaw agents set-identity`）將此檔案同步到代理設定時，`Theme`、`Creature` 和 `Vibe` 都會提供同一個有效身分值，並依此順序優先採用（如果設定了 `Theme`，它會優先，其次是 `Creature`，再來是 `Vibe`）。工具只會將 `Name`、`Theme`、`Emoji` 和 `Avatar` 寫回此檔案；`Creature` 和 `Vibe` 是唯讀輸入。
 
 ## 相關
 
-- [Agent 工作區](/zh-TW/concepts/agent-workspace)
+- [代理工作區](/zh-TW/concepts/agent-workspace)

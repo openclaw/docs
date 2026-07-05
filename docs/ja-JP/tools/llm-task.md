@@ -1,26 +1,26 @@
 ---
 read_when:
-    - ワークフロー内で JSON のみを返す LLM ステップが必要な場合
-    - 自動化にはスキーマ検証済みのLLM出力が必要です
-summary: JSONのみのLLMタスクをワークフローに使用する（任意のPluginツール）
-title: LLMタスク
+    - ワークフロー内に JSON のみの LLM ステップが必要な場合
+    - 自動化のためにスキーマ検証済みの LLM 出力が必要です
+summary: ワークフロー向けの JSON 専用 LLM タスク（任意の Plugin ツール）
+title: LLM タスク
 x-i18n:
-    generated_at: "2026-06-27T13:14:22Z"
+    generated_at: "2026-07-05T11:51:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 98856fd8ccf7181a89073cbaa939d9b303532f7fba612d7800e1b89a9d1b25ae
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` は、JSON のみの LLM タスクを実行し、構造化された出力を返す **オプションの Plugin ツール**です（任意で JSON Schema による検証も可能）。
+`llm-task` はバンドルされた**任意の plugin tool**で、JSON のみを返す単一の
+LLM 呼び出しを実行し、任意で JSON Schema に対して検証された構造化出力を返します。Lobster のようなワークフローエンジンに、ワークフローごとのカスタム
+OpenClaw コードなしで LLM ステップを提供します。
 
-これは Lobster のようなワークフローエンジンに最適です。各ワークフロー用にカスタム OpenClaw コードを書かなくても、単一の LLM ステップを追加できます。
+## 有効化
 
-## Plugin を有効化する
-
-1. Plugin を有効化します。
+1. Plugin を有効にします。
 
 ```json
 {
@@ -32,7 +32,7 @@ x-i18n:
 }
 ```
 
-2. オプションツールを許可します。
+2. ツールを許可します。
 
 ```json
 {
@@ -42,7 +42,9 @@ x-i18n:
 }
 ```
 
-制限的な許可リストモードを使いたい場合にのみ、`tools.allow` を使用してください。
+`alsoAllow` は、他のコアツールを制限せずに、アクティブなツールプロファイルの上に
+`llm-task` を追加します。代わりに制限的な許可リストモードを使いたい場合のみ
+`tools.allow` を使用してください。
 
 ## 設定（任意）
 
@@ -66,42 +68,45 @@ x-i18n:
 }
 ```
 
-`allowedModels` は `provider/model` 文字列の許可リストです。設定されている場合、リスト外のリクエストは拒否されます。
+`allowedModels` は `provider/model` 文字列の許可リストです。それ以外のモデルへのリクエストは拒否されます。他のすべてのキーは、ツール呼び出しでそのパラメータが省略された場合に使われる呼び出しごとのフォールバックです。
 
 ## ツールパラメータ
 
-- `prompt`（文字列、必須）
-- `input`（任意、任意）
-- `schema`（オブジェクト、任意の JSON Schema）
-- `provider`（文字列、任意）
-- `model`（文字列、任意）
-- `thinking`（文字列、任意）
-- `authProfileId`（文字列、任意）
-- `temperature`（数値、任意）
-- `maxTokens`（数値、任意）
-- `timeoutMs`（数値、任意）
-
-`thinking` は、`low` や `medium` など、標準の OpenClaw 推論プリセットを受け付けます。
+| パラメータ       | 型   | 注記                                                                                                                                         |
+| --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | string | 必須。LLM へのタスク指示。                                                                                                       |
+| `input`         | any    | 任意のペイロード。JSON にシリアライズされ、プロンプトに追加されます。                                                                              |
+| `schema`        | object | 任意の JSON Schema。解析された出力はこれに対して検証される必要があります。                                                                                 |
+| `provider`      | string | `defaultProvider` / エージェントのデフォルトプロバイダーを上書きします。                                                                                   |
+| `model`         | string | `defaultModel` を上書きします。素のモデル ID、エイリアス、または `provider/model` 参照を受け付けます（重複するプロバイダープレフィックスは自動的に取り除かれます）。 |
+| `thinking`      | string | 推論レベル（例: `low`, `medium`）。解決されたモデルでサポートされているもののいずれかである必要があります。                                                          |
+| `authProfileId` | string | `defaultAuthProfileId` を上書きします。                                                                                                             |
+| `temperature`   | number | ベストエフォート。すべてのプロバイダーがこれを尊重するわけではありません。                                                                                                      |
+| `maxTokens`     | number | 出力トークン数のベストエフォート上限。                                                                                                             |
+| `timeoutMs`     | number | 実行タイムアウト。デフォルトは `30000`。                                                                                                                 |
 
 ## 出力
 
-解析済み JSON を含む `details.json` を返します（`schema` が指定されている場合はそれに対して検証します）。
+`details.json`（解析され、スキーマ検証済みの JSON）に加えて、実際に実行されたものを示す
+`details.provider` と `details.model` を返します。
 
 ## 例: Lobster ワークフローステップ
 
 ### 重要な制限
 
-以下の例では、**スタンドアロン Lobster CLI** が、`openclaw.invoke` にすでに正しい Gateway URL と認証コンテキストがある環境で実行されていることを前提としています。
+以下の例は、**スタンドアロンの Lobster CLI** が実行されており、
+`openclaw.invoke` にすでに正しい gateway URL/auth コンテキストがあることを前提としています。
 
-OpenClaw 内のバンドルされた **組み込み** Lobster ランナーでは、このネストされた CLI パターンは **現在は信頼できません**。
+OpenClaw 内のバンドルされた**埋め込み** Lobster ランナーでは、このネストされた CLI
+パターンは**現在信頼できません**。
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-組み込み Lobster がこのフロー用のサポート済みブリッジを持つまでは、次のいずれかを優先してください。
+埋め込み Lobster がこのフロー向けにサポートされたブリッジを持つまでは、次のいずれかを推奨します。
 
-- Lobster の外部で直接 `llm-task` ツールを呼び出す、または
+- Lobster の外で直接 `llm-task` ツールを呼び出す、または
 - ネストされた `openclaw.invoke` 呼び出しに依存しない Lobster ステップ。
 
 スタンドアロン Lobster CLI の例:
@@ -128,13 +133,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## 安全上の注意
 
-- このツールは **JSON のみ** であり、JSON のみを出力するようモデルに指示します（コードフェンスやコメントは出力しません）。
-- この実行では、モデルにツールは公開されません。
+- **JSON のみ**: モデルには JSON 値のみを返すよう指示され、コードフェンスやコメントは返しません。
+- **ツールなし**: 下位の実行ではツールが無効化されているため、モデルはタスク中に外部呼び出しできません。
 - `schema` で検証しない限り、出力は信頼できないものとして扱ってください。
-- 副作用のあるステップ（send、post、exec）の前に承認を置いてください。
+- この出力を消費する副作用のあるステップ（send、post、exec）の前には承認を置いてください。
 
 ## 関連
 
-- [思考レベル](/ja-JP/tools/thinking)
-- [サブエージェント](/ja-JP/tools/subagents)
-- [スラッシュコマンド](/ja-JP/tools/slash-commands)
+- [Thinking levels](/ja-JP/tools/thinking)
+- [Sub-agents](/ja-JP/tools/subagents)
+- [Slash commands](/ja-JP/tools/slash-commands)

@@ -1,31 +1,33 @@
 ---
 read_when:
-    - Cron ジョブを作成せずにシステムイベントをキューに入れたい場合
-    - Heartbeatを有効または無効にする必要があります
-    - システムプレゼンスエントリを確認したい
-summary: '`openclaw system` の CLI リファレンス（システムイベント、Heartbeat、プレゼンス）'
+    - システムイベントをキューに追加したいが、cron ジョブは作成したくない
+    - Heartbeat を有効または無効にする必要があります
+    - システムの存在エントリを確認したい場合
+summary: '`openclaw system` の CLI リファレンス（システムイベント、heartbeat、presence）'
 title: システム
 x-i18n:
-    generated_at: "2026-05-11T20:27:32Z"
+    generated_at: "2026-07-05T11:14:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
+    source_hash: aaca206d8b463fd33f9e3cb21382bbf36469e9daa2706d8a9e2c7fab14b76e7a
     source_path: cli/system.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw system`
 
-Gateway 用のシステムレベルヘルパーです。システムイベントをキューに入れ、Heartbeat を制御し、
-プレゼンスを表示します。
+Gateway 用のシステムレベルのヘルパー: システムイベントのエンキュー、Heartbeat の制御、プレゼンスの表示。
 
 すべての `system` サブコマンドは Gateway RPC を使用し、共通のクライアントフラグを受け付けます。
 
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--expect-final`
+| フラグ              | デフォルト                              | 説明                                                                                                                                                                                            |
+| ----------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--url <url>`     | 構成済みの場合は `gateway.remote.url` | Gateway WebSocket URL。                                                                                                                                                                                 |
+| `--token <token>` | なし                                 | Gateway トークン (必要な場合)。                                                                                                                                                                           |
+| `--timeout <ms>`  | `30000`                              | ミリ秒単位の RPC タイムアウト。                                                                                                                                                                           |
+| `--expect-final`  | オフ                                  | 最終応答 (agent) を待ちます。                                                                                                                                                                       |
+| `--json`          | オフ                                  | JSON を出力します。`heartbeat last/enable/disable` と `system presence` は、このフラグに関係なく常に生の RPC JSON ペイロードを出力します。`system event` はこのフラグを使用して、JSON とプレーンな `ok` 行を切り替えます。 |
 
 ## 共通コマンド
 
@@ -39,57 +41,34 @@ openclaw system presence
 
 ## `system event`
 
-デフォルトでは、**メイン**セッションにシステムイベントをキューに入れます。次の Heartbeat で、
-プロンプト内の `System:` 行として注入されます。Heartbeat をすぐにトリガーするには `--mode now` を使用します。
-`next-heartbeat` は次にスケジュールされたティックまで待機します。
+デフォルトでは、**main** セッションにシステムイベントをエンキューします。次の Heartbeat が、それをプロンプト内の `System:` 行として注入します。Heartbeat を即時にトリガーするには `--mode now` を使用します。`next-heartbeat` (デフォルト) は次のスケジュール済み tick を待ちます。
 
-特定のセッションを対象にするには `--session-key` を渡します（たとえば、
-非同期タスクの完了を、それを開始したチャンネルへ中継して戻す場合）。
+特定のセッションを対象にするには `--session-key` を渡します。たとえば、async-task の完了を、それを開始したチャネルへ中継する場合です。
 
-> **`--session-key` 使用時のタイミング例外:** `--session-key` が指定されている場合、
-> `--mode next-heartbeat` は、次にスケジュールされたティックを待たずに、
-> 即時の対象指定ウェイクに折りたたまれます。対象指定ウェイクは Heartbeat インテント
-> `immediate` を使用するため、runner の not-due ゲートをバイパスします。このゲートは通常、
-> `event` インテントのウェイクを遅延させます（実質的にはドロップします）。遅延配信したい場合は、
-> `--session-key` を省略し、イベントがメインセッションに届いて次の通常の Heartbeat に乗るようにしてください。
+<Note>
+**`--session-key` 使用時のタイミング例外:** `--session-key` が指定されている場合、`--mode next-heartbeat` は次のスケジュール済み tick を待たず、即時の対象指定 wake に縮約されます。対象指定 wake は Heartbeat intent `immediate` を使用するため、runner の not-due gate をバイパスします。この gate は、そうしなければ `event`-intent wake を遅延させ (実質的にドロップし) ます。遅延配信したい場合は、`--session-key` を省略し、イベントが main セッションに着地して次の通常の Heartbeat に乗るようにしてください。
+</Note>
 
 フラグ:
 
 - `--text <text>`: 必須のシステムイベントテキスト。
-- `--mode <mode>`: `now` または `next-heartbeat`（デフォルト）。
-- `--session-key <sessionKey>`: 任意。エージェントのメインセッションではなく、
-  特定のエージェントセッションを対象にします。解決されたエージェントに属さないキーは、
-  エージェントのメインセッションにフォールバックします。
-- `--json`: 機械可読出力。
-- `--url`、`--token`、`--timeout`、`--expect-final`: 共通の Gateway RPC フラグ。
+- `--mode <mode>`: `now` または `next-heartbeat` (デフォルト)。
+- `--session-key <sessionKey>`: 任意。agent の main セッションではなく、特定の agent セッションを対象にします。解決された agent に属さないキーは、agent の main セッションにフォールバックします。
 
 ## `system heartbeat last|enable|disable`
 
-Heartbeat 制御:
-
 - `last`: 最後の Heartbeat イベントを表示します。
-- `enable`: Heartbeat を再びオンにします（無効化されていた場合に使用します）。
+- `enable`: Heartbeat を再びオンにします (無効化されていた場合に使用します)。
 - `disable`: Heartbeat を一時停止します。
-
-フラグ:
-
-- `--json`: 機械可読出力。
-- `--url`、`--token`、`--timeout`、`--expect-final`: 共通の Gateway RPC フラグ。
 
 ## `system presence`
 
-Gateway が認識している現在のシステムプレゼンスエントリ（ノード、
-インスタンス、および同様のステータス行）を一覧表示します。
+Gateway が把握している現在のシステムプレゼンスエントリ (ノード、インスタンス、同様のステータス行) を一覧表示します。
 
-フラグ:
+## 注記
 
-- `--json`: 機械可読出力。
-- `--url`、`--token`、`--timeout`、`--expect-final`: 共通の Gateway RPC フラグ。
-
-## メモ
-
-- 現在の設定（ローカルまたはリモート）から到達可能な、実行中の Gateway が必要です。
-- システムイベントは一時的なもので、再起動をまたいで永続化されません。
+- 現在の構成 (ローカルまたはリモート) で到達可能な、実行中の Gateway が必要です。
+- システムイベントは一時的で、再起動をまたいで永続化されません。
 
 ## 関連
 

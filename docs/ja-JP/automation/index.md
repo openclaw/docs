@@ -1,134 +1,134 @@
 ---
 doc-schema-version: 1
 read_when:
-    - OpenClawで作業を自動化する方法を決める
-    - Heartbeat、Cron、コミットメント、フック、常時指示の使い分け
-    - 適切な自動化のエントリーポイントを探す
-summary: '自動化メカニズムの概要: タスク、Cron、フック、常設指示、タスクフロー'
+    - OpenClaw で作業を自動化する方法を決める
+    - heartbeat、cron、コミットメント、フック、standing orders の選び方
+    - 適切な自動化エントリーポイントを探す
+summary: '自動化メカニズムの概要: タスク、Cron、フック、常時指示、Task Flow'
 title: 自動化
 x-i18n:
-    generated_at: "2026-05-12T23:29:10Z"
+    generated_at: "2026-07-05T11:01:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
+    source_hash: 210f2a33012e854e48aa145c665e16e7ffe861c91a2566507e81d809bb2b955c
     source_path: automation/index.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClawは、タスク、スケジュール済みジョブ、推論されたコミットメント、イベントフック、Standing Ordersを通じてバックグラウンドで作業を実行します。このページでは、適切な仕組みを選び、それらがどのように連携するかを理解できます。
+OpenClaw は、タスク、スケジュール済みジョブ、推論されたコミットメント、イベントフック、常設指示を通じてバックグラウンドで作業を実行します。このページを使って適切な仕組みを選択してください。
 
 ## クイック判断ガイド
 
 ```mermaid
 flowchart TD
-    START([何が必要ですか？]) --> Q1{作業をスケジュールする？}
-    START --> Q2{切り離された作業を追跡する？}
-    START --> Q3{複数ステップのフローをオーケストレーションする？}
-    START --> Q4{ライフサイクルイベントに反応する？}
-    START --> Q5{エージェントに永続的な指示を与える？}
-    START --> Q6{自然なフォローアップを記憶する？}
+    START([What do you need?]) --> Q1{Schedule work?}
+    START --> Q2{Track detached work?}
+    START --> Q3{Orchestrate multi-step flows?}
+    START --> Q4{React to lifecycle events?}
+    START --> Q5{Give the agent persistent instructions?}
+    START --> Q6{Remember a natural follow-up?}
 
-    Q1 -->|はい| Q1a{正確なタイミングか柔軟なタイミングか？}
-    Q1a -->|正確| CRON["Scheduled Tasks (Cron)"]
-    Q1a -->|柔軟| HEARTBEAT[Heartbeat]
+    Q1 -->|Yes| Q1a{Exact timing or flexible?}
+    Q1a -->|Exact| CRON["Scheduled Tasks (Cron)"]
+    Q1a -->|Flexible| HEARTBEAT[Heartbeat]
 
-    Q2 -->|はい| TASKS[Background Tasks]
-    Q3 -->|はい| FLOW[Task Flow]
-    Q4 -->|はい| HOOKS[Hooks]
-    Q5 -->|はい| SO[Standing Orders]
-    Q6 -->|はい| COMMITMENTS[Inferred Commitments]
+    Q2 -->|Yes| TASKS[Background Tasks]
+    Q3 -->|Yes| FLOW[Task Flow]
+    Q4 -->|Yes| HOOKS[Hooks]
+    Q5 -->|Yes| SO[Standing Orders]
+    Q6 -->|Yes| COMMITMENTS[Inferred Commitments]
 ```
 
-| ユースケース                            | 推奨                   | 理由                                             |
+| ユースケース                                | 推奨            | 理由                                              |
 | --------------------------------------- | ---------------------- | ------------------------------------------------ |
-| 毎日午前9時ちょうどにレポートを送信する | Scheduled Tasks (Cron) | 正確なタイミング、分離された実行                 |
-| 20分後にリマインドする                  | Scheduled Tasks (Cron) | 正確なタイミングの単発実行（`--at`）            |
-| 毎週の詳細分析を実行する                | Scheduled Tasks (Cron) | 独立したタスクで、別のモデルも使用可能           |
-| 30分ごとに受信箱を確認する              | Heartbeat              | 他の確認とまとめて処理でき、コンテキストを考慮   |
-| 予定表で近づいているイベントを監視する  | Heartbeat              | 定期的な認識に自然に適合                         |
-| 言及された面接の後に確認する            | Inferred Commitments   | メモリのようなフォローアップで、正確なリマインダー要求ではない |
-| ユーザーコンテキストの後に軽いケア確認をする | Inferred Commitments   | 同じエージェントとチャンネルにスコープされる     |
-| サブエージェントまたはACP実行の状態を調べる | Background Tasks       | タスク台帳がすべての切り離された作業を追跡する   |
-| 何がいつ実行されたかを監査する          | Background Tasks       | `openclaw tasks list` と `openclaw tasks audit` |
-| 複数ステップの調査後に要約する          | Task Flow              | リビジョン追跡付きの耐久的なオーケストレーション |
-| セッションリセット時にスクリプトを実行する | Hooks                  | イベント駆動で、ライフサイクルイベント時に発火   |
-| すべてのツール呼び出しでコードを実行する | Plugin hooks           | インプロセスフックがツール呼び出しをインターセプトできる |
-| 返信前に常にコンプライアンスを確認する  | Standing Orders        | すべてのセッションに自動的に注入される           |
+| 毎日午前9時ちょうどにレポートを送信する         | スケジュール済みタスク (Cron) | 正確なタイミング、分離された実行                 |
+| 20分後にリマインドする                 | スケジュール済みタスク (Cron) | 正確なタイミングの単発実行 (`--at`)            |
+| 毎週の詳細分析を実行する                | スケジュール済みタスク (Cron) | 独立したタスク、別のモデルを使用可能         |
+| 30分ごとに受信トレイを確認する                | Heartbeat              | 他の確認とバッチ化、コンテキスト認識         |
+| 今後のイベントについてカレンダーを監視する    | Heartbeat              | 定期的な認識に自然に適合               |
+| 言及された面接の後に確認する    | 推論されたコミットメント   | メモリのようなフォローアップ、正確なリマインダー要求なし |
+| ユーザーコンテキスト後の穏やかなケア確認 | 推論されたコミットメント   | 同じエージェントとチャンネルにスコープされる             |
+| サブエージェントまたは ACP 実行の状態を確認する | バックグラウンドタスク       | タスク台帳がすべての分離された作業を追跡する            |
+| 何がいつ実行されたかを監査する                 | バックグラウンドタスク       | `openclaw tasks list` と `openclaw tasks audit` |
+| 複数ステップの調査後に要約する      | タスクフロー              | リビジョン追跡付きの永続的なオーケストレーション     |
+| セッションリセット時にスクリプトを実行する           | フック                  | イベント駆動、ライフサイクルイベントで発火          |
+| すべてのツール呼び出しでコードを実行する         | Plugin フック           | プロセス内フックがツール呼び出しをインターセプト可能        |
+| 返信前に常にコンプライアンスを確認する | 常設指示        | すべてのセッションに自動的に注入        |
 
-### Scheduled Tasks (Cron) と Heartbeat
+### スケジュール済みタスク (Cron) と Heartbeat
 
-| 観点            | Scheduled Tasks (Cron)              | Heartbeat                             |
+| 次元       | スケジュール済みタスク (Cron)              | Heartbeat                             |
 | --------------- | ----------------------------------- | ------------------------------------- |
-| タイミング      | 正確（cron式、単発）                | おおよそ（デフォルトは30分ごと）      |
-| セッションコンテキスト | 新規（分離）または共有              | メインセッションの完全なコンテキスト  |
-| タスクレコード  | 常に作成される                      | 作成されない                          |
-| 配信            | チャンネル、webhook、または無音     | メインセッション内にインライン        |
-| 最適な用途      | レポート、リマインダー、バックグラウンドジョブ | 受信箱確認、予定表、通知              |
+| タイミング          | 正確 (cron 式、単発)  | おおよそ (デフォルトは30分ごと)    |
+| セッションコンテキスト | 新規 (分離) または共有          | メインセッションの完全なコンテキスト             |
+| タスク記録    | 常に作成                      | 作成されない                         |
+| 配信        | チャンネル、webhook、またはサイレント         | メインセッション内にインライン                |
+| 最適な用途        | レポート、リマインダー、バックグラウンドジョブ | 受信トレイ確認、カレンダー、通知 |
 
-正確なタイミングや分離された実行が必要な場合はScheduled Tasks (Cron)を使用します。完全なセッションコンテキストが役立ち、おおよそのタイミングで十分な場合はHeartbeatを使用します。
+正確なタイミングや分離された実行が必要な場合は、スケジュール済みタスク (Cron) を使用します。作業が完全なセッションコンテキストの恩恵を受け、おおよそのタイミングで十分な場合は、Heartbeat を使用します。
 
 ## コア概念
 
-### スケジュール済みタスク（cron）
+### スケジュール済みタスク (cron)
 
-Cronは、正確なタイミングのためのGateway組み込みスケジューラーです。ジョブを永続化し、適切な時刻にエージェントを起動し、出力をチャットチャンネルまたはwebhookエンドポイントに配信できます。単発リマインダー、繰り返し式、インバウンドwebhookトリガーをサポートします。
+Cron は、正確なタイミングのための Gateway 組み込みスケジューラーです。ジョブを永続化し、適切な時刻にエージェントを起動し、チャットチャンネルまたは webhook エンドポイントに出力を配信できます。単発リマインダー、繰り返し式、受信 webhook トリガーをサポートします。
 
-[Scheduled Tasks](/ja-JP/automation/cron-jobs)を参照してください。
+[スケジュール済みタスク](/ja-JP/automation/cron-jobs)を参照してください。
 
 ### タスク
 
-バックグラウンドタスク台帳は、すべての切り離された作業を追跡します。ACP実行、サブエージェントの起動、分離されたcron実行、CLI操作が含まれます。タスクはレコードであり、スケジューラーではありません。確認には`openclaw tasks list`と`openclaw tasks audit`を使用します。
+バックグラウンドタスク台帳は、ACP 実行、サブエージェントの生成、分離された cron 実行、CLI 操作など、すべての分離された作業を追跡します。タスクは記録であり、スケジューラーではありません。確認には `openclaw tasks list` と `openclaw tasks audit` を使用します。
 
-[Background Tasks](/ja-JP/automation/tasks)を参照してください。
+[バックグラウンドタスク](/ja-JP/automation/tasks)を参照してください。
 
 ### 推論されたコミットメント
 
-コミットメントは、オプトインの短命なフォローアップメモリです。OpenClawは通常の会話からそれらを推論し、同じエージェントとチャンネルにスコープし、期限になった確認をheartbeat経由で配信します。ユーザーが正確に要求したリマインダーは引き続きcronの担当です。
+コミットメントは、オプトインの短期間のフォローアップメモリです。OpenClaw は通常の会話からそれらを推論し、同じエージェントとチャンネルにスコープし、Heartbeat を通じて期限が来た確認を配信します。ユーザーが明示的に要求した正確なリマインダーは、引き続き cron の役割です。
 
-[Inferred Commitments](/ja-JP/concepts/commitments)を参照してください。
+[推論されたコミットメント](/ja-JP/concepts/commitments)を参照してください。
 
-### Task Flow
+### タスクフロー
 
-Task Flowは、バックグラウンドタスクの上にあるフローオーケストレーション基盤です。管理同期モードとミラー同期モード、リビジョン追跡、確認用の`openclaw tasks flow list|show|cancel`を備えた耐久的な複数ステップフローを管理します。
+タスクフローは、バックグラウンドタスクの上にあるフローオーケストレーション基盤です。管理同期モードとミラー同期モード、リビジョン追跡、確認用の `openclaw tasks flow list|show|cancel` を備えた、永続的な複数ステップフローを管理します。
 
-[Task Flow](/ja-JP/automation/taskflow)を参照してください。
+[タスクフロー](/ja-JP/automation/taskflow)を参照してください。
 
-### Standing Orders
+### 常設指示
 
-Standing Ordersは、定義されたプログラムに対してエージェントに恒久的な運用権限を付与します。これはワークスペースファイル（通常は`AGENTS.md`）に置かれ、すべてのセッションに注入されます。時間ベースの強制にはcronと組み合わせます。
+常設指示は、定義されたプログラムに対する永続的な運用権限をエージェントに付与します。ワークスペースファイル (通常は `AGENTS.md`) に存在し、すべてのセッションに注入されます。時間ベースの強制には cron と組み合わせます。
 
-[Standing Orders](/ja-JP/automation/standing-orders)を参照してください。
+[常設指示](/ja-JP/automation/standing-orders)を参照してください。
 
-### Hooks
+### フック
 
-内部フックは、エージェントのライフサイクルイベント（`/new`、`/reset`、`/stop`）、セッションCompaction、Gateway起動、メッセージフローによってトリガーされるイベント駆動スクリプトです。ディレクトリから自動的に検出され、`openclaw hooks`で管理できます。インプロセスのツール呼び出しインターセプトには、[Plugin hooks](/ja-JP/plugins/hooks)を使用します。
+内部フックは、エージェントのライフサイクルイベント (`/new`、`/reset`、`/stop`)、セッション Compaction、Gateway 起動、メッセージフローによってトリガーされるイベント駆動スクリプトです。フックディレクトリから検出され、`openclaw hooks` で管理されます。プロセス内のツール呼び出しインターセプトには、[Plugin フック](/ja-JP/plugins/hooks)を使用します。
 
-[Hooks](/ja-JP/automation/hooks)を参照してください。
+[フック](/ja-JP/automation/hooks)を参照してください。
 
 ### Heartbeat
 
-Heartbeatは、定期的なメインセッションのターンです（デフォルトは30分ごと）。複数の確認（受信箱、予定表、通知）を、完全なセッションコンテキストを持つ1回のエージェントターンにまとめます。Heartbeatのターンはタスクレコードを作成せず、日次またはアイドル時のセッションリセットの新鮮さを延長しません。小さなチェックリストには`HEARTBEAT.md`を使用し、heartbeat自体の中で期限到来時のみの定期確認を行いたい場合は`tasks:`ブロックを使用します。空のheartbeatファイルは`empty-heartbeat-file`としてスキップされ、期限到来時のみのタスクモードは`no-tasks-due`としてスキップされます。cron作業がアクティブまたはキューにある間、Heartbeatは延期されます。また、`heartbeat.skipWhenBusy`は、同じエージェントのセッションキー付きサブエージェントまたはネストされたレーンがビジーな間、そのエージェントを延期することもできます。
+Heartbeat は、定期的なメインセッションのターンです (デフォルトは30分ごと)。複数の確認 (受信トレイ、カレンダー、通知) を、完全なセッションコンテキストを持つ1回のエージェントターンにバッチ化します。Heartbeat ターンはタスク記録を作成せず、日次/アイドルのセッションリセットの鮮度を延長しません。小さなチェックリストには `HEARTBEAT.md` を使用し、Heartbeat 自体の中で期限が来たものだけを定期確認したい場合は `tasks:` ブロックを使用します。空の Heartbeat ファイルは `empty-heartbeat-file` としてスキップされます。期限のみのタスクモードは `no-tasks-due` としてスキップされます。cron 作業がアクティブまたはキューに入っている間、Heartbeat は延期されます。また、`heartbeat.skipWhenBusy` により、同じエージェントのセッションキー付きサブエージェントまたはネストされたレーンがビジーな間も、そのエージェントを延期できます。
 
 [Heartbeat](/ja-JP/gateway/heartbeat)を参照してください。
 
-## 連携の仕組み
+## 連携方法
 
-- **Cron**は、正確なスケジュール（日次レポート、週次レビュー）と単発リマインダーを処理します。すべてのcron実行はタスクレコードを作成します。
-- **Heartbeat**は、定期的な監視（受信箱、予定表、通知）を30分ごとの1回のまとめられたターンで処理します。
-- **Hooks**は、特定のイベント（セッションリセット、Compaction、メッセージフロー）にカスタムスクリプトで反応します。Plugin hooksはツール呼び出しを対象にします。
-- **Standing orders**は、エージェントに永続的なコンテキストと権限の境界を与えます。
-- **Task Flow**は、個々のタスクの上で複数ステップのフローを調整します。
-- **Tasks**は、すべての切り離された作業を自動的に追跡し、確認と監査を可能にします。
+- **Cron** は、正確なスケジュール (日次レポート、週次レビュー) と単発リマインダーを処理します。すべての cron 実行はタスク記録を作成します。
+- **Heartbeat** は、定期的な監視 (受信トレイ、カレンダー、通知) を30分ごとに1回のバッチ化されたターンで処理します。
+- **フック** は、特定のイベント (セッションリセット、Compaction、メッセージフロー) にカスタムスクリプトで反応します。Plugin フックはツール呼び出しを対象にします。
+- **常設指示** は、エージェントに永続的なコンテキストと権限境界を与えます。
+- **タスクフロー** は、個々のタスクの上で複数ステップのフローを調整します。
+- **タスク** はすべての分離された作業を自動的に追跡するため、確認および監査できます。
 
 ## 関連
 
-- [Scheduled Tasks](/ja-JP/automation/cron-jobs) — 正確なスケジューリングと単発リマインダー
-- [Inferred Commitments](/ja-JP/concepts/commitments) — メモリのようなフォローアップ確認
-- [Background Tasks](/ja-JP/automation/tasks) — すべての切り離された作業のタスク台帳
-- [Task Flow](/ja-JP/automation/taskflow) — 耐久的な複数ステップフローのオーケストレーション
-- [Hooks](/ja-JP/automation/hooks) — イベント駆動のライフサイクルスクリプト
-- [Plugin hooks](/ja-JP/plugins/hooks) — インプロセスのツール、プロンプト、メッセージ、ライフサイクルフック
-- [Standing Orders](/ja-JP/automation/standing-orders) — 永続的なエージェント指示
-- [Heartbeat](/ja-JP/gateway/heartbeat) — 定期的なメインセッションのターン
-- [Configuration Reference](/ja-JP/gateway/configuration-reference) — すべての設定キー
+- [スケジュール済みタスク](/ja-JP/automation/cron-jobs) — 正確なスケジューリングと単発リマインダー
+- [推論されたコミットメント](/ja-JP/concepts/commitments) — メモリのようなフォローアップ確認
+- [バックグラウンドタスク](/ja-JP/automation/tasks) — すべての分離された作業のタスク台帳
+- [タスクフロー](/ja-JP/automation/taskflow) — 永続的な複数ステップフローのオーケストレーション
+- [フック](/ja-JP/automation/hooks) — イベント駆動のライフサイクルスクリプト
+- [Plugin フック](/ja-JP/plugins/hooks) — プロセス内のツール、プロンプト、メッセージ、ライフサイクルフック
+- [常設指示](/ja-JP/automation/standing-orders) — 永続的なエージェント指示
+- [Heartbeat](/ja-JP/gateway/heartbeat) — 定期的なメインセッションターン
+- [設定リファレンス](/ja-JP/gateway/configuration-reference) — すべての設定キー

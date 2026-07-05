@@ -1,53 +1,108 @@
 ---
 read_when:
-    - 您想要具有明確核准的確定性多步驟工作流程
-    - 你需要繼續工作流程，而不重新執行先前的步驟
-summary: 適用於 OpenClaw 的型別化工作流程執行階段，具備可恢復的核准關卡。
+    - 你想要具備明確核准機制的可決定性多步驟工作流程
+    - 你需要在不重新執行先前步驟的情況下恢復工作流程
+summary: OpenClaw 的型別化工作流程執行階段，具備可恢復的核准閘門。
 title: 龍蝦
 x-i18n:
-    generated_at: "2026-05-12T00:59:53Z"
+    generated_at: "2026-07-05T11:51:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 404b2e47982f7efb9a8bb015ac5d7bd8a06f0a41d966e620c9826735abf7f0e3
+    source_hash: eedb6577133588b726992a882a92d94f1f414e55998d0fc80644dd3a64ffc1ab
     source_path: tools/lobster.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Lobster 是一個工作流程 shell，可讓 OpenClaw 將多步驟工具序列作為單一、確定性的操作執行，並具備明確的核准檢查點。
-
-Lobster 是獨立背景工作之上的一層撰寫層。若要了解個別任務之上的流程編排，請參閱 [Task Flow](/zh-TW/automation/taskflow)（`openclaw tasks flow`）。若要了解任務活動帳本，請參閱 [`openclaw tasks`](/zh-TW/automation/tasks)。
-
-## 掛鉤
-
-你的助理可以建置管理自身的工具。提出一個工作流程需求，30 分鐘後你就會有一個 CLI 加上可作為一次呼叫執行的管線。Lobster 是缺少的那一塊：確定性管線、明確核准，以及可恢復狀態。
+Lobster 會將多步驟工具管線作為一次確定性的工具呼叫執行，並具備明確的核准檢查點與續接權杖。它位於分離式背景工作的上一層：若要跨多個分離式任務編排流程，請參閱 [TaskFlow](/zh-TW/automation/taskflow) (`openclaw tasks flow`)；若要查看任務活動帳本，請參閱[背景任務](/zh-TW/automation/tasks)。
 
 ## 為什麼
 
-如今，複雜工作流程需要許多來回工具呼叫。每次呼叫都會消耗 token，而 LLM 必須編排每個步驟。Lobster 會把該編排移入型別化執行環境：
+沒有 Lobster 時，多步驟作業意味著多次往返工具呼叫，由模型編排每個步驟。Lobster 會把這種編排移入具型別的執行階段：
 
-- **一次呼叫取代多次呼叫**：OpenClaw 執行一次 Lobster 工具呼叫，並取得結構化結果。
-- **內建核准**：副作用（傳送電子郵件、發布留言）會讓工作流程暫停，直到明確核准。
-- **可恢復**：暫停的工作流程會回傳 token；核准後即可恢復，而不必重新執行所有內容。
+- **一次呼叫取代多次呼叫**：單次 Lobster 工具呼叫會回傳整個管線的結構化結果。
+- **內建核准**：副作用（傳送、發布、刪除）會暫停工作流程，直到明確核准。
+- **可續接**：暫停的工作流程會回傳權杖；核准後即可續接，無需重新執行先前步驟。
 
-## 為什麼使用 DSL，而不是普通程式？
+Lobster 是小型且受限的 DSL，而不是通用指令碼語言：核准/續接是持久且內建的原語；管線是資料（易於記錄、比較差異、重播、檢閱）；精簡的文法限制了「創意」程式碼路徑，讓驗證保持實際可行；逾時、輸出上限、沙盒檢查與允許清單由執行階段強制執行，而非由每個指令碼自行處理。每個步驟仍可呼叫任何命令列介面或指令碼 - 如果你想要更豐富的撰寫語言，可以從其他工具產生 `.lobster` 檔案。
 
-Lobster 有意保持小巧。目標不是「一門新語言」，而是一種可預測、AI 友善的管線規格，具備一級核准與恢復 token。
+沒有 Lobster 時，週期性的電子郵件分流會像這樣：
 
-- **內建核准/恢復**：一般程式可以提示人類，但若不自行發明該執行環境，它無法用持久 token _暫停並恢復_。
-- **確定性 + 可稽核性**：管線是資料，因此容易記錄、差異比較、重播與審查。
-- **受限的 AI 介面**：極小的文法 + JSON 管線傳遞可減少「創意」程式碼路徑，並讓驗證變得可行。
-- **內建安全政策**：逾時、輸出上限、沙盒檢查與允許清單由執行環境強制執行，而不是由每個指令碼各自處理。
-- **仍然可程式化**：每個步驟都可以呼叫任何 CLI 或指令碼。如果你想使用 JS/TS，可從程式碼產生 `.lobster` 檔案。
+```text
+User: "Check my email and draft replies"
+→ openclaw calls gmail.list
+→ LLM summarizes
+→ User: "draft replies to #2 and #5"
+→ LLM drafts
+→ User: "send #2"
+→ openclaw calls gmail.send
+(repeat daily, no memory of what was triaged)
+```
+
+有了 Lobster，同一項作業會成為一次呼叫，暫停等待核准後再續接：
+
+```json
+{ "action": "run", "pipeline": "email.triage --limit 20", "timeoutMs": 30000 }
+```
+
+```json
+{
+  "ok": true,
+  "status": "needs_approval",
+  "output": [{ "summary": "5 need replies, 2 need action" }],
+  "requiresApproval": {
+    "type": "approval_request",
+    "prompt": "Send 2 draft replies?",
+    "items": [],
+    "resumeToken": "..."
+  }
+}
+```
 
 ## 運作方式
 
-OpenClaw 使用嵌入式執行器**在程序內**執行 Lobster 工作流程。不會產生外部 CLI 子程序；工作流程引擎會在 gateway 程序內執行，並直接回傳 JSON 封套。
-如果管線因核准而暫停，工具會回傳 `resumeToken`，讓你稍後繼續。
+OpenClaw 使用隨附的 `@clawdbot/lobster` 套件作為嵌入式執行器，在**同一程序內**執行 Lobster 工作流程。不會產生外部 `lobster` 子程序；工具呼叫會直接回傳 JSON 封套。如果管線暫停等待核准，封套會攜帶續接權杖（或簡短的核准 ID），讓你稍後繼續。
 
-## 模式：小型 CLI + JSON 管線 + 核准
+## 啟用
 
-建置會使用 JSON 溝通的小型指令，然後將它們串接成單一 Lobster 呼叫。（以下範例指令名稱可替換為你自己的。）
+Lobster 是**選用**外掛工具，預設未啟用。它已隨附提供，因此不需要額外安裝步驟 - 只需允許該工具：
+
+```json
+{
+  "tools": {
+    "alsoAllow": ["lobster"]
+  }
+}
+```
+
+或針對每個代理：
+
+```json
+{
+  "agents": {
+    "list": [
+      {
+        "id": "main",
+        "tools": {
+          "alsoAllow": ["lobster"]
+        }
+      }
+    ]
+  }
+}
+```
+
+<Note>
+`alsoAllow` 會在作用中的工具設定檔之上加入 `lobster`，不會限制其他核心工具。只有在你想改用限制性允許清單模式時，才使用 `tools.allow`。
+</Note>
+
+此工具在沙盒化工具情境中會完全停用。
+
+如果你需要獨立的 Lobster 命令列介面進行開發或外部管線（位於嵌入式閘道執行器之外），請從 [Lobster repo](https://github.com/openclaw/lobster) 安裝，並將 `lobster` 放到 `PATH`。
+
+## 模式：小型命令列介面 + JSON 管線 + 核准
+
+建置會使用 JSON 溝通的小型命令，然後把它們串成一次 Lobster 呼叫。（以下範例命令名稱 - 請替換為你自己的命令。）
 
 ```bash
 inbox list --json
@@ -63,7 +118,7 @@ inbox apply --json
 }
 ```
 
-如果管線要求核准，請使用 token 恢復：
+如果管線要求核准，請用權杖續接：
 
 ```json
 {
@@ -73,22 +128,16 @@ inbox apply --json
 }
 ```
 
-AI 觸發工作流程；Lobster 執行步驟。核准關卡讓副作用保持明確且可稽核。
-
-範例：將輸入項目映射為工具呼叫：
+範例：將輸入項目對應成工具呼叫：
 
 ```bash
 gog.gmail.search --query 'newer_than:1d' \
   | openclaw.invoke --tool message --action send --each --item-key message --args-json '{"provider":"telegram","to":"..."}'
 ```
 
-## 僅 JSON 的 LLM 步驟（llm-task）
+## 僅 JSON 的 LLM 步驟 (llm-task)
 
-對於需要**結構化 LLM 步驟**的工作流程，請啟用選用的
-`llm-task` plugin 工具，並從 Lobster 呼叫它。這可讓工作流程保持
-確定性，同時仍能使用模型進行分類、摘要與草擬。
-
-啟用工具：
+若要在工作流程內使用**結構化 LLM 步驟**，請啟用選用的 `llm-task` 外掛工具，並從 Lobster 呼叫它：
 
 ```json
 {
@@ -110,17 +159,15 @@ gog.gmail.search --query 'newer_than:1d' \
 
 ### 重要限制：嵌入式 Lobster 與 `openclaw.invoke`
 
-內建的 Lobster plugin 會在 gateway 內**程序內**執行工作流程。在該嵌入式模式中，`openclaw.invoke` **不會**自動繼承 gateway URL/驗證情境以供巢狀 OpenClaw CLI 工具呼叫使用。
+隨附的 Lobster 外掛會在閘道內**同一程序內**執行工作流程。在該嵌入式模式中，`openclaw.invoke` **不會**自動繼承用於巢狀 OpenClaw 命令列介面工具呼叫的閘道 URL/驗證情境。
 
-這表示此模式**目前在嵌入式執行器中並不可靠**：
+這表示此模式**目前在嵌入式執行器中不可靠**：
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-只有在執行**獨立 Lobster CLI**，且 `openclaw.invoke` 已設定正確 gateway/驗證情境的環境中，才使用下方範例。
-
-在獨立 Lobster CLI 管線中使用它：
+只有在執行**獨立 Lobster 命令列介面**，且 `openclaw.invoke` 已在環境中設定正確閘道/驗證情境時，才使用下方範例。
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -139,16 +186,16 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 }'
 ```
 
-如果你今天使用的是嵌入式 Lobster plugin，請優先使用以下任一方式：
+如果你目前使用嵌入式 Lobster 外掛，請優先採用以下任一方式：
 
 - 在 Lobster 外部直接呼叫 `llm-task` 工具，或
-- 在 Lobster 管線內使用非 `openclaw.invoke` 步驟，直到加入支援的嵌入式橋接。
+- 在支援的嵌入式橋接加入之前，在 Lobster 管線內使用非 `openclaw.invoke` 步驟。
 
 請參閱 [LLM Task](/zh-TW/tools/llm-task) 以了解詳細資訊與設定選項。
 
-## 工作流程檔案（.lobster）
+## 工作流程檔案 (.lobster)
 
-Lobster 可以執行具有 `name`、`args`、`steps`、`env`、`condition` 和 `approval` 欄位的 YAML/JSON 工作流程檔案。在 OpenClaw 工具呼叫中，將 `pipeline` 設為檔案路徑。
+Lobster 可以執行含有 `name`、`args`、`steps`、`env`、`condition` 與 `approval` 欄位的 YAML/JSON 工作流程檔案。在工具呼叫中將 `pipeline` 設為檔案路徑。
 
 ```yaml
 name: inbox-triage
@@ -174,109 +221,11 @@ steps:
 備註：
 
 - `stdin: $step.stdout` 和 `stdin: $step.json` 會傳遞先前步驟的輸出。
-- `condition`（或 `when`）可依據 `$step.approved` 控制步驟是否執行。
-
-## 安裝 Lobster
-
-內建 Lobster 工作流程會在程序內執行；不需要單獨的 `lobster` 二進位檔。嵌入式執行器隨 Lobster plugin 提供。
-
-如果你需要獨立 Lobster CLI 來進行開發或外部管線，請從 [Lobster repo](https://github.com/openclaw/lobster) 安裝，並確保 `lobster` 位於 `PATH`。
-
-## 啟用工具
-
-Lobster 是**選用**的 plugin 工具（預設未啟用）。
-
-建議方式（加法式、安全）：
-
-```json
-{
-  "tools": {
-    "alsoAllow": ["lobster"]
-  }
-}
-```
-
-或依代理程式設定：
-
-```json
-{
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "tools": {
-          "alsoAllow": ["lobster"]
-        }
-      }
-    ]
-  }
-}
-```
-
-除非你打算在限制性允許清單模式中執行，否則請避免使用 `tools.allow: ["lobster"]`。
-
-<Note>
-允許清單對選用 plugins 採用選擇加入。`alsoAllow` 只會啟用指定的選用 plugin 工具，同時保留一般核心工具集。若要限制核心工具，請使用 `tools.allow` 搭配你想要的核心工具或群組。
-</Note>
-
-## 範例：電子郵件分類處理
-
-沒有 Lobster：
-
-```
-User: "Check my email and draft replies"
-→ openclaw calls gmail.list
-→ LLM summarizes
-→ User: "draft replies to #2 and #5"
-→ LLM drafts
-→ User: "send #2"
-→ openclaw calls gmail.send
-(repeat daily, no memory of what was triaged)
-```
-
-有 Lobster：
-
-```json
-{
-  "action": "run",
-  "pipeline": "email.triage --limit 20",
-  "timeoutMs": 30000
-}
-```
-
-回傳 JSON 封套（已截斷）：
-
-```json
-{
-  "ok": true,
-  "status": "needs_approval",
-  "output": [{ "summary": "5 need replies, 2 need action" }],
-  "requiresApproval": {
-    "type": "approval_request",
-    "prompt": "Send 2 draft replies?",
-    "items": [],
-    "resumeToken": "..."
-  }
-}
-```
-
-使用者核准 → 恢復：
-
-```json
-{
-  "action": "resume",
-  "token": "<resumeToken>",
-  "approve": true
-}
-```
-
-一個工作流程。確定性。安全。
+- `condition`（或 `when`）可依 `$step.approved` 對步驟設閘。
 
 ## 工具參數
 
 ### `run`
-
-以工具模式執行管線。
 
 ```json
 {
@@ -288,7 +237,7 @@ User: "Check my email and draft replies"
 }
 ```
 
-使用 args 執行工作流程檔案：
+使用引數執行工作流程檔案：
 
 ```json
 {
@@ -298,9 +247,15 @@ User: "Check my email and draft replies"
 }
 ```
 
-### `resume`
+| 欄位             | 預設        | 備註                                                                                                         |
+| ---------------- | ----------- | ------------------------------------------------------------------------------------------------------------ |
+| `pipeline`       | required    | 內嵌管線字串，或以 `.lobster`/`.yaml`/`.yml`/`.json` 結尾的工作流程檔案路徑。                                |
+| `cwd`            | gateway cwd | 相對工作目錄；必須解析在閘道工作目錄內（絕對路徑會被拒絕）。                                                 |
+| `timeoutMs`      | `20000`     | 若超過則中止執行。                                                                                           |
+| `maxStdoutBytes` | `512000`    | 若擷取的 stdout 或 stderr 超過此大小，則中止執行。                                                           |
+| `argsJson`       | -           | 工作流程檔案引數的 JSON 字串（內嵌管線會忽略）。                                                             |
 
-在核准後繼續已暫停的工作流程。
+### `resume`
 
 ```json
 {
@@ -310,64 +265,69 @@ User: "Check my email and draft replies"
 }
 ```
 
-### 選用輸入
+`resume` 可接受 `token`（來自 `requiresApproval` 的完整續接權杖）或 `approvalId`（來自同一物件的簡短 ID）- 請使用暫停執行回傳的任一項。`approve` 為必填。
 
-- `cwd`：管線的相對工作目錄（必須保留在 gateway 工作目錄內）。
-- `timeoutMs`：如果工作流程超過此持續時間，則中止（預設：20000）。
-- `maxStdoutBytes`：如果輸出超過此大小，則中止（預設：512000）。
-- `argsJson`：傳遞給 `lobster run --args-json` 的 JSON 字串（僅限工作流程檔案）。
+### 受管理的 TaskFlow 模式
+
+在 `run` 傳入 `flowControllerId` 和 `flowGoal`（或在 `resume` 傳入 `flowId` 和 `flowExpectedRevision`）會透過外掛執行階段的受管理 [TaskFlow](/zh-TW/automation/taskflow) API 驅動該呼叫，而不是回傳裸封套：OpenClaw 會建立或續接持久流程記錄，將 Lobster 封套套用到其中（核准時為 `waiting`，完成時為 `succeeded`/`failed`），並回傳 `{ ok, envelope, flow, mutation }`。此模式需要已繫結的 TaskFlow 執行階段，適用於需要在閘道重新啟動之間保留持久流程狀態的外掛/控制器程式碼，而非典型臨時代理使用。
 
 ## 輸出封套
 
-Lobster 會回傳包含三種狀態之一的 JSON 封套：
+Lobster 會回傳 JSON 封套，狀態為以下三者之一：
 
-- `ok` → 成功完成
-- `needs_approval` → 已暫停；需要 `requiresApproval.resumeToken` 才能恢復
-- `cancelled` → 已明確拒絕或取消
+- `ok` - 成功完成
+- `needs_approval` - 已暫停；`requiresApproval` 攜帶 `resumeToken` 和簡短的 `approvalId`，任一者都可續接執行
+- `cancelled` - 明確拒絕或取消
 
-工具會同時在 `content`（格式化 JSON）與 `details`（原始物件）中提供封套。
+工具會同時在 `content`（格式化 JSON）和 `details`（原始物件）中呈現封套。
 
 ## 核准
 
 如果存在 `requiresApproval`，請檢查提示並決定：
 
-- `approve: true` → 恢復並繼續副作用
-- `approve: false` → 取消並完成工作流程
+- `approve: true` - 續接並繼續副作用
+- `approve: false` - 取消並完成工作流程
 
-使用 `approve --preview-from-stdin --limit N` 可將 JSON 預覽附加到核准要求，而不需要自訂 jq/heredoc 黏合邏輯。恢復 token 現在更精簡：Lobster 會將工作流程恢復狀態儲存在其狀態目錄下，並回傳一個小型 token key。
+使用 `approve --preview-from-stdin --limit N` 可將 JSON 預覽附加到核准要求，無需自訂 jq/heredoc 黏合。續接狀態會儲存為 Lobster 狀態目錄下的小型 JSON 檔案（預設為 `~/.lobster/state`，可用 `LOBSTER_STATE_DIR` 覆寫）；權杖本身只編碼指向該狀態的指標，而不是完整管線狀態。
 
 ## OpenProse
 
-OpenProse 與 Lobster 搭配良好：使用 `/prose` 編排多代理準備工作，然後執行 Lobster 管線進行確定性核准。如果 Prose 程式需要 Lobster，請透過 `tools.subagents.tools` 允許子代理使用 `lobster` 工具。請參閱 [OpenProse](/zh-TW/prose)。
+OpenProse 與 Lobster 搭配良好：使用 `/prose` 編排多代理準備工作，然後執行 Lobster 管線以取得確定性核准。如果 Prose 程式需要 Lobster，請透過 `tools.subagents.tools` 為子代理允許 `lobster` 工具。請參閱 [OpenProse](/zh-TW/prose)。
 
 ## 安全性
 
-- **僅限本機程序內** - 工作流程在 gateway 程序內執行；plugin 本身不會發出網路呼叫。
-- **無秘密資訊** - Lobster 不管理 OAuth；它會呼叫處理這些事項的 OpenClaw 工具。
-- **感知沙盒** - 當工具情境位於沙盒中時停用。
-- **強化** - 逾時與輸出上限由嵌入式執行器強制執行。
+- **僅本機同一程序** - 工作流程在閘道程序內執行；外掛本身不發出網路呼叫。
+- **不含秘密** - Lobster 不管理 OAuth；它會呼叫負責管理的 OpenClaw 工具。
+- **沙盒感知** - 當工具情境為沙盒化時停用。
+- **已強化** - 逾時與輸出上限由嵌入式執行器強制執行。
 
 ## 疑難排解
 
-- **`lobster timed out`** → 增加 `timeoutMs`，或拆分較長的管線。
-- **`lobster output exceeded maxStdoutBytes`** → 提高 `maxStdoutBytes` 或減少輸出大小。
-- **`lobster returned invalid JSON`** → 確保管線在工具模式中執行，且只印出 JSON。
-- **`lobster failed`** → 檢查 gateway 記錄以取得嵌入式執行器錯誤詳細資訊。
+| 錯誤                                                          | 原因 / 修正                                                                     |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `lobster runtime timed out`                                   | 管線超過 `timeoutMs`。提高它或拆分管線。                                        |
+| `lobster stdout exceeded maxStdoutBytes`（或 `stderr`）       | 擷取的輸出超過上限。提高 `maxStdoutBytes` 或減少輸出。                          |
+| `run --args-json must be valid JSON`                          | `argsJson`（工作流程檔案執行）剖析失敗。修正 JSON 字串。                        |
+| `lobster runtime failed`（或其他 `runtime_error` 訊息）       | 嵌入式執行階段回傳錯誤封套。請檢查閘道記錄以取得詳細資訊。                     |
 
 ## 深入了解
 
-- [Plugins](/zh-TW/tools/plugin)
-- [Plugin 工具撰寫](/zh-TW/plugins/building-plugins#registering-agent-tools)
+- [外掛](/zh-TW/tools/plugin)
+- [外掛工具撰寫](/zh-TW/plugins/building-plugins#registering-agent-tools)
 
 ## 案例研究：社群工作流程
 
-一個公開範例：「第二大腦」CLI + Lobster 管線，用來管理三個 Markdown vault（個人、伴侶、共享）。CLI 會輸出統計資料、收件匣清單與過期掃描的 JSON；Lobster 會將這些指令串接成 `weekly-review`、`inbox-triage`、`memory-consolidation` 與 `shared-task-sync` 等工作流程，每個都具備核准關卡。可用時由 AI 處理判斷（分類），不可用時則退回確定性規則。
+一個公開範例：「第二大腦」命令列介面 + Lobster 管線，用來管理三個
+Markdown 知識庫（個人、伴侶、共享）。命令列介面會輸出 JSON，用於統計、
+收件匣列表，以及過期掃描；Lobster 會將這些命令串接成工作流程，
+例如 `weekly-review`、`inbox-triage`、`memory-consolidation` 和
+`shared-task-sync`，每個流程都有核准關卡。AI 在可用時負責判斷
+（分類），不可用時則退回使用確定性規則。
 
 - 討論串：[https://x.com/plattenschieber/status/2014508656335770033](https://x.com/plattenschieber/status/2014508656335770033)
-- Repo：[https://github.com/bloomedai/brain-cli](https://github.com/bloomedai/brain-cli)
+- 儲存庫：[https://github.com/bloomedai/brain-cli](https://github.com/bloomedai/brain-cli)
 
 ## 相關
 
-- [Automation](/zh-TW/automation) - 排程 Lobster 工作流程
-- [Automation Overview](/zh-TW/automation) - 所有自動化機制
-- [Tools Overview](/zh-TW/tools) - 所有可用的代理工具
+- [自動化](/zh-TW/automation) - 所有自動化機制
+- [工具概覽](/zh-TW/tools) - 所有可用的代理工具

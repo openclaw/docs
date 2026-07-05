@@ -1,22 +1,25 @@
 ---
 read_when:
-    - ローカルでパックしたPluginに対してオンボーディングまたはセットアップフローをテストする
-    - Plugin パッケージを公開前に検証する
-    - 自動 Plugin インストールをテスト成果物に置き換える
+    - ローカルでパックしたPluginに対するオンボーディングまたはセットアップフローのテスト
+    - 公開前にPluginパッケージを検証する
+    - 自動 Plugin インストールをテストアーティファクトに置き換える
 sidebarTitle: Install overrides
-summary: セットアップ時のインストールフローでパッケージ化された Plugin オーバーライドをテストする
+summary: セットアップ時のインストールフローでパッケージ化されたPluginオーバーライドをテストする
 title: Plugin インストールのオーバーライド
 x-i18n:
-    generated_at: "2026-06-27T12:16:11Z"
+    generated_at: "2026-07-05T11:37:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9ac3d8074f0455a3287c22447d134bebf57805bc06302652172eb5f87e47e548
+    source_hash: adc823f49ea9f8fa86e6a89933e43fdc309d808ac24397770495dbe81cb4b0d7
     source_path: plugins/install-overrides.md
     workflow: 16
 ---
 
-Plugin インストールオーバーライドにより、メンテナーはセットアップ時の Plugin インストールを、特定の npm パッケージまたはローカルの npm-pack tarball に対してテストできます。これは E2E とパッケージ検証専用です。通常のユーザーは [`openclaw plugins install`](/ja-JP/cli/plugins) で Plugin をインストールしてください。
+Plugin インストールオーバーライドを使うと、メンテナーはセットアップ時の Plugin インストールで、カタログ、バンドル済み、またはデフォルトの npm ソースではなく、
+特定の npm パッケージまたはローカルの npm-pack tarball を指定できます。これは E2E とパッケージ検証
+専用です。通常のユーザーは
+[`openclaw plugins install`](/ja-JP/cli/plugins) で Plugin をインストールします。
 
 <Warning>
 オーバーライドは、指定したソースから Plugin コードを実行します。隔離された状態ディレクトリまたは使い捨てのテストマシンでのみ使用してください。
@@ -34,22 +37,27 @@ export OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{
 }'
 ```
 
-オーバーライドマップは Plugin ID をキーにした JSON です。値は次をサポートします。
+オーバーライドマップは Plugin id をキーにした JSON です。値は次をサポートします。
 
-- レジストリパッケージと正確なバージョンまたはタグには `npm:<registry-spec>`
-- `npm pack` で生成されたローカル tarball には `npm-pack:<path.tgz>`
-
-相対 `npm-pack:` パスは現在の作業ディレクトリから解決されます。
+| プレフィックス        | ソース                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm:<registry-spec>` | レジストリパッケージ、厳密なバージョン、またはタグ                                               |
+| `npm-pack:<path.tgz>` | `npm pack` で生成されたローカル tarball。相対パスは現在の作業ディレクトリから解決されます        |
 
 ## 動作
 
-セットアップ時フローが、マップに ID が存在する Plugin のインストールを要求すると、OpenClaw はカタログ、バンドル、またはデフォルトの npm ソースではなく、オーバーライドソースを使用します。これはオンボーディングと、共有のセットアップ時 Plugin インストーラーを使用する他のフローに適用されます。
+セットアップ時のフローが、マップに id が含まれる Plugin をインストールすると、OpenClaw はカタログ、バンドル済み、またはデフォルトの npm
+ソースではなくオーバーライドソースを使用します。これは、オンボーディングと、共有の
+セットアップ時 Plugin インストーラーを使用するその他すべてのフローに適用されます。
 
-オーバーライドでも、期待される Plugin ID は引き続き強制されます。`codex` にマップされた tarball は、マニフェスト ID が `codex` の Plugin をインストールする必要があります。
-
-オーバーライドは、公式の信頼済みソースステータスを継承しません。カタログエントリが通常 OpenClaw 所有のパッケージを表している場合でも、オーバーライドはオペレーターが提供したテスト入力として扱われます。
-
-ワークスペースの `.env` ファイルではインストールオーバーライドを有効にできません。これらの変数は、OpenClaw を起動する信頼済みシェル、CI ジョブ、またはリモートテストコマンドで設定してください。
+- オーバーライドでも、想定される Plugin id は引き続き強制されます。`codex` にマップされた tarball は、
+  manifest id が `codex` の Plugin をインストールする必要があります。
+- オーバーライドは、公式の信頼済みソースの状態を継承しません。通常は
+  カタログエントリが OpenClaw 所有パッケージを表す場合でも、オーバーライドは
+  オペレーター指定のテスト入力として扱われます。
+- ワークスペースの `.env` ファイルではインストールオーバーライドを有効化できません。両方の env vars は
+  ブロックされたワークスペース dotenv リストに含まれています。OpenClaw を起動する信頼済みシェル、CI ジョブ、または
+  リモートテストコマンドで設定してください。
 
 ## パッケージ E2E
 
@@ -64,11 +72,12 @@ OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{"codex":"npm-pack:/tmp/openclaw-codex-2026.5
 pnpm openclaw onboard --mode local
 ```
 
-状態ディレクトリ配下にインストールされたパッケージを検証します。
+状態ディレクトリ配下でインストール済みパッケージを検証します。
 
 ```bash
 find "$OPENCLAW_STATE_DIR/npm/projects" -path '*/node_modules/@openclaw/codex/package.json' -print
 grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/projects"/*/package-lock.json
 ```
 
-ライブプロバイダー E2E では、テストコマンドを起動する前に、信頼済みシェルまたは CI シークレットから実際の API キーを読み込んでください。キーは出力せず、ソースとキーが存在していたかどうかのみを報告してください。
+ライブプロバイダー E2E では、テストコマンドを起動する前に、信頼済みシェルまたは CI
+シークレットから実際の API キーを読み込んでください。キーを出力しないでください。報告するのはソースとキーが存在したかどうかだけにしてください。

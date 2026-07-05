@@ -1,43 +1,107 @@
 ---
 read_when:
-    - Quieres entender cómo se relaciona el flujo de tareas con las tareas en segundo plano
-    - Encuentras Task Flow o el flujo de tareas de openclaw en notas de la versión o documentación
+    - Quieres entender cómo se relaciona TaskFlow con las tareas en segundo plano
+    - Encuentras TaskFlow o el flujo de tareas de OpenClaw en notas de versión o documentación
     - Quieres inspeccionar o gestionar el estado duradero del flujo
-summary: Capa de orquestación de flujos de tareas sobre las tareas en segundo plano
+summary: Capa de orquestación de TaskFlow sobre tareas en segundo plano
 title: Flujo de tareas
 x-i18n:
-    generated_at: "2026-07-02T07:55:06Z"
+    generated_at: "2026-07-05T11:01:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
+    source_hash: 5ccc6acf58b4b44c2989e3061bff08dabce8ef385706102360c756a1286ddd1b
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Task Flow es el sustrato de orquestación de flujos que se sitúa sobre las [tareas en segundo plano](/es/automation/tasks). Gestiona flujos duraderos de varios pasos con su propio estado, seguimiento de revisiones y semántica de sincronización, mientras que las tareas individuales siguen siendo la unidad de trabajo desacoplado.
+Task Flow es la capa de orquestación sobre las [tareas en segundo plano](/es/automation/tasks). Un flujo es un registro duradero de trabajo de varios pasos con su propio estado, estado JSON, contador de revisión y registros de tareas vinculados. Los flujos sobreviven a los reinicios del gateway; las tareas individuales siguen siendo la unidad de trabajo desacoplado.
 
 ## Cuándo usar Task Flow
 
-Usa Task Flow cuando el trabajo abarque varios pasos secuenciales o ramificados y necesites un seguimiento duradero del progreso entre reinicios del gateway. Para operaciones únicas en segundo plano, basta con una [tarea](/es/automation/tasks) simple.
+| Escenario                                  | Uso                                         |
+| ----------------------------------------- | ------------------------------------------- |
+| Trabajo único en segundo plano            | Tarea simple                                |
+| Pipeline de varios pasos impulsado por código de plugin | Task Flow (administrado)                    |
+| Creación de ACP desacoplado o subagente   | Task Flow (reflejado, creado automáticamente) |
+| Recordatorio de una sola ejecución        | Trabajo Cron                                |
 
-| Escenario                            | Uso                       |
-| ------------------------------------ | ------------------------- |
-| Trabajo único en segundo plano       | Tarea simple              |
-| Canalización de varios pasos (A, luego B y luego C) | Task Flow (gestionado) |
-| Observar tareas creadas externamente | Task Flow (reflejado)     |
-| Recordatorio puntual                 | Trabajo Cron              |
+## Modos de sincronización
 
-## Patrón de flujo de trabajo programado fiable
+### Modo administrado
 
-Para flujos de trabajo recurrentes, como informes de inteligencia de mercado, trata la programación, la orquestación y las comprobaciones de fiabilidad como capas separadas:
+Un flujo administrado tiene un controlador: código de plugin que crea el flujo mediante la API de Task Flow del runtime del plugin con un objetivo y un id de controlador obligatorio, y luego lo impulsa explícitamente.
 
-1. Usa [Tareas programadas](/es/automation/cron-jobs) para el tiempo de ejecución.
-2. Usa una sesión cron persistente cuando el flujo de trabajo deba basarse en contexto previo.
+- Cada paso se ejecuta como una tarea en segundo plano creada bajo el flujo; la clave de propietario del flujo y el origen del solicitante se transfieren a las tareas hijas.
+- El controlador avanza el flujo entre `running`, `waiting` y estados terminales, y almacena estado de paso JSON arbitrario en el registro del flujo.
+- Cada mutación pasa la revisión esperada del flujo. Una escritura obsoleta se rechaza como conflicto de revisión en lugar de sobrescribir un estado más nuevo.
+- Una vez solicitada la cancelación, se rechazan nuevas tareas hijas, y el flujo finaliza como `cancelled` cuando ninguna tarea hija permanece activa.
+
+Ejemplo: un flujo de informe semanal que (1) recopila datos, (2) genera el informe y (3) lo entrega, con una tarea en segundo plano por paso:
+
+```
+Flow: weekly-report
+  Step 1: gather-data     → task created → succeeded
+  Step 2: generate-report → task created → succeeded
+  Step 3: deliver         → task created → running
+```
+
+### Modo reflejado
+
+OpenClaw crea automáticamente un flujo reflejado de una tarea cuando se inicia una ejecución desacoplada de ACP o subagente (tareas con alcance de sesión y finalización entregable). El registro del flujo refleja su única tarea subyacente - estado, objetivo y tiempos - para que las creaciones desacopladas obtengan un identificador de flujo estable para superficies de estado y reintento sin controlador. Los flujos reflejados muestran el modo de sincronización `task_mirrored` en la CLI.
+
+## Estados de flujo
+
+| Estado      | Significado                                                               |
+| ----------- | ------------------------------------------------------------------------- |
+| `queued`    | Creado, aún sin progresar                                                 |
+| `running`   | El flujo está progresando activamente                                     |
+| `waiting`   | El flujo administrado está estacionado en metadatos de espera (temporizador, evento externo) |
+| `blocked`   | Un paso terminó sin un resultado utilizable; `blockedTaskId`/resumen indican cuál |
+| `succeeded` | Completado correctamente                                                  |
+| `failed`    | Completado con un error                                                   |
+| `cancelled` | Cancelación solicitada y todas las tareas hijas resueltas                 |
+| `lost`      | El flujo perdió su estado subyacente autoritativo                         |
+
+## Estado duradero y seguimiento de revisiones
+
+Los registros de flujo persisten en la base de datos de estado SQLite compartida (`~/.openclaw/state/openclaw.sqlite`, tabla `flow_runs`) junto con los registros de tareas, por lo que el progreso sobrevive a los reinicios del gateway. Cada escritura incrementa la `revision` del flujo; los escritores concurrentes que pasan una revisión esperada obsoleta reciben un conflicto y deben volver a leer. El crecimiento de WAL está limitado por el autocheckpointing de SQLite más checkpoints pasivos periódicos, con checkpoints de truncado al apagar. El sidecar heredado `flows/registry.sqlite` de instalaciones anteriores se importa mediante `openclaw doctor`.
+
+## Comportamiento de cancelación
+
+`openclaw tasks flow cancel` establece una intención de cancelación persistente en el flujo, cancela sus tareas hijas activas y rechaza nuevas tareas hijas administradas. Una vez que ninguna tarea hija permanece activa, el flujo finaliza como `cancelled`: de inmediato o mediante el barrido de mantenimiento si las hijas tardan más en resolverse. La intención se conserva, por lo que un flujo cancelado permanece cancelado incluso si el gateway se reinicia antes de que todas las tareas hijas hayan terminado.
+
+## Comandos de CLI
+
+```bash
+# List active and recent flows
+openclaw tasks flow list [--status <status>] [--json]
+
+# Show details for a specific flow
+openclaw tasks flow show <lookup> [--json]
+
+# Cancel a running flow and its active tasks
+openclaw tasks flow cancel <lookup>
+```
+
+| Comando                           | Descripción                                                             |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| `openclaw tasks flow list`        | Flujos rastreados con modo de sincronización, estado, revisión, controlador y conteos de tareas |
+| `openclaw tasks flow show <id>`   | Inspecciona un flujo por id de flujo o clave de propietario, incluidas las tareas vinculadas |
+| `openclaw tasks flow cancel <id>` | Cancela un flujo en ejecución y sus tareas activas                      |
+
+Los flujos también están cubiertos por `openclaw tasks audit` (hallazgos de flujos obsoletos o rotos) y `openclaw tasks maintenance` (finaliza cancelaciones atascadas, elimina flujos terminales después de 7 días).
+
+## Patrón de workflow programado confiable
+
+Para workflows recurrentes como informes de inteligencia de mercado, trata la programación, la orquestación y las comprobaciones de confiabilidad como capas separadas:
+
+1. Usa [Tareas programadas](/es/automation/cron-jobs) para la temporización.
+2. Usa una sesión cron persistente cuando el workflow deba basarse en contexto previo.
 3. Usa [Lobster](/es/tools/lobster) para pasos deterministas, puertas de aprobación y tokens de reanudación.
-4. Usa Task Flow para realizar el seguimiento de la ejecución de varios pasos a través de tareas secundarias, esperas, reintentos y reinicios del gateway.
+4. Usa Task Flow para rastrear la ejecución de varios pasos a través de tareas hijas, esperas, reintentos y reinicios del gateway.
 
-Ejemplo de forma de cron:
+Ejemplo de forma cron:
 
 ```bash
 openclaw cron add \
@@ -51,9 +115,9 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Usa `session:<id>` en lugar de `isolated` cuando el flujo de trabajo recurrente necesite historial deliberado, resúmenes de ejecuciones anteriores o contexto permanente. Usa `isolated` cuando cada ejecución deba empezar desde cero y todo el estado requerido esté explícito en el flujo de trabajo.
+Usa `--session session:<id>` en lugar de `isolated` cuando el workflow recurrente necesite historial deliberado, resúmenes de ejecuciones anteriores o contexto permanente. Usa `isolated` cuando cada ejecución deba empezar desde cero y todo el estado requerido sea explícito en el workflow.
 
-Dentro del flujo de trabajo, coloca las comprobaciones de fiabilidad antes del paso de resumen con el LLM:
+Dentro del workflow, coloca las comprobaciones de confiabilidad antes del paso de resumen del LLM:
 
 ```yaml
 name: market-intel-brief
@@ -78,11 +142,11 @@ steps:
 
 Comprobaciones de preflight recomendadas:
 
-- Disponibilidad del navegador y elección del perfil, por ejemplo `openclaw` para estado gestionado o `user` cuando se requiere una sesión de Chrome con sesión iniciada. Consulta [Navegador](/es/tools/browser).
+- Disponibilidad del navegador y elección de perfil, por ejemplo `openclaw` para estado administrado o `user` cuando se requiere una sesión de Chrome iniciada. Consulta [Navegador](/es/tools/browser).
 - Credenciales de API y cuota para cada fuente.
 - Accesibilidad de red para los endpoints requeridos.
 - Herramientas requeridas habilitadas para el agente, como `lobster`, `browser` y `llm-task`.
-- Destino de fallo configurado para cron de modo que los fallos de preflight sean visibles. Consulta [Tareas programadas](/es/automation/cron-jobs#delivery-and-output).
+- Destino de fallo configurado para cron para que los fallos de preflight sean visibles. Consulta [Tareas programadas](/es/automation/cron-jobs#delivery-and-output).
 
 Campos de procedencia de datos recomendados para cada elemento recopilado:
 
@@ -96,66 +160,17 @@ Campos de procedencia de datos recomendados para cada elemento recopilado:
 }
 ```
 
-Haz que el flujo de trabajo rechace o marque como obsoletos los elementos antes de la generación del resumen. El paso del LLM debe recibir solo JSON estructurado y se le debe pedir que preserve `sourceUrl`, `retrievedAt` y `asOf` en su salida. Usa [LLM Task](/es/tools/llm-task) cuando necesites un paso de modelo validado por esquema dentro del flujo de trabajo.
+Haz que el workflow rechace o marque elementos obsoletos antes de la síntesis. El paso de LLM debe recibir solo JSON estructurado y se le debe pedir que preserve `sourceUrl`, `retrievedAt` y `asOf` en su salida. Usa [LLM Task](/es/tools/llm-task) cuando necesites un paso de modelo validado por esquema dentro del workflow.
 
-Para flujos de trabajo reutilizables de equipo o comunidad, empaqueta la CLI, los archivos `.lobster` y cualquier nota de configuración como una skill o plugin y publícalo a través de [ClawHub](/clawhub). Mantén las barreras de protección específicas del flujo de trabajo en ese paquete, salvo que a la API del plugin le falte una capacidad genérica necesaria.
-
-## Modos de sincronización
-
-### Modo gestionado
-
-Task Flow posee el ciclo de vida de principio a fin. Crea tareas como pasos del flujo, las lleva hasta completarlas y avanza el estado del flujo automáticamente.
-
-Ejemplo: un flujo de informe semanal que (1) recopila datos, (2) genera el informe y (3) lo entrega. Task Flow crea cada paso como una tarea en segundo plano, espera a que se complete y luego pasa al siguiente paso.
-
-```
-Flow: weekly-report
-  Step 1: gather-data     → task created → succeeded
-  Step 2: generate-report → task created → succeeded
-  Step 3: deliver         → task created → running
-```
-
-### Modo reflejado
-
-Task Flow observa tareas creadas externamente y mantiene el estado del flujo sincronizado sin asumir la creación de tareas. Esto es útil cuando las tareas se originan en trabajos cron, comandos de CLI u otras fuentes y quieres una vista unificada de su progreso como flujo.
-
-Ejemplo: tres trabajos cron independientes que juntos forman una rutina de "operaciones matutinas". Un flujo reflejado realiza el seguimiento de su progreso colectivo sin controlar cuándo ni cómo se ejecutan.
-
-## Estado duradero y seguimiento de revisiones
-
-Cada flujo persiste su propio estado y realiza un seguimiento de las revisiones para que el progreso sobreviva a los reinicios del gateway. El seguimiento de revisiones permite detectar conflictos cuando varias fuentes intentan avanzar el mismo flujo simultáneamente.
-El registro de flujos usa SQLite con mantenimiento acotado del registro de escritura anticipada, incluidos puntos de control periódicos y al apagar, para que los gateways de larga duración no conserven archivos auxiliares `registry.sqlite-wal` sin límite.
-
-## Comportamiento de cancelación
-
-`openclaw tasks flow cancel` establece una intención de cancelación persistente en el flujo. Las tareas activas dentro del flujo se cancelan y no se inician nuevos pasos. La intención de cancelación persiste entre reinicios, por lo que un flujo cancelado permanece cancelado incluso si el gateway se reinicia antes de que todas las tareas secundarias hayan terminado.
-
-## Comandos de CLI
-
-```bash
-# List active and recent flows
-openclaw tasks flow list
-
-# Show details for a specific flow
-openclaw tasks flow show <lookup>
-
-# Cancel a running flow and its active tasks
-openclaw tasks flow cancel <lookup>
-```
-
-| Comando                           | Descripción                                             |
-| --------------------------------- | ------------------------------------------------------- |
-| `openclaw tasks flow list`        | Muestra los flujos con seguimiento, estado y modo de sincronización |
-| `openclaw tasks flow show <id>`   | Inspecciona un flujo por id de flujo o clave de búsqueda |
-| `openclaw tasks flow cancel <id>` | Cancela un flujo en ejecución y sus tareas activas      |
+Para workflows reutilizables de equipo o comunidad, empaqueta la CLI, los archivos `.lobster` y cualquier nota de configuración como una skill o plugin, y publícalo mediante [ClawHub](/es/clawhub). Mantén las barandillas específicas del workflow en ese paquete a menos que a la API del plugin le falte una capacidad genérica necesaria.
 
 ## Cómo se relacionan los flujos con las tareas
 
-Los flujos coordinan tareas, no las sustituyen. Un solo flujo puede controlar varias tareas en segundo plano durante su vida útil. Usa `openclaw tasks` para inspeccionar registros de tareas individuales y `openclaw tasks flow` para inspeccionar el flujo orquestador.
+Los flujos coordinan tareas, no las reemplazan. Un solo flujo puede impulsar varias tareas en segundo plano durante su vida útil. Usa `openclaw tasks` para inspeccionar registros de tareas individuales y `openclaw tasks flow` para inspeccionar el flujo orquestador.
 
 ## Relacionado
 
-- [Tareas en segundo plano](/es/automation/tasks) — el registro de trabajo desacoplado que coordinan los flujos
-- [CLI: tasks](/es/cli/tasks) — referencia de comandos de CLI para `openclaw tasks flow`
-- [Resumen de automatización](/es/automation) — todos los mecanismos de automatización de un vistazo
-- [Trabajos Cron](/es/automation/cron-jobs) — trabajos programados que pueden alimentar flujos
+- [Tareas en segundo plano](/es/automation/tasks) - el libro mayor de trabajo desacoplado que coordinan los flujos
+- [CLI: tasks](/es/cli/tasks) - referencia de comandos de CLI para `openclaw tasks flow`
+- [Resumen de automatización](/es/automation) - todos los mecanismos de automatización de un vistazo
+- [Trabajos Cron](/es/automation/cron-jobs) - trabajos programados que pueden alimentar flujos

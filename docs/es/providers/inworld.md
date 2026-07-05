@@ -1,43 +1,37 @@
 ---
 read_when:
     - Quieres síntesis de voz de Inworld para respuestas salientes
-    - Necesitas salida de telefonía PCM o nota de voz OGG_OPUS desde Inworld
-summary: Texto a voz en streaming de Inworld para las respuestas de OpenClaw
+    - Necesitas salida de telefonía PCM o de nota de voz OGG_OPUS desde Inworld
+summary: Texto a voz en streaming de Inworld para respuestas de OpenClaw
 title: Inworld
 x-i18n:
-    generated_at: "2026-06-27T12:38:09Z"
+    generated_at: "2026-07-05T11:36:27Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ea65903945586516b51b239f0671b9e59dac92f302442f3cb629f66b68338cfb
+    source_hash: 443797be3eec0f63c52a7b6b697abb85b15db9b878174f6f6b70ddec474e6326
     source_path: providers/inworld.md
     workflow: 16
 ---
 
-Inworld es un proveedor de texto a voz (TTS) en streaming. En OpenClaw,
-sintetiza audio de respuesta saliente (MP3 de forma predeterminada, OGG_OPUS para notas de voz)
-y audio PCM para canales de telefonía como Voice Call.
+Inworld es un proveedor de texto a voz (TTS) por streaming. En OpenClaw sintetiza audio de respuestas salientes (MP3 de forma predeterminada, OGG_OPUS para notas de voz) y audio PCM sin procesar para canales de telefonía como Llamada de voz.
 
-OpenClaw publica en el endpoint de TTS en streaming de Inworld, concatena los
-fragmentos de audio en base64 devueltos en un único búfer y entrega el resultado
-al flujo estándar de audio de respuesta.
+OpenClaw publica en el endpoint de TTS por streaming de Inworld, concatena los fragmentos de audio base64 devueltos en un único búfer y entrega el resultado al flujo estándar de audio de respuesta.
 
-| Propiedad         | Valor                                                           |
-| ----------------- | --------------------------------------------------------------- |
-| ID de proveedor   | `inworld`                                                       |
-| Plugin            | paquete externo oficial                                         |
-| Contrato          | `speechProviders` (solo TTS)                                    |
-| Var. de entorno de auth | `INWORLD_API_KEY` (HTTP Basic, credencial Base64 del panel) |
-| URL base          | `https://api.inworld.ai`                                        |
-| Voz predeterminada | `Sarah`                                                        |
-| Modelo predeterminado | `inworld-tts-1.5-max`                                      |
-| Salida            | MP3 (predeterminado), OGG_OPUS (notas de voz), PCM 22050 Hz (telefonía) |
-| Sitio web         | [inworld.ai](https://inworld.ai)                                |
-| Docs              | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+| Propiedad     | Valor                                                           |
+| ------------- | --------------------------------------------------------------- |
+| Id. de proveedor | `inworld`                                                    |
+| Plugin        | paquete externo oficial (`@openclaw/inworld-speech`)            |
+| Contrato      | `speechProviders` (solo TTS)                                    |
+| Variable de entorno de autenticación | `INWORLD_API_KEY` (HTTP Basic, credencial del panel en Base64) |
+| URL base      | `https://api.inworld.ai`                                        |
+| Voz predeterminada | `Sarah`                                                    |
+| Modelo predeterminado | `inworld-tts-1.5-max`                                    |
+| Salida        | MP3 (predeterminado), OGG_OPUS (notas de voz), PCM 22050 Hz (telefonía) |
+| Sitio web     | [inworld.ai](https://inworld.ai)                                |
+| Documentación | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
 
 ## Instalar Plugin
-
-Instala el Plugin oficial y luego reinicia Gateway:
 
 ```bash
 openclaw plugins install @openclaw/inworld-speech
@@ -48,12 +42,9 @@ openclaw gateway restart
 
 <Steps>
   <Step title="Configura tu clave de API">
-    Copia la credencial desde tu panel de Inworld (Workspace > API Keys)
-    y configúrala como una variable de entorno. El valor se envía literalmente
-    como la credencial HTTP Basic, así que no lo codifiques de nuevo en Base64
-    ni lo conviertas en un token bearer.
+    Copia la credencial desde tu panel de Inworld (Workspace > API Keys) y configúrala como una variable de entorno. El valor se envía literalmente como la credencial de HTTP Basic, así que no vuelvas a codificarlo en Base64 ni lo conviertas en un token de portador.
 
-    ```
+    ```bash
     INWORLD_API_KEY=<base64-credential-from-dashboard>
     ```
 
@@ -67,7 +58,7 @@ openclaw gateway restart
           provider: "inworld",
           providers: {
             inworld: {
-              speakerVoiceId: "Sarah",
+              voiceId: "Sarah",
               modelId: "inworld-tts-1.5-max",
             },
           },
@@ -77,46 +68,34 @@ openclaw gateway restart
     ```
   </Step>
   <Step title="Envía un mensaje">
-    Envía una respuesta a través de cualquier canal conectado. OpenClaw sintetiza
-    el audio con Inworld y lo entrega como MP3 (u OGG_OPUS cuando el canal
-    espera una nota de voz).
+    Envía una respuesta a través de cualquier canal conectado. OpenClaw sintetiza el audio con Inworld y lo entrega como MP3 (u OGG_OPUS cuando el canal espera una nota de voz).
   </Step>
 </Steps>
 
 ## Opciones de configuración
 
-| Opción           | Ruta                                            | Descripción                                                       |
-| ---------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
-| `apiKey`         | `messages.tts.providers.inworld.apiKey`         | Credencial Base64 del panel. Recurre a `INWORLD_API_KEY`.         |
-| `baseUrl`        | `messages.tts.providers.inworld.baseUrl`        | Sobrescribe la URL base de la API de Inworld (predeterminado `https://api.inworld.ai`). |
-| `speakerVoiceId` | `messages.tts.providers.inworld.speakerVoiceId` | Identificador de voz (predeterminado `Sarah`).                    |
-| `modelId`        | `messages.tts.providers.inworld.modelId`        | ID del modelo TTS (predeterminado `inworld-tts-1.5-max`).          |
-| `temperature`    | `messages.tts.providers.inworld.temperature`    | Temperatura de muestreo `0..2` (opcional).                        |
+| Opción        | Ruta                                         | Descripción                                                         |
+| ------------- | -------------------------------------------- | ------------------------------------------------------------------- |
+| `apiKey`      | `messages.tts.providers.inworld.apiKey`      | Credencial del panel en Base64. Recurre a `INWORLD_API_KEY`.        |
+| `baseUrl`     | `messages.tts.providers.inworld.baseUrl`     | Anula la URL base de la API de Inworld (predeterminada `https://api.inworld.ai`). |
+| `voiceId`     | `messages.tts.providers.inworld.voiceId`     | Identificador de voz (predeterminado `Sarah`). Alias heredado: `speakerVoiceId`. |
+| `modelId`     | `messages.tts.providers.inworld.modelId`     | Id. del modelo TTS (predeterminado `inworld-tts-1.5-max`).          |
+| `temperature` | `messages.tts.providers.inworld.temperature` | Temperatura de muestreo, de `0` (exclusivo) a `2` (opcional).       |
 
 ## Notas
 
 <AccordionGroup>
   <Accordion title="Autenticación">
-    Inworld usa autenticación HTTP Basic con una única cadena de credencial
-    codificada en Base64. Cópiala literalmente desde el panel de Inworld. El
-    proveedor la envía como `Authorization: Basic <apiKey>` sin ninguna
-    codificación adicional, así que no la codifiques tú mismo en Base64 y no
-    pases un token de estilo bearer. Consulta las [notas de autenticación de TTS](/es/tools/tts#inworld-primary)
-    para ver la misma advertencia.
+    Inworld usa autenticación HTTP Basic con una única cadena de credencial codificada en Base64. Cópiala literalmente desde el panel de Inworld. El proveedor la envía como `Authorization: Basic <apiKey>` sin ninguna codificación adicional, así que no la codifiques tú mismo en Base64 y no pases un token con estilo de portador. Consulta las [notas de autenticación de TTS](/es/tools/tts#inworld-primary) para ver el mismo aviso.
   </Accordion>
   <Accordion title="Modelos">
-    IDs de modelo compatibles: `inworld-tts-1.5-max` (predeterminado),
-    `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.
+    Ids. de modelos admitidos: `inworld-tts-1.5-max` (predeterminado), `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.
   </Accordion>
   <Accordion title="Salidas de audio">
-    Las respuestas usan MP3 de forma predeterminada. Cuando el destino del canal
-    es `voice-note`, OpenClaw solicita a Inworld `OGG_OPUS` para que el audio se
-    reproduzca como una burbuja de voz nativa. La síntesis de telefonía usa
-    `PCM` sin procesar a 22050 Hz para alimentar el puente de telefonía.
+    Las respuestas usan MP3 de forma predeterminada. Cuando el destino del canal es `voice-note`, OpenClaw solicita a Inworld `OGG_OPUS` para que el audio se reproduzca como una burbuja de voz nativa. La síntesis de telefonía usa `PCM` sin procesar a 22050 Hz para alimentar el puente de telefonía.
   </Accordion>
   <Accordion title="Endpoints personalizados">
-    Sobrescribe el host de la API con `messages.tts.providers.inworld.baseUrl`.
-    Las barras finales se eliminan antes de enviar las solicitudes.
+    Anula el host de la API con `messages.tts.providers.inworld.baseUrl`. Las barras finales se eliminan antes de enviar las solicitudes.
   </Accordion>
 </AccordionGroup>
 
@@ -124,13 +103,13 @@ openclaw gateway restart
 
 <CardGroup cols={2}>
   <Card title="Texto a voz" href="/es/tools/tts" icon="waveform-lines">
-    Resumen de TTS, proveedores y configuración de `messages.tts`.
+    Vista general de TTS, proveedores y configuración de `messages.tts`.
   </Card>
   <Card title="Configuración" href="/es/gateway/configuration" icon="gear">
-    Referencia completa de configuración, incluidos los ajustes de `messages.tts`.
+    Referencia de configuración completa, incluidos los ajustes de `messages.tts`.
   </Card>
   <Card title="Proveedores" href="/es/providers" icon="grid">
-    Todos los proveedores compatibles con OpenClaw.
+    Todos los proveedores de OpenClaw admitidos.
   </Card>
   <Card title="Solución de problemas" href="/es/help/troubleshooting" icon="wrench">
     Problemas comunes y pasos de depuración.

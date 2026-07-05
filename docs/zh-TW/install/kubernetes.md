@@ -1,29 +1,29 @@
 ---
 read_when:
     - 你想在 Kubernetes 叢集上執行 OpenClaw
-    - 您想在 Kubernetes 環境中測試 OpenClaw
+    - 你想在 Kubernetes 環境中測試 OpenClaw
 summary: 使用 Kustomize 將 OpenClaw 閘道部署到 Kubernetes 叢集
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-06-28T20:43:43Z"
+    generated_at: "2026-07-05T11:23:54Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-在 Kubernetes 上執行 OpenClaw 的最小起點，不是可直接用於生產環境的部署。它涵蓋核心資源，並預期你會依照自己的環境調整。
+在 Kubernetes 上執行 OpenClaw 的最小起點，並非可用於生產環境的部署。它涵蓋核心資源，並預期你會依自己的環境調整。
 
-## 為什麼不用 Helm？
+## 為什麼不用 Helm
 
-OpenClaw 是一個帶有一些設定檔的單一容器。真正需要自訂的部分在於代理內容（Markdown 檔案、Skills、設定覆寫），而不是基礎架構樣板。Kustomize 可以處理 overlays，且不需要 Helm chart 的額外負擔。如果你的部署變得更複雜，可以在這些 manifests 之上再疊加 Helm chart。
+OpenClaw 是單一容器加上一些設定檔。真正需要客製化的是代理內容（Markdown 檔案、Skills、設定覆寫），不是基礎設施樣板。Kustomize 可以處理覆蓋層，而不需要 Helm chart 的額外負擔。如果你的部署變得更複雜，可以在這些 manifests 之上再疊加 Helm chart。
 
 ## 你需要什麼
 
-- 一個正在執行的 Kubernetes 叢集（AKS、EKS、GKE、k3s、kind、OpenShift 等）
-- 已連線到你的叢集的 `kubectl`
+- 執行中的 Kubernetes 叢集（AKS、EKS、GKE、k3s、kind、OpenShift 等）
+- 已連線到叢集的 `kubectl`
 - 至少一個模型提供者的 API 金鑰
 
 ## 快速開始
@@ -37,13 +37,13 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-擷取為 Control UI 設定的共用密鑰。這個部署指令碼預設會建立 token 驗證：
+`deploy.sh` 預設會建立權杖驗證。擷取產生的閘道權杖供 Control UI 使用：
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-進行本機除錯時，`./scripts/k8s/deploy.sh --show-token` 會在部署後列印 token。
+若要進行本機偵錯，`./scripts/k8s/deploy.sh --show-token` 會在部署後列印權杖。
 
 ## 使用 Kind 進行本機測試
 
@@ -60,7 +60,7 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 
 ### 1) 部署
 
-**選項 A** — 環境中的 API 金鑰（一步完成）：
+**選項 A：環境中的 API 金鑰（一步完成）**
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -68,9 +68,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-此指令碼會使用 API 金鑰和自動產生的閘道 token 建立 Kubernetes Secret，然後進行部署。如果 Secret 已存在，它會保留目前的閘道 token，以及任何未變更的提供者金鑰。
+此指令碼會使用 API 金鑰和自動產生的閘道權杖建立 Kubernetes Secret，然後進行部署。如果 Secret 已存在，它會保留目前的閘道權杖，以及任何未變更的提供者金鑰。
 
-**選項 B** — 分開建立 secret：
+**選項 B：分開建立 secret**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -78,7 +78,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-如果你想在本機測試時將 token 列印到 stdout，任一指令都可搭配 `--show-token`。
+在任一命令加入 `--show-token`，即可將權杖列印到 stdout 以供本機測試。
 
 ### 2) 存取閘道
 
@@ -89,7 +89,7 @@ open http://localhost:18789
 
 ## 會部署哪些內容
 
-```
+```text
 Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 ├── Deployment/openclaw        # Single pod, init container + gateway
 ├── Service/openclaw           # ClusterIP on port 18789
@@ -98,7 +98,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 └── Secret/openclaw-secrets    # Gateway token + API keys
 ```
 
-## 自訂
+## 客製化
 
 ### 代理指示
 
@@ -110,7 +110,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### 閘道設定
 
-編輯 `scripts/k8s/manifests/configmap.yaml` 中的 `openclaw.json`。完整參考請見[閘道設定](/zh-TW/gateway/configuration)。
+編輯 `scripts/k8s/manifests/configmap.yaml` 中的 `openclaw.json`。完整參考請參閱[閘道設定](/zh-TW/gateway/configuration)。
 
 ### 新增提供者
 
@@ -123,7 +123,7 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-除非你覆寫既有提供者金鑰，否則它們會保留在 Secret 中。
+除非你覆寫，否則既有提供者金鑰會保留在 Secret 中。
 
 或直接修補 Secret：
 
@@ -133,7 +133,7 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### 自訂 namespace
+### 自訂命名空間
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
@@ -144,18 +144,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 編輯 `scripts/k8s/manifests/deployment.yaml` 中的 `image` 欄位：
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # primary; official Docker Hub mirror: openclaw/openclaw
 ```
 
-### 暴露到 port-forward 之外
+### 暴露到 port-forward 以外
 
-預設 manifests 會將閘道綁定到 pod 內的回送位址。這可搭配 `kubectl port-forward` 使用，但不適用於需要連到 pod IP 的 Kubernetes `Service` 或 Ingress 路徑。
+預設 manifests 會將閘道繫結到 Pod 內的 loopback。這可搭配 `kubectl port-forward` 使用，但無法搭配需要直接連到 Pod IP 的 Kubernetes `Service` 或 Ingress 路徑。
 
-如果你想透過 Ingress 或負載平衡器暴露閘道：
+若要透過 Ingress 或負載平衡器暴露閘道：
 
-- 將 `scripts/k8s/manifests/configmap.yaml` 中的閘道綁定從 `loopback` 改為符合你部署模型的非回送綁定
-- 保持啟用閘道驗證，並使用適當的 TLS 終止入口點
-- 使用受支援的網頁安全模型設定 Control UI 的遠端存取（例如 HTTPS/Tailscale Serve，並在需要時明確設定允許的 origins）
+- 將 `scripts/k8s/manifests/configmap.yaml` 中的閘道繫結從 `loopback` 改為符合你部署模型的非 loopback 繫結。
+- 保持啟用閘道驗證，並使用適當的 TLS 終止進入點。
+- 使用支援的 Web 安全性模型設定 Control UI 的遠端存取（例如 HTTPS/Tailscale Serve，並在需要時明確設定允許的 origins）。
 
 ## 重新部署
 
@@ -163,28 +163,28 @@ image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: o
 ./scripts/k8s/deploy.sh
 ```
 
-這會套用所有 manifests，並重新啟動 pod 以載入任何設定或 secret 變更。
+這會套用所有 manifests，並重新啟動 Pod 以載入任何設定或 secret 變更。
 
-## 移除
+## 清除
 
 ```bash
 ./scripts/k8s/deploy.sh --delete
 ```
 
-這會刪除 namespace 以及其中的所有資源，包含 PVC。
+這會刪除命名空間和其中所有資源，包括 PVC。
 
 ## 架構備註
 
-- 閘道預設會綁定到 pod 內的回送位址，因此內附設定是供 `kubectl port-forward` 使用
-- 沒有叢集範圍資源，一切都位於單一 namespace 中
-- 安全性：`readOnlyRootFilesystem`、`drop: ALL` capabilities、非 root 使用者（UID 1000）
-- 預設設定讓 Control UI 維持在較安全的本機存取路徑：回送綁定加上 `kubectl port-forward` 到 `http://127.0.0.1:18789`
-- 如果你要超出 localhost 存取，請使用受支援的遠端模型：HTTPS/Tailscale 加上適當的閘道綁定和 Control UI origin 設定
-- Secrets 會在暫存目錄中產生並直接套用到叢集，不會將 secret 材料寫入 repo checkout
+- 閘道預設會繫結到 Pod 內的 loopback，因此隨附的設定適用於 `kubectl port-forward`。
+- 沒有叢集範圍資源；所有內容都位於單一命名空間中。
+- 安全性強化：`readOnlyRootFilesystem`、`drop: ALL` capabilities、非 root 使用者（UID 1000）。
+- 預設設定會讓 Control UI 保持在較安全的本機存取路徑：loopback 繫結加上 `kubectl port-forward` 到 `http://127.0.0.1:18789`。
+- 如果你要超出 localhost 存取範圍，請使用支援的遠端模型：HTTPS/Tailscale，加上適當的閘道繫結與 Control UI origin 設定。
+- Secrets 會在暫存目錄中產生並直接套用到叢集；不會將任何 secret 資料寫入 repo checkout。
 
 ## 檔案結構
 
-```
+```text
 scripts/k8s/
 ├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
 ├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
@@ -199,5 +199,5 @@ scripts/k8s/
 ## 相關
 
 - [Docker](/zh-TW/install/docker)
-- [Docker VM runtime](/zh-TW/install/docker-vm-runtime)
-- [安裝概觀](/zh-TW/install)
+- [Docker VM 執行階段](/zh-TW/install/docker-vm-runtime)
+- [安裝概覽](/zh-TW/install)

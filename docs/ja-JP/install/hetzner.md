@@ -1,59 +1,47 @@
 ---
 read_when:
-    - OpenClaw をクラウド VPS（自分のノートPCではなく）で24時間365日稼働させたい場合
-    - 自分のVPS上で、本番グレードの常時稼働するGatewayを使いたい場合
-    - 永続化、バイナリ、再起動時の動作を完全に制御したい場合
-    - Hetzner または類似のプロバイダー上の Docker で OpenClaw を実行している
-summary: 安価な Hetzner VPS (Docker) 上で、永続化された状態と組み込み済みバイナリを使って OpenClaw Gateway を24時間365日実行する
+    - OpenClawをクラウドVPS（自分のラップトップではなく）で24時間365日稼働させたい
+    - 自分の VPS で本番グレードの常時稼働 Gateway を使いたい
+    - 永続化、バイナリ、再起動動作を完全に制御したい場合
+    - Hetzner または同様のプロバイダー上の Docker で OpenClaw を実行している
+summary: 安価な Hetzner VPS（Docker）で、永続的な状態と組み込み済みバイナリを備えた OpenClaw Gateway を24時間365日実行する
 title: Hetzner
 x-i18n:
-    generated_at: "2026-05-06T17:57:42Z"
+    generated_at: "2026-07-05T11:32:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6102649b381b3b1ecd6f52e1cf518fc36147fe143ebc8fd4be5f44ab26cb3b4d
+    source_hash: 8ffebc0ce725fd219d13d0a556940327e70dab810b8fbee0b365c4870dc7109b
     source_path: install/hetzner.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## 目的
+永続的な OpenClaw Gateway を Docker を使って Hetzner VPS 上で実行し、永続的な状態、組み込み済みバイナリ、安全な再起動動作を備えます。
 
-Docker を使用して Hetzner VPS 上で永続的な OpenClaw Gateway を実行し、永続化された状態、組み込み済みバイナリ、安全な再起動動作を確保します。
+Hetzner の料金は変わることがあります。要件に合う最小の Debian/Ubuntu VPS を選び、OOM が発生した場合はスケールアップしてください。
 
-「月額約 $5 で OpenClaw を 24 時間 365 日動かしたい」場合、これが最もシンプルで信頼性の高いセットアップです。
-Hetzner の料金は変わります。最小構成の Debian/Ubuntu VPS を選び、OOM が発生した場合にスケールアップしてください。
+Gateway には、ノート PC からの SSH ポートフォワーディング、またはファイアウォールとトークンを自分で管理する場合は直接ポート公開でアクセスできます。
 
-セキュリティモデルの確認:
+セキュリティモデルの注意事項:
 
-- 会社で共有するエージェントは、全員が同じ信頼境界内にいて、ランタイムが業務専用であれば問題ありません。
-- 厳密に分離してください: 専用 VPS/ランタイム + 専用アカウントを使い、そのホストに個人用の Apple/Google/ブラウザ/パスワードマネージャープロファイルを置かないでください。
-- ユーザー同士が敵対的である可能性がある場合は、gateway/ホスト/OS ユーザーごとに分離してください。
+- 会社共有のエージェントは、全員が同じ信頼境界内にいて、ランタイムが業務専用であれば問題ありません。
+- 厳密に分離してください: 専用 VPS/ランタイム + 専用アカウントを使い、そのホスト上に個人用の Apple/Google/ブラウザ/パスワードマネージャーのプロファイルを置かないでください。
+- ユーザー同士が敵対的である場合は、gateway/ホスト/OS ユーザー単位で分離してください。
 
 [セキュリティ](/ja-JP/gateway/security) と [VPS ホスティング](/ja-JP/vps) を参照してください。
 
-## 何をするのか（簡単に）?
+このガイドでは、Hetzner 上の Ubuntu または Debian を前提としています。別の Linux VPS では、パッケージを適宜読み替えてください。汎用的な Docker フローについては、[Docker](/ja-JP/install/docker) を参照してください。
 
-- 小さな Linux サーバー（Hetzner VPS）を借りる
-- Docker（分離されたアプリランタイム）をインストールする
-- Docker 内で OpenClaw Gateway を起動する
-- ホスト上に `~/.openclaw` + `~/.openclaw/workspace` を永続化する（再起動/再ビルド後も残る）
-- SSH トンネル経由で自分のラップトップから Control UI にアクセスする
+## 必要なもの
 
-マウントされたその `~/.openclaw` 状態には、`openclaw.json`、エージェントごとの
-`agents/<agentId>/agent/auth-profiles.json`、`.env` が含まれます。
+- root アクセス権を持つ Hetzner VPS
+- ノート PC からの SSH アクセス
+- Docker と Docker Compose
+- モデル認証情報
+- 任意のプロバイダー認証情報 (WhatsApp QR、Telegram bot token、Gmail OAuth)
+- 約 20 分
 
-Gateway には次の方法でアクセスできます:
-
-- ラップトップからの SSH ポートフォワーディング
-- ファイアウォールとトークンを自分で管理する場合の直接ポート公開
-
-このガイドでは、Hetzner 上の Ubuntu または Debian を前提としています。  
-別の Linux VPS を使用している場合は、パッケージを適宜対応させてください。
-汎用的な Docker フローについては、[Docker](/ja-JP/install/docker) を参照してください。
-
----
-
-## クイック手順（経験のある運用者向け）
+## 最短手順
 
 1. Hetzner VPS をプロビジョニングする
 2. Docker をインストールする
@@ -64,39 +52,19 @@ Gateway には次の方法でアクセスできます:
 7. `docker compose up -d`
 8. 永続化と Gateway アクセスを確認する
 
----
-
-## 必要なもの
-
-- root アクセス権を持つ Hetzner VPS
-- ラップトップからの SSH アクセス
-- SSH とコピー/ペーストの基本的な操作に慣れていること
-- 約 20 分
-- Docker と Docker Compose
-- モデル認証情報
-- 任意のプロバイダー認証情報
-  - WhatsApp QR
-  - Telegram bot token
-  - Gmail OAuth
-
----
-
 <Steps>
   <Step title="VPS をプロビジョニングする">
-    Hetzner で Ubuntu または Debian の VPS を作成します。
-
-    root として接続します:
+    Hetzner で Ubuntu または Debian の VPS を作成し、root として接続します:
 
     ```bash
     ssh root@YOUR_VPS_IP
     ```
 
-    このガイドでは、VPS が状態を保持することを前提としています。
-    使い捨てインフラとして扱わないでください。
+    VPS は使い捨てインフラではなく、状態を持つものとして扱ってください。
 
   </Step>
 
-  <Step title="Docker をインストールする（VPS 上）">
+  <Step title="Docker をインストールする (VPS 上)">
     ```bash
     apt-get update
     apt-get install -y git curl ca-certificates
@@ -118,13 +86,12 @@ Gateway には次の方法でアクセスできます:
     cd openclaw
     ```
 
-    このガイドでは、バイナリの永続性を保証するためにカスタムイメージをビルドすることを前提としています。
+    このガイドでは、組み込んだバイナリが再起動後も残るようにカスタムイメージをビルドします。
 
   </Step>
 
   <Step title="永続的なホストディレクトリを作成する">
-    Docker コンテナは一時的です。
-    長期間保持するすべての状態はホスト上に置く必要があります。
+    Docker コンテナは一時的なものです。長期間保持する状態はすべてホスト上に置く必要があります。
 
     ```bash
     mkdir -p /root/.openclaw/workspace
@@ -136,7 +103,7 @@ Gateway には次の方法でアクセスできます:
   </Step>
 
   <Step title="環境変数を設定する">
-    リポジトリルートに `.env` を作成します。
+    リポジトリルートに `.env` を作成します:
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -151,22 +118,23 @@ Gateway には次の方法でアクセスできます:
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    安定した gateway トークンを `.env` で管理したい場合は `OPENCLAW_GATEWAY_TOKEN` を設定します。それ以外の場合は、再起動をまたいでクライアントに依存する前に `gateway.auth.token` を設定してください。どちらのソースも存在しない場合、OpenClaw はその起動時だけ有効なランタイム専用トークンを使用します。キーリングパスワードを生成し、`GOG_KEYRING_PASSWORD` に貼り付けます:
+    `OPENCLAW_GATEWAY_TOKEN` を設定すると、安定した gateway token を
+    `.env` で管理できます。そうしない場合は、再起動をまたいでクライアントに依存する前に
+    `gateway.auth.token` を設定してください。どちらも設定されていない場合、OpenClaw は
+    その起動時だけ有効なランタイム専用トークンを使用します。`GOG_KEYRING_PASSWORD` 用の keyring password を生成します:
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **このファイルをコミットしないでください。**
-
-    この `.env` ファイルは、`OPENCLAW_GATEWAY_TOKEN` などのコンテナ/ランタイム環境変数用です。
-    保存されたプロバイダーの OAuth/API キー認証は、マウントされた
+    **このファイルをコミットしないでください。** これには
+    `OPENCLAW_GATEWAY_TOKEN` などのコンテナ/ランタイム env が含まれます。保存済みの provider OAuth/API-key auth は、マウントされた
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` にあります。
 
   </Step>
 
   <Step title="Docker Compose 設定">
-    `docker-compose.yml` を作成または更新します。
+    `docker-compose.yml` を作成または更新します:
 
     ```yaml
     services:
@@ -206,12 +174,12 @@ Gateway には次の方法でアクセスできます:
           ]
     ```
 
-    `--allow-unconfigured` はブートストラップの利便性のためだけのもので、適切な gateway 設定の代替ではありません。デプロイ環境では、引き続き認証（`gateway.auth.token` またはパスワード）を設定し、安全なバインド設定を使用してください。
+    `--allow-unconfigured` はブートストラップを便利にするためだけのものであり、実際の gateway 設定の代わりにはなりません。デプロイに合わせて auth (`gateway.auth.token` または password) と安全な bind mode を必ず設定してください。
 
   </Step>
 
   <Step title="共有 Docker VM ランタイム手順">
-    一般的な Docker ホストフローには、共有ランタイムガイドを使用してください:
+    一般的な Docker ホストフローについては、共有ランタイムガイドに従ってください:
 
     - [必要なバイナリをイメージに組み込む](/ja-JP/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [ビルドして起動する](/ja-JP/install/docker-vm-runtime#build-and-launch)
@@ -221,43 +189,41 @@ Gateway には次の方法でアクセスできます:
   </Step>
 
   <Step title="Hetzner 固有のアクセス">
-    共有のビルドおよび起動手順の後、トンネルを開くために次のセットアップを完了します:
+    共有のビルドと起動の手順が終わったら、トンネルを開きます。
 
-    **前提条件:** VPS の sshd 設定で TCP フォワーディングが許可されていることを確認してください。SSH 設定を強化している場合は、`/etc/ssh/sshd_config` を確認し、次のように設定します:
+    **前提条件:** VPS の sshd 設定で TCP forwarding が許可されていることを確認してください。
+    SSH 設定を強化している場合は、`/etc/ssh/sshd_config` を確認し、次のように設定します:
 
-    ```
+    ```text
     AllowTcpForwarding local
     ```
 
-    `local` は、サーバーからのリモートフォワードをブロックしつつ、ラップトップからの `ssh -L` ローカルフォワードを許可します。`no` に設定すると、トンネルは次のエラーで失敗します:
+    `local` は、サーバーからのリモートフォワードをブロックしつつ、ノート PC からの `ssh -L` ローカルフォワードを許可します。`no` に設定すると、トンネルは次のエラーで失敗します:
     `channel 3: open failed: administratively prohibited: open failed`
 
-    TCP フォワーディングが有効であることを確認したら、SSH サービスを再起動し
-    （`systemctl restart ssh`）、ラップトップからトンネルを実行します:
+    TCP forwarding が有効であることを確認したら、SSH サービスを再起動し
+    (`systemctl restart ssh`)、ノート PC からトンネルを実行します:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 root@YOUR_VPS_IP
     ```
 
-    開きます:
-
-    `http://127.0.0.1:18789/`
-
-    設定済みの共有シークレットを貼り付けます。このガイドではデフォルトで gateway トークンを使用します。パスワード認証に切り替えた場合は、代わりにそのパスワードを使用してください。
+    `http://127.0.0.1:18789/` を開き、設定した共有シークレットを貼り付けます。
+    このガイドではデフォルトで gateway token を使用します。password auth に切り替えた場合は、代わりに設定済みのパスワードを使用してください。
 
   </Step>
 </Steps>
 
 共有の永続化マップは [Docker VM Runtime](/ja-JP/install/docker-vm-runtime#what-persists-where) にあります。
 
-## コードとしてのインフラストラクチャ（Terraform）
+## Infrastructure as Code (Terraform)
 
-Infrastructure as Code のワークフローを好むチーム向けに、コミュニティが管理する Terraform セットアップが次を提供します:
+infrastructure-as-code ワークフローを好むチーム向けに、コミュニティ管理の Terraform セットアップでは次を提供しています:
 
 - リモート状態管理を備えたモジュール式 Terraform 設定
 - cloud-init による自動プロビジョニング
-- デプロイスクリプト（ブートストラップ、デプロイ、バックアップ/復元）
-- セキュリティ強化（ファイアウォール、UFW、SSH 専用アクセス）
+- デプロイスクリプト (bootstrap、deploy、backup/restore)
+- セキュリティ強化 (firewall、UFW、SSH-only access)
 - gateway アクセス用の SSH トンネル設定
 
 **リポジトリ:**
@@ -265,7 +231,7 @@ Infrastructure as Code のワークフローを好むチーム向けに、コミ
 - インフラストラクチャ: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - Docker 設定: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-このアプローチは、再現可能なデプロイ、バージョン管理されたインフラストラクチャ、自動化された災害復旧により、上記の Docker セットアップを補完します。
+このアプローチは、再現可能なデプロイ、バージョン管理されたインフラストラクチャ、自動化された災害復旧によって、上記の Docker セットアップを補完します。
 
 <Note>
 コミュニティ管理です。問題や貢献については、上記のリポジトリリンクを参照してください。
@@ -275,7 +241,7 @@ Infrastructure as Code のワークフローを好むチーム向けに、コミ
 
 - メッセージングチャネルを設定する: [チャネル](/ja-JP/channels)
 - Gateway を設定する: [Gateway 設定](/ja-JP/gateway/configuration)
-- OpenClaw を最新の状態に保つ: [更新](/ja-JP/install/updating)
+- OpenClaw を最新に保つ: [更新](/ja-JP/install/updating)
 
 ## 関連
 

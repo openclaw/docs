@@ -1,351 +1,132 @@
 ---
 read_when:
-    - 你想要管理智能体钩子
+    - 你想管理智能体 Hooks
     - 你想检查钩子可用性或启用工作区钩子
-summary: '`openclaw hooks`（智能体钩子）的 CLI 参考'
-title: 钩子
+summary: '`openclaw hooks` 的 CLI 参考（智能体钩子）'
+title: Hooks
 x-i18n:
-    generated_at: "2026-05-06T16:00:15Z"
+    generated_at: "2026-07-05T11:09:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
+    source_hash: f33d1e343771971bdc17dcafdabc6c4fc893b3080897862475a148e5f3957796
     source_path: cli/hooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw hooks`
 
-管理智能体钩子（用于 `/new`、`/reset` 和 Gateway 网关启动等命令的事件驱动自动化）。
+管理智能体 Hooks（由事件驱动的自动化，用于 `/new`、`/reset` 和 Gateway 网关启动等命令）。裸 `openclaw hooks` 等同于 `openclaw hooks list`。
 
-不带子命令运行 `openclaw hooks` 等同于 `openclaw hooks list`。
+相关：[Hooks](/zh-CN/automation/hooks) - [插件钩子](/zh-CN/plugins/hooks)
 
-相关内容：
-
-- 钩子：[钩子](/zh-CN/automation/hooks)
-- 插件钩子：[插件钩子](/zh-CN/plugins/hooks)
-
-## 列出所有钩子
+## 列出 Hooks
 
 ```bash
-openclaw hooks list
+openclaw hooks list [--eligible] [--json] [-v|--verbose]
 ```
 
-列出从工作区、托管目录、额外目录和内置目录发现的所有钩子。
-Gateway 网关启动时不会加载内部钩子处理程序，除非至少配置了一个内部钩子。
+列出从工作区、托管、额外和内置目录中发现的 Hooks。
 
-**选项：**
-
-- `--eligible`：仅显示符合条件的钩子（满足要求）
-- `--json`：以 JSON 输出
-- `-v, --verbose`：显示详细信息，包括缺失的要求
-
-**示例输出：**
+- `--eligible`：仅显示满足要求的 Hooks。
+- `--json`：结构化输出。
+- `-v, --verbose`：包含 Missing 列，显示未满足的要求。
 
 ```
-Hooks (4/4 ready)
+Hooks (4/5 ready)
 
 Ready:
   🚀 boot-md ✓ - Run BOOT.md on gateway startup
-  📎 bootstrap-extra-files ✓ - Inject extra workspace bootstrap files during agent bootstrap
+  📎 bootstrap-extra-files ✓ - Inject additional workspace bootstrap files during agent bootstrap
   📝 command-logger ✓ - Log all command events to a centralized audit file
   💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
 ```
 
-**示例（详细）：**
+## 获取 Hook 信息
 
 ```bash
-openclaw hooks list --verbose
+openclaw hooks info <name> [--json]
 ```
 
-显示不符合条件的钩子缺失的要求。
+`<name>` 是 Hook 名称或 Hook 键（例如 `session-memory`）。显示来源、文件/处理器路径、主页、事件，以及每项要求的状态（二进制文件、环境变量、配置、操作系统）。
 
-**示例（JSON）：**
+## 检查可用性
 
 ```bash
-openclaw hooks list --json
+openclaw hooks check [--json]
 ```
 
-返回用于程序化使用的结构化 JSON。
+打印就绪/未就绪数量摘要；如果存在未就绪的 Hooks，则列出每个 Hook 及其阻塞原因。
 
-## 获取钩子信息
-
-```bash
-openclaw hooks info <name>
-```
-
-显示特定钩子的详细信息。
-
-**参数：**
-
-- `<name>`：钩子名称或钩子键（例如 `session-memory`）
-
-**选项：**
-
-- `--json`：以 JSON 输出
-
-**示例：**
-
-```bash
-openclaw hooks info session-memory
-```
-
-**输出：**
-
-```
-💾 session-memory ✓ Ready
-
-Save session context to memory when /new or /reset command is issued
-
-Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
-
-Requirements:
-  Config: ✓ workspace.dir
-```
-
-## 检查钩子资格
-
-```bash
-openclaw hooks check
-```
-
-显示钩子资格状态摘要（多少已就绪、多少未就绪）。
-
-**选项：**
-
-- `--json`：以 JSON 输出
-
-**示例输出：**
-
-```
-Hooks Status
-
-Total hooks: 4
-Ready: 4
-Not ready: 0
-```
-
-## 启用钩子
+## 启用 Hook
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-通过将特定钩子添加到你的配置中来启用它（默认是 `~/.openclaw/openclaw.json`）。
+在配置中添加/更新 `hooks.internal.entries.<name>.enabled = true`，并同时打开 `hooks.internal.enabled` 主开关（Gateway 网关在至少配置一个内部 Hook 处理器之前不会加载任何内部 Hook 处理器）。如果 Hook 不存在、由插件管理，或不可用（缺少要求），则会失败。
 
-**注意：** 工作区钩子默认处于禁用状态，直到在这里或配置中启用。由插件管理的钩子会在 `openclaw hooks list` 中显示 `plugin:<id>`，不能在这里启用或禁用。请改为启用或禁用对应插件。
+插件管理的 Hooks 会在 `hooks list` 中显示 `plugin:<id>`，无法在这里启用/禁用；请改为启用或禁用所属插件。
 
-**参数：**
+启用后重启 Gateway 网关（重启 macOS 菜单栏应用，或在开发中重启你的 Gateway 网关进程），使其重新加载 Hooks。
 
-- `<name>`：钩子名称（例如 `session-memory`）
-
-**示例：**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**输出：**
-
-```
-✓ Enabled hook: 💾 session-memory
-```
-
-**它会做什么：**
-
-- 检查钩子是否存在且符合条件
-- 在你的配置中更新 `hooks.internal.entries.<name>.enabled = true`
-- 将配置保存到磁盘
-
-如果钩子来自 `<workspace>/hooks/`，则必须先执行此选择启用步骤，
-Gateway 网关才会加载它。
-
-**启用后：**
-
-- 重启 Gateway 网关以重新加载钩子（在 macOS 上重启菜单栏应用，或在开发环境中重启你的 Gateway 网关进程）。
-
-## 禁用钩子
+## 禁用 Hook
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-通过更新你的配置来禁用特定钩子。
+设置 `hooks.internal.entries.<name>.enabled = false`。之后重启 Gateway 网关。
 
-**参数：**
-
-- `<name>`：钩子名称（例如 `command-logger`）
-
-**示例：**
-
-```bash
-openclaw hooks disable command-logger
-```
-
-**输出：**
-
-```
-⏸ Disabled hook: 📝 command-logger
-```
-
-**禁用后：**
-
-- 重启 Gateway 网关以重新加载钩子
-
-## 备注
-
-- `openclaw hooks list --json`、`info --json` 和 `check --json` 会将结构化 JSON 直接写入 stdout。
-- 由插件管理的钩子不能在这里启用或禁用；请改为启用或禁用所属插件。
-
-## 安装钩子包
+## 安装和更新 Hook 包
 
 ```bash
 openclaw plugins install <package>        # npm by default
 openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
-```
+openclaw plugins install <package> --pin  # pin resolved version
+openclaw plugins install <path>           # local directory or archive
+openclaw plugins install -l <path>        # link a local directory instead of copying
 
-通过统一的插件安装器安装钩子包。
-
-`openclaw hooks install` 仍可作为兼容别名使用，但它会打印弃用警告，
-并转发到 `openclaw plugins install`。
-
-npm 规范**仅限注册表**（包名 + 可选的**精确版本**或
-**dist-tag**）。Git/URL/file 规范和 semver 范围会被拒绝。为了安全，即使你的
-shell 配置了全局 npm 安装设置，依赖安装也会以项目本地方式运行，并带上 `--ignore-scripts`。
-
-裸规范和 `@latest` 会留在稳定轨道上。如果 npm 将其中任何一种解析为预发布版本，
-OpenClaw 会停止并要求你使用 `@beta`/`@rc` 等预发布标签或精确预发布版本来显式选择加入。
-
-**它会做什么：**
-
-- 将钩子包复制到 `~/.openclaw/hooks/<id>`
-- 在 `hooks.internal.entries.*` 中启用已安装的钩子
-- 在 `hooks.internal.installs` 下记录安装
-
-**选项：**
-
-- `-l, --link`：链接本地目录而不是复制（将其添加到 `hooks.internal.load.extraDirs`）
-- `--pin`：将 npm 安装记录为 `hooks.internal.installs` 中解析后的精确 `name@version`
-
-**支持的归档格式：** `.zip`、`.tgz`、`.tar.gz`、`.tar`
-
-**示例：**
-
-```bash
-# Local directory
-openclaw plugins install ./my-hook-pack
-
-# Local archive
-openclaw plugins install ./my-hook-pack.zip
-
-# NPM package
-openclaw plugins install @openclaw/my-hook-pack
-
-# Link a local directory without copying
-openclaw plugins install -l ./my-hook-pack
-```
-
-已链接的钩子包会被视为来自操作员配置目录的托管钩子，
-而不是工作区钩子。
-
-## 更新钩子包
-
-```bash
 openclaw plugins update <id>
 openclaw plugins update --all
+openclaw plugins update --dry-run
 ```
 
-通过统一的插件更新器更新已跟踪的基于 npm 的钩子包。
+Hook 包通过统一的插件安装器/更新器安装；`openclaw hooks install` / `openclaw hooks update` 仍可作为已弃用别名使用，它们会打印警告并转发到 `plugins` 命令。
 
-`openclaw hooks update` 仍可作为兼容别名使用，但它会打印弃用警告，
-并转发到 `openclaw plugins update`。
+- Npm 规格仅限注册表：包名加可选的精确版本或 dist-tag。Git/URL/file 规格和 semver 范围会被拒绝。依赖安装在项目本地运行，并带有 `--ignore-scripts`。
+- 裸规格和 `@latest` 保持在稳定轨道；如果 npm 解析到预发布版本，OpenClaw 会停止并要求你显式选择加入（`@beta`、`@rc`，或精确的预发布版本）。
+- 支持的归档格式：`.zip`、`.tgz`、`.tar.gz`、`.tar`。
+- `-l, --link` 会链接本地目录而不是复制它（将其添加到 `hooks.internal.load.extraDirs`）；链接的 Hook 包是来自操作员配置目录的托管 Hooks，而不是工作区 Hooks。
+- `--pin` 会将 npm 安装记录为 `hooks.internal.installs` 中精确解析出的 `name@version`。
+- 安装会将包复制到 `~/.openclaw/hooks/<id>`，在 `hooks.internal.entries.*` 下启用其 Hooks，并将安装记录到 `hooks.internal.installs`。
+- 如果已存储的完整性哈希不再匹配获取到的制品，OpenClaw 会警告并在继续前提示；传递全局 `--yes` 可绕过提示（例如在 CI 中）。
 
-**选项：**
+## 内置 Hooks
 
-- `--all`：更新所有已跟踪的钩子包
-- `--dry-run`：显示会发生什么变化但不写入
+| Hook                  | 事件                                              | 作用                                                                                               |
+| --------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| boot-md               | `gateway:startup`                                 | 在 Gateway 网关启动时，为每个已配置的智能体作用域运行 `BOOT.md`                                  |
+| bootstrap-extra-files | `agent:bootstrap`                                 | 在智能体引导启动期间注入额外的引导启动文件（例如 monorepo `AGENTS.md`/`TOOLS.md`） |
+| command-logger        | `command`                                         | 将命令事件记录到 `~/.openclaw/logs/commands.log`                                                   |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | 在会话压缩开始和结束时发送可见的聊天通知                                                         |
+| session-memory        | `command:new`, `command:reset`                    | 在 `/new` 或 `/reset` 时将会话上下文保存到记忆                                                     |
 
-当已存储完整性哈希且获取到的制品哈希发生变化时，
-OpenClaw 会打印警告并在继续之前请求确认。在 CI/非交互式运行中使用
-全局 `--yes` 可绕过提示。
+使用 `openclaw hooks enable <hook-name>` 启用任何内置 Hook。完整详情、配置键和默认值：[内置 Hooks](/zh-CN/automation/hooks#bundled-hooks)。
 
-## 内置钩子
-
-### session-memory
-
-当你发出 `/new` 或 `/reset` 时，将会话上下文保存到记忆中。
-
-**启用：**
+### command-logger 日志文件
 
 ```bash
-openclaw hooks enable session-memory
+tail -n 20 ~/.openclaw/logs/commands.log        # recent commands
+cat ~/.openclaw/logs/commands.log | jq .          # pretty-print
+grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .   # filter by action
 ```
 
-**输出：** 默认写入 `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`。设置 `hooks.internal.entries.session-memory.llmSlug: true` 可使用模型生成的文件名 slug。
+## 说明
 
-**参见：** [session-memory 文档](/zh-CN/automation/hooks#session-memory)
+- `hooks list --json`、`info --json` 和 `check --json` 会将结构化 JSON 直接写入 stdout。
 
-### bootstrap-extra-files
-
-在 `agent:bootstrap` 期间注入额外的启动文件（例如 monorepo 本地的 `AGENTS.md` / `TOOLS.md`）。
-
-**启用：**
-
-```bash
-openclaw hooks enable bootstrap-extra-files
-```
-
-**参见：** [bootstrap-extra-files 文档](/zh-CN/automation/hooks#bootstrap-extra-files)
-
-### command-logger
-
-将所有命令事件记录到集中式审计文件。
-
-**启用：**
-
-```bash
-openclaw hooks enable command-logger
-```
-
-**输出：** `~/.openclaw/logs/commands.log`
-
-**查看日志：**
-
-```bash
-# Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
-
-# Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
-
-# Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
-```
-
-**参见：** [command-logger 文档](/zh-CN/automation/hooks#command-logger)
-
-### boot-md
-
-Gateway 网关启动时（在渠道启动后）运行 `BOOT.md`。
-
-**事件**：`gateway:startup`
-
-**启用**：
-
-```bash
-openclaw hooks enable boot-md
-```
-
-**参见：** [boot-md 文档](/zh-CN/automation/hooks#boot-md)
-
-## 相关内容
+## 相关
 
 - [CLI 参考](/zh-CN/cli)
-- [自动化钩子](/zh-CN/automation/hooks)
+- [自动化 Hooks](/zh-CN/automation/hooks)

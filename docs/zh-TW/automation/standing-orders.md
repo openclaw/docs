@@ -1,58 +1,46 @@
 ---
 read_when:
     - 設定無需逐項任務提示即可執行的自主代理工作流程
-    - 定義代理可獨立執行的事項與需要人工核准的事項
-    - 以清楚的邊界與升級處理規則建構多程式代理
-summary: 為自主代理程式定義永久運作權限
+    - 定義代理可以獨立執行的事項，以及需要人類核准的事項
+    - 以清楚的邊界與升級規則建構多程式代理
+summary: 定義自主代理程式的永久操作權限
 title: 常設指令
 x-i18n:
-    generated_at: "2026-05-12T00:56:16Z"
+    generated_at: "2026-07-05T11:01:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
+    source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
     source_path: automation/standing-orders.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-長期指令會授予你的代理程式針對已定義方案的**永久操作權限**。你不必每次都給出個別任務指示，而是以明確範圍、觸發條件與升級規則來定義方案，代理程式便會在這些邊界內自主執行。
+常駐指令會授予你的代理針對已定義計畫的**永久操作授權**。你不是針對每個任務提示代理，而是定義具有明確範圍、觸發條件與升級規則的計畫，代理會在這些邊界內自主執行：「你負責每週報告。每週五彙整、送出，只有在看起來不對勁時才升級處理。」
 
-這就像是每週五都告訴助理「寄出週報」，與授予長期權限之間的差別：「週報由你負責。每週五彙整、寄出，只有在看起來有問題時才升級處理。」
+## 為什麼需要常駐指令
 
-## 為什麼需要長期指令
+**沒有常駐指令：**你要為每個任務提示代理，例行工作會被遺忘或延誤，而你會成為瓶頸。
 
-**沒有長期指令時：**
-
-- 你必須為每個任務提示代理程式
-- 代理程式會在請求之間閒置
-- 例行工作會被遺忘或延誤
-- 你會成為瓶頸
-
-**有長期指令時：**
-
-- 代理程式會在已定義邊界內自主執行
-- 例行工作會按排程自動完成，無需提示
-- 你只需介入例外狀況與核准
-- 代理程式會有效利用閒置時間
+**有常駐指令：**代理會在已定義的邊界內自主執行，例行工作會依排程發生，而你只需介入例外狀況與核准事項。
 
 ## 運作方式
 
-長期指令會定義在你的[代理程式工作區](/zh-TW/concepts/agent-workspace)檔案中。建議做法是直接放在 `AGENTS.md`（每個工作階段都會自動注入）中，讓代理程式永遠能在脈絡中取得這些指令。對於較大型的設定，你也可以將它們放在專用檔案中，例如 `standing-orders.md`，並從 `AGENTS.md` 參照。
+常駐指令是在你的[代理工作區](/zh-TW/concepts/agent-workspace)檔案中定義。建議做法是直接放在 `AGENTS.md` 中（每個工作階段都會自動注入），讓代理永遠能在脈絡中取得它們。對於較大型的設定，你也可以把它們放在專用檔案中，例如 `standing-orders.md`，再從 `AGENTS.md` 參照它。
 
-每個方案會指定：
+每個計畫會指定：
 
-1. **範圍** - 代理程式被授權執行的事項
+1. **範圍** - 代理被授權執行的事項
 2. **觸發條件** - 何時執行（排程、事件或條件）
-3. **核准關卡** - 行動前需要人工簽核的事項
+3. **核准關卡** - 哪些事項在行動前需要人工簽核
 4. **升級規則** - 何時停止並尋求協助
 
-代理程式會透過工作區啟動檔案在每個工作階段載入這些指令（自動注入檔案的完整清單請參閱[代理程式工作區](/zh-TW/concepts/agent-workspace)），並結合 [cron jobs](/zh-TW/automation/cron-jobs) 進行時間型執行。
+代理會透過工作區啟動檔案在每個工作階段載入這些指令（請參閱[代理工作區](/zh-TW/concepts/agent-workspace)取得完整的自動注入檔案清單），並依據它們執行，同時結合[排程工作](/zh-TW/automation/cron-jobs)進行時間型強制執行。
 
 <Tip>
-將長期指令放在 `AGENTS.md` 中，以保證每個工作階段都會載入。工作區啟動程序會自動注入 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md` 與 `MEMORY.md`，但不會注入子目錄中的任意檔案。
+把常駐指令放在 `AGENTS.md` 中，以確保它們每個工作階段都會載入。工作區啟動程序會自動注入 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md` 和 `MEMORY.md`，但不會注入子目錄中的任意檔案。
 </Tip>
 
-## 長期指令的結構
+## 常駐指令的剖析
 
 ```markdown
 ## Program: Weekly Status Report
@@ -77,11 +65,11 @@ x-i18n:
 - Do not skip delivery if metrics look bad - report accurately
 ```
 
-## 長期指令加上 cron jobs
+## 常駐指令加上排程工作
 
-長期指令定義代理程式被授權做**什麼**。[Cron jobs](/zh-TW/automation/cron-jobs) 定義事情在**何時**發生。兩者會一起運作：
+常駐指令定義代理被授權執行的**內容**。[排程工作](/zh-TW/automation/cron-jobs)定義它發生的**時間**。兩者會一起運作：
 
-```
+```text
 Standing Order: "You own the daily inbox triage"
     ↓
 Cron Job (8 AM daily): "Execute inbox triage per standing orders"
@@ -89,7 +77,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-Cron job 提示應參照長期指令，而不是重複其內容：
+排程工作提示應參照常駐指令，而不是重複其內容：
 
 ```bash
 openclaw cron add \
@@ -180,13 +168,13 @@ openclaw cron add \
 | Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## 執行、驗證、回報模式
+## 執行-驗證-回報模式
 
-長期指令搭配嚴格的執行紀律時效果最好。長期指令中的每個任務都應遵循此迴圈：
+常駐指令搭配嚴格的執行紀律時效果最好。常駐指令中的每個任務都應遵循這個循環：
 
-1. **執行** - 完成實際工作（不要只是確認收到指示）
+1. **執行** - 進行實際工作（不要只是確認收到指令）
 2. **驗證** - 確認結果正確（檔案存在、訊息已送達、資料已解析）
-3. **回報** - 告訴擁有者完成了什麼，以及驗證了什麼
+3. **回報** - 告知擁有者完成了什麼，以及驗證了什麼
 
 ```markdown
 ### Execution rules
@@ -199,11 +187,11 @@ openclaw cron add \
 - Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-這個模式能防止最常見的代理程式失敗模式：確認收到任務，卻沒有完成。
+這個模式能防止最常見的代理失敗模式：確認任務但沒有完成它。
 
-## 多方案架構
+## 多計畫架構
 
-對於管理多個關注領域的代理程式，請將長期指令組織成邊界清楚的獨立方案：
+對於管理多個關注事項的代理，將常駐指令整理成邊界清楚的獨立計畫：
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -224,35 +212,35 @@ openclaw cron add \
 - [Approval gates that apply across programs]
 ```
 
-每個方案都應具備：
+每個計畫都應具備：
 
 - 自己的**觸發節奏**（每週、每月、事件驅動、持續）
-- 自己的**核准關卡**（某些方案比其他方案需要更多監督）
-- 清楚的**邊界**（代理程式應知道一個方案在哪裡結束，另一個方案從哪裡開始）
+- 自己的**核准關卡**（有些計畫需要比其他計畫更多監督）
+- 明確的**邊界**（代理應該知道一個計畫在哪裡結束，另一個從哪裡開始）
 
-## 最佳實務
+## 最佳做法
 
 ### 建議
 
-- 從狹窄權限開始，隨著信任建立再擴大
-- 為高風險行動定義明確的核准關卡
-- 包含「不要做什麼」區段，邊界與權限同樣重要
-- 搭配 cron jobs，以可靠執行時間型任務
-- 每週檢閱代理程式記錄，確認長期指令正在被遵循
-- 隨著需求演進更新長期指令，它們是活文件
+- 從較窄的授權開始，隨信任建立再擴大
+- 為高風險動作定義明確的核准關卡
+- 納入「不要做什麼」章節，邊界和權限一樣重要
+- 搭配排程工作，確保可靠的時間型執行
+- 每週檢閱代理記錄，確認常駐指令正在被遵循
+- 隨著需求演進更新常駐指令，它們是持續演進的文件
 
 ### 避免
 
-- 第一天就授予寬泛權限（「做你認為最好的事」）
-- 省略升級規則，每個方案都需要「何時停止並詢問」條款
-- 假設代理程式會記得口頭指示，請把所有內容寫進檔案
-- 在單一方案中混合多種關注事項，不同領域應使用不同方案
-- 忘記使用 cron jobs 強制執行，沒有觸發條件的長期指令只會變成建議
+- 第一天就授予廣泛權限（「做你認為最好的事」）
+- 略過升級規則，每個計畫都需要「何時停止並詢問」條款
+- 假設代理會記得口頭指示，請把所有內容放進檔案
+- 在單一計畫中混合多種關注事項，為不同領域分開建立計畫
+- 忘記用排程工作強制執行，沒有觸發條件的常駐指令會變成建議
 
 ## 相關
 
 - [自動化](/zh-TW/automation)：所有自動化機制一覽。
-- [Cron jobs](/zh-TW/automation/cron-jobs)：長期指令的排程執行。
-- [Hooks](/zh-TW/automation/hooks)：用於代理程式生命週期事件的事件驅動指令碼。
-- [Webhooks](/zh-TW/automation/cron-jobs#webhooks)：傳入 HTTP 事件觸發器。
-- [代理程式工作區](/zh-TW/concepts/agent-workspace)：長期指令存放的位置，包括自動注入啟動檔案的完整清單（`AGENTS.md`、`SOUL.md` 等）。
+- [排程工作](/zh-TW/automation/cron-jobs)：常駐指令的排程強制執行。
+- [鉤子](/zh-TW/automation/hooks)：用於代理生命週期事件的事件驅動指令碼。
+- [網路鉤子](/zh-TW/automation/cron-jobs#webhooks)：入站 HTTP 事件觸發條件。
+- [代理工作區](/zh-TW/concepts/agent-workspace)：常駐指令存放的位置，包含完整的自動注入啟動檔案清單（`AGENTS.md`、`SOUL.md` 等）。

@@ -1,48 +1,47 @@
 ---
 read_when:
-    - 自分のGPUマシンからモデルを提供したい場合
-    - LM StudioまたはOpenAI互換プロキシを接続設定している
+    - 自分のGPUボックスからモデルを提供したい
+    - LM StudioまたはOpenAI互換プロキシを接続している
     - 最も安全なローカルモデルのガイダンスが必要です
 summary: ローカル LLM（LM Studio、vLLM、LiteLLM、カスタム OpenAI エンドポイント）で OpenClaw を実行する
 title: ローカルモデル
 x-i18n:
-    generated_at: "2026-06-27T11:30:41Z"
+    generated_at: "2026-07-05T11:22:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 671c92d78fa29c778fd34b6df027cc8f9e7ad507c9d446700d97cd789becd041
+    source_hash: 850bbd6db1cf3da8719edec37cc271d9ea36dd5adf3722a555ded0823ec022ea
     source_path: gateway/local-models.md
     workflow: 16
 ---
 
-ローカルモデルは実現可能です。ただし、ハードウェア、コンテキストサイズ、プロンプトインジェクション防御の要求水準も上がります。小型または極端に量子化されたカードではコンテキストが切り詰められ、安全性が損なわれます。このページは、上位のローカルスタックとカスタムの OpenAI 互換ローカルサーバー向けの、方針を明確にしたガイドです。最も手間の少ないオンボーディングには、[LM Studio](/ja-JP/providers/lmstudio) または [Ollama](/ja-JP/providers/ollama) と `openclaw onboard` から始めてください。
+ローカルモデルは動作しますが、ハードウェア、コンテキストサイズ、プロンプトインジェクション防御の要件が高くなります。小型モデルや強く量子化されたモデルはコンテキストを切り詰め、プロバイダー側の安全フィルターを省略します。このページでは、上位のローカルスタックとカスタムの OpenAI 互換サーバーを扱います。最も手間の少ない経路として、[LM Studio](/ja-JP/providers/lmstudio) または [Ollama](/ja-JP/providers/ollama) と `openclaw onboard` から始めてください。
 
-選択されたモデルが必要とするときだけ起動すべきローカルサーバーについては、
-[ローカルモデルサービス](/ja-JP/gateway/local-model-services) を参照してください。
+選択されたモデルが必要とするときだけ起動するローカルサーバーについては、[ローカルモデルサービス](/ja-JP/gateway/local-model-services) を参照してください。
 
 ## ハードウェアの下限
 
-高めを目指してください。快適なエージェントループには **最大構成の Mac Studio 2 台以上、または同等の GPU リグ（約 $30k+）** が目安です。単一の **24 GB** GPU で動作するのは、より軽いプロンプトを高めのレイテンシで扱う場合に限られます。常に **ホストできる最大 / フルサイズのバリアント** を実行してください。小型または大きく量子化されたチェックポイントは、プロンプトインジェクションのリスクを高めます（[セキュリティ](/ja-JP/gateway/security) を参照）。
+快適なエージェントループには、**最大構成の Mac Studio 2台以上、または同等の GPU リグ（約 $30k 以上）**を目安にしてください。単一の **24 GB** GPU では、軽めのプロンプトを高いレイテンシで処理できる程度です。常に**ホストできる最大 / フルサイズのバリアント**を実行してください。小型または大きく量子化されたチェックポイントは、プロンプトインジェクションのリスクを高めます（[セキュリティ](/ja-JP/gateway/security) を参照）。
 
 ## バックエンドを選ぶ
 
-| バックエンド                                         | 使用する場面                                                                 |
+| バックエンド                                         | 使用する場面                                                                |
 | ---------------------------------------------------- | --------------------------------------------------------------------------- |
-| [ds4](/ja-JP/providers/ds4)                                | macOS Metal 上で OpenAI 互換ツール呼び出しを使ってローカル DeepSeek V4 Flash を実行する場合 |
-| [LM Studio](/ja-JP/providers/lmstudio)                     | 初回のローカルセットアップ、GUI ローダー、ネイティブ Responses API を使う場合 |
-| LiteLLM / OAI-proxy / カスタム OpenAI 互換プロキシ | 別のモデル API を前段に置き、OpenClaw に OpenAI として扱わせる必要がある場合 |
-| MLX / vLLM / SGLang                                  | OpenAI 互換 HTTP エンドポイントで高スループットのセルフホスト配信を行う場合 |
-| [Ollama](/ja-JP/providers/ollama)                          | CLI ワークフロー、モデルライブラリ、手離れのよい systemd サービスを使う場合 |
+| [ds4](/ja-JP/providers/ds4)                                | macOS Metal 上のローカル DeepSeek V4 Flash で OpenAI 互換のツール呼び出しを使う |
+| [LM Studio](/ja-JP/providers/lmstudio)                     | 初回のローカルセットアップ、GUI ローダー、ネイティブ Responses API          |
+| LiteLLM / OAI-proxy / カスタム OpenAI 互換プロキシ   | 別のモデル API を前段に置き、OpenClaw に OpenAI として扱わせる必要がある     |
+| MLX / vLLM / SGLang                                  | OpenAI 互換 HTTP エンドポイントで高スループットなセルフホスト配信を行う     |
+| [Ollama](/ja-JP/providers/ollama)                          | CLI ワークフロー、モデルライブラリ、手放しの systemd サービス               |
 
-バックエンドが対応している場合（LM Studio は対応）、Responses API（`api: "openai-responses"`）を使用してください。それ以外は Chat Completions（`api: "openai-completions"`）を使います。
+バックエンドが対応している場合は `api: "openai-responses"` を使用してください（LM Studio は対応しています）。それ以外の場合は `api: "openai-completions"` を使用してください。`baseUrl` を持つカスタムプロバイダーで `api` を省略した場合、OpenClaw は既定で `openai-completions` を使用します。
 
 <Warning>
-**WSL2 + Ollama + NVIDIA/CUDA ユーザー:** 公式の Ollama Linux インストーラーは、`Restart=always` の systemd サービスを有効にします。WSL2 GPU セットアップでは、自動起動により起動中に最後のモデルが再読み込みされ、ホストメモリを固定することがあります。Ollama を有効にした後、WSL2 VM が繰り返し再起動する場合は、[WSL2 クラッシュループ](/ja-JP/providers/ollama#wsl2-crash-loop-repeated-reboots) を参照してください。
+**WSL2 + Ollama + NVIDIA/CUDA:** 公式の Ollama Linux インストーラーは `Restart=always` の systemd サービスを有効にします。WSL2 GPU セットアップでは、自動起動によって起動中に最後のモデルが再読み込みされ、ホストメモリを固定して、VM の再起動が繰り返されることがあります。[WSL2 クラッシュループ](/ja-JP/providers/ollama#troubleshooting) を参照してください。
 </Warning>
 
-## 推奨: LM Studio + 大規模ローカルモデル（Responses API）
+## LM Studio + 大規模ローカルモデル（Responses API）
 
-現時点で最適なローカルスタックです。LM Studio で大規模モデル（たとえば、フルサイズの Qwen、DeepSeek、または Llama ビルド）を読み込み、ローカルサーバー（既定は `http://127.0.0.1:1234`）を有効にし、Responses API を使って推論を最終テキストから分離します。
+これは現時点で最良のローカルスタックです。LM Studio で大規模モデル（フルサイズの Qwen、DeepSeek、または Llama ビルド）を読み込み、ローカルサーバー（既定 `http://127.0.0.1:1234`）を有効化し、Responses API を使って推論を最終テキストから分離します。
 
 ```json5
 {
@@ -79,18 +78,17 @@ x-i18n:
 }
 ```
 
-**セットアップチェックリスト**
+セットアップチェックリスト:
 
 - LM Studio をインストールする: [https://lmstudio.ai](https://lmstudio.ai)
-- LM Studio で **利用可能な最大のモデルビルド** をダウンロードし（「small」や大きく量子化されたバリアントは避ける）、サーバーを起動し、`http://127.0.0.1:1234/v1/models` に表示されることを確認する。
-- `my-local-model` を LM Studio に表示される実際のモデル ID に置き換える。
-- モデルを読み込んだままにする。コールドロードは起動レイテンシを増やします。
-- LM Studio のビルドが異なる場合は、`contextWindow`/`maxTokens` を調整する。
-- WhatsApp では、最終テキストだけが送信されるように Responses API を使う。
+- **利用可能な最大のモデルビルド**をダウンロードし（"small"/大きく量子化されたバリアントは避ける）、サーバーを起動して、`http://127.0.0.1:1234/v1/models` にそのモデルが表示されることを確認します。
+- `my-local-model` を LM Studio に表示される実際のモデル ID に置き換えます。
+- モデルを読み込んだままにします。コールドロードは起動レイテンシを追加します。
+- LM Studio のビルドが異なる場合は、`contextWindow`/`maxTokens` を調整します。
+- WhatsApp では、最終テキストだけが送信されるように Responses API を使い続けます。
+- ホスト型モデルをフォールバックとして利用できるように、`models.mode: "merge"` を維持します。
 
-ローカル実行時でもホスト型モデルを設定したままにしてください。フォールバックを利用可能に保つため、`models.mode: "merge"` を使用します。
-
-### ハイブリッド設定: ホスト型をプライマリ、ローカルをフォールバック
+### ハイブリッド設定: ホスト型プライマリ、ローカルフォールバック
 
 ```json5
 {
@@ -131,22 +129,15 @@ x-i18n:
 }
 ```
 
-### ローカル優先、ホスト型を安全網にする
+ホスト型の安全網を備えたローカル優先にするには、`primary`/`fallbacks` の順序を入れ替え、同じ `providers` ブロックと `models.mode: "merge"` を維持します。
 
-プライマリとフォールバックの順序を入れ替えます。同じ providers ブロックと `models.mode: "merge"` を維持すれば、ローカルマシンが停止しているときに Sonnet または Opus にフォールバックできます。
+### リージョン別ホスティング / データルーティング
 
-### リージョナルホスティング / データルーティング
-
-- ホスト型の MiniMax/Kimi/GLM バリアントは、OpenRouter 上にもリージョン固定エンドポイント（例: 米国ホスト）として存在します。Anthropic/OpenAI フォールバック用に `models.mode: "merge"` を使い続けながら、選択した管轄内にトラフィックを留めるには、そこでリージョナルバリアントを選びます。
-- ローカルのみが最も強力なプライバシー経路です。プロバイダー機能が必要だがデータフローを制御したい場合、ホスト型のリージョナルルーティングは中間的な選択肢です。
+ホスト型の MiniMax/Kimi/GLM バリアントは、リージョン固定のエンドポイント（例: 米国ホスト）付きで OpenRouter にも存在します。Anthropic/OpenAI フォールバック用に `models.mode: "merge"` を維持しつつ、選択した法域内にトラフィックを保つにはリージョン別バリアントを選択してください。ローカルのみが今でも最も強力なプライバシー経路です。ホスト型リージョンルーティングは、プロバイダー機能が必要だがデータフローを制御したい場合の中間策です。
 
 ## その他の OpenAI 互換ローカルプロキシ
 
-MLX（`mlx_lm.server`）、vLLM、SGLang、LiteLLM、OAI-proxy、またはカスタム
-Gateway は、OpenAI 形式の `/v1/chat/completions`
-エンドポイントを公開していれば動作します。バックエンドが明示的に
-`/v1/responses` 対応を文書化していない限り、Chat Completions アダプターを使用します。
-上記の provider ブロックを、自分のエンドポイントとモデル ID に置き換えてください。
+MLX (`mlx_lm.server`)、vLLM、SGLang、LiteLLM、OAI-proxy、または任意のカスタム Gateway は、OpenAI スタイルの `/v1/chat/completions` エンドポイントを公開していれば動作します。バックエンドが `/v1/responses` 対応を明示的に文書化していない限り、`openai-completions` を使用してください。
 
 ```json5
 {
@@ -180,62 +171,34 @@ Gateway は、OpenAI 形式の `/v1/chat/completions`
 }
 ```
 
-`baseUrl` を持つカスタムプロバイダーで `api` が省略された場合、OpenClaw は既定で
-`openai-completions` を使用します。カスタム / ローカルプロバイダーのエントリは、loopback、LAN、tailnet、
-プライベート DNS ホストを含め、保護されたモデルリクエストに対して、正確に設定された
-`baseUrl` のオリジンを信頼します。他のプライベートオリジンへのリクエストには、引き続き
-`request.allowPrivateNetwork: true` が必要です。メタデータ / link-local オリジンは、
-明示的なオプトインなしではブロックされたままです。正確なオリジンの信頼をオプトアウトするには、`false` に設定します。
+カスタム/ローカルプロバイダーのエントリは、local loopback、LAN、tailnet、プライベート DNS ホストを含め、ガード付きモデルリクエストについて正確に設定された `baseUrl` のオリジンを信頼します。メタデータ/リンクローカルのオリジンは常にブロックされます。他のプライベートオリジンへのリクエストには、引き続き `models.providers.<id>.request.allowPrivateNetwork: true` が必要です。正確なオリジン信頼をオプトアウトするには、信頼フラグを `false` に設定します。
 
-`models.providers.<id>.models[].id` の値はプロバイダー内ローカルです。そこに
-プロバイダーの接頭辞を含めないでください。たとえば、
-`mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` で起動した MLX サーバーでは、次の
-カタログ ID とモデル参照を使用します。
+`models.providers.<id>.models[].id` はプロバイダーローカルです。プロバイダープレフィックスを含めないでください。`mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` で起動した MLX サーバーの場合:
 
 - `models.providers.mlx.models[].id: "mlx-community/Qwen3-30B-A3B-6bit"`
 - `agents.defaults.model.primary: "mlx/mlx-community/Qwen3-30B-A3B-6bit"`
 
-画像添付がエージェントターンに挿入されるよう、ローカルまたはプロキシされたビジョンモデルでは
-`input: ["text", "image"]` を設定します。対話式のカスタムプロバイダー
-オンボーディングは一般的なビジョンモデル ID を推測し、不明な名前に対してのみ質問します。
-非対話式オンボーディングでも同じ推測が使われます。不明なビジョン ID には `--custom-image-input` を、
-エンドポイントの背後ではテキスト専用の、ビジョンモデルに見える既知のモデルには
-`--custom-text-input` を使用します。
+ローカルまたはプロキシ経由のビジョンモデルでは、画像添付がエージェントターンに注入されるように `input: ["text", "image"]` を設定します。対話型のカスタムプロバイダーオンボーディングは一般的なビジョンモデル ID を推論し、不明な名前についてのみ確認します。非対話型オンボーディングでも同じ推論を使用し、`--custom-image-input` / `--custom-text-input` で上書きできます。
 
-ホスト型モデルをフォールバックとして利用可能に保つため、`models.mode: "merge"` を維持してください。
-低速なローカルまたはリモートモデルサーバーには、`agents.defaults.timeoutSeconds` を上げる前に
-`models.providers.<id>.timeoutSeconds` を使用します。プロバイダータイムアウトは、
-接続、ヘッダー、ボディストリーミング、保護された fetch 全体の中断を含むモデル HTTP リクエストにのみ適用されます。
-エージェントまたは実行タイムアウトの方が低い場合は、その上限も引き上げてください。プロバイダータイムアウトでは
-エージェント実行全体を延長できないためです。
+低速なローカル/リモートモデルサーバーには、`agents.defaults.timeoutSeconds` を上げる前に `models.providers.<id>.timeoutSeconds` を使用してください。プロバイダータイムアウトは、モデル HTTP リクエストのみについて、接続、ヘッダー、ボディストリーミング、およびガード付き fetch の総アボートを対象にします。エージェント/実行タイムアウトの方が低い場合は、プロバイダータイムアウトでは実行全体を延長できないため、そちらも上げてください。
 
 <Note>
-カスタム OpenAI 互換プロバイダーでは、`baseUrl` が loopback、プライベート LAN、`.local`、またはベアホスト名に解決される場合、`apiKey: "ollama-local"` のような非シークレットのローカルマーカーを永続化できます。OpenClaw は、それをキー欠落として報告するのではなく、有効なローカル資格情報として扱います。公開ホスト名を受け付けるプロバイダーには、実際の値を使用してください。
+カスタム OpenAI 互換プロバイダーでは、`apiKey: "ollama-local"` のような非シークレットのローカルマーカーは、`baseUrl` が local loopback、プライベート LAN、`.local`、またはベアホスト名に解決される場合に受け入れられます。OpenClaw は、キー不足として報告する代わりに、それを有効なローカル認証情報として扱います。公開ホスト名を受け入れるプロバイダーには実際の値を使用してください。
 </Note>
 
-ローカル / プロキシされた `/v1` バックエンドに関する動作メモ:
+ローカル/プロキシ経由の `/v1` バックエンドに関する動作メモ:
 
-- OpenClaw はこれらをネイティブの OpenAI エンドポイントではなく、プロキシ形式の OpenAI 互換ルートとして扱います
-- ネイティブ OpenAI 専用のリクエスト整形はここでは適用されません: `service_tier` なし、Responses の `store` なし、OpenAI 推論互換ペイロード整形なし、プロンプトキャッシュヒントなし
-- 隠し OpenClaw 帰属ヘッダー（`originator`、`version`、`User-Agent`）は、これらのカスタムプロキシ URL には挿入されません
+- OpenClaw はこれらをネイティブ OpenAI エンドポイントではなく、プロキシ形式の OpenAI 互換ルートとして扱います。
+- ネイティブ OpenAI 専用のリクエスト整形は適用されません。`service_tier` なし、Responses の `store` なし、OpenAI 推論互換ペイロード整形なし、プロンプトキャッシュヒントなしです。
+- 非表示の OpenClaw 帰属ヘッダー（`originator`、`version`、`User-Agent`）はカスタムプロキシ URL に注入されません。
 
-より厳格な OpenAI 互換バックエンド向けの互換性メモ:
+より厳格な OpenAI 互換バックエンド向けの互換オーバーライド:
 
-- 一部のサーバーは、Chat Completions で構造化された content-part 配列ではなく、文字列の
-  `messages[].content` のみを受け付けます。そのようなエンドポイントには
-  `models.providers.<provider>.models[].compat.requiresStringContent: true` を設定してください。
-- 一部のローカルモデルは、`[tool_name]` に続く JSON と `[END_TOOL_REQUEST]` のような、
-  独立した角括弧付きツールリクエストをテキストとして出力します。OpenClaw は、その名前がそのターンに登録された
-  ツールと完全に一致する場合にのみ、それらを実際のツール呼び出しに昇格します。それ以外の場合、そのブロックは未対応のテキストとして扱われ、
-  ユーザーに見える返信からは非表示になります。
-- モデルが JSON、XML、または ReAct 形式の、ツール呼び出しのように見えるテキストを出力したものの、
-  プロバイダーが構造化された呼び出しを出力しなかった場合、OpenClaw はそれをテキストのままにし、実行 ID、プロバイダー / モデル、検出されたパターン、
-  利用可能な場合はツール名を含む警告をログに記録します。これは完了したツール実行ではなく、
-  プロバイダー / モデルのツール呼び出し非互換性として扱ってください。
-- ツールが実行されず、たとえば生の JSON、XML、ReAct 構文、またはプロバイダー応答内の空の `tool_calls` 配列として
-  アシスタントテキストに現れる場合、まずサーバーがツール呼び出し対応のチャットテンプレート / パーサーを使用していることを確認してください。
-  OpenAI 互換 Chat Completions バックエンドで、ツール使用が強制されたときにのみパーサーが動作する場合は、
-  テキスト解析に頼らず、モデルごとのリクエストオーバーライドを設定します。
+- **文字列のみのコンテンツ**: 一部のサーバーは、構造化されたコンテンツパート配列ではなく、文字列の `messages[].content` のみを受け入れます。`models.providers.<provider>.models[].compat.requiresStringContent: true` を設定してください。
+- **厳格なメッセージキー**: サーバーが `role`/`content` より多いキーを持つメッセージエントリを拒否する場合は、`compat.strictMessageKeys: true` を設定してください。
+- **角括弧付きツールテキスト**: 一部のローカルモデルは、`[tool_name]` の後に JSON と `[END_TOOL_REQUEST]` が続くような、独立した角括弧付きツールリクエストをテキストとして出力します。OpenClaw は、その名前がターンに登録されたツールと完全に一致する場合にのみ、それらを実際のツール呼び出しに昇格します。それ以外の場合は、非表示の未対応テキストのままです。
+- **構造化されていないツール呼び出し風テキスト**: モデルがツール呼び出しのように見える JSON/XML/ReAct スタイルのテキストを出力したものの、それが構造化された呼び出しではなかった場合、OpenClaw はそれをテキストのまま残し、利用可能な場合は実行 ID、プロバイダー/モデル、検出されたパターン、ツール名とともに警告をログに記録します。これはプロバイダー/モデルの非互換であり、完了したツール実行ではありません。
+- **ツール使用の強制**: ツールがアシスタントテキスト（生の JSON/XML/ReAct、または空の `tool_calls` 配列）として表示される場合は、まずサーバーのチャットテンプレート/パーサーがツール呼び出しに対応していることを確認してください。パーサーがツール使用を強制した場合にのみ動作するなら、モデルごとに既定のプロキシ値 `tool_choice: "auto"` を上書きします。
 
   ```json5
   {
@@ -255,18 +218,13 @@ Gateway は、OpenAI 形式の `/v1/chat/completions`
   }
   ```
 
-  通常のすべてのターンでツールを呼び出すべきモデル / セッションにのみ、これを使用してください。
-  これは OpenClaw の既定のプロキシ値である `tool_choice: "auto"` を上書きします。
-  `local/my-local-model` は、`openclaw models list` に表示される正確なプロバイダー / モデル参照に置き換えてください。
+  すべての通常ターンでツールを呼び出すべき場合にのみ、これを使用してください。`local/my-local-model` を `openclaw models list` の正確な参照に置き換えるか、CLI 経由で設定します。
 
   ```bash
   openclaw config set agents.defaults.models '{"local/my-local-model":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
   ```
 
-- カスタム OpenAI 互換モデルが組み込みプロファイルを超える OpenAI 推論 effort を受け付ける場合は、
-  モデルの compat ブロックで宣言します。ここに `"xhigh"` を追加すると、`/think xhigh`、
-  セッションピッカー、Gateway 検証、`llm-task` 検証で、その設定済みプロバイダー / モデル参照に対して
-  そのレベルが公開されます。
+- **追加の推論エフォート**: カスタム OpenAI 互換モデルが組み込みプロファイルを超える OpenAI 推論エフォートを受け入れる場合は、モデルの互換ブロックで宣言してください。`"xhigh"` を追加すると、そのモデル参照について `/think xhigh`、セッションピッカー、Gateway 検証、`llm-task` 検証で使用できるようになります。
 
   ```json5
   {
@@ -297,56 +255,39 @@ Gateway は、OpenAI 形式の `/v1/chat/completions`
   }
   ```
 
-## より小さい、またはより厳格なバックエンド
+## より小規模または厳格なバックエンド
 
-モデルは正常に読み込まれるが、完全なエージェントターンが誤動作する場合は、上から順に進めます。まずトランスポートを確認し、その後で対象範囲を絞り込みます。
+モデルが正常に読み込まれるものの、完全なエージェントターンがうまく動作しない場合は、上から順に確認してください。まずトランスポートを確認し、その後で対象範囲を絞ります。
 
-1. **ローカルモデル自体が応答することを確認します。** ツールなし、エージェントコンテキストなし:
+1. **ローカルモデルが応答することを確認する** - ツールなし、エージェントコンテキストなし:
 
    ```bash
    openclaw infer model run --local --model <provider/model> --prompt "Reply with exactly: pong" --json
    ```
 
-2. **Gateway ルーティングを確認します。** 指定したプロンプトだけを送信します。トランスクリプト、AGENTS ブートストラップ、コンテキストエンジンの組み立て、ツール、同梱 MCP サーバーはスキップしますが、Gateway ルーティング、認証、プロバイダー選択は引き続き実行します:
+2. **Gateway ルーティングを確認する** - プロンプトのみを送信し、トランスクリプト、AGENTS ブートストラップ、コンテキストエンジンの組み立て、ツール、同梱 MCP サーバーを省略しますが、Gateway ルーティング、認証、プロバイダー選択は引き続き実行します。
 
    ```bash
    openclaw infer model run --gateway --model <provider/model> --prompt "Reply with exactly: pong" --json
    ```
 
-3. **リーンモードを試します。** 両方のプローブが成功するのに、実際のエージェントターンが不正なツール呼び出しや大きすぎるプロンプトで失敗する場合は、`agents.defaults.experimental.localModelLean: true` を有効にします。直接の `message` 配信セマンティクスを維持する必要がある実行を除き、最も重い既定ツール 3 つ (`browser`, `cron`, `message`) を外し、より大きなツールカタログを構造化されたツール検索コントロールの背後で既定化します。詳しい説明、使用すべきタイミング、有効になっていることの確認方法については、[実験的機能 → ローカルモデル リーンモード](/ja-JP/concepts/experimental-features#local-model-lean-mode) を参照してください。
+3. 両方のプローブは通るが、実際のエージェントターンが不正な形式のツール呼び出しや大きすぎるプロンプトで失敗する場合は、**リーンモードを試す**: `agents.defaults.experimental.localModelLean: true` を設定します。最も重い 3 つの既定ツール (`browser`、`cron`、`message` - 実行で直接の `message` 配信セマンティクスを維持する必要がある場合を除く) を削除し、より大きなツールカタログは既定で構造化された Tool Search コントロールの背後に置きます。詳細と有効化の確認方法については、[実験的機能 -> ローカルモデルのリーンモード](/ja-JP/concepts/experimental-features#local-model-lean-mode) を参照してください。
 
-4. **最後の手段としてツールを完全に無効化します。** リーンモードで不十分な場合は、そのモデルエントリに `models.providers.<provider>.models[].compat.supportsTools: false` を設定します。そのモデルでは、エージェントはツール呼び出しなしで動作します。
+4. **最後の手段としてツールを完全に無効化する**には、そのモデルに `models.providers.<provider>.models[].compat.supportsTools: false` を設定します。するとエージェントはツール呼び出しなしで実行されます。
 
-5. **それでも先に進む場合、ボトルネックはアップストリームです。** リーンモードと `supportsTools: false` の後でも、より大きな OpenClaw 実行でのみバックエンドが失敗する場合、残る問題は通常、アップストリームのモデルまたはサーバー容量です。たとえば、コンテキストウィンドウ、GPU メモリ、kv-cache の退避、またはバックエンドのバグです。その時点では OpenClaw のトランスポート層ではありません。
+5. **それでも解決しない場合、ボトルネックは上流にあります。** リーンモードと `supportsTools: false` の後でも、大きめの OpenClaw 実行でのみバックエンドが失敗する場合、残る問題は通常 OpenClaw のトランスポート層ではなく、モデルまたはサーバー自体、つまりコンテキストウィンドウ、GPU メモリ、kv-cache 退避、またはバックエンドのバグです。
 
 ## トラブルシューティング
 
-- Gateway はプロキシに到達できますか? `curl http://127.0.0.1:1234/v1/models`。
-- LM Studio のモデルがアンロードされていますか? 再読み込みしてください。コールドスタートは一般的な「ハング」原因です。
-- ローカルサーバーが `terminated`、`ECONNRESET` を返す、またはターンの途中でストリームを閉じますか?
-  OpenClaw は、低カーディナリティの `model.call.error.failureKind` と
-  OpenClaw プロセスの RSS/ヒープスナップショットを診断情報に記録します。LM Studio/Ollama
-  のメモリ圧迫については、そのタイムスタンプをサーバーログまたは macOS のクラッシュ /
-  jetsam ログと照合し、モデルサーバーが強制終了されたかどうかを確認してください。
-- OpenClaw は、検出されたモデルウィンドウ、または `agents.defaults.contextTokens` が有効ウィンドウを下げている場合は上限なしのモデルウィンドウから、コンテキストウィンドウのプリフライトしきい値を導出します。20% 未満では **8k** の下限で警告します。ハードブロックでは **4k** の下限を持つ 10% しきい値を使い、有効コンテキストウィンドウに上限をかけるため、大きすぎるモデルメタデータが、それ以外は有効なユーザー上限を拒否することはありません。このプリフライトに当たった場合は、サーバー/モデルのコンテキスト上限を上げるか、より大きなモデルを選んでください。
-- コンテキストエラーですか? `contextWindow` を下げるか、サーバー上限を上げてください。
-- OpenAI 互換サーバーが `messages[].content ... expected a string` を返しますか?
-  そのモデルエントリに `compat.requiresStringContent: true` を追加してください。
-- OpenAI 互換サーバーが `validation.keys` を返す、またはメッセージエントリでは `role` と `content` だけが許可されると言いますか?
-  そのモデルエントリに `compat.strictMessageKeys: true` を追加してください。
-- 直接の小さな `/v1/chat/completions` 呼び出しは動作するのに、`openclaw infer model run --local`
-  が Gemma や別のローカルモデルで失敗しますか? まずプロバイダー URL、モデル参照、認証
-  マーカー、サーバーログを確認してください。ローカルの `model run` にはエージェントツールは含まれません。
-  ローカルの `model run` は成功するが、より大きなエージェントターンが失敗する場合は、
-  `localModelLean` または `compat.supportsTools: false` でエージェントの
-  ツール対象範囲を減らしてください。
-- ツール呼び出しが生の JSON/XML/ReAct テキストとして表示される、またはプロバイダーが
-  空の `tool_calls` 配列を返しますか? アシスタントのテキストを盲目的に
-  ツール実行へ変換するプロキシを追加しないでください。まずサーバーのチャットテンプレート/パーサーを修正してください。
-  ツール使用を強制したときだけモデルが動作する場合は、上記のモデル単位の
-  `params.extra_body.tool_choice: "required"` オーバーライドを追加し、すべてのターンでツール呼び出しが想定されるセッションにのみそのモデル
-  エントリを使用してください。
-- 安全性: ローカルモデルはプロバイダー側のフィルターをスキップします。プロンプトインジェクションの影響範囲を制限するため、エージェントは狭く保ち、Compaction を有効にしてください。
+- **Gateway がプロキシに到達できませんか？** `curl http://127.0.0.1:1234/v1/models`。
+- **LM Studio モデルがアンロードされていますか？** 再読み込みしてください。コールドスタートは一般的な「ハング」の原因です。
+- **ローカルサーバーが `terminated`、`ECONNRESET` と言う、またはターンの途中でストリームを閉じますか？** OpenClaw は、低カーディナリティの `model.call.error.failureKind` と OpenClaw プロセスの RSS/heap スナップショットを診断に記録します。LM Studio/Ollama のメモリ圧迫については、そのタイムスタンプをサーバーログまたは macOS のクラッシュ/jetsam ログと照合し、モデルサーバーが kill されたかどうかを確認してください。
+- **コンテキストエラーですか？** OpenClaw は、検出されたモデルウィンドウ (または `agents.defaults.contextTokens` で下げられた場合は上限付きウィンドウ) からコンテキストウィンドウのプリフライトしきい値を導出し、20% 未満では **8k** を下限として警告し、10% 未満では **4k** を下限としてハードブロックします (有効なコンテキストウィンドウに上限を合わせるため、大きすぎるモデルメタデータが有効なユーザー上限を拒否することはありません)。`contextWindow` を下げるか、サーバー/モデルのコンテキスト制限を上げてください。
+- **`messages[].content ... expected a string` ですか？** そのモデルエントリに `compat.requiresStringContent: true` を追加してください。
+- **`validation.keys`、または「メッセージエントリでは `role` と `content` のみが許可されます」ですか？** そのモデルエントリに `compat.strictMessageKeys: true` を追加してください。
+- **直接の `/v1/chat/completions` 呼び出しは動作するのに、Gemma または別のローカルモデルで `openclaw infer model run --local` が失敗しますか？** まずプロバイダー URL、モデル参照、認証マーカー、サーバーログを確認してください。`model run` はエージェントツールを完全に省略します。`model run` は成功するが、より大きなエージェントターンが失敗する場合は、`localModelLean` または `compat.supportsTools: false` でツール面を減らしてください。
+- **ツール呼び出しが生の JSON/XML/ReAct テキストとして表示される、またはプロバイダーが空の `tool_calls` 配列を返しますか？** アシスタントのテキストを盲目的にツール実行へ変換するプロキシを追加しないでください。まずサーバーのチャットテンプレート/パーサーを修正してください。ツール使用を強制した場合にのみモデルが動作するなら、上記の `params.extra_body.tool_choice: "required"` オーバーライドを追加し、各ターンでツール呼び出しが想定されるセッションでのみそのモデルエントリを使用してください。
+- **安全性**: ローカルモデルはプロバイダー側フィルターを省略します。プロンプトインジェクションの影響範囲を抑えるため、エージェントを絞り込み、Compaction を有効にしてください。
 
 ## 関連
 

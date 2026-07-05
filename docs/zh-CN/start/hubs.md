@@ -1,23 +1,23 @@
 ---
 read_when:
-    - 你需要一份完整的文档地图
-summary: 链接到每篇 OpenClaw 文档的枢纽页面
+    - 你想要一份完整的文档地图
+summary: 链接到每篇 OpenClaw 文档的中心页
 title: 文档中心
 x-i18n:
-    generated_at: "2026-06-27T03:22:00Z"
+    generated_at: "2026-07-05T11:42:38Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
+    source_hash: 9b51fc77155b2e7ed6cb6e36d375585ebd457c3d89f97c4151877d1aae20717f
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-如果你刚开始使用 OpenClaw，请先阅读[入门指南](/zh-CN/start/getting-started)。
+如果你刚开始使用 OpenClaw，请从[入门指南](/zh-CN/start/getting-started)开始。
 </Note>
 
-使用这些中心页来发现每个页面，包括未显示在左侧导航中的深度解析和参考文档。
+使用这些中心来发现每个页面，包括左侧导航中未显示的深度解析和参考文档。
 
 ## 从这里开始
 
@@ -26,14 +26,14 @@ x-i18n:
 - [新手引导](/zh-CN/start/onboarding)
 - [新手引导（CLI）](/zh-CN/start/wizard)
 - [设置](/zh-CN/start/setup)
-- [仪表板（本地 Gateway 网关）](http://127.0.0.1:18789/)
+- [仪表盘（本地 Gateway 网关）](http://127.0.0.1:18789/)
 - [帮助](/zh-CN/help)
 - [文档目录](/zh-CN/start/docs-directory)
 - [配置](/zh-CN/gateway/configuration)
 - [配置示例](/zh-CN/gateway/configuration-examples)
 - [OpenClaw 助手](/zh-CN/start/openclaw)
 - [展示](/zh-CN/start/showcase)
-- [背景设定](/zh-CN/start/lore)
+- [背景故事](/zh-CN/start/lore)
 
 ## 安装 + 更新
 
@@ -47,7 +47,7 @@ x-i18n:
 - [架构](/zh-CN/concepts/architecture)
 - [功能](/zh-CN/concepts/features)
 - [网络中心](/zh-CN/network)
-- [Agent 运行时](/zh-CN/concepts/agent)
+- [智能体运行时](/zh-CN/concepts/agent)
 - [Agent 工作区](/zh-CN/concepts/agent-workspace)
 - [记忆](/zh-CN/concepts/memory)
 - [Agent loop](/zh-CN/concepts/agent-loop)
@@ -55,7 +55,7 @@ x-i18n:
 - [多 Agent 路由](/zh-CN/concepts/multi-agent)
 - [压缩](/zh-CN/concepts/compaction)
 - [会话](/zh-CN/concepts/session)
-- [会话修剪](/zh-CN/concepts/session-pruning)
+- [会话剪枝](/zh-CN/concepts/session-pruning)
 - [会话工具](/zh-CN/concepts/session-tool)
 - [队列](/zh-CN/concepts/queue)
 - [斜杠命令](/zh-CN/tools/slash-commands)
@@ -65,27 +65,27 @@ x-i18n:
 - [在线状态](/zh-CN/concepts/presence)
 - [设备发现 + 传输协议](/zh-CN/gateway/discovery)
 - [Bonjour](/zh-CN/gateway/bonjour)
-- [频道路由](/zh-CN/channels/channel-routing)
+- [渠道路由](/zh-CN/channels/channel-routing)
 - [群组](/zh-CN/channels/groups)
 - [群组消息](/zh-CN/channels/group-messages)
-- [模型故障切换](/zh-CN/concepts/model-failover)
+- [模型故障转移](/zh-CN/concepts/model-failover)
 - [OAuth](/zh-CN/concepts/oauth)
 
 ## 提供商 + 入口
 
 - [聊天渠道中心](/zh-CN/channels)
 - [模型提供商中心](/zh-CN/providers/models)
-- [WhatsApp](/zh-CN/channels/whatsapp)
-- [Telegram](/zh-CN/channels/telegram)
-- [Slack](/zh-CN/channels/slack)
 - [Discord](/zh-CN/channels/discord)
-- [Mattermost](/zh-CN/channels/mattermost)
-- [Signal](/zh-CN/channels/signal)
-- [QQ Bot](/zh-CN/channels/qqbot)
 - [iMessage](/zh-CN/channels/imessage)
-- [位置解析](/zh-CN/channels/location)
+- [Mattermost](/zh-CN/channels/mattermost)
+- [QQ Bot](/zh-CN/channels/qqbot)
+- [Signal](/zh-CN/channels/signal)
+- [Slack](/zh-CN/channels/slack)
+- [Telegram](/zh-CN/channels/telegram)
 - [WebChat](/zh-CN/web/webchat)
-- [Webhook](/zh-CN/automation/cron-jobs#webhooks)
+- [WhatsApp](/zh-CN/channels/whatsapp)
+- [位置解析](/zh-CN/channels/location)
+- [Webhooks](/zh-CN/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/zh-CN/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway 网关 + 运维
@@ -100,13 +100,13 @@ x-i18n:
 - [Doctor](/zh-CN/gateway/doctor)
 - [日志](/zh-CN/gateway/logging)
 - [沙箱隔离](/zh-CN/gateway/sandboxing)
-- [仪表板](/zh-CN/web/dashboard)
+- [仪表盘](/zh-CN/web/dashboard)
 - [Control UI](/zh-CN/web/control-ui)
 - [远程访问](/zh-CN/gateway/remote)
 - [远程 Gateway 网关 README](/zh-CN/gateway/remote-gateway-readme)
 - [Tailscale](/zh-CN/gateway/tailscale)
 - [安全](/zh-CN/gateway/security)
-- [故障排除](/zh-CN/gateway/troubleshooting)
+- [故障排查](/zh-CN/gateway/troubleshooting)
 
 ## 工具 + 自动化
 
@@ -116,7 +116,7 @@ x-i18n:
 - [Exec 工具](/zh-CN/tools/exec)
 - [PDF 工具](/zh-CN/tools/pdf)
 - [提升权限模式](/zh-CN/tools/elevated)
-- [Cron 作业](/zh-CN/automation/cron-jobs)
+- [Cron 任务](/zh-CN/automation/cron-jobs)
 - [自动化](/zh-CN/automation)
 - [思考 + 详细输出](/zh-CN/tools/thinking)
 - [Models](/zh-CN/concepts/models)
@@ -124,7 +124,7 @@ x-i18n:
 - [Agent 发送 CLI](/zh-CN/tools/agent-send)
 - [终端 UI](/zh-CN/web/tui)
 - [浏览器控制](/zh-CN/tools/browser)
-- [浏览器（Linux 故障排除）](/zh-CN/tools/browser-linux-troubleshooting)
+- [浏览器（Linux 故障排查）](/zh-CN/tools/browser-linux-troubleshooting)
 - [投票](/zh-CN/cli/message)
 
 ## 节点、媒体、语音
@@ -174,8 +174,8 @@ x-i18n:
 - [插件钩子](/zh-CN/plugins/hooks)
 - [插件清单](/zh-CN/plugins/manifest)
 - [Agent 工具](/zh-CN/plugins/building-plugins#registering-agent-tools)
-- [插件包](/zh-CN/plugins/bundles)
-- [ClawHub](/zh-CN/clawhub)
+- [插件捆绑包](/zh-CN/plugins/bundles)
+- [ClawHub](/clawhub)
 - [能力扩展手册](/zh-CN/plugins/adding-capabilities)
 - [语音通话插件](/zh-CN/plugins/voice-call)
 - [Zalo 用户插件](/zh-CN/plugins/zalouser)
@@ -183,7 +183,7 @@ x-i18n:
 ## 工作区 + 模板
 
 - [Skills](/zh-CN/tools/skills)
-- [ClawHub](/zh-CN/clawhub)
+- [ClawHub](/clawhub)
 - [Skills 配置](/zh-CN/tools/skills-config)
 - [默认 AGENTS](/zh-CN/reference/AGENTS.default)
 - [模板：AGENTS](/zh-CN/reference/templates/AGENTS)

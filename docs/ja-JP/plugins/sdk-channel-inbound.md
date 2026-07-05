@@ -1,28 +1,28 @@
 ---
 read_when:
     - メッセージングチャネルPluginの受信パスを構築またはリファクタリングしている
-    - 共有のインバウンドコンテキスト構築、セッション記録、または準備済み返信のディスパッチが必要な場合
-    - 古いチャネルターンヘルパーをインバウンド/メッセージ API に移行しています
-summary: 'チャネルPlugin向けの受信イベントヘルパー: コンテキスト構築、共有ランナーのオーケストレーション、セッションレコード、準備済み返信ディスパッチ'
+    - 共有受信コンテキストの構築、セッション記録、または準備済み返信のディスパッチが必要です
+    - 古いチャネルターンヘルパーを受信/メッセージ API に移行しています
+summary: 'チャネルPlugin向けの受信イベントヘルパー: コンテキスト構築、共有ランナーのオーケストレーション、セッションレコード、準備済み返信のディスパッチ'
 title: チャネル受信 API
 x-i18n:
-    generated_at: "2026-06-27T12:30:48Z"
+    generated_at: "2026-07-05T11:35:54Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d3ffb04438412a3e92b976c34ce31c36cc790967503df35fc435f67637f45bf4
+    source_hash: a85ffaf9501af00e1493b5fbb0454a070626ed6ca41977323b55e84b92075ed1
     source_path: plugins/sdk-channel-inbound.md
     workflow: 16
 ---
 
-Channel plugins は、受信パスを inbound と message の名詞でモデル化する必要があります。
+チャネル受信パスは1つのフローに従います。
 
 ```text
 platform event -> inbound facts/context -> agent reply -> message delivery
 ```
 
-受信イベントの正規化、フォーマット、ルート、オーケストレーションには `openclaw/plugin-sdk/channel-inbound` を使用します。
-ネイティブな送信、受領、永続的デリバリー、ライブプレビュー動作には
+インバウンドイベントの正規化、フォーマット、ルート、オーケストレーションには `openclaw/plugin-sdk/channel-inbound` を使用します。
+ネイティブ送信、受信確認、永続的な配信、ライブプレビューの動作には
 `openclaw/plugin-sdk/channel-outbound` を使用します。
 
 ## コアヘルパー
@@ -35,17 +35,18 @@ import {
 } from "openclaw/plugin-sdk/channel-inbound";
 ```
 
-- `buildChannelInboundEventContext(...)`: 正規化されたチャンネルのファクトを
-  プロンプト/セッションコンテキストへ投影します。`channelContext` を使用して、チャンネル所有の
-  送信者/チャットメタデータを Plugin hook `ctx.channelContext` に渡します。
-  チャンネル固有フィールドには、このサブパスの
-  `PluginHookChannelSenderContext` または `PluginHookChannelChatContext` を拡張します。
-- `runChannelInboundEvent(...)`: 1 つの受信プラットフォームイベントについて、取り込み、分類、事前確認、解決、
+- `buildChannelInboundEventContext(...)`: 正規化されたチャネル情報を
+  プロンプト/セッションコンテキストに投影します。チャネルが所有する送信者/チャットのメタデータは
+  `channelContext` 経由で渡します。Plugin フックからは `ctx.channelContext` として見えます。
+  チャネル固有のフィールドには、このサブパスの `PluginHookChannelSenderContext` または
+  `PluginHookChannelChatContext` を拡張します。
+- `runChannelInboundEvent(...)`: 1つのインバウンドプラットフォームイベントに対して、取り込み、分類、プリフライト、解決、
   記録、ディスパッチ、完了処理を実行します。
-- `dispatchChannelInboundReply(...)`: すでに組み立て済みの受信返信を、デリバリーアダプターで記録してディスパッチします。
+- `dispatchChannelInboundReply(...)`: すでに組み立て済みのインバウンド返信を、配信アダプターで
+  記録してディスパッチします。
 
-注入された Plugin ランタイムは、すでにランタイムオブジェクトを受け取っているバンドル/ネイティブチャンネル向けに、
-同じ高レベルヘルパーを `runtime.channel.inbound.*` の下で公開します。
+注入された Plugin ランタイムオブジェクトをすでに受け取っているバンドル/ネイティブチャネルは、
+このサブパスを直接インポートする代わりに、`runtime.channel.inbound.*` 配下の同じヘルパーを呼び出せます。
 
 ```ts
 await runtime.channel.inbound.run({
@@ -59,20 +60,20 @@ await runtime.channel.inbound.run({
 });
 ```
 
-互換ディスパッチャーは `dispatchChannelInboundReply(...)` の入力を組み立て、
-プラットフォームデリバリーはデリバリーアダプター内に保つ必要があります。新しい送信パスでは、
-message アダプターと永続的 message ヘルパーを優先してください。
+プラットフォーム配信を配信アダプター内に保持する互換ディスパッチャー向けに、
+`dispatchChannelInboundReply(...)` の入力を組み立てます。新しい送信パスでは、代わりに
+`channel-outbound` のメッセージアダプターと永続メッセージヘルパーを使用する必要があります。
 
 ## 移行
 
-古い `runtime.channel.turn.*` ランタイムエイリアスは削除されました。以下を使用してください。
+`runtime.channel.turn.*` ランタイムエイリアスは削除されました。次を使用してください。
 
-- 生の受信イベントには `runtime.channel.inbound.run(...)`。
-- 組み立て済み返信コンテキストには `runtime.channel.inbound.dispatchReply(...)`。
-- 受信コンテキストペイロードには `runtime.channel.inbound.buildContext(...)`。
-- すでに独自のディスパッチクロージャーを組み立てている、チャンネル所有の準備済み
-  ディスパッチパスにのみ `runtime.channel.inbound.runPreparedReply(...)`。
+- 生のインバウンドイベントには `runtime.channel.inbound.run(...)`。
+- 組み立て済みの返信コンテキストには `runtime.channel.inbound.dispatchReply(...)`。
+- インバウンドコンテキストペイロードには `runtime.channel.inbound.buildContext(...)`。
+- `runtime.channel.inbound.runPreparedReply(...)` は非推奨で、自身の
+  ディスパッチクロージャーをすでに組み立てている、チャネル所有の準備済みディスパッチパスにのみ使用します。
 
-新しい Plugin コードでは、`turn` という名前のチャンネル API を導入しないでください。モデルまたは
-agent turn の語彙は agent/provider コード内に保ち、channel plugins では inbound、
+新しい Plugin コードでは、`turn` という名前のチャネル API を導入しないでください。モデルまたは
+エージェントターンの語彙はエージェント/プロバイダーコード内にとどめます。チャネル Plugin では、inbound、
 message、delivery、reply の用語を使用します。

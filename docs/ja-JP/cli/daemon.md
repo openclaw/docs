@@ -1,26 +1,24 @@
 ---
 read_when:
-    - まだ scripts で `openclaw daemon ...` を使用しています
-    - サービスライフサイクルコマンド（インストール/開始/停止/再起動/ステータス）が必要です
-summary: '`openclaw daemon` の CLI リファレンス（Gateway サービス管理の従来のエイリアス）'
+    - スクリプト内でまだ `openclaw daemon ...` を使用しています
+    - サービスのライフサイクルコマンド（install/start/stop/restart/status）が必要です
+summary: '`openclaw daemon` の CLI リファレンス（Gateway サービス管理のレガシーエイリアス）'
 title: デーモン
 x-i18n:
-    generated_at: "2026-06-30T13:47:44Z"
+    generated_at: "2026-07-05T11:11:01Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a3ec72b22907994ecefac84b2b9e5b22bf1d922e5b2822a1c0db80f0362dade
+    source_hash: 4933885078d067ff2e077f25f14483aa5a10e3cd36951d0dc25c625d8b4d78e6
     source_path: cli/daemon.md
     workflow: 16
 ---
 
 # `openclaw daemon`
 
-Gateway サービス管理コマンドのレガシーエイリアス。
+Gateway サービス管理のレガシーエイリアスです。`openclaw daemon ...` は、`openclaw gateway ...` と同じサービス制御コマンドに対応します。現在のドキュメントと例では [`openclaw gateway`](/ja-JP/cli/gateway) を優先してください。
 
-`openclaw daemon ...` は、`openclaw gateway ...` サービスコマンドと同じサービス制御面にマップされます。
-
-## 使用法
+## 使い方
 
 ```bash
 openclaw daemon status
@@ -31,43 +29,32 @@ openclaw daemon restart
 openclaw daemon uninstall
 ```
 
-## サブコマンド
+## サブコマンドとオプション
 
-- `status`: サービスのインストール状態を表示し、Gateway の健全性をプローブする
-- `install`: サービスをインストールする（`launchd`/`systemd`/`schtasks`）
-- `uninstall`: サービスを削除する
-- `start`: サービスを起動する
-- `stop`: サービスを停止する
-- `restart`: サービスを再起動する
+| サブコマンド | オプション                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| `status`    | `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json` |
+| `install`   | `--port`, `--runtime <node\|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`            |
+| `uninstall` | `--json`                                                                                         |
+| `start`     | `--json`                                                                                         |
+| `stop`      | `--json`, `--disable` (launchd のみ: 次回開始まで KeepAlive/RunAtLoad を永続的に抑制) |
+| `restart`   | `--force`, `--safe`, `--skip-deferral`, `--wait <duration>`, `--json`                            |
 
-## 共通オプション
+- `status`: サービスのインストール状態 (launchd/systemd/schtasks) を表示し、Gateway のヘルスをプローブします。
+- `install`: サービスをインストールします。`--force` は既存のインストールを再インストールまたは上書きします。
+- `restart --safe`: 実行中の Gateway に、アクティブな作業を事前確認し、作業が排出された後に 1 回にまとめた再起動をスケジュールするよう要求します。これは `gateway.reload.deferralTimeoutMs` (デフォルト 300000ms/5 分、無期限に待つには `0` に設定) によって制限されます。その予算が期限切れになると、再起動はそれでも強制されます。通常の `restart` はサービスマネージャーを直接使用します。`--force` は即時オーバーライドです。
+- `restart --safe --skip-deferral`: アクティブ作業の延期ゲートをバイパスし、ブロッカーが報告されていても Gateway を即座に再起動します。`--safe` が必要です。
 
-- `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-- `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
-- `restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
-- ライフサイクル（`uninstall|start|stop`）: `--json`
+## 注意
 
-注:
-
-- `status` は、可能な場合にプローブ認証用として設定済みの認証 SecretRefs を解決します。
-- このコマンドパスで必須の認証 SecretRef が未解決の場合、プローブ接続または認証に失敗すると `daemon status --json` は `rpc.authWarning` を報告します。`--token`/`--password` を明示的に渡すか、先にシークレットソースを解決してください。
-- プローブが成功した場合、未解決の認証参照警告は誤検知を避けるため抑制されます。
-- `status --deep` は、ベストエフォートのシステムレベルのサービススキャンを追加します。他の Gateway らしいサービスを見つけると、人間向け出力にはクリーンアップのヒントが表示され、1 台のマシンにつき 1 つの Gateway が通常の推奨であることを警告します。
-- `status --deep` は Plugin 対応モードで設定検証も実行し、設定済み Plugin マニフェストの警告（たとえばチャンネル設定メタデータの欠落）を表面化するため、インストールと更新のスモークチェックで検出できます。既定の `status` は、Plugin 検証をスキップする高速な読み取り専用パスを維持します。
-- Linux systemd インストールでは、`status` のトークンドリフトチェックに `Environment=` と `EnvironmentFile=` の両方のユニットソースが含まれます。
-- ドリフトチェックは、マージ済みランタイム env（まずサービスコマンドの env、次にプロセス env フォールバック）を使って `gateway.auth.token` SecretRefs を解決します。
-- トークン認証が実質的に有効でない場合（明示的な `gateway.auth.mode` が `password`/`none`/`trusted-proxy`、またはモード未設定でパスワードが優先され得て、トークン候補が優先され得ない場合）、トークンドリフトチェックは設定トークンの解決をスキップします。
-- トークン認証にトークンが必要で、`gateway.auth.token` が SecretRef 管理の場合、`install` は SecretRef が解決可能であることを検証しますが、解決済みトークンをサービス環境メタデータに永続化しません。
-- トークン認証にトークンが必要で、設定済みトークン SecretRef が未解決の場合、インストールはフェイルクローズします。
-- `gateway.auth.token` と `gateway.auth.password` の両方が設定され、`gateway.auth.mode` が未設定の場合、モードが明示的に設定されるまでインストールはブロックされます。
-- macOS では、`install` は LaunchAgent plists を所有者専用に保ち、API キーや認証プロファイルの env 参照を `EnvironmentVariables` にシリアライズする代わりに、所有者専用ファイルとラッパーを通じて管理対象サービス環境値を読み込みます。
-- 1 つのホストで複数の Gateway を意図的に実行する場合は、ポート、設定/状態、ワークスペースを分離してください。[/gateway#multiple-gateways-same-host](/ja-JP/gateway#multiple-gateways-same-host) を参照してください。
-- `restart --safe` は、実行中の Gateway にアクティブな作業を事前確認し、アクティブな作業が排出された後に 1 回の集約された再起動をスケジュールするよう要求します。既定の安全な再起動は、設定済みの `gateway.reload.deferralTimeoutMs`（既定 5 分）までアクティブな作業を待機します。その予算を使い切ると再起動は強制されます。強制しない無期限の安全待機にするには、`gateway.reload.deferralTimeoutMs` を `0` に設定してください。通常の `restart` は既存のサービスマネージャーの挙動を維持します。`--force` は即時上書きパスのままです。
-- `restart --safe --skip-deferral` は OpenClaw 対応の安全な再起動を実行しますが、アクティブ作業の遅延ゲートをバイパスするため、ブロッカーが報告されていても Gateway は即座に再起動を発行します。停止したタスク実行が安全な再起動を固定している場合のオペレーター向け脱出口です。`--safe` が必要です。
-
-## 推奨
-
-現在のドキュメントと例には [`openclaw gateway`](/ja-JP/cli/gateway) を使用してください。
+- `status` は、可能な場合、プローブ認証用に構成済みの認証 SecretRefs を解決します。必要な SecretRef が未解決の場合、`status --json` は `rpc.authWarning` を報告します。`--token`/`--password` を明示的に渡すか、先にシークレットソースを解決してください。未解決認証の警告は、それ以外のプローブが成功すると抑制されます。
+- `status --deep` は、他の Gateway 風サービスに対するベストエフォートのシステムレベルスキャンを追加し (クリーンアップのヒントを出力します。1 台のマシンにつき 1 つの Gateway が引き続き推奨です)、Plugin 対応モードで構成検証を実行して、高速なデフォルトパスではスキップされる Plugin マニフェスト警告を表示します。
+- Linux systemd インストールでは、トークンドリフトチェックが `Environment=` と `EnvironmentFile=` の両方の unit ソースを検査します。
+- トークンドリフトチェックは、マージされたランタイム環境 (先にサービスコマンド環境、その後にプロセス環境) を使用して `gateway.auth.token` SecretRefs を解決します。トークン認証が実質的にアクティブでない場合 (`gateway.auth.mode` が `password`/`none`/`trusted-proxy`、または未設定でパスワードが優先され得る場合)、構成トークンの解決はスキップされます。
+- `install` は SecretRef 管理の `gateway.auth.token` が解決可能であることを検証しますが、解決された値をサービス環境メタデータに永続化することはありません。解決できない場合、インストールはフェイルクローズします。
+- `gateway.auth.token` と `gateway.auth.password` の両方が構成されていて、`gateway.auth.mode` が未設定の場合、`install` はモードを明示的に設定するまでブロックします。
+- macOS では、`install` はシークレットを `EnvironmentVariables` に埋め込む代わりに、LaunchAgent plist と生成された環境ファイル/ラッパーを所有者のみ (モード `0600`/`0700`) に保ちます。
+- 1 台のホストで複数の Gateway を実行する場合: ポート、構成/状態、ワークスペースを分離してください。[複数の Gateway](/ja-JP/gateway#multiple-gateways-same-host) を参照してください。
 
 ## 関連
 

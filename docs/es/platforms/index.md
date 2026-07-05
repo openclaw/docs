@@ -5,23 +5,26 @@ read_when:
 summary: Resumen de compatibilidad de plataformas (Gateway + aplicaciones complementarias)
 title: Plataformas
 x-i18n:
-    generated_at: "2026-06-27T12:00:20Z"
+    generated_at: "2026-07-05T11:26:24Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4d6edfaf9c4b1f1bc824d4bddf8263244902676dd5df98da556a8a5f35afe566
+    source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
     source_path: platforms/index.md
     workflow: 16
 ---
 
 OpenClaw core está escrito en TypeScript. **Node es el runtime recomendado**.
-Bun no se recomienda para el Gateway: hay problemas conocidos con los canales
-WhatsApp y Telegram; consulta [Bun (experimental)](/es/install/bun) para más detalles.
+Bun no se recomienda para el Gateway: hay problemas conocidos con los canales de WhatsApp y
+Telegram; consulta [Bun (experimental)](/es/install/bun) para obtener detalles.
 
 Existen aplicaciones complementarias para Windows Hub, macOS (aplicación de barra de menús) y nodos móviles
-(iOS/Android). Las aplicaciones complementarias para Linux están previstas, pero el Gateway cuenta hoy con soporte completo. En Windows, elige Windows Hub para la aplicación de escritorio, la instalación nativa con PowerShell para uso centrado en la terminal, o WSL2 para el runtime de Gateway más compatible con Linux.
+(iOS/Android). Las aplicaciones complementarias para Linux están planificadas, pero el Gateway es totalmente
+compatible hoy. En Windows, elige Windows Hub para la aplicación de escritorio, la instalación nativa de
+PowerShell para un uso centrado en la terminal, o WSL2 para el runtime de Gateway más
+compatible con Linux.
 
-## Elige tu SO
+## Elige tu sistema operativo
 
 - macOS: [macOS](/es/platforms/macos)
 - iOS: [iOS](/es/platforms/ios)
@@ -29,9 +32,9 @@ Existen aplicaciones complementarias para Windows Hub, macOS (aplicación de bar
 - Windows: [Windows](/es/platforms/windows)
 - Linux: [Linux](/es/platforms/linux)
 
-## VPS y alojamiento
+## VPS y hosting
 
-- Hub VPS: [Alojamiento VPS](/es/vps)
+- Hub VPS: [Hosting VPS](/es/vps)
 - Fly.io: [Fly.io](/es/install/fly)
 - Hetzner (Docker): [Hetzner](/es/install/hetzner)
 - GCP (Compute Engine): [GCP](/es/install/gcp)
@@ -49,22 +52,22 @@ Existen aplicaciones complementarias para Windows Hub, macOS (aplicación de bar
 
 ## Instalación del servicio Gateway (CLI)
 
-Usa una de estas opciones (todas compatibles):
+Usa una de estas opciones (todas son compatibles):
 
 - Asistente (recomendado): `openclaw onboard --install-daemon`
 - Directo: `openclaw gateway install`
-- Flujo de configuración: `openclaw configure` → selecciona **Servicio Gateway**
+- Flujo de configuración: `openclaw configure` → selecciona **servicio Gateway**
 - Reparar/migrar: `openclaw doctor` (ofrece instalar o corregir el servicio)
 
-El destino del servicio depende del SO:
+El destino del servicio depende del sistema operativo:
 
-- macOS: LaunchAgent (`ai.openclaw.gateway` o `ai.openclaw.<profile>`; heredado `com.openclaw.*`)
+- macOS: LaunchAgent (`ai.openclaw.gateway`, o `ai.openclaw.<profile>` para un perfil con nombre)
 - Linux/WSL2: servicio de usuario systemd (`openclaw-gateway[-<profile>].service`)
-- Windows nativo: tarea programada (`OpenClaw Gateway` o `OpenClaw Gateway (<profile>)`), con un fallback de elemento de inicio de sesión en la carpeta Inicio por usuario si se deniega la creación de la tarea
+- Windows nativo: Tarea programada (`OpenClaw Gateway` u `OpenClaw Gateway (<profile>)`), con una alternativa de elemento de inicio de sesión en la carpeta de Inicio por usuario si se deniega la creación de la tarea
 
 ## Relacionado
 
 - [Resumen de instalación](/es/install)
 - [Windows Hub](/es/platforms/windows)
-- [Aplicación macOS](/es/platforms/macos)
-- [Aplicación iOS](/es/platforms/ios)
+- [Aplicación para macOS](/es/platforms/macos)
+- [Aplicación para iOS](/es/platforms/ios)

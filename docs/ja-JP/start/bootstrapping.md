@@ -1,48 +1,61 @@
 ---
 read_when:
-    - 初回のエージェント実行で何が起こるかを理解する
-    - ブートストラップ用ファイルの配置場所を説明する
-    - オンボーディングのアイデンティティ設定のデバッグ
+    - 最初のエージェント実行で何が起こるかを理解する
+    - ブートストラップ用ファイルの場所を説明する
+    - オンボーディング ID セットアップのデバッグ
 sidebarTitle: Bootstrapping
-summary: ワークスペースとアイデンティティファイルを準備するエージェントのブートストラップ手順
-title: エージェントのブートストラップ
+summary: エージェントのブートストラップ儀式により、ワークスペースと ID ファイルをシードします
+title: Agent のブートストラップ
 x-i18n:
-    generated_at: "2026-05-06T09:10:43Z"
+    generated_at: "2026-07-05T11:51:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
+    source_hash: d8356684e8567b02f558ce2b455a20019e55579e5dcb4625bb441d66656098e0
     source_path: start/bootstrapping.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ブートストラップは、エージェントのワークスペースを準備し、ID 詳細を収集する**初回実行**の手順です。これはオンボーディングの後、エージェントが初めて起動するときに実行されます。
+ブートストラップは、新しいエージェントワークスペースを初期化し、エージェントがアイデンティティを選ぶまで案内する初回実行時の手順です。オンボーディングの直後、エージェントの最初の実際のターンで一度だけ実行されます。
 
-## ブートストラップで行われること
+## 何が起こるか
 
-エージェントの初回実行時に、OpenClaw はワークスペース（デフォルトは
-`~/.openclaw/workspace`）をブートストラップします。
+まったく新しいワークスペース（デフォルトは `~/.openclaw/workspace`）での初回実行時に、OpenClaw は次を行います。
 
-- `AGENTS.md`、`BOOTSTRAP.md`、`IDENTITY.md`、`USER.md` をシードします。
-- 短い Q&A 手順を実行します（1 回に 1 つの質問）。
-- ID と設定を `IDENTITY.md`、`USER.md`、`SOUL.md` に書き込みます。
-- 完了時に `BOOTSTRAP.md` を削除し、1 回だけ実行されるようにします。
+- `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md` を配置します。
+- エージェントに `BOOTSTRAP.md` に従わせます。これは、名前、性格、雰囲気を決めるための自由形式の会話（固定の Q&A フォームではありません）です。
+- 学習した内容を `IDENTITY.md`、`USER.md`、`SOUL.md` に書き込みます。
+- ワークスペースが設定済みに見えたら `BOOTSTRAP.md` を削除し、この手順が一度だけ実行されるようにします。
 
-埋め込みモデルまたはローカルモデルで実行する場合、OpenClaw は `BOOTSTRAP.md` を特権付きシステムコンテキストに含めません。主要な対話型の初回実行では、`read` ツールを確実には呼び出さないモデルでもこの手順を完了できるように、ユーザープロンプト内でファイルの内容を引き続き渡します。現在の実行がワークスペースに安全にアクセスできない場合、エージェントは汎用的な挨拶ではなく、限定的なブートストラップノートを受け取ります。
+`SOUL.md`、`IDENTITY.md`、または `USER.md` がスターターテンプレートから変化しているか、`memory/` フォルダーが存在する場合、ワークスペースは設定済みと見なされます。
+
+<Note>
+`BOOTSTRAP.md` はアイデンティティに関する会話全体を扱います。内容は
+[BOOTSTRAP.md テンプレート](/ja-JP/reference/templates/BOOTSTRAP) を参照してください。
+</Note>
+
+## 組み込みモデルとローカルモデルの実行
+
+組み込みモデルまたはローカルモデルの実行では、OpenClaw は `BOOTSTRAP.md` を特権システムコンテキストに含めません。主要な対話型の初回実行では、引き続きユーザープロンプトを通じてファイル内容を渡すため、`read` ツールを確実に呼び出さないモデルでもこの手順を完了できます。現在の実行でワークスペースに安全にアクセスできない場合、エージェントは汎用的な挨拶ではなく、短い限定ブートストラップのメモを受け取ります。
 
 ## ブートストラップをスキップする
 
-事前にシード済みのワークスペースでこれをスキップするには、`openclaw onboard --skip-bootstrap` を実行します。
+事前に初期化済みのワークスペースでこれをスキップするには、次を実行します。
 
-## 実行される場所
+```bash
+openclaw onboard --skip-bootstrap
+```
 
-ブートストラップは常に **Gateway ホスト**で実行されます。macOS アプリがリモート Gateway に接続している場合、ワークスペースとブートストラップファイルはそのリモートマシン上にあります。
+## 実行場所
+
+ブートストラップは常に Gateway ホスト上で実行されます。macOS アプリがリモート Gateway に接続している場合、ワークスペースとそのブートストラップファイルは Mac ではなく、そのリモートマシン上にあります。
 
 <Note>
-Gateway が別のマシンで実行されている場合は、Gateway ホスト上のワークスペースファイルを編集してください（例: `user@gateway-host:~/.openclaw/workspace`）。
+Gateway が別のマシンで実行されている場合は、Gateway ホスト上でワークスペースファイルを編集してください（例: `user@gateway-host:~/.openclaw/workspace`）。
 </Note>
 
 ## 関連ドキュメント
 
 - macOS アプリのオンボーディング: [オンボーディング](/ja-JP/start/onboarding)
-- ワークスペースレイアウト: [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
+- ワークスペースのレイアウト: [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
+- テンプレートの内容: [BOOTSTRAP.md テンプレート](/ja-JP/reference/templates/BOOTSTRAP)

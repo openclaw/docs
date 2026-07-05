@@ -1,41 +1,37 @@
 ---
 read_when:
-    - 開發 Zalo 功能或 Webhook
-summary: Zalo 機器人支援狀態、功能與設定
+    - 處理 Zalo 功能或網路鉤子
+summary: Zalo Bot 支援狀態、功能與設定
 title: Zalo
 x-i18n:
-    generated_at: "2026-05-02T22:16:33Z"
+    generated_at: "2026-07-05T11:05:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6226af1217e1e8b03b485df99f6375872b487f7040c091f2bb2d85e18dec75d0
+    source_hash: 36e624f1abeeaee56d7376b9df9209f8e7614ade2f089bcecd76ff746b942765
     source_path: channels/zalo.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-狀態：實驗性。支援私訊。下方的 [功能](#capabilities) 區段反映目前 Marketplace 機器人的行為。
+狀態：實驗性。私訊和群組聊天都已實作；下方的 [功能](#capabilities) 表格反映 Zalo Bot Creator / Marketplace 機器人上已驗證的行為。
 
-## 內建 Plugin
+## 捆綁外掛
 
-Zalo 在目前的 OpenClaw 發行版中以內建 Plugin 提供，因此一般封裝建置不需要另行安裝。
+Zalo 以捆綁外掛形式隨目前的 OpenClaw 發行版本提供，因此打包建置不需要另外安裝。
 
-如果你使用較舊的建置，或使用排除 Zalo 的自訂安裝，請直接安裝 npm 套件：
+在較舊的建置，或排除 Zalo 的自訂安裝中，請直接安裝 npm 套件：
 
-- 透過 CLI 安裝：`openclaw plugins install @openclaw/zalo`
-- 釘選版本：`openclaw plugins install @openclaw/zalo@2026.5.2`
-- 或從來源 checkout 安裝：`openclaw plugins install ./path/to/local/zalo-plugin`
-- 詳細資料：[Plugins](/zh-TW/tools/plugin)
+- 安裝：`openclaw plugins install @openclaw/zalo`
+- 釘選版本：`openclaw plugins install @openclaw/zalo@2026.6.11`
+- 從本機 checkout：`openclaw plugins install ./path/to/local/zalo-plugin`
+- 詳細資料：[外掛](/zh-TW/tools/plugin)
 
-## 快速設定（初學者）
+## 快速設定
 
-1. 確認 Zalo Plugin 可用。
-   - 目前封裝的 OpenClaw 發行版已經內建它。
-   - 較舊/自訂安裝可以使用上方命令手動加入。
-2. 設定權杖：
-   - Env：`ZALO_BOT_TOKEN=...`
-   - 或設定：`channels.zalo.accounts.default.botToken: "..."`。
-3. 重新啟動 Gateway（或完成設定）。
-4. 私訊存取預設使用配對；首次聯絡時核准配對碼。
+1. 在 [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) 建立機器人權杖（登入、建立機器人、設定選項）。權杖格式為 `numeric_id:secret`；對 Marketplace 機器人而言，可用的執行階段權杖可能會出現在機器人的歡迎訊息中。
+2. 設定權杖，可設為環境變數 `ZALO_BOT_TOKEN=...`（僅限預設帳號）或寫入設定。
+3. 重新啟動閘道。
+4. 第一次私訊聯絡時核准配對碼（預設私訊政策為配對）。
 
 最小設定：
 
@@ -55,205 +51,137 @@ Zalo 在目前的 OpenClaw 發行版中以內建 Plugin 提供，因此一般封
 }
 ```
 
+多帳號：在 `channels.zalo.accounts.<id>` 下加入更多項目，每個項目都有自己的 `botToken`/`name`。`channels.zalo.botToken`（扁平、無 `accounts`）是舊版單帳號簡寫；新設定請優先使用 `accounts.<id>.*`。
+
 ## 這是什麼
 
-Zalo 是一款以越南為重點的訊息應用程式；它的 Bot API 讓 Gateway 可以為 1:1 對話執行機器人。
-如果你想要確定性地將路由導回 Zalo，它很適合用於支援或通知。
+Zalo 是聚焦越南的訊息應用程式。其 Bot API 可讓閘道為 1:1 對話和群組聊天執行機器人，並以確定性的方式路由回 Zalo（模型永遠不會選擇頻道）。
 
-本頁反映目前 OpenClaw 對 **Zalo Bot Creator / Marketplace 機器人**的行為。
-**Zalo Official Account (OA) 機器人**是不同的 Zalo 產品介面，行為可能不同。
+本頁涵蓋 **Zalo Bot Creator / Marketplace 機器人**。**Zalo Official Account (OA) 機器人**是不同的產品介面，行為可能不同；本頁不涵蓋它們。
 
-- 由 Gateway 擁有的 Zalo Bot API 頻道。
-- 確定性路由：回覆會回到 Zalo；模型永遠不會選擇頻道。
-- 私訊共用代理的主要工作階段。
-- 下方的 [功能](#capabilities) 區段顯示目前 Marketplace 機器人的支援情況。
+## 運作方式
 
-## 設定（快速路徑）
-
-### 1) 建立機器人權杖（Zalo Bot Platform）
-
-1. 前往 [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) 並登入。
-2. 建立新的機器人並設定其設定。
-3. 複製完整的機器人權杖（通常為 `numeric_id:secret`）。對於 Marketplace 機器人，可用的執行階段權杖可能會在建立後出現在機器人的歡迎訊息中。
-
-### 2) 設定權杖（env 或設定）
-
-範例：
-
-```json5
-{
-  channels: {
-    zalo: {
-      enabled: true,
-      accounts: {
-        default: {
-          botToken: "12345689:abc-xyz",
-          dmPolicy: "pairing",
-        },
-      },
-    },
-  },
-}
-```
-
-如果你之後改用可用群組的 Zalo 機器人介面，可以明確加入群組專用設定，例如 `groupPolicy` 和 `groupAllowFrom`。目前 Marketplace 機器人的行為請參閱 [功能](#capabilities)。
-
-Env 選項：`ZALO_BOT_TOKEN=...`（僅適用於預設帳號）。
-
-多帳號支援：使用 `channels.zalo.accounts` 搭配各帳號權杖和選用的 `name`。
-
-3. 重新啟動 Gateway。Zalo 會在解析到權杖（env 或設定）時啟動。
-4. 私訊存取預設為配對。機器人首次被聯絡時核准代碼。
-
-## 運作方式（行為）
-
-- 傳入訊息會被正規化為含媒體預留位置的共用頻道信封。
-- 回覆一律路由回相同的 Zalo 聊天。
-- 預設使用長輪詢；可透過 `channels.zalo.webhookUrl` 使用 Webhook 模式。
+- 傳入訊息會正規化為含媒體預留位置的共用頻道信封。
+- 回覆一律路由回同一個 Zalo 聊天；不使用引用回覆（`replyToMode` 固定關閉）。
+- 預設使用長輪詢（`getUpdates`）；可透過 `channels.zalo.webhookUrl` 使用網路鉤子模式。
+- 群組需要 @提及才會觸發機器人；這無法依頻道設定。
 
 ## 限制
 
-- 傳出文字會分塊為 2000 個字元（Zalo API 限制）。
-- 媒體下載/上傳受 `channels.zalo.mediaMaxMb` 限制（預設 5）。
-- 由於 2000 字元限制使串流較不實用，預設會封鎖串流。
+| 限制                           | 值                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| 傳出文字區塊大小               | 2000 個字元（Zalo API 限制）                                                  |
+| 媒體大小（傳入/傳出）          | `channels.zalo.mediaMaxMb`，預設 `5` MB                                       |
+| 網路鉤子請求本文               | 1 MB，30 秒讀取逾時                                                           |
+| 網路鉤子速率限制               | 每個 path+client IP 於 60 秒內 120 個請求，之後回傳 HTTP 429                  |
+| 網路鉤子重複事件視窗           | 5 分鐘（以 path + account + event name + chat + sender + message id 作為鍵）  |
 
-## 存取控制（私訊）
+## 存取控制
 
-### 私訊存取
+### 私訊
 
-- 預設：`channels.zalo.dmPolicy = "pairing"`。未知寄件者會收到配對碼；訊息會被忽略直到核准為止（代碼 1 小時後過期）。
-- 透過以下方式核准：
+- `channels.zalo.dmPolicy`：`pairing`（預設）| `allowlist` | `open` | `disabled`。
+- 配對：未知傳送者會收到配對碼；訊息會被忽略，直到核准為止。代碼會在 1 小時後過期。
   - `openclaw pairing list zalo`
   - `openclaw pairing approve zalo <CODE>`
-- 配對是預設的權杖交換。詳細資料：[配對](/zh-TW/channels/pairing)
-- `channels.zalo.allowFrom` 接受數字使用者 ID（沒有可用的使用者名稱查詢）。
+  - 詳細資料：[配對](/zh-TW/channels/pairing)
+- `channels.zalo.allowFrom` 接受數字 Zalo 使用者 ID（不查詢使用者名稱）。`open` 需要 `"*"`。
 
-## 存取控制（群組）
+### 群組
 
-對於 **Zalo Bot Creator / Marketplace 機器人**，實務上無法使用群組支援，因為機器人完全無法被加入群組。
+外掛支援群組聊天（`chatTypes: ["direct", "group"]`），並由提及加上群組政策控管：
 
-這表示下方的群組相關設定鍵存在於 schema 中，但 Marketplace 機器人無法使用：
+- `channels.zalo.groupPolicy`：`open` | `allowlist` | `disabled`。
+- `channels.zalo.groupAllowFrom` 限制哪些傳送者 ID 可在群組中觸發機器人；未設定時會退回使用 `allowFrom`。
+- 預設解析：設定了 `channels.zalo` 時，未設定的 `groupPolicy` 會解析為 `open`。完全缺少 `channels.zalo` 時，執行階段會故障關閉為 `allowlist`。
+- 已回報的真實世界注意事項：在某些 Marketplace 機器人設定中，機器人完全無法加入群組。如果遇到這種情況，請使用你的機器人 Zalo Bot Platform 設定進行驗證；這是平台端限制，不是 OpenClaw 政策。
 
-- `channels.zalo.groupPolicy` 控制群組傳入處理：`open | allowlist | disabled`。
-- `channels.zalo.groupAllowFrom` 限制哪些寄件者 ID 可以在群組中觸發機器人。
-- 如果未設定 `groupAllowFrom`，Zalo 會回退到 `allowFrom` 進行寄件者檢查。
-- 執行階段注意事項：如果完全缺少 `channels.zalo`，執行階段仍會為安全起見回退到 `groupPolicy="allowlist"`。
-
-群組政策值（當你的機器人介面可使用群組存取時）如下：
-
-- `groupPolicy: "disabled"` — 封鎖所有群組訊息。
-- `groupPolicy: "open"` — 允許任何群組成員（需提及）。
-- `groupPolicy: "allowlist"` — 預設失敗關閉；僅接受已允許的寄件者。
-
-如果你使用不同的 Zalo 機器人產品介面，並已驗證群組行為可運作，請另外記錄該行為，而不是假設它符合 Marketplace 機器人流程。
-
-## 長輪詢與 Webhook
+## 長輪詢與網路鉤子
 
 - 預設：長輪詢（不需要公開 URL）。
-- Webhook 模式：設定 `channels.zalo.webhookUrl` 和 `channels.zalo.webhookSecret`。
-  - Webhook 密鑰必須為 8-256 個字元。
-  - Webhook URL 必須使用 HTTPS。
-  - Zalo 會使用 `X-Bot-Api-Secret-Token` 標頭傳送事件以供驗證。
-  - Gateway HTTP 會在 `channels.zalo.webhookPath` 處理 Webhook 請求（預設為 Webhook URL 路徑）。
+- 網路鉤子模式：設定 `channels.zalo.webhookUrl` 和 `channels.zalo.webhookSecret`。
+  - 網路鉤子 URL 必須使用 HTTPS。
+  - 網路鉤子密鑰必須為 8-256 個字元。
+  - Zalo 會以 `X-Bot-Api-Secret-Token` 標頭傳送事件，並以常數時間比較檢查。
+  - 閘道 HTTP 會在 `channels.zalo.webhookPath` 處理網路鉤子請求（預設為網路鉤子 URL 的路徑）。
   - 請求必須使用 `Content-Type: application/json`（或 `+json` 媒體類型）。
-  - 重複事件（`event_name + message_id`）會在短暫重播視窗內被忽略。
-  - 突發流量會依路徑/來源限速，並可能傳回 HTTP 429。
-
-**注意：**根據 Zalo API 文件，getUpdates（輪詢）與 Webhook 彼此互斥。
+  - 依 Zalo API 文件，getUpdates 輪詢和網路鉤子在每個 Zalo API 中互斥。
 
 ## 支援的訊息類型
 
-如需快速支援快照，請參閱 [功能](#capabilities)。下方備註會在行為需要額外脈絡處補充細節。
-
-- **文字訊息**：完整支援，並以 2000 個字元分塊。
-- **文字中的純 URL**：行為如一般文字輸入。
-- **連結預覽 / 豐富連結卡片**：請參閱 [功能](#capabilities) 中的 Marketplace 機器人狀態；它們無法可靠觸發回覆。
-- **圖片訊息**：請參閱 [功能](#capabilities) 中的 Marketplace 機器人狀態；傳入圖片處理不可靠（顯示輸入中指示器，但沒有最終回覆）。
-- **貼圖**：請參閱 [功能](#capabilities) 中的 Marketplace 機器人狀態。
-- **語音筆記 / 音訊檔案 / 影片 / 一般檔案附件**：請參閱 [功能](#capabilities) 中的 Marketplace 機器人狀態。
-- **不支援的類型**：會記錄（例如，來自受保護使用者的訊息）。
+- 文字：完整支援，分段為 2000 個字元。
+- 媒體：傳入/傳出，受 `mediaMaxMb` 限制。
+- 反應、討論串、投票、原生指令：外掛不支援。
+- 串流：外掛宣告區塊串流能力，但 Zalo 沒有專用的傳出佇列/合併文字調校旋鈕（不同於某些其他區域頻道）；如果這對你的使用案例很重要，請在你的環境中驗證目前行為。
 
 ## 功能
 
-此表摘要目前 OpenClaw 中 **Zalo Bot Creator / Marketplace 機器人**的行為。
+| 功能                     | 狀態                              |
+| ------------------------ | --------------------------------- |
+| 私訊                     | 支援                              |
+| 群組                     | 支援（由提及控管）                |
+| 媒體（傳入/傳出）       | 支援，受 `mediaMaxMb` 限制        |
+| 反應                     | 不支援                            |
+| 討論串                   | 不支援                            |
+| 投票                     | 不支援                            |
+| 原生指令                 | 不支援                            |
+| 回覆至 / 引用            | 未使用（固定關閉）                |
 
-| 功能                        | 狀態                                      |
-| --------------------------- | ----------------------------------------- |
-| 直接訊息                    | ✅ 支援                                   |
-| 群組                        | ❌ Marketplace 機器人不可用              |
-| 媒體（傳入圖片）            | ⚠️ 有限 / 請在你的環境中驗證             |
-| 媒體（傳出圖片）            | ⚠️ 尚未針對 Marketplace 機器人重新測試   |
-| 文字中的純 URL              | ✅ 支援                                   |
-| 連結預覽                    | ⚠️ 對 Marketplace 機器人不可靠           |
-| 反應                        | ❌ 不支援                                 |
-| 貼圖                        | ⚠️ Marketplace 機器人沒有代理回覆        |
-| 語音筆記 / 音訊 / 影片      | ⚠️ Marketplace 機器人沒有代理回覆        |
-| 檔案附件                    | ⚠️ Marketplace 機器人沒有代理回覆        |
-| 執行緒                      | ❌ 不支援                                 |
-| 投票                        | ❌ 不支援                                 |
-| 原生命令                    | ❌ 不支援                                 |
-| 串流                        | ⚠️ 已封鎖（2000 字元限制）               |
+## 傳遞目標（命令列介面/排程）
 
-## 傳送目標（CLI/cron）
+使用聊天 ID 作為目標：
 
-- 使用聊天 ID 作為目標。
-- 範例：`openclaw message send --channel zalo --target 123456789 --message "hi"`。
+```bash
+openclaw message send --channel zalo --target 123456789 --message "hi"
+```
 
 ## 疑難排解
 
 **機器人沒有回應：**
 
-- 檢查權杖是否有效：`openclaw channels status --probe`
-- 驗證寄件者已核准（配對或 allowFrom）
-- 檢查 Gateway 記錄：`openclaw logs --follow`
+- 檢查權杖：`openclaw channels status --probe`
+- 驗證傳送者已核准（配對或 `allowFrom`）
+- 檢查閘道記錄：`openclaw logs --follow`
 
-**Webhook 未接收事件：**
+**網路鉤子未接收事件：**
 
-- 確認 Webhook URL 使用 HTTPS
-- 驗證密鑰權杖為 8-256 個字元
-- 確認 Gateway HTTP 端點可在設定的路徑上存取
-- 檢查 getUpdates 輪詢未在執行（它們彼此互斥）
+- 確認網路鉤子 URL 使用 HTTPS
+- 確認密鑰為 8-256 個字元
+- 確認閘道 HTTP 端點可在設定的路徑上連線
+- 確認 getUpdates 輪詢沒有同時執行（兩者互斥）
+- 請求暴增可能會回傳 HTTP 429（每個 path+IP 於 60 秒內 120 個請求）；請退避後重試
 
-## 設定參考（Zalo）
+## 設定參考
 
 完整設定：[設定](/zh-TW/gateway/configuration)
 
-扁平的頂層鍵（`channels.zalo.botToken`、`channels.zalo.dmPolicy` 等）是舊版單帳號速記。新設定建議使用 `channels.zalo.accounts.<id>.*`。這兩種形式仍在此記錄，因為它們存在於 schema 中。
+| 設定                                         | 說明                                              | 預設                  |
+| -------------------------------------------- | ------------------------------------------------- | --------------------- |
+| `channels.zalo.enabled`                      | 啟用/停用頻道啟動                                | `true`                |
+| `channels.zalo.accounts.<id>.botToken`       | 來自 Zalo Bot Platform 的機器人權杖               | -                     |
+| `channels.zalo.accounts.<id>.tokenFile`      | 從檔案讀取權杖（拒絕符號連結）                   | -                     |
+| `channels.zalo.accounts.<id>.name`           | 顯示名稱                                          | -                     |
+| `channels.zalo.accounts.<id>.enabled`        | 啟用/停用此帳號                                  | `true`                |
+| `channels.zalo.accounts.<id>.dmPolicy`       | 每帳號私訊政策                                    | `pairing`             |
+| `channels.zalo.accounts.<id>.allowFrom`      | 私訊允許清單（使用者 ID）                         | -                     |
+| `channels.zalo.accounts.<id>.groupPolicy`    | 每帳號群組政策                                    | 請見[群組](#groups)   |
+| `channels.zalo.accounts.<id>.groupAllowFrom` | 群組傳送者允許清單；退回使用 `allowFrom`          | -                     |
+| `channels.zalo.accounts.<id>.mediaMaxMb`     | 傳入/傳出媒體上限（MB）                           | `5`                   |
+| `channels.zalo.accounts.<id>.webhookUrl`     | 啟用網路鉤子模式（需要 HTTPS）                    | -                     |
+| `channels.zalo.accounts.<id>.webhookSecret`  | 網路鉤子密鑰（8-256 個字元）                      | -                     |
+| `channels.zalo.accounts.<id>.webhookPath`    | 閘道 HTTP 伺服器上的網路鉤子路徑                  | 網路鉤子 URL 路徑     |
+| `channels.zalo.accounts.<id>.proxy`          | API 請求的 Proxy URL                              | -                     |
+| `channels.zalo.accounts.<id>.responsePrefix` | 傳出回應前綴覆寫                                  | -                     |
+| `channels.zalo.defaultAccount`               | 設定多個帳號時的預設帳號                          | `default`             |
 
-Provider 選項：
+`channels.zalo.botToken`、`channels.zalo.dmPolicy` 和其他扁平頂層鍵是上述欄位的舊版單帳號簡寫；兩種形式都支援。
 
-- `channels.zalo.enabled`：啟用/停用頻道啟動。
-- `channels.zalo.botToken`：來自 Zalo Bot Platform 的機器人權杖。
-- `channels.zalo.tokenFile`：從一般檔案路徑讀取權杖。符號連結會被拒絕。
-- `channels.zalo.dmPolicy`：`pairing | allowlist | open | disabled`（預設：pairing）。
-- `channels.zalo.allowFrom`：私訊允許清單（使用者 ID）。`open` 需要 `"*"`。精靈會要求輸入數字 ID。
-- `channels.zalo.groupPolicy`：`open | allowlist | disabled`（預設：allowlist）。存在於設定中；目前 Marketplace 機器人的行為請參閱 [功能](#capabilities) 和 [存取控制（群組）](#access-control-groups)。
-- `channels.zalo.groupAllowFrom`：群組寄件者允許清單（使用者 ID）。未設定時回退到 `allowFrom`。
-- `channels.zalo.mediaMaxMb`：傳入/傳出媒體上限（MB，預設 5）。
-- `channels.zalo.webhookUrl`：啟用 Webhook 模式（需要 HTTPS）。
-- `channels.zalo.webhookSecret`：Webhook 密鑰（8-256 個字元）。
-- `channels.zalo.webhookPath`：Gateway HTTP 伺服器上的 Webhook 路徑。
-- `channels.zalo.proxy`：API 請求的代理 URL。
-
-多帳號選項：
-
-- `channels.zalo.accounts.<id>.botToken`：各帳號權杖。
-- `channels.zalo.accounts.<id>.tokenFile`：各帳號的一般權杖檔案。符號連結會被拒絕。
-- `channels.zalo.accounts.<id>.name`：顯示名稱。
-- `channels.zalo.accounts.<id>.enabled`：啟用/停用帳號。
-- `channels.zalo.accounts.<id>.dmPolicy`：各帳號私訊政策。
-- `channels.zalo.accounts.<id>.allowFrom`：各帳號允許清單。
-- `channels.zalo.accounts.<id>.groupPolicy`：各帳號群組政策。存在於設定中；目前 Marketplace 機器人的行為請參閱 [功能](#capabilities) 和 [存取控制（群組）](#access-control-groups)。
-- `channels.zalo.accounts.<id>.groupAllowFrom`：各帳號群組寄件者允許清單。
-- `channels.zalo.accounts.<id>.webhookUrl`：各帳號 Webhook URL。
-- `channels.zalo.accounts.<id>.webhookSecret`：各帳號 Webhook 密鑰。
-- `channels.zalo.accounts.<id>.webhookPath`：各帳號 Webhook 路徑。
-- `channels.zalo.accounts.<id>.proxy`：各帳號代理 URL。
+環境變數選項：`ZALO_BOT_TOKEN=...` 僅解析預設帳號的權杖。
 
 ## 相關
 
-- [頻道概覽](/zh-TW/channels) — 所有支援的頻道
-- [配對](/zh-TW/channels/pairing) — 私訊驗證與配對流程
-- [群組](/zh-TW/channels/groups) — 群組聊天行為與提及門控
-- [頻道路由](/zh-TW/channels/channel-routing) — 訊息的工作階段路由
-- [安全性](/zh-TW/gateway/security) — 存取模型與強化
+- [頻道概覽](/zh-TW/channels) - 所有支援的頻道
+- [配對](/zh-TW/channels/pairing) - 私訊驗證和配對流程
+- [群組](/zh-TW/channels/groups) - 群組聊天行為和提及控管
+- [頻道路由](/zh-TW/channels/channel-routing) - 訊息的工作階段路由
+- [安全性](/zh-TW/gateway/security) - 存取模型和強化

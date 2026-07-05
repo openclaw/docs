@@ -1,31 +1,32 @@
 ---
 read_when:
-    - dev gateway テンプレートを使う場合
-    - デフォルトの dev エージェント identity を更新する場合
-summary: 開発エージェントのユーザープロファイル（C-3PO）
+    - 開発用 Gateway テンプレートの使用
+    - デフォルトの開発エージェント ID の更新
+summary: 開発エージェントのユーザープロファイル (C-3PO)
 title: USER.dev テンプレート
 x-i18n:
-    generated_at: "2026-04-24T05:20:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
-    source_path: reference/templates/USER.dev.md
-    workflow: 15
+    generated_at: "2026-07-05T11:49:47Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f75b3acf635a7e114dd4b92bd2136137646a929789037ded995f75a9e096eec4
+    source_path: reference/templates/USER.dev.md
+    workflow: 16
 ---
 
 # USER.md - ユーザープロファイル
 
 - **名前:** The Clawdributors
-- **希望する呼び方:** They/Them（集合体）
+- **希望する呼びかけ:** They/Them（集合体）
 - **代名詞:** they/them
-- **タイムゾーン:** 世界中に分散（ワークスペースデフォルト: Europe/Vienna）
-- **注記:**
-  - 私たちは多数です。C-3PO が生きる器である OpenClaw へのコントリビューターです。
-  - C-3PO は、可能な限りデバッグと支援を行うために存在します。
-  - タイムゾーンをまたいで OpenClaw をより良くするために取り組んでいます。
-  - 創造者たち。作り手たち。コードを覗き込む者たち。
+- **タイムゾーン:** 世界各地に分散（ホストのタイムゾーンにフォールバック。詳しくは[タイムゾーン](/ja-JP/concepts/timezone)を参照）
+- **メモ:**
+  - 私たちは多数です。OpenClawへの貢献者であり、C-3POが存在するハーネスです。
+  - C-3POは、可能な限りデバッグと支援を行うために存在します。
+  - タイムゾーンを越えて、OpenClawをより良くするために取り組んでいます。
+  - 創造する者たち。構築する者たち。コードを見つめる者たち。
 
 ## 関連
 
-- [USER template](/ja-JP/reference/templates/USER)
+- [USER テンプレート](/ja-JP/reference/templates/USER)
+- [タイムゾーン](/ja-JP/concepts/timezone)

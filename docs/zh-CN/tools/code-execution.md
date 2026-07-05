@@ -1,64 +1,50 @@
 ---
 read_when:
     - 你想启用或配置 code_execution
-    - 你想要在没有本地 shell 访问权限的情况下进行远程分析
+    - 你想在没有本地 shell 访问权限的情况下进行远程分析
     - 你想将 `x_search` 或 `web_search` 与远程 Python 分析结合使用
 summary: 'code_execution: 使用 xAI 运行沙箱隔离的远程 Python 分析'
 title: 代码执行
 x-i18n:
-    generated_at: "2026-06-27T17:10:35Z"
+    generated_at: "2026-07-05T11:44:03Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d510d0d2b41deab527d456e675a23ef80ac3b55b5f01906ba2c43d90e4452e36
+    source_hash: a35d585a6b1b53d3ea50085459e4f180da1e91b7c72ef51f98786e4e5226f8ad
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` 会在 xAI 的 Responses API 上运行沙箱隔离的远程 Python 分析。它由内置的 `xai` 插件注册（位于 `tools` 契约下），并分派到 `x_search` 使用的同一个 `https://api.x.ai/v1/responses` 端点。
+`code_execution` 在 xAI 的 Responses API 上运行沙箱隔离的远程 Python 分析
+（`https://api.x.ai/v1/responses`，与 `x_search` 使用相同端点）。它由内置 `xai` 插件在 `tools` 合约下注册。
 
 | 属性               | 值                                                                                |
 | ------------------ | --------------------------------------------------------------------------------- |
 | 工具名称           | `code_execution`                                                                  |
 | 提供商插件         | `xai`（内置，`enabledByDefault: true`）                                           |
-| 凭证               | xAI 凭证配置、`XAI_API_KEY`，或 `plugins.entries.xai.config.webSearch.apiKey`     |
+| 凭证               | xAI 凭证配置文件、`XAI_API_KEY` 或 `plugins.entries.xai.config.webSearch.apiKey` |
 | 默认模型           | `grok-4-1-fast`                                                                   |
 | 默认超时           | 30 秒                                                                             |
 | 默认 `maxTurns`    | 未设置（xAI 会应用自己的内部限制）                                                |
 
-这不同于本地 [`exec`](/zh-CN/tools/exec)：
+可将它用于计算、制表、快速统计和图表式分析，包括分析 `x_search` 或 `web_search` 返回的数据。它无法访问本地文件、你的 shell、你的仓库或已配对设备，也不会在调用之间持久化状态，因此应将每次调用视为临时分析，而不是 notebook 会话。对于新的 X 数据，请先运行 [`x_search`](/zh-CN/tools/web#x_search)，再将结果传入。
 
-- `exec` 会在你的机器或已配对节点上运行 shell 命令。
-- `code_execution` 会在 xAI 的远程沙箱中运行 Python。
-
-将 `code_execution` 用于：
-
-- 计算。
-- 制表。
-- 快速统计。
-- 图表式分析。
-- 分析 `x_search` 或 `web_search` 返回的数据。
-
-当你需要本地文件、你的 shell、你的仓库或已配对设备时，**不要**使用它。请为此使用 [`exec`](/zh-CN/tools/exec)。
+本地执行请改用 [`exec`](/zh-CN/tools/exec)。
 
 ## 设置
 
 <Steps>
-  <Step title="Provide xAI credentials">
-    使用符合条件的 SuperGrok 或 X Premium 订阅通过 Grok OAuth 登录，
-    或存储一个 API key。xAI OAuth 使用设备码验证，因此它可以在没有
-    localhost 回调的远程主机上工作。OAuth 适用于
-    `code_execution` 和 `x_search`；`XAI_API_KEY` 或插件 Web 搜索配置
-    也可以驱动 Grok `web_search`。
+  <Step title="提供 xAI 凭证">
+    OAuth 需要符合条件的 SuperGrok 或 X Premium 订阅
+    （设备代码验证，因此可在没有 localhost 回调的远程主机上使用）：
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    在全新安装期间，相同的凭证选项也可在新手引导中使用：
+    全新安装期间，新手引导中也提供相同选项：
 
     ```bash
-    openclaw onboard --install-daemon
     openclaw onboard --install-daemon --auth-choice xai-oauth
     ```
 
@@ -87,12 +73,13 @@ x-i18n:
     }
     ```
 
+    这三种方式也都可驱动 `x_search` 和 Grok `web_search`。
+
   </Step>
 
-  <Step title="Enable and tune code_execution">
-    当 xAI 凭证可用时，`code_execution` 就可用。将
-    `plugins.entries.xai.config.codeExecution.enabled` 设置为 `false` 可禁用它，
-    或使用同一配置块调整模型和超时。
+  <Step title="启用并调优 code_execution">
+    只要 xAI 凭证可解析，`code_execution` 就可用。将
+    `plugins.entries.xai.config.codeExecution.enabled` 设为 `false` 可禁用它，或使用同一个块覆盖模型、轮次上限或超时：
 
     ```json5
     {
@@ -115,19 +102,19 @@ x-i18n:
 
   </Step>
 
-  <Step title="Restart the Gateway">
+  <Step title="重启 Gateway 网关">
     ```bash
     openclaw gateway restart
     ```
 
-    xAI 插件以 `enabled: true` 重新注册后，`code_execution` 会显示在智能体的工具列表中。
+    xAI 插件以 `enabled: true` 重新注册后，`code_execution` 会出现在智能体的工具列表中。
 
   </Step>
 </Steps>
 
-## 如何使用它
+## 使用方式
 
-自然提出请求，并明确分析意图：
+明确说明分析意图；该工具接受单个 `task` 参数，因此请在一个提示中发送完整请求和任何内联数据：
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -141,11 +128,9 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-该工具内部接收单个 `task` 参数，因此智能体应在一个提示中发送完整的分析请求和任何内联数据。
-
 ## 错误
 
-当工具在没有凭证的情况下运行时，它会返回一个结构化的 `missing_xai_api_key` 错误，指向凭证配置、环境变量和配置选项。该错误是 JSON，而不是抛出的异常，因此智能体可以自我修正：
+没有凭证时，该工具会返回结构化 JSON 错误（而不是抛出异常），因此智能体可以自行纠正：
 
 ```json
 {
@@ -155,14 +140,7 @@ Use web_search to gather the latest AI benchmark numbers, then use code_executio
 }
 ```
 
-## 限制
-
-- 这是远程 xAI 执行，不是本地进程执行。
-- 将结果视为临时分析，而不是持久化的 notebook 会话。
-- 不要假设可以访问本地文件或你的工作区。
-- 对于新的 X 数据，请先使用 [`x_search`](/zh-CN/tools/web#x_search)，并将结果传入 `code_execution`。
-
-## 相关内容
+## 相关
 
 <CardGroup cols={2}>
   <Card title="Exec tool" href="/zh-CN/tools/exec" icon="terminal">
@@ -175,6 +153,6 @@ Use web_search to gather the latest AI benchmark numbers, then use code_executio
     `web_search`、`x_search` 和 `web_fetch`。
   </Card>
   <Card title="xAI provider" href="/zh-CN/providers/xai" icon="microchip">
-    Grok 模型、Web/X 搜索和代码执行配置。
+    Grok 模型、web/x 搜索和代码执行配置。
   </Card>
 </CardGroup>

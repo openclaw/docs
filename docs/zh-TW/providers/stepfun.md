@@ -5,27 +5,25 @@ read_when:
 summary: 搭配 OpenClaw 使用 StepFun 模型
 title: StepFun
 x-i18n:
-    generated_at: "2026-06-27T19:57:27Z"
+    generated_at: "2026-07-05T11:39:33Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
+    source_hash: 172b7ad5c2cf7cac9a99e391d0454efa4611acedd378d92b2b7ca47511bc0e5e
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-StepFun 提供者外掛支援兩個提供者 ID：
+StepFun 以外部官方外掛 (`@openclaw/stepfun-provider`) 形式提供，並包含兩個供應商 ID：
 
 - `stepfun` 用於標準端點
 - `stepfun-plan` 用於 Step Plan 端點
 
 <Warning>
-標準與 Step Plan 是**不同的提供者**，具備不同端點與模型參照前綴（`stepfun/...` 與 `stepfun-plan/...`）。`.com` 端點請使用中國金鑰，`.ai` 端點請使用全球金鑰。
+標準與 Step Plan 是**不同的供應商**，具有不同的端點與模型參照前綴（`stepfun/...` 與 `stepfun-plan/...`）。請將中國金鑰搭配 `.com` 端點使用，將全球金鑰搭配 `.ai` 端點使用。
 </Warning>
 
 ## 安裝外掛
-
-安裝官方外掛，然後重新啟動閘道：
 
 ```bash
 openclaw plugins install @openclaw/stepfun-provider
@@ -34,119 +32,115 @@ openclaw gateway restart
 
 ## 區域與端點概覽
 
-| 端點      | 中國 (`.com`)                          | 全球 (`.ai`)                         |
-| --------- | -------------------------------------- | ------------------------------------ |
-| 標準      | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`          |
+| 端點      | 中國 (`.com`)                         | 全球 (`.ai`)                        |
+| --------- | -------------------------------------- | ------------------------------------- |
+| 標準      | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
 驗證環境變數：`STEPFUN_API_KEY`
 
-## 內建目錄
+## 內建型錄
 
-標準（`stepfun`）：
+標準 (`stepfun`)：
 
-| 模型參照                 | 上下文  | 最大輸出 | 備註           |
-| ------------------------ | ------- | -------- | -------------- |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536   | 預設標準模型   |
+| 模型參照                 | 上下文  | 最大輸出   | 備註             |
+| ------------------------ | ------- | ---------- | ---------------- |
+| `stepfun/step-3.5-flash` | 262,144 | 65,536     | 預設標準模型     |
 
-Step Plan（`stepfun-plan`）：
+Step Plan (`stepfun-plan`)：
 
-| 模型參照                           | 上下文  | 最大輸出 | 備註                    |
-| ---------------------------------- | ------- | -------- | ----------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536   | 預設 Step Plan 模型     |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536   | 額外的 Step Plan 模型   |
+| 模型參照                           | 上下文  | 最大輸出   | 備註                    |
+| ---------------------------------- | ------- | ---------- | ----------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | 預設 Step Plan 模型     |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | 額外的 Step Plan 模型   |
 
 ## 開始使用
 
-選擇你的提供者介面，並依照設定步驟操作。
-
 <Tabs>
-  <Tab title="標準">
-    **最適合：** 透過標準 StepFun 端點進行一般用途使用。
+  <Tab title="Standard">
+    最適合透過標準 StepFun 端點進行通用用途。
 
     <Steps>
-      <Step title="選擇你的端點區域">
-        | 驗證選項                         | 端點                             | 區域 |
-        | -------------------------------- | -------------------------------- | ---- |
-        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | 國際 |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | 中國 |
+      <Step title="Choose your endpoint region">
+        | 驗證選項                         | 端點                          | 區域 |
+        | -------------------------------- | ----------------------------- | ---- |
+        | `stepfun-standard-api-key-intl` | `https://api.stepfun.ai/v1`  | 國際 |
+        | `stepfun-standard-api-key-cn`   | `https://api.stepfun.com/v1` | 中國 |
       </Step>
-      <Step title="執行 onboarding">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        或使用中國端點：
+        中國端點：
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
         ```
       </Step>
-      <Step title="非互動式替代方式">
+      <Step title="Non-interactive alternative">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="驗證模型可用">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider stepfun
         ```
       </Step>
     </Steps>
 
-    ### 模型參照
-
-    - 預設模型：`stepfun/step-3.5-flash`
+    預設模型：`stepfun/step-3.5-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **最適合：** Step Plan 推理端點。
+    最適合 Step Plan 推理端點。
 
     <Steps>
-      <Step title="選擇你的端點區域">
-        | 驗證選項                     | 端點                                    | 區域 |
-        | ---------------------------- | --------------------------------------- | ---- |
-        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | 國際 |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | 中國 |
+      <Step title="Choose your endpoint region">
+        | 驗證選項                      | 端點                                      | 區域 |
+        | ------------------------------ | ------------------------------------------ | ---- |
+        | `stepfun-plan-api-key-intl` | `https://api.stepfun.ai/step_plan/v1`  | 國際 |
+        | `stepfun-plan-api-key-cn`   | `https://api.stepfun.com/step_plan/v1` | 中國 |
       </Step>
-      <Step title="執行 onboarding">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        或使用中國端點：
+        中國端點：
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
         ```
       </Step>
-      <Step title="非互動式替代方式">
+      <Step title="Non-interactive alternative">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="驗證模型可用">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
       </Step>
     </Steps>
 
-    ### 模型參照
-
-    - 預設模型：`stepfun-plan/step-3.5-flash`
-    - 替代模型：`stepfun-plan/step-3.5-flash-2603`
+    預設模型：`stepfun-plan/step-3.5-flash`
+    替代模型：`stepfun-plan/step-3.5-flash-2603`
 
   </Tab>
 </Tabs>
 
+單一驗證流程會為 `stepfun` 與 `stepfun-plan` 寫入符合區域的設定檔，因此一次上線設定後即可同時探索到兩個介面。
+
 ## 進階設定
 
 <AccordionGroup>
-  <Accordion title="完整設定：標準提供者">
+  <Accordion title="Full config: Standard provider">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -176,7 +170,7 @@ Step Plan（`stepfun-plan`）：
     ```
   </Accordion>
 
-  <Accordion title="完整設定：Step Plan 提供者">
+  <Accordion title="Full config: Step Plan provider">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -215,32 +209,26 @@ Step Plan（`stepfun-plan`）：
     ```
   </Accordion>
 
-  <Accordion title="備註">
-    - 此提供者是官方外部套件；請先安裝再進行設定。
-    - `step-3.5-flash-2603` 目前只在 `stepfun-plan` 上公開。
-    - 單一驗證流程會為 `stepfun` 和 `stepfun-plan` 寫入符合區域的設定檔，因此兩個介面都可以一起被探索。
-    - 使用 `openclaw models list` 和 `openclaw models set <provider/model>` 來檢查或切換模型。
+  <Accordion title="Notes">
+    - `step-3.5-flash-2603` 目前僅在 `stepfun-plan` 上公開。
+    - 使用 `openclaw models list` 與 `openclaw models set <provider/model>` 來檢查或切換模型。
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-如需更完整的提供者概覽，請參閱[模型提供者](/zh-TW/concepts/model-providers)。
-</Note>
-
 ## 相關
 
 <CardGroup cols={2}>
-  <Card title="模型選擇" href="/zh-TW/concepts/model-providers" icon="layers">
-    所有提供者、模型參照與容錯移轉行為的概覽。
+  <Card title="Model providers" href="/zh-TW/concepts/model-providers" icon="layers">
+    所有供應商、模型參照與容錯移轉行為的概覽。
   </Card>
-  <Card title="設定參考" href="/zh-TW/gateway/configuration-reference" icon="gear">
-    提供者、模型與外掛的完整設定結構描述。
+  <Card title="Configuration reference" href="/zh-TW/gateway/configuration-reference" icon="gear">
+    供應商、模型與外掛的完整設定結構描述。
   </Card>
-  <Card title="模型選擇" href="/zh-TW/concepts/models" icon="brain">
+  <Card title="Models CLI" href="/zh-TW/concepts/models" icon="brain">
     如何選擇與設定模型。
   </Card>
-  <Card title="StepFun 平台" href="https://platform.stepfun.com" icon="globe">
+  <Card title="StepFun Platform" href="https://platform.stepfun.com" icon="globe">
     StepFun API 金鑰管理與文件。
   </Card>
 </CardGroup>

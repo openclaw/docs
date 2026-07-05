@@ -5,77 +5,78 @@ status: active
 summary: 'マルチエージェントルーティング: 分離されたエージェント、チャネルアカウント、バインディング'
 title: マルチエージェントルーティング
 x-i18n:
-    generated_at: "2026-06-27T11:14:46Z"
+    generated_at: "2026-07-05T11:14:33Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4c1c55188cd27ea786cf65dcabd356a602e1e6da5f842532b189df59195274db
+    source_hash: 48e32d9e8ac2b68fdceb9a84d95bae2a73ab10f9c5fd177b72e8e452954329e9
     source_path: concepts/multi-agent.md
     workflow: 16
 ---
 
-複数の_分離された_エージェントを実行します。各エージェントは独自のワークスペース、状態ディレクトリ（`agentDir`）、セッション履歴を持ち、さらに 1 つの実行中 Gateway 内で複数のチャネルアカウント（例: 2 つの WhatsApp）を扱えます。受信メッセージは bindings を通じて適切なエージェントへルーティングされます。
+1つの Gateway プロセスで複数の_分離された_エージェントを実行します。各エージェントは専用のワークスペース、状態ディレクトリ（`agentDir`）、セッションストアを持ち、さらに複数のチャンネルアカウント（例: 2つの WhatsApp 番号）も扱えます。受信メッセージは **bindings** を通じて適切なエージェントへルーティングされます。
 
-ここでの**エージェント**は、ワークスペースファイル、認証プロファイル、モデルレジストリ、セッションストアを含む、ペルソナごとの完全なスコープです。`agentDir` は、このエージェントごとの設定を `~/.openclaw/agents/<agentId>/` に保持するディスク上の状態ディレクトリです。**binding** は、チャネルアカウント（例: Slack ワークスペースや WhatsApp 番号）をそれらのエージェントの 1 つに対応付けます。
+**エージェント**とは、ペルソナごとの完全なスコープです。ワークスペースファイル、認証プロファイル、モデルレジストリ、セッションストアを含みます。**binding** はチャンネルアカウント（Slack ワークスペース、WhatsApp 番号など）をそれらのエージェントの1つに対応付けます。
 
-## 「1 つのエージェント」とは何か？
+## 1つのエージェントとは
 
-**エージェント**は、独自の以下を持つ完全にスコープ化された頭脳です。
+各エージェントは専用の次のものを持ちます。
 
-- **ワークスペース**（ファイル、AGENTS.md/SOUL.md/USER.md、ローカルノート、ペルソナルール）。
-- 認証プロファイル、モデルレジストリ、エージェントごとの設定のための**状態ディレクトリ**（`agentDir`）。
-- `~/.openclaw/agents/<agentId>/sessions` 配下の**セッションストア**（チャット履歴 + ルーティング状態）。
+- **ワークスペース**: ファイル、`AGENTS.md`/`SOUL.md`/`USER.md`、ローカルノート、ペルソナルール。
+- **状態ディレクトリ**（`agentDir`）: 認証プロファイル、モデルレジストリ、エージェントごとの設定。
+- **セッションストア**: `~/.openclaw/agents/<agentId>/sessions` 配下のチャット履歴とルーティング状態。
 
-認証プロファイルは**エージェントごと**です。各エージェントは自身の以下から読み込みます。
+認証プロファイルはエージェントごとで、次から読み込まれます。
 
 ```text
 ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
 ```
 
 <Note>
-ここでも `sessions_history` は、より安全なクロスセッション想起パスです。未加工のトランスクリプトダンプではなく、範囲を制限しサニタイズされたビューを返します。アシスタントの想起は、thinking タグ、`<relevant-memories>` の足場、プレーンテキストのツール呼び出し XML ペイロード（`<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`、および切り詰められたツール呼び出しブロックを含む）、降格されたツール呼び出しの足場、漏えいした ASCII/全角モデル制御トークン、不正な MiniMax ツール呼び出し XML を、墨消し/切り詰めの前に取り除きます。
+`sessions_history` はより安全なクロスセッション想起パスです。生のトランスクリプトダンプではなく、範囲が制限され、リダクトされたビューを返します。thinking-block シグネチャ、ツール結果ペイロードの詳細、`<relevant-memories>` の足場、ツール呼び出し XML タグ（`<tool_call>`、`<function_call>`、およびそれらの複数形/ダウングレード形式）、MiniMax ツール呼び出し XML を取り除き、その後バイトサイズで出力を切り詰め、上限を適用します。
 </Note>
 
 <Warning>
-複数のエージェント間で `agentDir` を再利用しないでください（認証/セッションの衝突を引き起こします）。エージェントは、ローカルプロファイルを持たない場合にデフォルト/メインエージェントの認証プロファイルを参照できますが、OpenClaw は OAuth リフレッシュトークンをセカンダリエージェントストアへ複製しません。独立した OAuth アカウントが必要な場合は、そのエージェントからサインインしてください。認証情報を手動でコピーする場合は、移植可能な静的 `api_key` または `token` プロファイルのみをコピーしてください。
+エージェント間で `agentDir` を再利用しないでください。認証/セッション状態の衝突が発生します。セカンダリエージェントのローカル OAuth 資格情報が期限切れ、または更新に失敗した場合、OpenClaw は同じプロファイル ID についてデフォルト/メインエージェントの資格情報を読み抜き、最も新しいトークンを採用します。ただし、更新トークンはセカンダリエージェントのストアにはコピーしません。完全に独立した OAuth アカウントが必要な場合は、そのエージェントからサインインしてください。資格情報を手動でコピーする場合は、ポータブルな静的 `api_key` または `token` プロファイルだけをコピーしてください。OAuth 更新素材はデフォルトではポータブルではありません（`copyToAgents` でプロファイルを明示的にオプトインできます）。
 </Warning>
 
-Skills は各エージェントワークスペースと `~/.openclaw/skills` などの共有ルートから読み込まれ、設定されている場合は有効なエージェント Skills 許可リストでフィルタリングされます。共有ベースラインには `agents.defaults.skills` を、エージェントごとの置き換えには `agents.list[].skills` を使用します。[Skills: エージェントごとと共有](/ja-JP/tools/skills#per-agent-vs-shared-skills) および [Skills: エージェント Skills 許可リスト](/ja-JP/tools/skills#agent-allowlists) を参照してください。
-
-Gateway は**1 つのエージェント**（デフォルト）または**複数のエージェント**を並べてホストできます。
+Skills は各エージェントワークスペースと `~/.openclaw/skills` などの共有ルートから読み込まれ、その後、有効なエージェント Skills 許可リストでフィルタリングされます。共有ベースラインには `agents.defaults.skills` を、エージェントごとの置き換えには `agents.list[].skills` を使用してください（明示的なエントリはデフォルトを置き換え、マージしません）。[Skills: エージェントごと vs 共有](/ja-JP/tools/skills#per-agent-vs-shared-skills) と [Skills: エージェント許可リスト](/ja-JP/tools/skills#agent-allowlists) を参照してください。
 
 <Note>
-**ワークスペースの注意:** 各エージェントのワークスペースは**デフォルト cwd**であり、強制的なサンドボックスではありません。相対パスはワークスペース内で解決されますが、サンドボックス化が有効でない限り、絶対パスはホスト上の他の場所に到達できます。[サンドボックス化](/ja-JP/gateway/sandboxing) を参照してください。
+**ワークスペース注記:** 各エージェントのワークスペースは **デフォルト cwd** であり、強制的なサンドボックスではありません。相対パスはワークスペース内で解決されますが、サンドボックス化が有効でない限り、絶対パスはホスト上の他の場所に到達できます。[サンドボックス化](/ja-JP/gateway/sandboxing) を参照してください。
 </Note>
 
-## パス（クイックマップ）
+## パス
 
-- 設定: `~/.openclaw/openclaw.json`（または `OPENCLAW_CONFIG_PATH`）
-- 状態ディレクトリ: `~/.openclaw`（または `OPENCLAW_STATE_DIR`）
-- ワークスペース: `~/.openclaw/workspace`（または `~/.openclaw/workspace-<agentId>`）
-- エージェントディレクトリ: `~/.openclaw/agents/<agentId>/agent`（または `agents.list[].agentDir`）
-- セッション: `~/.openclaw/agents/<agentId>/sessions`
+| 対象                      | デフォルト                                                                                | 上書き                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| 設定                    | `~/.openclaw/openclaw.json`                                                            | `OPENCLAW_CONFIG_PATH`                                                                   |
+| 状態ディレクトリ                 | `~/.openclaw`                                                                          | `OPENCLAW_STATE_DIR`                                                                     |
+| デフォルトエージェントのワークスペース | `~/.openclaw/workspace`（または `OPENCLAW_PROFILE` が設定されている場合は `workspace-<profile>`）      | `agents.list[].workspace`、次に `agents.defaults.workspace`、または `OPENCLAW_WORKSPACE_DIR` |
+| その他のエージェントのワークスペース   | `<stateDir>/workspace-<agentId>`（または設定時は `<agents.defaults.workspace>/<agentId>`） | `agents.list[].workspace`                                                                |
+| エージェントディレクトリ                 | `~/.openclaw/agents/<agentId>/agent`                                                   | `agents.list[].agentDir`                                                                 |
+| セッション                  | `~/.openclaw/agents/<agentId>/sessions`                                                | —                                                                                        |
 
 ### 単一エージェントモード（デフォルト）
 
-何もしない場合、OpenClaw は単一のエージェントを実行します。
+何も設定しない場合、OpenClaw は1つのエージェントを実行します。
 
-- `agentId` のデフォルトは **`main`** です。
-- セッションは `agent:main:<mainKey>` としてキー付けされます。
-- ワークスペースのデフォルトは `~/.openclaw/workspace` です（`OPENCLAW_PROFILE` が設定されている場合は `~/.openclaw/workspace-<profile>`）。
+- `agentId` のデフォルトは `main` です。
+- セッションは `agent:main:<mainKey>` をキーにします（デフォルトの `mainKey` は `main`）。
+- ワークスペースのデフォルトは `~/.openclaw/workspace` です（または `OPENCLAW_PROFILE` が `default` 以外に設定されている場合は `workspace-<profile>`）。
 - 状態のデフォルトは `~/.openclaw/agents/main/agent` です。
 
 ## エージェントヘルパー
 
-agent ウィザードを使用して、新しい分離エージェントを追加します。
+新しい分離エージェントを追加します。
 
 ```bash
 openclaw agents add work
 ```
 
-次に、受信メッセージをルーティングするために `bindings` を追加します（またはウィザードに任せます）。
+フラグ: `--workspace <dir>`、`--model <id>`、`--agent-dir <dir>`、`--bind <channel[:accountId]>`（繰り返し可能）、`--non-interactive`（`--workspace` が必要）。
 
-以下で確認します。
+受信メッセージをルーティングするために `bindings` を追加し（ウィザードがこれを行うか提案します）、その後検証します。
 
 ```bash
 openclaw agents list --bindings
@@ -84,35 +85,33 @@ openclaw agents list --bindings
 ## クイックスタート
 
 <Steps>
-  <Step title="各エージェントワークスペースを作成する">
-    ウィザードを使用するか、ワークスペースを手動で作成します。
-
+  <Step title="各エージェントワークスペースを作成">
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    各エージェントには、`SOUL.md`、`AGENTS.md`、任意の `USER.md` を含む独自のワークスペースに加え、専用の `agentDir` と `~/.openclaw/agents/<agentId>` 配下のセッションストアが割り当てられます。
+    各エージェントには、`SOUL.md`、`AGENTS.md`、任意の `USER.md` を含む専用ワークスペースに加え、専用の `agentDir` と `~/.openclaw/agents/<agentId>` 配下のセッションストアが割り当てられます。
 
   </Step>
-  <Step title="チャネルアカウントを作成する">
-    利用したいチャネルごとに、エージェントごとのアカウントを 1 つ作成します。
+  <Step title="チャンネルアカウントを作成">
+    使用したいチャンネルで、エージェントごとに1つのアカウントを作成します。
 
-    - Discord: エージェントごとに 1 つの bot を作成し、Message Content Intent を有効化して、各トークンをコピーします。
-    - Telegram: BotFather 経由でエージェントごとに 1 つの bot を作成し、各トークンをコピーします。
+    - Discord: エージェントごとに1つのボットを作成し、Message Content Intent を有効化して、各トークンをコピーします。
+    - Telegram: BotFather 経由でエージェントごとに1つのボットを作成し、各トークンをコピーします。
     - WhatsApp: アカウントごとに各電話番号をリンクします。
 
     ```bash
     openclaw channels login --channel whatsapp --account work
     ```
 
-    チャネルガイドを参照してください: [Discord](/ja-JP/channels/discord)、[Telegram](/ja-JP/channels/telegram)、[WhatsApp](/ja-JP/channels/whatsapp)。
+    チャンネルガイドを参照してください: [Discord](/ja-JP/channels/discord)、[Telegram](/ja-JP/channels/telegram)、[WhatsApp](/ja-JP/channels/whatsapp)。
 
   </Step>
-  <Step title="エージェント、アカウント、bindings を追加する">
-    `agents.list` 配下にエージェントを、`channels.<channel>.accounts` 配下にチャネルアカウントを追加し、`bindings`（以下の例）でそれらを接続します。
+  <Step title="エージェント、アカウント、bindings を追加">
+    `agents.list` 配下にエージェントを、`channels.<channel>.accounts` 配下にチャンネルアカウントを追加し、`bindings` で接続します（例は下記）。
   </Step>
-  <Step title="再起動して確認する">
+  <Step title="再起動して検証">
     ```bash
     openclaw gateway restart
     openclaw agents list --bindings
@@ -121,19 +120,19 @@ openclaw agents list --bindings
   </Step>
 </Steps>
 
-## 複数のエージェント = 複数の人、複数の人格
+## 複数のエージェント、複数のペルソナ
 
-**複数のエージェント**では、各 `agentId` が**完全に分離されたペルソナ**になります。
+設定された各 `agentId` は、完全に分離されたペルソナです。
 
-- **異なる電話番号/アカウント**（チャネルごとの `accountId`）。
-- **異なる人格**（`AGENTS.md` や `SOUL.md` などのエージェントごとのワークスペースファイル）。
-- **分離された認証 + セッション**（明示的に有効化しない限り相互干渉なし）。
+- チャンネルごとの異なるアカウント（`accountId` ごと）。
+- 異なる人格（エージェントごとの `AGENTS.md`/`SOUL.md`）。
+- 明示的に有効化しない限りクロストークのない、分離された認証とセッション。
 
-これにより、**複数の人**が 1 つの Gateway サーバーを共有しながら、それぞれの AI「頭脳」とデータを分離できます。
+これにより、複数の人が1つの Gateway を共有しつつ、各自のエージェント状態を分離できます。
 
 ## クロスエージェント QMD メモリ検索
 
-あるエージェントが別のエージェントの QMD セッショントランスクリプトを検索する必要がある場合は、`agents.list[].memorySearch.qmd.extraCollections` 配下に追加コレクションを追加します。すべてのエージェントが同じ共有トランスクリプトコレクションを継承する必要がある場合にのみ、`agents.defaults.memorySearch.qmd.extraCollections` を使用してください。
+1つのエージェントが別のエージェントの QMD セッショントランスクリプトを検索できるようにするには、`agents.list[].memorySearch.qmd.extraCollections` 配下に追加コレクションを追加します。すべてのエージェントが同じコレクションを共有する必要がある場合は、`agents.defaults.memorySearch.qmd.extraCollections` を使用します。
 
 ```json5
 {
@@ -166,17 +165,15 @@ openclaw agents list --bindings
 }
 ```
 
-追加コレクションのパスはエージェント間で共有できますが、そのパスがエージェントワークスペースの外側にある場合、コレクション名は明示的なままです。ワークスペース内のパスはエージェントスコープのままなので、各エージェントは独自のトランスクリプト検索セットを保持します。
+追加コレクションのパスはエージェント間で共有できますが、そのパスがエージェントワークスペースの外にある場合、`name` は明示的なままです。ワークスペース内のパスはエージェントスコープのままなので、各エージェントは専用のトランスクリプト検索セットを保持します。
 
-## 1 つの WhatsApp 番号、複数の人（DM 分割）
+## 1つの WhatsApp 番号、複数の人（DM 分割）
 
-**1 つの WhatsApp アカウント**のまま、**異なる WhatsApp DM** を異なるエージェントにルーティングできます。`peer.kind: "direct"` を使用し、送信者 E.164（例: `+15551234567`）で照合します。返信は引き続き同じ WhatsApp 番号から送信されます（エージェントごとの送信者 ID はありません）。
+送信者 E.164（`+15551234567`）を `peer.kind: "direct"` で照合することで、**1つ**の WhatsApp アカウント上の異なる WhatsApp DM を別々のエージェントにルーティングします。返信は引き続き同じ WhatsApp 番号から送信されます。エージェントごとの送信者 ID はありません。
 
 <Note>
-ダイレクトチャットはエージェントの**メインセッションキー**に集約されるため、真の分離には**人ごとに 1 つのエージェント**が必要です。
+ダイレクトチャットはデフォルトでエージェントのメインセッションキーに折りたたまれるため、真の分離には人ごとに1つのエージェントが必要です。
 </Note>
-
-例:
 
 ```json5
 {
@@ -205,81 +202,36 @@ openclaw agents list --bindings
 }
 ```
 
-注:
+DM アクセス制御（ペアリング/許可リスト）は WhatsApp アカウントごとにグローバルであり、エージェントごとではありません。共有グループの場合は、グループを1つのエージェントにバインドするか、[ブロードキャストグループ](/ja-JP/channels/broadcast-groups) を使用してください。
 
-- DM アクセス制御は**WhatsApp アカウントごとのグローバル**（ペアリング/許可リスト）であり、エージェントごとではありません。
-- 共有グループでは、グループを 1 つのエージェントに binding するか、[ブロードキャストグループ](/ja-JP/channels/broadcast-groups) を使用します。
+## ルーティングルール
 
-## ルーティングルール（メッセージがエージェントを選ぶ仕組み）
+Bindings は決定的で、最も具体的なものが優先されます。完全なティア順序（正確なピア、親ピア、ピアワイルドカード、guild+roles、guild、team、account、channel、デフォルトエージェント）については、[チャンネルルーティング](/ja-JP/channels/channel-routing#routing-rules-how-an-agent-is-chosen) を参照してください。ここで取り上げる価値のあるルールがいくつかあります。
 
-Bindings は**決定的**で、**最も具体的なものが優先**されます。
-
-<Steps>
-  <Step title="peer 照合">
-    正確な DM/グループ/チャネル ID。
-  </Step>
-  <Step title="parentPeer 照合">
-    スレッド継承。
-  </Step>
-  <Step title="guildId + roles">
-    Discord ロールルーティング。
-  </Step>
-  <Step title="guildId">
-    Discord。
-  </Step>
-  <Step title="teamId">
-    Slack。
-  </Step>
-  <Step title="チャネルの accountId 照合">
-    アカウントごとのフォールバック。
-  </Step>
-  <Step title="チャネルレベルの照合">
-    `accountId: "*"`。
-  </Step>
-  <Step title="デフォルトエージェント">
-    `agents.list[].default` にフォールバックし、それがなければ最初のリストエントリ、デフォルトは `main`。
-  </Step>
-</Steps>
-
-<AccordionGroup>
-  <Accordion title="同順位の決定と AND セマンティクス">
-    - 同じ階層で複数の bindings が一致する場合は、設定順で最初のものが優先されます。
-    - binding が複数の照合フィールド（例: `peer` + `guildId`）を設定している場合、指定されたすべてのフィールドが必須です（`AND` セマンティクス）。
-
-  </Accordion>
-  <Accordion title="アカウントスコープの詳細">
-    - `accountId` を省略した binding は、デフォルトアカウントのみに一致します。すべてのアカウントには一致しません。
-    - すべてのアカウントにまたがるチャネル全体のフォールバックには `accountId: "*"` を使用します。
-    - 1 つのアカウントに一致させるには `accountId: "<name>"` を使用します。
-    - 後から同じエージェントに対して明示的なアカウント ID を持つ同じ binding を追加した場合、OpenClaw は既存のチャネルのみの binding を重複させるのではなく、アカウントスコープへアップグレードします。
-
-  </Accordion>
-</AccordionGroup>
+- 同じティア内で複数の bindings が一致する場合、設定順で最初のものが優先されます。
+- binding が複数の match フィールド（例: `peer` + `guildId`）を設定している場合、指定されたすべてのフィールドが一致する必要があります（`AND` セマンティクス）。
+- `accountId` を省略した binding は、すべてのアカウントではなくデフォルトアカウントのみに一致します。チャンネル全体のフォールバックには `accountId: "*"` を、1つのアカウントには `accountId: "<name>"` を使用してください。同じ binding を明示的なアカウント ID 付きでもう一度追加すると、既存のチャンネルのみの binding を複製するのではなくアップグレードします。
 
 ## 複数アカウント / 電話番号
 
-**複数アカウント**をサポートするチャネル（例: WhatsApp）は、各ログインを識別するために `accountId` を使用します。各 `accountId` は異なるエージェントにルーティングできるため、1 つのサーバーで複数の電話番号をホストし、セッションを混在させずに済みます。
+複数アカウントをサポートするチャンネル（例: WhatsApp）は、各ログインを識別するために `accountId` を使用します。各 `accountId` は専用のエージェントにルーティングされるため、1つのサーバーでセッションを混在させずに複数の電話番号をホストできます。
 
-`accountId` が省略された場合にチャネル全体のデフォルトアカウントを使用したい場合は、`channels.<channel>.defaultAccount`（任意）を設定します。未設定の場合、OpenClaw は `default` が存在すればそれにフォールバックし、なければ設定済みアカウント ID の最初（ソート済み）にフォールバックします。
+`accountId` が省略された場合に使用するアカウントを選ぶには、`channels.<channel>.defaultAccount` を設定します。未設定の場合、OpenClaw は存在すれば `default` にフォールバックし、それ以外の場合は最初に設定されたアカウント ID（ソート済み）にフォールバックします。
 
-このパターンをサポートする一般的なチャネルには以下があります。
-
-- `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`
-- `irc`, `line`, `googlechat`, `mattermost`, `matrix`, `nextcloud-talk`
-- `zalo`, `zalouser`, `nostr`, `feishu`
+複数アカウントをサポートするチャンネル: `discord`、`feishu`、`googlechat`、`imessage`、`irc`、`line`、`mattermost`、`matrix`、`nextcloud-talk`、`nostr`、`signal`、`slack`、`telegram`、`whatsapp`、`zalo`、`zalouser`。
 
 ## 概念
 
-- `agentId`: 1 つの「頭脳」（ワークスペース、エージェントごとの認証、エージェントごとのセッションストア）。
-- `accountId`: 1 つのチャネルアカウントインスタンス（例: WhatsApp アカウント `"personal"` と `"biz"`）。
-- `binding`: `(channel, accountId, peer)` と任意の guild/team ID によって、受信メッセージを `agentId` にルーティングします。
-- ダイレクトチャットは `agent:<agentId>:<mainKey>`（エージェントごとの「main」、`session.mainKey`）に集約されます。
+- `agentId`: 1つの「頭脳」（ワークスペース、エージェントごとの認証、エージェントごとのセッションストア）。
+- `accountId`: 1つのチャンネルアカウントインスタンス（例: WhatsApp アカウント `personal` と `biz`）。
+- `binding`: `(channel, accountId, peer)` と、任意で guild/team ID によって、受信メッセージを `agentId` にルーティングします。
+- ダイレクトチャットは `agent:<agentId>:<mainKey>` に折りたたまれます（エージェントごとの「main」。`session.mainKey` を参照）。
 
 ## プラットフォーム例
 
 <AccordionGroup>
-  <Accordion title="エージェントごとの Discord bot">
-    各 Discord bot アカウントは一意の `accountId` に対応します。各アカウントをエージェントに binding し、許可リストは bot ごとに保持します。
+  <Accordion title="エージェントごとの Discord ボット">
+    各 Discord ボットアカウントは一意の `accountId` に対応します。各アカウントをエージェントにバインドし、ボットごとに許可リストを維持してください。
 
     ```json5
     {
@@ -323,11 +275,11 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
     }
     ```
 
-    - 各 bot をギルドに招待し、Message Content Intent を有効にします。
-    - トークンは `channels.discord.accounts.<id>.token` にあります（デフォルトアカウントでは `DISCORD_BOT_TOKEN` を使用できます）。
+    - 各ボットをギルドに招待し、Message Content Intent を有効にします。
+    - トークンは `channels.discord.accounts.<id>.token` に置きます（デフォルトアカウントは `DISCORD_BOT_TOKEN` を使用できます）。
 
   </Accordion>
-  <Accordion title="エージェントごとの Telegram bot">
+  <Accordion title="エージェントごとの Telegram ボット">
     ```json5
     {
       agents: {
@@ -358,17 +310,17 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
     }
     ```
 
-    - BotFather でエージェントごとに bot を1つ作成し、それぞれのトークンをコピーします。
-    - トークンは `channels.telegram.accounts.<id>.botToken` にあります（デフォルトアカウントでは `TELEGRAM_BOT_TOKEN` を使用できます）。
-    - 同じ Telegram グループで複数の bot を使う場合は、各 bot を招待し、応答すべき bot をメンションします。
-    - 各グループ bot で BotFather Privacy Mode を無効にしてから、Telegram が設定を適用するように bot を再追加します。
-    - `channels.telegram.groups` でグループを許可するか、信頼できるグループデプロイでのみ `groupPolicy: "open"` を使用します。
+    - BotFather でエージェントごとに 1 つのボットを作成し、それぞれのトークンをコピーします。
+    - トークンは `channels.telegram.accounts.<id>.botToken` に置きます（デフォルトアカウントは `TELEGRAM_BOT_TOKEN` を使用できます）。
+    - 同じ Telegram グループで複数のボットを使う場合は、各ボットを招待し、応答すべきボットにメンションします。
+    - 各グループボットで BotFather Privacy Mode を無効にし（`/setprivacy` -> Disable）、その後ボットを削除して再追加し、Telegram に設定を適用させます。
+    - `channels.telegram.groups` でグループを許可するか、信頼済みのグループデプロイでのみ `groupPolicy: "open"` を使用します。
     - 送信者のユーザー ID は `groupAllowFrom` に入れます。グループ ID とスーパーグループ ID は `groupAllowFrom` ではなく `channels.telegram.groups` に属します。
-    - 各 bot がそれぞれのエージェントにルーティングされるように、`accountId` でバインドします。
+    - 各ボットが自分のエージェントにルーティングされるよう、`accountId` でバインドします。
 
   </Accordion>
   <Accordion title="エージェントごとの WhatsApp 番号">
-    ゲートウェイを起動する前に各アカウントをリンクします。
+    Gateway を起動する前に各アカウントをリンクします。
 
     ```bash
     openclaw channels login --channel whatsapp --account personal
@@ -444,8 +396,8 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
 ## 一般的なパターン
 
 <Tabs>
-  <Tab title="WhatsApp の日常利用 + Telegram の深い作業">
-    チャンネルごとに分割します。WhatsApp は高速な日常用エージェントに、Telegram は Opus エージェントにルーティングします。
+  <Tab title="WhatsApp の日常利用 + Telegram のディープワーク">
+    チャンネルで分割します。WhatsApp は高速な日常用エージェントに、Telegram は Opus エージェントにルーティングします。
 
     ```json5
     {
@@ -472,14 +424,11 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
     }
     ```
 
-    注:
-
-    - これらの例では `accountId: "*"` を使用しているため、後でアカウントを追加してもバインディングは機能し続けます。
-    - 残りを chat に維持したまま、単一の DM/グループを Opus にルーティングするには、そのピアに対する `match.peer` バインディングを追加します。ピア一致は常にチャンネル全体のルールより優先されます。
+    これらの例では `accountId: "*"` を使用しているため、後でアカウントを追加してもバインディングは動作し続けます。残りをチャットに保持したまま単一の DM/グループを Opus にルーティングするには、そのピアの `match.peer` バインディングを追加します。ピア一致は常にチャンネル全体のルールより優先されます。
 
   </Tab>
-  <Tab title="同じチャンネルで、1つのピアを Opus へ">
-    WhatsApp は高速なエージェントのままにし、1つの DM だけを Opus にルーティングします。
+  <Tab title="同じチャンネルで 1 つのピアを Opus へ">
+    WhatsApp は高速なエージェントのままにし、1 つの DM だけを Opus にルーティングします。
 
     ```json5
     {
@@ -509,7 +458,7 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
     }
     ```
 
-    ピアバインディングは常に優先されるため、チャンネル全体のルールより上に置きます。
+    ピアバインディングは常に優先されるため、チャンネル全体のルールより上に置いてください。
 
   </Tab>
   <Tab title="WhatsApp グループにバインドされたファミリーエージェント">
@@ -558,17 +507,14 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
     }
     ```
 
-    注:
-
-    - ツールの許可/拒否リストは**ツール**であり、Skillsではありません。Skill がバイナリを実行する必要がある場合は、`exec` が許可され、そのバイナリがサンドボックス内に存在することを確認してください。
-    - より厳格なゲートには、`agents.list[].groupChat.mentionPatterns` を設定し、チャンネルのグループ許可リストを有効のままにします。
+    ツールの許可/拒否リストは**ツール**であり、スキルではありません。スキルがバイナリを実行する必要がある場合は、`exec` が許可されていて、そのバイナリがサンドボックス内に存在することを確認してください。より厳格にゲートするには、`agents.list[].groupChat.mentionPatterns` を設定し、チャンネルでグループの許可リストを有効にしたままにします。
 
   </Tab>
 </Tabs>
 
 ## エージェントごとのサンドボックスとツール設定
 
-各エージェントは独自のサンドボックスとツール制限を持てます。
+各エージェントは独自のサンドボックスとツール制限を持つことができます。
 
 ```js
 {
@@ -604,20 +550,20 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
 ```
 
 <Note>
-`setupCommand` は `sandbox.docker` 配下にあり、コンテナ作成時に1回実行されます。解決されたスコープが `"shared"` の場合、エージェントごとの `sandbox.docker.*` オーバーライドは無視されます。
+`setupCommand` は `sandbox.docker` の下にあり、コンテナ作成時に 1 回実行されます。解決後のスコープが `"shared"` の場合、エージェントごとの `sandbox.docker.*` オーバーライドは無視されます。
 </Note>
 
-**利点:**
+これにより、次のことが可能になります。
 
 - **セキュリティ分離**: 信頼できないエージェントのツールを制限します。
-- **リソース制御**: 特定のエージェントをサンドボックス化し、他はホスト上に維持します。
-- **柔軟なポリシー**: エージェントごとに異なる権限を設定できます。
+- **リソース制御**: 特定のエージェントをサンドボックス化し、他のエージェントはホスト上に保持します。
+- **柔軟なポリシー**: エージェントごとに異なる権限を設定します。
 
 <Note>
-`tools.elevated` は**グローバル**かつ送信者ベースです。エージェントごとには設定できません。エージェントごとの境界が必要な場合は、`agents.list[].tools` を使用して `exec` を拒否します。グループターゲティングでは、@メンションが意図したエージェントに明確に対応するように `agents.list[].groupChat.mentionPatterns` を使用します。
+`tools.elevated` にはグローバルゲート（`tools.elevated.enabled`/`allowFrom`）とエージェントごとのゲート（`agents.list[].tools.elevated.enabled`/`allowFrom`）の両方があります。エージェントごとのゲートはグローバルゲートをさらに制限することしかできません。昇格コマンドを実行するには、両方が送信者を許可している必要があります。グループを対象にする場合は、@mentions が意図したエージェントに明確に対応するよう、`agents.list[].groupChat.mentionPatterns` を使用してください。
 </Note>
 
-詳細な例は [マルチエージェントのサンドボックスとツール](/ja-JP/tools/multi-agent-sandbox-tools) を参照してください。
+詳細な例については、[マルチエージェントのサンドボックスとツール](/ja-JP/tools/multi-agent-sandbox-tools)を参照してください。
 
 ## 関連
 
@@ -625,4 +571,4 @@ Bindings は**決定的**で、**最も具体的なものが優先**されます
 - [チャンネルルーティング](/ja-JP/channels/channel-routing) — メッセージがエージェントにルーティングされる仕組み
 - [プレゼンス](/ja-JP/concepts/presence) — エージェントのプレゼンスと可用性
 - [セッション](/ja-JP/concepts/session) — セッション分離とルーティング
-- [サブエージェント](/ja-JP/tools/subagents) — バックグラウンドエージェント実行の起動
+- [サブエージェント](/ja-JP/tools/subagents) — バックグラウンドエージェント実行の生成

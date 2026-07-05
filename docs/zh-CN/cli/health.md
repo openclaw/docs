@@ -1,30 +1,30 @@
 ---
 read_when:
-    - 你想快速检查运行中的 Gateway 网关的健康状态
-summary: '`openclaw health` 的 CLI 参考（通过 RPC 获取 Gateway 网关健康快照）'
-title: 健康状态
+    - 你想快速检查正在运行的 Gateway 网关的健康状态
+summary: '`openclaw health` 的 CLI 参考（通过 RPC 获取的 Gateway 健康快照）'
+title: 健康
 x-i18n:
-    generated_at: "2026-05-10T19:27:49Z"
+    generated_at: "2026-07-05T11:09:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-从正在运行的 Gateway 网关获取健康状态。
+通过 WebSocket RPC 从正在运行的 Gateway 网关获取健康快照（CLI 不直接使用渠道 socket）。
 
 ## 选项
 
-| 标志             | 默认值 | 描述                                                        |
-| ---------------- | ------- | ------------------------------------------------------------------ |
-| `--json`         | `false` | 输出机器可读的 JSON，而不是文本。                       |
-| `--timeout <ms>` | `10000` | 连接超时，单位为毫秒。                                |
-| `--verbose`      | `false` | 详细日志记录。强制执行实时探测，并展开每个智能体的输出。 |
-| `--debug`        | `false` | `--verbose` 的别名。                                             |
+| 标志             | 默认值 | 描述                                                                       |
+| ---------------- | ------- | --------------------------------------------------------------------------------- |
+| `--json`         | `false` | 打印机器可读的 JSON，而不是文本。                                      |
+| `--timeout <ms>` | `10000` | 连接超时时间，单位为毫秒。                                               |
+| `--verbose`      | `false` | 强制执行实时探测，并展开所有已配置账户和智能体的输出。 |
+| `--debug`        | `false` | `--verbose` 的别名。                                                            |
 
 示例：
 
@@ -36,15 +36,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-备注：
+## 行为
 
-- 默认的 `openclaw health` 会向正在运行的 Gateway 网关请求其健康状态快照。当该
-  Gateway 网关已有新的缓存快照时，它可以返回该缓存负载，并在后台刷新。
-- `--verbose` 会强制执行实时探测，打印 Gateway 网关连接详情，并展开所有已配置账户和智能体的
-  人类可读输出。
-- 当配置了多个智能体时，输出会包含每个智能体的会话存储。
+- 不带 `--verbose` 时，Gateway 网关可以返回缓存快照（最长 60 秒内保持新鲜，并且与实时渠道运行时状态一致），并在后台刷新它，供下一个调用方使用。
+- `--verbose` 强制执行实时探测（按渠道的账户探测），打印 Gateway 网关连接详情，并将人类可读输出展开到所有已配置账户和智能体，而不只是默认智能体。
+- `--json` 始终返回完整快照：渠道、按账户的探测、插件加载状态、上下文引擎隔离状态、模型定价缓存状态、事件循环健康状态，以及按智能体的会话存储。
 
-## 相关内容
+## 相关
 
 - [CLI 参考](/zh-CN/cli)
-- [Gateway 网关健康状态](/zh-CN/gateway/health)
+- [`openclaw status`](/zh-CN/cli/status) — 本地诊断和渠道探测，不包含完整健康快照
+- [Gateway 健康](/zh-CN/gateway/health)

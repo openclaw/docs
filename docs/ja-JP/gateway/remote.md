@@ -4,98 +4,64 @@ read_when:
 summary: Gateway WS、SSH トンネル、tailnet を使用したリモートアクセス
 title: リモートアクセス
 x-i18n:
-    generated_at: "2026-07-03T23:26:25Z"
+    generated_at: "2026-07-05T11:24:11Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb6fd38698480f1dff93a6e4819082711e8e4395556a2fd85a8eb772ef6fbe31
+    source_hash: 78daaad7bcb9f80072eaa2d6946bff9f28ba1ec4f95a68edb0d24cf7f9c3fec2
     source_path: gateway/remote.md
     workflow: 16
 ---
 
-このリポジトリは、専用ホスト（デスクトップ/サーバー）上で単一の Gateway（マスター）を実行し続け、クライアントをそこへ接続することで、リモート Gateway アクセスをサポートします。
+OpenClawはホスト上で1つのGateway（マスター）を実行し、すべてのクライアントをそこへ接続します。Gatewayはセッション、認証プロファイル、チャンネル、状態を所有し、それ以外はすべてクライアントです。
 
-- **オペレーター（あなた / macOS アプリ）向け**: Gateway に到達できる場合は、直接の LAN/Tailnet WebSocket が最も簡単です。SSH トンネルは汎用的なフォールバックです。
-- **ノード（iOS/Android と将来のデバイス）向け**: 必要に応じて LAN/tailnet または SSH トンネル経由で、Gateway **WebSocket** に接続します。
+- **オペレーター**（あなた、またはmacOSアプリ）: Gatewayに到達できる場合は、直接LAN/Tailnet WebSocketが最も簡単です。SSHトンネルは汎用フォールバックです。
+- **Node**（iOS/Androidおよびその他のデバイス）: Gateway **WebSocket**（LAN/tailnetまたはSSHトンネル）に接続します。
 
-## 核心となる考え方
+## 中核となる考え方
 
-- Gateway WebSocket は通常、設定済みポート（デフォルトは 18789）の **ループバック** にバインドします。
-- リモート利用では、Tailscale Serve、信頼済み LAN/Tailnet バインド、または SSH 経由でループバックポートを転送して公開します。
+Gateway WebSocketはデフォルトで**ループバック**にバインドし、ポートは`18789`（`gateway.port`）です。リモート利用では、Tailscale Serve / 信頼済みLAN-Tailnetバインド経由で公開するか、SSHでループバックポートを転送します。
 
-## 一般的な VPN と tailnet 構成
+## トポロジーの選択肢
 
-**Gateway ホスト**はエージェントが存在する場所だと考えてください。セッション、認証プロファイル、チャネル、状態を所有します。ノート PC、デスクトップ、ノードはそのホストへ接続します。
+| セットアップ                      | Gatewayを実行する場所                                                                                     | 最適な用途                                                                                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| tailnet内の常時稼働Gateway        | 永続ホスト（VPSまたはホームサーバー）、TailscaleまたはSSH経由で到達                                       | スリープしがちなノートPCでも、エージェントを常時稼働させたい場合。[exe.dev](/ja-JP/install/exe-dev)（簡単なVM）または[Hetzner](/ja-JP/install/hetzner)（本番VPS）を参照してください。 |
+| 自宅デスクトップ                  | デスクトップ。ノートPCはmacOSアプリのリモートモード（設定 → 接続 → OpenClawの実行先）でリモート接続します | 電源が入ったままのハードウェア上でエージェントを維持する場合。手順書: [macOSリモートアクセス](/ja-JP/platforms/mac/remote)。                         |
+| ノートPC                          | ノートPC。SSHトンネルまたはTailscale Serveで安全に公開します（`gateway.bind: "loopback"`を維持）           | 単一マシンのセットアップ。[Tailscale](/ja-JP/gateway/tailscale)と[Web](/ja-JP/web)を参照してください。                                                       |
 
-### tailnet 内で常時稼働する Gateway
+常時稼働とノートPCのセットアップでは、`gateway.bind: "loopback"`を維持し、Control UIには**Tailscale Serve**を使用するか、`gateway.remote.transport: "direct"`で信頼済みLAN/Tailnetバインドを使うことを推奨します。SSHトンネルは、どのマシンからでも動作するフォールバックです。
 
-永続ホスト（VPS またはホームサーバー）で Gateway を実行し、**Tailscale** または SSH で到達します。
+## コマンドフロー（何がどこで実行されるか）
 
-- **最良の UX:** `gateway.bind: "loopback"` を維持し、Control UI には **Tailscale Serve** を使用します。
-- **信頼済み LAN/Tailnet:** Gateway をプライベートインターフェイスにバインドし、`gateway.remote.transport: "direct"` で直接接続します。
-- **フォールバック:** ループバックを維持し、アクセスが必要な任意のマシンから SSH トンネルを使用します。
-- **例:** [exe.dev](/ja-JP/install/exe-dev)（簡単な VM）または [Hetzner](/ja-JP/install/hetzner)（本番 VPS）。
+1つのGatewayが状態とチャンネルを所有し、Nodeは周辺機器です。例（TelegramメッセージがNodeツールへルーティングされる場合）:
 
-ノート PC が頻繁にスリープする一方で、エージェントを常時稼働させたい場合に理想的です。
+1. Telegramメッセージが**Gateway**に到着します。
+2. Gatewayが**エージェント**を実行し、Nodeツールを呼び出すかどうかを判断します。
+3. GatewayがGateway WebSocket（`node.invoke` RPC）経由で**Node**を呼び出します。
+4. Nodeが結果を返し、GatewayがTelegramへ返信します。
 
-### ホームデスクトップで Gateway を実行する
+NodeはGatewayサービスを実行しません。意図的に分離プロファイルを実行する場合を除き、ホストごとに実行するGatewayは1つだけにしてください（[複数Gateway](/ja-JP/gateway/multiple-gateways)を参照）。macOSアプリの「Nodeモード」は、Gateway WebSocket経由のNodeクライアントにすぎません。
 
-ノート PC はエージェントを実行**しません**。リモートで接続します。
-
-- macOS アプリのリモートモードを使用します（Settings → General → OpenClaw runs）。
-- Gateway が LAN/Tailnet 上で到達可能な場合、アプリは直接接続します。SSH を選択した場合は、SSH トンネルを開いて管理します。
-
-運用手順: [macOS リモートアクセス](/ja-JP/platforms/mac/remote)。
-
-### ノート PC で Gateway を実行する
-
-Gateway をローカルに保ちつつ、安全に公開します。
-
-- 他のマシンからノート PC へ SSH トンネルを張る、または
-- Control UI を Tailscale Serve し、Gateway はループバック専用のままにします。
-
-ガイド: [Tailscale](/ja-JP/gateway/tailscale) と [Web 概要](/ja-JP/web)。
-
-## コマンドフロー（どこで何が実行されるか）
-
-1 つの Gateway サービスが状態 + チャネルを所有します。ノードは周辺機器です。
-
-フロー例（Telegram → ノード）:
-
-- Telegram メッセージが **Gateway** に到着します。
-- Gateway が **エージェント**を実行し、ノードツールを呼び出すかどうかを判断します。
-- Gateway が Gateway WebSocket（`node.*` RPC）経由で **ノード**を呼び出します。
-- ノードが結果を返し、Gateway が Telegram へ返信します。
-
-注記:
-
-- **ノードは Gateway サービスを実行しません。** 意図的に分離プロファイルを実行する場合を除き、ホストごとに実行する Gateway は 1 つだけにしてください（[複数 Gateway](/ja-JP/gateway/multiple-gateways) を参照）。
-- macOS アプリの「node mode」は、Gateway WebSocket 上のノードクライアントにすぎません。
-
-## SSH トンネル（CLI + ツール）
-
-リモート Gateway WS へのローカルトンネルを作成します。
+## SSHトンネル（CLI + ツール）
 
 ```bash
-ssh -N -L 18789:127.0.0.1:18789 user@host
+ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
 ```
 
-トンネルが有効な状態では:
-
-- `openclaw health` と `openclaw status --deep` は、`ws://127.0.0.1:18789` 経由でリモート Gateway に到達します。
-- `openclaw gateway status`、`openclaw gateway health`、`openclaw gateway probe`、`openclaw gateway call` も、必要に応じて `--url` で転送先 URL を対象にできます。
+トンネルが有効な状態では、`openclaw health`と`openclaw status --deep`は`ws://127.0.0.1:18789`経由でリモートGatewayに到達します。`openclaw gateway status`、`openclaw gateway health`、`openclaw gateway probe`、`openclaw gateway call`も、`--url`を使って転送先URLを対象にできます。
 
 <Note>
-`18789` は、設定済みの `gateway.port`（または `--port` か `OPENCLAW_GATEWAY_PORT`）に置き換えてください。
+`18789`は、設定済みの`gateway.port`（または`--port` / `OPENCLAW_GATEWAY_PORT`）に置き換えてください。
 </Note>
 
 <Warning>
-`--url` を渡すと、CLI は config や環境の認証情報へフォールバックしません。`--token` または `--password` を明示的に含めてください。明示的な認証情報がない場合はエラーです。
+`--url`は設定や環境の認証情報へフォールバックしません。`--token`または`--password`を明示的に渡してください。指定しない場合、クライアントは認証情報を送信せず、対象Gatewayが認証を要求していると接続は失敗します。
 </Warning>
 
-## CLI リモートデフォルト
+## CLIリモートデフォルト
 
-リモートターゲットを永続化して、CLI コマンドがデフォルトでそれを使用するようにできます。
+リモートターゲットを永続化し、CLIコマンドがデフォルトでそれを使うようにします。
 
 ```json5
 {
@@ -109,16 +75,11 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 }
 ```
 
-Gateway がループバック専用の場合は、URL を `ws://127.0.0.1:18789` のままにし、先に SSH トンネルを開きます。
-macOS アプリの SSH トンネルトランスポートでは、検出された Gateway ホスト名は
-`gateway.remote.sshTarget` に属します。`gateway.remote.url` はローカルトンネル URL のままです。
-これらのポートが異なる場合は、SSH ホスト上の Gateway ポートを
-`gateway.remote.remotePort` に設定します。
-ホストキー検証はデフォルトで厳格です。管理対象エイリアスは、
-`gateway.remote.sshHostKeyPolicy: "openssh"` で有効な OpenSSH 信頼ポリシーを明示的に使用できます。有効化する前に、一致するユーザーおよびシステムの
-SSH 設定を確認してください。
+Gatewayがループバック専用の場合は、URLを`ws://127.0.0.1:18789`のままにし、先にSSHトンネルを開きます。macOSアプリのSSHトンネルトランスポートでは、検出されたGatewayホスト名を`gateway.remote.sshTarget`（`user@host`または`user@host:port`）に設定します。`gateway.remote.url`はローカルトンネルURLのままです。リモートポートがローカルポートと異なる場合は、`gateway.remote.remotePort`を設定します。
 
-信頼済み LAN または Tailnet ですでに到達可能な Gateway には、direct モードを使用します。
+ホストキー検証はデフォルトで厳格です（`gateway.remote.sshHostKeyPolicy: "strict"`）。代わりに有効なOpenSSH設定へ委任するには、`"openssh"`に設定します。有効化する前に、ユーザーおよびシステムのSSH設定を確認してください。
+
+信頼済みLANまたはTailnet上ですでに到達可能なGatewayには、直接モードを使用します。
 
 ```json5
 {
@@ -135,64 +96,58 @@ SSH 設定を確認してください。
 
 ## 認証情報の優先順位
 
-Gateway の認証情報解決は、call/probe/status パスと Discord exec-approval 監視全体で、1 つの共有契約に従います。Node-host は、1 つのローカルモード例外（意図的に `gateway.remote.*` を無視する）を除き、同じ基本契約を使用します。
+Gatewayの認証情報解決は、call/probe/statusパスとDiscord実行承認監視にまたがる共通契約に従います。Node-hostも同じ契約を使用しますが、ローカルモードの例外が1つあります（`gateway.remote.*`を無視します）。
 
-- 明示的な認証情報（`--token`、`--password`、またはツールの `gatewayToken`）は、明示的な認証を受け付ける call パスでは常に優先されます。
-- URL オーバーライドの安全性:
-  - CLI URL オーバーライド（`--url`）は、暗黙の config/env 認証情報を再利用しません。
-  - Env URL オーバーライド（`OPENCLAW_GATEWAY_URL`）は、env 認証情報（`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`）のみを使用できます。
+- 明示的な認証情報（`--token`、`--password`、またはツールの`gatewayToken`）は、明示的な認証を受け付けるcallパスでは常に優先されます。
+- URLオーバーライドの安全性:
+  - CLI `--url`は暗黙の設定/環境認証情報を再利用しません。
+  - Env `OPENCLAW_GATEWAY_URL`は環境認証情報のみ（`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`）を使用できます。
 - ローカルモードのデフォルト:
-  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token`（リモートフォールバックは、ローカル認証 token 入力が未設定の場合にのみ適用）
-  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password`（リモートフォールバックは、ローカル認証 password 入力が未設定の場合にのみ適用）
+  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token`（ローカルトークンが未設定の場合のみリモートフォールバック）
+  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password`（ローカルパスワードが未設定の場合のみリモートフォールバック）
 - リモートモードのデフォルト:
   - token: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
   - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
-- Node-host のローカルモード例外: `gateway.remote.token` / `gateway.remote.password` は無視されます。
-- リモート probe/status の token チェックはデフォルトで厳格です。リモートモードを対象にする場合、`gateway.remote.token` のみを使用します（ローカル token フォールバックなし）。
-- Gateway env オーバーライドは `OPENCLAW_GATEWAY_*` のみを使用します。
+- Node-hostのローカルモード例外: `gateway.remote.token` / `gateway.remote.password`は無視されます。
+- リモートprobe/statusのトークンチェックはデフォルトで厳格です。リモートモードを対象にする場合、`gateway.remote.token`のみを使用します（ローカルトークンへのフォールバックはありません）。
+- Gatewayの環境オーバーライドは`OPENCLAW_GATEWAY_*`のみを使用します。
 
-## Chat UI のリモートアクセス
+## Chat UIのリモートアクセス
 
-WebChat は別個の HTTP ポートを使用しなくなりました。SwiftUI チャット UI は Gateway WebSocket に直接接続します。
+WebChatには別個のHTTPポートはありません。SwiftUIチャットUIはGateway WebSocketへ直接接続します。
 
-- SSH 経由で `18789` を転送し（上記参照）、クライアントを `ws://127.0.0.1:18789` に接続します。
-- LAN/Tailnet direct モードでは、設定済みのプライベート `ws://` または安全な `wss://` URL にクライアントを接続します。
-- macOS では、選択されたトランスポートを自動的に管理するアプリのリモートモードを優先してください。
+- SSHで`18789`を転送し（上記参照）、クライアントを`ws://127.0.0.1:18789`へ接続します。
+- LAN/Tailnet直接モードでは、クライアントを設定済みのプライベート`ws://`またはセキュアな`wss://` URLへ接続します。
+- macOSでは、アプリのリモートモードが選択されたトランスポートを自動的に管理します。
 
-## macOS アプリのリモートモード
+## macOSアプリのリモートモード
 
-macOS メニューバーアプリは、同じセットアップをエンドツーエンドで駆動できます（リモート状態チェック、WebChat、Voice Wake 転送）。
-
-運用手順: [macOS リモートアクセス](/ja-JP/platforms/mac/remote)。
+macOSメニューバーアプリは、リモート状態チェック、WebChat、Voice Wake転送を含む同じセットアップをエンドツーエンドで実行します。手順書: [macOSリモートアクセス](/ja-JP/platforms/mac/remote)。
 
 ## セキュリティルール（リモート/VPN）
 
-短く言うと、バインドが必要だと確信できる場合を除き、**Gateway はループバック専用に保ってください**。
+バインドが必要だと確信している場合を除き、Gatewayは**ループバック専用**に保ってください。
 
-- **ループバック + SSH/Tailscale Serve** が最も安全なデフォルトです（公開露出なし）。
-- 平文の `ws://` は、ループバック、LAN、link-local、`.local`、`.ts.net`、Tailscale CGNAT ホストで受け付けられます。公開リモートホストでは `wss://` を使用する必要があります。
-- **非ループバックバインド**（`lan`/`tailnet`/`custom`、またはループバックが利用できない場合の `auto`）では、token、password、または `gateway.auth.mode: "trusted-proxy"` を備えた identity-aware リバースプロキシによる Gateway 認証を使用する必要があります。
-- `gateway.remote.token` / `.password` はクライアント認証情報ソースです。それ自体ではサーバー認証を設定しません。
-- ローカル call パスは、`gateway.auth.*` が未設定の場合にのみ `gateway.remote.*` をフォールバックとして使用できます。
-- `gateway.auth.token` / `gateway.auth.password` が SecretRef 経由で明示的に設定され、解決されない場合、解決は fail closed します（リモートフォールバックで隠蔽しません）。
-- `gateway.remote.tlsFingerprint` は、macOS direct モードを含め、`wss://` 使用時にリモート TLS 証明書をピン留めします。設定済みまたは以前に保存済みの pin がない場合、macOS は通常のシステム信頼を通過した後にのみ初回使用証明書をピン留めします。macOS がまだ信頼していない自己署名またはプライベート CA の Gateway には、明示的な fingerprint または SSH 経由の Remote が必要です。
-- **Tailscale Serve** は、`gateway.auth.allowTailscale: true` の場合、identity
-  headers 経由で Control UI/WebSocket トラフィックを認証できます。HTTP API エンドポイントはその Tailscale header auth を使用せず、代わりに Gateway の通常の HTTP
-  auth モードに従います。この tokenless フローは、Gateway ホストが信頼済みであることを前提にします。すべての場所で shared-secret auth を使いたい場合は、
-  `false` に設定してください。
-- **Trusted-proxy** auth は、デフォルトでは非ループバックの identity-aware proxy 構成を想定します。
-  同一ホストのループバックリバースプロキシには、明示的な `gateway.auth.trustedProxy.allowLoopback = true` が必要です。
-- ブラウザー制御はオペレーターアクセスと同様に扱ってください。tailnet 専用 + 明示的なノードペアリングにします。
+- **ループバック + SSH/Tailscale Serve**が最も安全なデフォルトです（公開露出なし）。
+- 平文の`ws://`は、ループバック、プライベート/LAN（RFC 1918）、リンクローカル、CGNAT、`.local`、`.ts.net`ホストで許可されます。公開リモートホストでは`wss://`を使用する必要があります。
+- **非ループバックバインド**（`lan`/`tailnet`/`custom`、またはループバックが利用できない場合の`auto`）では、Gateway認証（トークン、パスワード、または`gateway.auth.mode: "trusted-proxy"`を設定したID対応リバースプロキシ）を使用する必要があります。
+- `gateway.remote.token` / `.password`はクライアント認証情報ソースです。それだけではサーバー認証を設定しません。
+- ローカルcallパスは、`gateway.auth.*`が未設定の場合のみ`gateway.remote.*`をフォールバックとして使用できます。
+- `gateway.auth.token` / `gateway.auth.password`がSecretRefで明示的に設定されていて解決できない場合、解決はフェイルクローズします（リモートフォールバックで隠蔽しません）。
+- `gateway.remote.tlsFingerprint`は、macOS直接モードを含め、`wss://`のリモートTLS証明書をピン留めします。保存済みピンがない場合、macOSは通常のシステム信頼が通った後の初回使用時にのみピン留めします。自己署名またはプライベートCAのGatewayには、明示的なフィンガープリントまたはSSH経由のRemoteが必要です。
+- **Tailscale Serve**は、`gateway.auth.allowTailscale: true`の場合、IDヘッダー経由でControl UI/WebSocketトラフィックを認証できます。HTTP APIエンドポイントはそのヘッダー認証を使用せず、代わりにGatewayの通常のHTTP認証モードに従います。このトークンレスフローはGatewayホストが信頼されていることを前提にします。共有シークレット認証を全体で使う場合は`false`に設定してください。
+- **Trusted-proxy**認証は、デフォルトで非ループバックのID対応プロキシを想定します。同一ホストのループバックリバースプロキシには、明示的な`gateway.auth.trustedProxy.allowLoopback = true`が必要です。
+- ブラウザー制御はオペレーターアクセスと同様に扱ってください。tailnet専用にし、Nodeペアリングは意図的に行います。
 
-詳細解説: [セキュリティ](/ja-JP/gateway/security)。
+詳細: [セキュリティ](/ja-JP/gateway/security)。
 
-### macOS: LaunchAgent による永続 SSH トンネル
+### macOS: LaunchAgentによる永続SSHトンネル
 
-リモート Gateway に接続する macOS クライアントでは、SSH `LocalForward` config エントリと LaunchAgent を使用して、再起動やクラッシュをまたいでトンネルを維持するのが最も簡単な永続セットアップです。
+macOSクライアントでは、SSH `LocalForward`設定エントリと、再起動やクラッシュ後もトンネルを維持するLaunchAgentを使うのが最も簡単な永続セットアップです。
 
-#### ステップ 1: SSH config を追加する
+#### ステップ1: SSH設定を追加する
 
-`~/.ssh/config` を編集します。
+`~/.ssh/config`を編集します。
 
 ```ssh
 Host remote-gateway
@@ -202,25 +157,25 @@ Host remote-gateway
     IdentityFile ~/.ssh/id_rsa
 ```
 
-`<REMOTE_IP>` と `<REMOTE_USER>` を自分の値に置き換えてください。
+`<REMOTE_IP>`と`<REMOTE_USER>`を自分の値に置き換えてください。
 
-#### ステップ 2: SSH キーをコピーする（一度だけ）
+#### ステップ2: SSHキーをコピーする（1回のみ）
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-#### ステップ 3: Gateway token を設定する
-
-再起動後も保持されるよう、token を config に保存します。
+#### ステップ3: Gatewayトークンを設定する
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-#### ステップ 4: LaunchAgent を作成する
+リモートGatewayがパスワード認証を使用している場合は、代わりに`gateway.remote.password`を使用します。`OPENCLAW_GATEWAY_TOKEN`はシェルレベルのオーバーライドとして引き続き有効ですが、永続的なリモートクライアント設定は`gateway.remote.token` / `gateway.remote.password`です。
 
-これを `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` として保存します。
+#### ステップ4: LaunchAgentを作成する
+
+`~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`として保存します。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -243,48 +198,41 @@ openclaw config set gateway.remote.token "<your-token>"
 </plist>
 ```
 
-#### ステップ 5: LaunchAgent を読み込む
+#### ステップ5: LaunchAgentを読み込む
 
 ```bash
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-トンネルはログイン時に自動起動し、クラッシュ時に再起動し、転送ポートを稼働状態に保ちます。
+トンネルはログイン時に自動的に開始し、クラッシュ時に再起動し、転送ポートを維持します。
 
 <Note>
-古いセットアップの `com.openclaw.ssh-tunnel` LaunchAgent が残っている場合は、アンロードして削除してください。
+古いセットアップから残った`com.openclaw.ssh-tunnel` LaunchAgentがある場合は、アンロードして削除してください。
 </Note>
 
 #### トラブルシューティング
 
-トンネルが実行中か確認します。
-
 ```bash
+# Check if the tunnel is running
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
-```
 
-トンネルを再起動します。
-
-```bash
+# Restart the tunnel
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
 
-トンネルを停止します。
-
-```bash
+# Stop the tunnel
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-| Config エントリ                     | 役割                                                         |
+| 設定エントリ                       | 役割                                                         |
 | ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | ローカルポート 18789 をリモートポート 18789 に転送します     |
-| `ssh -N`                             | リモートコマンドを実行しない SSH（ポート転送のみ）           |
-| `KeepAlive`                          | トンネルがクラッシュした場合に自動的に再起動します           |
-| `RunAtLoad`                          | ログイン時に LaunchAgent が読み込まれるとトンネルを開始します |
+| `LocalForward 18789 127.0.0.1:18789` | ローカルポート18789をリモートポート18789へ転送します         |
+| `ssh -N`                             | リモートコマンドを実行しないSSHです（ポート転送のみ）        |
+| `KeepAlive`                          | クラッシュした場合にトンネルを自動的に再起動します           |
+| `RunAtLoad`                          | ログイン時にLaunchAgentが読み込まれたとき、トンネルを開始します |
 
 ## 関連
 
 - [Tailscale](/ja-JP/gateway/tailscale)
 - [認証](/ja-JP/gateway/authentication)
-- [リモート Gateway セットアップ](/ja-JP/gateway/remote-gateway-readme)
+- [リモートGatewayセットアップ](/ja-JP/gateway/remote-gateway-readme)

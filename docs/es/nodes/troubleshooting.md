@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Node está conectado, pero fallan las herramientas camera/canvas/screen/exec
-    - Necesitas el modelo mental de emparejamiento de Node frente a aprobaciones
-summary: Soluciona problemas de emparejamiento de nodos, requisitos de primer plano, permisos y fallos de herramientas
+    - Node está conectado, pero las herramientas de cámara/canvas/pantalla/exec fallan
+    - Necesitas el modelo mental de emparejamiento de nodos frente a aprobaciones
+summary: Soluciona problemas de emparejamiento de nodos, requisitos de primer plano, permisos y errores de herramientas
 title: Solución de problemas de Node
 x-i18n:
-    generated_at: "2026-05-11T20:41:18Z"
+    generated_at: "2026-07-05T11:30:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
+    source_hash: 2f7b98658f1090e48d4a6f4b02788f570458fa5e1d76daa1c4a43e26ffc099e9
     source_path: nodes/troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Usa esta página cuando un nodo sea visible en el estado, pero las herramientas de nodo fallen.
+Usa esta página cuando un nodo sea visible en el estado pero las herramientas del nodo fallen.
 
-## Escala de comandos
+## Escalera de comandos
 
 ```bash
 openclaw status
@@ -34,17 +34,17 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Señales saludables:
+Señales de buen estado:
 
-- El nodo está conectado y emparejado para el rol `node`.
+- El Node está conectado y emparejado para el rol `node`.
 - `nodes describe` incluye la capacidad que estás llamando.
-- Las aprobaciones de ejecución muestran el modo/lista de permitidos esperados.
+- Las aprobaciones de ejecución muestran el modo/la lista de permitidos esperados.
 
 ## Requisitos de primer plano
 
 `canvas.*`, `camera.*` y `screen.*` solo funcionan en primer plano en nodos iOS/Android.
 
-Comprobación y solución rápida:
+Comprobación y solución rápidas:
 
 ```bash
 openclaw nodes describe --node <idOrNameOrIp>
@@ -56,20 +56,22 @@ Si ves `NODE_BACKGROUND_UNAVAILABLE`, lleva la aplicación del nodo al primer pl
 
 ## Matriz de permisos
 
-| Capacidad                    | iOS                                              | Android                                               | Aplicación de nodo para macOS       | Código de fallo típico         |
-| ---------------------------- | ------------------------------------------------ | ----------------------------------------------------- | ----------------------------------- | ------------------------------ |
-| `camera.snap`, `camera.clip` | Cámara (+ micrófono para audio de clip)          | Cámara (+ micrófono para audio de clip)               | Cámara (+ micrófono para audio de clip) | `*_PERMISSION_REQUIRED`        |
-| `screen.record`              | Grabación de pantalla (+ micrófono opcional)     | Solicitud de captura de pantalla (+ micrófono opcional) | Grabación de pantalla               | `*_PERMISSION_REQUIRED`        |
-| `location.get`               | Al usarse o siempre (depende del modo)           | Ubicación en primer/segundo plano según el modo       | Permiso de ubicación                | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | n/a (ruta del host del nodo)                     | n/a (ruta del host del nodo)                          | Se requieren aprobaciones de ejecución | `SYSTEM_RUN_DENIED`            |
+| Capacidad                    | iOS                                               | Android                                             | Aplicación de nodo de macOS       | Código de fallo típico         |
+| ---------------------------- | ------------------------------------------------- | --------------------------------------------------- | --------------------------------- | ------------------------------ |
+| `camera.snap`, `camera.clip` | Cámara (+ micrófono para audio del clip)          | Cámara (+ micrófono para audio del clip)            | Cámara (+ micrófono para audio del clip) | `*_PERMISSION_REQUIRED`        |
+| `screen.record`              | Grabación de pantalla (+ micrófono opcional)      | Solicitud de captura de pantalla (+ micrófono opcional) | Grabación de pantalla             | `*_PERMISSION_REQUIRED`        |
+| `location.get`               | Al usarse o siempre (depende del modo)            | Ubicación en primer plano/segundo plano según el modo | Permiso de ubicación              | `LOCATION_PERMISSION_REQUIRED` |
+| `system.run`                 | n/d (ruta del host del nodo)                      | n/d (ruta del host del nodo)                        | Aprobaciones de ejecución requeridas | `SYSTEM_RUN_DENIED`            |
 
 ## Emparejamiento frente a aprobaciones
 
-Son controles distintos:
+Tres controles separados determinan si un comando de nodo tiene éxito:
 
-1. **Emparejamiento de dispositivo**: ¿puede este nodo conectarse al Gateway?
-2. **Política de comandos de nodo del Gateway**: ¿el ID del comando RPC está permitido por `gateway.nodes.allowCommands` / `denyCommands` y los valores predeterminados de la plataforma?
-3. **Aprobaciones de ejecución**: ¿puede este nodo ejecutar localmente un comando de shell específico?
+1. **Emparejamiento del dispositivo**: ¿puede este nodo conectarse al Gateway?
+2. **Política de comandos de nodo del Gateway**: ¿está permitido el ID de comando RPC por `gateway.nodes.allowCommands` / `denyCommands` y los valores predeterminados de la plataforma?
+3. **Aprobaciones de ejecución**: ¿puede este nodo ejecutar un comando de shell específico localmente?
+
+El emparejamiento de nodos es un control de identidad/confianza, no una superficie de aprobación por comando. Para `system.run`, la política por nodo reside en el archivo de aprobaciones de ejecución de ese nodo (`openclaw approvals get --node ...`), no en el registro de emparejamiento del Gateway.
 
 Comprobaciones rápidas:
 
@@ -80,31 +82,26 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Si falta el emparejamiento, aprueba primero el dispositivo del nodo.
-Si a `nodes describe` le falta un comando, comprueba la política de comandos de nodo del Gateway y si el nodo declaró realmente ese comando al conectarse.
-Si el emparejamiento está correcto pero `system.run` falla, corrige las aprobaciones de ejecución/lista de permitidos en ese nodo.
+- Falta el emparejamiento: aprueba primero el dispositivo del nodo.
+- A `nodes describe` le falta un comando: comprueba la política de comandos de nodo del Gateway y si el nodo declaró realmente ese comando al conectarse.
+- El emparejamiento está bien pero `system.run` falla: corrige las aprobaciones de ejecución/lista de permitidos en ese nodo.
 
-El emparejamiento de nodos es un control de identidad/confianza, no una superficie de aprobación por comando. Para `system.run`, la política por nodo vive en el archivo de aprobaciones de ejecución de ese nodo (`openclaw approvals get --node ...`), no en el registro de emparejamiento del Gateway.
+Para ejecuciones `host=node` respaldadas por aprobaciones, el Gateway también vincula la ejecución al `systemRunPlan` canónico preparado. Si un llamador posterior muta el comando, el cwd o los metadatos de sesión antes de que se reenvíe la ejecución aprobada, el Gateway rechaza la ejecución como una discrepancia de aprobación en lugar de confiar en la carga editada.
 
-Para ejecuciones `host=node` respaldadas por aprobación, el Gateway también vincula la ejecución al
-`systemRunPlan` canónico preparado. Si un llamador posterior muta el comando/cwd o los
-metadatos de sesión antes de que se reenvíe la ejecución aprobada, el Gateway rechaza la
-ejecución como una discrepancia de aprobación en lugar de confiar en la carga útil editada.
+## Códigos comunes de error de nodo
 
-## Códigos de error comunes de nodo
+| Código                                 | Significado                                                                                                                                                                                  |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_BACKGROUND_UNAVAILABLE`          | La aplicación está en segundo plano; tráela al primer plano.                                                                                                                                 |
+| `CAMERA_DISABLED`                      | Interruptor de cámara desactivado en la configuración del nodo.                                                                                                                              |
+| `*_PERMISSION_REQUIRED`                | Permiso del sistema operativo faltante/denegado.                                                                                                                                             |
+| `LOCATION_DISABLED`                    | El modo de ubicación está desactivado.                                                                                                                                                       |
+| `LOCATION_PERMISSION_REQUIRED`         | No se concedió el modo de ubicación solicitado.                                                                                                                                              |
+| `LOCATION_BACKGROUND_UNAVAILABLE`      | La aplicación está en segundo plano, pero solo existe el permiso Al usarse.                                                                                                                   |
+| `SYSTEM_RUN_DENIED: approval required` | La solicitud de ejecución necesita aprobación explícita.                                                                                                                                      |
+| `SYSTEM_RUN_DENIED: allowlist miss`    | Comando bloqueado por el modo de lista de permitidos. En hosts de nodo Windows, las formas de envoltorio de shell como `cmd.exe /c ...` se tratan como ausencias en la lista de permitidos en modo de lista de permitidos salvo que se aprueben mediante el flujo de solicitud. |
 
-- `NODE_BACKGROUND_UNAVAILABLE` → la aplicación está en segundo plano; llévala al primer plano.
-- `CAMERA_DISABLED` → el interruptor de cámara está desactivado en la configuración del nodo.
-- `*_PERMISSION_REQUIRED` → falta el permiso del SO o fue denegado.
-- `LOCATION_DISABLED` → el modo de ubicación está desactivado.
-- `LOCATION_PERMISSION_REQUIRED` → no se concedió el modo de ubicación solicitado.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → la aplicación está en segundo plano, pero solo existe permiso Al usarse.
-- `SYSTEM_RUN_DENIED: approval required` → la solicitud de ejecución necesita aprobación explícita.
-- `SYSTEM_RUN_DENIED: allowlist miss` → comando bloqueado por el modo de lista de permitidos.
-  En hosts de nodo Windows, las formas de envoltorio de shell como `cmd.exe /c ...` se tratan como omisiones de la lista de permitidos en
-  modo de lista de permitidos, salvo que se aprueben mediante el flujo de solicitud.
-
-## Bucle de recuperación rápida
+## Bucle rápido de recuperación
 
 ```bash
 openclaw nodes status
@@ -113,19 +110,19 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Si sigues atascado:
+Si sigues bloqueado:
 
 - Vuelve a aprobar el emparejamiento del dispositivo.
 - Vuelve a abrir la aplicación del nodo (primer plano).
-- Vuelve a conceder los permisos del SO.
+- Vuelve a conceder los permisos del sistema operativo.
 - Recrea/ajusta la política de aprobación de ejecución.
 
 ## Relacionado
 
-- [Información general de los nodos](/es/nodes)
+- [Resumen de nodos](/es/nodes)
 - [Nodos de cámara](/es/nodes/camera)
 - [Comando de ubicación](/es/nodes/location-command)
 - [Aprobaciones de ejecución](/es/tools/exec-approvals)
-- [Emparejamiento de Gateway](/es/gateway/pairing)
-- [Solución de problemas de Gateway](/es/gateway/troubleshooting)
+- [Emparejamiento del Gateway](/es/gateway/pairing)
+- [Solución de problemas del Gateway](/es/gateway/troubleshooting)
 - [Solución de problemas de canales](/es/channels/troubleshooting)

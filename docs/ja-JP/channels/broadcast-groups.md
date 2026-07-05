@@ -1,89 +1,41 @@
 ---
 read_when:
     - ブロードキャストグループの設定
-    - WhatsApp のマルチエージェント返信のデバッグ
+    - WhatsApp でのマルチエージェント返信のデバッグ
 sidebarTitle: Broadcast groups
 status: experimental
 summary: 複数のエージェントに WhatsApp メッセージをブロードキャストする
 title: ブロードキャストグループ
 x-i18n:
-    generated_at: "2026-07-01T05:27:26Z"
+    generated_at: "2026-07-05T11:01:14Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 97e8c2ade5d12a437864e6aca0d475e586289f71155188afed216881ebf89f88
+    source_hash: 2771c15b31592f11293385498b9c89decf84747a9172caafb994a5dca4bbdc06
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
 
 <Note>
-**状態:** 実験的。2026.1.9に追加。
+**ステータス:** 実験的。2026.1.9 で追加。WhatsApp（Webチャネル）のみ。
 </Note>
 
 ## 概要
 
-ブロードキャストグループを使うと、複数のエージェントが同じメッセージを同時に処理して応答できます。これにより、単一の WhatsApp グループまたは DM 内で連携する専門エージェントチームを、1つの電話番号だけで作成できます。
+ブロードキャストグループは、同じ受信メッセージに対して**複数のエージェント**を実行します。各エージェントは独自の分離されたセッションでメッセージを処理し、独自の返信を投稿するため、1つの WhatsApp 番号で、1つのグループチャットまたは DM 内に専門化されたエージェントのチームをホストできます。
 
-現在の対象範囲: **WhatsApp のみ**（Web チャネル）。
+ブロードキャストグループは、チャネル許可リストとグループ有効化ルールの後に評価されます。WhatsApp グループでは、OpenClaw が通常返信する場面（例: メンション時。グループ設定に依存）でブロードキャストが発生します。これは**どのエージェントが実行されるか**だけを変更し、メッセージが処理対象になるかどうかは変更しません。
 
-ブロードキャストグループは、チャネルの許可リストとグループ有効化ルールの後に評価されます。WhatsApp グループでは、これは OpenClaw が通常応答する場合にブロードキャストが発生することを意味します（例: グループ設定に応じたメンション時）。
-
-ライブ WhatsApp QA レーンには `whatsapp-broadcast-group-fanout` が含まれており、メンションされた1件のグループメッセージから、設定済みの2つのエージェントがそれぞれ異なる可視応答を生成できることを検証します。
-
-## ユースケース
-
-<AccordionGroup>
-  <Accordion title="1. 専門エージェントチーム">
-    原子的で焦点を絞った責任を持つ複数のエージェントをデプロイします。
-
-    ```
-    Group: "Development Team"
-    Agents:
-      - CodeReviewer (reviews code snippets)
-      - DocumentationBot (generates docs)
-      - SecurityAuditor (checks for vulnerabilities)
-      - TestGenerator (suggests test cases)
-    ```
-
-    各エージェントは同じメッセージを処理し、それぞれの専門的な観点を提供します。
-
-  </Accordion>
-  <Accordion title="2. 多言語サポート">
-    ```
-    Group: "International Support"
-    Agents:
-      - Agent_EN (responds in English)
-      - Agent_DE (responds in German)
-      - Agent_ES (responds in Spanish)
-    ```
-  </Accordion>
-  <Accordion title="3. 品質保証ワークフロー">
-    ```
-    Group: "Customer Support"
-    Agents:
-      - SupportAgent (provides answer)
-      - QAAgent (reviews quality, only responds if issues found)
-    ```
-  </Accordion>
-  <Accordion title="4. タスク自動化">
-    ```
-    Group: "Project Management"
-    Agents:
-      - TaskTracker (updates task database)
-      - TimeLogger (logs time spent)
-      - ReportGenerator (creates summaries)
-    ```
-  </Accordion>
-</AccordionGroup>
+ライブ WhatsApp QA レーンには `whatsapp-broadcast-group-fanout` が含まれており、メンションされた1つのグループメッセージから、設定された2つのエージェントによる異なる可視返信が生成されることを検証します。
 
 ## 設定
 
-### 基本セットアップ
+### 基本設定
 
-トップレベルの `broadcast` セクションを（`bindings` の隣に）追加します。キーは WhatsApp ピア ID です。
+トップレベルの `broadcast` セクションを追加します（`bindings` の隣）。キーは WhatsApp ピア ID、値はエージェント ID の配列です。
 
 - グループチャット: グループ JID（例: `120363403215116621@g.us`）
-- DM: E.164 電話番号（例: `+15551234567`）
+- DM: 送信者の E.164 電話番号（例: `+15551234567`）
 
 ```json
 {
@@ -93,40 +45,27 @@ x-i18n:
 }
 ```
 
-**結果:** OpenClaw がこのチャットで応答する場合、3つすべてのエージェントを実行します。
+**結果:** このチャットで OpenClaw が返信する場合、3つすべてのエージェントを実行します。
+
+一覧に含まれるすべてのエージェント ID は `agents.list` に存在している必要があります。設定検証は不明な ID を報告し、ランタイムは `Broadcast agent <id> not found in agents.list; skipping` 警告とともにそれらをスキップします。
 
 ### 処理戦略
 
-エージェントがメッセージを処理する方法を制御します。
+`broadcast.strategy` は、エージェントがメッセージを処理する方法を設定します。
 
-<Tabs>
-  <Tab title="parallel（デフォルト）">
-    すべてのエージェントが同時に処理します。
+| 戦略                 | 動作                                                                  |
+| -------------------- | --------------------------------------------------------------------- |
+| `parallel`（デフォルト） | すべてのエージェントが同時に処理します。返信は任意の順序で到着します。 |
+| `sequential`         | エージェントは配列順に処理します。それぞれ前の処理完了を待ちます。    |
 
-    ```json
-    {
-      "broadcast": {
-        "strategy": "parallel",
-        "120363403215116621@g.us": ["alfred", "baerbel"]
-      }
-    }
-    ```
-
-  </Tab>
-  <Tab title="sequential">
-    エージェントは順番に処理します（1つ前の完了を待ちます）。
-
-    ```json
-    {
-      "broadcast": {
-        "strategy": "sequential",
-        "120363403215116621@g.us": ["alfred", "baerbel"]
-      }
-    }
-    ```
-
-  </Tab>
-</Tabs>
+```json
+{
+  "broadcast": {
+    "strategy": "sequential",
+    "120363403215116621@g.us": ["alfred", "baerbel"]
+  }
+}
+```
 
 ### 完全な例
 
@@ -172,15 +111,16 @@ x-i18n:
     WhatsApp グループまたは DM メッセージが到着します。
   </Step>
   <Step title="ルートと受け入れ">
-    OpenClaw はチャネル許可リスト、グループ有効化ルール、設定済みの ACP バインディング所有権を適用します。
+    OpenClaw はチャネル許可リスト、グループ有効化ルール、設定済み ACP バインディング所有権を適用します。
   </Step>
   <Step title="ブロードキャスト確認">
-    設定済みの ACP バインディングがルートを所有していない場合、OpenClaw はピア ID が `broadcast` に含まれているかを確認します。
+    設定済み ACP バインディングがルートを所有していない場合、OpenClaw はピア ID が `broadcast` に含まれているかを確認します。
   </Step>
   <Step title="ブロードキャストが適用される場合">
-    - リストされたすべてのエージェントがメッセージを処理します。
-    - 各エージェントは独自のセッションキーと隔離されたコンテキストを持ちます。
-    - エージェントは並列（デフォルト）または順次に処理します。
+    - 一覧に含まれるすべてのエージェントがメッセージを処理します。
+    - 各エージェントには独自のセッションキーと分離されたコンテキストがあります。
+    - エージェントは並列（デフォルト）または逐次で処理します。
+    - 音声添付はファンアウト前に一度だけ文字起こしされるため、エージェントは個別に STT 呼び出しを行う代わりに1つのトランスクリプトを共有します。
 
   </Step>
   <Step title="ブロードキャストが適用されない場合">
@@ -189,93 +129,80 @@ x-i18n:
 </Steps>
 
 <Note>
-ブロードキャストグループは、チャネル許可リストやグループ有効化ルール（メンション/コマンドなど）を迂回しません。メッセージが処理対象になったときに、_どのエージェントを実行するか_ だけを変更します。
+ブロードキャストグループは、チャネル許可リストやグループ有効化ルール（メンション、コマンドなど）をバイパスしません。メッセージが処理対象になったときに、_どのエージェントが実行されるか_ だけを変更します。
 </Note>
 
-### セッションの隔離
+### セッション分離
 
-ブロードキャストグループ内の各エージェントは、以下を完全に分離して維持します。
+ブロードキャストグループ内の各エージェントは、以下を完全に別々に保持します。
 
 - **セッションキー**（`agent:alfred:whatsapp:group:120363...` と `agent:baerbel:whatsapp:group:120363...`）
-- **会話履歴**（エージェントは他のエージェントのメッセージを見ません）
+- **会話履歴**（エージェントは他のエージェントの返信を見ません）
 - **ワークスペース**（設定されている場合は別々のサンドボックス）
 - **ツールアクセス**（異なる許可/拒否リスト）
-- **メモリ/コンテキスト**（別々の IDENTITY.md、SOUL.md など）
-- **グループコンテキストバッファ**（コンテキストに使われる最近のグループメッセージ）はピアごとに共有されるため、トリガー時にはすべてのブロードキャストエージェントが同じコンテキストを参照します
+- **メモリ/コンテキスト**（別々の `IDENTITY.md`、`SOUL.md` など）
 
-これにより、各エージェントは以下を持てます。
+意図的に共有される例外が1つあります。**グループコンテキストバッファ**（コンテキストに使われる最近のグループメッセージ）はピアごとに共有されるため、トリガーされたすべてのブロードキャストエージェントが同じコンテキストを参照します。これはファンアウト完了後に一度だけクリアされます。
 
-- 異なるパーソナリティ
-- 異なるツールアクセス（例: 読み取り専用と読み書き）
-- 異なるモデル（例: opus と sonnet）
-- 異なる Skills のインストール
+これにより、各エージェントに異なる人格、モデル、Skills、ツールアクセス（たとえば読み取り専用と読み書き可能）を持たせることができます。
 
-### 例: 隔離されたセッション
+### 例: 分離されたセッション
 
-グループ `120363403215116621@g.us` にエージェント `["alfred", "baerbel"]` がある場合:
+エージェント `["alfred", "baerbel"]` を持つグループ `120363403215116621@g.us` では次のようになります。
 
 <Tabs>
   <Tab title="Alfred のコンテキスト">
-    ```
+    ```text
     Session: agent:alfred:whatsapp:group:120363403215116621@g.us
     History: [user message, alfred's previous responses]
-    Workspace: /Users/user/openclaw-alfred/
+    Workspace: ~/openclaw-alfred/
     Tools: read, write, exec
     ```
   </Tab>
-  <Tab title="Bärbel のコンテキスト">
-    ```
+  <Tab title="Baerbel のコンテキスト">
+    ```text
     Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
     History: [user message, baerbel's previous responses]
-    Workspace: /Users/user/openclaw-baerbel/
+    Workspace: ~/openclaw-baerbel/
     Tools: read only
     ```
   </Tab>
 </Tabs>
 
+## ユースケース
+
+- **専門化されたエージェントチーム**: `code-reviewer`、`security-auditor`、`test-generator`、`docs-checker` が、それぞれ自分の観点から同じメッセージに回答する開発グループ。
+- **多言語サポート**: `support-en`、`support-de`、`support-es` がそれぞれの言語で応答する1つのサポートチャット。
+- **品質保証**: `support-agent` が回答し、`qa-agent` はレビューして問題を見つけた場合にのみ応答します。
+- **タスク自動化**: `task-tracker`、`time-logger`、`report-generator` が同じステータス更新をすべて処理します。
+
 ## ベストプラクティス
 
 <AccordionGroup>
-  <Accordion title="1. エージェントの焦点を絞る">
-    各エージェントを、単一で明確な責任を持つように設計します。
-
-    ```json
-    {
-      "broadcast": {
-        "DEV_GROUP": ["formatter", "linter", "tester"]
-      }
-    }
-    ```
-
-    ✅ **良い:** 各エージェントに1つの役割がある。❌ **悪い:** 汎用的な "dev-helper" エージェントが1つだけ。
-
+  <Accordion title="1. エージェントの責務を絞る">
+    1つの汎用的な「dev-helper」エージェントではなく、各エージェントに単一で明確な責務（`formatter`、`linter`、`tester`）を与えます。
   </Accordion>
-  <Accordion title="2. 説明的な名前を使う">
-    各エージェントの役割が明確になるようにします。
-
+  <Accordion title="2. 説明的な ID と名前を使う">
     ```json
     {
       "agents": {
-        "security-scanner": { "name": "Security Scanner" },
-        "code-formatter": { "name": "Code Formatter" },
-        "test-generator": { "name": "Test Generator" }
+        "list": [
+          { "id": "security-scanner", "name": "Security Scanner" },
+          { "id": "code-formatter", "name": "Code Formatter" },
+          { "id": "test-generator", "name": "Test Generator" }
+        ]
       }
     }
     ```
-
   </Accordion>
   <Accordion title="3. 異なるツールアクセスを設定する">
-    エージェントには必要なツールだけを与えます。
-
     ```json
     {
       "agents": {
-        "reviewer": {
-          "tools": { "allow": ["read", "exec"] }
-        },
-        "fixer": {
-          "tools": { "allow": ["read", "write", "edit", "exec"] }
-        }
+        "list": [
+          { "id": "reviewer", "tools": { "allow": ["read", "exec"] } },
+          { "id": "fixer", "tools": { "allow": ["read", "write", "edit", "exec"] } }
+        ]
       }
     }
     ```
@@ -284,21 +211,10 @@ x-i18n:
 
   </Accordion>
   <Accordion title="4. パフォーマンスを監視する">
-    エージェントが多い場合は、以下を検討してください。
-
-    - 速度のために `"strategy": "parallel"`（デフォルト）を使う
-    - ブロードキャストグループを5〜10エージェントに制限する
-    - より単純なエージェントには高速なモデルを使う
-
+    エージェントが多い場合は、`"strategy": "parallel"`（デフォルト）を優先し、ブロードキャストグループのエージェント数を少数に抑え、単純なエージェントにはより高速なモデルを使用します。
   </Accordion>
-  <Accordion title="5. 失敗を適切に処理する">
-    エージェントは独立して失敗します。あるエージェントのエラーが他をブロックすることはありません。
-
-    ```
-    Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
-    Result: Agent A and C respond, Agent B logs error
-    ```
-
+  <Accordion title="5. 失敗は分離されたままにする">
+    エージェントは独立して失敗します。あるエージェントのエラーはログに記録され（`Broadcast agent <id> failed: ...`）、他のエージェントをブロックしません。
   </Accordion>
 </AccordionGroup>
 
@@ -306,12 +222,7 @@ x-i18n:
 
 ### プロバイダー
 
-ブロードキャストグループは現在、以下で動作します。
-
-- ✅ WhatsApp（実装済み）
-- 🚧 Telegram（予定）
-- 🚧 Discord（予定）
-- 🚧 Slack（予定）
+ブロードキャストグループは現在 WhatsApp（Webチャネル）のみに実装されています。他のチャネルは `broadcast` 設定を無視します。
 
 ### ルーティング
 
@@ -335,7 +246,7 @@ x-i18n:
 - `GROUP_B`: agent1 と agent2 が応答します（ブロードキャスト）。
 
 <Note>
-**優先順位:** `broadcast` は通常のルートバインディングより優先されます。設定済みの ACP バインディング（`bindings[].type="acp"`）は排他的です。一致するものがある場合、OpenClaw はファンアウトブロードキャストではなく、設定済みの ACP セッションへディスパッチします。
+**優先順位:** `broadcast` は通常のルートバインディングより優先されます。設定済み ACP バインディング（`bindings[].type="acp"`）は排他的です。一致した場合、OpenClaw はファンアウトブロードキャストではなく、設定済み ACP セッションにディスパッチします。
 </Note>
 
 ## トラブルシューティング
@@ -344,30 +255,27 @@ x-i18n:
   <Accordion title="エージェントが応答しない">
     **確認:**
 
-    1. エージェント ID が `agents.list` に存在する。
-    2. ピア ID 形式が正しい（例: `120363403215116621@g.us`）。
-    3. エージェントが拒否リストに含まれていない。
+    1. エージェント ID が `agents.list` に存在する（設定検証は不明な ID を拒否します）。
+    2. ピア ID 形式が正しい（`120363403215116621@g.us` のようなグループ JID、または DM では `+15551234567` のような E.164）。
+    3. メッセージが通常のゲートを通過している（メンション/有効化ルールは引き続き適用されます）。
 
     **デバッグ:**
 
     ```bash
-    tail -f ~/.openclaw/logs/gateway.log | grep broadcast
+    openclaw logs --follow | grep -i broadcast
     ```
+
+    ファンアウトが成功すると、`Broadcasting message to <n> agents (<strategy>)` がログに記録されます。
 
   </Accordion>
   <Accordion title="1つのエージェントだけが応答する">
     **原因:** ピア ID が通常のルートバインディングには含まれているが `broadcast` には含まれていない、または排他的な設定済み ACP バインディングに一致している可能性があります。
 
-    **修正:** 通常のルートにバインドされたピアをブロードキャスト設定に追加するか、ファンアウトブロードキャストが必要な場合は設定済み ACP バインディングを削除または変更します。
+    **修正:** 通常ルートにバインドされたピアをブロードキャスト設定に追加するか、ファンアウトブロードキャストが必要な場合は設定済み ACP バインディングを削除または変更します。
 
   </Accordion>
   <Accordion title="パフォーマンスの問題">
-    多数のエージェントで遅い場合:
-
-    - グループあたりのエージェント数を減らす。
-    - より軽量なモデルを使う（opus ではなく sonnet）。
-    - サンドボックスの起動時間を確認する。
-
+    多数のエージェントで遅い場合は、グループごとのエージェント数を減らし、より軽量なモデルを使い、サンドボックスの起動時間を確認します。
   </Accordion>
 </AccordionGroup>
 
@@ -409,17 +317,10 @@ x-i18n:
     }
     ```
 
-    **ユーザーが送信:** コードスニペット。
-
-    **応答:**
-
-    - code-formatter: "Fixed indentation and added type hints"
-    - security-scanner: "⚠️ SQL injection vulnerability in line 12"
-    - test-coverage: "Coverage is 45%, missing tests for error cases"
-    - docs-checker: "Missing docstring for function `process_data`"
+    グループ内の1つのコードスニペットから、フォーマット修正、セキュリティ指摘、カバレッジの不足、ドキュメントの細かな指摘という4つの返信が生成されます。
 
   </Accordion>
-  <Accordion title="例 2: 多言語サポート">
+  <Accordion title="例 2: 多言語パイプライン">
     ```json
     {
       "broadcast": {
@@ -454,31 +355,22 @@ interface OpenClawConfig {
 ### フィールド
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  エージェントの処理方法。`parallel` はすべてのエージェントを同時に実行し、`sequential` は配列の順序で実行します。
+  エージェントを処理する方法です。`parallel` はすべてのエージェントを同時に実行し、`sequential` は配列順に実行します。
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp グループ JID、E.164 番号、またはその他のピア ID。値は、メッセージを処理するエージェント ID の配列です。
+  WhatsApp グループ JID または E.164 電話番号です。値は、そのピアからのメッセージをすべて処理するべきエージェント ID の配列です。
 </ParamField>
 
 ## 制限事項
 
-1. **最大エージェント数:** ハードリミットはありませんが、10 個以上のエージェントでは遅くなる場合があります。
-2. **共有コンテキスト:** エージェントは互いの応答を参照しません（設計上の仕様です）。
-3. **メッセージ順序:** 並列応答は任意の順序で到着する場合があります。
-4. **レート制限:** すべてのエージェントが WhatsApp のレート制限にカウントされます。
-
-## 今後の拡張
-
-計画中の機能:
-
-- [ ] 共有コンテキストモード（エージェントが互いの応答を参照できる）
-- [ ] エージェント調整（エージェント同士がシグナルを送れる）
-- [ ] 動的なエージェント選択（メッセージ内容に基づいてエージェントを選択）
-- [ ] エージェント優先度（一部のエージェントが他より先に応答）
+1. **最大エージェント数:** ハードリミットはありませんが、多数のエージェント（10以上）は遅くなる可能性があります。
+2. **共有コンテキスト:** エージェントは互いの応答を見ません（設計上）。
+3. **メッセージ順序:** 並列応答は任意の順序で到着する可能性があります。
+4. **レート制限:** すべての返信は1つの WhatsApp アカウントから送信されるため、すべてのエージェントの返信が同じ WhatsApp レート制限にカウントされます。
 
 ## 関連
 
-- [チャンネルルーティング](/ja-JP/channels/channel-routing)
+- [チャネルルーティング](/ja-JP/channels/channel-routing)
 - [グループ](/ja-JP/channels/groups)
 - [マルチエージェントサンドボックスツール](/ja-JP/tools/multi-agent-sandbox-tools)
 - [ペアリング](/ja-JP/channels/pairing)

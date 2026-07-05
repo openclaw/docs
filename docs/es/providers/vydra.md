@@ -5,53 +5,53 @@ read_when:
 summary: Usa imagen, video y voz de Vydra en OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-06-27T12:46:20Z"
+    generated_at: "2026-07-05T11:39:55Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4cb1128d877e06a274fe07c42282a7990c322e4d88d4232a1cac78e54deaf163
+    source_hash: e775bdd6f4ec7d1f5189910af450b92d8d6e831c17c338271afee962636ba69f
     source_path: providers/vydra.md
     workflow: 16
 ---
 
-El Plugin de Vydra incluido agrega:
+El Plugin Vydra incluido agrega:
 
 - Generación de imágenes mediante `vydra/grok-imagine`
-- Generación de video mediante `vydra/veo3` y `vydra/kling`
+- Generación de video mediante `vydra/veo3` (texto a video) y `vydra/kling` (imagen a video)
 - Síntesis de voz mediante la ruta TTS de Vydra respaldada por ElevenLabs
 
 OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
 
-| Propiedad       | Valor                                                                     |
-| --------------- | ------------------------------------------------------------------------- |
-| ID de proveedor | `vydra`                                                                   |
-| Plugin          | incluido, `enabledByDefault: true`                                        |
-| Variable de entorno de autenticación | `VYDRA_API_KEY`                                       |
-| Flag de incorporación | `--auth-choice vydra-api-key`                                       |
-| Flag directo de CLI | `--vydra-api-key <key>`                                               |
-| Contratos       | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
-| URL base        | `https://www.vydra.ai/api/v1` (usa el host `www`)                         |
+| Propiedad              | Valor                                                                     |
+| ---------------------- | ------------------------------------------------------------------------- |
+| Id. de proveedor       | `vydra`                                                                   |
+| Plugin                 | incluido, `enabledByDefault: true`                                        |
+| Variable de entorno de auth | `VYDRA_API_KEY`                                                      |
+| Flag de incorporación  | `--auth-choice vydra-api-key`                                             |
+| Flag directo de CLI    | `--vydra-api-key <key>`                                                   |
+| Contratos              | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
+| URL base               | `https://www.vydra.ai/api/v1` (usa el host `www`)                         |
 
 <Warning>
-  Usa `https://www.vydra.ai/api/v1` como URL base. El host apex de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`. Algunos clientes HTTP eliminan `Authorization` en esa redirección entre hosts, lo que convierte una clave de API válida en un fallo de autenticación engañoso. El Plugin incluido usa directamente la URL base con `www` para evitarlo.
+Usa `https://www.vydra.ai/api/v1` como URL base. El host raíz de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`. Algunos clientes HTTP eliminan `Authorization` en esa redirección entre hosts, lo que convierte una clave de API válida en un error de auth engañoso. El Plugin incluido normaliza cualquier URL base configurada de `vydra.ai` a `www.vydra.ai` para evitarlo.
 </Warning>
 
 ## Configuración
 
 <Steps>
-  <Step title="Run interactive onboarding">
+  <Step title="Ejecutar la incorporación interactiva">
     ```bash
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    O configura directamente la variable de entorno:
+    O configura la variable de entorno directamente:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
     ```
 
   </Step>
-  <Step title="Choose a default capability">
+  <Step title="Elegir una capacidad predeterminada">
     Elige una o más de las capacidades siguientes (imagen, video o voz) y aplica la configuración correspondiente.
   </Step>
 </Steps>
@@ -59,8 +59,8 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
 ## Capacidades
 
 <AccordionGroup>
-  <Accordion title="Image generation">
-    Modelo de imagen predeterminado:
+  <Accordion title="Generación de imágenes">
+    Modelo de imagen predeterminado y único incluido:
 
     - `vydra/grok-imagine`
 
@@ -78,19 +78,19 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
     }
     ```
 
-    El soporte incluido actual es solo de texto a imagen. Las rutas de edición alojadas de Vydra esperan URL de imágenes remotas, y OpenClaw todavía no agrega un puente de carga específico de Vydra en el Plugin incluido.
+    El soporte incluido es solo de texto a imagen, con un máximo de una imagen por solicitud. Las rutas de edición alojadas de Vydra esperan URLs de imágenes remotas, y el Plugin incluido no agrega un puente de carga específico de Vydra.
 
     <Note>
-    Consulta [Generación de imágenes](/es/tools/image-generation) para ver los parámetros compartidos de la herramienta, la selección de proveedor y el comportamiento de conmutación por error.
+    Consulta [Generación de imágenes](/es/tools/image-generation) para ver los parámetros compartidos de la herramienta, la selección de proveedor y el comportamiento de failover.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Video generation">
+  <Accordion title="Generación de video">
     Modelos de video registrados:
 
-    - `vydra/veo3` para texto a video
-    - `vydra/kling` para imagen a video
+    - `vydra/veo3` para texto a video (rechaza entradas de referencia de imagen)
+    - `vydra/kling` para imagen a video (requiere exactamente una URL de imagen remota)
 
     Configura Vydra como proveedor de video predeterminado:
 
@@ -108,18 +108,17 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
 
     Notas:
 
-    - `vydra/veo3` se incluye solo como texto a video.
-    - `vydra/kling` actualmente requiere una referencia de URL de imagen remota. Las cargas de archivos locales se rechazan desde el inicio.
-    - La ruta HTTP actual `kling` de Vydra ha sido inconsistente sobre si requiere `image_url` o `video_url`; el proveedor incluido asigna la misma URL de imagen remota a ambos campos.
+    - `vydra/kling` rechaza las cargas de archivos locales desde el inicio; solo funciona una referencia de URL de imagen remota.
+    - La ruta HTTP `kling` de Vydra ha sido inconsistente sobre si requiere `image_url` o `video_url`; el proveedor incluido envía la misma URL de imagen remota en ambos campos.
     - El Plugin incluido se mantiene conservador y no reenvía controles de estilo no documentados, como relación de aspecto, resolución, marca de agua o audio generado.
 
     <Note>
-    Consulta [Generación de video](/es/tools/video-generation) para ver los parámetros compartidos de la herramienta, la selección de proveedor y el comportamiento de conmutación por error.
+    Consulta [Generación de video](/es/tools/video-generation) para ver los parámetros compartidos de la herramienta, la selección de proveedor y el comportamiento de failover.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Video live tests">
+  <Accordion title="Pruebas en vivo de video">
     Cobertura en vivo específica del proveedor:
 
     ```bash
@@ -128,7 +127,7 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    El archivo en vivo de Vydra incluido ahora cubre:
+    El archivo en vivo incluido de Vydra cubre:
 
     - `vydra/veo3` de texto a video
     - `vydra/kling` de imagen a video usando una URL de imagen remota
@@ -141,7 +140,7 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
 
   </Accordion>
 
-  <Accordion title="Speech synthesis">
+  <Accordion title="Síntesis de voz">
     Configura Vydra como proveedor de voz:
 
     ```json5
@@ -152,7 +151,7 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
           providers: {
             vydra: {
               apiKey: "${VYDRA_API_KEY}",
-              speakerVoiceId: "21m00Tcm4TlvDq8ikWAM",
+              voiceId: "21m00Tcm4TlvDq8ikWAM",
             },
           },
         },
@@ -163,9 +162,9 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
     Valores predeterminados:
 
     - Modelo: `elevenlabs/tts`
-    - ID de voz: `21m00Tcm4TlvDq8ikWAM`
+    - Id. de voz: `21m00Tcm4TlvDq8ikWAM` ("Rachel")
 
-    El Plugin incluido actualmente expone una voz predeterminada conocida como fiable y devuelve archivos de audio MP3.
+    El Plugin incluido expone esta voz predeterminada conocida y fiable, y devuelve archivos de audio MP3.
 
   </Accordion>
 </AccordionGroup>
@@ -173,16 +172,16 @@ OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Provider directory" href="/es/providers/index" icon="list">
+  <Card title="Directorio de proveedores" href="/es/providers/index" icon="list">
     Explora todos los proveedores disponibles.
   </Card>
-  <Card title="Image generation" href="/es/tools/image-generation" icon="image">
+  <Card title="Generación de imágenes" href="/es/tools/image-generation" icon="image">
     Parámetros compartidos de la herramienta de imagen y selección de proveedor.
   </Card>
-  <Card title="Video generation" href="/es/tools/video-generation" icon="video">
+  <Card title="Generación de video" href="/es/tools/video-generation" icon="video">
     Parámetros compartidos de la herramienta de video y selección de proveedor.
   </Card>
-  <Card title="Configuration reference" href="/es/gateway/config-agents#agent-defaults" icon="gear">
-    Valores predeterminados de agente y configuración de modelo.
+  <Card title="Referencia de configuración" href="/es/gateway/config-agents#agent-defaults" icon="gear">
+    Valores predeterminados de agentes y configuración de modelos.
   </Card>
 </CardGroup>

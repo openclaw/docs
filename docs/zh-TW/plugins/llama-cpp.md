@@ -1,35 +1,34 @@
 ---
 read_when:
-    - 你想要來自本機 GGUF 模型的記憶搜尋嵌入向量
-    - 你正在設定 memorySearch.provider = "local"
+    - 你想要從本機 GGUF 模型取得記憶搜尋嵌入
+    - 您正在設定 memorySearch.provider = "local"
     - 你需要擁有 node-llama-cpp 執行階段的 OpenClaw 外掛
 sidebarTitle: llama.cpp Provider
-summary: 安裝官方 llama.cpp 供應商，以使用本機 GGUF 記憶嵌入
-title: llama.cpp 供應商
+summary: 安裝官方 llama.cpp 供應器，用於本機 GGUF 記憶嵌入
+title: llama.cpp 提供者
 x-i18n:
-    generated_at: "2026-06-27T19:37:32Z"
+    generated_at: "2026-07-05T11:31:05Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3b0988c36c5ed5c61a7e97980df291fb43a0071e57c7460bf5a653f516114963
+    source_hash: bc8243a07b647f2f9a4b2da855997d39fb37704dfe584fc4f14076ab276b07a8
     source_path: plugins/llama-cpp.md
     workflow: 16
 ---
 
-`llama-cpp` 是本機 GGUF 嵌入的官方外部提供者外掛。
-它擁有 `memorySearch.provider: "local"` 使用的 `node-llama-cpp` 執行階段相依套件。
+`llama-cpp` 是用於本機 GGUF 嵌入的官方外部供應商外掛。它會註冊嵌入供應商 ID `local`，並擁有 `memorySearch.provider: "local"` 所使用的 `node-llama-cpp` 執行階段相依性。
 
-使用本機記憶嵌入前，請先安裝它：
+使用本機記憶嵌入之前，請先安裝它：
 
 ```bash
 openclaw plugins install @openclaw/llama-cpp-provider
 ```
 
-主要的 `openclaw` npm 套件不包含 `node-llama-cpp`。將原生相依套件保留在此外掛中，可避免一般 OpenClaw npm 更新刪除 OpenClaw 套件目錄內手動安裝的執行階段。
+主要的 `openclaw` npm 套件不包含 `node-llama-cpp`。將這個原生相依性保留在此插件中，可避免一般 OpenClaw npm 更新刪除 OpenClaw 套件目錄內手動安裝的執行階段。
 
 ## 設定
 
-將記憶搜尋提供者設為 `local`：
+將 `memorySearch.provider` 設為 `local`：
 
 ```json5
 {
@@ -46,15 +45,24 @@ openclaw plugins install @openclaw/llama-cpp-provider
 }
 ```
 
-預設模型是 `embeddinggemma-300m-qat-Q8_0.gguf`。你也可以將 `local.modelPath` 指向本機 `.gguf` 檔案。
+`local.modelPath` 預設為上方顯示的 `hf:` URI（`embeddinggemma-300m-qat-Q8_0.gguf`）。
+將它指向不同的 `hf:` URI 或本機 `.gguf` 檔案，即可使用另一個模型。`local.modelCacheDir` 會覆寫下載模型的快取位置（預設值：`~/.node-llama-cpp/models`），而 `local.contextSize` 可接受整數或 `"auto"`。
 
 ## 原生執行階段
 
-使用節點 24 可獲得最順暢的原生安裝路徑。使用 pnpm 的原始碼 checkout 可能需要核准並重新建置原生相依套件：
+使用節點 24 可獲得最順暢的原生安裝路徑。使用 pnpm 的原始碼 checkout 可能需要核准並重新建置原生相依性：
 
 ```bash
 pnpm approve-builds
 pnpm rebuild node-llama-cpp
 ```
 
-若要降低本機嵌入的使用阻力，請改用 Ollama 或 LM Studio 等本機服務提供者。
+## 疑難排解
+
+如果缺少 `node-llama-cpp` 或載入失敗，OpenClaw 會回報失敗並附上：
+
+1. 安裝外掛：`openclaw plugins install @openclaw/llama-cpp-provider`。
+2. 使用節點 24 進行原生安裝/更新。
+3. 從 pnpm 原始碼 checkout 執行：`pnpm approve-builds`，然後執行 `pnpm rebuild node-llama-cpp`。
+
+若想使用阻力較低、無需原生建置步驟的本機嵌入，請改將 `memorySearch.provider` 設為遠端嵌入供應商，例如 `lmstudio`、`ollama`、`openai` 或 `voyage`。

@@ -2,85 +2,89 @@
 read_when:
     - ペアリングされたノード（カメラ、画面、キャンバス）を管理しています
     - リクエストを承認するか、node コマンドを呼び出す必要があります
-summary: '`openclaw nodes` の CLI リファレンス (status, pairing, invoke, camera/canvas/screen)'
-title: Node
+summary: '`openclaw nodes` の CLI リファレンス（status、pairing、invoke、camera/canvas/screen/location/notify）'
+title: ノード
 x-i18n:
-    generated_at: "2026-06-27T10:58:51Z"
+    generated_at: "2026-07-05T11:10:20Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e752e4a5809e01ee7970204c84d9f1008f146d8a55954f6ed5de527a6a124bc7
+    source_hash: 2542d7cba45fd4db7480baee48370aea5980dc03d683ea28b65c11fef1007c03
     source_path: cli/nodes.md
     workflow: 16
 ---
 
 # `openclaw nodes`
 
-ペアリング済みノード（デバイス）を管理し、ノードの機能を呼び出します。
+ペアリング済みノード（デバイス）を管理し、ノード機能を呼び出します。
 
-関連:
+関連: [ノード概要](/ja-JP/nodes) - [カメラノード](/ja-JP/nodes/camera) - [画像ノード](/ja-JP/nodes/images)
 
-- ノード概要: [ノード](/ja-JP/nodes)
-- カメラ: [カメラノード](/ja-JP/nodes/camera)
-- 画像: [画像ノード](/ja-JP/nodes/images)
+すべてのサブコマンドで共通のオプション: `--url <url>`、`--token <token>`、`--timeout <ms>`（デフォルト `10000`）、`--json`。
 
-共通オプション:
-
-- `--url`, `--token`, `--timeout`, `--json`
-
-## 共通コマンド
+## ステータス
 
 ```bash
+openclaw nodes status
+openclaw nodes status --connected
+openclaw nodes status --last-connected 24h
 openclaw nodes list
-openclaw nodes list --connected
-openclaw nodes list --last-connected 24h
+openclaw nodes describe --node <idOrNameOrIp>
+```
+
+`status` と `list` はどちらも `--connected`（接続中のノードのみ）と `--last-connected <duration>`（例: `24h`、`7d`。指定期間内に接続したノードのみ）を受け付けます。`list` は保留中ノードとペアリング済みノードを別々のテーブルで表示し、ペアリング済み行には直近の接続経過時間（最終接続）が含まれます。`status` はノードごとの機能とバージョンの詳細を含む 1 つの統合テーブルを表示します。`describe` は 1 つのノードの機能、権限、有効な呼び出しコマンドと保留中の呼び出しコマンドを出力します。
+
+## ペアリング
+
+```bash
 openclaw nodes pending
 openclaw nodes approve <requestId>
 openclaw nodes reject <requestId>
 openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name <displayName>
-openclaw nodes status
-openclaw nodes status --connected
-openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` は保留中/ペアリング済みの表を出力します。ペアリング済みの行には、直近の接続からの経過時間（最終接続）が含まれます。
-現在接続中のノードだけを表示するには `--connected` を使用します。ある期間内（例: `24h`, `7d`）に
-接続したノードに絞り込むには `--last-connected <duration>` を使用します。
-ノードのペアリングを削除するには `nodes remove --node <id|name|ip>` を使用します。
-デバイスに基づくノードの場合、これは `devices/paired.json` でそのデバイスの `node` ロールを取り消し、
-そのノードロールのセッションを切断します（混在ロールのデバイスは行を保持し、
-`node` ロールだけを失います。ノード専用デバイスは削除されます）。また、一致する
-従来の Gateway 所有ノードペアリングレコードも消去します。`operator.pairing` は
-非オペレーターのノード行を削除できます。デバイストークンの呼び出し元が混在ロールデバイス上の
-自分自身のノードロールを取り消す場合は、追加で `operator.admin` が必要です。
+これらのコマンドは、ノードの WS `connect` ハンドシェイクを制御するデバイスペアリング（`openclaw devices approve`）とは別の、Gateway 所有の `node.pair.*` ストアを操作します。両者の関係については [ノード](/ja-JP/nodes) を参照してください。
 
-承認に関する注記:
-
-- `openclaw nodes pending` に必要なのはペアリングスコープだけです。
-- `gateway.nodes.pairing.autoApproveCidrs` は、明示的に信頼された初回の `role: node` デバイスペアリングに限り、
-  保留ステップをスキップできます。デフォルトではオフで、アップグレードは承認しません。
-- `openclaw nodes approve <requestId>` は、保留中リクエストから追加のスコープ要件を継承します:
-  - コマンドなしリクエスト: ペアリングのみ
-  - 非 exec ノードコマンド: ペアリング + 書き込み
-  - `system.run` / `system.run.prepare` / `system.which`: ペアリング + 管理者
+- `remove` はノードのペアリング済みロールエントリを取り消します。デバイスに裏付けられたノードの場合、これはデバイスペアリングストア内の `node` ロールを取り消し、そのノードロールセッションを切断します。混合ロールのデバイスは行を保持し、`node` ロールだけを失います。ノード専用デバイスの行は削除されます。一致する従来の Gateway 所有ノードペアリングレコードもクリアします。
+- `pending` に必要なのは `operator.pairing` スコープのみです。
+- `gateway.nodes.pairing.autoApproveCidrs` は、明示的に信頼された初回の `role: node` デバイスペアリングについて、保留ステップを省略できます。デフォルトではオフです。ロールのアップグレードは承認しません。
+- `approve` のスコープ要件は、保留中リクエストで宣言されたコマンドに従います。
+  - コマンドなしリクエスト: `operator.pairing`
+  - exec 以外のノードコマンド: `operator.pairing` + `operator.write`
+  - `system.run` / `system.run.prepare` / `system.which`: `operator.pairing` + `operator.admin`
+- `remove` のスコープ: `operator.pairing` は非オペレーターノード行を削除できます。混合ロールデバイス上で自分自身のノードロールを取り消すデバイストークン呼び出し元には、追加で `operator.admin` が必要です。
 
 ## 呼び出し
 
 ```bash
-openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
+openclaw nodes invoke --node <id> --command system.which --params '{"name":"uname"}'
 ```
 
-呼び出しフラグ:
+フラグ:
 
+- `--command <command>`（必須）: 例: `canvas.eval`。
 - `--params <json>`: JSON オブジェクト文字列（デフォルト `{}`）。
 - `--invoke-timeout <ms>`: ノード呼び出しタイムアウト（デフォルト `15000`）。
 - `--idempotency-key <key>`: 任意の冪等性キー。
-- `system.run` と `system.run.prepare` はここではブロックされます。シェル実行には `host=node` で `exec` ツールを使用してください。
 
-ノードでシェル実行を行うには、`openclaw nodes run` の代わりに `host=node` で `exec` ツールを使用してください。
-`nodes` CLI は現在、機能に重点を置いています。`nodes invoke` による直接 RPC に加えて、ペアリング、カメラ、
-画面、位置情報、Canvas、通知を扱います。Canvas コマンドはバンドルされた実験的な Canvas plugin によって実装されます。core は互換性フックを保持しているため、それらは引き続き `openclaw nodes canvas` の下にあります。
+ここでは `system.run` と `system.run.prepare` はブロックされます。代わりにシェル実行には `host=node` の `exec` ツールを使用してください。`system.which` は `invoke` 経由で許可されます。
+
+## 通知、プッシュ、位置情報、画面
+
+```bash
+openclaw nodes notify --node <id> --title "Build" --body "Done" --priority timeSensitive
+openclaw nodes push --node <id> --title "OpenClaw" --environment sandbox
+openclaw nodes location get --node <id> --accuracy precise
+openclaw nodes screen record --node <id> --duration 10s --fps 10 --out ./clip.mp4
+```
+
+- `notify` はノード上でローカル通知を送信します（macOS のみ）。`--title` または `--body` が必要です。オプション: `--sound <name>`、`--priority <passive|active|timeSensitive>`、`--delivery <system|overlay|auto>`（デフォルト `system`）、`--invoke-timeout <ms>`（デフォルト `15000`）。
+- `push` は iOS ノードに APNs テストプッシュを送信します。オプション: `--title <text>`（デフォルト `OpenClaw`）、`--body <text>`、検出された APNs 環境を上書きする `--environment <sandbox|production>`。
+- `location get` はノードの現在位置を取得します。オプション: `--max-age <ms>`（キャッシュ済みの測位結果を再利用）、`--accuracy <coarse|balanced|precise>`、`--location-timeout <ms>`（デフォルト `10000`）、`--invoke-timeout <ms>`（デフォルト `20000`）。
+- `screen record` は短いクリップをキャプチャし、保存先パスを出力します（または `--json` で JSON を書き出します）。オプション: `--screen <index>`（デフォルト `0`）、`--duration <ms|10s>`（デフォルト `10000`）、`--fps <fps>`（デフォルト `10`）、`--no-audio`、`--out <path>`、`--invoke-timeout <ms>`（デフォルト `120000`）。
+
+カメラと Canvas のコマンドには独自のドキュメントがあります: [カメラノード](/ja-JP/nodes/camera)、[Canvas](/ja-JP/platforms/mac/canvas)。Canvas はバンドルされた実験的な Canvas Plugin によって実装されています。core は互換性のあるマウントポイントとして `openclaw nodes canvas` を維持します。
 
 ## 関連
 

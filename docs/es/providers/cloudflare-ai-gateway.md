@@ -3,32 +3,35 @@ read_when:
     - Quieres usar Cloudflare AI Gateway con OpenClaw
     - Necesitas el ID de cuenta, el ID de Gateway o la variable de entorno de clave de API
 summary: Configuración de Cloudflare AI Gateway (autenticación + selección de modelo)
-title: Gateway de IA de Cloudflare
+title: gateway de IA de Cloudflare
 x-i18n:
-    generated_at: "2026-06-27T12:35:31Z"
+    generated_at: "2026-07-05T11:35:27Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
+    source_hash: 02c7785616e7aee645bb3fc41ef6a3585e1f2f9d886fab1a06231e497effd045
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway se sitúa delante de las API de proveedores y te permite añadir analíticas, almacenamiento en caché y controles. Para Anthropic, OpenClaw usa la API Anthropic Messages a través de tu endpoint de Gateway.
+[Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/) se sitúa delante de las API de proveedores y añade análisis, caché y controles. Para Anthropic, OpenClaw usa la API Anthropic Messages mediante tu endpoint de Gateway.
 
-| Propiedad             | Valor                                                                                    |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| Proveedor             | `cloudflare-ai-gateway`                                                                  |
-| URL base              | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
-| Modelo predeterminado | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
-| Clave API             | `CLOUDFLARE_AI_GATEWAY_API_KEY` (tu clave API del proveedor para solicitudes a través del Gateway) |
+| Propiedad             | Valor                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Proveedor             | `cloudflare-ai-gateway`                                                                                    |
+| Plugin                | paquete externo oficial (`@openclaw/cloudflare-ai-gateway-provider`)                                       |
+| URL base              | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`                                 |
+| Modelo predeterminado | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                                  |
+| Clave de API          | `CLOUDFLARE_AI_GATEWAY_API_KEY` (tu clave de API de proveedor para solicitudes mediante el Gateway)        |
 
 <Note>
-Para los modelos de Anthropic enrutados a través de Cloudflare AI Gateway, usa tu **clave API de Anthropic** como clave del proveedor.
+Para los modelos de Anthropic enrutados mediante Cloudflare AI Gateway, usa tu **clave de API de Anthropic** como clave del proveedor.
 </Note>
 
-Cuando el razonamiento está habilitado para modelos Anthropic Messages, OpenClaw elimina los turnos finales de prerrelleno del asistente antes de enviar la carga a través de Cloudflare AI Gateway.
-Anthropic rechaza el prerrelleno de respuestas con razonamiento extendido, mientras que el prerrelleno ordinario sin razonamiento sigue estando disponible.
+Cuando el razonamiento está activado para modelos Anthropic Messages, OpenClaw elimina los turnos finales
+de precarga del asistente antes de enviar la carga útil mediante Cloudflare AI Gateway.
+Anthropic rechaza la precarga de respuestas con razonamiento extendido, mientras que la precarga
+ordinaria sin razonamiento sigue disponible.
 
 ## Instalar Plugin
 
@@ -49,7 +52,7 @@ openclaw gateway restart
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Esto solicita tu ID de cuenta, ID de gateway y clave API.
+    Esto solicita tu ID de cuenta, ID de Gateway y clave de API.
 
   </Step>
   <Step title="Set a default model">
@@ -90,7 +93,7 @@ openclaw onboard --non-interactive \
 
 <AccordionGroup>
   <Accordion title="Authenticated gateways">
-    Si habilitaste la autenticación de Gateway en Cloudflare, añade el encabezado `cf-aig-authorization`. Esto es **además de** tu clave API del proveedor.
+    Si activaste la autenticación de Gateway en Cloudflare, añade el encabezado `cf-aig-authorization`. Esto es **adicional a** tu clave de API del proveedor.
 
     ```json5
     {
@@ -107,16 +110,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    El encabezado `cf-aig-authorization` autentica con el propio Cloudflare Gateway, mientras que la clave API del proveedor (por ejemplo, tu clave de Anthropic) autentica con el proveedor ascendente.
+    El encabezado `cf-aig-authorization` se autentica con el Gateway de Cloudflare, mientras que la clave de API del proveedor (por ejemplo, tu clave de Anthropic) se autentica con el proveedor upstream.
     </Tip>
 
   </Accordion>
 
   <Accordion title="Environment note">
-    Si Gateway se ejecuta como daemon (launchd/systemd), asegúrate de que `CLOUDFLARE_AI_GATEWAY_API_KEY` esté disponible para ese proceso.
+    Si Gateway se ejecuta como demonio (launchd/systemd), asegúrate de que `CLOUDFLARE_AI_GATEWAY_API_KEY` esté disponible para ese proceso.
 
     <Warning>
-    Una clave exportada solo en un shell interactivo no ayudará a un daemon launchd/systemd a menos que ese entorno también se importe allí. Define la clave en `~/.openclaw/.env` o mediante `env.shellEnv` para asegurarte de que el proceso de gateway pueda leerla.
+    Una clave exportada solo en un shell interactivo no ayudará a un demonio launchd/systemd a menos que ese entorno también se importe allí. Define la clave en `~/.openclaw/.env` o mediante `env.shellEnv` para garantizar que el proceso de Gateway pueda leerla.
     </Warning>
 
   </Accordion>
@@ -126,9 +129,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="Model selection" href="/es/concepts/model-providers" icon="layers">
-    Elegir proveedores, referencias de modelo y comportamiento de conmutación por error.
+    Elección de proveedores, referencias de modelo y comportamiento de conmutación por error.
   </Card>
   <Card title="Troubleshooting" href="/es/help/troubleshooting" icon="wrench">
-    Solución general de problemas y preguntas frecuentes.
+    Resolución general de problemas y preguntas frecuentes.
   </Card>
 </CardGroup>

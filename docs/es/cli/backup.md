@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Quieres un archivo de respaldo de primera clase para el estado local de OpenClaw
+    - Quieres un archivo de respaldo de primer nivel para el estado local de OpenClaw
     - Quieres previsualizar qué rutas se incluirían antes de restablecer o desinstalar
 summary: Referencia de CLI para `openclaw backup` (crear archivos de copia de seguridad locales)
 title: Copia de seguridad
 x-i18n:
-    generated_at: "2026-06-27T10:56:45Z"
+    generated_at: "2026-07-05T11:06:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ac7d8e4babd24f1c46ac48dca6c413e12361173df83cfe485dd3945ccd30c3e
+    source_hash: 48487eb747b88111899106f507b4ce6364b56c65b88da2e33c43fc160c6b17a9
     source_path: cli/backup.md
     workflow: 16
 ---
@@ -30,77 +30,50 @@ openclaw backup verify ./2026-03-09T08-00-00.000+08-00-openclaw-backup.tar.gz
 
 ## Notas
 
-- El archivo incluye un archivo `manifest.json` con las rutas de origen resueltas y el diseño del archivo.
-- La salida predeterminada es un archivo `.tar.gz` con marca de tiempo en el directorio de trabajo actual.
-- Los nombres de archivo de respaldo con marca de tiempo usan la zona horaria local de tu máquina e incluyen el desplazamiento UTC.
-- Si el directorio de trabajo actual está dentro de un árbol de origen respaldado, OpenClaw recurre a tu directorio de inicio para la ubicación predeterminada del archivo.
-- Los archivos de archivo existentes nunca se sobrescriben.
-- Las rutas de salida dentro de los árboles de estado/espacio de trabajo de origen se rechazan para evitar la autoinclusión.
-- `openclaw backup verify <archive>` valida que el archivo contenga exactamente un manifiesto raíz, rechaza rutas de archivo de estilo transversal y comprueba que cada carga útil declarada en el manifiesto exista en el tarball.
-- `openclaw backup create --verify` ejecuta esa validación inmediatamente después de escribir el archivo.
+- El archivo incorpora un `manifest.json` con las rutas de origen resueltas y el diseño del archivo.
+- La salida predeterminada es un archivo `.tar.gz` con marca de tiempo en el directorio de trabajo actual. Los nombres de archivo con marca de tiempo usan la zona horaria local de tu equipo e incluyen el desfase UTC. Si el directorio de trabajo actual está dentro de un árbol de origen respaldado, OpenClaw usa tu directorio de inicio como alternativa para la ubicación predeterminada del archivo.
+- Los archivos de archivo existentes nunca se sobrescriben. Las rutas de salida dentro de los árboles de estado/espacio de trabajo de origen se rechazan para evitar la autoinclusión.
+- `openclaw backup verify <archive>` comprueba que el archivo contenga exactamente un manifiesto raíz, rechaza rutas de archivo de estilo recorrido y confirma que cada carga útil declarada en el manifiesto exista en el tarball. `openclaw backup create --verify` ejecuta esa validación inmediatamente después de escribir el archivo.
 - `openclaw backup create --only-config` respalda solo el archivo de configuración JSON activo.
 
 ## Qué se respalda
 
-`openclaw backup create` planifica las fuentes de respaldo desde tu instalación local de OpenClaw:
+`openclaw backup create` planifica los orígenes desde tu instalación local de OpenClaw:
 
-- El directorio de estado devuelto por el resolutor de estado local de OpenClaw, normalmente `~/.openclaw`
+- El directorio de estado (normalmente `~/.openclaw`)
 - La ruta del archivo de configuración activo
 - El directorio `credentials/` resuelto cuando existe fuera del directorio de estado
-- Los directorios de espacios de trabajo detectados desde la configuración actual, salvo que pases `--no-include-workspace`
+- Los directorios de espacio de trabajo descubiertos desde la configuración actual, a menos que pases `--no-include-workspace`
 
-Los perfiles de autenticación de modelos ya forman parte del directorio de estado bajo
-`agents/<agentId>/agent/auth-profiles.json`, por lo que normalmente quedan cubiertos por la
-entrada de respaldo de estado.
+Los perfiles de autenticación y otros estados de ejecución por agente viven en SQLite bajo el directorio de estado (`agents/<agentId>/agent/openclaw-agent.sqlite`), por lo que la entrada de respaldo del estado los cubre automáticamente.
 
-Si usas `--only-config`, OpenClaw omite el estado, el directorio de credenciales y la detección de espacios de trabajo, y archiva únicamente la ruta del archivo de configuración activo.
+`--only-config` omite el estado, el directorio de credenciales y el descubrimiento de espacios de trabajo, y archiva solo la ruta del archivo de configuración activo.
 
-OpenClaw canonicaliza las rutas antes de construir el archivo. Si la configuración, el
-directorio de credenciales o un espacio de trabajo ya están dentro del directorio de estado,
-no se duplican como fuentes de respaldo de nivel superior separadas. Las rutas faltantes se
-omiten.
+OpenClaw canonicaliza las rutas antes de crear el archivo: si la configuración, el directorio de credenciales o un espacio de trabajo ya viven dentro del directorio de estado, no se duplican como orígenes de respaldo de nivel superior separados. Las rutas faltantes se omiten.
 
-La carga útil del archivo almacena el contenido de los archivos de esos árboles de origen, y el `manifest.json` incrustado registra las rutas absolutas de origen resueltas junto con el diseño de archivo usado para cada recurso.
+Durante la creación del archivo, OpenClaw omite archivos conocidos de mutación en vivo sin valor de restauración: transcripciones de sesiones de agentes activas, registros de ejecuciones cron, registros rotativos, colas de entrega, archivos de socket/pid/temporales bajo el directorio de estado y archivos temporales relacionados de colas durables. El `skippedVolatileCount` del resultado JSON informa cuántos archivos se omitieron intencionalmente. Las bases de datos SQLite bajo el directorio de estado se capturan de forma segura (`VACUUM INTO`) en lugar de copiarse en vivo, por lo que los archivos WAL/SHM abiertos no corrompen el respaldo.
 
-Durante la creación del archivo, OpenClaw omite archivos conocidos de mutación en vivo que no tienen valor de restauración, incluidos los transcritos de sesiones de agentes activas, los registros de ejecuciones Cron, los registros rotativos, las colas de entrega, los archivos de socket/pid/temporales bajo el directorio de estado y los archivos temporales relacionados de colas duraderas. El resultado JSON incluye `skippedVolatileCount` para que la automatización pueda ver cuántos archivos se omitieron intencionalmente.
-
-Se incluyen los archivos de origen y manifiesto de Plugin instalados bajo el árbol
-`extensions/` del directorio de estado, pero se omiten sus árboles de dependencias
-`node_modules/` anidados. Esas dependencias son artefactos de instalación reconstruibles; después
-de restaurar un archivo, usa `openclaw plugins update <id>` o reinstala el Plugin
-con `openclaw plugins install <spec> --force` cuando un Plugin restaurado informe
-dependencias faltantes.
+Se incluyen los archivos fuente y de manifiesto de plugins instalados bajo el árbol `extensions/` del directorio de estado, pero sus árboles de dependencias `node_modules/` anidados se omiten como artefactos de instalación reconstruibles. Después de restaurar un archivo, usa `openclaw plugins update <id>` o reinstala con `openclaw plugins install <spec> --force` si un plugin restaurado informa dependencias faltantes.
 
 ## Comportamiento con configuración no válida
 
-`openclaw backup` omite intencionalmente la comprobación previa normal de configuración para poder ayudar durante la recuperación. Como la detección de espacios de trabajo depende de una configuración válida, `openclaw backup create` ahora falla rápido cuando el archivo de configuración existe pero no es válido y el respaldo de espacios de trabajo sigue habilitado.
+`openclaw backup` omite la comprobación previa normal de configuración para poder seguir ayudando durante la recuperación. El descubrimiento de espacios de trabajo depende de una configuración válida, por lo que `openclaw backup create` falla de inmediato cuando el archivo de configuración existe pero no es válido y el respaldo de espacios de trabajo sigue habilitado.
 
-Si aun así quieres un respaldo parcial en esa situación, vuelve a ejecutar:
+Para un respaldo parcial en esa situación, vuelve a ejecutarlo con `--no-include-workspace`: mantiene en alcance el estado, la configuración y el directorio de credenciales externo, mientras omite por completo el descubrimiento de espacios de trabajo.
 
-```bash
-openclaw backup create --no-include-workspace
-```
-
-Eso mantiene el estado, la configuración y el directorio externo de credenciales dentro del alcance mientras
-omite por completo la detección de espacios de trabajo.
-
-Si solo necesitas una copia del archivo de configuración en sí, `--only-config` también funciona cuando la configuración tiene formato incorrecto porque no depende de analizar la configuración para detectar espacios de trabajo.
+`--only-config` también funciona cuando la configuración está mal formada, ya que no analiza la configuración para descubrir espacios de trabajo.
 
 ## Tamaño y rendimiento
 
-OpenClaw no impone un tamaño máximo de respaldo integrado ni un límite de tamaño por archivo.
-
-Los límites prácticos provienen de la máquina local y del sistema de archivos de destino:
+OpenClaw no aplica un tamaño máximo de respaldo integrado ni un límite de tamaño por archivo. Los límites prácticos provienen de:
 
 - Espacio disponible para la escritura temporal del archivo más el archivo final
 - Tiempo para recorrer árboles grandes de espacios de trabajo y comprimirlos en un `.tar.gz`
-- Tiempo para volver a escanear el archivo si usas `openclaw backup create --verify` o ejecutas `openclaw backup verify`
-- Comportamiento del sistema de archivos en la ruta de destino. OpenClaw prefiere un paso de publicación mediante enlace duro sin sobrescritura y recurre a una copia exclusiva cuando los enlaces duros no son compatibles
+- Tiempo para volver a examinar el archivo con `--verify` u `openclaw backup verify`
+- Comportamiento del sistema de archivos de destino: OpenClaw prefiere un paso de publicación mediante enlace físico sin sobrescritura y recurre a copia exclusiva cuando no se admiten enlaces físicos
 
-Los espacios de trabajo grandes suelen ser el principal factor del tamaño del archivo. Si quieres un respaldo más pequeño o más rápido, usa `--no-include-workspace`.
-
-Para el archivo más pequeño, usa `--only-config`.
+Los espacios de trabajo grandes suelen ser el principal factor del tamaño del archivo. Usa `--no-include-workspace` para un respaldo más pequeño/rápido, o `--only-config` para el archivo más pequeño.
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
+- [Referencia de CLI](/es/cli)

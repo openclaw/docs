@@ -1,54 +1,61 @@
 ---
 read_when:
     - 了解首次智能体运行时会发生什么
-    - 说明引导文件的存放位置
+    - 说明引导启动文件所在位置
     - 调试新手引导身份设置
 sidebarTitle: Bootstrapping
-summary: 用于初始化工作区和身份文件的智能体启动引导流程
-title: 智能体启动引导
+summary: 种子化工作区和身份文件的智能体引导初始化流程
+title: Agent 引导启动
 x-i18n:
-    generated_at: "2026-05-06T06:20:09Z"
+    generated_at: "2026-07-05T11:42:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
+    source_hash: d8356684e8567b02f558ce2b455a20019e55579e5dcb4625bb441d66656098e0
     source_path: start/bootstrapping.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Bootstrapping 是准备智能体工作区并收集身份详情的**首次运行**流程。它发生在新手引导之后，也就是智能体第一次启动时。
+引导初始化是首次运行时的流程，用于填充新的智能体工作区，并引导智能体选择身份。它只运行一次，在新手引导之后、智能体的第一个真实轮次中立即运行。
 
-## Bootstrapping 会做什么
+## 会发生什么
 
-在首次运行智能体时，OpenClaw 会 bootstrap 工作区（默认
-`~/.openclaw/workspace`）：
+首次针对全新工作区（默认 `~/.openclaw/workspace`）运行时，OpenClaw 会：
 
-- 生成 `AGENTS.md`、`BOOTSTRAP.md`、`IDENTITY.md`、`USER.md`。
-- 运行一段简短的问答流程（一次一个问题）。
-- 将身份 + 偏好写入 `IDENTITY.md`、`USER.md`、`SOUL.md`。
-- 完成后移除 `BOOTSTRAP.md`，因此它只会运行一次。
+- 填充 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md` 和 `BOOTSTRAP.md`。
+- 让智能体遵循 `BOOTSTRAP.md`：通过自由形式的对话（不是固定的问答表单）确定名称、性格和氛围。
+- 将学到的内容写入 `IDENTITY.md`、`USER.md` 和 `SOUL.md`。
+- 工作区看起来已配置后删除 `BOOTSTRAP.md`，因此该流程只运行一次。
 
-对于嵌入式/本地模型运行，OpenClaw 会将 `BOOTSTRAP.md` 排除在
-特权系统上下文之外。在主要的交互式首次运行中，它仍会在用户提示中传入
-文件内容，以便那些不能可靠调用 `read` 工具的模型也能完成该流程。如果当前运行无法安全访问
-工作区，智能体会收到一条受限的 bootstrap 说明，而不是通用问候语。
+一旦 `SOUL.md`、`IDENTITY.md` 或 `USER.md` 偏离其起始模板，或者存在 `memory/` 文件夹，工作区就会被视为已配置。
 
-## 跳过 bootstrapping
+<Note>
+`BOOTSTRAP.md` 覆盖完整的身份对话。查看其内容：
+[BOOTSTRAP.md 模板](/zh-CN/reference/templates/BOOTSTRAP)。
+</Note>
 
-要为预先填充好的工作区跳过此步骤，请运行 `openclaw onboard --skip-bootstrap`。
+## 嵌入式和本地模型运行
+
+对于嵌入式或本地模型运行，OpenClaw 会将 `BOOTSTRAP.md` 排除在特权系统上下文之外。在主要交互式首次运行中，它仍会通过用户提示传递文件内容，因此即使模型无法可靠调用 `read` 工具，也仍能完成该流程。如果当前运行无法安全访问工作区，智能体会收到一条简短的受限引导初始化说明，而不是通用问候语。
+
+## 跳过引导初始化
+
+要在预先填充的工作区上跳过此步骤，请运行：
+
+```bash
+openclaw onboard --skip-bootstrap
+```
 
 ## 运行位置
 
-Bootstrapping 始终在 **Gateway 网关主机**上运行。如果 macOS 应用连接到
-远程 Gateway 网关，工作区和 bootstrapping 文件就位于那台远程
-机器上。
+引导初始化始终在 Gateway 网关主机上运行。如果 macOS 应用连接到远程 Gateway 网关，工作区及其引导初始化文件会位于该远程机器上，而不是 Mac 上。
 
 <Note>
-当 Gateway 网关运行在另一台机器上时，请在 Gateway 网关
-主机上编辑工作区文件（例如 `user@gateway-host:~/.openclaw/workspace`）。
+当 Gateway 网关在另一台机器上运行时，请在 Gateway 网关主机上编辑工作区文件（例如 `user@gateway-host:~/.openclaw/workspace`）。
 </Note>
 
 ## 相关文档
 
 - macOS 应用新手引导：[新手引导](/zh-CN/start/onboarding)
 - 工作区布局：[Agent 工作区](/zh-CN/concepts/agent-workspace)
+- 模板内容：[BOOTSTRAP.md 模板](/zh-CN/reference/templates/BOOTSTRAP)

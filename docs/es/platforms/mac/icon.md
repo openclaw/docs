@@ -4,41 +4,49 @@ read_when:
 summary: Estados y animaciones del icono de la barra de menús para OpenClaw en macOS
 title: Icono de la barra de menús
 x-i18n:
-    generated_at: "2026-05-06T09:05:14Z"
+    generated_at: "2026-07-05T11:29:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
+    source_hash: b7a096ad148e83f368624e750c1e50c965d8a34a6255a09a19c568e7e88a5868
     source_path: platforms/mac/icon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Estados del icono de la barra de menús
 
-Autor: steipete · Actualizado: 2025-12-06 · Alcance: aplicación macOS (`apps/macos`)
+Ámbito: app de macOS (`apps/macos`). Renderizado: `CritterIconRenderer.makeIcon(...)`. Cableado de animación/estado: `CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`.
 
-- **Inactivo:** Animación normal del icono (parpadeo, oscilación ocasional).
-- **En pausa:** El elemento de estado usa `appearsDisabled`; sin movimiento.
-- **Activación por voz (orejas grandes):** El detector de activación por voz llama a `AppState.triggerVoiceEars(ttl: nil)` cuando se oye la palabra de activación, manteniendo `earBoostActive=true` mientras se captura la expresión. Las orejas aumentan de tamaño (1.9x), reciben orificios circulares para mejorar la legibilidad y luego vuelven a su estado normal mediante `stopVoiceEars()` después de 1 s de silencio. Solo se activa desde la canalización de voz dentro de la aplicación.
-- **Trabajando (agente en ejecución):** `AppState.isWorking=true` impulsa un micromovimiento de "correteo de cola/patas": oscilación más rápida de las patas y un ligero desplazamiento mientras el trabajo está en curso. Actualmente se activa alrededor de las ejecuciones del agente de WebChat; añade la misma activación alrededor de otras tareas largas cuando las conectes.
+## Estados
 
-Puntos de conexión
+| Estado                | Activador                                 | Visual                                                                                              |
+| --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Inactivo              | Predeterminado                            | Animación normal de parpadeo/meneo                                                                 |
+| Pausado               | `isPaused=true`                           | El elemento de estado usa `appearsDisabled`; sin movimiento                                         |
+| Activación por voz (orejas grandes) | Se oyó la palabra de activación           | Las orejas escalan a `1.9x` con `earHoles=true` (agujeros circulares para legibilidad); desaparece tras el silencio |
+| Trabajando            | `isWorking=true` o un `IconState` activo  | Meneo de patas más rápido (`legWiggle` hasta `1.0`) más un pequeño desplazamiento horizontal; aditivo al meneo inactivo |
 
-- Activación por voz: la llamada de runtime/probador llama a `AppState.triggerVoiceEars(ttl: nil)` al activarse y a `stopVoiceEars()` después de 1 s de silencio para coincidir con la ventana de captura.
-- Actividad del agente: define `AppStateStore.shared.setWorking(true/false)` alrededor de los intervalos de trabajo (ya hecho en la llamada del agente de WebChat). Mantén los intervalos cortos y restablécelos en bloques `defer` para evitar animaciones atascadas.
+Una insignia de actividad de herramienta (puck de SF Symbol, por ejemplo `chevron.left.slash.chevron.right` para exec) puede renderizarse encima del mismo icono de criatura cuando una sesión tiene un trabajo o una herramienta activos. Esa insignia proviene de `IconState`/`ActivityKind`; consulta [Barra de menús](/es/platforms/mac/menu-bar) para ver el modelo de estado completo.
 
-Formas y tamaños
+## Orejas de activación por voz
 
-- El icono base se dibuja en `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)`.
-- La escala de las orejas tiene un valor predeterminado de `1.0`; el refuerzo de voz define `earScale=1.9` y activa `earHoles=true` sin cambiar el marco general (imagen de plantilla de 18×18 pt renderizada en un búfer de respaldo Retina de 36×36 px).
-- El correteo usa una oscilación de patas de hasta ~1.0 con una pequeña sacudida horizontal; es aditivo a cualquier oscilación inactiva existente.
+- Activador: `AppStateStore.shared.triggerVoiceEars(ttl: nil)`, llamado desde la canalización de captura de activación por voz (`VoiceWakeRuntime`) y desde las herramientas de depuración/prueba de activación por voz (`VoiceWakeTester`, `VoiceWakeOverlayController`).
+- Detener: `stopVoiceEars()`, llamado cuando finaliza la captura.
+- Ventana de silencio antes de finalizar: `2.0s` normalmente, `5.0s` si solo se oyó la palabra activadora y no siguió más habla (`VoiceWakeRuntime.silenceWindow` / `triggerOnlySilenceWindow`).
+- Mientras está reforzado, los temporizadores inactivos de parpadeo/meneo/patas/orejas se suspenden (`earBoostActive` controla la tarea de animación en `CritterStatusLabel+Behavior`).
 
-Notas de comportamiento
+## Formas y tamaños
 
-- No hay activación externa de CLI/intermediario para orejas/trabajo; mantenla interna a las propias señales de la aplicación para evitar cambios accidentales repetidos.
-- Mantén los TTL cortos (&lt;10 s) para que el icono vuelva rápidamente al estado base si una tarea se cuelga.
+- Lienzo: imagen de plantilla de 18x18 pt, renderizada en un almacén de respaldo de mapa de bits de 36x36 px (2x) para que el icono se mantenga nítido en Retina.
+- La escala de orejas predeterminada es `1.0`; el refuerzo por voz establece `earScale=1.9` y `earHoles=true` sin cambiar el marco general.
+- El correteo de patas usa `legWiggle` hasta `1.0` con una pequeña sacudida horizontal.
+
+## Notas de comportamiento
+
+- No hay interruptor externo de CLI/broker para las orejas o el estado de trabajo; ambos se controlan internamente mediante señales de la app (`AppState.setWorking`, `AppState.triggerVoiceEars`) para evitar oscilaciones accidentales.
+- Mantén cualquier TTL nuevo corto (muy por debajo de 10 s) para que el icono vuelva rápidamente al estado base si un trabajo se cuelga.
 
 ## Relacionado
 
 - [Barra de menús](/es/platforms/mac/menu-bar)
-- [Aplicación macOS](/es/platforms/macos)
+- [app de macOS](/es/platforms/macos)

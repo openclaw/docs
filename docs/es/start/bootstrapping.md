@@ -1,57 +1,73 @@
 ---
 read_when:
-    - Comprender qué sucede en la primera ejecución del agente
+    - Entender qué ocurre en la primera ejecución del agente
     - Explicación de dónde se encuentran los archivos de inicialización
-    - Depuración de la configuración de identidad durante la incorporación
+    - Depurar la configuración de identidad de incorporación
 sidebarTitle: Bootstrapping
 summary: Ritual de inicialización del agente que prepara el espacio de trabajo y los archivos de identidad
-title: Inicialización del agente
+title: Arranque del agente
 x-i18n:
-    generated_at: "2026-05-06T09:06:42Z"
+    generated_at: "2026-07-05T11:42:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
+    source_hash: d8356684e8567b02f558ce2b455a20019e55579e5dcb4625bb441d66656098e0
     source_path: start/bootstrapping.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-La inicialización es el ritual de **primera ejecución** que prepara un espacio de trabajo de agente y
-recopila detalles de identidad. Ocurre después de la incorporación, cuando el agente se inicia
-por primera vez.
+El arranque inicial es el ritual de primera ejecución que prepara un nuevo espacio de trabajo del agente y
+guía al agente para elegir una identidad. Se ejecuta una vez, justo después de
+la incorporación, en el primer turno real del agente.
 
-## Qué hace la inicialización
+## Qué ocurre
 
-En la primera ejecución del agente, OpenClaw inicializa el espacio de trabajo (predeterminado
-`~/.openclaw/workspace`):
+En la primera ejecución contra un espacio de trabajo completamente nuevo (predeterminado `~/.openclaw/workspace`),
+OpenClaw:
 
-- Siembra `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`.
-- Ejecuta un breve ritual de preguntas y respuestas (una pregunta a la vez).
-- Escribe la identidad y las preferencias en `IDENTITY.md`, `USER.md`, `SOUL.md`.
-- Elimina `BOOTSTRAP.md` al finalizar para que solo se ejecute una vez.
+- Inicializa `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` y `BOOTSTRAP.md`.
+- Hace que el agente siga `BOOTSTRAP.md`: una conversación de formato libre (no un formulario fijo de preguntas y respuestas) para decidir un nombre, una personalidad y un tono.
+- Escribe lo que aprende en `IDENTITY.md`, `USER.md` y `SOUL.md`.
+- Elimina `BOOTSTRAP.md` una vez que el espacio de trabajo parece configurado, para que el ritual solo se ejecute una vez.
 
-Para ejecuciones con modelos integrados/locales, OpenClaw mantiene `BOOTSTRAP.md` fuera del
-contexto privilegiado del sistema. En la primera ejecución interactiva principal, aun así pasa
-el contenido del archivo en el prompt de usuario para que los modelos que no llaman de forma fiable a la
-herramienta `read` puedan completar el ritual. Si la ejecución actual no puede acceder de forma segura al
-espacio de trabajo, el agente recibe una nota de inicialización limitada en lugar de un saludo genérico.
+Un espacio de trabajo cuenta como configurado una vez que `SOUL.md`, `IDENTITY.md` o `USER.md` se ha
+desviado de su plantilla inicial, o existe una carpeta `memory/`.
 
-## Omitir la inicialización
+<Note>
+`BOOTSTRAP.md` cubre toda la conversación de identidad. Consulta su contenido en
+[plantilla de BOOTSTRAP.md](/es/reference/templates/BOOTSTRAP).
+</Note>
 
-Para omitir esto en un espacio de trabajo presembrado, ejecuta `openclaw onboard --skip-bootstrap`.
+## Ejecuciones con modelos integrados y locales
+
+Para ejecuciones con modelos integrados o locales, OpenClaw mantiene `BOOTSTRAP.md` fuera del
+contexto de sistema privilegiado. En la primera ejecución interactiva principal, aun así
+pasa el contenido del archivo a través del prompt de usuario, de modo que los modelos que no
+llaman de forma fiable a la herramienta `read` todavía puedan completar el ritual. Si la ejecución
+actual no puede acceder de forma segura al espacio de trabajo, el agente recibe una nota breve de arranque limitado
+en lugar de un saludo genérico.
+
+## Omitir el arranque inicial
+
+Para omitir esto en un espacio de trabajo previamente preparado, ejecuta:
+
+```bash
+openclaw onboard --skip-bootstrap
+```
 
 ## Dónde se ejecuta
 
-La inicialización siempre se ejecuta en el **host del Gateway**. Si la app de macOS se conecta a
-un Gateway remoto, el espacio de trabajo y los archivos de inicialización residen en esa máquina
-remota.
+El arranque inicial siempre se ejecuta en el host del Gateway. Si la app de macOS se conecta a un
+Gateway remoto, el espacio de trabajo y sus archivos de arranque inicial viven en esa máquina
+remota, no en el Mac.
 
 <Note>
-Cuando el Gateway se ejecuta en otra máquina, edita los archivos del espacio de trabajo en el host del Gateway
+Cuando el Gateway se ejecuta en otra máquina, edita los archivos del espacio de trabajo en el host del gateway
 (por ejemplo, `user@gateway-host:~/.openclaw/workspace`).
 </Note>
 
-## Documentación relacionada
+## Documentos relacionados
 
 - Incorporación de la app de macOS: [Incorporación](/es/start/onboarding)
 - Diseño del espacio de trabajo: [Espacio de trabajo del agente](/es/concepts/agent-workspace)
+- Contenido de la plantilla: [plantilla de BOOTSTRAP.md](/es/reference/templates/BOOTSTRAP)

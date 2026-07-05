@@ -1,47 +1,56 @@
 ---
 read_when:
-    - Depurar los indicadores de estado de la app para Mac
-summary: Cómo la app de macOS informa los estados de salud de gateway/Baileys
+    - Depuración de los indicadores de estado de la app para Mac
+summary: Cómo informa la app de macOS los estados de salud del gateway/canal
 title: Comprobaciones de estado (macOS)
 x-i18n:
-    generated_at: "2026-04-24T05:38:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-05T11:31:56Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
 # Comprobaciones de estado en macOS
 
-Cómo ver si el canal vinculado está en buen estado desde la app de barra de menús.
+Cómo leer el estado de salud del canal vinculado desde la aplicación de la barra de menús.
 
 ## Barra de menús
 
-- El punto de estado ahora refleja el estado de Baileys:
-  - Verde: vinculado + socket abierto recientemente.
-  - Naranja: conectando/reintentando.
-  - Rojo: sesión cerrada o fallo del sondeo.
-- La línea secundaria muestra "linked · auth 12m" o el motivo del fallo.
-- El elemento de menú "Run Health Check" activa un sondeo bajo demanda.
+Punto de estado:
 
-## Configuración
+- Verde: vinculado + sondeo correcto.
+- Naranja: vinculado, pero un sondeo de canal informa degradación/no conectado.
+- Rojo: aún no vinculado.
 
-- La pestaña General incorpora una tarjeta de estado que muestra: antigüedad de autenticación vinculada, ruta/recuento del almacén de sesiones, hora de la última comprobación, último error/código de estado y botones para Run Health Check / Reveal Logs.
-- Usa una instantánea en caché para que la UI cargue al instante y tenga un comportamiento de respaldo correcto cuando no hay conexión.
-- La **pestaña Channels** muestra el estado del canal + controles para WhatsApp/Telegram (QR de inicio de sesión, cierre de sesión, sondeo, último error/desconexión).
+La línea secundaria dice "vinculado · autenticación 12m" o muestra el motivo del error.
+"Ejecutar comprobación de estado ahora" en el menú activa un sondeo bajo demanda.
+
+## Ajustes
+
+- La pestaña General muestra una tarjeta de estado: punto de estado, línea de resumen (estado del vínculo +
+  antigüedad de la autenticación) y una línea opcional de detalle del error, con botones **Reintentar ahora** y
+  **Abrir registros**.
+- La **pestaña Canales** muestra el estado y los controles por canal (QR de inicio de sesión,
+  cierre de sesión, sondeo, última desconexión/error) para WhatsApp y Telegram.
 
 ## Cómo funciona el sondeo
 
-- La app ejecuta `openclaw health --json` mediante `ShellExecutor` aproximadamente cada 60 s y bajo demanda. El sondeo carga credenciales e informa el estado sin enviar mensajes.
-- Almacena en caché por separado la última instantánea válida y el último error para evitar parpadeos; muestra la marca de tiempo de cada uno.
+La aplicación llama al RPC `health` del Gateway a través de su conexión WebSocket
+existente (no mediante una llamada a la CLI) cada ~60 s y bajo demanda. El RPC carga
+credenciales e informa el estado sin enviar mensajes. La aplicación almacena en caché la última
+instantánea correcta y el último error por separado para que la UI cargue al instante y
+no parpadee mientras está sin conexión.
 
 ## En caso de duda
 
-- Aún puedes usar el flujo de CLI en [Estado de Gateway](/es/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) y seguir `/tmp/openclaw/openclaw-*.log` para `web-heartbeat` / `web-reconnect`.
+Use el flujo de CLI en [Salud del Gateway](/es/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) y siga
+`/tmp/openclaw/openclaw-*.log`, filtrando por `web-heartbeat` / `web-reconnect`.
 
 ## Relacionado
 
-- [Estado de Gateway](/es/gateway/health)
-- [App de macOS](/es/platforms/macos)
+- [Salud del Gateway](/es/gateway/health)
+- [Aplicación de macOS](/es/platforms/macos)

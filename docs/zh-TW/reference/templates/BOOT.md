@@ -4,21 +4,28 @@ read_when:
 summary: BOOT.md 的工作區範本
 title: BOOT.md 範本
 x-i18n:
-    generated_at: "2026-04-30T03:38:01Z"
+    generated_at: "2026-07-05T11:45:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
+    source_hash: 1adfb4d71f1f03716a1ddc4774a4cb6ead4b8be65bd9bb34066a9e1929a36b21
     source_path: reference/templates/BOOT.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # BOOT.md
 
-新增簡短且明確的指示，說明 OpenClaw 在啟動時應該執行什麼（啟用 `hooks.internal.enabled`）。
-如果任務會傳送訊息，請使用訊息工具，然後以確切的
-靜默權杖 `NO_REPLY` / `no_reply` 回覆。
+在這裡加入簡短、明確的啟動指示。隨附的 `boot-md` 鉤子會在每次閘道啟動時，針對每個代理工作區執行此檔案一次，前提是檔案存在且包含非空白內容。多個代理共用同一個工作區只會觸發一次執行。
+
+此鉤子預設為停用。請先啟用它：
+
+```bash
+openclaw hooks enable boot-md
+```
+
+如果檢查清單項目會傳送訊息，請使用訊息工具，然後回覆確切的靜默權杖 `NO_REPLY`（不區分大小寫）。
 
 ## 相關
 
-- [代理程式工作區](/zh-TW/concepts/agent-workspace)
+- [代理工作區](/zh-TW/concepts/agent-workspace)
+- [鉤子](/zh-TW/automation/hooks#boot-md)

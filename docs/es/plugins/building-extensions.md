@@ -1,21 +1,21 @@
 ---
 read_when:
     - Enlace heredado a building-extensions
-summary: Redirige a la guía actual de creación de plugins
+summary: Redirige a la guía actual de creación de Plugins
 title: Creación de plugins (redirección)
 x-i18n:
-    generated_at: "2026-04-24T05:39:27Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
-    source_path: plugins/building-extensions.md
-    workflow: 15
+    generated_at: "2026-07-05T11:29:58Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
+    source_path: plugins/building-extensions.md
+    workflow: 16
 ---
 
-Esta página se ha movido a [Building Plugins](/es/plugins/building-plugins).
+Esta página se ha movido. Consulta [Creación de Plugins](/es/plugins/building-plugins).
 
 ## Relacionado
 
-- [Building plugins](/es/plugins/building-plugins)
-- [Arquitectura de plugins](/es/plugins/architecture)
+- [Creación de Plugins](/es/plugins/building-plugins)
+- [Arquitectura de Plugins](/es/plugins/architecture)

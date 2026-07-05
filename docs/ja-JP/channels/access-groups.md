@@ -1,29 +1,29 @@
 ---
 read_when:
     - 複数のメッセージチャネルで同じ許可リストを設定する
-    - DM とグループの送信者アクセスルールの共有
+    - DM とグループの送信者アクセスルール
     - メッセージチャネルのアクセス制御をレビューする
 summary: メッセージチャネル用の再利用可能な送信者許可リスト
 title: アクセスグループ
 x-i18n:
-    generated_at: "2026-05-10T19:20:59Z"
+    generated_at: "2026-07-05T11:01:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
+    source_hash: 099abc95e90d9a7b7006d19062c46b4ffdb2aecb1e8e714454a3182131a786d0
     source_path: channels/access-groups.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-アクセスグループは、一度定義してチャネル許可リストから `accessGroup:<name>` で参照する、名前付きの送信者リストです。
+アクセスグループは、`accessGroups` の下で一度定義し、チャネル許可リストから `accessGroup:<name>` で参照する、名前付き送信者リストです。
 
-同じ人たちを複数のメッセージチャネルで許可したい場合や、信頼済みの 1 つの集合を DM とグループ送信者認可の両方に適用したい場合に使用します。
+同じ人たちを複数のメッセージチャネルで許可する必要がある場合や、信頼済みの 1 セットを DM とグループ送信者認可の両方に適用する必要がある場合に使用します。
 
-アクセスグループは、それ自体ではアクセスを付与しません。グループが意味を持つのは、許可リストフィールドがそれを参照している場合だけです。
+グループ自体は何も許可しません。許可リストフィールドがそのグループを参照している場所でのみ意味を持ちます。
 
 ## 静的メッセージ送信者グループ
 
-静的送信者グループは `type: "message.senders"` を使用します。
+静的送信者グループは `type: "message.senders"` を使用します。`members` はメッセージチャネル ID をキーとし、さらにすべてのチャネルで共有されるエントリ用に `"*"` を使用します。
 
 ```json5
 {
@@ -41,20 +41,16 @@ x-i18n:
 }
 ```
 
-メンバーリストはメッセージチャネル ID でキー付けされます。
+| キー                       | 意味                                                                        |
+| -------------------------- | --------------------------------------------------------------------------- |
+| `"*"`                      | グループを参照するすべてのメッセージチャネルでチェックされる共有エントリ。 |
+| `discord`, `telegram`, ... | そのチャネルの許可リスト照合でのみチェックされるエントリ。                  |
 
-| キー        | 意味                                                                 |
-| ---------- | ----------------------------------------------------------------------- |
-| `"*"`      | グループを参照するすべてのメッセージチャネルでチェックされる共有エントリ。 |
-| `discord`  | Discord の許可リスト照合でのみチェックされるエントリ。                    |
-| `telegram` | Telegram の許可リスト照合でのみチェックされるエントリ。                   |
-| `whatsapp` | WhatsApp の許可リスト照合でのみチェックされるエントリ。                   |
-
-エントリは、宛先チャネルの通常の `allowFrom` ルールで照合されます。OpenClaw はチャネル間で送信者 ID を変換しません。Alice に Telegram ID と Discord ID がある場合は、該当するキーの下に両方の ID を列挙してください。
+エントリは、宛先チャネルの通常の `allowFrom` ルールで照合されます。OpenClaw はチャネル間で送信者 ID を変換しません。Alice が Telegram ID と Discord ID を持っている場合は、対応するチャネルキーの下に両方の ID を列挙してください。
 
 ## 許可リストからグループを参照する
 
-メッセージチャネルパスが送信者許可リストをサポートする場所ならどこでも、`accessGroup:<name>` でグループを参照します。
+メッセージチャネルパスが送信者許可リストをサポートする任意の場所で、`accessGroup:<name>` を使ってグループを参照します。
 
 DM 許可リストの例:
 
@@ -101,7 +97,7 @@ DM 許可リストの例:
       groupAllowFrom: ["accessGroup:oncall"],
     },
     googlechat: {
-      spaces: {
+      groups: {
         "spaces/AAA": {
           users: ["accessGroup:oncall"],
         },
@@ -126,35 +122,16 @@ DM 許可リストの例:
 
 ## サポートされるメッセージチャネルパス
 
-アクセスグループは、共有メッセージチャネル認可パスで利用できます。たとえば次のものが含まれます。
+アクセスグループは、共有メッセージチャネル認可パスで機能します。
 
 - `channels.<channel>.allowFrom` などの DM 送信者許可リスト
 - `channels.<channel>.groupAllowFrom` などのグループ送信者許可リスト
-- 同じ送信者照合ルールを使用する、チャネル固有のルーム単位の送信者許可リスト
+- 同じ送信者照合ルールを使用する、チャネル固有の部屋ごとの送信者許可リスト（例: Google Chat `groups.<space>.users`）
 - メッセージチャネル送信者許可リストを再利用するコマンド認可パス
 
-チャネルサポートは、そのチャネルが共有の OpenClaw 送信者認可ヘルパー経由で接続されているかどうかに依存します。現在バンドルされているサポートには、Discord、Feishu、Google Chat、iMessage、LINE、Mattermost、Microsoft Teams、Nextcloud Talk、Nostr、QQBot、Signal、WhatsApp、Zalo、Zalo Personal が含まれます。静的な `message.senders` グループはチャネルに依存しないように設計されているため、新しいメッセージチャネルは、カスタムの許可リスト展開ではなく共有 Plugin SDK ヘルパーを使用することで、それらをサポートする必要があります。
+チャネル対応は、そのチャネルが共有の OpenClaw 送信者認可ヘルパーを通るように接続されているかどうかに依存します。現在の同梱サポートには、ClickClack、Discord、Feishu、Google Chat、iMessage、IRC、LINE、Mattermost、Microsoft Teams、Nextcloud Talk、Nostr、QQ Bot、Signal、Slack、SMS、Telegram、WhatsApp、Zalo、Zalo Personal が含まれます。静的な `message.senders` グループはチャネル非依存なので、新しいメッセージチャネルはカスタム許可リスト展開ではなく共有 Plugin SDK の ingress ヘルパーを使うことで、それらを利用できます。
 
-## Plugin 診断
-
-Plugin 作成者は、構造化されたアクセスグループ状態を、フラットな許可リストへ展開し直さずに調査できます。
-
-```typescript
-import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
-
-const state = await resolveAccessGroupAllowFromState({
-  accessGroups: cfg.accessGroups,
-  allowFrom: channelConfig.allowFrom,
-  channel: "my-channel",
-  accountId: "default",
-  senderId,
-  isSenderAllowed,
-});
-```
-
-結果には、参照済み、一致済み、欠落、未サポート、失敗の各グループが報告されます。診断や適合性テストが必要な場合に使用してください。まだフラットな `allowFrom` 配列を想定している互換性パスに限り、`expandAllowFromWithAccessGroups(...)` を使用してください。
-
-## Discord チャネルオーディエンス
+## Discord チャネルのオーディエンス
 
 Discord は動的アクセスグループ型もサポートします。
 
@@ -177,24 +154,43 @@ Discord は動的アクセスグループ型もサポートします。
 }
 ```
 
-`discord.channelAudience` は「現在このギルドチャネルを表示できる Discord DM 送信者を許可する」ことを意味します。OpenClaw は認可時に Discord 経由で送信者を解決し、Discord の `ViewChannel` 権限ルールを適用します。
+`discord.channelAudience` は「現在このギルドチャネルを表示できる Discord DM 送信者を許可する」という意味です。OpenClaw は認可時に Discord を通じて送信者を解決し、Discord の `ViewChannel` 権限ルールを適用します。`membership` は任意で、デフォルトは `canViewChannel` です。
 
-`#maintainers` や `#on-call` のように、Discord チャネルがすでにチームの信頼できる情報源である場合に使用します。
+Discord チャネルが `#maintainers` や `#on-call` のように、すでにチームの信頼できる情報源になっている場合に使います。
 
-要件と失敗時の挙動:
+要件と失敗時の動作:
 
 - ボットはギルドとチャネルにアクセスできる必要があります。
 - ボットには Discord Developer Portal の **Server Members Intent** が必要です。
-- Discord が `Missing Access` を返した場合、送信者をギルドメンバーとして解決できない場合、またはチャネルが別のギルドに属している場合、アクセスグループはフェイルクローズします。
+- Discord が `Missing Access` を返した場合、送信者をギルドメンバーとして解決できない場合、またはチャネルが別のギルドに属している場合、アクセスグループは fail closed します。
 
-Discord 固有のその他の例: [Discord アクセス制御](/ja-JP/channels/discord#access-control-and-routing)
+Discord 固有の例について詳しくは、[Discord アクセス制御](/ja-JP/channels/discord#access-control-and-routing) を参照してください。
 
-## セキュリティメモ
+## Plugin 診断
 
-- アクセスグループは許可リストのエイリアスであり、ロールではありません。それ自体では、所有者を作成したり、ペアリング要求を承認したり、ツール権限を付与したりしません。
+Plugin 作者は、構造化されたアクセスグループ状態をフラットな許可リストへ展開し直さずに検査できます。
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/access-groups";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+結果には、参照されたグループ、一致したグループ、欠落したグループ、未サポートのグループ、失敗したグループが報告されます。診断または適合性テストに使います。まだフラットな `allowFrom` 配列を想定している互換パスでのみ、`expandAllowFromWithAccessGroups(...)` を使ってください。
+
+## セキュリティ上の注意
+
+- アクセスグループは許可リストのエイリアスであり、ロールではありません。それ自体で所有者を作成したり、ペアリング要求を承認したり、ツール権限を付与したりすることはありません。
 - `dmPolicy: "open"` でも、有効な DM 許可リスト内に `"*"` が必要です。アクセスグループを参照することは、公開アクセスと同じではありません。
-- 存在しないグループ名はフェイルクローズします。`allowFrom` に `accessGroup:operators` が含まれていて、`accessGroups.operators` が存在しない場合、そのエントリは誰も認可しません。
-- チャネル ID は安定させてください。チャネルが表示名と数値/ユーザー ID の両方をサポートする場合は、表示名よりも数値/ユーザー ID を優先してください。
+- 存在しないグループ名は fail closed します。`allowFrom` に `accessGroup:operators` が含まれていて、`accessGroups.operators` が存在しない場合、そのエントリは誰も認可しません。
+- チャネル ID は安定させてください。チャネルが両方をサポートしている場合は、表示名よりも数値 ID やユーザー ID を優先してください。
 
 ## トラブルシューティング
 
@@ -202,8 +198,8 @@ Discord 固有のその他の例: [Discord アクセス制御](/ja-JP/channels/d
 
 1. 許可リストフィールドに正確な `accessGroup:<name>` 参照が含まれていることを確認します。
 2. `accessGroups.<name>.type` が正しいことを確認します。
-3. 送信者 ID が一致するチャネルキーの下、または `"*"` の下に列挙されていることを確認します。
-4. エントリがそのチャネルの通常の許可リスト構文を使用していることを確認します。
-5. Discord チャネルオーディエンスについては、ボットがギルドチャネルを表示でき、Server Members Intent が有効になっていることを確認します。
+3. 送信者 ID が一致するチャネルキーの下、または `"*"` の下に記載されていることを確認します。
+4. そのエントリがそのチャネルの通常の許可リスト構文を使っていることを確認します。
+5. Discord チャネルオーディエンスの場合、ボットがギルドチャネルを表示でき、Server Members Intent が有効になっていることを確認します。
 
 アクセス制御設定を編集した後は `openclaw doctor` を実行してください。ランタイム前に、多くの無効な許可リストとポリシーの組み合わせを検出できます。

@@ -1,106 +1,106 @@
 ---
 read_when:
-    - HostingerでOpenClawをセットアップする
-    - OpenClaw向けのマネージドVPSを探している
-    - Hostingerの1クリックOpenClawを使う
-summary: HostingerでOpenClawをホストする
+    - Hostinger で OpenClaw をセットアップする
+    - OpenClaw 用のマネージド VPS を探す
+    - Hostinger 1-Click OpenClaw を使用する
+summary: Hostinger で OpenClaw をホストする
 title: Hostinger
 x-i18n:
-    generated_at: "2026-04-24T05:04:27Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
-    source_path: install/hostinger.md
-    workflow: 15
+    generated_at: "2026-07-05T11:26:21Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 7dc49e741f8581928553e2426ed91f92df6e7b0c31dd8780c0d6e891a07be263
+    source_path: install/hostinger.md
+    workflow: 16
 ---
 
-[Hostinger](https://www.hostinger.com/openclaw) 上で、**1クリック**のマネージドデプロイ、または **VPS** インストールを使って、永続的なOpenClaw Gatewayを実行します。
+永続的な OpenClaw Gateway を [Hostinger](https://www.hostinger.com/openclaw) で実行します。**1クリック** のマネージドデプロイとして実行するか、自分で管理する **VPS** インストールとして実行できます。
 
 ## 前提条件
 
-- Hostingerアカウント（[signup](https://www.hostinger.com/openclaw)）
-- 約5〜10分
+- Hostinger アカウント（[登録](https://www.hostinger.com/openclaw)）
+- 約 5〜10 分
 
-## オプションA: 1クリックOpenClaw
+## オプション A: 1クリック OpenClaw
 
-最も素早く始める方法です。Hostingerがインフラ、Docker、自動更新を処理します。
+Hostinger がインフラ、Docker、自動更新を処理します。実行中のインスタンスまでの最速の方法です。
 
 <Steps>
-  <Step title="購入して起動する">
-    1. [Hostinger OpenClawページ](https://www.hostinger.com/openclaw) で、Managed OpenClawプランを選択し、購入手続きを完了します。
+  <Step title="購入して起動">
+    1. [Hostinger OpenClaw ページ](https://www.hostinger.com/openclaw)から、マネージド OpenClaw プランを選択してチェックアウトを完了します。
 
     <Note>
-    購入時に、事前購入済みでOpenClaw内に即座に統合される **Ready-to-Use AI** クレジットを選べます。外部アカウントや他プロバイダのAPIキーは不要で、すぐにチャットを始められます。あるいは、セットアップ中にAnthropic、OpenAI、Google Gemini、xAIの自分のキーを指定することもできます。
+    チェックアウト中に、事前購入済みで OpenClaw 内に即座に統合される **すぐに使える AI** クレジットを選択できます。他のプロバイダーの外部アカウントや API キーは不要です。すぐにチャットを開始できます。別の方法として、セットアップ中に Anthropic、OpenAI、Google Gemini、または xAI の独自キーを指定することもできます。
     </Note>
 
   </Step>
 
-  <Step title="メッセージングチャネルを選ぶ">
-    接続するチャネルを1つ以上選択します:
+  <Step title="メッセージングチャネルを選択">
+    接続するチャネルを 1 つ以上選択します。
 
-    - **WhatsApp** -- セットアップウィザードに表示されるQRコードをスキャンします。
+    - **WhatsApp** -- セットアップウィザードに表示される QR コードをスキャンします。
     - **Telegram** -- [BotFather](https://t.me/BotFather) から取得したボットトークンを貼り付けます。
 
   </Step>
 
-  <Step title="インストールを完了する">
-    **Finish** をクリックしてインスタンスをデプロイします。準備ができたら、hPanel の **OpenClaw Overview** からOpenClawダッシュボードにアクセスします。
+  <Step title="インストールを完了">
+    **完了** をクリックしてインスタンスをデプロイします。準備ができたら、hPanel の **OpenClaw 概要** から OpenClaw ダッシュボードにアクセスします。
   </Step>
 
 </Steps>
 
-## オプションB: VPS上のOpenClaw
+## オプション B: VPS 上の OpenClaw
 
-サーバーをより細かく制御できます。HostingerはあなたのVPS上にDocker経由でOpenClawをデプロイし、hPanel の **Docker Manager** から管理します。
+サーバーをより細かく制御できます。Hostinger は VPS 上に Docker 経由で OpenClaw をデプロイします。hPanel の **Docker Manager** で管理します。
 
 <Steps>
-  <Step title="VPSを購入する">
-    1. [Hostinger OpenClawページ](https://www.hostinger.com/openclaw) で、OpenClaw on VPSプランを選択し、購入手続きを完了します。
+  <Step title="VPS を購入">
+    1. [Hostinger OpenClaw ページ](https://www.hostinger.com/openclaw)から、VPS 上の OpenClaw プランを選択してチェックアウトを完了します。
 
     <Note>
-    購入時に **Ready-to-Use AI** クレジットを選択できます。これは事前購入済みでOpenClaw内に即時統合されるため、外部アカウントや他プロバイダのAPIキーなしでチャットを始められます。
+    チェックアウト中に **すぐに使える AI** クレジットを選択できます。これらは事前購入済みで OpenClaw 内に即座に統合されるため、他のプロバイダーの外部アカウントや API キーなしでチャットを開始できます。
     </Note>
 
   </Step>
 
-  <Step title="OpenClawを設定する">
-    VPSのプロビジョニング後、設定項目を入力します:
+  <Step title="OpenClaw を構成">
+    VPS がプロビジョニングされたら、構成フィールドに入力します。
 
-    - **Gateway token** -- 自動生成されます。後で使うので保存してください。
-    - **WhatsApp number** -- 国番号付きのあなたの番号（任意）。
-    - **Telegram bot token** -- [BotFather](https://t.me/BotFather) から取得（任意）。
-    - **API keys** -- 購入時にReady-to-Use AIクレジットを選択しなかった場合のみ必要です。
+    - **Gateway トークン** -- 自動生成されます。後で使用するために保存してください。
+    - **WhatsApp 番号** -- 国番号付きの自分の番号（任意）。
+    - **Telegram ボットトークン** -- [BotFather](https://t.me/BotFather) から取得します（任意）。
+    - **API キー** -- チェックアウト中にすぐに使える AI クレジットを選択しなかった場合にのみ必要です。
 
   </Step>
 
-  <Step title="OpenClawを起動する">
-    **Deploy** をクリックします。起動したら、hPanel で **Open** をクリックしてOpenClawダッシュボードを開きます。
+  <Step title="OpenClaw を開始">
+    **デプロイ** をクリックします。実行されたら、hPanel で **開く** をクリックして OpenClaw ダッシュボードを開きます。
   </Step>
 
 </Steps>
 
-ログ、再起動、更新は、hPanel のDocker Managerインターフェースから直接管理します。更新するには、Docker Managerの **Update** を押すと最新イメージがpullされます。
+ログ、再起動、更新は hPanel の Docker Manager インターフェイスから実行します。更新するには、Docker Manager で **更新** を押して最新イメージを取得します。
 
-## セットアップを確認する
+## セットアップを確認
 
-接続したチャネルで、アシスタントに「Hi」と送ってください。OpenClawが返信し、初期設定について案内します。
+接続したチャネルでアシスタントに「こんにちは」と送信します。OpenClaw が返信し、初期設定を案内します。
 
 ## トラブルシューティング
 
-**ダッシュボードが読み込まれない** -- コンテナのプロビジョニング完了まで数分待ってください。hPanelのDocker Managerログを確認してください。
+**ダッシュボードが読み込まれない** -- コンテナのプロビジョニングが完了するまで数分待ってから、hPanel の Docker Manager ログを確認してください。
 
-**Dockerコンテナが再起動を繰り返す** -- Docker Managerログを開き、設定エラー（トークン不足、無効なAPIキー）がないか確認してください。
+**Docker コンテナが再起動を繰り返す** -- Docker Manager ログを開き、構成エラー（不足しているトークン、無効な API キー）を探してください。
 
-**Telegramボットが応答しない** -- 接続を完了するため、Telegramからペアリングコードメッセージを、OpenClawチャット内に直接メッセージとして送ってください。
+**Telegram ボットが応答しない** -- DM ペアリングが必要な場合、不明な送信者には返信の代わりに短いペアリングコードが送られます。OpenClaw ダッシュボードチャットから承認するか、コンテナへのシェルアクセスがある場合は `openclaw pairing approve telegram <CODE>` で承認します。[ペアリング](/ja-JP/channels/pairing)を参照してください。
 
 ## 次のステップ
 
-- [Channels](/ja-JP/channels) -- Telegram、WhatsApp、Discord などを接続する
-- [Gateway設定](/ja-JP/gateway/configuration) -- すべての設定オプション
+- [チャネル](/ja-JP/channels) -- Telegram、WhatsApp、Discord などを接続
+- [Gateway 構成](/ja-JP/gateway/configuration) -- すべての構成オプション
 
 ## 関連
 
 - [インストール概要](/ja-JP/install)
-- [VPSホスティング](/ja-JP/vps)
+- [VPS ホスティング](/ja-JP/vps)
 - [DigitalOcean](/ja-JP/install/digitalocean)

@@ -1,20 +1,20 @@
 ---
 summary: /cli/message にリダイレクト
-title: ポーリング
+title: 投票
 x-i18n:
-    generated_at: "2026-04-24T04:45:00Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-05T11:00:50Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-このページは[Message tool](/ja-JP/cli/message)に移動しました。ポーリングに関するドキュメントは[Message tool](/ja-JP/cli/message)を参照してください。
+このページは移動しました。`openclaw message poll` フラグやチャンネルごとの制限を含むポーリングのドキュメントは、[メッセージツール](/ja-JP/cli/message)にあります。
 
 ## 関連
 
-- [Webhook](/ja-JP/automation/cron-jobs)
+- [Webhook](/ja-JP/automation/cron-jobs#webhooks)
 - [スケジュールされたタスク](/ja-JP/automation/cron-jobs)
 - [バックグラウンドタスク](/ja-JP/automation/tasks)

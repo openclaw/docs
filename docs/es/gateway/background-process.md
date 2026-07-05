@@ -1,109 +1,108 @@
 ---
 read_when:
-    - Añadir o modificar el comportamiento de ejecución en segundo plano
-    - Depurar tareas exec de larga duración
-summary: Ejecución en segundo plano y gestión de procesos
-title: Ejecución en segundo plano y herramienta de procesos
+    - Agregar o modificar el comportamiento de exec en segundo plano
+    - Depuración de tareas exec de larga duración
+summary: Ejecución en segundo plano con exec y gestión de procesos
+title: Herramienta de ejecución en segundo plano y procesos
 x-i18n:
-    generated_at: "2026-06-27T11:22:47Z"
+    generated_at: "2026-07-05T11:16:36Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5822c1e26b0144c5216ae6e59e279ccc506cf4c0a42b8cd6c386f535fe458bd3
+    source_hash: 6a4cd16585ee31038f5a9849add94ddc5056591d2f04523375b0a3f570a301c6
     source_path: gateway/background-process.md
     workflow: 16
 ---
 
-OpenClaw ejecuta comandos de shell mediante la herramienta `exec` y conserva las tareas de larga duración en memoria. La herramienta `process` gestiona esas sesiones en segundo plano.
+OpenClaw ejecuta comandos de shell mediante la herramienta `exec` y conserva las tareas de larga duración en memoria. La herramienta `process` administra esas sesiones en segundo plano.
 
-## Herramienta exec
+## herramienta exec
 
-Parámetros clave:
+Parámetros:
 
-- `command` (obligatorio)
-- `yieldMs` (predeterminado 10000): pasa automáticamente a segundo plano después de este retraso
-- `background` (bool): pasa a segundo plano inmediatamente
-- `timeout` (segundos, predeterminado `tools.exec.timeoutSec`): finaliza el proceso después de este tiempo de espera; establece `timeout: 0` solo para desactivar el tiempo de espera del proceso exec en esa llamada
-- `elevated` (bool): ejecuta fuera del sandbox si el modo elevado está habilitado/permitido (`gateway` de forma predeterminada, o `node` cuando el destino de exec es `node`)
-- ¿Necesitas un TTY real? Establece `pty: true`.
-- `workdir`, `env`
+| Parámetro    | Descripción                                                                                                                                                                 |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `command`    | Obligatorio. Comando de shell que se va a ejecutar.                                                                                                                         |
+| `workdir`    | Directorio de trabajo; omítelo para usar el cwd predeterminado.                                                                                                             |
+| `env`        | Variables de entorno adicionales para el comando.                                                                                                                           |
+| `yieldMs`    | Milisegundos que se esperarán antes de enviar al segundo plano (valor predeterminado: 10000).                                                                                |
+| `background` | Ejecutar en segundo plano inmediatamente.                                                                                                                                   |
+| `timeout`    | Tiempo de espera en segundos (valor predeterminado: `tools.exec.timeoutSec`); mata el proceso al vencer. Define `timeout: 0` para desactivar el tiempo de espera del proceso exec para esa llamada. |
+| `pty`        | Ejecutar en una pseudoterminal cuando esté disponible (CLI que requieren TTY, agentes de programación).                                                                     |
+| `elevated`   | Ejecutar fuera del sandbox si el modo elevado está habilitado/permitido (`gateway` de forma predeterminada, o `node` cuando el destino de exec es `node`).                  |
+| `host`       | Destino de exec: `auto`, `sandbox`, `gateway` o `node`.                                                                                                                     |
+| `node`       | Id/nombre de Node, usado con `host: "node"`.                                                                                                                                |
 
 Comportamiento:
 
 - Las ejecuciones en primer plano devuelven la salida directamente.
-- Cuando se pasa a segundo plano (explícitamente o por tiempo de espera), la herramienta devuelve `status: "running"` + `sessionId` y una breve cola de salida.
-- Las ejecuciones en segundo plano y con `yieldMs` heredan `tools.exec.timeoutSec` salvo que la llamada proporcione un `timeout` explícito.
-- La salida se conserva en memoria hasta que se consulte o se borre la sesión.
+- Cuando se envía al segundo plano (explícitamente o mediante el tiempo de espera de `yieldMs`), la herramienta devuelve `status: "running"` + `sessionId` y una cola breve de salida.
+- Las ejecuciones en segundo plano y con `yieldMs` heredan `tools.exec.timeoutSec` salvo que la llamada pase un `timeout` explícito.
+- La salida permanece en memoria hasta que se sondea o se borra la sesión.
 - Si la herramienta `process` no está permitida, `exec` se ejecuta de forma síncrona e ignora `yieldMs`/`background`.
-- Los comandos exec iniciados reciben `OPENCLAW_SHELL=exec` para reglas de shell/perfil con reconocimiento de contexto.
-- Para trabajos de larga duración que empiezan ahora, inícialos una vez y confía en la reactivación automática
-  de finalización cuando esté habilitada y el comando emita salida o falle.
-- Si la reactivación automática de finalización no está disponible, o necesitas confirmación de
-  éxito silencioso para un comando que salió correctamente sin salida, usa `process`
-  para confirmar la finalización.
-- No emules recordatorios ni seguimientos diferidos con bucles `sleep` o sondeos
-  repetidos; usa cron para trabajo futuro.
+- Los comandos exec generados reciben `OPENCLAW_SHELL=exec` para reglas de shell/perfil conscientes del contexto.
+- Para trabajo de larga duración que empieza ahora: inícialo una vez y confía en la activación automática al completarse (cuando esté habilitada) una vez que el comando emita salida o falle.
+- Si la activación automática al completarse no está disponible, o necesitas confirmar éxito silencioso para un comando que sale correctamente sin salida, sondea con `process`.
+- No emules recordatorios ni seguimientos diferidos con bucles `sleep` o sondeos repetidos; usa cron para trabajo futuro.
 
-## Puente de procesos secundarios
+### Sobrescrituras de entorno
 
-Al iniciar procesos secundarios de larga duración fuera de las herramientas exec/process (por ejemplo, reinicios de CLI o ayudantes de gateway), adjunta el ayudante de puente de procesos secundarios para que las señales de terminación se reenvíen y los listeners se desvinculen al salir o producirse un error. Esto evita procesos huérfanos en systemd y mantiene un comportamiento de apagado coherente entre plataformas.
+| Variable                                 | Efecto                                                                                                                     |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_BASH_YIELD_MS`                 | Espera predeterminada antes de enviar al segundo plano (ms). Valor predeterminado: 10000, limitado a 10-120000.            |
+| `OPENCLAW_BASH_MAX_OUTPUT_CHARS`         | Límite de salida en memoria (caracteres).                                                                                  |
+| `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS` | Límite de stdout/stderr pendiente por flujo (caracteres).                                                                  |
+| `OPENCLAW_BASH_JOB_TTL_MS`               | TTL para sesiones finalizadas (ms), limitado a 1m-3h.                                                                      |
+| `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`    | Umbral de salida inactiva antes de que las sesiones en segundo plano escribibles se marquen como probablemente esperando entrada. Valor predeterminado: 15000. |
 
-Sobrescrituras de entorno:
+### Configuración (preferida sobre las sobrescrituras de entorno)
 
-- `OPENCLAW_BASH_YIELD_MS`: espera predeterminada (ms)
-- `OPENCLAW_BASH_MAX_OUTPUT_CHARS`: límite de salida en memoria (caracteres)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: límite de stdout/stderr pendiente por flujo (caracteres)
-- `OPENCLAW_BASH_JOB_TTL_MS`: TTL para sesiones finalizadas (ms, limitado a 1m–3h)
-- `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`: umbral de salida inactiva antes de que las sesiones en segundo plano escribibles se marquen como probablemente esperando entrada (predeterminado 15000 ms)
+| Clave                                 | Predeterminado | Efecto                                                                                  |
+| ------------------------------------- | -------------- | --------------------------------------------------------------------------------------- |
+| `tools.exec.backgroundMs`             | 10000          | Igual que `OPENCLAW_BASH_YIELD_MS`.                                                     |
+| `tools.exec.timeoutSec`               | 1800           | Tiempo de espera predeterminado por llamada.                                            |
+| `tools.exec.cleanupMs`                | 1800000        | Igual que `OPENCLAW_BASH_JOB_TTL_MS`.                                                   |
+| `tools.exec.notifyOnExit`             | true           | Encola un evento del sistema + solicita Heartbeat cuando sale un exec en segundo plano. |
+| `tools.exec.notifyOnExitEmptySuccess` | false          | También encola eventos de finalización para ejecuciones en segundo plano correctas sin salida. |
 
-Configuración (preferida):
+## Puente de procesos hijos
 
-- `tools.exec.backgroundMs` (predeterminado 10000)
-- `tools.exec.timeoutSec` (predeterminado 1800)
-- `tools.exec.cleanupMs` (predeterminado 1800000)
-- `tools.exec.notifyOnExit` (predeterminado true): encola un evento del sistema + solicita Heartbeat cuando sale un exec en segundo plano.
-- `tools.exec.notifyOnExitEmptySuccess` (predeterminado false): cuando es true, también encola eventos de finalización para ejecuciones en segundo plano correctas que no produjeron salida.
+Al generar procesos hijos de larga duración fuera de las herramientas exec/process (reinicios de CLI, helpers de gateway), adjunta el helper de puente de procesos hijos para que las señales de terminación se reenvíen y los listeners se desprendan al salir/error. Esto evita procesos huérfanos en systemd y mantiene un apagado coherente entre plataformas.
 
-## Herramienta process
+## herramienta process
 
 Acciones:
 
-- `list`: sesiones en ejecución + finalizadas
-- `poll`: drena nueva salida de una sesión (también informa el estado de salida)
-- `log`: lee la salida agregada y muestra sugerencias de recuperación de entrada (admite `offset` + `limit`)
-- `write`: envía stdin (`data`, `eof` opcional)
-- `send-keys`: envía tokens de tecla o bytes explícitos a una sesión respaldada por PTY
-- `submit`: envía Enter / retorno de carro a una sesión respaldada por PTY
-- `paste`: envía texto literal, opcionalmente envuelto en modo de pegado entre corchetes
-- `kill`: termina una sesión en segundo plano
-- `clear`: elimina una sesión finalizada de la memoria
-- `remove`: finaliza si está en ejecución; de lo contrario, borra si está finalizada
+| Acción      | Efecto                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| `list`      | Sesiones en ejecución + finalizadas.                                                             |
+| `poll`      | Drenar salida nueva de una sesión (también informa el estado de salida).                         |
+| `log`       | Leer salida agregada y pistas de recuperación de entrada. Admite `offset` + `limit`.             |
+| `write`     | Enviar stdin (`data`, `eof` opcional).                                                           |
+| `send-keys` | Enviar tokens de tecla explícitos o bytes a una sesión respaldada por PTY.                       |
+| `submit`    | Enviar Enter/retorno de carro a una sesión respaldada por PTY.                                   |
+| `paste`     | Enviar texto literal, opcionalmente envuelto en modo de pegado entre corchetes.                  |
+| `kill`      | Terminar una sesión en segundo plano.                                                            |
+| `clear`     | Eliminar una sesión finalizada de la memoria.                                                    |
+| `remove`    | Matar si está en ejecución; de lo contrario, borrar si finalizó.                                 |
 
 Notas:
 
-- Solo las sesiones en segundo plano se listan/persisten en memoria.
-- Las sesiones se pierden al reiniciar el proceso (sin persistencia en disco).
-- Los registros de sesión solo se guardan en el historial del chat si ejecutas `process poll/log` y se registra el resultado de la herramienta.
-- `process` tiene ámbito por agente; solo ve las sesiones iniciadas por ese agente.
-- Usa `poll` / `log` para estado, registros, confirmación de éxito silencioso o
-  confirmación de finalización cuando la reactivación automática de finalización no esté disponible.
-- Usa `log` antes de recuperar una CLI interactiva para que la transcripción actual,
-  el estado de stdin y la sugerencia de espera de entrada sean visibles juntos.
-- Usa `write` / `send-keys` / `submit` / `paste` / `kill` cuando necesites entrada
-  o intervención.
+- Solo se listan/persisten las sesiones en segundo plano: únicamente en memoria, no en disco. Las sesiones se pierden al reiniciar el proceso.
+- Los registros de sesión solo se guardan en el historial de chat si ejecutas `process poll`/`log` y se registra el resultado de la herramienta.
+- `process` tiene alcance por agente; solo ve las sesiones iniciadas por ese agente.
+- Usa `poll`/`log` para estado, registros o confirmación de finalización cuando la activación automática al completarse no esté disponible.
+- Usa `log` antes de recuperar una CLI interactiva, para que la transcripción actual, el estado de stdin y la pista de espera de entrada sean visibles juntos.
+- Usa `write`/`send-keys`/`submit`/`paste`/`kill` cuando necesites entrada o intervención.
 - `process list` incluye un `name` derivado (verbo del comando + destino) para revisiones rápidas.
-- `process list`, `poll` y `log` informan `waitingForInput` solo
-  cuando la sesión todavía tiene stdin escribible y ha estado inactiva más tiempo que el
-  umbral de espera de entrada.
-- `process log` usa `offset`/`limit` basados en líneas.
-- Cuando se omiten tanto `offset` como `limit`, devuelve las últimas 200 líneas e incluye una sugerencia de paginación.
-- Cuando se proporciona `offset` y se omite `limit`, devuelve desde `offset` hasta el final (sin limitar a 200).
-- El sondeo es para estado bajo demanda, no para programar bucles de espera. Si el trabajo debe
-  ocurrir más tarde, usa cron en su lugar.
+- `process list`, `poll` y `log` informan `waitingForInput` solo cuando la sesión todavía tiene stdin escribible y ha estado inactiva más tiempo que el umbral de espera de entrada (valor predeterminado: 15000 ms, `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`).
+- `process log` usa `offset`/`limit` basados en líneas. Cuando ambos se omiten, devuelve las últimas 200 líneas con una pista de paginación. Cuando se establece `offset` y `limit` no, devuelve desde `offset` hasta el final (sin limitar a 200).
+- El `timeout` de `poll` espera hasta esa cantidad de milisegundos antes de devolver; los valores superiores a 30000 se limitan a 30000.
+- El sondeo es para estado bajo demanda, no para programar bucles de espera. Si el trabajo debe ocurrir más tarde, usa cron.
 
 ## Ejemplos
 
-Ejecuta una tarea larga y consúltala más tarde:
+Ejecutar una tarea larga y sondear más tarde:
 
 ```json
 { "tool": "exec", "command": "sleep 5 && echo done", "yieldMs": 1000 }
@@ -113,37 +112,37 @@ Ejecuta una tarea larga y consúltala más tarde:
 { "tool": "process", "action": "poll", "sessionId": "<id>" }
 ```
 
-Inspecciona una sesión interactiva antes de enviar entrada:
+Inspeccionar una sesión interactiva antes de enviar entrada:
 
 ```json
 { "tool": "process", "action": "log", "sessionId": "<id>" }
 ```
 
-Inicia inmediatamente en segundo plano:
+Iniciar inmediatamente en segundo plano:
 
 ```json
 { "tool": "exec", "command": "npm run build", "background": true }
 ```
 
-Envía stdin:
+Enviar stdin:
 
 ```json
 { "tool": "process", "action": "write", "sessionId": "<id>", "data": "y\n" }
 ```
 
-Envía teclas PTY:
+Enviar teclas PTY:
 
 ```json
 { "tool": "process", "action": "send-keys", "sessionId": "<id>", "keys": ["C-c"] }
 ```
 
-Envía la línea actual:
+Enviar la línea actual:
 
 ```json
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-Pega texto literal:
+Pegar texto literal:
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
@@ -151,5 +150,5 @@ Pega texto literal:
 
 ## Relacionado
 
-- [Herramienta exec](/es/tools/exec)
+- [Herramienta Exec](/es/tools/exec)
 - [Aprobaciones de exec](/es/tools/exec-approvals)

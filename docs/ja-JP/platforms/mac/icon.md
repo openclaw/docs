@@ -1,42 +1,50 @@
 ---
 read_when:
     - メニューバーアイコンの動作を変更する
-summary: macOS における OpenClaw のメニューバーアイコンの状態とアニメーション
+summary: macOS 版 OpenClaw のメニューバーアイコンの状態とアニメーション
 title: メニューバーアイコン
 x-i18n:
-    generated_at: "2026-05-06T09:07:14Z"
+    generated_at: "2026-07-05T11:34:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
+    source_hash: b7a096ad148e83f368624e750c1e50c965d8a34a6255a09a19c568e7e88a5868
     source_path: platforms/mac/icon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # メニューバーアイコンの状態
 
-著者: steipete · 更新日: 2025-12-06 · スコープ: macOS アプリ (`apps/macos`)
+範囲: macOS アプリ (`apps/macos`)。レンダリング: `CritterIconRenderer.makeIcon(...)`。アニメーション/状態の配線: `CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`。
 
-- **アイドル:** 通常のアイコンアニメーション（まばたき、時折の小さな揺れ）。
-- **一時停止:** ステータス項目は `appearsDisabled` を使用し、動きはありません。
-- **音声トリガー（大きな耳）:** 音声ウェイク検出器は、ウェイクワードが聞こえたときに `AppState.triggerVoiceEars(ttl: nil)` を呼び出し、発話のキャプチャ中は `earBoostActive=true` を維持します。耳は拡大（1.9 倍）し、読みやすさのために円形の耳穴が付き、その後 1 秒間の無音後に `stopVoiceEars()` で元に戻ります。アプリ内音声パイプラインからのみ発火します。
-- **作業中（エージェント実行中）:** `AppState.isWorking=true` は「しっぽ/脚が小走りする」マイクロモーションを駆動します。作業の進行中は、脚の揺れが速くなり、わずかなオフセットが加わります。現在は WebChat エージェント実行の前後で切り替えられています。他の長時間タスクを接続するときは、同じ切り替えを追加してください。
+## 状態
 
-接続ポイント
+| 状態                  | トリガー                                  | 見た目                                                                                              |
+| --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| アイドル              | デフォルト                                | 通常のまばたき/揺れアニメーション                                                                  |
+| 一時停止              | `isPaused=true`                           | ステータス項目が `appearsDisabled` を使用し、動きなし                                               |
+| 音声ウェイク (大きな耳) | ウェイクワードを検知                      | 耳が `earHoles=true` (読みやすさのための円形の穴) で `1.9x` に拡大し、無音後に戻る                 |
+| 作業中                | `isWorking=true` またはアクティブな `IconState` | より速い脚の揺れ (`legWiggle` は最大 `1.0`) に小さな水平オフセットを追加し、アイドル時の揺れに加算 |
 
-- 音声ウェイク: runtime/tester は、トリガー時に `AppState.triggerVoiceEars(ttl: nil)` を呼び出し、キャプチャウィンドウに合わせて 1 秒間の無音後に `stopVoiceEars()` を呼び出します。
-- エージェントのアクティビティ: 作業区間の前後で `AppStateStore.shared.setWorking(true/false)` を設定します（WebChat エージェント呼び出しでは対応済み）。アニメーションが停止しない状態を避けるため、区間は短く保ち、`defer` ブロックでリセットしてください。
+セッションにアクティブなジョブまたはツールがある場合、ツールアクティビティバッジ (SF Symbol のパック、例: exec 用の `chevron.left.slash.chevron.right`) を同じクリッターアイコンの上に描画できる。このバッジは `IconState`/`ActivityKind` から来る。完全な状態モデルについては [メニューバー](/ja-JP/platforms/mac/menu-bar) を参照。
 
-形状とサイズ
+## 音声ウェイクの耳
 
-- ベースアイコンは `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)` で描画されます。
-- 耳のスケールのデフォルトは `1.0` です。音声ブーストでは全体フレームを変更せずに `earScale=1.9` を設定し、`earHoles=true` を切り替えます（18×18 pt のテンプレート画像を 36×36 px の Retina バッキングストアにレンダリング）。
-- 小走りは、最大約 1.0 の脚の揺れと小さな水平の揺さぶりを使用します。既存のアイドル時の揺れがある場合は、それに加算されます。
+- トリガー: `AppStateStore.shared.triggerVoiceEars(ttl: nil)`。音声ウェイクのキャプチャパイプライン (`VoiceWakeRuntime`) と、音声ウェイクのデバッグ/テストツール (`VoiceWakeTester`, `VoiceWakeOverlayController`) から呼び出される。
+- 停止: `stopVoiceEars()`。キャプチャの確定時に呼び出される。
+- 確定前の無音ウィンドウ: 通常は `2.0s`。トリガーワードだけが聞こえ、その後に発話が続かなかった場合は `5.0s` (`VoiceWakeRuntime.silenceWindow` / `triggerOnlySilenceWindow`)。
+- ブースト中は、アイドルのまばたき/揺れ/脚/耳のタイマーが一時停止される (`earBoostActive` が `CritterStatusLabel+Behavior` のアニメーションタスクをゲートする)。
 
-動作上の注意
+## 形状とサイズ
 
-- 耳/作業中の外部 CLI/broker 切り替えはありません。意図しないばたつきを避けるため、アプリ自身のシグナル内部に保ってください。
-- ジョブがハングした場合でもアイコンがすぐに基準状態へ戻るように、TTL は短く（&lt;10 秒）保ってください。
+- キャンバス: 18x18pt のテンプレート画像。Retina でアイコンを鮮明に保つため、36x36px のビットマップバッキングストア (2x) にレンダリングされる。
+- 耳のスケールはデフォルトで `1.0`。音声ブーストでは全体のフレームを変えずに `earScale=1.9` と `earHoles=true` を設定する。
+- 脚の小走りは、小さな水平ジグルとともに最大 `1.0` の `legWiggle` を使用する。
+
+## 挙動上の注意
+
+- 耳や作業中状態の外部 CLI/ブローカートグルはない。どちらも偶発的なばたつきを避けるため、アプリシグナル (`AppState.setWorking`, `AppState.triggerVoiceEars`) によって内部的に駆動される。
+- ジョブがハングした場合にアイコンがすばやくベースラインへ戻るよう、新しい TTL は短く (10s を大きく下回る) 保つ。
 
 ## 関連
 

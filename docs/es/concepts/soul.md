@@ -2,58 +2,41 @@
 read_when:
     - Quieres que tu agente suene menos genérico
     - Estás editando SOUL.md
-    - Quieres una personalidad más marcada sin comprometer la seguridad ni la brevedad
-summary: Usa SOUL.md para darle a tu agente de OpenClaw una voz real en lugar de la palabrería genérica de un asistente
-title: Guía de personalidad SOUL.md
+    - Quieres una personalidad más marcada sin romper la seguridad ni la brevedad
+summary: Usa SOUL.md para darle a tu agente OpenClaw una voz real en lugar de contenido genérico de asistente.
+title: Guía de personalidad de SOUL.md
 x-i18n:
-    generated_at: "2026-06-27T11:20:21Z"
+    generated_at: "2026-07-05T11:16:10Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
+    source_hash: c53531d687ba7a2340b779a419c282c8ba22193ff52f6e21005f3fd3bde88cb2
     source_path: concepts/soul.md
     workflow: 16
 ---
 
-`SOUL.md` es donde vive la voz de tu agente.
+`SOUL.md` es donde vive la voz de tu agente. OpenClaw lo inyecta en las
+sesiones normales, así que tiene peso real: si tu agente suena insulso, evasivo
+o corporativo, este suele ser el archivo que debes corregir.
 
-OpenClaw lo inyecta en las sesiones normales, así que tiene peso real. Si tu agente
-suena insulso, evasivo o extrañamente corporativo, normalmente este es el archivo que hay que corregir.
+## Qué debe ir en SOUL.md
 
-## Qué va en SOUL.md
+Pon lo que cambia cómo se siente hablar con el agente: tono, opiniones,
+brevedad, humor, límites, nivel predeterminado de franqueza.
 
-Pon lo que cambia cómo se siente hablar con el agente:
-
-- tono
-- opiniones
-- brevedad
-- humor
-- límites
-- nivel predeterminado de franqueza
-
-**No** lo conviertas en:
-
-- una historia de vida
-- un changelog
-- un volcado de políticas de seguridad
-- un muro enorme de vibras sin efecto en el comportamiento
-
-Corto gana a largo. Preciso gana a vago.
+**No** lo conviertas en una historia de vida, un registro de cambios, un volcado
+de políticas de seguridad ni un muro de vibras sin efecto conductual. Lo corto
+gana a lo largo. Lo preciso gana a lo vago.
 
 ## Por qué funciona
 
-Esto encaja con la guía de prompts de OpenAI:
-
-- La guía de ingeniería de prompts dice que el comportamiento de alto nivel, el tono, los objetivos y
-  los ejemplos pertenecen a la capa de instrucciones de alta prioridad, no enterrados en el
-  turno del usuario.
-- La misma guía recomienda tratar los prompts como algo que iteras,
-  fijas y evalúas, no como prosa mágica que escribes una vez y olvidas.
-
-Para OpenClaw, `SOUL.md` es esa capa.
-
-Si quieres mejor personalidad, escribe instrucciones más fuertes. Si quieres una personalidad estable,
-mantenlas concisas y versionadas.
+Esto se alinea con la guía de prompts de OpenAI: el comportamiento de alto
+nivel, el tono, los objetivos y los ejemplos pertenecen a la capa de
+instrucciones de alta prioridad, no enterrados en el turno del usuario, y los
+prompts deben iterarse, fijarse y evaluarse en lugar de escribirse una vez y
+olvidarse. Para OpenClaw, `SOUL.md` es esa capa: escribe instrucciones más
+fuertes para una mejor personalidad, y mantenlas concisas y versionadas para una
+personalidad estable.
 
 Referencias de OpenAI:
 
@@ -63,8 +46,6 @@ Referencias de OpenAI:
 ## El prompt de Molty
 
 Pega esto en tu agente y deja que reescriba `SOUL.md`.
-
-Ruta fija para espacios de trabajo de OpenClaw: usa `SOUL.md`, no `http://SOUL.md`.
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -83,42 +64,32 @@ Save the new `SOUL.md`. Welcome to having a personality.
 
 ## Cómo se ve algo bueno
 
-Las buenas reglas de `SOUL.md` suenan así:
+Buenas reglas: tener una postura, omitir el relleno, ser gracioso cuando encaja,
+señalar las malas ideas pronto, mantener la concisión salvo que la profundidad
+sea realmente útil.
 
-- tener una postura
-- omitir el relleno
-- ser gracioso cuando encaja
-- señalar las malas ideas pronto
-- mantenerse conciso salvo que la profundidad sea realmente útil
-
-Las malas reglas de `SOUL.md` suenan así:
-
-- mantener la profesionalidad en todo momento
-- proporcionar asistencia integral y reflexiva
-- garantizar una experiencia positiva y de apoyo
-
-Esa segunda lista es cómo acabas con una pasta insípida.
+Malas reglas: "mantener la profesionalidad en todo momento", "proporcionar
+asistencia integral y reflexiva", "garantizar una experiencia positiva y de
+apoyo". Así es como obtienes una masa informe.
 
 ## Una advertencia
 
-La personalidad no es permiso para ser descuidado.
-
-Mantén `AGENTS.md` para las reglas operativas. Mantén `SOUL.md` para la voz, la postura y el
-estilo. Si tu agente trabaja en canales compartidos, respuestas públicas o superficies para clientes,
-asegúrate de que el tono siga encajando con el entorno.
-
-Directo está bien. Molesto no.
+La personalidad no es permiso para ser descuidado. Mantén `AGENTS.md` para las
+reglas operativas; mantén `SOUL.md` para la voz, la postura y el estilo. Si tu
+agente trabaja en canales compartidos, respuestas públicas o superficies de
+clientes, asegúrate de que el tono siga encajando con el entorno. Lo directo es
+bueno. Lo molesto no.
 
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Agent workspace" href="/es/concepts/agent-workspace" icon="folder-open">
+  <Card title="Espacio de trabajo del agente" href="/es/concepts/agent-workspace" icon="folder-open">
     Archivos del espacio de trabajo que OpenClaw inyecta en el contexto del modelo.
   </Card>
-  <Card title="System prompt" href="/es/concepts/system-prompt" icon="message-lines">
-    Cómo `SOUL.md` se compone en el contexto de ejecución de OpenClaw y Codex.
+  <Card title="Prompt del sistema" href="/es/concepts/system-prompt" icon="message-lines">
+    Cómo `SOUL.md` se compone en el contexto de runtime de OpenClaw y Codex.
   </Card>
-  <Card title="SOUL.md template" href="/es/reference/templates/SOUL" icon="file-lines">
+  <Card title="Plantilla de SOUL.md" href="/es/reference/templates/SOUL" icon="file-lines">
     Plantilla inicial para un archivo de personalidad.
   </Card>
 </CardGroup>

@@ -2,19 +2,19 @@
 summary: 重定向到 /automation/cron-jobs
 title: Webhooks
 x-i18n:
-    generated_at: "2026-04-23T22:55:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
-    source_path: automation/webhook.md
-    workflow: 15
+    generated_at: "2026-07-05T11:00:53Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: fde1180946aef371d4e44b24f3880f28e935a033c9a722ea3b188f893faf9e17
+    source_path: automation/webhook.md
+    workflow: 16
 ---
 
-此页面已移至 [计划任务](/zh-CN/automation/cron-jobs#webhooks)。有关网络钩子文档，请参见 [计划任务](/zh-CN/automation/cron-jobs#webhooks)。
+此页面已移动。Webhook 文档现在位于 [定时任务](/zh-CN/automation/cron-jobs#webhooks)。
 
 ## 相关内容
 
-- [轮询](/zh-CN/cli/message)
+- [投票](/zh-CN/cli/message)
 - [Gmail PubSub](/zh-CN/automation/cron-jobs)
-- [钩子](/zh-CN/automation/hooks)
+- [Hooks](/zh-CN/automation/hooks)

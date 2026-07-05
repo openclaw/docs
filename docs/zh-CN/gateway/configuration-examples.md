@@ -1,21 +1,21 @@
 ---
 read_when:
     - 学习如何配置 OpenClaw
-    - 正在寻找配置示例
+    - 查找配置示例
     - 首次设置 OpenClaw
-summary: 常见 OpenClaw 设置的 schema 准确配置示例
+summary: 适用于常见 OpenClaw 设置的符合 schema 的配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-06-27T01:59:30Z"
+    generated_at: "2026-07-05T11:16:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-以下示例与当前配置 schema 保持一致。如需完整参考和各字段说明，请参阅[配置](/zh-CN/gateway/configuration)。
+以下示例与当前配置 schema 对齐。完整参考和各字段说明请参阅 [配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
@@ -30,7 +30,7 @@ x-i18n:
 
 保存到 `~/.openclaw/openclaw.json`，然后你就可以从该号码向 bot 发送私信。
 
-### 推荐起始配置
+### 推荐起步配置
 
 ```json5
 {
@@ -66,13 +66,13 @@ x-i18n:
 }
 ```
 
-## 扩展示例（主要选项）
+## 展开示例（主要选项）
 
-> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以。
+> JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以。
 
 ```json5
 {
-  // Environment + shell
+  // 环境 + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +84,7 @@ x-i18n:
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // 凭证配置文件元数据（密钥存放在 auth-profiles.json 中）
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +98,9 @@ x-i18n:
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // 身份按智能体设置 —— 在下面的 agents.list[].identity 上配置。
 
-  // Logging
+  // 日志
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +109,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // 消息格式化
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +118,7 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      visibleReplies: "message_tool", // 为使用工具可靠模型的共享房间选择启用
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,15 +138,15 @@ x-i18n:
     },
   },
 
-  // Tooling
+  // 工具
   tools: {
     media: {
       audio: {
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          { provider: "openai", model: "gpt-4o-transcribe" },
+          // 可选 CLI 回退（Whisper 二进制文件）：
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +159,10 @@ x-i18n:
     },
   },
 
-  // Session behavior
+  // 会话行为
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // 建议用于多用户收件箱
     reset: {
       mode: "daily",
       atHour: 4,
@@ -172,14 +172,14 @@ x-i18n:
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // 时长或 false
+      maxDiskBytes: "500mb", // 可选
+      highWaterBytes: "400mb", // 可选（默认为 maxDiskBytes 的 80%）
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +188,7 @@ x-i18n:
     },
   },
 
-  // Channels
+  // 渠道
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -216,8 +216,8 @@ x-i18n:
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ x-i18n:
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -257,7 +257,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // 被省略 list[].skills 的智能体继承
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +284,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // allow（默认）| block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +299,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // 优先于旧版 perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -323,18 +323,18 @@ x-i18n:
           theme: "helpful sloth",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // 继承 defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // 按智能体覆盖 thinking
+        reasoningDefault: "on", // 按智能体设置 reasoning 可见性
+        fastModeDefault: false, // 按智能体设置快速模式
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // 此智能体不使用 Skills
+        fastModeDefault: true, // 此智能体始终快速运行
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +362,7 @@ x-i18n:
     },
   },
 
-  // Custom model providers
+  // 自定义模型提供商
   models: {
     mode: "merge",
     providers: {
@@ -388,11 +388,11 @@ x-i18n:
     },
   },
 
-  // Cron jobs
+  // Cron 任务
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+    store: "~/.openclaw/cron/jobs.json",
+    maxConcurrentRuns: 8, // 默认值；cron 调度 + 隔离的 cron 智能体轮次执行
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -443,7 +443,7 @@ x-i18n:
     },
   },
 
-  // Gateway + networking
+  // Gateway 网关 + 网络
   gateway: {
     mode: "local",
     port: 18789,
@@ -455,7 +455,7 @@ x-i18n:
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,9 +482,9 @@ x-i18n:
 }
 ```
 
-### 符号链接的同级 Skill 仓库
+### 符号链接的同级 Skills 仓库
 
-当内置 Skill 根目录包含指向同级仓库的符号链接时使用此配置，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
+当内置 Skills 根目录包含指向同级仓库的符号链接时使用此配置，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
 
 ```json5
 {
@@ -497,13 +497,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs` 会将同级仓库作为显式 Skill 根目录扫描。
-- `allowSymlinkTargets` 允许符号链接的 Skill 文件夹解析到该受信任的真实目标根目录，而不会允许任意符号链接逃逸。
-- 要让 Skill Workshop 通过同一个受信任的符号链接目标应用写入，请设置 `skills.workshop.allowSymlinkTargetWrites: true`。
+- `extraDirs` 会将同级仓库作为显式 Skills 根目录扫描。
+- `allowSymlinkTargets` 允许符号链接的 Skills 文件夹解析到该受信任的真实目标根目录，而不允许任意符号链接逃逸。
+- 要允许 Skill Workshop 通过同一个受信任的符号链接目标执行写入，请设置 `skills.workshop.allowSymlinkTargetWrites: true`。
 
 ## 常见模式
 
-### 带有一个覆盖项的共享 Skill 基线
+### 带一个覆盖项的共享 Skills 基线
 
 ```json5
 {
@@ -521,7 +521,7 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共享基线。
-- `agents.list[].skills` 会为某个智能体替换该基线。
+- `agents.list[].skills` 会为单个智能体替换该基线。
 - 当某个智能体不应看到任何 Skills 时，使用 `skills: []`。
 
 ### 多平台设置
@@ -547,7 +547,7 @@ x-i18n:
 
 ### 受信任节点网络自动审批
 
-除非你控制网络路径，否则保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择用精确的 CIDR 或 IP 启用首次节点设备自动审批：
+除非你控制网络路径，否则保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP，为首次节点设备配对启用自动审批：
 
 ```json5
 {
@@ -561,11 +561,11 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它只适用于没有请求范围的新 `role: node` 配对。操作员/浏览器客户端，以及角色、范围、元数据或公钥升级仍然需要手动审批。
+未设置时，此功能保持关闭。它仅适用于没有请求权限范围的全新 `role: node` 配对。操作员/浏览器客户端，以及角色、权限范围、元数据或公钥升级仍然需要手动审批。
 
-### 安全私信模式（共享收件箱 / 多用户私信）
+### 安全私信模式（共享收件箱/多用户私信）
 
-如果不止一个人可以私信你的机器人（`allowFrom` 中有多个条目、对多人批准了配对，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
+如果不止一个人可以向你的 bot 发送私信（`allowFrom` 中有多个条目、为多人批准了配对，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -589,8 +589,8 @@ x-i18n:
 }
 ```
 
-对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认以 ID 优先。
-只有在你明确接受该风险时，才通过每个渠道的 `dangerouslyAllowNameMatching: true` 启用直接可变的名称/邮箱/昵称匹配。
+对于 Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack，发送者授权默认优先使用 ID。
+只有在你明确接受该风险时，才通过每个渠道的 `dangerouslyAllowNameMatching: true` 启用直接可变的姓名/电子邮件/nick 匹配。
 
 ### Anthropic API key + MiniMax 回退
 
@@ -628,7 +628,7 @@ x-i18n:
 }
 ```
 
-### 工作机器人（受限访问）
+### 工作 bot（受限访问）
 
 ```json5
 {
@@ -652,8 +652,8 @@ x-i18n:
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -698,8 +698,8 @@ x-i18n:
 
 - 如果你设置 `dmPolicy: "open"`，匹配的 `allowFrom` 列表必须包含 `"*"`。
 - 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
-- 稍后可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
+- 可稍后添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 请参阅[提供商](/zh-CN/providers)和[故障排查](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
 
 ## 相关
 

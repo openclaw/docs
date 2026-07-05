@@ -1,36 +1,36 @@
 ---
 read_when:
-    - モデルプロバイダーとしてSyntheticを使いたい場合
-    - Synthetic API keyまたはbase URLの設定が必要な場合
-summary: OpenClawでSyntheticのAnthropic互換APIを使う
-title: Synthetic
+    - Synthetic をモデルプロバイダーとして使用する
+    - Synthetic API キーまたはベース URL の設定が必要です
+summary: OpenClaw で Synthetic の Anthropic 互換 API を使用する
+title: 合成
 x-i18n:
-    generated_at: "2026-04-24T05:16:58Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b
-    source_path: providers/synthetic.md
-    workflow: 15
+    generated_at: "2026-07-05T11:42:14Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f1882a34aa1ca52403b92effdbf3b753fd911575af6d8b8aa5d692245b8e8f1b
+    source_path: providers/synthetic.md
+    workflow: 16
 ---
 
-[Synthetic](https://synthetic.new)はAnthropic互換エンドポイントを公開しています。
-OpenClawはこれを`synthetic`プロバイダーとして登録し、Anthropic
-Messages APIを使用します。
+[Synthetic](https://synthetic.new) は Anthropic 互換エンドポイントを公開しています。
+OpenClaw はこれを `synthetic` プロバイダーとしてバンドルし、Anthropic
+Messages API を使用します。
 
-| プロパティ | 値 |
-| -------- | ------------------------------------- |
-| プロバイダー | `synthetic` |
-| 認証 | `SYNTHETIC_API_KEY` |
-| API | Anthropic Messages |
-| Base URL | `https://api.synthetic.new/anthropic` |
+| プロパティ | 値                                    |
+| ---------- | ------------------------------------- |
+| プロバイダー | `synthetic`                           |
+| 認証       | `SYNTHETIC_API_KEY`                   |
+| API        | Anthropic Messages                    |
+| ベース URL | `https://api.synthetic.new/anthropic` |
 
 ## はじめに
 
 <Steps>
-  <Step title="API keyを取得する">
-    Syntheticアカウントから`SYNTHETIC_API_KEY`を取得するか、
-    オンボーディングウィザードに入力を促させてください。
+  <Step title="API キーを取得する">
+    Synthetic アカウントから `SYNTHETIC_API_KEY` を取得するか、オンボーディングで
+    入力を求められるようにします。
   </Step>
   <Step title="オンボーディングを実行する">
     ```bash
@@ -38,17 +38,17 @@ Messages APIを使用します。
     ```
   </Step>
   <Step title="デフォルトモデルを確認する">
-    オンボーディング後、デフォルトモデルは次に設定されます:
-    ```
+    オンボーディングはデフォルトモデルを次に設定します。
+    ```text
     synthetic/hf:MiniMaxAI/MiniMax-M2.5
     ```
   </Step>
 </Steps>
 
 <Warning>
-OpenClawのAnthropic clientはbase URLに自動的に`/v1`を追加するため、
-`https://api.synthetic.new/anthropic`を使ってください（`/anthropic/v1`ではありません）。Syntheticが
-base URLを変更した場合は、`models.providers.synthetic.baseUrl`を上書きしてください。
+OpenClaw の Anthropic クライアントはベース URL に `/v1` を自動的に追加するため、
+`https://api.synthetic.new/anthropic`（`/anthropic/v1` ではない）を使用してください。Synthetic が
+ベース URL を変更した場合は、`models.providers.synthetic.baseUrl` を上書きしてください。
 </Warning>
 
 ## 設定例
@@ -88,46 +88,46 @@ base URLを変更した場合は、`models.providers.synthetic.baseUrl`を上書
 
 ## 組み込みカタログ
 
-すべてのSyntheticモデルはコスト`0`（input/output/cache）を使用します。
+すべての Synthetic モデルはコスト `0`（input/output/cache）を使用します。
 
-| モデルID | コンテキストウィンドウ | 最大トークン | Reasoning | 入力 |
+| モデル ID                                              | コンテキストウィンドウ | 最大トークン | 推論 | 入力         |
 | ------------------------------------------------------ | -------------- | ---------- | --------- | ------------ |
-| `hf:MiniMaxAI/MiniMax-M2.5`                            | 192,000        | 65,536     | no        | text         |
-| `hf:moonshotai/Kimi-K2-Thinking`                       | 256,000        | 8,192      | yes       | text         |
-| `hf:zai-org/GLM-4.7`                                   | 198,000        | 128,000    | no        | text         |
-| `hf:deepseek-ai/DeepSeek-R1-0528`                      | 128,000        | 8,192      | no        | text         |
-| `hf:deepseek-ai/DeepSeek-V3-0324`                      | 128,000        | 8,192      | no        | text         |
-| `hf:deepseek-ai/DeepSeek-V3.1`                         | 128,000        | 8,192      | no        | text         |
-| `hf:deepseek-ai/DeepSeek-V3.1-Terminus`                | 128,000        | 8,192      | no        | text         |
-| `hf:deepseek-ai/DeepSeek-V3.2`                         | 159,000        | 8,192      | no        | text         |
-| `hf:meta-llama/Llama-3.3-70B-Instruct`                 | 128,000        | 8,192      | no        | text         |
-| `hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | 524,000        | 8,192      | no        | text         |
-| `hf:moonshotai/Kimi-K2-Instruct-0905`                  | 256,000        | 8,192      | no        | text         |
-| `hf:moonshotai/Kimi-K2.5`                              | 256,000        | 8,192      | yes       | text + image |
-| `hf:openai/gpt-oss-120b`                               | 128,000        | 8,192      | no        | text         |
-| `hf:Qwen/Qwen3-235B-A22B-Instruct-2507`                | 256,000        | 8,192      | no        | text         |
-| `hf:Qwen/Qwen3-Coder-480B-A35B-Instruct`               | 256,000        | 8,192      | no        | text         |
-| `hf:Qwen/Qwen3-VL-235B-A22B-Instruct`                  | 250,000        | 8,192      | no        | text + image |
-| `hf:zai-org/GLM-4.5`                                   | 128,000        | 128,000    | no        | text         |
-| `hf:zai-org/GLM-4.6`                                   | 198,000        | 128,000    | no        | text         |
-| `hf:zai-org/GLM-5`                                     | 256,000        | 128,000    | yes       | text + image |
-| `hf:deepseek-ai/DeepSeek-V3`                           | 128,000        | 8,192      | no        | text         |
-| `hf:Qwen/Qwen3-235B-A22B-Thinking-2507`                | 256,000        | 8,192      | yes       | text         |
+| `hf:MiniMaxAI/MiniMax-M2.5`                            | 192,000        | 65,536     | いいえ    | text         |
+| `hf:moonshotai/Kimi-K2-Thinking`                       | 256,000        | 8,192      | はい      | text         |
+| `hf:zai-org/GLM-4.7`                                   | 198,000        | 128,000    | いいえ    | text         |
+| `hf:deepseek-ai/DeepSeek-R1-0528`                      | 128,000        | 8,192      | いいえ    | text         |
+| `hf:deepseek-ai/DeepSeek-V3-0324`                      | 128,000        | 8,192      | いいえ    | text         |
+| `hf:deepseek-ai/DeepSeek-V3.1`                         | 128,000        | 8,192      | いいえ    | text         |
+| `hf:deepseek-ai/DeepSeek-V3.1-Terminus`                | 128,000        | 8,192      | いいえ    | text         |
+| `hf:deepseek-ai/DeepSeek-V3.2`                         | 159,000        | 8,192      | いいえ    | text         |
+| `hf:meta-llama/Llama-3.3-70B-Instruct`                 | 128,000        | 8,192      | いいえ    | text         |
+| `hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | 524,000        | 8,192      | いいえ    | text         |
+| `hf:moonshotai/Kimi-K2-Instruct-0905`                  | 256,000        | 8,192      | いいえ    | text         |
+| `hf:moonshotai/Kimi-K2.5`                              | 256,000        | 8,192      | はい      | text + image |
+| `hf:openai/gpt-oss-120b`                               | 128,000        | 8,192      | いいえ    | text         |
+| `hf:Qwen/Qwen3-235B-A22B-Instruct-2507`                | 256,000        | 8,192      | いいえ    | text         |
+| `hf:Qwen/Qwen3-Coder-480B-A35B-Instruct`               | 256,000        | 8,192      | いいえ    | text         |
+| `hf:Qwen/Qwen3-VL-235B-A22B-Instruct`                  | 250,000        | 8,192      | いいえ    | text + image |
+| `hf:zai-org/GLM-4.5`                                   | 128,000        | 128,000    | いいえ    | text         |
+| `hf:zai-org/GLM-4.6`                                   | 198,000        | 128,000    | いいえ    | text         |
+| `hf:zai-org/GLM-5`                                     | 256,000        | 128,000    | はい      | text + image |
+| `hf:deepseek-ai/DeepSeek-V3`                           | 128,000        | 8,192      | いいえ    | text         |
+| `hf:Qwen/Qwen3-235B-A22B-Thinking-2507`                | 256,000        | 8,192      | はい      | text         |
 
 <Tip>
-モデル参照は`synthetic/<modelId>`形式を使います。アカウントで利用可能な
-すべてのモデルを見るには、`openclaw models list --provider synthetic`を使用してください。
+モデル参照は `synthetic/<modelId>` の形式を使用します。アカウントで利用可能なすべてのモデルを確認するには、
+`openclaw models list --provider synthetic` を使用してください。
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="モデルallowlist">
-    モデルallowlist（`agents.defaults.models`）を有効にする場合は、
-    使用予定のSyntheticモデルをすべて追加してください。allowlistにないモデルは、
-    エージェントから見えなくなります。
+  <Accordion title="モデル許可リスト">
+    モデル許可リスト（`agents.defaults.models`）を有効にする場合は、使用する予定の
+    すべての Synthetic モデルを追加してください。許可リストに含まれていないモデルは
+    エージェントから非表示になります。
   </Accordion>
 
-  <Accordion title="Base URL上書き">
-    SyntheticがAPIエンドポイントを変更した場合は、設定内でbase URLを上書きしてください。
+  <Accordion title="ベース URL の上書き">
+    Synthetic が API エンドポイントを変更した場合は、ベース URL を上書きしてください。
 
     ```json5
     {
@@ -141,7 +141,7 @@ base URLを変更した場合は、`models.providers.synthetic.baseUrl`を上書
     }
     ```
 
-    OpenClawは自動的に`/v1`を追加することを忘れないでください。
+    OpenClaw は引き続き `/v1` を自動的に追加します。
 
   </Accordion>
 </AccordionGroup>
@@ -149,13 +149,13 @@ base URLを変更した場合は、`models.providers.synthetic.baseUrl`を上書
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ja-JP/concepts/model-providers" icon="layers">
-    プロバイダールール、モデル参照、およびフェイルオーバー動作。
+  <Card title="モデルプロバイダー" href="/ja-JP/concepts/model-providers" icon="layers">
+    プロバイダールール、モデル参照、フェイルオーバー動作。
   </Card>
-  <Card title="Configuration reference" href="/ja-JP/gateway/configuration-reference" icon="gear">
+  <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
     プロバイダー設定を含む完全な設定スキーマ。
   </Card>
   <Card title="Synthetic" href="https://synthetic.new" icon="arrow-up-right-from-square">
-    SyntheticダッシュボードとAPIドキュメント。
+    Synthetic ダッシュボードと API ドキュメント。
   </Card>
 </CardGroup>

@@ -1,86 +1,81 @@
 ---
 read_when:
     - OpenClaw エージェントランタイムのコードまたはテストに取り組む
-    - agent-runtime の lint、typecheck、live test フローの実行
+    - agent-runtime lint、typecheck、ライブテストフローの実行
 summary: 'OpenClaw エージェントランタイムの開発者ワークフロー: ビルド、テスト、ライブ検証'
 title: OpenClaw エージェントランタイムのワークフロー
 x-i18n:
-    generated_at: "2026-06-27T11:57:31Z"
+    generated_at: "2026-07-05T11:28:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: e5150689bc102a372b65b1c9bf0a378c7ccb0578d38a750571887dcbe0650e8a
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-OpenClaw で OpenClaw エージェントランタイムに取り組むための健全なワークフロー。
+OpenClaw リポジトリ内のエージェントランタイム (`src/agents/`) 向け開発者ワークフロー。
 
 ## 型チェックと lint
 
-- デフォルトのローカルゲート: `pnpm check`
+- デフォルトのローカルゲート: `pnpm check` (型チェック、lint、ポリシーガード)
 - ビルドゲート: 変更がビルド出力、パッケージング、または遅延読み込み/モジュール境界に影響する可能性がある場合は `pnpm build`
-- エージェントランタイム変更の完全なランディングゲート: `pnpm check && pnpm test`
+- 完全なプッシュ前ゲート: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
 ## エージェントランタイムテストの実行
 
-Vitest で agent-runtime テストセットを直接実行します。
+エージェントランタイムのユニットスイートを実行します。
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-ライブプロバイダー演習を含めるには:
+最初のグロブには、`agent-tools*`、`agent-settings`、および
+`agent-tool-definition-adapter*` スイートも含まれます。
+
+ライブテストはユニット設定から除外されています。ライブ
+ラッパー経由で実行してください (`OPENCLAW_LIVE_TEST=1` を設定し、プロバイダーの認証情報が必要です)。
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
-
-これは主要なエージェントランタイムのユニットスイートを対象にします。
-
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
 
 ## 手動テスト
 
-推奨フロー:
+- Gateway を開発モードで実行します (`OPENCLAW_SKIP_CHANNELS=1` によりチャンネル接続をスキップ): `pnpm gateway:dev`
+- Gateway 経由でエージェントターンを 1 回トリガーします: `pnpm openclaw agent --message "Hello" --thinking low`
+- 対話的なデバッグには TUI を使用します: `pnpm tui`
 
-- 開発モードで Gateway を実行します。
-  - `pnpm gateway:dev`
-- エージェントを直接トリガーします。
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- インタラクティブなデバッグには TUI を使用します。
-  - `pnpm tui`
-
-ツール呼び出しの動作については、`read` または `exec` アクションをプロンプトし、ツールストリーミングとペイロード処理を確認できるようにします。
+ツール呼び出しの挙動については、`read` または `exec` アクションを促すことで、
+ツールのストリーミングとペイロード処理を確認できます。
 
 ## クリーンスレートリセット
 
-状態は OpenClaw 状態ディレクトリの下にあります。デフォルトは `~/.openclaw` です。`OPENCLAW_STATE_DIR` が設定されている場合は、代わりにそのディレクトリを使用します。
+状態は OpenClaw の状態ディレクトリに保存されます。デフォルトは `~/.openclaw`、
+設定されている場合は `$OPENCLAW_STATE_DIR` です。そのディレクトリからの相対パスは次のとおりです。
 
-すべてをリセットするには:
+| パス                                           | 保持する内容                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `openclaw.json`                                | 設定                                                               |
+| `state/openclaw.sqlite`                        | 共有ランタイム状態データベース                                     |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | エージェントごとのモデル認証プロファイル (API キー + OAuth) とランタイム状態 |
+| `credentials/`                                 | 認証プロファイルストア外のプロバイダー/チャンネル認証情報          |
+| `agents/<agentId>/sessions/`                   | セッショントランスクリプトと `sessions.json` インデックス           |
+| `sessions/`                                    | レガシーな単一エージェントセッションストア (古いインストールのみ) |
+| `workspace/`                                   | デフォルトのエージェントワークスペース (追加エージェントは `workspace-<agentId>` を使用) |
 
-- 設定用の `openclaw.json`
-- モデル認証プロファイル（API キー + OAuth）用の `agents/<agentId>/agent/auth-profiles.json`
-- 認証プロファイルストアの外にまだ存在するプロバイダー/チャネル状態用の `credentials/`
-- エージェントセッション履歴用の `agents/<agentId>/sessions/`
-- セッションインデックス用の `agents/<agentId>/sessions/sessions.json`
-- レガシーパスが存在する場合は `sessions/`
-- 空のワークスペースが必要な場合は `workspace/`
+完全にリセットするには、これらのパスを削除します。より範囲を絞ったリセット:
 
-セッションだけをリセットしたい場合は、そのエージェントの `agents/<agentId>/sessions/` を削除します。認証を保持したい場合は、`agents/<agentId>/agent/auth-profiles.json` と `credentials/` 配下のプロバイダー状態をそのまま残します。
+- セッションのみ: そのエージェントの `agents/<agentId>/sessions/` を削除します。
+- 認証を保持: `agents/<agentId>/agent/openclaw-agent.sqlite` と `credentials/` はそのまま残します。
 
-## 参考資料
+レガシーな `auth-profiles.json` ファイルはランタイムでは読み取られなくなりました。
+`openclaw doctor --fix` がそれらを SQLite ストアにインポートします。
+
+## 参考
 
 - [テスト](/ja-JP/help/testing)
 - [はじめに](/ja-JP/start/getting-started)

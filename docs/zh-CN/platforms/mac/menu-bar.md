@@ -1,33 +1,34 @@
 ---
 read_when:
-    - 调整 Mac 菜单 UI 或状态逻辑
+    - 调整 mac 菜单 UI 或状态逻辑
 summary: 菜单栏状态逻辑以及向用户呈现的内容
 title: 菜单栏
 x-i18n:
-    generated_at: "2026-05-06T02:39:59Z"
+    generated_at: "2026-07-05T11:30:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c569ced20b2f6a639d52d373cc8b55a42d7c015a0b234d5154ce67ac03c2eaf6
+    source_hash: 480a85f383a6495c0e45850a322c0c67c4cc35e21d2d29b4bd86f42fdbf9430a
     source_path: platforms/mac/menu-bar.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## 显示内容
 
-- 我们会在菜单栏图标和菜单的第一行状态中显示当前智能体工作状态。
-- 工作处于活动状态时隐藏健康状态；当所有会话都空闲时恢复显示。
-- 根级“上下文”子菜单包含最近的会话，而不是直接在根菜单中展开它们。
-- 根菜单中的“节点”区块仅列出**设备**（通过 `node.list` 配对的节点），不列出客户端/在线状态条目。
-- 当提供商用量快照可用时，根级“用量”分区会显示在上下文下方；如果可用，随后显示用量成本详情。
+- 当前 Agent 工作状态会显示在菜单栏图标和菜单的第一行状态中。
+- 工作处于活动状态时会隐藏健康状态；所有会话空闲后会恢复显示。
+- 根级“上下文”项会打开一个包含最近会话的子菜单，而不是在根菜单中展开它们。
+- 根菜单中的“节点”块只列出已配对的**设备**（来自 `node.list`），不列出客户端/在线状态条目。
+- 当提供商用量快照可用时，根级“用量”部分会显示在上下文下方；如有可用成本详情，则随后显示。
 
 ## 状态模型
 
-- 会话：事件会携带 `runId`（每次运行）以及负载中的 `sessionKey`。`main` 会话是键 `main`；如果缺失，则回退到最近更新的会话。
-- 优先级：main 始终优先。如果 main 处于活动状态，会立即显示其状态。如果 main 空闲，则显示最近活跃的非 main 会话。我们不会在活动过程中来回切换；只有当前会话进入空闲或 main 变为活动时才会切换。
+- 来源：`WorkActivityStore`（`apps/macos/Sources/OpenClaw/WorkActivityStore.swift`）。
+- 事件以带有 `runId` 的 `ControlAgentEvent` 到达；处理器（`ControlChannel.routeWorkActivity`）从事件载荷读取 `sessionKey`，如果缺失则默认为 `"main"`。
+- 优先级：主会话（默认 `sessionKey == "main"`）始终优先。如果主会话处于活动状态，它的状态会立即显示。如果主会话空闲，则改为显示最近活动的非主会话。存储不会在活动中途切换；只有当前会话变为空闲或主会话变为活动状态时才会切换。
 - 活动类型：
-  - `job`：高级命令执行（`state: started|streaming|done|error`）。
-  - `tool`：`phase: start|result`，带有 `toolName` 和 `meta/args`。
+  - `job`：高级命令执行（`state: started|streaming|done|error|...`）。
+  - `tool`：带有 `name`、可选 `meta`/`args` 的 `phase: start|result`。
 
 ## IconState 枚举（Swift）
 
@@ -36,64 +37,62 @@ x-i18n:
 - `workingOther(ActivityKind)`
 - `overridden(ActivityKind)`（调试覆盖）
 
-### ActivityKind → 字形
+### ActivityKind -> 徽章符号
 
-- `exec` → 💻
-- `read` → 📄
-- `write` → ✍️
-- `edit` → 📝
-- `attach` → 📎
-- 默认 → 🛠️
+`ActivityKind` 包装一个 `ToolKind`（`bash`、`read`、`write`、`edit`、`attach`、`other`）或一个裸 `job`。每种类型都会映射到绘制在小角色图标上的 SF Symbol 徽章（`IconState.badgeSymbolName`）：
+
+| 类型            | 符号                               |
+| --------------- | ---------------------------------- |
+| `bash`          | `chevron.left.slash.chevron.right` |
+| `read`          | `doc`                              |
+| `write`         | `pencil`                           |
+| `edit`          | `pencil.tip`                       |
+| `attach`        | `paperclip`                        |
+| `other` / `job` | `gearshape.fill`                   |
 
 ### 视觉映射
 
-- `idle`：普通小动物。
-- `workingMain`：带字形的徽章、完整着色、腿部“工作中”动画。
-- `workingOther`：带字形的徽章、弱化着色、无疾走动画。
-- `overridden`：无论活动如何，都使用选定的字形/着色。
+- `idle`：普通小角色，无徽章。
+- `workingMain`：带符号的徽章，完整色调（`.primary` 强调级别），腿部“工作中”动画。
+- `workingOther`：带符号的徽章，弱化色调（`.secondary` 强调级别），无快速移动。
+- `overridden`：无论真实活动如何，都使用所选符号/色调。
 
 ## 上下文子菜单
 
-- 根菜单显示一行“上下文”，带有会话数量/状态，并打开一个子菜单。
-- 上下文子菜单标题显示过去 24 小时内的活动会话数量。
-- 每个会话行都会保留其令牌条、时间、预览、思考/详细、重置、压缩和删除操作。
-- 加载中、已断开连接和会话加载错误消息会显示在上下文子菜单内。
-- 提供商用量和用量成本详情保持在上下文下方的根级位置，这样无需打开子菜单也能快速查看。
+- 根菜单显示一行“上下文”，带会话数量/状态；它会打开一个子菜单（`MenuSessionsInjector`）。
+- 子菜单标题显示过去 24 小时内的活动会话数量。
+- 每个会话行都会保留其令牌条、时间、预览、思考/详细开关、重置、压缩和删除操作。
+- 加载中、已断开连接和会话加载错误消息会在上下文子菜单内渲染。
+- 用量和成本部分保持在上下文下方的根级，因此无需打开子菜单也能快速查看。
 
 ## 状态行文本（菜单）
 
-- 工作处于活动状态时：`<Session role> · <activity label>`
-  - 示例：`Main · exec: pnpm test`、`Other · read: apps/macos/Sources/OpenClaw/AppState.swift`。
+- 工作处于活动状态时：`<Session role> · <activity label>`（`MenuContentView` 中的 `"\(roleLabel) · \(activity.label)"`），其中角色标签为“主会话”或“其他”。
 - 空闲时：回退到健康摘要。
 
 ## 事件摄取
 
-- 来源：控制频道 `agent` 事件（`ControlChannel.handleAgentEvent`）。
+- 来源：control-channel `agent` 事件，由 `ControlChannel.routeWorkActivity(from:)` 路由。
 - 解析字段：
-  - `stream: "job"`，带有用于开始/停止的 `data.state`。
-  - `stream: "tool"`，带有 `data.phase`、`name`，以及可选的 `meta`/`args`。
-- 标签：
-  - `exec`：`args.command` 的第一行。
-  - `read`/`write`：缩短后的路径。
-  - `edit`：路径加上从 `meta`/diff 计数推断出的变更类型。
-  - 回退：工具名称。
+  - `stream: "job"`，带有用于启动/停止的 `data.state`。
+  - `stream: "tool"`，带有 `data.phase`、`data.name`、可选 `data.meta`/`data.args`。
+- 工具标签来自 `ToolDisplayRegistry.resolve(name:args:meta:)`；无法解析的名称会回退为原始工具名称。
 
 ## 调试覆盖
 
-- 设置 ▸ 调试 ▸ “图标覆盖”选择器：
+- 设置 > 调试 > “图标覆盖”选择器：
   - `System (auto)`（默认）
-  - `Working: main`（按工具类型）
-  - `Working: other`（按工具类型）
+  - `Working: main` / `Working: other`（按工具类型：bash、read、write、edit、other）
   - `Idle`
-- 通过 `@AppStorage("iconOverride")` 存储；映射到 `IconState.overridden`。
+- 存储在 `UserDefaults` 键 `openclaw.iconOverride` 下；映射到 `IconState.overridden`。
 
-## 测试检查清单
+## 测试清单
 
-- 触发 main 会话任务：验证图标立即切换，且状态行显示 main 标签。
-- main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持稳定直到其完成。
-- 其他会话活动时启动 main：图标立即切换到 main。
-- 快速工具突发：确保徽章不闪烁（工具结果上有 TTL 宽限）。
-- 所有会话空闲后，健康行重新出现。
+- 触发主会话任务：图标立即切换，状态行显示主会话标签。
+- 主会话空闲时触发非主会话任务：图标/状态显示非主会话；保持稳定直到它完成。
+- 另一个会话处于活动状态时启动主会话：图标立即切换到主会话。
+- 快速工具突发：徽章不会闪烁（已完成工具清除前有 2 秒宽限窗口，`WorkActivityStore.toolResultGrace`）。
+- 所有会话空闲后，健康行会重新出现。
 
 ## 相关
 

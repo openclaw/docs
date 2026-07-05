@@ -1,49 +1,45 @@
 ---
 read_when:
-    - 音声添付ファイルに Deepgram の speech-to-text を使いたい場合
-    - Voice Call で Deepgram のストリーミング文字起こしを使いたい場合
-    - Deepgram のクイック設定例が必要な場合
-summary: 受信ボイスノート向けの Deepgram 文字起こし
+    - 音声添付ファイルに Deepgram の音声テキスト変換を使用したい場合
+    - Voice Call 用に Deepgram ストリーミング文字起こしを使用したい
+    - Deepgram設定の簡単な例が必要です
+summary: 受信したボイスメモ向けの Deepgram 文字起こし
 title: Deepgram
 x-i18n:
-    generated_at: "2026-04-25T13:56:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
-    source_path: providers/deepgram.md
-    workflow: 15
+    generated_at: "2026-07-05T11:43:25Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 8b0f407829ba47344ad92c5fe63aacd0ce234909c439c96370e7bd900cadff8b
+    source_path: providers/deepgram.md
+    workflow: 16
 ---
 
-Deepgram は speech-to-text API です。OpenClaw では、
-`tools.media.audio` を通じた受信音声/ボイスノートの文字起こし、および
-`plugins.entries.voice-call.config.streaming` を通じた Voice Call のストリーミング STT に使用されます。
+Deepgram は音声テキスト変換 API です。OpenClaw は `tools.media.audio` を通じた受信音声/ボイスメモの
+文字起こしと、`plugins.entries.voice-call.config.streaming` を通じた Voice Call ストリーミング STT
+にこれを使用します。
 
-バッチ文字起こしでは、OpenClaw は完全な音声ファイルを Deepgram にアップロードし、
-文字起こし結果を返信パイプラインに注入します（`{{Transcript}}` +
-`[Audio]` block）。Voice Call のストリーミングでは、OpenClaw は live な G.711
-u-law frame を Deepgram の WebSocket `listen` endpoint へ転送し、Deepgram が返す partial または
-final transcript を発行します。
+バッチ文字起こしは完全な音声ファイルを Deepgram にアップロードし、
+文字起こし結果を返信パイプライン（`{{Transcript}}` + `[Audio]` ブロック）に注入します。
+Voice Call ストリーミングはライブの G.711 u-law フレームを Deepgram の
+WebSocket `listen` エンドポイントへ転送し、Deepgram が返すたびに部分/最終文字起こしを出力します。
 
-| Detail        | Value                                                      |
+| 詳細        | 値                                                         |
 | ------------- | ---------------------------------------------------------- |
-| Website       | [deepgram.com](https://deepgram.com)                       |
-| Docs          | [developers.deepgram.com](https://developers.deepgram.com) |
-| Auth          | `DEEPGRAM_API_KEY`                                         |
-| Default model | `nova-3`                                                   |
+| ウェブサイト       | [deepgram.com](https://deepgram.com)                       |
+| ドキュメント          | [developers.deepgram.com](https://developers.deepgram.com) |
+| 認証          | `DEEPGRAM_API_KEY`                                         |
+| デフォルトモデル | `nova-3`                                                   |
 
 ## はじめに
 
 <Steps>
-  <Step title="API key を設定する">
-    Deepgram API key を環境変数に追加します。
-
-    ```
+  <Step title="API キーを設定する">
+    ```bash
     DEEPGRAM_API_KEY=dg_...
     ```
-
   </Step>
-  <Step title="音声 provider を有効化する">
+  <Step title="音声プロバイダーを有効にする">
     ```json5
     {
       tools: {
@@ -57,21 +53,22 @@ final transcript を発行します。
     }
     ```
   </Step>
-  <Step title="ボイスノートを送る">
-    接続済みの任意の channel から音声メッセージを送ってください。OpenClaw は
-    Deepgram 経由でそれを文字起こしし、その transcript を返信パイプラインに注入します。
+  <Step title="ボイスメモを送信する">
+    接続済みの任意のチャネルを通じて音声メッセージを送信します。OpenClaw は Deepgram 経由で文字起こしし、
+    文字起こし結果を返信パイプラインに注入します。
   </Step>
 </Steps>
 
 ## 設定オプション
 
-| Option            | Path                                                         | Description                           |
-| ----------------- | ------------------------------------------------------------ | ------------------------------------- |
-| `model`           | `tools.media.audio.models[].model`                           | Deepgram model id（デフォルト: `nova-3`） |
-| `language`        | `tools.media.audio.models[].language`                        | 言語ヒント（任意）                    |
-| `detect_language` | `tools.media.audio.providerOptions.deepgram.detect_language` | 言語検出を有効化（任意）              |
-| `punctuate`       | `tools.media.audio.providerOptions.deepgram.punctuate`       | 句読点付与を有効化（任意）            |
-| `smart_format`    | `tools.media.audio.providerOptions.deepgram.smart_format`    | スマート整形を有効化（任意）          |
+| オプション     | パス                                  | 説明                                  |
+| ---------- | ------------------------------------- | ------------------------------------- |
+| `model`    | `tools.media.audio.models[].model`    | Deepgram モデル ID（デフォルト: `nova-3`） |
+| `language` | `tools.media.audio.models[].language` | 言語ヒント（任意）              |
+
+`providerOptions.deepgram` は追加のクエリパラメーターを Deepgram `/listen` リクエストへ直接マージするため、
+Deepgram がサポートする任意のパラメーター名を使用できます
+（例: `detect_language`, `punctuate`, `smart_format`）:
 
 <Tabs>
   <Tab title="言語ヒントあり">
@@ -113,17 +110,17 @@ final transcript を発行します。
 
 ## Voice Call ストリーミング STT
 
-バンドル済みの `deepgram` Plugin は、Voice Call Plugin 向けの realtime transcription provider も登録します。
+バンドルされた `deepgram` Plugin は、Voice Call Plugin 用のリアルタイム文字起こしプロバイダーも登録します。
 
-| Setting         | Config path                                                             | Default                          |
+| 設定         | 設定パス                                                             | デフォルト                          |
 | --------------- | ----------------------------------------------------------------------- | -------------------------------- |
-| API key         | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | `DEEPGRAM_API_KEY` にフォールバック |
-| Model           | `...deepgram.model`                                                     | `nova-3`                         |
-| Language        | `...deepgram.language`                                                  | （未設定）                       |
-| Encoding        | `...deepgram.encoding`                                                  | `mulaw`                          |
-| Sample rate     | `...deepgram.sampleRate`                                                | `8000`                           |
-| Endpointing     | `...deepgram.endpointingMs`                                             | `800`                            |
-| Interim results | `...deepgram.interimResults`                                            | `true`                           |
+| API キー         | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | `DEEPGRAM_API_KEY` にフォールバック |
+| モデル           | `...deepgram.model`                                                     | `nova-3`                         |
+| 言語        | `...deepgram.language`                                                  | （未設定）                          |
+| エンコーディング        | `...deepgram.encoding`                                                  | `mulaw`                          |
+| サンプルレート     | `...deepgram.sampleRate`                                                | `8000`                           |
+| エンドポイント処理     | `...deepgram.endpointingMs`                                             | `800`                            |
+| 暫定結果 | `...deepgram.interimResults`                                            | `true`                           |
 
 ```json5
 {
@@ -151,38 +148,39 @@ final transcript を発行します。
 ```
 
 <Note>
-Voice Call は、8 kHz G.711 u-law の電話音声を受信します。Deepgram
-streaming provider のデフォルトは `encoding: "mulaw"` と `sampleRate: 8000` なので、
-Twilio の media frame をそのまま直接転送できます。
+Voice Call は電話音声を 8 kHz G.711 u-law として受信します。Deepgram
+ストリーミングプロバイダーはデフォルトで `encoding: "mulaw"` と `sampleRate: 8000` を使用するため、
+Twilio メディアフレームを直接転送できます。
 </Note>
 
-## 注意
+## メモ
 
 <AccordionGroup>
   <Accordion title="認証">
-    認証は標準の provider auth 順序に従います。最も簡単なのは `DEEPGRAM_API_KEY` を使う方法です。
+    認証は標準のプロバイダー認証順序に従います。`DEEPGRAM_API_KEY` が
+    最も簡単な方法です。
   </Accordion>
-  <Accordion title="Proxy とカスタム endpoint">
-    proxy を使用する場合は、`tools.media.audio.baseUrl` と
-    `tools.media.audio.headers` で endpoint または header を上書きします。
+  <Accordion title="プロキシとカスタムエンドポイント">
+    プロキシを使用する場合は、`tools.media.audio.baseUrl` と
+    `tools.media.audio.headers` でエンドポイントまたはヘッダーを上書きします。
   </Accordion>
   <Accordion title="出力動作">
-    出力は他の provider と同じ音声ルールに従います（size cap、timeout、
-    transcript injection）。
+    出力は他のプロバイダーと同じ音声ルール（サイズ上限、タイムアウト、
+    文字起こし注入）に従います。
   </Accordion>
 </AccordionGroup>
 
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Media tools" href="/ja-JP/tools/media-overview" icon="photo-film">
-    音声、画像、および動画処理パイプラインの概要。
+  <Card title="メディアツール" href="/ja-JP/tools/media-overview" icon="photo-film">
+    音声、画像、動画処理パイプラインの概要。
   </Card>
-  <Card title="Configuration" href="/ja-JP/gateway/configuration" icon="gear">
-    media tool 設定を含む完全な設定リファレンス。
+  <Card title="設定" href="/ja-JP/gateway/configuration" icon="gear">
+    メディアツール設定を含む完全な設定リファレンス。
   </Card>
-  <Card title="Troubleshooting" href="/ja-JP/help/troubleshooting" icon="wrench">
-    一般的な問題とデバッグ手順。
+  <Card title="トラブルシューティング" href="/ja-JP/help/troubleshooting" icon="wrench">
+    よくある問題とデバッグ手順。
   </Card>
   <Card title="FAQ" href="/ja-JP/help/faq" icon="circle-question">
     OpenClaw セットアップに関するよくある質問。

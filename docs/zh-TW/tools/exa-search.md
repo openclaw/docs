@@ -1,27 +1,23 @@
 ---
 read_when:
-    - 您想使用 Exa 進行 web_search
+    - 你想使用 Exa 進行 web_search
     - 你需要 EXA_API_KEY
     - 你想要神經搜尋或內容擷取
-summary: Exa AI 搜尋 -- 具備內容擷取的神經與關鍵字搜尋
+summary: Exa AI 搜尋 -- 具內容擷取的神經與關鍵字搜尋
 title: Exa 搜尋
 x-i18n:
-    generated_at: "2026-06-27T20:06:24Z"
+    generated_at: "2026-07-05T11:49:50Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ffbf61b6cb7768898842e27805acc34334544b327d010246da12513218aa465f
+    source_hash: 3ddfd6fb471f92e705facf5a2d02361c1a343b9032fa8e0a7b135af634df65b7
     source_path: tools/exa-search.md
     workflow: 16
 ---
 
-OpenClaw 支援將 [Exa AI](https://exa.ai/) 作為 `web_search` 提供者。Exa
-提供神經、關鍵字與混合搜尋模式，並內建內容
-擷取功能（重點、文字、摘要）。
+[Exa AI](https://exa.ai/) 是一個 `web_search` 提供者，支援神經、關鍵字和混合搜尋模式，並內建內容擷取（重點、文字、摘要）。
 
 ## 安裝外掛
-
-安裝官方外掛，然後重新啟動閘道：
 
 ```bash
 openclaw plugins install @openclaw/exa-plugin
@@ -32,8 +28,7 @@ openclaw gateway restart
 
 <Steps>
   <Step title="建立帳號">
-    前往 [exa.ai](https://exa.ai/) 註冊，並從你的
-    儀表板產生 API 金鑰。
+    在 [exa.ai](https://exa.ai/) 註冊，並從你的儀表板產生 API 金鑰。
   </Step>
   <Step title="儲存金鑰">
     在閘道環境中設定 `EXA_API_KEY`，或透過以下方式設定：
@@ -71,16 +66,15 @@ openclaw gateway restart
 }
 ```
 
-**環境替代方式：**在閘道環境中設定 `EXA_API_KEY`。
-若是閘道安裝，請將它放在 `~/.openclaw/.env`。
+**環境替代方案：**在閘道環境中設定 `EXA_API_KEY`。若是閘道安裝，請放在 `~/.openclaw/.env`。請參閱
+[環境變數](/zh-TW/help/faq#env-vars-and-env-loading)。
 
-## 覆寫基底 URL
+## Base URL 覆寫
 
-當 Exa 搜尋請求應透過相容代理或替代 Exa 端點時，
-設定 `plugins.entries.exa.config.webSearch.baseUrl`。OpenClaw
-會在裸主機前加上 `https://`，並附加 `/search`，除非路徑
-已經以此結尾。解析後的端點會包含在搜尋快取
-金鑰中，因此不同 Exa 端點的結果不會共用。
+設定 `plugins.entries.exa.config.webSearch.baseUrl`，即可將 Exa 搜尋
+請求路由到相容的代理或替代端點。OpenClaw 會透過加上 `https://` 來
+正規化裸主機，並附加 `/search`，除非路徑已經以該字串結尾。解析後的端點是搜尋
+快取鍵的一部分，因此不同端點的結果絕不會共用。
 
 ## 工具參數
 
@@ -88,8 +82,8 @@ openclaw gateway restart
 搜尋查詢。
 </ParamField>
 
-<ParamField path="count" type="number">
-要傳回的結果數量（1–100）。
+<ParamField path="count" type="number" default="5">
+要傳回的結果數量（1-100，受 Exa 搜尋類型限制約束）。
 </ParamField>
 
 <ParamField path="type" type="'auto' | 'neural' | 'fast' | 'deep' | 'deep-reasoning' | 'instant'">
@@ -97,7 +91,7 @@ openclaw gateway restart
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-時間篩選器。
+時間篩選器。不能與 `date_after`/`date_before` 組合使用。
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -114,8 +108,7 @@ openclaw gateway restart
 
 ### 內容擷取
 
-Exa 可以在搜尋結果旁傳回擷取出的內容。傳入 `contents`
-物件即可啟用：
+傳入 `contents` 物件以控制結果中擷取的內容：
 
 ```javascript
 await web_search({
@@ -129,41 +122,37 @@ await web_search({
 });
 ```
 
-| 內容選項        | 類型                                                                  | 說明                   |
-| --------------- | --------------------------------------------------------------------- | ---------------------- |
-| `text`          | `boolean \| { maxCharacters }`                                        | 擷取完整頁面文字       |
-| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | 擷取關鍵句子           |
-| `summary`       | `boolean \| { query }`                                                | AI 產生的摘要          |
+| 內容選項        | 類型                                                                  | 說明             |
+| --------------- | --------------------------------------------------------------------- | ---------------- |
+| `text`          | `boolean \| { maxCharacters }`                                        | 擷取完整頁面文字 |
+| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | 擷取關鍵句子     |
+| `summary`       | `boolean \| { query }`                                                | AI 產生的摘要    |
+
+如果省略 `contents`，Exa 預設為 `{ highlights: true }`，因此結果會包含
+關鍵句子摘錄。結果說明會優先從重點解析，其次是摘要，再來是完整文字 -- 以最先可用者為準。結果
+也會在可用時保留 Exa API 回應中的原始 `highlightScores` 和 `summary` 欄位。
 
 ### 搜尋模式
 
-| 模式             | 說明                              |
-| ---------------- | --------------------------------- |
-| `auto`           | Exa 選擇最佳模式（預設）          |
-| `neural`         | 語意／基於意義的搜尋              |
-| `fast`           | 快速關鍵字搜尋                    |
-| `deep`           | 完整深度搜尋                      |
-| `deep-reasoning` | 具備推理的深度搜尋                |
-| `instant`        | 最快結果                          |
+| 模式             | 說明                         |
+| ---------------- | ---------------------------- |
+| `auto`           | Exa 選擇最佳模式（預設）     |
+| `neural`         | 語意/基於意義的搜尋          |
+| `fast`           | 快速關鍵字搜尋               |
+| `deep`           | 完整深度搜尋                 |
+| `deep-reasoning` | 帶有推理的深度搜尋           |
+| `instant`        | 最快的結果                   |
 
 ## 備註
 
-- 如果未提供 `contents` 選項，Exa 預設為 `{ highlights: true }`，
-  因此結果會包含關鍵句摘錄
-- 可用時，結果會保留 Exa API 回應中的 `highlightScores` 和 `summary`
-  欄位
-- 結果說明會先從重點解析，其次是摘要，再其次是
-  完整文字，以可用者為準
-- `freshness` 與 `date_after`/`date_before` 不能合併使用，請使用一種
-  時間篩選模式
-- 每次查詢最多可傳回 100 筆結果（受 Exa 搜尋類型
-  限制）
-- 結果預設會快取 15 分鐘（可透過
-  `cacheTtlMinutes` 設定）
-- Exa 是官方 API 整合，提供結構化 JSON 回應
+- `count` 最多接受 100，受 Exa 搜尋類型限制約束。
+- 結果預設快取 15 分鐘。設定共用的
+  `tools.web.search.cacheTtlMinutes`（分鐘）和
+  `tools.web.search.timeoutSeconds`（預設 30s），即可變更所有 `web_search` 提供者（包括 Exa）的快取和
+  請求逾時。
 
 ## 相關
 
 - [網頁搜尋概覽](/zh-TW/tools/web) -- 所有提供者與自動偵測
-- [Brave Search](/zh-TW/tools/brave-search) -- 具備國家／語言篩選器的結構化結果
-- [Perplexity Search](/zh-TW/tools/perplexity-search) -- 具備網域篩選的結構化結果
+- [Brave Search](/zh-TW/tools/brave-search) -- 含國家/語言篩選器的結構化結果
+- [Perplexity Search](/zh-TW/tools/perplexity-search) -- 含網域篩選的結構化結果

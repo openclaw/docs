@@ -1,28 +1,27 @@
 ---
 read_when:
-    - 推測されたフォローアップの約束事項を確認したい
-    - 保留中のチェックインを閉じたい場合
-    - Heartbeat が配信する可能性がある内容を監査しています
-summary: '`openclaw commitments` の CLI リファレンス（推論されたフォローアップを確認して却下する）'
+    - 推論されたフォローアップのコミットメントを確認したい
+    - 保留中のチェックインを却下したい
+    - 監査している対象は Heartbeat が配信する可能性のある内容です
+summary: '`openclaw commitments` の CLI リファレンス（推測されたフォローアップの確認と却下）'
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T05:03:39Z"
+    generated_at: "2026-07-05T11:10:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-推論されたフォローアップのコミットメントを一覧表示し、管理します。
+推論されたフォローアップのコミットメントを一覧表示および管理します。
 
-コミットメントは、会話コンテキストから作成される、オプトインで短期間だけ保持されるフォローアップメモリーです。
-概念ガイドについては、[推論されたコミットメント](/ja-JP/concepts/commitments)を参照してください。
+コミットメントはオプトイン（`commitments.enabled`）で、会話コンテキストから作成され、Heartbeat によって配信される短期間のフォローアップメモリです。概念ガイドと設定については、[推論されたコミットメント](/ja-JP/concepts/commitments)を参照してください。
 
 サブコマンドなしの場合、`openclaw commitments` は保留中のコミットメントを一覧表示します。
 
-## 使用法
+## 使用方法
 
 ```bash
 openclaw commitments [--all] [--agent <id>] [--status <status>] [--json]
@@ -33,10 +32,12 @@ openclaw commitments dismiss <id...> [--json]
 ## オプション
 
 - `--all`: 保留中のコミットメントだけでなく、すべてのステータスを表示します。
-- `--agent <id>`: 1つのエージェント id に絞り込みます。
+- `--agent <id>`: 1 つのエージェント ID に絞り込みます。
 - `--status <status>`: ステータスで絞り込みます。値: `pending`、`sent`、
-  `dismissed`、`snoozed`、または `expired`。
+  `dismissed`、`snoozed`、または `expired`。不明な値はエラーで終了します。
 - `--json`: 機械可読な JSON を出力します。
+
+`dismiss` は指定されたコミットメント ID を `dismissed` としてマークし、Heartbeat がそれらを配信しないようにします。
 
 ## 例
 
@@ -46,25 +47,25 @@ openclaw commitments dismiss <id...> [--json]
 openclaw commitments
 ```
 
-保存済みのすべてのコミットメントを一覧表示します。
+保存されているすべてのコミットメントを一覧表示します。
 
 ```bash
 openclaw commitments --all
 ```
 
-1つのエージェントに絞り込みます。
+1 つのエージェントに絞り込みます。
 
 ```bash
 openclaw commitments --agent main
 ```
 
-スヌーズ中のコミットメントを探します。
+スヌーズされたコミットメントを検索します。
 
 ```bash
 openclaw commitments --status snoozed
 ```
 
-1つ以上のコミットメントを却下します。
+1 つ以上のコミットメントを破棄します。
 
 ```bash
 openclaw commitments dismiss cm_abc123 cm_def456
@@ -78,20 +79,22 @@ openclaw commitments --all --json
 
 ## 出力
 
-テキスト出力には次が含まれます。
+テキスト出力では、コミットメント数、ストアパス、有効なフィルター、
+およびコミットメントごとの 1 行が出力されます。
 
-- コミットメント id
+- コミットメント ID
 - ステータス
-- 種類
-- 最も早い期限時刻
-- スコープ
-- 推奨される確認テキスト
+- 種類（`event_check_in`、`deadline_check`、`care_check_in`、または `open_loop`）
+- 最短の期限時刻
+- スコープ（エージェント/チャンネル/ターゲット）
+- 推奨されるチェックインテキスト
 
-JSON 出力には、コミットメントストアのパスと、保存済みレコード全体も含まれます。
+JSON 出力には、件数、有効なステータスおよびエージェントのフィルター、
+コミットメントストアパス、保存されている完全なレコードが含まれます。
 
 ## 関連
 
 - [推論されたコミットメント](/ja-JP/concepts/commitments)
-- [メモリーの概要](/ja-JP/concepts/memory)
+- [メモリの概要](/ja-JP/concepts/memory)
 - [Heartbeat](/ja-JP/gateway/heartbeat)
-- [スケジュール済みタスク](/ja-JP/automation/cron-jobs)
+- [スケジュールされたタスク](/ja-JP/automation/cron-jobs)

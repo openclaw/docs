@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Aprender a configurar OpenClaw
+    - Aprende a configurar OpenClaw
     - Buscando ejemplos de configuración
-    - Configuración de OpenClaw por primera vez
+    - Configurar OpenClaw por primera vez
 summary: Ejemplos de configuración precisos según el esquema para configuraciones comunes de OpenClaw
 title: Ejemplos de configuración
 x-i18n:
-    generated_at: "2026-06-27T11:26:07Z"
+    generated_at: "2026-07-05T11:17:15Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Los ejemplos siguientes están alineados con el esquema de configuración actual. Para ver la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
+Ejemplos a continuación están alineados con el esquema de configuración actual. Para la referencia exhaustiva y notas por campo, consulta [Configuración](/es/gateway/configuration).
 
 ## Inicio rápido
 
@@ -28,7 +28,7 @@ Los ejemplos siguientes están alineados con el esquema de configuración actual
 }
 ```
 
-Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al bot desde ese número.
+Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese número.
 
 ### Inicio recomendado
 
@@ -145,7 +145,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
+          { provider: "openai", model: "gpt-4o-transcribe" },
           // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
@@ -172,7 +172,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
@@ -216,8 +216,8 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -391,7 +391,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
   // Cron jobs
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
+    store: "~/.openclaw/cron/jobs.json",
     maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
@@ -455,7 +455,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,9 +482,9 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
 }
 ```
 
-### Repositorio de Skills hermano con enlace simbólico
+### Repositorio de habilidades hermano con enlace simbólico
 
-Usa esto cuando una raíz de Skill integrada contenga un enlace simbólico hacia un repositorio hermano, por
+Usa esto cuando una raíz de habilidad incorporada contenga un enlace simbólico a un repositorio hermano, por
 ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -498,15 +498,15 @@ ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `extraDirs` escanea el repositorio hermano como una raíz de Skill explícita.
-- `allowSymlinkTargets` permite que las carpetas de Skill con enlace simbólico se resuelvan en esa raíz de destino real
-  de confianza sin permitir escapes arbitrarios por enlace simbólico.
-- Para permitir que Skill Workshop escriba a través del mismo destino de enlace simbólico de confianza,
+- `extraDirs` examina el repositorio hermano como una raíz de habilidad explícita.
+- `allowSymlinkTargets` permite que las carpetas de habilidades con enlaces simbólicos se resuelvan hacia esa raíz
+  de destino real y de confianza sin permitir escapes arbitrarios por enlaces simbólicos.
+- Para permitir que Skill Workshop aplique escrituras mediante el mismo destino de enlace simbólico de confianza,
   establece `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Patrones comunes
 
-### Línea base de Skill compartida con una sobrescritura
+### Línea base de habilidades compartida con una anulación
 
 ```json5
 {
@@ -525,7 +525,7 @@ ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 - `agents.defaults.skills` es la línea base compartida.
 - `agents.list[].skills` reemplaza esa línea base para un agente.
-- Usa `skills: []` cuando un agente no deba ver ninguna Skill.
+- Usa `skills: []` cuando un agente no deba ver Skills.
 
 ### Configuración multiplataforma
 
@@ -550,9 +550,9 @@ ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ### Aprobación automática de red de nodos de confianza
 
-Mantén el emparejamiento de dispositivos manual salvo que controles la ruta de red. Para un
-laboratorio dedicado o una subred tailnet, puedes activar la aprobación automática
-de dispositivos de nodo por primera vez con CIDR o IP exactos:
+Mantén el emparejamiento de dispositivos manual salvo que controles la ruta de red. Para un laboratorio dedicado
+o una subred tailnet, puedes aceptar la aprobación automática de dispositivos de nodo por primera vez
+con CIDR o IP exactos:
 
 ```json5
 {
@@ -566,13 +566,13 @@ de dispositivos de nodo por primera vez con CIDR o IP exactos:
 }
 ```
 
-Esto permanece desactivado cuando no está configurado. Solo se aplica al emparejamiento nuevo con `role: node` y
-sin ámbitos solicitados. Los clientes operador/navegador y las actualizaciones de rol, ámbito, metadatos o
+Esto permanece desactivado cuando no está configurado. Solo se aplica al emparejamiento nuevo de `role: node` sin
+ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o
 clave pública siguen requiriendo aprobación manual.
 
-### Modo de DM seguro (bandeja compartida / DM multiusuario)
+### Modo DM seguro (bandeja compartida / DM multiusuario)
 
-Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo de DM seguro** para que los DM de distintos remitentes no compartan un único contexto de forma predeterminada:
+Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo DM seguro** para que los DM de distintos remitentes no compartan un mismo contexto de forma predeterminada:
 
 ```json5
 {
@@ -596,8 +596,8 @@ Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`,
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente se basa primero en ID de forma predeterminada.
-Habilita la coincidencia directa con nombre/correo electrónico/apodo mutable mediante `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
+Para Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack, la autorización de remitente se basa en el ID de forma predeterminada.
+Habilita la coincidencia directa mutable de nombre/correo electrónico/apodo con `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
 
 ### Clave de API de Anthropic + respaldo de MiniMax
 
@@ -659,8 +659,8 @@ Habilita la coincidencia directa con nombre/correo electrónico/apodo mutable me
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -704,9 +704,9 @@ Habilita la coincidencia directa con nombre/correo electrónico/apodo mutable me
 ## Consejos
 
 - Si configuras `dmPolicy: "open"`, la lista `allowFrom` correspondiente debe incluir `"*"`.
-- Los ID de proveedor difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
+- Los ID de proveedores difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
 - Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para obtener notas de configuración más detalladas.
+- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para ver notas de configuración más detalladas.
 
 ## Relacionado
 

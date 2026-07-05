@@ -1,29 +1,31 @@
 ---
 read_when:
-    - Tailscale + CoreDNS 経由で広域検出（DNS-SD）を使いたい場合
+    - Tailscale + CoreDNS 経由で広域検出 (DNS-SD) を使用したい
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
 summary: '`openclaw dns` の CLI リファレンス（広域検出ヘルパー）'
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T09:03:36Z"
+    generated_at: "2026-07-05T11:11:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-広域ディスカバリー用の DNS ヘルパー (Tailscale + CoreDNS)。現在は macOS + Homebrew CoreDNS に重点を置いています。
+広域検出（Tailscale + CoreDNS）のための DNS ヘルパーです。現在は macOS + Homebrew CoreDNS のみ対応しています。
 
 関連:
 
-- Gateway ディスカバリー: [ディスカバリー](/ja-JP/gateway/discovery)
-- 広域ディスカバリー設定: [設定](/ja-JP/gateway/configuration)
+- Gateway 検出: [Discovery](/ja-JP/gateway/discovery)
+- 広域検出設定: [Configuration](/ja-JP/gateway/configuration)
 
-## セットアップ
+## `dns setup`
+
+ユニキャスト DNS-SD 検出向けの CoreDNS セットアップを計画または適用します。
 
 ```bash
 openclaw dns setup
@@ -31,31 +33,27 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| オプション              | 効果                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `--domain <domain>` | 広域検出ドメイン（例: `openclaw.internal`）。                       |
+| `--apply`           | CoreDNS 設定をインストール/更新し、サービスを（再）起動します。sudo が必要で、macOS のみ対応です。 |
 
-ユニキャスト DNS-SD ディスカバリー用の CoreDNS セットアップを計画または適用します。
+`--domain` がない場合、OpenClaw は設定の `discovery.wideArea.domain` を使用します。
 
-オプション:
+`--apply` がない場合、コマンドは次のみを出力します。
 
-- `--domain <domain>`: 広域ディスカバリードメイン (例: `openclaw.internal`)
-- `--apply`: CoreDNS 設定をインストールまたは更新し、サービスを再起動します (sudo が必要、macOS のみ)
-
-表示内容:
-
-- 解決されたディスカバリードメイン
-- ゾーンファイルパス
+- 解決済みの検出ドメインとゾーンファイルパス
 - 現在の tailnet IP
-- 推奨される `openclaw.json` ディスカバリー設定
-- 設定する Tailscale Split DNS のネームサーバー/ドメイン値
+- 推奨される `openclaw.json` 検出設定
+- Tailscale 管理コンソールで設定する Tailscale Split DNS ネームサーバー/ドメイン値
 
-注記:
+`--apply` を指定した場合（macOS のみ、Homebrew CoreDNS が必要）:
 
-- `--apply` なしでは、このコマンドは計画用ヘルパーのみとして機能し、推奨セットアップを出力します。
-- `--domain` を省略した場合、OpenClaw は設定の `discovery.wideArea.domain` を使用します。
-- `--apply` は現在 macOS のみをサポートし、Homebrew CoreDNS を前提としています。
-- `--apply` は必要に応じてゾーンファイルをブートストラップし、CoreDNS の import スタンザが存在することを確認し、`coredns` brew サービスを再起動します。
+- ゾーンファイルがない場合はブートストラップします
+- CoreDNS の import スタンザがない場合は追加します
+- `coredns` brew サービスを再起動します
 
 ## 関連
 
 - [CLI リファレンス](/ja-JP/cli)
-- [ディスカバリー](/ja-JP/gateway/discovery)
+- [Discovery](/ja-JP/gateway/discovery)

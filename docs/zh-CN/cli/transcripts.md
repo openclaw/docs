@@ -1,27 +1,26 @@
 ---
 read_when:
     - 你想从终端读取已存储的转录摘要
-    - 你需要转录 Markdown 摘要的路径
-    - 你正在调试核心转录记录存储布局
-summary: CLI 参考：`openclaw transcripts`（列出、显示和定位已存储的转录记录）
-title: 转录记录 CLI
+    - 你需要 transcripts Markdown 摘要的路径
+    - 你正在调试核心转录存储布局
+summary: '`openclaw transcripts` 的 CLI 参考（列出、显示和定位已存储的转录记录）'
+title: 文字记录 CLI
 x-i18n:
-    generated_at: "2026-06-27T01:44:02Z"
+    generated_at: "2026-07-05T11:10:36Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ae6010cfb4e051182f1c48d0d728b30d054542e1e7983ff15a2432840193f9c0
+    source_hash: dde02e924339c64cf6acd5c4b6162785dcfccf4a1df2aac0d9d52d5306511579
     source_path: cli/transcripts.md
     workflow: 16
 ---
 
 # `openclaw transcripts`
 
-检查 OpenClaw 核心 `transcripts` 工具写入的转录记录。这个 CLI 是只读的；采集、导入和摘要由智能体工具以及已配置的自动启动来源负责。
+用于检查由 `transcripts` 智能体工具写入的转录记录的只读检查器。
+捕获、导入和摘要生成通过该工具运行，而不是通过此 CLI。
 
-当你想查找昨天的笔记、在编辑器中打开 Markdown 文件、把转录记录提供给另一个工具，或调试某个会话落盘位置时，可以使用这个 CLI。它不会启动或停止采集。
-
-产物位于 OpenClaw 状态目录下：
+工件位于状态目录下：
 
 ```text
 $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
@@ -31,7 +30,8 @@ $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
   summary.md
 ```
 
-默认状态目录是 `~/.openclaw`；设置 `OPENCLAW_STATE_DIR` 可使用其他目录。日期目录来自会话开始时间，会话目录是从会话 id 派生出的安全文件系统片段。
+默认状态目录是 `~/.openclaw`；可用 `OPENCLAW_STATE_DIR` 覆盖。
+日期目录来自会话开始时间；会话目录是从会话 ID 派生的文件系统安全 slug。
 
 ## 命令
 
@@ -49,44 +49,40 @@ openclaw transcripts show <session> --json
 openclaw transcripts path <session> --json
 ```
 
-- `list`：列出已存储的会话、带日期限定的选择器、开始时间、标题和 `summary.md` 路径。
-- `show <session>`：打印已存储的 `summary.md`。
-- `path <session>`：打印 `summary.md` 路径。
-- `path <session> --dir`：打印会话目录。
-- `path <session> --metadata`：打印 `metadata.json`。
-- `path <session> --transcript`：打印 `transcript.jsonl`。
-- `--json`：打印机器可读输出。
+| 命令                          | 说明                                            |
+| ----------------------------- | ----------------------------------------------- |
+| `list`                        | 列出已存储的会话。                              |
+| `show <session>`              | 打印已存储的 `summary.md`。                     |
+| `path <session>`              | 打印 `summary.md` 路径。                        |
+| `path <session> --dir`        | 打印会话目录。                                  |
+| `path <session> --metadata`   | 打印 `metadata.json`。                          |
+| `path <session> --transcript` | 打印 `transcript.jsonl`。                       |
+| `--json`                      | 打印机器可读输出（任意子命令）。                |
 
-当人工设置的会话 id 跨天重复时，请使用 `list` 中带日期限定的选择器，例如 `openclaw transcripts show 2026-05-22/standup`。默认会话 id 包含时间戳和随机后缀；只有在固定会话 id 在当天唯一时才配置它。
+`<session>` 接受裸会话 ID 或带日期限定的选择器
+（`YYYY-MM-DD/<session>`）。当同一个会话 ID 在多天出现时，请使用限定形式，例如 `openclaw transcripts show
+2026-05-22/standup`。默认会话 ID 包含时间戳和随机后缀；只有在该 ID 在当天唯一时，才给会话指定固定 ID。
 
 ## 输出
 
-`list` 每行打印一个会话：
+`list` 每个会话打印一行制表符分隔的内容：选择器、开始时间、标题、摘要路径。
 
 ```text
-2026-05-22/standup  2026-05-22T09:00:00.000Z  Weekly standup  /Users/alex/.openclaw/transcripts/2026-05-22/standup/summary.md
+2026-05-22/standup  2026-05-22T09:00:00.000Z  Weekly standup  /Users/user/.openclaw/transcripts/2026-05-22/standup/summary.md
 ```
 
-输出以制表符分隔。列依次为选择器、开始时间、标题和摘要路径。选择器是传回给 `show` 或 `path` 的最安全取值。
+选择器是传回给 `show` 或 `path` 的最安全值。
 
-`list --json` 打印包含以下字段的对象：
+`list --json` 返回包含 `sessionId`、`selector`、`date`、`title`、
+`startedAt`、`stoppedAt`、`source`、`path`、`summaryPath`、`hasSummary` 的对象。
 
-- `sessionId`
-- `selector`
-- `date`
-- `title`
-- `startedAt`
-- `stoppedAt`
-- `source`
-- `path`
-- `summaryPath`
-- `hasSummary`
+`show --json` 返回已存储的会话元数据、选择器、会话目录、摘要路径和摘要 Markdown 文本。
 
-`show --json` 返回已存储的会话元数据、选择器、会话目录、摘要路径和摘要 Markdown 文本。`path --json` 返回所选路径以及该文件是否存在。
+`path --json` 返回所选路径以及该文件是否存在。
 
-## 每天多场会议
+## 每天多个会话
 
-转录记录先按日期分组，再按会话 id 分组。同一天的十场会议会变成十个同级文件夹：
+会话先按日期分组，再按会话 ID 分组。一天中的十场会议会成为十个同级文件夹：
 
 ```text
 ~/.openclaw/transcripts/2026-05-22/
@@ -95,17 +91,17 @@ openclaw transcripts path <session> --json
   standup/
 ```
 
-大多数自动化场景使用默认生成的 id。只有在同一个 id 不会在同一日期被使用两次时，才使用 `standup` 这样的固定 id。
+自动化场景请使用默认生成的 ID。只有当固定 ID（如 `standup`）不会在同一日期重复时才使用它。
 
 ## 缺少摘要
 
-实时会话会在会话停止时写入 `summary.md`。导入的转录记录会在导入后立即写入 `summary.md`。当采集正在进行、提供商在停止期间失败，或元数据在任何发言到达之前已写入时，会话仍可能出现在 `list` 中但没有摘要。
+实时会话在会话停止时写入 `summary.md`；导入的转录记录会在导入后立即写入它。捕获仍处于活动状态、提供商在停止期间失败，或在任何话语到达前就写入了元数据时，会话可能会出现在 `list` 中但没有摘要。
 
-使用 `path <session> --transcript` 检查只追加的转录记录，并使用 `transcripts` 工具动作 `summarize` 重新生成 Markdown 摘要。
+使用 `path <session> --transcript` 检查原始的仅追加转录记录，或运行 `transcripts` 工具的 `summarize` 操作来重新生成 Markdown 摘要。
 
 ## 配置
 
-转录采集需要显式启用，因为实时来源可以加入并录制会议音频。使用顶层 `transcripts.enabled` 启用该工具：
+捕获是选择加入的（实时来源可以加入并录制会议音频）。通过以下方式启用：
 
 ```json
 {
@@ -116,7 +112,11 @@ openclaw transcripts path <session> --json
 }
 ```
 
-在 `openclaw.json` 中使用 `transcripts.autoStart` 配置自动启动来源。每个条目只要存在即启用；省略某个条目即可禁用对应来源。
+- `enabled`（默认 `false`）：启用该工具。
+- `maxUtterances`（默认 `2000`，限制在 1-10000）：每个会话的话语缓冲区大小。
+
+使用 `transcripts.autoStart` 配置自动启动来源。每个条目只要存在即为启用；省略某个条目即可禁用该来源。`discord-voice`
+是内置的支持自动启动的来源，并且需要 `guildId` 和 `channelId`：
 
 ```json
 {
@@ -127,11 +127,6 @@ openclaw transcripts path <session> --json
         "providerId": "discord-voice",
         "guildId": "1234567890",
         "channelId": "2345678901"
-      },
-      {
-        "providerId": "slack-huddle",
-        "accountId": "workspace",
-        "channelId": "C123"
       }
     ]
   }

@@ -2,30 +2,31 @@
 read_when:
     - 你想在 OpenClaw 中使用 Z.AI / GLM 模型
     - 你需要一个简单的 ZAI_API_KEY 设置
-summary: 使用 Z.AI（GLM 模型）搭配 OpenClaw
+summary: 将 Z.AI（GLM 模型）与 OpenClaw 配合使用
 title: Z.AI
 x-i18n:
-    generated_at: "2026-06-27T03:12:15Z"
+    generated_at: "2026-07-05T11:38:25Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a40675d3db518c090828bcc46c3bca348d1bed1027ba6b80228aa27773efd10f
+    source_hash: ab29149da39cbf82fe041ea5932a860c461320e14bf26f83f69060d7ae0ae00a
     source_path: providers/zai.md
     workflow: 16
 ---
 
-Z.AI 是 **GLM** 模型的 API 平台。它为 GLM 提供 REST API，并使用 API key 进行认证。请在 Z.AI 控制台中创建你的 API key。OpenClaw 使用 `zai` 提供商和 Z.AI API key。
+Z.AI 是 **GLM** 模型的 API 平台。它为 GLM 提供 REST API，并使用 API key 进行身份验证。请在 Z.AI 控制台中创建你的 API key。OpenClaw 使用带有 Z.AI API key 的 `zai` 提供商。
 
 | 属性 | 值                                           |
 | -------- | -------------------------------------------- |
 | 提供商 | `zai`                                        |
 | 包  | `@openclaw/zai-provider`                     |
-| 认证     | `ZAI_API_KEY`（旧版别名：`Z_AI_API_KEY`） |
+| 凭证     | `ZAI_API_KEY`（旧版别名：`Z_AI_API_KEY`） |
 | API      | Z.AI Chat Completions（Bearer 认证）          |
 
 ## GLM 模型
 
-GLM 是一个模型家族，不是单独的提供商。在 OpenClaw 中，GLM 模型使用类似 `zai/glm-5.2` 的引用：提供商 `zai`，模型 ID `glm-5.2`。
+GLM 是一个模型系列，而不是单独的提供商。在 OpenClaw 中，GLM 模型使用
+`zai/glm-5.2` 这样的引用：提供商 `zai`，模型 ID `glm-5.2`。
 
 ## 入门指南
 
@@ -36,16 +37,16 @@ openclaw plugins install @openclaw/zai-provider
 ```
 
 <Tabs>
-  <Tab title="Auto-detect endpoint">
+  <Tab title="自动检测端点">
     **最适合：** 大多数用户。OpenClaw 会使用你的 API key 探测受支持的 Z.AI 端点，并自动应用正确的 base URL。
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="运行新手引导">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Verify the model is listed">
+      <Step title="验证模型已列出">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -54,11 +55,11 @@ openclaw plugins install @openclaw/zai-provider
 
   </Tab>
 
-  <Tab title="Explicit regional endpoint">
-    **最适合：** 想要强制使用特定 Coding Plan 或通用 API 表面的用户。
+  <Tab title="显式区域端点">
+    **最适合：** 想强制使用特定 Coding Plan 或通用 API 表面的用户。
 
     <Steps>
-      <Step title="Pick the right onboarding choice">
+      <Step title="选择正确的新手引导选项">
         ```bash
         # Coding Plan Global (recommended for Coding Plan users)
         openclaw onboard --auth-choice zai-coding-global
@@ -73,7 +74,7 @@ openclaw plugins install @openclaw/zai-provider
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Verify the model is listed">
+      <Step title="验证模型已列出">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -83,10 +84,22 @@ openclaw plugins install @openclaw/zai-provider
   </Tab>
 </Tabs>
 
+### 端点
+
+| 新手引导选项   | Base URL                                      | 默认模型 |
+| ------------------- | --------------------------------------------- | ------------- |
+| `zai-global`        | `https://api.z.ai/api/paas/v4`                | `glm-5.1`     |
+| `zai-cn`            | `https://open.bigmodel.cn/api/paas/v4`        | `glm-5.1`     |
+| `zai-coding-global` | `https://api.z.ai/api/coding/paas/v4`         | `glm-5.2`     |
+| `zai-coding-cn`     | `https://open.bigmodel.cn/api/coding/paas/v4` | `glm-5.2`     |
+
+`zai-api-key` 会通过用你的 key 探测每个端点的 chat-completions API，在这四个端点中自动检测一个；它会先检查通用端点（`zai-global`，然后是 `zai-cn`），再检查 Coding Plan 端点（`zai-coding-global`，然后是
+`zai-coding-cn`），并在第一个接受请求的端点处停止。如果你的 key 在两者上都可用，请使用显式 `--auth-choice` 来强制使用 Coding Plan 端点。
+
 ## 配置示例
 
 <Tip>
-`zai-api-key` 让 OpenClaw 根据 key 检测匹配的 Z.AI 端点，并自动应用正确的 base URL。当你想要强制使用特定 Coding Plan 或通用 API 表面时，请使用明确的区域选项。
+`zai-api-key` 让 OpenClaw 根据 key 检测匹配的 Z.AI 端点，并自动应用正确的 base URL。当你想强制使用特定 Coding Plan 或通用 API 表面时，请使用显式区域选项。
 </Tip>
 
 ```json5
@@ -112,7 +125,7 @@ openclaw plugins install @openclaw/zai-provider
 openclaw models list --all --provider zai
 ```
 
-基于清单的目录目前包括：
+由清单支持的目录目前包括：
 
 | 模型引用            | 说明                           |
 | -------------------- | ------------------------------- |
@@ -132,26 +145,43 @@ openclaw models list --all --provider zai
 | `zai/glm-4.5v`       |                                 |
 
 <Tip>
-GLM 模型可通过 `zai/<model>` 使用（示例：`zai/glm-5`）。
-</Tip>
-
-<Tip>
-GLM-5.2 支持 `off`、`low`、`high` 和 `max` 思考级别。OpenClaw 将 `low` 和 `high` 映射到 Z.AI 高推理强度，并将 `max` 映射到最大强度。
+GLM 模型可作为 `zai/<model>` 使用（示例：`zai/glm-5`）。
 </Tip>
 
 <Note>
-Coding Plan 设置默认使用 `zai/glm-5.2`；通用 API 设置保留 `zai/glm-5.1`。当所选计划未提供 GLM-5.2 时，端点自动检测会回退到 `glm-5.1` 或 `glm-4.7`。GLM 版本和可用性可能会变化；运行 `openclaw models list --all --provider zai` 查看你的已安装版本已知的目录。
+Coding Plan 设置默认使用 `zai/glm-5.2`；通用 API 设置保留
+`zai/glm-5.1`。在 Coding Plan 端点上，当 key/计划未暴露 GLM-5.2 时，自动检测会回退到
+`glm-5.1`，然后回退到 `glm-4.7`。GLM 版本和可用性可能会变化；运行 `openclaw models list --all --provider zai`
+查看你的已安装版本已知的目录。
 </Note>
+
+## 思考级别
+
+<Tabs>
+  <Tab title="GLM-5.2">
+    完整范围：`off`、`low`、`high`、`max`（默认 `off`）。OpenClaw 通过请求载荷中的 `reasoning_effort`，将
+    `low` 和 `high` 映射到 Z.AI 的 `high` 推理强度，并将 `max` 映射到 Z.AI 的
+    `max` 强度。
+  </Tab>
+  <Tab title="其他 GLM 模型">
+    仅二元开关：`off` 和 `low`（在选择器中显示为 `on`），默认
+    `off`。将思考设置为 `off` 会发送 `thinking: { type: "disabled" }`；
+    任何其他级别都会让请求载荷保持不变（应用 Z.AI 自身的默认推理行为）。
+  </Tab>
+</Tabs>
+
+将思考设置为 `off` 可避免响应在可见文本之前将输出预算花在
+`reasoning_content` 上。
 
 ## 高级配置
 
 <AccordionGroup>
-  <Accordion title="Forward-resolving unknown GLM-5 models">
-    未知的 `glm-5*` ID 仍会在提供商路径上向前解析：当 ID 匹配当前 GLM-5 家族形态时，会从 `glm-4.7` 模板合成提供商拥有的元数据。
+  <Accordion title="向前解析未知 GLM-5 模型">
+    未知的 `glm-5*` ID 仍会在提供商路径上向前解析：当 ID 匹配当前 GLM-5 系列形态时，会从 `glm-4.7` 模板合成提供商自有的元数据。
   </Accordion>
 
-  <Accordion title="Tool-call streaming">
-    Z.AI 工具调用流式传输默认启用 `tool_stream`。要禁用它：
+  <Accordion title="工具调用流式传输">
+    对于 Z.AI 工具调用流式传输，默认启用 `tool_stream`。要禁用它：
 
     ```json5
     {
@@ -169,10 +199,9 @@ Coding Plan 设置默认使用 `zai/glm-5.2`；通用 API 设置保留 `zai/glm-
 
   </Accordion>
 
-  <Accordion title="Thinking and preserved thinking">
-    Z.AI 思考遵循 OpenClaw 的 `/think` 控制。关闭思考时，OpenClaw 会发送 `thinking: { type: "disabled" }`，以避免响应在可见文本之前将输出预算花在 `reasoning_content` 上。
-
-    保留思考是可选开启的，因为 Z.AI 要求重放完整的历史 `reasoning_content`，这会增加提示词 token。按模型启用：
+  <Accordion title="保留思考">
+    保留思考是可选启用的，因为 Z.AI 要求重放完整的历史
+    `reasoning_content`，这会增加提示词 token。按模型启用它：
 
     ```json5
     {
@@ -188,39 +217,41 @@ Coding Plan 设置默认使用 `zai/glm-5.2`；通用 API 设置保留 `zai/glm-
     }
     ```
 
-    启用后且思考开启时，OpenClaw 会发送 `thinking: { type: "enabled", clear_thinking: false }`，并为同一个 OpenAI 兼容转录重放先前的 `reasoning_content`。
+    启用后且思考开启时，OpenClaw 会发送
+    `thinking: { type: "enabled", clear_thinking: false }`，并为同一个 OpenAI 兼容转录重放之前的
+    `reasoning_content`。snake_case 的 `preserve_thinking` 参数键可作为别名使用。
 
-    高级用户仍然可以使用 `params.extra_body.thinking` 覆盖确切的提供商载荷。
+    高级用户仍可使用 `params.extra_body.thinking` 覆盖确切的提供商载荷。
 
   </Accordion>
 
-  <Accordion title="Image understanding">
-    Z.AI 插件注册了图像理解能力。
+  <Accordion title="图像理解">
+    Z.AI 插件注册了图像理解。
 
     | 属性      | 值       |
     | ------------- | ----------- |
     | 模型         | `glm-4.6v`  |
 
-    图像理解会从配置的 Z.AI 认证自动解析，不需要额外配置。
+    图像理解会根据配置的 Z.AI 凭证自动解析，无需额外配置。
 
   </Accordion>
 
-  <Accordion title="Auth details">
-    - Z.AI 使用你的 API key 进行 Bearer 认证。
-    - `zai-api-key` 新手引导选项会使用你的 key 探测受支持的端点，从而自动检测匹配的 Z.AI 端点。
-    - 当你想要强制使用特定 API 表面时，请使用明确的区域选项（`zai-coding-global`、`zai-coding-cn`、`zai-global`、`zai-cn`）。
-    - 旧版环境变量 `Z_AI_API_KEY` 仍被接受；如果未设置 `ZAI_API_KEY`，OpenClaw 会在启动时将其复制到 `ZAI_API_KEY`。
+  <Accordion title="凭证详情">
+    - Z.AI 使用带有你的 API key 的 Bearer 认证。
+    - `zai-api-key` 新手引导选项会通过用你的 key 探测受支持的端点，自动检测匹配的 Z.AI 端点。
+    - 当你想强制使用特定 API 表面时，请使用显式区域选项（`zai-coding-global`、`zai-coding-cn`、`zai-global`、`zai-cn`）。
+    - 旧版环境变量 `Z_AI_API_KEY` 仍被接受；如果 `ZAI_API_KEY` 未设置，OpenClaw 会在启动时将其复制到 `ZAI_API_KEY`。
 
   </Accordion>
 </AccordionGroup>
 
-## 相关
+## 相关内容
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/zh-CN/concepts/model-providers" icon="layers">
+  <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
     选择提供商、模型引用和故障转移行为。
   </Card>
-  <Card title="Configuration reference" href="/zh-CN/gateway/configuration-reference" icon="gear">
-    完整的 OpenClaw 配置架构，包括提供商和模型设置。
+  <Card title="配置参考" href="/zh-CN/gateway/configuration-reference" icon="gear">
+    完整的 OpenClaw 配置 schema，包括提供商和模型设置。
   </Card>
 </CardGroup>

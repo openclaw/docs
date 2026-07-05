@@ -1,28 +1,28 @@
 ---
 read_when:
     - モデルプロバイダーを選択したい
-    - 対応している LLM バックエンドの概要をすばやく把握したい場合
-summary: OpenClaw が対応するモデルプロバイダー (LLM)
-title: プロバイダーディレクトリ
+    - サポートされている LLM バックエンドの概要をすばやく確認したい場合
+summary: OpenClaw が対応するモデルプロバイダー（LLM）
+title: Provider ディレクトリ
 x-i18n:
-    generated_at: "2026-07-04T03:36:13Z"
+    generated_at: "2026-07-05T11:40:26Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
+    source_hash: b90fc2b21b16b4630f9f2412f43e640a3e969564fe62def6a789853546bb0ba1
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw は多くの LLM プロバイダーを使用できます。プロバイダーを選び、認証してから、
-既定のモデルを `provider/model` として設定します。
+OpenClaw は多くの LLM プロバイダーを使用できます。プロバイダーを選択して認証し、
+既定モデルを `provider/model` として設定します。
 
-チャットチャンネルのドキュメント（WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/など）を探していますか？[チャンネル](/ja-JP/channels)を参照してください。
+チャットチャネルのドキュメント (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/など) を探していますか？[チャネル](/ja-JP/channels) を参照してください。
 
 ## クイックスタート
 
-1. プロバイダーで認証します（通常は `openclaw onboard` 経由）。
-2. 既定のモデルを設定します。
+1. プロバイダーで認証します (通常は `openclaw onboard` 経由)。
+2. 既定モデルを設定します。
 
 ```json5
 {
@@ -41,9 +41,9 @@ OpenClaw は多くの LLM プロバイダーを使用できます。プロバイ
 - [BytePlus (International)](/ja-JP/concepts/model-providers#byteplus-international)
 - [Cerebras](/ja-JP/providers/cerebras)
 - [Chutes](/ja-JP/providers/chutes)
-- [ClawRouter (マネージドマルチプロバイダールーティング)](/providers/clawrouter)
-- [Cohere](/ja-JP/providers/cohere)
+- [ClawRouter (マネージドのマルチプロバイダールーティング)](/ja-JP/providers/clawrouter)
 - [Cloudflare AI Gateway](/ja-JP/providers/cloudflare-ai-gateway)
+- [Cohere](/ja-JP/providers/cohere)
 - [ComfyUI](/ja-JP/providers/comfy)
 - [DeepSeek](/ja-JP/providers/deepseek)
 - [ds4 (ローカル DeepSeek V4)](/ja-JP/providers/ds4)
@@ -63,8 +63,8 @@ OpenClaw は多くの LLM プロバイダーを使用できます。プロバイ
 - [MiniMax](/ja-JP/providers/minimax)
 - [Mistral](/ja-JP/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/ja-JP/providers/moonshot)
-- [NVIDIA](/ja-JP/providers/nvidia)
 - [NovitaAI](/ja-JP/providers/novita)
+- [NVIDIA](/ja-JP/providers/nvidia)
 - [Ollama (クラウド + ローカルモデル)](/ja-JP/providers/ollama)
 - [Ollama Cloud](/ja-JP/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/ja-JP/providers/openai)
@@ -93,7 +93,7 @@ OpenClaw は多くの LLM プロバイダーを使用できます。プロバイ
 
 ## 共有概要ページ
 
-- [追加のバンドル済みバリアント](/ja-JP/providers/models#additional-bundled-provider-variants) - Anthropic Vertex、Copilot Proxy、Gemini CLI OAuth
+- [追加のプロバイダーバリアント](/ja-JP/providers/models#additional-provider-variants) - Anthropic Vertex、Copilot Proxy、Gemini CLI OAuth
 - [画像生成](/ja-JP/tools/image-generation) - 共有 `image_generate` ツール、プロバイダー選択、フェイルオーバー
 - [音楽生成](/ja-JP/tools/music-generation) - 共有 `music_generate` ツール、プロバイダー選択、フェイルオーバー
 - [動画生成](/ja-JP/tools/video-generation) - 共有 `video_generate` ツール、プロバイダー選択、フェイルオーバー
@@ -103,13 +103,13 @@ OpenClaw は多くの LLM プロバイダーを使用できます。プロバイ
 - [Deepgram (音声文字起こし)](/ja-JP/providers/deepgram)
 - [ElevenLabs](/ja-JP/providers/elevenlabs#speech-to-text)
 - [Mistral](/ja-JP/providers/mistral#audio-transcription-voxtral)
-- [OpenAI](/ja-JP/providers/openai#speech-to-text)
+- [OpenAI](/ja-JP/providers/openai)
 - [SenseAudio](/ja-JP/providers/senseaudio)
-- [xAI](/ja-JP/providers/xai#speech-to-text)
+- [xAI](/ja-JP/providers/xai)
 
 ## コミュニティツール
 
-- [Claude Max API Proxy](/ja-JP/providers/claude-max-api-proxy) - Claude サブスクリプション認証情報向けのコミュニティプロキシ（使用前に Anthropic のポリシー/規約を確認してください）
+- [Claude Max API Proxy](/ja-JP/providers/claude-max-api-proxy) - Claude サブスクリプション認証情報向けのコミュニティプロキシ (使用前に Anthropic のポリシー/規約を確認してください)
 
-完全なプロバイダーカタログ（xAI、Groq、Mistral など）と高度な設定については、
-[モデルプロバイダー](/ja-JP/concepts/model-providers)を参照してください。
+完全なプロバイダーカタログ (xAI、Groq、Mistral など) と高度な設定については、
+[モデルプロバイダー](/ja-JP/concepts/model-providers) を参照してください。

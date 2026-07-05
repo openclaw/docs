@@ -1,42 +1,39 @@
 ---
 read_when:
     - Ajustar los valores predeterminados del modo elevado, las listas de permitidos o el comportamiento de los comandos de barra
-    - Comprender cómo los agentes aislados pueden acceder al sistema anfitrión
-summary: 'Modo de ejecución elevada: ejecutar comandos fuera del entorno aislado desde un agente en entorno aislado'
+    - Comprender cómo los agentes en sandbox pueden acceder al host
+summary: 'Modo de ejecución elevada: ejecutar comandos fuera del sandbox desde un agente en sandbox'
 title: Modo elevado
 x-i18n:
-    generated_at: "2026-05-06T05:50:21Z"
+    generated_at: "2026-07-05T11:48:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
+    source_hash: ab035f2f0d0074da4e7661d9d690d89aa5eea25b7920ce48a2a03dffccded85b
     source_path: tools/elevated.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Cuando un agente se ejecuta dentro de un sandbox, sus comandos `exec` quedan confinados al
-entorno del sandbox. El **modo elevado** permite que el agente salga y ejecute comandos
-fuera del sandbox en su lugar, con puertas de aprobación configurables.
+Cuando un agente se ejecuta dentro de un entorno aislado, sus comandos `exec` quedan confinados al entorno del entorno aislado. El **modo elevado** permite que el agente salga de él y ejecute comandos fuera del entorno aislado, con puertas de aprobación configurables.
 
 <Info>
-  El modo elevado solo cambia el comportamiento cuando el agente está **en sandbox**. Para
-  agentes sin sandbox, exec ya se ejecuta en el host.
+  El modo elevado solo cambia el comportamiento cuando el agente está **en un entorno aislado**. Para agentes sin entorno aislado, exec ya se ejecuta en el host.
 </Info>
 
 ## Directivas
 
 Controla el modo elevado por sesión con comandos de barra:
 
-| Directiva        | Qué hace                                                           |
-| ---------------- | ---------------------------------------------------------------------- |
-| `/elevated on`   | Ejecuta fuera del sandbox en la ruta del host configurada, mantiene las aprobaciones    |
-| `/elevated ask`  | Igual que `on` (alias)                                                   |
-| `/elevated full` | Ejecuta fuera del sandbox en la ruta del host configurada y omite las aprobaciones |
-| `/elevated off`  | Vuelve a la ejecución confinada al sandbox                                   |
+| Directiva        | Qué hace                                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `/elevated on`   | Ejecuta fuera del entorno aislado en la ruta del host configurada, mantiene las aprobaciones                                                             |
+| `/elevated ask`  | Igual que `on` (alias)                                                                                                            |
+| `/elevated full` | Ejecuta fuera del entorno aislado en la ruta del host configurada y omite las aprobaciones cuando la política de aprobación de modo/host ya es permisiva |
+| `/elevated off`  | Vuelve a la ejecución confinada al entorno aislado                                                                                            |
 
 También disponible como `/elev on|off|ask|full`.
 
-Envía `/elevated` sin argumento para ver el nivel actual.
+Envía `/elevated` sin argumentos para ver el nivel actual.
 
 ## Cómo funciona
 
@@ -76,29 +73,31 @@ Envía `/elevated` sin argumento para ver el nivel actual.
   </Step>
 
   <Step title="Commands run outside the sandbox">
-    Con elevated activo, las llamadas `exec` salen del sandbox. El host efectivo es
-    `gateway` de forma predeterminada, o `node` cuando el destino exec configurado/de sesión es
-    `node`. En modo `full`, se omiten las aprobaciones de exec. En modo `on`/`ask`,
-    las reglas de aprobación configuradas siguen aplicándose.
+    Con el modo elevado activo, las llamadas `exec` salen del entorno aislado. El host efectivo es
+    `gateway` de forma predeterminada, o `node` cuando el destino de exec configurado/de la sesión es
+    `node`. En modo `full`, las aprobaciones de exec se omiten cuando la política de aprobación de
+    modo/host de exec resuelta ya es totalmente permisiva (security `full`,
+    ask `off`); de lo contrario, se sigue aplicando la política de aprobación normal. En
+    modo `on`/`ask`, siempre se aplican las reglas de aprobación configuradas.
   </Step>
 </Steps>
 
 ## Orden de resolución
 
 1. **Directiva en línea** en el mensaje (se aplica solo a ese mensaje)
-2. **Anulación de sesión** (establecida al enviar un mensaje que contiene solo la directiva)
+2. **Anulación de sesión** (establecida al enviar un mensaje que contiene solo una directiva)
 3. **Valor predeterminado global** (`agents.defaults.elevatedDefault` en la configuración)
 
 ## Disponibilidad y listas de permitidos
 
 - **Puerta global**: `tools.elevated.enabled` (debe ser `true`)
 - **Lista de permitidos de remitentes**: `tools.elevated.allowFrom` con listas por canal
-- **Puerta por agente**: `agents.list[].tools.elevated.enabled` (solo puede restringir más)
+- **Puerta por agente**: `agents.list[].tools.elevated.enabled` (solo puede restringir más; tanto la puerta global como la puerta por agente deben ser `true`)
 - **Lista de permitidos por agente**: `agents.list[].tools.elevated.allowFrom` (el remitente debe coincidir tanto con la global como con la del agente)
-- **Reserva de Discord**: si se omite `tools.elevated.allowFrom.discord`, se usa `channels.discord.allowFrom` como reserva
-- **Todas las puertas deben pasar**; de lo contrario, elevated se trata como no disponible
+- **Lista de permitidos de reserva proporcionada por el canal**: los plugins de canal pueden suministrar opcionalmente una lista de permitidos de reserva mediante un hook de adaptador del SDK, usada cuando `tools.elevated.allowFrom.<provider>` no está configurado. Ningún canal incluido implementa actualmente este hook, así que en la práctica cada proveedor necesita hoy una entrada explícita `tools.elevated.allowFrom.<provider>`.
+- **Todas las puertas deben pasar**; de lo contrario, el modo elevado se trata como no disponible
 
-Formatos de entradas de la lista de permitidos:
+Formatos de entrada de la lista de permitidos:
 
 | Prefijo                  | Coincide con                         |
 | ----------------------- | ------------------------------- |
@@ -108,14 +107,14 @@ Formatos de entradas de la lista de permitidos:
 | `tag:`                  | Etiqueta del remitente                      |
 | `id:`, `from:`, `e164:` | Selección explícita de identidad     |
 
-## Lo que elevated no controla
+## Qué no controla el modo elevado
 
-- **Política de herramientas**: si `exec` es denegado por la política de herramientas, elevated no puede anularlo.
-- **Política de selección de host**: elevated no convierte `auto` en una anulación libre entre hosts. Usa las reglas del destino exec configurado/de sesión, eligiendo `node` solo cuando el destino ya es `node`.
-- **Separado de `/exec`**: la directiva `/exec` ajusta los valores predeterminados de exec por sesión para remitentes autorizados y no requiere modo elevado.
+- **Política de herramientas**: si la política de herramientas deniega `exec`, el modo elevado no puede anularla.
+- **Política de selección de host**: el modo elevado no convierte `auto` en una anulación libre entre hosts. Usa las reglas configuradas/de sesión del destino de exec y elige `node` solo cuando el destino ya es `node`.
+- **Separado de `/exec`**: la directiva `/exec` ajusta los valores predeterminados de exec por sesión (host, security, ask, node) para remitentes autorizados y no requiere el modo elevado.
 
 <Note>
-  El comando de chat de bash (prefijo `!`; alias `/bash`) es una puerta separada que requiere que `tools.elevated` esté habilitado además de su propia marca `tools.bash.enabled`. Deshabilitar elevated también bloquea los comandos de shell `!`.
+  El comando de chat de bash (prefijo `!`; alias `/bash`) es una puerta independiente que requiere que `tools.elevated` esté habilitado además de su propia marca `tools.bash.enabled`. Deshabilitar el modo elevado también bloquea los comandos de shell `!`.
 </Note>
 
 ## Relacionado
@@ -128,9 +127,9 @@ Formatos de entradas de la lista de permitidos:
     Sistema de aprobación y lista de permitidos para `exec`.
   </Card>
   <Card title="Sandboxing" href="/es/gateway/sandboxing" icon="box">
-    Configuración de sandbox a nivel de Gateway.
+    Configuración de entorno aislado a nivel de Gateway.
   </Card>
   <Card title="Sandbox vs Tool Policy vs Elevated" href="/es/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
-    Cómo se componen las tres puertas durante una llamada de herramienta.
+    Cómo se combinan las tres puertas durante una llamada de herramienta.
   </Card>
 </CardGroup>

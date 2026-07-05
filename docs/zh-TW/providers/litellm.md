@@ -1,87 +1,57 @@
 ---
 read_when:
-    - 你想要將 OpenClaw 透過 LiteLLM 代理進行路由
-    - 你需要透過 LiteLLM 進行成本追蹤、日誌記錄或模型路由
+    - 你想透過 LiteLLM 代理路由 OpenClaw
+    - 你需要透過 LiteLLM 進行成本追蹤、記錄或模型路由
 summary: 透過 LiteLLM Proxy 執行 OpenClaw，以統一模型存取與成本追蹤
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-30T03:31:50Z"
+    generated_at: "2026-07-05T11:41:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
+    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
     source_path: providers/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[LiteLLM](https://litellm.ai) 是一個開源 LLM Gateway，提供統一 API，可連接 100 多個模型供應商。透過 LiteLLM 路由 OpenClaw，即可取得集中式成本追蹤、記錄功能，以及在不變更 OpenClaw 設定的情況下切換後端的彈性。
-
-<Tip>
-**為什麼要搭配 OpenClaw 使用 LiteLLM？**
-
-- **成本追蹤** — 精確查看 OpenClaw 在所有模型上的花費
-- **模型路由** — 在不變更設定的情況下，在 Claude、GPT-4、Gemini、Bedrock 之間切換
-- **虛擬金鑰** — 為 OpenClaw 建立具有花費上限的金鑰
-- **記錄** — 完整的請求/回應記錄，方便除錯
-- **備援** — 主要供應商停機時自動故障轉移
-
-</Tip>
+[LiteLLM](https://litellm.ai) 是一個開放原始碼 LLM 閘道，提供統一 API，可連接 100 多個模型提供者。透過 LiteLLM 路由 OpenClaw，即可集中追蹤成本、記錄日誌、使用具花費上限的虛擬金鑰，以及在不變更 OpenClaw 設定的情況下進行後端容錯移轉。
 
 ## 快速開始
 
 <Tabs>
-  <Tab title="Onboarding (recommended)">
-    **最適合：**最快完成可用 LiteLLM 設定的路徑。
+  <Tab title="入門設定（建議）">
+    ```bash
+    openclaw onboard --auth-choice litellm-api-key
+    ```
 
-    <Steps>
-      <Step title="Run onboarding">
-        ```bash
-        openclaw onboard --auth-choice litellm-api-key
-        ```
+    若要針對遠端代理進行非互動式設定，請明確傳入代理 URL：
 
-        若要針對遠端 Proxy 進行非互動式設定，請明確傳入 Proxy URL：
-
-        ```bash
-        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
-        ```
-      </Step>
-    </Steps>
+    ```bash
+    openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
+      --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
+    ```
 
   </Tab>
 
-  <Tab title="Manual setup">
-    **最適合：**完整掌控安裝與設定。
-
+  <Tab title="手動設定">
     <Steps>
-      <Step title="Start LiteLLM Proxy">
+      <Step title="啟動 LiteLLM Proxy">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="Point OpenClaw to LiteLLM">
+      <Step title="將 OpenClaw 指向 LiteLLM">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
-
         openclaw
         ```
-
-        就這樣。OpenClaw 現在會透過 LiteLLM 路由。
       </Step>
     </Steps>
-
   </Tab>
 </Tabs>
 
 ## 設定
-
-### 環境變數
-
-```bash
-export LITELLM_API_KEY="sk-litellm-key"
-```
-
-### 設定檔
 
 ```json5
 {
@@ -120,12 +90,11 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## 進階設定
+入門設定寫入的預設模型是 `litellm/claude-opus-4-6`。
 
-### 圖片生成
+## 圖像生成
 
-LiteLLM 也可以透過 OpenAI 相容的
-`/images/generations` 和 `/images/edits` 路由，支援 OpenClaw 的 `image_generate` 工具。請在 `agents.defaults.imageGenerationModel` 下設定 LiteLLM 圖片模型：
+LiteLLM 可以透過 OpenAI 相容的 `/images/generations` 和 `/images/edits` 路由支援 `image_generate` 工具。預設圖像模型是 `gpt-image-2`；可在 `agents.defaults.imageGenerationModel` 下設定不同模型：
 
 ```json5
 {
@@ -148,14 +117,13 @@ LiteLLM 也可以透過 OpenAI 相容的
 }
 ```
 
-像 `http://localhost:4000` 這類 Loopback LiteLLM URL 無需全域
-私有網路覆寫即可運作。若是 LAN 託管的 Proxy，請設定
-`models.providers.litellm.request.allowPrivateNetwork: true`，因為 API 金鑰
-會被送到已設定的 Proxy 主機。
+Loopback LiteLLM URL（`http://localhost:4000`、`127.0.0.1`、`::1`、`host.docker.internal`）不需要全域私有網路覆寫即可運作。若是託管於區域網路的代理，請設定 `models.providers.litellm.request.allowPrivateNetwork: true`，因為 API 金鑰會傳送到該主機。
+
+## 進階
 
 <AccordionGroup>
-  <Accordion title="Virtual keys">
-    為 OpenClaw 建立具有花費上限的專用金鑰：
+  <Accordion title="虛擬金鑰">
+    為 OpenClaw 建立具花費上限的專用金鑰：
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -168,12 +136,12 @@ LiteLLM 也可以透過 OpenAI 相容的
       }'
     ```
 
-    將產生的金鑰用作 `LITELLM_API_KEY`。
+    將產生的金鑰作為 `LITELLM_API_KEY` 使用。
 
   </Accordion>
 
-  <Accordion title="Model routing">
-    LiteLLM 可以將模型請求路由到不同後端。請在你的 LiteLLM `config.yaml` 中設定：
+  <Accordion title="模型路由">
+    LiteLLM 可以將模型請求路由到不同後端。請在 LiteLLM `config.yaml` 中設定：
 
     ```yaml
     model_list:
@@ -188,13 +156,11 @@ LiteLLM 也可以透過 OpenAI 相容的
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw 會持續請求 `claude-opus-4-6` — LiteLLM 負責處理路由。
+    OpenClaw 會持續請求 `claude-opus-4-6`；LiteLLM 會處理路由。
 
   </Accordion>
 
-  <Accordion title="Viewing usage">
-    查看 LiteLLM 的儀表板或 API：
-
+  <Accordion title="檢視用量">
     ```bash
     # Key info
     curl "http://localhost:4000/key/info" \
@@ -207,35 +173,34 @@ LiteLLM 也可以透過 OpenAI 相容的
 
   </Accordion>
 
-  <Accordion title="Proxy behavior notes">
-    - LiteLLM 預設在 `http://localhost:4000` 上執行
-    - OpenClaw 會透過 LiteLLM Proxy 風格、OpenAI 相容的 `/v1`
-      端點連線
-    - 原生 OpenAI 專用的請求塑形不會透過 LiteLLM 套用：
-      沒有 `service_tier`、沒有 Responses `store`、沒有提示快取提示，也沒有
-      OpenAI reasoning 相容酬載塑形
-    - 自訂 LiteLLM base URL 不會注入隱藏的 OpenClaw 歸因標頭（`originator`、`version`、`User-Agent`）
-
+  <Accordion title="代理行為注意事項">
+    - LiteLLM 預設在 `http://localhost:4000` 上執行。
+    - OpenClaw 透過 LiteLLM 的代理式 OpenAI 相容 `/v1` 端點連線。
+    - 透過已設定的 LiteLLM base URL 時，不會套用僅限原生 OpenAI 的請求塑形：
+      沒有 `service_tier`、沒有 Responses `store`、沒有提示快取提示，也沒有 OpenAI reasoning-effort
+      酬載塑形。
+    - 隱藏的 OpenClaw 歸因標頭（`originator`、`version`、`User-Agent`）只會傳送至
+      已驗證的原生 OpenAI 端點，因此不會注入到自訂 LiteLLM base URL。
   </Accordion>
 </AccordionGroup>
 
 <Note>
-如需一般供應商設定與故障轉移行為，請參閱[模型供應商](/zh-TW/concepts/model-providers)。
+如需一般提供者設定與容錯移轉行為，請參閱[模型提供者](/zh-TW/concepts/model-providers)。
 </Note>
 
 ## 相關
 
 <CardGroup cols={2}>
-  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
+  <Card title="LiteLLM 文件" href="https://docs.litellm.ai" icon="book">
     官方 LiteLLM 文件與 API 參考。
   </Card>
-  <Card title="Model selection" href="/zh-TW/concepts/model-providers" icon="layers">
-    所有供應商、模型參照與故障轉移行為的概覽。
+  <Card title="模型選擇" href="/zh-TW/concepts/model-providers" icon="layers">
+    所有提供者、模型參照與容錯移轉行為的概覽。
   </Card>
-  <Card title="Configuration" href="/zh-TW/gateway/configuration" icon="gear">
+  <Card title="設定" href="/zh-TW/gateway/configuration" icon="gear">
     完整設定參考。
   </Card>
-  <Card title="Model selection" href="/zh-TW/concepts/models" icon="brain">
-    如何選擇並設定模型。
+  <Card title="模型" href="/zh-TW/concepts/models" icon="brain">
+    如何選擇和設定模型。
   </Card>
 </CardGroup>

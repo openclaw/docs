@@ -2,68 +2,56 @@
 read_when:
     - Agregar o modificar la captura de cámara en nodos iOS/Android o macOS
     - Extensión de los flujos de trabajo de archivos temporales MEDIA accesibles para agentes
-summary: 'Captura de cámara (nodos iOS/Android + app para macOS) para uso del agente: fotos (jpg) y clips de video cortos (mp4)'
+summary: 'Captura de cámara (nodos iOS/Android + app de macOS) para uso del agente: fotos (jpg) y clips de video cortos (mp4)'
 title: Captura de cámara
 x-i18n:
-    generated_at: "2026-06-27T11:52:18Z"
+    generated_at: "2026-07-05T11:30:16Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8cb02b1e0e5d68e537dc699bcabacfb48b7beaf07459bf47800810a721191795
+    source_hash: 38555c98886f6cd74ddacabc049da353cdb023e7f99aba81a272021cd8a0e33d
     source_path: nodes/camera.md
     workflow: 16
 ---
 
-OpenClaw admite la **captura de cámara** para flujos de trabajo de agentes:
+OpenClaw admite captura de cámara para flujos de trabajo de agentes en nodos **iOS**, **Android** y **macOS** emparejados: captura una foto (`jpg`) o un clip de video corto (`mp4`, con audio opcional) mediante Gateway `node.invoke`.
 
-- **Nodo iOS** (emparejado mediante Gateway): captura una **foto** (`jpg`) o un **clip de video corto** (`mp4`, con audio opcional) mediante `node.invoke`.
-- **Nodo Android** (emparejado mediante Gateway): captura una **foto** (`jpg`) o un **clip de video corto** (`mp4`, con audio opcional) mediante `node.invoke`.
-- **App macOS** (nodo mediante Gateway): captura una **foto** (`jpg`) o un **clip de video corto** (`mp4`, con audio opcional) mediante `node.invoke`.
-
-Todo el acceso a la cámara está protegido por **ajustes controlados por el usuario**.
+Todo acceso a la cámara está protegido por una configuración controlada por el usuario en cada plataforma.
 
 ## Nodo iOS
 
-### Ajuste de usuario (activado de forma predeterminada)
+### Configuración de usuario de iOS
 
-- Pestaña Ajustes de iOS → **Cámara** → **Permitir cámara** (`camera.enabled`)
-  - Predeterminado: **activado** (si falta la clave, se trata como habilitado).
+- Pestaña Configuración de iOS → **Cámara** → **Permitir cámara** (`camera.enabled`).
+  - Valor predeterminado: **activado** (una clave ausente se trata como habilitada).
   - Cuando está desactivado: los comandos `camera.*` devuelven `CAMERA_DISABLED`.
 
-### Comandos (mediante Gateway `node.invoke`)
+### Comandos de iOS (mediante Gateway `node.invoke`)
 
 - `camera.list`
-  - Carga útil de respuesta:
-    - `devices`: matriz de `{ id, name, position, deviceType }`
+  - Carga útil de respuesta: `devices` — arreglo de `{ id, name, position, deviceType }`.
 
 - `camera.snap`
   - Parámetros:
-    - `facing`: `front|back` (predeterminado: `front`)
-    - `maxWidth`: número (opcional; predeterminado `1600` en el nodo iOS)
-    - `quality`: `0..1` (opcional; predeterminado `0.9`)
+    - `facing`: `front|back` (valor predeterminado: `front`)
+    - `maxWidth`: número (opcional; valor predeterminado `1600`)
+    - `quality`: `0..1` (opcional; valor predeterminado `0.9`, limitado a `[0.05, 1.0]`)
     - `format`: actualmente `jpg`
-    - `delayMs`: número (opcional; predeterminado `0`)
+    - `delayMs`: número (opcional; valor predeterminado `0`, limitado internamente a `10000`)
     - `deviceId`: cadena (opcional; de `camera.list`)
-  - Carga útil de respuesta:
-    - `format: "jpg"`
-    - `base64: "<...>"`
-    - `width`, `height`
-  - Protección de carga útil: las fotos se recomprimen para mantener la carga útil base64 por debajo de 5 MB.
+  - Carga útil de respuesta: `format: "jpg"`, `base64`, `width`, `height`.
+  - Protección de carga útil: las fotos se recomprimen para mantener la carga útil codificada en base64 por debajo de 5 MB.
 
 - `camera.clip`
   - Parámetros:
-    - `facing`: `front|back` (predeterminado: `front`)
-    - `durationMs`: número (predeterminado `3000`, limitado a un máximo de `60000`)
-    - `includeAudio`: booleano (predeterminado `true`)
+    - `facing`: `front|back` (valor predeterminado: `front`)
+    - `durationMs`: número (valor predeterminado `3000`, limitado a `[250, 60000]`)
+    - `includeAudio`: booleano (valor predeterminado `true`)
     - `format`: actualmente `mp4`
     - `deviceId`: cadena (opcional; de `camera.list`)
-  - Carga útil de respuesta:
-    - `format: "mp4"`
-    - `base64: "<...>"`
-    - `durationMs`
-    - `hasAudio`
+  - Carga útil de respuesta: `format: "mp4"`, `base64`, `durationMs`, `hasAudio`.
 
-### Requisito de primer plano
+### Requisito de primer plano de iOS
 
 Al igual que `canvas.*`, el nodo iOS solo permite comandos `camera.*` en **primer plano**. Las invocaciones en segundo plano devuelven `NODE_BACKGROUND_UNAVAILABLE`.
 
@@ -71,101 +59,93 @@ Al igual que `canvas.*`, el nodo iOS solo permite comandos `camera.*` en **prime
 
 La forma más sencilla de obtener archivos multimedia es mediante el ayudante de CLI, que escribe los medios decodificados en un archivo temporal e imprime la ruta guardada.
 
-Ejemplos:
-
 ```bash
-openclaw nodes camera snap --node <id>               # default: both front + back (2 MEDIA lines)
+openclaw nodes camera snap --node <id>                 # default: both front + back (2 MEDIA lines)
 openclaw nodes camera snap --node <id> --facing front
 openclaw nodes camera clip --node <id> --duration 3000
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-Notas:
-
-- `nodes camera snap` usa de forma predeterminada **ambas** orientaciones para dar al agente ambas vistas.
-- Los archivos de salida son temporales (en el directorio temporal del SO) salvo que crees tu propio envoltorio.
+`nodes camera snap` usa `--facing both` como valor predeterminado, capturando tanto la cámara frontal como la trasera para dar al agente ambas vistas; pasa `--device-id` con una sola orientación explícita (`both` se rechaza cuando `--device-id` está establecido). Los archivos de salida son temporales (en el directorio temporal del SO) a menos que crees tu propio contenedor.
 
 ## Nodo Android
 
-### Ajuste de usuario de Android (activado de forma predeterminada)
+### Configuración de usuario de Android
 
-- Hoja de Ajustes de Android → **Cámara** → **Permitir cámara** (`camera.enabled`)
-  - Predeterminado: **activado** (si falta la clave, se trata como habilitado).
-  - Cuando está desactivado: los comandos `camera.*` devuelven `CAMERA_DISABLED`.
+- Hoja de configuración de Android → **Cámara** → **Permitir cámara** (`camera.enabled`).
+  - **Las instalaciones nuevas vienen desactivadas de forma predeterminada.** Las instalaciones existentes anteriores a esta configuración se migran a **activado** para que las actualizaciones no pierdan silenciosamente el acceso a la cámara que funcionaba antes.
+  - Cuando está desactivado: los comandos `camera.*` devuelven `CAMERA_DISABLED: enable Camera in Settings`.
 
 ### Permisos
 
-- Android requiere permisos en tiempo de ejecución:
-  - `CAMERA` para `camera.snap` y `camera.clip`.
-  - `RECORD_AUDIO` para `camera.clip` cuando `includeAudio=true`.
+- `CAMERA` es necesario tanto para `camera.snap` como para `camera.clip`; si falta el permiso o se deniega, devuelve `CAMERA_PERMISSION_REQUIRED`.
+- `RECORD_AUDIO` es necesario para `camera.clip` cuando `includeAudio` es `true`; si falta el permiso o se deniega, devuelve `MIC_PERMISSION_REQUIRED`.
 
-Si faltan permisos, la app solicitará autorización cuando sea posible; si se deniega, las solicitudes `camera.*` fallan con un error
-`*_PERMISSION_REQUIRED`.
+La app solicita permisos en tiempo de ejecución cuando es posible.
 
-### Requisito de primer plano en Android
+### Requisito de primer plano de Android
 
-Al igual que `canvas.*`, el nodo Android solo permite comandos `camera.*` en **primer plano**. Las invocaciones en segundo plano devuelven `NODE_BACKGROUND_UNAVAILABLE`.
+Al igual que `canvas.*`, el nodo Android solo permite comandos `camera.*` en **primer plano**. Las invocaciones en segundo plano devuelven `NODE_BACKGROUND_UNAVAILABLE: command requires foreground`.
 
 ### Comandos de Android (mediante Gateway `node.invoke`)
 
 - `camera.list`
-  - Carga útil de respuesta:
-    - `devices`: matriz de `{ id, name, position, deviceType }`
+  - Carga útil de respuesta: `devices` — arreglo de `{ id, name, position, deviceType }`.
 
-### Protección de carga útil
+- `camera.snap`
+  - Parámetros: `facing` (`front|back`, valor predeterminado `front`), `quality` (valor predeterminado `0.95`, limitado a `[0.1, 1.0]`), `maxWidth` (valor predeterminado `1600`), `deviceId` (opcional; un id desconocido falla con `INVALID_REQUEST`).
+  - Carga útil de respuesta: `format: "jpg"`, `base64`, `width`, `height`.
+  - Protección de carga útil: se recomprime para mantener base64 por debajo de 5 MB (el mismo presupuesto que iOS).
 
-Las fotos se recomprimen para mantener la carga útil base64 por debajo de 5 MB.
+- `camera.clip`
+  - Parámetros: `facing` (valor predeterminado `front`), `durationMs` (valor predeterminado `3000`, limitado a `[200, 60000]`), `includeAudio` (valor predeterminado `true`), `deviceId` (opcional).
+  - Carga útil de respuesta: `format: "mp4"`, `base64`, `durationMs`, `hasAudio`.
+  - Protección de carga útil: el MP4 sin procesar está limitado a 18 MB antes de la codificación base64; los clips de tamaño excesivo fallan con `PAYLOAD_TOO_LARGE` (reduce `durationMs` y vuelve a intentarlo).
 
-## App macOS
+## App de macOS
 
-### Ajuste de usuario (desactivado de forma predeterminada)
+### Configuración de usuario de macOS
 
 La app complementaria de macOS expone una casilla:
 
-- **Ajustes → General → Permitir cámara** (`openclaw.cameraEnabled`)
-  - Predeterminado: **desactivado**
-  - Cuando está desactivado: las solicitudes de cámara devuelven "Cámara desactivada por el usuario".
+- **Configuración → General → Permitir cámara** (`openclaw.cameraEnabled`).
+  - Valor predeterminado: **desactivado**.
+  - Cuando está desactivado: las solicitudes de cámara devuelven `CAMERA_DISABLED: enable Camera in Settings`.
 
 ### Ayudante de CLI (invocación de nodo)
 
 Usa la CLI principal `openclaw` para invocar comandos de cámara en el nodo macOS.
 
-Ejemplos:
-
 ```bash
-openclaw nodes camera list --node <id>            # list camera ids
-openclaw nodes camera snap --node <id>            # prints saved path
+openclaw nodes camera list --node <id>                     # list camera ids
+openclaw nodes camera snap --node <id>                     # prints saved path
 openclaw nodes camera snap --node <id> --max-width 1280
 openclaw nodes camera snap --node <id> --delay-ms 2000
 openclaw nodes camera snap --node <id> --device-id <id>
-openclaw nodes camera clip --node <id> --duration 10s          # prints saved path
-openclaw nodes camera clip --node <id> --duration-ms 3000      # prints saved path (legacy flag)
+openclaw nodes camera clip --node <id> --duration 10s       # prints saved path
+openclaw nodes camera clip --node <id> --duration-ms 3000   # prints saved path (legacy flag)
 openclaw nodes camera clip --node <id> --device-id <id>
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-Notas:
-
-- `openclaw nodes camera snap` usa `maxWidth=1600` de forma predeterminada salvo que se sobrescriba.
-- En macOS, `camera.snap` espera `delayMs` (predeterminado 2000 ms) después del calentamiento y la estabilización de la exposición antes de capturar.
-- Las cargas útiles de foto se recomprimen para mantener base64 por debajo de 5 MB.
+- `openclaw nodes camera snap` usa `maxWidth=1600` como valor predeterminado a menos que se sobrescriba.
+- `camera.snap` espera `delayMs` (valor predeterminado 2000 ms, limitado a `[0, 10000]`) después del calentamiento/estabilización de la exposición antes de capturar.
+- Las cargas útiles de fotos se recomprimen para mantener base64 por debajo de 5 MB.
 
 ## Seguridad + límites prácticos
 
-- El acceso a la cámara y al micrófono activa las indicaciones habituales de permisos del SO (y requiere cadenas de uso en Info.plist).
-- Los clips de video están limitados (actualmente `<= 60s`) para evitar cargas útiles de nodo sobredimensionadas (sobrecarga de base64 + límites de mensajes).
+- El acceso a la cámara y al micrófono activa los avisos habituales de permisos del SO (y requiere cadenas de uso en `Info.plist`).
+- Los clips de video están limitados a 60 s para evitar cargas útiles de nodo demasiado grandes (sobrecarga de base64 más límites de mensajes).
 
-## Video de pantalla de macOS (a nivel de SO)
+## Video de pantalla en macOS (nivel de SO)
 
-Para video de _pantalla_ (no de cámara), usa el complemento de macOS:
+Para video de _pantalla_ (no cámara), usa la app complementaria de macOS:
 
 ```bash
 openclaw nodes screen record --node <id> --duration 10s --fps 15   # prints saved path
 ```
 
-Notas:
-
-- Requiere permiso de **Grabación de pantalla** de macOS (TCC).
+Requiere permiso de **Grabación de pantalla** de macOS (TCC).
 
 ## Relacionado
 

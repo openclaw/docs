@@ -1,178 +1,145 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - 檢視形式化安全模型的保證或限制
-    - 重現或更新 TLA+/TLC 安全性模型檢查
-summary: 針對 OpenClaw 最高風險路徑的經機器驗證安全模型。
-title: 形式化驗證（安全模型）
+    - 審查形式化安全模型保證或限制
+    - 重現或更新 TLA+/TLC 安全模型檢查
+summary: OpenClaw 最高風險路徑的機器檢查安全模型。
+title: 形式驗證（安全模型）
 x-i18n:
-    generated_at: "2026-05-06T09:19:25Z"
+    generated_at: "2026-07-05T11:42:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
+    source_hash: 86342f6e2f54c08d5e0f8a08d0d488459650a6ace35e985ff886f847540202c9
     source_path: security/formal-verification.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-本頁追蹤 OpenClaw 的 **正式安全模型**（目前為 TLA+/TLC；日後視需要增加）。
+OpenClaw 的正式安全模型（目前為 TLA+/TLC）提供經機器檢查的論證，證明特定最高風險路徑 — 授權、工作階段隔離、工具閘控，以及錯誤設定安全性 — 在明確陳述的假設下，會執行其預期政策。
 
-> 注意：部分較舊連結可能會提及先前的專案名稱。
+> 注意：部分較舊連結可能會參照先前的專案名稱。
 
-**目標（北極星）：** 提供一個經機器檢查的論證，證明 OpenClaw 在明確假設下會執行其
-預期的安全政策（授權、工作階段隔離、工具控管，以及
-錯誤設定安全性）。
+## 這是什麼
 
-**目前這是什麼：** 一套可執行、由攻擊者驅動的 **安全迴歸套件**：
+一套可執行、由攻擊者驅動的安全迴歸套件：
 
-- 每個主張都有可在有限狀態空間上執行的模型檢查。
-- 許多主張都有配對的 **負向模型**，會為真實的錯誤類別產生反例追蹤。
+- 每項主張都有可在有限狀態空間上執行的模型檢查。
+- 許多主張都有配對的負向模型，可為真實的錯誤類型產生反例追蹤。
 
-**目前這還不是什麼：** 這不是「OpenClaw 在所有方面都是安全的」的證明，也不是完整 TypeScript 實作正確性的證明。
+這**不是**證明 OpenClaw 在所有方面都是安全的，也不會驗證完整的 TypeScript 實作。
 
-## 模型存放位置
+## 模型位於何處
 
-模型維護在獨立的 repo：[vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models)。
+模型維護在獨立的 repo 中：[vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models)。
 
-## 重要注意事項
+<Note>
+該儲存庫目前無法存取（截至撰寫本文時，GitHub 回傳「Repository not found」）。如果你那裡仍然無法開啟，請先在 OpenClaw 維護者頻道詢問目前位置，再假設模型已被移除。
+</Note>
 
-- 這些是 **模型**，不是完整的 TypeScript 實作。模型與程式碼之間可能會出現偏移。
-- 結果受限於 TLC 探索的狀態空間；「綠燈」並不表示在已建模假設與邊界之外也具備安全性。
-- 部分主張依賴明確的環境假設（例如正確的部署、正確的設定輸入）。
+## 注意事項
+
+- 這些是模型，不是完整的 TypeScript 實作 — 模型與程式碼之間可能會產生偏移。
+- 結果受限於 TLC 探索的狀態空間。綠燈不代表超出已建模假設與界限之外的安全性。
+- 某些主張依賴明確的環境假設（例如正確部署與正確設定輸入）。
 
 ## 重現結果
 
-目前，結果可透過在本機 clone 模型 repo 並執行 TLC 來重現（見下方）。未來的迭代可以提供：
-
-- 由 CI 執行的模型，並附公開成品（反例追蹤、執行記錄）
-- 用於小型、有界檢查的託管式「執行此模型」工作流程
-
-開始使用：
+Clone 模型 repo 並執行 TLC：
 
 ```bash
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# 需要 Java 11+（TLC 在 JVM 上執行）。
-# 此 repo 隨附固定版本的 `tla2tools.jar`（TLA+ 工具），並提供 `bin/tlc` + Make targets。
+# Java 11+ required (TLC runs on the JVM).
+# The repo vendors a pinned tla2tools.jar and provides bin/tlc plus Make targets.
 
 make <target>
 ```
 
-### Gateway 暴露與開放 Gateway 錯誤設定
+目前尚未將 CI 整合回這個 repo；未來版本可加入由 CI 執行的模型並提供公開成品（反例追蹤、執行記錄），或為小型有界檢查提供託管的「執行此模型」工作流程。
 
-**主張：** 在沒有 auth 的情況下綁定超出 loopback 的範圍，可能讓遠端攻陷成為可能 / 增加暴露面；token/password 會阻擋未經 auth 的攻擊者（依模型假設）。
+## 主張與目標
 
-- 綠燈執行：
-  - `make gateway-exposure-v2`
-  - `make gateway-exposure-v2-protected`
-- 紅燈（預期）：
-  - `make gateway-exposure-v2-negative`
+### 閘道暴露與開放閘道錯誤設定
 
-另見模型 repo 中的 `docs/gateway-exposure-matrix.md`。
+**主張：** 在沒有驗證的情況下綁定到超出 loopback 的範圍，可能讓遠端攻陷成為可能並增加暴露面；根據模型的假設，token/password 會阻擋未驗證的攻擊者。
 
-### Node exec 管線（最高風險能力）
+| 結果       | 目標                                                             |
+| ---------- | ---------------------------------------------------------------- |
+| 綠燈       | `make gateway-exposure-v2`, `make gateway-exposure-v2-protected` |
+| 紅燈（預期） | `make gateway-exposure-v2-negative`                              |
 
-**主張：** `exec host=node` 需要 (a) Node 命令允許清單加上已宣告命令，以及 (b) 設定時需要即時核准；核准會被 token 化以防止重放（在模型中）。
+另請參閱模型 repo 中的 `docs/gateway-exposure-matrix.md`。
 
-- 綠燈執行：
-  - `make nodes-pipeline`
-  - `make approvals-token`
-- 紅燈（預期）：
-  - `make nodes-pipeline-negative`
-  - `make approvals-token-negative`
+### 節點 exec 管線（最高風險能力）
 
-### 配對儲存區（DM 控管）
+**主張：** `exec host=node` 需要 (a) 節點命令允許清單加上已宣告命令，以及 (b) 設定時的即時核准；在模型中，核准會 token 化以防止重放。
 
-**主張：** 配對請求會遵守 TTL 和待處理請求上限。
+| 結果       | 目標                                                            |
+| ---------- | --------------------------------------------------------------- |
+| 綠燈       | `make nodes-pipeline`, `make approvals-token`                   |
+| 紅燈（預期） | `make nodes-pipeline-negative`, `make approvals-token-negative` |
 
-- 綠燈執行：
-  - `make pairing`
-  - `make pairing-cap`
-- 紅燈（預期）：
-  - `make pairing-negative`
-  - `make pairing-cap-negative`
+### 配對儲存區（DM 閘控）
 
-### 輸入控管（提及 + 控制命令繞過）
+**主張：** 配對請求會遵守 TTL 與待處理請求上限。
 
-**主張：** 在需要提及的群組情境中，未經授權的「控制命令」不能繞過提及控管。
+| 結果       | 目標                                                 |
+| ---------- | ---------------------------------------------------- |
+| 綠燈       | `make pairing`, `make pairing-cap`                   |
+| 紅燈（預期） | `make pairing-negative`, `make pairing-cap-negative` |
 
-- 綠燈：
-  - `make ingress-gating`
-- 紅燈（預期）：
-  - `make ingress-gating-negative`
+### 輸入閘控（提及與控制命令繞過）
 
-### 路由 / 工作階段金鑰隔離
+**主張：** 在需要提及的群組情境中，未授權的控制命令無法繞過提及閘控。
 
-**主張：** 來自不同對等端的 DM 不會折疊到同一個工作階段，除非明確連結 / 設定。
+| 結果       | 目標                           |
+| ---------- | ------------------------------ |
+| 綠燈       | `make ingress-gating`          |
+| 紅燈（預期） | `make ingress-gating-negative` |
 
-- 綠燈：
-  - `make routing-isolation`
-- 紅燈（預期）：
-  - `make routing-isolation-negative`
+### 路由與工作階段金鑰隔離
 
-## v1++：額外的有界模型（並行、重試、追蹤正確性）
+**主張：** 來自不同對等方的 DM 不會收斂到同一個工作階段，除非明確連結或設定。
 
-這些是後續模型，用於提高對真實世界失敗模式（非原子更新、重試，以及訊息 fan-out）的擬真度。
+| 結果       | 目標                              |
+| ---------- | --------------------------------- |
+| 綠燈       | `make routing-isolation`          |
+| 紅燈（預期） | `make routing-isolation-negative` |
 
-### 配對儲存區並行 / 冪等性
+## v1++ 模型：並行、重試、追蹤正確性
 
-**主張：** 配對儲存區即使在交錯執行下也應強制執行 `MaxPending` 與冪等性（也就是說，「check-then-write」必須是原子性的 / 已鎖定；refresh 不應建立重複項）。
+後續模型會圍繞真實世界失敗模式提升擬真度：非原子更新、重試，以及訊息扇出。
 
-含義：
+### 配對儲存區並行與冪等性
 
-- 在並行請求下，不能超過某個 channel 的 `MaxPending`。
-- 對同一個 `(channel, sender)` 的重複請求 / refresh 不應建立重複的即時 pending 列。
+**主張：** 配對儲存區即使在交錯執行下，也會強制執行 `MaxPending` 與冪等性 — 檢查後寫入必須是原子性/鎖定的，且重新整理不得建立重複項。具體而言：並行請求不得超過某頻道的 `MaxPending`，而同一 `(channel, sender)` 的重複請求/重新整理不會建立重複的有效待處理列。
 
-- 綠燈執行：
-  - `make pairing-race`（原子 / 已鎖定的上限檢查）
-  - `make pairing-idempotency`
-  - `make pairing-refresh`
-  - `make pairing-refresh-race`
-- 紅燈（預期）：
-  - `make pairing-race-negative`（非原子的 begin/commit 上限競爭）
-  - `make pairing-idempotency-negative`
-  - `make pairing-refresh-negative`
-  - `make pairing-refresh-race-negative`
+| 結果       | 目標                                                                                                                                                                        |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 綠燈       | `make pairing-race`（原子性/鎖定的上限檢查）、`make pairing-idempotency`、`make pairing-refresh`、`make pairing-refresh-race`                                              |
+| 紅燈（預期） | `make pairing-race-negative`（非原子 begin/commit 上限競態）、`make pairing-idempotency-negative`、`make pairing-refresh-negative`、`make pairing-refresh-race-negative` |
 
-### 輸入追蹤關聯 / 冪等性
+### 輸入追蹤關聯與冪等性
 
-**主張：** 擷取應在 fan-out 間保留追蹤關聯，並在 provider 重試下保持冪等。
+**主張：** 在供應商重試時，擷取會在扇出之間保留追蹤關聯並保持冪等。當一個外部事件變成多個內部訊息時，每個部分都保留相同的追蹤/事件身分；重試不會重複處理；如果缺少供應商事件 ID，去重會退回到安全鍵（例如追蹤 ID），以避免丟棄不同事件。
 
-含義：
+| 結果       | 目標                                                                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 綠燈       | `make ingress-trace`, `make ingress-trace2`, `make ingress-idempotency`, `make ingress-dedupe-fallback`                                     |
+| 紅燈（預期） | `make ingress-trace-negative`, `make ingress-trace2-negative`, `make ingress-idempotency-negative`, `make ingress-dedupe-fallback-negative` |
 
-- 當一個外部事件變成多個內部訊息時，每個部分都保留相同的 trace/event identity。
-- 重試不會導致重複處理。
-- 如果 provider event ID 缺失，去重會退回到安全金鑰（例如 trace ID），以避免丟棄不同事件。
+### 路由 dmScope 優先順序與 identityLinks
 
-- 綠燈：
-  - `make ingress-trace`
-  - `make ingress-trace2`
-  - `make ingress-idempotency`
-  - `make ingress-dedupe-fallback`
-- 紅燈（預期）：
-  - `make ingress-trace-negative`
-  - `make ingress-trace2-negative`
-  - `make ingress-idempotency-negative`
-  - `make ingress-dedupe-fallback-negative`
+**主張：** 路由預設會保持 DM 工作階段隔離，且只有在透過頻道優先順序與身分連結明確設定時，才會收斂工作階段。頻道特定的 `dmScope` 覆寫會優先於全域預設；`identityLinks` 只會在明確連結群組內收斂工作階段，不會跨越不相關的對等方。
 
-### 路由 dmScope 優先順序 + identityLinks
-
-**主張：** 路由必須預設保持 DM 工作階段隔離，且只有在明確設定時才折疊工作階段（channel 優先順序 + identity links）。
-
-含義：
-
-- Channel-specific dmScope 覆寫必須優先於全域預設。
-- identityLinks 應只在明確連結的群組內折疊，而不是跨無關對等端。
-
-- 綠燈：
-  - `make routing-precedence`
-  - `make routing-identitylinks`
-- 紅燈（預期）：
-  - `make routing-precedence-negative`
-  - `make routing-identitylinks-negative`
+| 結果       | 目標                                                                      |
+| ---------- | ------------------------------------------------------------------------- |
+| 綠燈       | `make routing-precedence`, `make routing-identitylinks`                   |
+| 紅燈（預期） | `make routing-precedence-negative`, `make routing-identitylinks-negative` |
 
 ## 相關
 
 - [威脅模型](/zh-TW/security/THREAT-MODEL-ATLAS)
 - [協助貢獻威脅模型](/zh-TW/security/CONTRIBUTING-THREAT-MODEL)
+- [事件回應](/zh-TW/security/incident-response)

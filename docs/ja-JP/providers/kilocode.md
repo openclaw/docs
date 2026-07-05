@@ -1,42 +1,40 @@
 ---
 read_when:
-    - 多数のLLMに対して単一のAPIキーを使いたい
+    - 多くの LLM に対して単一の API キーを使いたい
     - OpenClaw で Kilo Gateway 経由でモデルを実行したい
-summary: Kilo Gatewayの統合APIを使用して、OpenClawで多くのモデルにアクセスします
+summary: Kilo Gateway の統合 API を使用して OpenClaw で多くのモデルにアクセスする
 title: Kilo Gateway
 x-i18n:
-    generated_at: "2026-06-27T12:44:36Z"
+    generated_at: "2026-07-05T11:40:33Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: be06295295b63ce9b9d00d6f3d73e132c805237fde056eac4619616bf992e803
+    source_hash: 2108e1bb5b2430f42bf9e798da1d5e40448f05d396ab1710a0d6708961960756
     source_path: providers/kilocode.md
     workflow: 16
 ---
 
-Kilo Gateway は、単一のエンドポイントと API キーの背後で多数のモデルへリクエストをルーティングする **統一 API** を提供します。OpenAI 互換のため、ほとんどの OpenAI SDK はベース URL を切り替えるだけで動作します。
+Kilo Gatewayは、単一のOpenAI互換エンドポイントとAPIキーの背後で、多数のモデルへリクエストをルーティングします。
 
 | プロパティ | 値                                 |
-| ---------- | ---------------------------------- |
+| -------- | ---------------------------------- |
 | プロバイダー | `kilocode`                         |
-| 認証       | `KILOCODE_API_KEY`                 |
-| API        | OpenAI 互換                        |
-| ベース URL | `https://api.kilo.ai/api/gateway/` |
+| 認証     | `KILOCODE_API_KEY`                 |
+| API      | OpenAI互換                         |
+| ベースURL | `https://api.kilo.ai/api/gateway/` |
 
-## Plugin をインストール
-
-公式 Plugin をインストールしてから、Gateway を再起動します。
+## Pluginをインストール
 
 ```bash
 openclaw plugins install @openclaw/kilocode-provider
 openclaw gateway restart
 ```
 
-## はじめに
+## セットアップ
 
 <Steps>
   <Step title="アカウントを作成">
-    [app.kilo.ai](https://app.kilo.ai) にアクセスし、サインインするかアカウントを作成してから、API Keys に移動して新しいキーを生成します。
+    [app.kilo.ai](https://app.kilo.ai) に移動し、サインインするかアカウントを作成してから、APIキーを生成します。
   </Step>
   <Step title="オンボーディングを実行">
     ```bash
@@ -57,31 +55,13 @@ openclaw gateway restart
   </Step>
 </Steps>
 
-## デフォルトモデル
+## デフォルトモデルとカタログ
 
-デフォルトモデルは `kilocode/kilo/auto` です。これは Kilo Gateway によって管理される、プロバイダー所有のスマートルーティングモデルです。
+デフォルトモデルは `kilocode/kilo/auto` で、プロバイダーが所有するスマートルーティングモデルです。OpenClawは、このモデルについてタスクから上流モデルへのマッピングを公開していません。`kilo/auto` の背後のルーティングはKilo Gatewayが所有します。
 
-<Note>
-OpenClaw は `kilocode/kilo/auto` を安定したデフォルト ref として扱いますが、このルートに対するタスクから上流モデルへの対応付けを、ソースに基づく形では公開していません。`kilocode/kilo/auto` の背後にある正確な上流ルーティングは Kilo Gateway が所有しており、OpenClaw にハードコードされているものではありません。
-</Note>
+起動時にOpenClawは `GET https://api.kilo.ai/api/gateway/models` をクエリし、検出されたモデルを静的フォールバックカタログより優先してマージします。静的フォールバックには `kilocode/kilo/auto` のみが含まれます（`Kilo Auto`、`input: ["text", "image"]`、`reasoning: true`、`contextWindow: 1000000`、`maxTokens: 128000`）。
 
-## 組み込みカタログ
-
-OpenClaw は起動時に Kilo Gateway から利用可能なモデルを動的に検出します。アカウントで利用可能なモデルの完全なリストを確認するには、`/models kilocode` を使用します。
-
-Gateway で利用可能な任意のモデルは、`kilocode/` プレフィックス付きで使用できます。
-
-| モデル ref                               | メモ                               |
-| ---------------------------------------- | ---------------------------------- |
-| `kilocode/kilo/auto`                     | デフォルト — スマートルーティング  |
-| `kilocode/anthropic/claude-sonnet-4`     | Kilo 経由の Anthropic              |
-| `kilocode/openai/gpt-5.5`                | Kilo 経由の OpenAI                 |
-| `kilocode/google/gemini-3.1-pro-preview` | Kilo 経由の Google                 |
-| ...他にも多数                            | すべてを一覧するには `/models kilocode` を使用 |
-
-<Tip>
-起動時に、OpenClaw は `GET https://api.kilo.ai/api/gateway/models` を問い合わせ、検出されたモデルを静的フォールバックカタログより優先してマージします。静的フォールバックには、常に `kilocode/kilo/auto`（`Kilo Auto`）が含まれ、`input: ["text", "image"]`、`reasoning: true`、`contextWindow: 1000000`、`maxTokens: 128000` が設定されています。
-</Tip>
+Gateway上の任意のモデルは `kilocode/<upstream-id>` として指定できます（例: `kilocode/anthropic/claude-sonnet-4`、`kilocode/openai/gpt-5.5`）。検出された完全な一覧を確認するには、`/models kilocode` または `openclaw models list --provider kilocode` を実行します。
 
 ## 設定例
 
@@ -96,28 +76,30 @@ Gateway で利用可能な任意のモデルは、`kilocode/` プレフィック
 }
 ```
 
+## 動作メモ
+
 <AccordionGroup>
   <Accordion title="トランスポートと互換性">
-    Kilo Gateway はソース上で OpenRouter 互換として文書化されているため、ネイティブ OpenAI リクエスト整形ではなく、プロキシ形式の OpenAI 互換パスに留まります。
+    Kilo GatewayはOpenRouter互換のため、ネイティブなOpenAIリクエスト整形ではなく、プロキシ形式のOpenAI互換リクエストパスを使用します（`store` なし、OpenAIのreasoning-effortペイロードなし）。
 
-    - Gemini バックエンドの Kilo ref はプロキシ Gemini パスに留まるため、OpenClaw はそこで Gemini の thought-signature サニタイズを維持し、ネイティブ Gemini のリプレイ検証やブートストラップの書き換えは有効にしません。
-    - Kilo Gateway は内部で API キーを Bearer トークンとして使用します。
+    - GeminiベースのKilo参照はプロキシGeminiパスのままです。OpenClawはそこでGeminiのthought signatureをサニタイズしますが、ネイティブGeminiのリプレイ検証やブートストラップ書き換えは有効にしません。
+    - リクエストはAPIキーから構築されたBearerトークンを使用します。
 
   </Accordion>
 
   <Accordion title="ストリームラッパーと推論">
-    Kilo の共有ストリームラッパーは、プロバイダーアプリヘッダーを追加し、対応する具体的なモデル ref のプロキシ推論ペイロードを正規化します。
+    Kiloストリームラッパーは `X-KILOCODE-FEATURE` リクエストヘッダー（デフォルトは `openclaw`、`KILOCODE_FEATURE` 環境変数で上書き可能）を追加し、対応モデル向けにreasoning-effortペイロードを正規化します。
 
     <Warning>
-    `kilocode/kilo/auto` およびその他のプロキシ推論非対応ヒントでは、推論の注入がスキップされます。推論サポートが必要な場合は、`kilocode/anthropic/claude-sonnet-4` などの具体的なモデル ref を使用してください。
+    `kilocode/kilo/auto` と `x-ai/*` 参照ではreasoning-effortの注入をスキップします。推論サポートが必要な場合は、`kilocode/anthropic/claude-sonnet-4` のような具体的なモデル参照を使用してください。
     </Warning>
 
   </Accordion>
 
   <Accordion title="トラブルシューティング">
-    - 起動時にモデル検出が失敗した場合、OpenClaw は `kilocode/kilo/auto` を含む静的カタログにフォールバックします。
-    - API キーが有効であり、Kilo アカウントで目的のモデルが有効になっていることを確認してください。
-    - Gateway をデーモンとして実行する場合、そのプロセスで `KILOCODE_API_KEY` を利用できるようにしてください（たとえば `~/.openclaw/.env` 内、または `env.shellEnv` 経由）。
+    - 起動時にモデル検出が失敗した場合、OpenClawは `kilocode/kilo/auto` を含む静的カタログにフォールバックします。
+    - APIキーが有効であり、Kiloアカウントで目的のモデルが有効になっていることを確認してください。
+    - Gatewayがデーモンとして実行される場合は、`KILOCODE_API_KEY` がそのプロセスで利用可能であることを確認してください（例: `~/.openclaw/.env` 内、または `env.shellEnv` 経由）。
 
   </Accordion>
 </AccordionGroup>
@@ -126,12 +108,12 @@ Gateway で利用可能な任意のモデルは、`kilocode/` プレフィック
 
 <CardGroup cols={2}>
   <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
-    プロバイダー、モデル ref、フェイルオーバー動作の選択。
+    プロバイダー、モデル参照、フェイルオーバー動作の選択。
   </Card>
   <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
-    OpenClaw 設定の完全なリファレンス。
+    OpenClaw設定の完全なリファレンス。
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">
-    Kilo Gateway ダッシュボード、API キー、アカウント管理。
+    Kilo Gatewayダッシュボード、APIキー、アカウント管理。
   </Card>
 </CardGroup>

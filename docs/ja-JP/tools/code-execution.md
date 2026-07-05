@@ -1,74 +1,65 @@
 ---
 read_when:
-    - code_executionを有効化または設定する
+    - code_execution を有効化または設定したい
     - ローカルシェルアクセスなしでリモート分析を行いたい
-    - x_search または web_search をリモート Python 解析と組み合わせたい場合
-summary: 'code_execution: xAI でサンドボックス化されたリモート Python 分析を実行'
+    - x_search または web_search をリモート Python 分析と組み合わせたい場合
+summary: 'code_execution: サンドボックス化されたリモート Python 分析を xAI で実行'
 title: コード実行
 x-i18n:
-    generated_at: "2026-06-27T17:10:34Z"
+    generated_at: "2026-07-05T11:52:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d510d0d2b41deab527d456e675a23ef80ac3b55b5f01906ba2c43d90e4452e36
+    source_hash: a35d585a6b1b53d3ea50085459e4f180da1e91b7c72ef51f98786e4e5226f8ad
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` は、xAI の Responses API でサンドボックス化されたリモート Python 分析を実行します。これはバンドル済みの `xai` plugin（`tools` contract 配下）によって登録され、`x_search` と同じ `https://api.x.ai/v1/responses` endpoint にディスパッチされます。
+`code_execution` は、xAI の Responses API
+(`https://api.x.ai/v1/responses`、`x_search` が使うものと同じエンドポイント) で、サンドボックス化されたリモート Python 解析を実行します。これは
+バンドル済みの `xai` plugin により、`tools` contract の下で登録されます。
 
 | プロパティ       | 値                                                                                |
 | ------------------ | --------------------------------------------------------------------------------- |
 | ツール名          | `code_execution`                                                                  |
-| Provider plugin    | `xai`（バンドル済み、`enabledByDefault: true`）                                      |
-| 認証               | xAI 認証 profile、`XAI_API_KEY`、または `plugins.entries.xai.config.webSearch.apiKey` |
-| デフォルト model   | `grok-4-1-fast`                                                                   |
-| デフォルト timeout | 30 秒                                                                             |
-| デフォルト `maxTurns` | 未設定（xAI が独自の内部制限を適用）                                               |
+| Provider plugin    | `xai` (バンドル済み、`enabledByDefault: true`)                                    |
+| 認証               | xAI 認証プロファイル、`XAI_API_KEY`、または `plugins.entries.xai.config.webSearch.apiKey` |
+| デフォルトモデル  | `grok-4-1-fast`                                                                   |
+| デフォルトタイムアウト | 30 秒                                                                        |
+| デフォルト `maxTurns` | 未設定 (xAI が独自の内部制限を適用)                                        |
 
-これはローカルの [`exec`](/ja-JP/tools/exec) とは異なります。
+計算、表作成、簡単な統計、チャート形式の解析に使用します。これには
+`x_search` や `web_search` から返されたデータも含まれます。ローカルファイル、シェル、リポジトリ、ペアリング済みデバイスには
+アクセスできず、呼び出し間で状態を永続化しません。そのため、各呼び出しはノートブックセッションではなく、一時的な解析として扱います。新しい X データには、まず [`x_search`](/ja-JP/tools/web#x_search)
+を実行し、その結果を渡してください。
 
-- `exec` は、あなたのマシンまたはペアリング済み node で shell コマンドを実行します。
-- `code_execution` は、xAI のリモートサンドボックスで Python を実行します。
-
-`code_execution` は次の場合に使用します。
-
-- 計算。
-- 表作成。
-- 簡単な統計。
-- グラフ形式の分析。
-- `x_search` または `web_search` から返されたデータの分析。
-
-ローカルファイル、shell、repo、またはペアリング済みデバイスが必要な場合は使用**しないでください**。その場合は [`exec`](/ja-JP/tools/exec) を使用してください。
+ローカル実行には、代わりに [`exec`](/ja-JP/tools/exec) を使用します。
 
 ## セットアップ
 
 <Steps>
   <Step title="xAI 認証情報を提供する">
-    対象の SuperGrok または X Premium サブスクリプションを使って Grok OAuth でサインインするか、
-    API key を保存します。xAI OAuth は device-code verification を使用するため、localhost callback がない
-    リモート host からでも動作します。OAuth は `code_execution` と `x_search` で動作します。
-    `XAI_API_KEY` または plugin web-search config でも Grok `web_search` を動かせます。
+    OAuth には対象となる SuperGrok または X Premium サブスクリプションが必要です
+    (device-code 検証のため、localhost callback なしでリモートホストから動作します):
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    新規インストール時は、オンボーディング内でも同じ認証の選択肢を利用できます。
+    新規インストール時には、オンボーディングでも同じ選択肢を利用できます:
 
     ```bash
-    openclaw onboard --install-daemon
     openclaw onboard --install-daemon --auth-choice xai-oauth
     ```
 
-    または API key を使用します。
+    または API キー:
 
     ```bash
     openclaw models auth login --provider xai --method api-key
     export XAI_API_KEY=xai-...
     ```
 
-    または config 経由で設定します。
+    または config 経由:
 
     ```json5
     {
@@ -86,12 +77,14 @@ x-i18n:
     }
     ```
 
+    これら 3 つはいずれも `x_search` と Grok `web_search` も動作させます。
+
   </Step>
 
   <Step title="code_execution を有効化して調整する">
-    xAI 認証情報が利用可能な場合、`code_execution` を使用できます。無効化するには
+    `code_execution` は、xAI 認証情報が解決できる場合に利用できます。無効化するには
     `plugins.entries.xai.config.codeExecution.enabled` を `false` に設定します。
-    また、同じ block を使って model と timeout を調整できます。
+    または同じブロックを使って、モデル、turn 上限、タイムアウトを上書きします:
 
     ```json5
     {
@@ -124,9 +117,10 @@ x-i18n:
   </Step>
 </Steps>
 
-## 使い方
+## 使用方法
 
-自然に依頼し、分析の意図を明示します。
+解析の意図を明示します。このツールは単一の `task` パラメータを取るため、
+リクエスト全体とインラインデータを 1 つのプロンプトで送信します:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -140,11 +134,10 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-この tool は内部的に単一の `task` parameter を取るため、agent は完全な分析リクエストと任意の inline data を 1 つの prompt で送る必要があります。
-
 ## エラー
 
-tool が認証なしで実行されると、auth-profile、env var、config options を示す構造化された `missing_xai_api_key` エラーを返します。このエラーは JSON であり、throw された例外ではないため、agent は自己修正できます。
+認証がない場合、このツールは thrown exception ではなく構造化された JSON エラーを返すため、
+agent は自己修正できます:
 
 ```json
 {
@@ -154,26 +147,19 @@ tool が認証なしで実行されると、auth-profile、env var、config opti
 }
 ```
 
-## 制限
-
-- これはローカル process 実行ではなく、リモート xAI 実行です。
-- 結果は永続的な notebook session ではなく、一時的な分析として扱ってください。
-- ローカルファイルや workspace へのアクセスを想定しないでください。
-- 新しい X データについては、まず [`x_search`](/ja-JP/tools/web#x_search) を使用し、その結果を `code_execution` に渡してください。
-
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Exec tool" href="/ja-JP/tools/exec" icon="terminal">
-    あなたのマシンまたはペアリング済み node でのローカル shell 実行。
+  <Card title="Exec ツール" href="/ja-JP/tools/exec" icon="terminal">
+    自分のマシンまたはペアリング済み node でのローカルシェル実行。
   </Card>
-  <Card title="Exec approvals" href="/ja-JP/tools/exec-approvals" icon="shield">
-    shell 実行の許可/拒否 policy。
+  <Card title="Exec 承認" href="/ja-JP/tools/exec-approvals" icon="shield">
+    シェル実行の許可/拒否ポリシー。
   </Card>
-  <Card title="Web tools" href="/ja-JP/tools/web" icon="globe">
-    `web_search`、`x_search`、および `web_fetch`。
+  <Card title="Web ツール" href="/ja-JP/tools/web" icon="globe">
+    `web_search`、`x_search`、`web_fetch`。
   </Card>
   <Card title="xAI provider" href="/ja-JP/providers/xai" icon="microchip">
-    Grok models、web/x search、および code execution config。
+    Grok モデル、web/x search、code execution config。
   </Card>
 </CardGroup>

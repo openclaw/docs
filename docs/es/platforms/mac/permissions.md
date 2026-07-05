@@ -1,64 +1,51 @@
 ---
 read_when:
     - Depuración de avisos de permisos de macOS ausentes o bloqueados
-    - Decidir si conceder Accesibilidad a node o a un entorno de ejecución de CLI
-    - Empaquetar o firmar la app de macOS
-    - Cambiar los ID de paquete o las rutas de instalación de la app
-summary: Persistencia de permisos de macOS (TCC) y requisitos de firma
+    - Decidir si conceder Accesibilidad a Node o a un runtime de CLI
+    - Empaquetar o firmar la aplicación de macOS
+    - Cambiar identificadores de paquete o rutas de instalación de la aplicación
+summary: Requisitos de persistencia de permisos de macOS (TCC) y de firma
 title: Permisos de macOS
 x-i18n:
-    generated_at: "2026-06-27T12:03:26Z"
+    generated_at: "2026-07-05T11:27:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b7e21c53bff16c3023e2b6509894717c3d0ef96524951b0d0c5975d2fc91019
+    source_hash: c8431a1d5a27aed00c50c5d6c8c36554cf766051dfdccea677d0523bbc4189d4
     source_path: platforms/mac/permissions.md
     workflow: 16
 ---
 
-Las concesiones de permisos de macOS son frágiles. TCC asocia una concesión de permiso con la
-firma de código de la app, el identificador del paquete y la ruta en disco. Si cualquiera de estos cambia,
-macOS trata la app como nueva y puede descartar u ocultar los avisos.
+macOS permission grants are fragile. TCC associates a permission grant with the app's code signature, bundle identifier, and on-disk path. If any of those change, macOS treats the app as new and may drop or hide prompts.
 
-## Requisitos para permisos estables
+## Requirements for stable permissions
 
-- Misma ruta: ejecuta la app desde una ubicación fija (para OpenClaw, `dist/OpenClaw.app`).
-- Mismo identificador de paquete: cambiar el ID del paquete crea una nueva identidad de permiso.
-- App firmada: las compilaciones sin firma o firmadas ad hoc no conservan los permisos.
-- Firma coherente: usa un certificado real de Apple Development o Developer ID
-  para que la firma se mantenga estable entre recompilaciones.
+- Same path: run the app from a fixed location (for OpenClaw, `dist/OpenClaw.app`).
+- Same bundle identifier: OpenClaw's bundle ID is `ai.openclaw.mac`; changing it creates a new permission identity.
+- Signed app: unsigned or ad-hoc signed builds do not persist permissions.
+- Consistent signature: use a real Apple Development or Developer ID certificate so the signature stays stable across rebuilds.
 
-Las firmas ad hoc generan una identidad nueva en cada compilación. macOS olvidará las concesiones
-anteriores, y los avisos pueden desaparecer por completo hasta que se borren las entradas obsoletas.
+Ad-hoc signatures generate a new identity every build. macOS forgets previous grants, and prompts can disappear entirely until the stale entries are cleared.
 
-## Concesiones de Accesibilidad para tiempos de ejecución de Node y CLI
+## Accessibility grants for Node and CLI runtimes
 
-Prefiere conceder Accesibilidad a OpenClaw.app, Peekaboo.app u otro asistente firmado
-con su propio identificador de paquete en lugar de un binario `node` genérico.
+Prefer granting Accessibility to OpenClaw.app, Peekaboo.app, or another signed helper with its own bundle identifier instead of a generic `node` binary.
 
-TCC de macOS concede Accesibilidad a la identidad de código del proceso que ve. Si un
-flujo de trabajo de Homebrew, nvm, pnpm o npm hace que un ejecutable `node` compartido
-reciba Accesibilidad, cualquier paquete de JavaScript iniciado mediante ese mismo
-ejecutable puede heredar privilegios de automatización de GUI.
+macOS TCC grants Accessibility to the code identity of the process it sees. If a Homebrew, nvm, pnpm, or npm workflow causes a shared `node` executable to receive Accessibility, any JavaScript package launched through that same executable may inherit GUI automation privileges.
 
-Trata una entrada `node` en Configuración del Sistema como un permiso amplio para ese tiempo de ejecución de Node,
-no como un permiso para un único paquete npm. Evita conceder Accesibilidad a
-`node` a menos que confíes en todos los scripts y paquetes iniciados mediante esa instalación exacta de
-Node.
+Treat a `node` entry in System Settings as broad permission for that Node runtime, not as permission for one npm package. Avoid granting Accessibility to `node` unless you trust every script and package launched through that exact Node install.
 
-Si concediste Accesibilidad a `node` por accidente, elimina esa entrada de
-Configuración del Sistema -> Privacidad y seguridad -> Accesibilidad. Luego concede el permiso a la app
-o al asistente firmado que debe ser dueño de la automatización de la UI.
+If you accidentally granted Accessibility to `node`, remove that entry from System Settings -> Privacy & Security -> Accessibility. Then grant the signed app or helper that should own UI automation.
 
-## Lista de recuperación cuando desaparecen los avisos
+## Recovery checklist when prompts disappear
 
-1. Cierra la app.
-2. Elimina la entrada de la app en Configuración del Sistema -> Privacidad y seguridad.
-3. Vuelve a iniciar la app desde la misma ruta y concede de nuevo los permisos.
-4. Si el aviso todavía no aparece, restablece las entradas de TCC con `tccutil` e inténtalo de nuevo.
-5. Algunos permisos solo vuelven a aparecer después de reiniciar macOS por completo.
+1. Quit the app.
+2. Remove the app entry in System Settings -> Privacy & Security.
+3. Relaunch the app from the same path and re-grant permissions.
+4. If the prompt still does not appear, reset TCC entries with `tccutil` and try again.
+5. Some permissions only reappear after a full macOS restart.
 
-Ejemplos de restablecimiento (reemplaza el ID de paquete según sea necesario):
+Example resets (using OpenClaw's bundle ID, `ai.openclaw.mac`):
 
 ```bash
 sudo tccutil reset Accessibility ai.openclaw.mac
@@ -66,16 +53,15 @@ sudo tccutil reset ScreenCapture ai.openclaw.mac
 sudo tccutil reset AppleEvents
 ```
 
-## Permisos de archivos y carpetas (Escritorio/Documentos/Descargas)
+## Files and folders permissions (Desktop/Documents/Downloads)
 
-macOS también puede restringir Escritorio, Documentos y Descargas para procesos de terminal/en segundo plano. Si las lecturas de archivos o los listados de directorios se bloquean, concede acceso al mismo contexto de proceso que realiza las operaciones de archivo (por ejemplo, Terminal/iTerm, una app iniciada por LaunchAgent o un proceso SSH).
+macOS may also gate Desktop, Documents, and Downloads for terminal/background processes. If file reads or directory listings hang, grant access to the same process context that performs file operations (for example Terminal/iTerm, LaunchAgent-launched app, or SSH process).
 
-Solución alternativa: mueve los archivos al espacio de trabajo de OpenClaw (`~/.openclaw/workspace`) si quieres evitar concesiones por carpeta.
+Workaround: move files into the OpenClaw workspace (`~/.openclaw/workspace`) if you want to avoid per-folder grants.
 
-Si estás probando permisos, firma siempre con un certificado real. Las compilaciones ad hoc
-solo son aceptables para ejecuciones locales rápidas donde los permisos no importan.
+If you are testing permissions, always sign with a real certificate. Ad-hoc builds are only acceptable for quick local runs where permissions do not matter.
 
-## Relacionado
+## Related
 
-- [app de macOS](/es/platforms/macos)
-- [firma de macOS](/es/platforms/mac/signing)
+- [macOS app](/es/platforms/macos)
+- [macOS signing](/es/platforms/mac/signing)

@@ -1,35 +1,28 @@
 ---
 read_when:
-    - デプロイ前に、オペレーター管理のプロキシルーティングを検証する必要があります
-    - デバッグのために OpenClaw のトランスポートトラフィックをローカルでキャプチャする必要がある
-    - デバッグプロキシセッション、blob、または組み込みクエリプリセットを調査したい場合
+    - デプロイ前にオペレーター管理のプロキシルーティングを検証する必要があります。
+    - OpenClaw のトランスポートトラフィックをデバッグのためにローカルでキャプチャする必要がある
+    - デバッグプロキシセッション、Blob、または組み込みクエリプリセットを調査したい
 summary: '`openclaw proxy` の CLI リファレンス。オペレーター管理プロキシの検証とローカルデバッグプロキシのキャプチャインスペクターを含む'
 title: プロキシ
 x-i18n:
-    generated_at: "2026-06-27T11:00:31Z"
+    generated_at: "2026-07-05T11:10:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c3883373f2aa6d365ed93bcb9f7da2bb9281b8bd061d1842bc5bef0f43b7ccb9
+    source_hash: 91583f785032bfffe455a1963804108550f6fbb735ac4de1dd91d0ca5ae0df35
     source_path: cli/proxy.md
     workflow: 16
 ---
 
 # `openclaw proxy`
 
-オペレーター管理のプロキシルーティングを検証するか、ローカルの明示的なデバッグプロキシを実行して
-キャプチャされたトラフィックを調査します。
-
-OpenClaw のプロキシルーティングを有効にする前に、オペレーター管理のフォワードプロキシを事前確認するには `validate` を使用します。その他のコマンドは
-トランスポートレベルの調査用デバッグツールです。ローカルプロキシの起動、キャプチャを有効にした子コマンドの実行、キャプチャセッションの一覧表示、一般的なトラフィックパターンの照会、
-キャプチャ済み blob の読み取り、ローカルキャプチャデータの削除ができます。
-
-## コマンド
+オペレーター管理のプロキシルーティングを検証するか、ローカルの明示的なデバッグプロキシを実行してキャプチャされたトラフィックを調査します。
 
 ```bash
+openclaw proxy validate [--json] [--proxy-url <url>] [--proxy-ca-file <path>] [--allowed-url <url>] [--denied-url <url>] [--apns-reachable] [--apns-authority <url>] [--timeout-ms <ms>]
 openclaw proxy start [--host <host>] [--port <port>]
 openclaw proxy run [--host <host>] [--port <port>] -- <cmd...>
-openclaw proxy validate [--json] [--proxy-url <url>] [--proxy-ca-file <path>] [--allowed-url <url>] [--denied-url <url>] [--apns-reachable] [--apns-authority <url>] [--timeout-ms <ms>]
 openclaw proxy coverage
 openclaw proxy sessions [--limit <count>]
 openclaw proxy query --preset <name> [--session <id>]
@@ -37,26 +30,53 @@ openclaw proxy blob --id <blobId>
 openclaw proxy purge
 ```
 
+`validate` は、オペレーター管理のフォワードプロキシを事前確認します。残りはトランスポートレベルの調査用デバッグツールです。ローカルのキャプチャプロキシの起動、そこを経由した子コマンドの実行、キャプチャセッションの一覧表示、トラフィックパターンのクエリ、キャプチャされた blob の読み取り、ローカルキャプチャデータのパージを行います。
+
 ## 検証
 
-`openclaw proxy validate` は、`--proxy-url`、設定、または `OPENCLAW_PROXY_URL` から有効なオペレーター管理プロキシ URL を確認します。マネージドプロキシ URL には、プレーンなフォワードプロキシリスナーには `http://` を使用でき、OpenClaw がプロキシリクエストを送信する前にプロキシエンドポイントへ TLS を開く必要がある場合は `https://` を使用できます。プロキシが有効化および設定されていない場合は設定問題として報告します。設定を変更する前の一回限りの事前確認には `--proxy-url` を使用してください。HTTPS プロキシエンドポイントへの TLS 接続でプライベート CA を信頼するには `--proxy-ca-file` を追加します。既定では、公開宛先がプロキシ経由で成功することと、プロキシが一時的なループバックカナリアへ到達できないことを検証します。カスタムの拒否宛先は fail-closed です。デプロイ固有の拒否シグナルを別途検証できない限り、HTTP レスポンスと曖昧なトランスポート失敗はいずれも失敗になります。プロキシ経由で APNs HTTP/2 CONNECT トンネルも開き、サンドボックス APNs が応答することを確認するには `--apns-reachable` を追加します。このプローブは意図的に無効なプロバイダートークンを使用するため、APNs の `403 InvalidProviderToken` レスポンスは到達可能性の成功シグナルです。
+`--proxy-url`、設定 (`proxy.proxyUrl`)、または `OPENCLAW_PROXY_URL` から、有効なオペレーター管理プロキシ URL をこの優先順位で確認します。プロキシが有効化および設定されていない場合は設定上の問題として報告します。設定に触れずに一回限りの事前確認を行うには `--proxy-url` を渡します。
 
-オプション:
+管理対象プロキシ URL では、プレーンなフォワードプロキシリスナーには `http://` を使い、OpenClaw がプロキシリクエストを送る前にプロキシエンドポイント自体へ TLS を開く必要がある場合は `https://` を使います。その TLS 接続でプライベート CA を信頼するには `--proxy-ca-file` を使います。
 
-- `--json`: 機械可読 JSON を出力します。
-- `--proxy-url <url>`: 設定または環境変数の代わりに、この `http://` または `https://` プロキシ URL を検証します。
-- `--proxy-ca-file <path>`: HTTPS プロキシエンドポイントの TLS 検証で、この PEM CA ファイルを信頼します。
-- `--allowed-url <url>`: プロキシ経由で成功することが期待される宛先を追加します。複数の宛先を確認するには繰り返します。
-- `--denied-url <url>`: プロキシによってブロックされることが期待される宛先を追加します。複数の宛先を確認するには繰り返します。
-- `--apns-reachable`: サンドボックス APNs HTTP/2 がプロキシ経由で到達可能であることも検証します。
-- `--apns-authority <url>`: `--apns-reachable` でプローブする APNs authority（既定は `https://api.sandbox.push.apple.com`、本番は `https://api.push.apple.com`）。
-- `--timeout-ms <ms>`: リクエストごとのタイムアウト（ミリ秒）。
+デフォルトでは次を実行します。
 
-デプロイのガイダンスと拒否セマンティクスについては [ネットワークプロキシ](/ja-JP/security/network-proxy) を参照してください。
+- `https://example.com/` に対する 1 つの **許可** チェック (`--allowed-url` で上書き/追加、繰り返し指定可)
+- 一時的なループバックカナリアに対する 1 つの **拒否** チェック (`--denied-url` で上書き、繰り返し指定可)
 
-## クエリプリセット
+カスタムの `--denied-url` ターゲットはフェイルクローズです。デプロイ固有の拒否シグナルを独立して検証できない限り、HTTP レスポンスと曖昧なトランスポート失敗の両方が失敗として扱われます。組み込みのループバックカナリアは、トランスポートエラーがブロックの証拠として扱われる唯一のターゲットです。
 
-`openclaw proxy query --preset <name>` は以下を受け付けます。
+`--apns-reachable` を追加すると、プロキシ経由で APNs HTTP/2 CONNECT トンネルも開き、サンドボックス APNs が応答することを確認します。このプローブは意図的に無効なプロバイダートークンを送信するため、APNs の `403 InvalidProviderToken` レスポンスは到達可能性の成功シグナルとして扱われます (失敗ではありません)。
+
+### オプション
+
+| フラグ                   | 効果                                                                                                                 |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `--json`                 | 機械可読 JSON を出力                                                                                                 |
+| `--proxy-url <url>`      | 設定や環境変数の代わりに、この `http://`/`https://` プロキシ URL を検証                                               |
+| `--proxy-ca-file <path>` | HTTPS プロキシエンドポイントの TLS 検証で、この PEM CA ファイルを信頼                                                |
+| `--allowed-url <url>`    | プロキシ経由で成功することが期待される宛先 (繰り返し指定可)                                                         |
+| `--denied-url <url>`     | プロキシによってブロックされることが期待される宛先 (繰り返し指定可)                                                 |
+| `--apns-reachable`       | サンドボックス APNs HTTP/2 がプロキシ経由で到達可能であることも検証                                                  |
+| `--apns-authority <url>` | プローブする APNs オーソリティ (デフォルト `https://api.sandbox.push.apple.com`; 本番は `https://api.push.apple.com`) |
+| `--timeout-ms <ms>`      | リクエストごとのタイムアウト                                                                                         |
+
+プロキシ設定または宛先チェックが失敗すると、コード 1 で終了します。
+
+デプロイのガイダンスと拒否セマンティクスについては、[ネットワークプロキシ](/ja-JP/security/network-proxy) を参照してください。
+
+## デバッグプロキシ
+
+`start` はローカルのキャプチャプロキシを起動し、その URL、CA 証明書パス、キャプチャ DB パスを出力します。停止するには Ctrl+C を使います。`--host` が設定されていない限り、デフォルトでは `127.0.0.1` にバインドします。
+
+`run` はローカルデバッグプロキシを起動し、その後、プロキシ環境を適用した状態で、独自のキャプチャセッションの下で `<cmd...>` (`--` の後) を実行します。
+
+デバッグプロキシの直接アップストリーム転送は、診断のためにアップストリームソケットを開きます。OpenClaw 管理プロキシモードが有効な場合、プロキシリクエストと CONNECT トンネルの直接転送はデフォルトで無効です。承認されたローカル診断の場合のみ、`OPENCLAW_DEBUG_PROXY_ALLOW_DIRECT_CONNECT_WITH_MANAGED_PROXY=1` を設定してください。
+
+`coverage` は、どのトランスポートがキャプチャ対象、プロキシ専用、または未カバーかを示す JSON レポート (`summary` + トランスポートごとの `entries`) を出力します。
+
+`sessions` は最近のキャプチャセッションを一覧表示します (`--limit`、デフォルト 20)。
+
+`query --preset <name>` は、キャプチャされたトラフィックに対して組み込みクエリを実行します。必要に応じて `--session <id>` にスコープできます。プリセット:
 
 - `double-sends`
 - `retry-storms`
@@ -65,13 +85,9 @@ openclaw proxy purge
 - `missing-ack`
 - `error-bursts`
 
-## 注記
+`blob --id <blobId>` は、キャプチャされたペイロード blob の生コンテンツを出力します。
 
-- `start` は `--host` が設定されていない限り、既定で `127.0.0.1` を使用します。
-- `run` はローカルデバッグプロキシを起動してから、`--` の後のコマンドを実行します。
-- デバッグプロキシの直接アップストリーム転送は、診断用にアップストリームソケットを開きます。OpenClaw のマネージドプロキシモードが有効な場合、プロキシリクエストと CONNECT トンネルの直接転送は既定で無効です。承認済みのローカル診断でのみ `OPENCLAW_DEBUG_PROXY_ALLOW_DIRECT_CONNECT_WITH_MANAGED_PROXY=1` を設定してください。
-- `validate` は、プロキシ設定または宛先チェックが失敗すると終了コード 1 で終了します。
-- キャプチャはローカルデバッグデータです。完了したら `openclaw proxy purge` を使用してください。
+`purge` は、キャプチャされたすべてのトラフィックメタデータと blob を削除します。キャプチャはローカルデバッグデータです。完了したらパージしてください。
 
 ## 関連
 

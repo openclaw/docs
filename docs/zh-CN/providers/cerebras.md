@@ -1,35 +1,33 @@
 ---
 read_when:
-    - 你想将 Cerebras 与 OpenClaw 搭配使用
-    - 你需要 Cerebras API 密钥环境变量或 CLI 凭证选择
+    - 你想将 Cerebras 与 OpenClaw 一起使用
+    - 你需要 Cerebras API key 环境变量或 CLI 凭证选择
 summary: Cerebras 设置（凭证 + 模型选择）
 title: Cerebras
 x-i18n:
-    generated_at: "2026-06-27T03:01:48Z"
+    generated_at: "2026-07-05T11:34:23Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cd21756ac521c7b60ca6d3dfbef8665574dca52d1a25e6293169b24f4af6273e
+    source_hash: fca8110d345c796f0481ebf1a8d85c2cc9630b8bd55db8d4bf60772151b35b37
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) 在自定义推理硬件上提供高速、兼容 OpenAI 的推理。Cerebras 提供商插件包含一个静态的四模型目录。
+[Cerebras](https://www.cerebras.ai) 在自定义推理硬件上提供高速、兼容 OpenAI 的推理。该插件内置静态的四模型目录（无实时发现）。
 
-| 属性            | 值                                       |
-| --------------- | ---------------------------------------- |
-| 提供商 ID       | `cerebras`                               |
-| 插件            | 官方外部包                               |
-| 凭证环境变量    | `CEREBRAS_API_KEY`                       |
-| 新手引导标志    | `--auth-choice cerebras-api-key`         |
-| 直接 CLI 标志   | `--cerebras-api-key <key>`               |
-| API             | 兼容 OpenAI（`openai-completions`）      |
-| 基础 URL        | `https://api.cerebras.ai/v1`             |
-| 默认模型        | `cerebras/zai-glm-4.7`                   |
+| 属性            | 值                                                        |
+| --------------- | --------------------------------------------------------- |
+| 提供商 id       | `cerebras`                                                |
+| 插件            | 官方外部包（`@openclaw/cerebras-provider`）               |
+| 凭证环境变量    | `CEREBRAS_API_KEY`                                        |
+| 新手引导标志    | `--auth-choice cerebras-api-key`                          |
+| 直接 CLI 标志   | `--cerebras-api-key <key>`                                |
+| API             | 兼容 OpenAI（`openai-completions`）                       |
+| 基础 URL        | `https://api.cerebras.ai/v1`                              |
+| 默认模型        | `cerebras/zai-glm-4.7`                                    |
 
 ## 安装插件
-
-安装官方插件，然后重启 Gateway 网关：
 
 ```bash
 openclaw plugins install @openclaw/cerebras-provider
@@ -67,7 +65,7 @@ export CEREBRAS_API_KEY=csk-...
     openclaw models list --provider cerebras
     ```
 
-    列表应包含全部四个静态模型。如果 `CEREBRAS_API_KEY` 未解析，`openclaw models status --json` 会在 `auth.unusableProfiles` 下报告缺失的凭证。
+    列出全部四个静态模型。如果 `CEREBRAS_API_KEY` 未解析，`openclaw models status --json` 会在 `auth.unusableProfiles` 下报告缺失的凭证。
 
   </Step>
 </Steps>
@@ -83,9 +81,9 @@ openclaw onboard --non-interactive \
 
 ## 内置目录
 
-OpenClaw 提供一个静态 Cerebras 目录，用于镜像公开的兼容 OpenAI 端点。全部四个模型共享 128k 上下文和 8,192 个最大输出 token。
+全部四个模型共享 128k 上下文窗口和 8,192 个最大输出 token。
 
-| 模型引用                                  | 名称                 | 推理 | 说明                                   |
+| 模型 ref                                  | 名称                 | 推理 | 说明                                   |
 | ----------------------------------------- | -------------------- | ---- | -------------------------------------- |
 | `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | 是   | 默认模型；预览版推理模型               |
 | `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | 是   | 生产推理模型                           |
@@ -93,12 +91,12 @@ OpenClaw 提供一个静态 Cerebras 目录，用于镜像公开的兼容 OpenAI
 | `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | 否   | 面向速度的生产模型                     |
 
 <Warning>
-  Cerebras 将 `zai-glm-4.7` 和 `qwen-3-235b-a22b-instruct-2507` 标记为预览模型，并且文档说明 `llama3.1-8b` 以及 `qwen-3-235b-a22b-instruct-2507` 将于 2026 年 5 月 27 日弃用。在将它们用于生产工作负载之前，请查看 Cerebras 的受支持模型页面。
+Cerebras 将 `zai-glm-4.7` 和 `qwen-3-235b-a22b-instruct-2507` 标记为预览模型，并且文档说明 `llama3.1-8b` 以及 `qwen-3-235b-a22b-instruct-2507` 将于 2026 年 5 月 27 日弃用。在生产工作负载中依赖它们之前，请查看 Cerebras 的[支持模型页面](https://inference-docs.cerebras.ai/models/overview)。
 </Warning>
 
 ## 手动配置
 
-使用该插件通常意味着你只需要 API key。当你想覆盖模型元数据，或以 `mode: "merge"` 针对静态目录运行时，请使用显式的 `models.providers.cerebras` 配置：
+大多数设置只需要 API key。使用显式的 `models.providers.cerebras` 配置来覆盖模型元数据，或以 `mode: "merge"` 针对静态目录运行：
 
 ```json5
 {
@@ -126,14 +124,14 @@ OpenClaw 提供一个静态 Cerebras 目录，用于镜像公开的兼容 OpenAI
 ```
 
 <Note>
-  如果 Gateway 网关以守护进程运行（launchd、systemd、Docker），请确保 `CEREBRAS_API_KEY` 对该进程可用，例如放在 `~/.openclaw/.env` 中，或通过 `env.shellEnv` 提供。仅在交互式 shell 中导出的 key 对托管服务没有帮助，除非单独导入该环境变量。
+如果 Gateway 网关作为守护进程运行（launchd、systemd、Docker），请确保 `CEREBRAS_API_KEY` 对该进程可用，例如放在 `~/.openclaw/.env` 中，或通过 `env.shellEnv` 提供。仅在交互式 shell 中导出的 key 对托管服务没有帮助，除非单独导入该环境变量。
 </Note>
 
-## 相关内容
+## 相关
 
 <CardGroup cols={2}>
   <Card title="模型提供商" href="/zh-CN/concepts/model-providers" icon="layers">
-    选择提供商、模型引用和故障转移行为。
+    选择提供商、模型 ref 和故障转移行为。
   </Card>
   <Card title="思考模式" href="/zh-CN/tools/thinking" icon="brain">
     两个支持推理的 Cerebras 模型的推理强度级别。
@@ -141,7 +139,7 @@ OpenClaw 提供一个静态 Cerebras 目录，用于镜像公开的兼容 OpenAI
   <Card title="配置参考" href="/zh-CN/gateway/config-agents#agent-defaults" icon="gear">
     Agent 默认值和模型配置。
   </Card>
-  <Card title="Models 常见问题" href="/zh-CN/help/faq-models" icon="circle-question">
-    凭证配置文件、切换模型，以及解决 “no profile” 错误。
+  <Card title="模型常见问题" href="/zh-CN/help/faq-models" icon="circle-question">
+    凭证档案、切换模型，以及解决 “no profile” 错误。
   </Card>
 </CardGroup>

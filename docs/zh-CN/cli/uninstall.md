@@ -1,35 +1,41 @@
 ---
 read_when:
-    - 你想要移除 Gateway 网关服务和/或本地状态
+    - 你想移除 Gateway 网关服务和/或本地状态
     - 你想先进行一次试运行
 summary: '`openclaw uninstall` 的 CLI 参考（移除 Gateway 网关服务 + 本地数据）'
 title: 卸载
 x-i18n:
-    generated_at: "2026-06-27T01:44:16Z"
+    generated_at: "2026-07-05T11:11:52Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-卸载 Gateway 网关服务和本地数据（CLI 保留）。
+卸载 Gateway 网关服务和/或本地数据。CLI 本身不会被
+移除；请通过 npm/pnpm 单独卸载。
 
-选项：
+## 选项
 
-- `--service`：移除 Gateway 网关服务
-- `--state`：移除状态和配置
-- `--workspace`：移除工作区目录
-- `--app`：移除 macOS 应用
-- `--all`：移除服务、状态、工作区和应用
-- `--yes`：跳过确认提示
-- `--non-interactive`：禁用提示；需要 `--yes`
-- `--dry-run`：打印操作而不移除文件
+| 标志                | 默认值 | 描述                                          |
+| ------------------- | ------- | ---------------------------------------------------- |
+| `--service`         | `false` | 移除 Gateway 网关服务。                          |
+| `--state`           | `false` | 移除状态和配置。                             |
+| `--workspace`       | `false` | 移除工作区目录。                        |
+| `--app`             | `false` | 移除 macOS 应用。                                |
+| `--all`             | `false` | `--service --state --workspace --app` 的简写。 |
+| `--yes`             | `false` | 跳过确认提示。                           |
+| `--non-interactive` | `false` | 禁用提示；需要 `--yes`。                   |
+| `--dry-run`         | `false` | 打印计划执行的操作，而不移除文件。        |
 
-示例：
+如果没有指定范围标志，会通过交互式多选提示选择要移除的组件
+（默认预选服务、状态和工作区）。
+
+## 示例
 
 ```bash
 openclaw backup create
@@ -40,14 +46,12 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-说明：
+## 说明
 
-- 如果你想在移除状态或工作区之前保留可恢复的快照，请先运行 `openclaw backup create`。
+- 在移除状态或工作区之前，先运行 `openclaw backup create` 创建可恢复的快照。
 - `--state` 会保留已配置的工作区目录，除非同时选择了 `--workspace`。
-- `--all` 是同时移除服务、状态、工作区和应用的简写。
-- `--non-interactive` 需要 `--yes`。
 
-## 相关内容
+## 相关
 
 - [CLI 参考](/zh-CN/cli)
 - [卸载](/zh-CN/install/uninstall)

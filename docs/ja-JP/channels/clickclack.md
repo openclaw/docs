@@ -1,30 +1,30 @@
 ---
 read_when:
-    - OpenClaw を ClickClack ワークスペースに接続する
+    - ClickClack ワークスペースに OpenClaw を接続する
     - ClickClack ボット ID のテスト
-summary: ClickClack ボットトークンチャネルのセットアップとターゲット構文
+summary: ClickClack ボットトークンチャンネルのセットアップとターゲット構文
 title: ClickClack
 x-i18n:
-    generated_at: "2026-06-27T10:32:45Z"
+    generated_at: "2026-07-05T11:01:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 17d5dd79c29122916474a54069306e8e040a68c15c46bd217391bc97dd5d5bb5
+    source_hash: 2f268ab4ec96226a890aa1be7ccd1f05c9c92656aa5347864b1c74026dea9098
     source_path: channels/clickclack.md
     workflow: 16
 ---
 
-ClickClack は、ファーストクラスの ClickClack ボットトークンを通じて、OpenClaw をセルフホストの ClickClack ワークスペースに接続します。
+ClickClack は、ファーストクラスの ClickClack ボットトークンを通じて、OpenClaw を自己ホスト型 ClickClack ワークスペースに接続します。
 
-OpenClaw エージェントを ClickClack ボットユーザーとして表示したい場合に使用します。ClickClack は独立したサービスボットとユーザー所有ボットをサポートします。ユーザー所有ボットは `owner_user_id` を保持し、付与したトークンスコープのみを受け取ります。
+OpenClaw エージェントを ClickClack ボットユーザーとして表示したい場合に使用します。ClickClack は独立したサービスボットとユーザー所有ボットをサポートします。ユーザー所有ボットは `owner_user_id` を保持し、付与したトークンスコープだけを受け取ります。
 
 ## クイックセットアップ
 
-ClickClack でボットトークンを作成します。
+ClickClack サーバーでボットトークンを作成します。
 
 ```bash
 clickclack admin bot create \
-  --workspace <workspace_id_or_slug> \
+  --workspace <workspace_id> \
   --name "OpenClaw" \
   --handle openclaw \
   --scopes bot:write \
@@ -37,41 +37,81 @@ OpenClaw を設定します。
 
 ```json5
 {
-  plugins: {
-    entries: {
-      clickclack: {
-        llm: {
-          allowAgentIdOverride: true,
-        },
-      },
-    },
-  },
   channels: {
     clickclack: {
       enabled: true,
-      baseUrl: "https://app.clickclack.chat",
+      baseUrl: "https://clickclack.example.com",
       token: { source: "env", provider: "default", id: "CLICKCLACK_BOT_TOKEN" },
       workspace: "default",
       defaultTo: "channel:general",
-      agentId: "clickclack-bot",
-      replyMode: "model",
     },
   },
 }
 ```
 
-次に実行します。
+その後、次を実行します。
 
 ```bash
 export CLICKCLACK_BOT_TOKEN="ccb_..."
 openclaw gateway
 ```
 
-`plugins.allow` が空ではない制限的なリストの場合、チャネルセットアップで ClickClack を明示的に選択するか、`openclaw plugins enable clickclack` を実行すると、そのリストに `clickclack` が追加されます。オンボーディングインストールも同じ明示的選択の動作を使用します。これらの経路は `plugins.deny` やグローバルな `plugins.enabled: false` 設定を上書きしません。直接 `openclaw plugins install @openclaw/clickclack` を実行すると、通常の Plugin インストールポリシーに従い、既存の許可リストにも ClickClack が記録されます。
+アカウントは、`baseUrl`、`token`、`workspace` がすべて設定されている場合にのみ設定済みと見なされます。`workspace` はワークスペース ID（`wsp_...`）、スラッグ、または名前を受け付けます。Gateway は起動時にそれを ID に解決します。
+
+### アカウント設定キー
+
+| キー                    | デフォルト          | 注記                                                                                   |
+| ----------------------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `baseUrl`               | なし（必須）        | ClickClack サーバー URL。                                                              |
+| `token`                 | なし（必須）        | プレーン文字列またはシークレット参照（`source: "env" \| "file" \| "exec"`）。          |
+| `workspace`             | なし（必須）        | ワークスペース ID、スラッグ、または名前。                                              |
+| `replyMode`             | `"agent"`           | `"agent"` は完全なエージェントパイプラインを実行します。`"model"` は短い直接モデル補完を送信します。 |
+| `defaultTo`             | `"channel:general"` | アウトバウンドパスでターゲットが指定されていない場合に使用されるターゲット。            |
+| `allowFrom`             | `["*"]`             | インバウンド DM とチャンネルメッセージ用のユーザー ID 許可リスト。                     |
+| `botUserId`             | 自動検出            | 起動時にボットトークン ID から解決されます。                                           |
+| `agentId`               | ルートのデフォルト  | このアカウントのインバウンドメッセージを 1 つのエージェントに固定します。              |
+| `toolsAllow`            | なし                | このアカウントからのエージェント返信に対するツール許可リスト。                         |
+| `model`, `systemPrompt` | なし                | `replyMode: "model"` の補完で使用されます。                                             |
+| `reconnectMs`           | `1500`              | リアルタイム再接続遅延（100 から 60000）。                                             |
+
+`plugins.allow` が空でない制限リストの場合、チャンネル設定で ClickClack を明示的に選択するか、`openclaw plugins enable clickclack` を実行すると、そのリストに `clickclack` が追加されます。オンボーディングインストールでも同じ明示的選択の挙動が使用されます。これらのパスは、`plugins.deny` やグローバルな `plugins.enabled: false` 設定を上書きしません。直接 `openclaw plugins install @openclaw/clickclack` を実行した場合は、通常の Plugin インストールポリシーに従い、既存の許可リストにも ClickClack が記録されます。
 
 ## 複数のボット
 
-各アカウントはそれぞれ独自の ClickClack リアルタイム接続を開き、独自のボットトークンを使用します。
+各アカウントは独自の ClickClack リアルタイム接続を開き、独自のボットトークンを使用します。
+
+```json5
+{
+  channels: {
+    clickclack: {
+      enabled: true,
+      baseUrl: "https://clickclack.example.com",
+      defaultAccount: "service",
+      accounts: {
+        service: {
+          token: { source: "env", provider: "default", id: "CLICKCLACK_SERVICE_BOT_TOKEN" },
+          workspace: "default",
+          defaultTo: "channel:general",
+          agentId: "service-bot",
+        },
+        support: {
+          token: { source: "env", provider: "default", id: "CLICKCLACK_SUPPORT_BOT_TOKEN" },
+          workspace: "default",
+          defaultTo: "dm:usr_...",
+          agentId: "support-bot",
+        },
+      },
+    },
+  },
+}
+```
+
+## 返信モード
+
+- `replyMode: "agent"`（デフォルト）は、セッション記録とツールポリシーを含む通常のエージェントパイプラインを通じてインバウンドメッセージをディスパッチします。
+- `replyMode: "model"` はエージェントパイプラインをスキップし、Plugin ランタイムの `llm.complete` を使用して短い直接ボット返信を行います（任意で `model` と `systemPrompt` によって調整されます）。
+
+モデルモードは、解決されたボットエージェント ID に対して補完を実行します。そのため、明示的な `plugins.entries.clickclack.llm.allowAgentIdOverride: true` 信頼ビットが必要です。
 
 ```json5
 {
@@ -84,40 +124,18 @@ openclaw gateway
       },
     },
   },
-  channels: {
-    clickclack: {
-      enabled: true,
-      baseUrl: "https://app.clickclack.chat",
-      defaultAccount: "service",
-      accounts: {
-        service: {
-          token: { source: "env", provider: "default", id: "CLICKCLACK_SERVICE_BOT_TOKEN" },
-          workspace: "default",
-          defaultTo: "channel:general",
-          agentId: "service-bot",
-          replyMode: "model",
-        },
-        peter: {
-          token: { source: "env", provider: "default", id: "CLICKCLACK_PETER_BOT_TOKEN" },
-          workspace: "default",
-          defaultTo: "dm:usr_...",
-          agentId: "peter-bot",
-          replyMode: "model",
-        },
-      },
-    },
-  },
 }
 ```
 
-`replyMode: "model"` は、短いボット返信に `api.runtime.llm.complete` を直接使用します。
-アカウントが `agentId` を設定する場合、OpenClaw は明示的な `plugins.entries.clickclack.llm.allowAgentIdOverride` 信頼ビットを要求します。これにより、Plugin がそのボットエージェントの補完を実行できます。デフォルトのエージェント経路だけを使用する場合は、オフのままにしてください。
+デフォルトの `agent` 返信モードだけを使用する場合は、信頼ビットをオフのままにしてください。この場合は不要です。
 
 ## ターゲット
 
-- `channel:<name-or-id>` はワークスペースチャネルに送信します。裸のターゲットはデフォルトで `channel:` になります。
-- `dm:<user_id>` は、そのユーザーとのダイレクト会話を作成または再利用します。
-- `thread:<message_id>` は既存のスレッドに返信します。
+- `channel:<name-or-id>` はワークスペースチャンネルに送信します。裸のターゲットはデフォルトで `channel:` になります。
+- `dm:<user_id>` は、そのユーザーとの直接会話を作成または再利用します。
+- `thread:<message_id>` は、そのメッセージをルートとするスレッド内で返信します。
+
+明示的なアウトバウンドターゲットには、`clickclack:` または `cc:` プロバイダープレフィックスを付けることもできます。
 
 例:
 
@@ -129,17 +147,17 @@ openclaw message send --channel clickclack --target thread:msg_123 --message "fo
 
 ## 権限
 
-ClickClack トークンスコープは ClickClack API によって強制されます。
+ClickClack トークンスコープは ClickClack API によって適用されます。
 
-- `bot:read`: ワークスペース、チャネル、メッセージ、スレッド、DM、リアルタイム、プロフィールデータを読み取ります。
-- `bot:write`: `bot:read` に加えて、チャネルメッセージ、スレッド返信、DM、アップロードを扱えます。
-- `bot:admin`: `bot:write` に加えて、チャネル作成を扱えます。
+- `bot:read`: ワークスペース、チャンネル、メッセージ、スレッド、DM、リアルタイム、プロフィールのデータを読み取ります。
+- `bot:write`: `bot:read` に加えて、チャンネルメッセージ、スレッド返信、DM、アップロードを許可します。
+- `bot:admin`: `bot:write` に加えて、チャンネル作成を許可します。
 
-通常のエージェントチャットでは、OpenClaw に必要なのは `bot:write` のみです。
+OpenClaw は通常のエージェントチャットに `bot:write` だけを必要とします。
 
 ## トラブルシューティング
 
-- `ClickClack is not configured`: `channels.clickclack.token` または `CLICKCLACK_BOT_TOKEN` を設定します。
-- `workspace not found`: `workspace` を ClickClack から返されたワークスペース ID またはスラッグに設定します。
-- 受信返信がない場合: トークンにリアルタイム読み取りアクセスがあり、ボットが自身のメッセージに返信していないことを確認します。
-- チャネル送信が失敗する場合: ボットがワークスペースのメンバーであり、`bot:write` を持っていることを確認します。
+- `ClickClack is not configured for account "<id>"`: そのアカウントに `baseUrl`、`token`（たとえば `CLICKCLACK_BOT_TOKEN` 経由）、`workspace` を設定します。
+- `ClickClack workspace not found: <value>`: `workspace` を、ClickClack が返すワークスペース ID、スラッグ、または名前に設定します。
+- インバウンド返信がない: トークンにリアルタイム読み取りアクセスがあることを確認し、ボットは自身のメッセージと他のボットからのメッセージを無視する点に注意してください。
+- チャンネル送信が失敗する: ボットがワークスペースのメンバーであり、`bot:write` を持っていることを確認します。

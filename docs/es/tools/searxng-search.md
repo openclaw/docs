@@ -3,27 +3,27 @@ read_when:
     - Quieres un proveedor de búsqueda web autoalojado
     - Quieres usar SearXNG para web_search
     - Necesitas una opción de búsqueda centrada en la privacidad o aislada de la red
-summary: 'Búsqueda web SearXNG: proveedor de metabúsqueda autoalojado y sin claves'
+summary: Búsqueda web SearXNG -- proveedor de metabúsqueda autoalojado y sin clave
 title: Búsqueda de SearXNG
 x-i18n:
-    generated_at: "2026-06-27T13:08:13Z"
+    generated_at: "2026-07-05T11:45:43Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4bd00a20e45f71b7bd855a6588d5c829a0202839fc93ddcec1e255b7858ff183
+    source_hash: cae8de9f8e2c8dd9cec615adb48da5c1fd7654bffe96c7afc1acea3effbcf1fc
     source_path: tools/searxng-search.md
     workflow: 16
 ---
 
-OpenClaw admite [SearXNG](https://docs.searxng.org/) como proveedor `web_search` **autoalojado
-y sin clave**. SearXNG es un motor de metabúsqueda de código abierto
+OpenClaw admite [SearXNG](https://docs.searxng.org/) como proveedor `web_search` **autoalojado y
+sin claves**. SearXNG es un motor de metabúsqueda de código abierto
 que agrega resultados de Google, Bing, DuckDuckGo y otras fuentes.
 
 Ventajas:
 
-- **Gratis e ilimitado** -- no requiere clave de API ni suscripción comercial
+- **Gratuito e ilimitado** -- no se requiere clave de API ni suscripción comercial
 - **Privacidad / aislamiento de red** -- las consultas nunca salen de tu red
-- **Funciona en cualquier lugar** -- sin restricciones regionales de las API de búsqueda comerciales
+- **Funciona en cualquier lugar** -- sin restricciones regionales en las API de búsqueda comerciales
 
 ## Configuración
 
@@ -71,7 +71,7 @@ Ventajas:
 }
 ```
 
-Configuración a nivel de Plugin para la instancia de SearXNG:
+Ajustes de nivel de Plugin para la instancia de SearXNG:
 
 ```json5
 {
@@ -91,16 +91,7 @@ Configuración a nivel de Plugin para la instancia de SearXNG:
 }
 ```
 
-El campo `baseUrl` también acepta objetos SecretRef.
-
-Reglas de transporte:
-
-- `https://` funciona para hosts SearXNG públicos o privados
-- `http://` solo se acepta para hosts de red privada de confianza o loopback
-- los hosts SearXNG públicos deben usar `https://`
-- los hosts privados/internos usan la protección de red autoalojada; los hosts
-  públicos `https://` permanecen en la protección estricta de búsqueda web y no pueden redirigir a
-  direcciones privadas
+`baseUrl` también acepta un objeto SecretRef (por ejemplo `{ source: "env", id: "SEARXNG_BASE_URL" }`).
 
 ## Variable de entorno
 
@@ -110,9 +101,10 @@ Define `SEARXNG_BASE_URL` como alternativa a la configuración:
 export SEARXNG_BASE_URL="http://localhost:8888"
 ```
 
-Cuando `SEARXNG_BASE_URL` está definida y no hay ningún proveedor explícito configurado, la detección automática
-elige SearXNG automáticamente (con la prioridad más baja -- cualquier proveedor respaldado por API con una
-clave tiene preferencia).
+Orden de resolución: cadena `baseUrl` configurada, luego una SecretRef de entorno en línea en
+`baseUrl`, luego `SEARXNG_BASE_URL`. Cuando no se establece ninguna de las rutas de configuración y
+`SEARXNG_BASE_URL` está presente sin un proveedor explícito elegido, la detección automática
+elige SearXNG.
 
 ## Referencia de configuración del Plugin
 
@@ -122,25 +114,33 @@ clave tiene preferencia).
 | `categories` | Categorías separadas por comas, como `general`, `news` o `science` |
 | `language`   | Código de idioma para resultados, como `en`, `de` o `fr`           |
 
+La llamada a la herramienta `web_search` también acepta `count` (1-10 resultados), `categories`
+y `language` como sobrescrituras por llamada.
+
 ## Notas
 
 - **API JSON** -- usa el endpoint nativo `format=json` de SearXNG, no extracción de HTML
-- **URL de resultados de imagen** -- los resultados de categoría de imagen incluyen `img_src` cuando SearXNG
-  devuelve una URL de imagen directa
-- **Sin clave de API** -- funciona con cualquier instancia de SearXNG sin configuración adicional
+- **URL de resultados de imágenes** -- los resultados de categorías de imagen incluyen `img_src` cuando SearXNG
+  devuelve una URL directa de imagen
+- **Sin clave de API** -- funciona con cualquier instancia de SearXNG de inmediato
 - **Validación de URL base** -- `baseUrl` debe ser una URL `http://` o `https://`
-  válida; los hosts públicos deben usar `https://`
-- **Protección de red** -- los endpoints SearXNG privados/internos optan por
-  el acceso a la red privada; los endpoints SearXNG públicos `https://` mantienen una protección SSRF
-  estricta
-- **Orden de detección automática** -- SearXNG se comprueba después de los proveedores respaldados por API
-  con claves configuradas (orden 200). Los proveedores sin clave como DuckDuckGo u
-  Ollama Web Search no se seleccionan automáticamente sin una elección explícita de proveedor
+  válida
+- **Protección de red** -- las URL base `http://` deben apuntar a un host privado de confianza o de
+  loopback (los hosts públicos deben usar `https://`); las URL base `https://` que
+  se resuelven a una dirección privada/interna reciben la misma concesión autoalojada,
+  mientras que las URL base `https://` que se resuelven públicamente mantienen protección SSRF estricta
+- **Orden de detección automática** -- SearXNG requiere un `baseUrl` configurado (orden
+  200 entre proveedores que ya tienen su credencial requerida). Los proveedores sin claves,
+  como DuckDuckGo u Ollama Web Search, nunca ganan la detección automática
+  implícitamente; solo se activan con una elección explícita de `provider`
 - **Autoalojado** -- tú controlas la instancia, las consultas y los motores de búsqueda ascendentes
-- **Categorías** usa `general` de forma predeterminada cuando no está configurado
-- **Reserva de categoría** -- si una solicitud de categoría distinta de `general` se completa correctamente pero
+- **Categorías** usa `general` de forma predeterminada cuando no se configura
+- **Reserva de categoría** -- si una solicitud de categoría distinta de `general` se realiza correctamente pero
   devuelve cero resultados, OpenClaw reintenta la misma consulta una vez con `general`
   antes de devolver un conjunto de resultados vacío
+- **Almacenamiento en caché de resultados** -- las consultas idénticas (misma consulta, conteo, categorías,
+  idioma y URL base) se almacenan en caché dentro del proceso durante un TTL breve
+- **Requisito de versión** -- el Plugin declara `minHostVersion: >=2026.6.9`
 
 <Tip>
   Para que la API JSON de SearXNG funcione, asegúrate de que tu instancia de SearXNG tenga el formato `json`
@@ -149,6 +149,6 @@ clave tiene preferencia).
 
 ## Relacionado
 
-- [Descripción general de búsqueda web](/es/tools/web) -- todos los proveedores y la detección automática
-- [Búsqueda de DuckDuckGo](/es/tools/duckduckgo-search) -- otro proveedor sin clave
+- [Resumen de Web Search](/es/tools/web) -- todos los proveedores y la detección automática
+- [Búsqueda de DuckDuckGo](/es/tools/duckduckgo-search) -- otro proveedor sin claves
 - [Brave Search](/es/tools/brave-search) -- resultados estructurados con nivel gratuito

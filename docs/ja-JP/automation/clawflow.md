@@ -1,20 +1,20 @@
 ---
-summary: タスクフローへリダイレクト
+summary: Task Flow へリダイレクト
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-30T04:57:00Z"
+    generated_at: "2026-07-05T11:00:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
     source_path: automation/clawflow.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawFlow は [タスクフロー](/ja-JP/automation/taskflow) に名称変更されました。
+ClawFlow は [Task Flow](/ja-JP/automation/taskflow) に名称変更されました。永続的な複数ステップのフローオーケストレーションには、そのページを使用してください。
 
 ## 関連
 
-- [タスクフロー](/ja-JP/automation/taskflow)
-- [常時指示](/ja-JP/automation/standing-orders)
-- [フック](/ja-JP/automation/hooks)
+- [Task Flow](/ja-JP/automation/taskflow)
+- [常設指示](/ja-JP/automation/standing-orders)
+- [Hooks](/ja-JP/automation/hooks)

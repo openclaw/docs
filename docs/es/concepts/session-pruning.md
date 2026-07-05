@@ -1,70 +1,69 @@
 ---
 read_when:
-    - Quieres reducir el crecimiento del contexto por las salidas de herramientas
+    - Quieres reducir el crecimiento del contexto provocado por las salidas de herramientas
     - Quieres entender la optimización de la caché de prompts de Anthropic
 summary: Recortar resultados antiguos de herramientas para mantener el contexto ligero y el almacenamiento en caché eficiente
-title: Poda de sesión
+title: Poda de sesiones
 x-i18n:
-    generated_at: "2026-04-26T11:27:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
-    source_path: concepts/session-pruning.md
-    workflow: 15
+    generated_at: "2026-07-05T11:15:42Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: dd5cb4582cb8d9d7265213abe1f5b5893634882b9f8b3ce1deef746293dd07db
+    source_path: concepts/session-pruning.md
+    workflow: 16
 ---
 
-La poda de sesión recorta los **resultados antiguos de herramientas** del contexto antes de cada llamada al LLM. Reduce el crecimiento del contexto por salidas acumuladas de herramientas (resultados de ejecución, lecturas de archivos, resultados de búsqueda) sin reescribir el texto normal de la conversación.
+La depuración de sesiones recorta **resultados antiguos de herramientas** del contexto antes de cada llamada al LLM. Reduce la sobrecarga del contexto causada por salidas acumuladas de herramientas (resultados de ejecución, lecturas de archivos, resultados de búsqueda) sin reescribir el texto normal de la conversación.
 
 <Info>
-La poda es solo en memoria; no modifica la transcripción de la sesión en disco.
-Tu historial completo siempre se conserva.
+La depuración solo ocurre en memoria: no modifica la transcripción de sesión en disco. Tu historial completo siempre se conserva.
 </Info>
 
 ## Por qué importa
 
-Las sesiones largas acumulan salidas de herramientas que inflan la ventana de contexto. Esto aumenta el costo y puede forzar la [Compaction](/es/concepts/compaction) antes de lo necesario.
+Las sesiones largas acumulan salida de herramientas que infla la ventana de contexto. Esto aumenta el costo y puede forzar [Compaction](/es/concepts/compaction) antes de lo necesario.
 
-La poda es especialmente valiosa para la **caché de prompts de Anthropic**. Después de que expire el TTL de la caché, la siguiente solicitud vuelve a almacenar en caché el prompt completo. La poda reduce el tamaño de escritura en caché, lo que reduce directamente el costo.
+La depuración es especialmente valiosa para el **almacenamiento en caché de prompts de Anthropic**. Después de que vence el TTL de la caché, la siguiente solicitud vuelve a almacenar en caché el prompt completo. La depuración reduce el tamaño de escritura en caché, lo que reduce directamente el costo.
 
 ## Cómo funciona
 
-1. Espera a que expire el TTL de la caché (predeterminado: 5 minutos).
-2. Encuentra resultados antiguos de herramientas para la poda normal (el texto de la conversación se deja intacto).
-3. **Recorte suave** de resultados sobredimensionados: conserva el inicio y el final, e inserta `...`.
-4. **Borrado total** del resto: sustitúyelo por un marcador de posición.
-5. Restablece el TTL para que las solicitudes posteriores reutilicen la caché nueva.
+La depuración se ejecuta en modo `cache-ttl`, condicionada tanto por una comprobación de tiempo como por una comprobación de tamaño de contexto:
 
-## Limpieza heredada de imágenes
+1. Espera a que venza el TTL de la caché (5 minutos de forma predeterminada cuando se define manualmente; consulta [Valores predeterminados inteligentes](#smart-defaults) para el valor automático predeterminado de Anthropic). Antes de que transcurra el TTL, la depuración se omite por completo para preservar la reutilización de la caché de prompts en turnos cercanos.
+2. Una vez transcurrido el TTL, estima el tamaño total del contexto frente a la ventana de contexto del modelo. Si la proporción está por debajo de `softTrimRatio` (predeterminado 0.3), omite la depuración y mantiene el reloj del TTL en marcha.
+3. **Recorta suavemente** los resultados de herramientas sobredimensionados por encima de la proporción: conserva el inicio y el final (1500 caracteres cada uno de forma predeterminada, con un límite de 4000 caracteres combinados), e inserta `...` en medio.
+4. Si la proporción sigue en `hardClearRatio` o por encima (predeterminado 0.5) y quedan al menos `minPrunableToolChars` (predeterminado 50,000) de contenido de herramientas depurable, **borra por completo** esos resultados: reemplaza su contenido por un marcador de posición (predeterminado `[Old tool result content cleared]`).
+5. Restablece el reloj del TTL solo cuando la depuración realmente cambió el contexto, para que las solicitudes posteriores reutilicen la caché nueva.
 
-OpenClaw también crea una vista de repetición idempotente independiente para sesiones que
-persisten bloques de imagen sin procesar o marcadores de medios de hidratación del prompt en el historial.
+Se aplican dos reglas de seguridad independientemente de los umbrales: los turnos de asistente más recientes `keepLastAssistants` (predeterminado 3) nunca se depuran, y nunca se depura nada anterior al primer mensaje de usuario de la sesión (protege lecturas de arranque como `SOUL.md`/`USER.md`).
 
-- Conserva los **3 turnos completados más recientes** byte por byte para que los
-  prefijos de caché de prompts de seguimientos recientes sigan siendo estables.
-- En la vista de repetición, los bloques de imagen más antiguos ya procesados del historial de `user` o
-  `toolResult` pueden sustituirse por
-  `[image data removed - already processed by model]`.
-- Las referencias textuales de medios más antiguas, como `[media attached: ...]`,
-  `[Image: source: ...]` y `media://inbound/...`, pueden sustituirse por
-  `[media reference removed - already processed by model]`. Los marcadores de archivos adjuntos del turno actual permanecen intactos para que los modelos de visión puedan seguir hidratando imágenes nuevas.
-- La transcripción sin procesar de la sesión no se reescribe, por lo que los visores del historial pueden seguir renderizando las entradas de mensaje originales y sus imágenes.
-- Esto es independiente de la poda normal por TTL de caché. Existe para evitar que cargas útiles de imagen repetidas o referencias de medios obsoletas invaliden las cachés de prompts en turnos posteriores.
+Solo los mensajes `toolResult` son elegibles; el texto normal de la conversación se deja intacto. Usa `agents.defaults.contextPruning.tools.{allow,deny}` para delimitar qué nombres de herramientas son depurables.
+
+## Limpieza de imágenes heredadas
+
+OpenClaw también construye una vista de reproducción idempotente separada para sesiones que conservan bloques de imágenes sin procesar o marcadores multimedia de hidratación de prompts en el historial.
+
+- Conserva los **3 turnos completados más recientes** byte por byte para que los prefijos de caché de prompts de seguimientos recientes permanezcan estables. Este recuento incluye todos los turnos completados, no solo los que contienen imágenes, por lo que los turnos solo de texto también consumen la ventana.
+- En la vista de reproducción, los bloques de imágenes antiguos ya procesados del historial de `user` o `toolResult` se reemplazan por `[image data removed - already processed by model]`.
+- Las referencias multimedia textuales antiguas, como `[media attached: ...]`, `[Image: source: ...]` y `media://inbound/...`, se reemplazan por `[media reference removed - already processed by model]`. Los marcadores de adjuntos del turno actual permanecen intactos para que los modelos de visión todavía puedan hidratar imágenes nuevas.
+- La transcripción de sesión sin procesar no se reescribe, por lo que los visores de historial todavía pueden renderizar las entradas de mensajes originales y sus imágenes.
+- Esto es independiente de la depuración normal por TTL de caché descrita arriba. Existe para evitar que las cargas de imágenes repetidas o las referencias multimedia obsoletas invaliden las cachés de prompts en turnos posteriores.
 
 ## Valores predeterminados inteligentes
 
-OpenClaw habilita automáticamente la poda para perfiles de Anthropic:
+El plugin Anthropic incluido configura automáticamente la depuración y la cadencia de Heartbeat la primera vez que resuelve un perfil de autenticación de Anthropic (o Claude CLI), pero solo para campos que no hayas definido ya explícitamente:
 
-| Tipo de perfil                                         | Poda habilitada | Heartbeat |
-| ------------------------------------------------------ | --------------- | --------- |
-| Autenticación OAuth/token de Anthropic (incluida la reutilización de Claude CLI) | Sí | 1 hora |
-| Clave de API                                           | Sí              | 30 min    |
+| Modo de autenticación                         | `contextPruning.mode` | `contextPruning.ttl` | `heartbeat.every` |
+| --------------------------------------------- | --------------------- | -------------------- | ----------------- |
+| OAuth/token (incluida reutilización de Claude CLI) | `cache-ttl`           | `1h`                 | `1h`              |
+| Clave de API                                  | `cache-ttl`           | `1h`                 | `30m`             |
 
-Si estableces valores explícitos, OpenClaw no los sobrescribe.
+Si defines `agents.defaults.contextPruning.mode` o `agents.defaults.heartbeat.every` por tu cuenta, OpenClaw no los sobrescribe. Este valor automático predeterminado solo se activa para autenticación de la familia Anthropic; otros proveedores tienen la depuración en `off` salvo que la configures.
 
-## Habilitar o deshabilitar
+## Activar o desactivar
 
-La poda está desactivada de forma predeterminada para proveedores que no sean Anthropic. Para habilitarla:
+La depuración está desactivada de forma predeterminada para proveedores que no son Anthropic. Para activarla:
 
 ```json5
 {
@@ -76,23 +75,22 @@ La poda está desactivada de forma predeterminada para proveedores que no sean A
 }
 ```
 
-Para deshabilitarla: establece `mode: "off"`.
+Para desactivarla: define `mode: "off"`.
 
-## Poda frente a Compaction
+## Depuración frente a Compaction
 
-|            | Poda                | Compaction              |
-| ---------- | ------------------- | ----------------------- |
-| **Qué**    | Recorta resultados de herramientas | Resume la conversación |
-| **¿Se guarda?** | No (por solicitud) | Sí (en la transcripción) |
-| **Ámbito** | Solo resultados de herramientas | Conversación completa |
+|            | Depuración                    | Compaction                    |
+| ---------- | ----------------------------- | ----------------------------- |
+| **Qué**    | Recorta resultados de herramientas | Resume la conversación        |
+| **¿Guardado?** | No (por solicitud)           | Sí (en la transcripción)      |
+| **Alcance** | Solo resultados de herramientas | Toda la conversación          |
 
-Se complementan entre sí: la poda mantiene ligera la salida de herramientas entre ciclos de Compaction.
+Se complementan: la depuración mantiene ligera la salida de herramientas entre ciclos de Compaction.
 
-## Lectura adicional
+## Lecturas adicionales
 
-- [Compaction](/es/concepts/compaction) — reducción de contexto basada en resumido
-- [Configuración del Gateway](/es/gateway/configuration) — todos los controles de configuración de la poda
-  (`contextPruning.*`)
+- [Compaction](/es/concepts/compaction): reducción de contexto basada en resumir
+- [Configuración de Gateway](/es/gateway/configuration): todos los controles de configuración de depuración (`contextPruning.*`)
 
 ## Relacionado
 

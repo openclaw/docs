@@ -1,51 +1,41 @@
 ---
 read_when:
-    - Depuración de la vista WebChat de mac o del puerto de loopback
-summary: Cómo la aplicación para Mac incrusta el WebChat de Gateway y cómo depurarlo
-title: Chat web (macOS)
+    - Depuración de la vista WebChat en Mac o del puerto local loopback
+summary: Cómo la app de Mac integra el WebChat del Gateway y cómo depurarlo
+title: WebChat (macOS)
 x-i18n:
-    generated_at: "2026-05-06T09:05:32Z"
+    generated_at: "2026-07-05T11:27:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
+    source_hash: 24fe8b868fa2a7e2205bd13d32332bae903d3050073ea93f798649ccbaa478f9
     source_path: platforms/mac/webchat.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-El app de la barra de menú de macOS integra la UI WebChat como una vista nativa de SwiftUI. Se
-conecta al Gateway y usa de forma predeterminada la **sesión principal** del
-agente seleccionado (con un selector de sesiones para otras sesiones).
+La app de la barra de menús de macOS integra la UI de WebChat como una vista nativa de SwiftUI. Se conecta al Gateway y usa de forma predeterminada la sesión principal del agente seleccionado (`main`, o `global` cuando `session.scope` es `global`), con un selector de sesiones para otras sesiones.
 
 - **Modo local**: se conecta directamente al WebSocket del Gateway local.
-- **Modo remoto**: reenvía el puerto de control del Gateway por SSH y usa ese
-  túnel como plano de datos.
+- **Modo remoto**: reenvía el puerto de control del Gateway por SSH y usa ese túnel como plano de datos.
 
 ## Inicio y depuración
 
-- Manual: menú Lobster → "Abrir chat".
+- Manual: menú de Lobster -> "Abrir chat".
 - Apertura automática para pruebas:
 
   ```bash
-  dist/OpenClaw.app/Contents/MacOS/OpenClaw --webchat
+  dist/OpenClaw.app/Contents/MacOS/OpenClaw --chat
   ```
+
+  (`--webchat` se acepta como alias heredado.)
 
 - Registros: `./scripts/clawlog.sh` (subsistema `ai.openclaw`, categoría `WebChatSwiftUI`).
 
 ## Cómo está conectado
 
-- Plano de datos: métodos WS del Gateway `chat.history`, `chat.send`, `chat.abort`,
-  `chat.inject` y eventos `chat`, `agent`, `presence`, `tick`, `health`.
-- `chat.history` devuelve filas de transcripción normalizadas para visualización: las etiquetas
-  de directivas en línea se eliminan del texto visible, las cargas XML de llamadas a herramientas
-  en texto sin formato (incluidos `<tool_call>...</tool_call>`,
-  `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-  `<function_calls>...</function_calls>` y bloques truncados de llamadas a herramientas) y
-  los tokens de control de modelo filtrados en ASCII/ancho completo se eliminan, las filas de
-  asistente con solo tokens silenciosos, como los `NO_REPLY` / `no_reply` exactos, se
-  omiten, y las filas sobredimensionadas pueden reemplazarse por marcadores de posición.
-- Sesión: usa de forma predeterminada la sesión primaria (`main`, o `global` cuando el alcance es
-  global). La UI puede cambiar entre sesiones.
+- Plano de datos: métodos WS del Gateway `chat.history`, `chat.send`, `chat.abort`, `chat.inject` y eventos `chat`, `agent`, `presence`, `tick`, `health`.
+- `chat.history` devuelve una transcripción normalizada para visualización: las etiquetas de directivas en línea se eliminan del texto visible, las cargas XML de llamadas a herramientas en texto plano (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`, incluidos bloques truncados) y los tokens de control del modelo filtrados se eliminan, las filas del asistente con tokens silenciosos puros, como `NO_REPLY`/`no_reply` exactos, se omiten, y las filas demasiado grandes pueden reemplazarse por un marcador de posición truncado.
+- Sesión: usa de forma predeterminada la sesión principal como se indicó arriba; la UI puede cambiar entre sesiones.
 - La incorporación usa una sesión dedicada para mantener separada la configuración inicial.
 
 ## Superficie de seguridad
@@ -54,9 +44,9 @@ agente seleccionado (con un selector de sesiones para otras sesiones).
 
 ## Limitaciones conocidas
 
-- La UI está optimizada para sesiones de chat (no es un entorno aislado completo de navegador).
+- La UI está optimizada para sesiones de chat, no para un entorno aislado de navegador completo.
 
 ## Relacionado
 
 - [WebChat](/es/web/webchat)
-- [app de macOS](/es/platforms/macos)
+- [app para macOS](/es/platforms/macos)

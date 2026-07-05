@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Configuración inicial desde cero
-    - Quieres la ruta más rápida para tener un chat funcionando
+    - Primera configuración desde cero
+    - Quieres la ruta más rápida hacia un chat funcional
 summary: Instala OpenClaw y ejecuta tu primer chat en minutos.
 title: Primeros pasos
 x-i18n:
-    generated_at: "2026-06-28T20:45:12Z"
+    generated_at: "2026-07-05T11:44:15Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
+    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Instala OpenClaw, ejecuta la incorporación y chatea con tu asistente de IA, todo en
-unos 5 minutos. Al final tendrás un Gateway en ejecución, autenticación configurada
-y una sesión de chat funcional.
+Instala OpenClaw, ejecuta la incorporación y chatea con tu asistente de IA en unos 5
+minutos. Al final tendrás un Gateway en ejecución, autenticación configurada y una
+sesión de chat funcional.
 
 ## Lo que necesitas
 
-- **Node.js**: se recomienda Node 24 (también se admite Node 22.19+)
+- **Node.js 22.19+, 23.11+ o 24+** (24 es el valor predeterminado recomendado)
 - **Una clave de API** de un proveedor de modelos (Anthropic, OpenAI, Google, etc.); la incorporación te la pedirá
 
 <Tip>
 Comprueba tu versión de Node con `node --version`.
-**Usuarios de Windows:** la aplicación Hub nativa de Windows es la ruta de escritorio más sencilla. También se admiten las rutas del instalador de PowerShell y Gateway en WSL2. Consulta [Windows](/es/platforms/windows).
+**Usuarios de Windows:** la app nativa Windows Hub es la ruta de escritorio más sencilla. También se admiten las rutas del instalador de PowerShell y del Gateway en WSL2. Consulta [Windows](/es/platforms/windows).
 ¿Necesitas instalar Node? Consulta [Configuración de Node](/es/install/node).
 </Tip>
 
@@ -61,16 +61,16 @@ Comprueba tu versión de Node con `node --version`.
     openclaw onboard --install-daemon
     ```
 
-    El asistente te guía para elegir un proveedor de modelos, definir una clave de API
+    El asistente te guía para elegir un proveedor de modelos, configurar una clave de API
     y configurar el Gateway. QuickStart suele tomar solo unos minutos, pero
     el inicio de sesión del proveedor, el emparejamiento de canales, la instalación del daemon, las descargas de red, Skills
-    o los plugins opcionales pueden hacer que la incorporación completa tarde más. Puedes omitir los pasos opcionales
-    y volver más tarde con `openclaw configure`.
+    o los plugins opcionales pueden hacer que la incorporación completa tarde más. Omite los pasos
+    opcionales y vuelve más tarde con `openclaw configure`.
 
     Consulta [Incorporación (CLI)](/es/start/wizard) para ver la referencia completa.
 
   </Step>
-  <Step title="Verificar que el Gateway esté en ejecución">
+  <Step title="Verificar que el Gateway está en ejecución">
     ```bash
     openclaw gateway status
     ```
@@ -83,7 +83,7 @@ Comprueba tu versión de Node con `node --version`.
     openclaw dashboard
     ```
 
-    Esto abre la Control UI en tu navegador. Si se carga, todo está funcionando.
+    Esto abre la Control UI en tu navegador. Si carga, todo funciona.
 
   </Step>
   <Step title="Enviar tu primer mensaje">
@@ -99,7 +99,7 @@ Comprueba tu versión de Node con `node --version`.
 <Accordion title="Avanzado: montar una compilación personalizada de la Control UI">
   Si mantienes una compilación localizada o personalizada del panel, apunta
   `gateway.controlUi.root` a un directorio que contenga tus recursos estáticos
-  compilados e `index.html`.
+  compilados y `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -138,7 +138,7 @@ openclaw dashboard
     Controla quién puede enviar mensajes a tu agente.
   </Card>
   <Card title="Configurar el Gateway" href="/es/gateway/configuration" icon="settings">
-    Modelos, herramientas, sandbox y ajustes avanzados.
+    Modelos, herramientas, sandbox y configuración avanzada.
   </Card>
   <Card title="Explorar herramientas" href="/es/tools" icon="wrench">
     Navegador, exec, búsqueda web, Skills y plugins.
@@ -148,9 +148,9 @@ openclaw dashboard
 <Accordion title="Avanzado: variables de entorno">
   Si ejecutas OpenClaw como una cuenta de servicio o quieres rutas personalizadas:
 
-- `OPENCLAW_HOME`: directorio de inicio para la resolución de rutas internas
-- `OPENCLAW_STATE_DIR`: sobrescribe el directorio de estado
-- `OPENCLAW_CONFIG_PATH`: sobrescribe la ruta del archivo de configuración
+- `OPENCLAW_HOME` — directorio de inicio para la resolución de rutas internas
+- `OPENCLAW_STATE_DIR` — sobrescribe el directorio de estado
+- `OPENCLAW_CONFIG_PATH` — sobrescribe la ruta del archivo de configuración
 
 Referencia completa: [Variables de entorno](/es/help/environment).
 </Accordion>

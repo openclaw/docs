@@ -1,45 +1,67 @@
 ---
 read_when:
-    - 執行或除錯 Gateway 程序
-    - 調查單一執行個體強制機制
-summary: 使用 WebSocket 監聽器繫結的 Gateway 單例防護
-title: Gateway 鎖定
+    - 執行或偵錯閘道程序
+    - 正在調查單一執行個體強制機制
+summary: 閘道單例防護：檔案鎖加上 WebSocket/HTTP 繫結
+title: 閘道鎖定
 x-i18n:
-    generated_at: "2026-04-30T16:29:01Z"
+    generated_at: "2026-07-05T11:19:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 85a1cb55f08d47d36fde25900e4247ef01c9a6800bf017fbff44a337f299ce13
+    source_hash: 8c3ba4e8c12d6aadd089cb05722444eaa99d4b573553ac52a21c5c91e5ce1c09
     source_path: gateway/gateway-lock.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## 原因
 
-- 確保同一主機上的每個基準連接埠只執行一個 Gateway 執行個體；額外的 Gateway 必須使用隔離的設定檔與唯一連接埠。
-- 在當機/SIGKILL 後仍能恢復，且不留下過時的鎖定檔。
-- 當控制連接埠已被佔用時，快速失敗並顯示清楚的錯誤。
+- 在一台主機上，只有一個閘道程序應該擁有指定的設定 + 連接埠；請使用隔離的設定檔與唯一連接埠來執行額外的閘道。
+- 即使發生當機/SIGKILL，也不會留下過期的鎖定檔。
+- 當另一個閘道已經擁有該連接埠時，以清楚的錯誤快速失敗。
 
-## 機制
+## 兩層
 
-- Gateway 會先在狀態鎖定目錄下取得每個設定專屬的鎖定檔，並探測已設定連接埠是否已有既有監聽器。
-- 如果記錄的鎖定擁有者已不存在、連接埠可用，或鎖定已過時，啟動程序會收回鎖定並繼續。
-- 接著 Gateway 會使用獨占 TCP 監聽器綁定 HTTP/WebSocket 監聽器（預設 `ws://127.0.0.1:18789`）。
-- 如果綁定因 `EADDRINUSE` 失敗，啟動程序會拋出 `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`。
-- 關閉時，Gateway 會關閉 HTTP/WebSocket 伺服器並移除鎖定檔。
+啟動會依序透過兩個獨立步驟強制單一執行個體擁有權：
 
-## 錯誤介面
+1. **檔案鎖定** 會在狀態鎖定目錄下取得每個設定專屬的鎖定檔。取得鎖定時，啟動流程會探測設定的連接埠是否有作用中的監聽器，以偵測過期的（已當機）鎖定擁有者。
+2. **通訊端繫結** 會將 HTTP/WebSocket 監聽器（預設 `ws://127.0.0.1:18789`）繫結為獨占 TCP 監聽器。
 
-- 如果另一個程序持有該連接埠，啟動程序會拋出 `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`。
-- 其他綁定失敗會呈現為 `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`。
+每一層都可能獨立失敗，並擲出自己的 `GatewayLockError`。
+
+### 檔案鎖定
+
+- 如果鎖定檔遺失、記錄的擁有者程序已不存在，或擁有者的連接埠探測顯示沒有作用中的監聽器，啟動流程會收回鎖定並繼續。
+- 如果鎖定正被作用中的程序持有，且上述情況皆不適用，啟動流程會重試最多 5 秒（預設）後放棄：
+
+  ```text
+  GatewayLockError("gateway already running (pid <pid>); lock timeout after <ms>ms")
+  ```
+
+### 通訊端繫結
+
+- 遇到 `EADDRINUSE` 時，啟動流程會以 500ms 間隔最多重試繫結 20 次（總計約 10 秒），以渡過最近結束的程序留下的 `TIME_WAIT` 視窗。
+- 如果重試後連接埠仍在使用中：
+
+  ```text
+  GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")
+  ```
+
+- 其他繫結失敗：
+
+  ```text
+  GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: <cause>")
+  ```
+
+關閉時，閘道會關閉 HTTP/WebSocket 伺服器並移除鎖定檔。
 
 ## 操作注意事項
 
-- 如果連接埠被_另一個_程序佔用，錯誤相同；釋放該連接埠，或使用 `openclaw gateway --port <port>` 選擇另一個連接埠。
-- 在服務監督程式下，若新的 Gateway 程序看到現有健康的 `/healthz` 回應者，會讓該程序維持控制權。在 systemd 上，重複啟動者會以代碼 78 結束，因此預設的 `RestartPreventExitStatus=78` 會阻止 `Restart=always` 因鎖定或 `EADDRINUSE` 衝突而不斷迴圈。如果現有程序始終無法變為健康狀態，重試次數會受限，且啟動會以清楚的鎖定錯誤失敗，而不是永遠迴圈。
-- macOS App 在產生 Gateway 前仍會維護自己的輕量 PID 防護；執行階段鎖定則由鎖定檔加上 HTTP/WebSocket 綁定強制執行。
+- 如果連接埠被不同的非閘道程序占用，錯誤會相同；請釋放該連接埠，或使用 `openclaw gateway --port <port>` 選擇另一個連接埠。
+- 在服務監督器下，新的閘道程序若遇到上述任一錯誤，會先探測既有程序的 `/healthz`。如果該程序健康，新的程序會讓它保持控制權，而不是失敗。在 systemd 上，它會以代碼 `78` 結束；單元的 `RestartPreventExitStatus=78` 會阻止 `Restart=always` 因鎖定或 `EADDRINUSE` 衝突而不斷循環。如果既有程序始終未變健康，健康探測重試會有時間限制，接著啟動流程會以上述鎖定錯誤失敗，而不是永遠循環。
+- macOS 應用程式在產生閘道之前會保留自己的輕量 PID 防護；上述檔案鎖定與通訊端繫結才是實際的執行階段強制機制。
 
 ## 相關
 
-- [多個 Gateway](/zh-TW/gateway/multiple-gateways) — 使用唯一連接埠執行多個執行個體
-- [疑難排解](/zh-TW/gateway/troubleshooting) — 診斷 `EADDRINUSE` 與連接埠衝突
+- [多個閘道](/zh-TW/gateway/multiple-gateways) - 使用唯一連接埠執行多個執行個體
+- [疑難排解](/zh-TW/gateway/troubleshooting) - 診斷 `EADDRINUSE` 與連接埠衝突

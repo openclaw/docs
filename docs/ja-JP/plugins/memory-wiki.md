@@ -1,106 +1,56 @@
 ---
 read_when:
-    - プレーンな MEMORY.md メモを超える永続的な知識が必要な場合
+    - 単なる MEMORY.md メモを超えた永続的な知識が必要
     - バンドルされた memory-wiki Plugin を設定しています
-    - wiki_search、wiki_get、またはブリッジモードを理解したい
-summary: 'memory-wiki: 出典、主張、ダッシュボード、ブリッジモードを備えたコンパイル済みナレッジボールト'
-title: メモリ wiki
+    - wiki_search、wiki_get、またはブリッジモードについて理解したい
+summary: 'memory-wiki: 出典、主張、ダッシュボード、ブリッジモードを備えたコンパイル済みナレッジボルト'
+title: メモリ Wiki
 x-i18n:
-    generated_at: "2026-06-27T12:18:27Z"
+    generated_at: "2026-07-05T11:39:51Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 91512fbab8bfa87d3be29a75c217f99dbae11d9d7065fcc5ae9aa2c51847ec42
+    source_hash: 8e6233922483e0e858cb39cdeb2537e5f454e5b6df0c49ea5b89dc56da3e0bfe
     source_path: plugins/memory-wiki.md
     workflow: 16
 ---
 
-`memory-wiki` は、永続メモリをコンパイル済みの知識ボールトに変えるバンドルPluginです。
+`memory-wiki` は、永続的な知識をナビゲート可能な wiki にコンパイルするバンドル済みプラグインです。決定的なページ、エビデンス付きの構造化クレーム、来歴、ダッシュボード、機械可読ダイジェストを生成します。
 
-これは Active Memory Plugin を置き換えるものでは**ありません**。Active Memory Plugin は引き続き、リコール、昇格、インデックス作成、Dreaming を担います。`memory-wiki` はその隣に置かれ、永続的な知識を、決定的なページ、構造化された主張、来歴、ダッシュボード、機械可読ダイジェストを備えたナビゲーション可能な wiki にコンパイルします。
+これはアクティブメモリプラグインを置き換えるものではありません。リコール、昇格、インデックス作成、dreaming は、設定されているメモリバックエンド（`memory-core`、QMD、Honcho など）が引き続き所有します。`memory-wiki` はその横に配置され、知識を保守された wiki レイヤーにコンパイルします。
 
-メモリを Markdown ファイルの山ではなく、保守された知識レイヤーのように振る舞わせたい場合に使います。
+| レイヤー             | 所有するもの                                                                      |
+| -------------------- | --------------------------------------------------------------------------------- |
+| Active memory plugin | リコール、セマンティック検索、昇格、dreaming、メモリランタイム                   |
+| `memory-wiki`        | コンパイル済み wiki ページ、来歴豊富な統合、ダッシュボード、wiki search/get/apply |
 
-## 追加されるもの
+実用上のルール:
 
-- 決定的なページレイアウトを持つ専用 wiki ボールト
-- 単なる文章ではなく、構造化された主張と証拠メタデータ
-- ページ単位の来歴、信頼度、矛盾、未解決の質問
-- エージェント/ランタイム利用者向けのコンパイル済みダイジェスト
-- wiki ネイティブの検索/get/apply/lint ツール
-- Open Knowledge Format からコンパイル済み wiki 概念へのインポート
-- Active Memory Plugin から公開アーティファクトをインポートする任意のブリッジモード
-- 任意の Obsidian 対応レンダリングモードと CLI 統合
+- 設定済みのコーパス全体に対する幅広いリコールを 1 回行うには `memory_search`
+- wiki 固有のランキング、来歴、またはページ単位の信念構造が必要な場合は `wiki_search` / `wiki_get`
+- アクティブメモリプラグインがコーパス選択をサポートしている場合、1 回の呼び出しで両方のレイヤーをまたぐには `memory_search corpus=all`
 
-## メモリとの関係
+一般的なローカルファースト構成: リコール用のアクティブメモリバックエンドとして QMD を使い、永続的に統合されたページ用に `memory-wiki` を `bridge` モードで使います。[Configuration](#configuration) の QMD + bridge モードの例を参照してください。
 
-分割は次のように考えてください。
+bridge モードでエクスポートされたアーティファクトが 0 件と報告される場合、アクティブメモリプラグインは現在パブリック bridge 入力を公開していません。まず `openclaw wiki doctor` を実行し、その後アクティブメモリプラグインがパブリックアーティファクトをサポートしていることを確認してください。
 
-| レイヤー                                                | 担当                                                                                       |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Active Memory Plugin (`memory-core`, QMD, Honcho など) | リコール、セマンティック検索、昇格、Dreaming、メモリランタイム                            |
-| `memory-wiki`                                           | コンパイル済み wiki ページ、来歴の豊富な統合、ダッシュボード、wiki 固有の検索/get/apply |
+## Vault モード
 
-Active Memory Plugin が共有リコールアーティファクトを公開している場合、OpenClaw は `memory_search corpus=all` を使って両方のレイヤーを 1 回で検索できます。
+- `isolated`（デフォルト）: 独自の vault、独自のソースを持ち、アクティブメモリプラグインに依存しません。自己完結したキュレーション済み知識ストアに使用します。
+- `bridge`: パブリック Plugin SDK の継ぎ目を通じて、アクティブメモリプラグインからパブリックメモリアーティファクトとイベントログを読み取ります。プライベートなプラグイン内部に踏み込まず、メモリプラグインがエクスポートしたアーティファクトをコンパイルするために使用します。
+- `unsafe-local`: ローカルのプライベートパス向けに、明示的な同一マシンの脱出口を提供します。意図的に実験的で移植性はありません。信頼境界を理解しており、bridge モードでは提供できないローカルファイルシステムアクセスが特に必要な場合にのみ使用してください。
 
-wiki 固有のランキング、来歴、またはページへの直接アクセスが必要な場合は、代わりに wiki ネイティブのツールを使います。
+bridge モードは、`bridge.*` 設定トグルごとに次をインデックスできます。
 
-## 推奨ハイブリッドパターン
+- エクスポートされたメモリアーティファクト（`indexMemoryRoot`）
+- デイリーノート（`indexDailyNotes`）
+- dream レポート（`indexDreamReports`）
+- メモリイベントログ（`followMemoryEvents`）
 
-ローカルファースト構成の強力なデフォルトは次のとおりです。
+bridge モードが有効で `bridge.readMemoryArtifacts` が有効な場合、`openclaw wiki status`、`openclaw wiki doctor`、`openclaw wiki bridge
+import` は実行中の Gateway 経由でルーティングされるため、エージェント/ランタイムメモリと同じアクティブメモリプラグインコンテキストを参照します。bridge が無効、またはアーティファクト読み取りがオフの場合、これらのコマンドはローカル/オフラインの動作を維持します。
 
-- リコールと広範なセマンティック検索の Active Memory バックエンドとして QMD
-- 永続的に統合された知識ページ用に `bridge` モードの `memory-wiki`
-
-この分割は、各レイヤーが役割に集中できるためうまく機能します。
-
-- QMD は生のメモ、セッションエクスポート、追加コレクションを検索可能に保つ
-- `memory-wiki` は安定したエンティティ、主張、ダッシュボード、ソースページをコンパイルする
-
-実用的なルール:
-
-- メモリ全体に対して 1 回の広範なリコールを行いたい場合は `memory_search` を使う
-- 来歴を考慮した wiki 結果が必要な場合は `wiki_search` と `wiki_get` を使う
-- 共有検索で両方のレイヤーをまたぎたい場合は `memory_search corpus=all` を使う
-
-ブリッジモードがエクスポート済みアーティファクト 0 件を報告する場合、Active Memory Plugin はまだ公開ブリッジ入力を公開していません。まず `openclaw wiki doctor` を実行し、その後 Active Memory Plugin が公開アーティファクトをサポートしていることを確認してください。
-
-ブリッジモードが有効で `bridge.readMemoryArtifacts` が有効な場合、`openclaw wiki status`、`openclaw wiki doctor`、`openclaw wiki bridge
-import` は実行中の Gateway 経由で読み取ります。これにより、CLI のブリッジチェックはランタイムのメモリPluginコンテキストと整合します。ブリッジが無効、またはアーティファクト読み取りがオフの場合、これらのコマンドはローカル/オフライン動作を維持します。
-
-## ボールトモード
-
-`memory-wiki` は 3 つのボールトモードをサポートします。
-
-### `isolated`
-
-独自のボールト、独自のソースを持ち、`memory-core` に依存しません。
-
-wiki を独自にキュレーションされた知識ストアにしたい場合に使います。
-
-### `bridge`
-
-公開Plugin SDK 境界を通じて、Active Memory Plugin から公開メモリアーティファクトとメモリイベントを読み取ります。
-
-Plugin の非公開内部に入り込まず、メモリPluginのエクスポート済みアーティファクトを wiki でコンパイルおよび整理したい場合に使います。
-
-ブリッジモードは次をインデックスできます。
-
-- エクスポート済みメモリアーティファクト
-- Dream レポート
-- 日次ノート
-- メモリルートファイル
-- メモリイベントログ
-
-### `unsafe-local`
-
-ローカルの非公開パス向けの、明示的な同一マシン脱出口です。
-
-このモードは意図的に実験的で、移植性がありません。信頼境界を理解しており、ブリッジモードでは提供できないローカルファイルシステムアクセスが明確に必要な場合にのみ使ってください。
-
-## ボールトレイアウト
-
-Plugin は次のようにボールトを初期化します。
+## Vault レイアウト
 
 ```text
 <vault>/
@@ -118,120 +68,90 @@ Plugin は次のようにボールトを初期化します。
   .openclaw-wiki/
 ```
 
-管理対象コンテンツは生成ブロック内に留まります。人間用のノートブロックは保持されます。
+管理対象コンテンツは生成ブロック内に留まり、人間が書いたノートブロックは再生成をまたいで保持されます。
 
-主なページグループは次のとおりです。
-
-- `sources/`: インポートされた生素材とブリッジ由来ページ
-- `entities/`: 永続的な物事、人、システム、プロジェクト、オブジェクト
-- `concepts/`: アイデア、抽象化、パターン、ポリシー
-- `syntheses/`: コンパイル済み要約と保守された集約
+- `sources/`: インポートされた生素材と bridge/unsafe-local に裏付けられたページ
+- `entities/`: 永続的なもの、人、システム、プロジェクト、オブジェクト
+- `concepts/`: アイデア、抽象、パターン、ポリシー（OKF インポートの配置先でもあります）
+- `syntheses/`: コンパイル済みサマリーと保守されるロールアップ
 - `reports/`: 生成されたダッシュボード
 
 ## Open Knowledge Format インポート
-
-`memory-wiki` は展開済みの Open Knowledge Format バンドルを次でインポートできます。
 
 ```bash
 openclaw wiki okf import ./bundles/ga4
 ```
 
-これは、データカタログ、ドキュメントクローラー、またはエンリッチメントエージェントがすでに OKF を生成している場合に最もきれいに適合します。OKF を移植可能な交換アーティファクトとして維持し、その後 `memory-wiki` に OpenClaw ネイティブの概念ページとコンパイル済みダイジェストへ変換させます。
+展開済みの Open Knowledge Format バンドルを wiki のコンセプトページにインポートします。データカタログ、ドキュメントクローラー、またはエンリッチメントエージェントがすでに OKF を生成している場合に適しています。OKF を移植可能な交換アーティファクトとして維持し、`memory-wiki` に OpenClaw ネイティブなコンセプトページとコンパイル済みダイジェストへ変換させます。
 
-インポーターは OKF v0.1 の形に従います。
+- 予約されていない `.md` ファイルはコンセプトドキュメントです
+- インポートされる各コンセプトには、空でない `type` frontmatter フィールドが必要です。`type` がない場合は `missing-type` 警告が生成され、そのファイルはスキップされます
+- 未知の `type` 値は汎用コンセプトとして受け入れられます
+- `index.md` と `log.md` は予約済みであり、コンセプトとしてインポートされることはありません
+- 壊れた Markdown リンクまたは外部 Markdown リンクは変更されません
 
-- 予約されていない `.md` ファイルは概念ドキュメント
-- 各インポート済み概念には、空でない `type` frontmatter フィールドが必要
-- 未知の OKF `type` 値は受け入れられる
-- 予約済みの `index.md` と `log.md` ファイルは概念としてインポートされない
-- 壊れた、または外部の Markdown リンクは保持される
+インポートされたページは `concepts/` の下にフラット化されるため、既存の compile、search、get、dashboard フローは 2 つ目の wiki ツリーなしでそれらを参照できます。各ページは元の OKF コンセプト ID、ソースパス、`type`、`resource`、`tags`、タイムスタンプ、完全なプロデューサー frontmatter を保持します。内部 OKF リンクは生成された wiki コンセプトページに書き換えられ、さらに `kind: okf-link` を持つ構造化された `relationships` エントリも出力します。
 
-インポートされた概念ページは `concepts/` の下にフラット化されるため、既存のコンパイル、検索、get、ダッシュボード、プロンプトダイジェストのパスは、2 つ目の wiki ツリーを追加せずにそれらを扱えます。各ページは元の OKF 概念 ID、ソースパス、`type`、`resource`、`tags`、タイムスタンプ、完全な生成元 frontmatter を保持します。内部 OKF リンクは生成された wiki 概念ページに書き換えられ、`kind: okf-link` を持つ構造化された `relationships` エントリとしても出力されます。
+## 構造化クレームとエビデンス
 
-## 構造化された主張と証拠
+ページは自由形式のテキストだけでなく、構造化された `claims` frontmatter を持ちます。各クレームには `id`、`text`、`status`、`confidence`、`evidence[]`、`updatedAt` を含められます。各エビデンスエントリには `kind`、`sourceId`、`path`、`lines`、`weight`、`confidence`、`privacyTier`、`note`、`updatedAt` を含められます。
 
-ページは自由形式のテキストだけでなく、構造化された `claims` frontmatter を持てます。
-
-各主張には次を含められます。
-
-- `id`
-- `text`
-- `status`
-- `confidence`
-- `evidence[]`
-- `updatedAt`
-
-証拠エントリには次を含められます。
-
-- `kind`
-- `sourceId`
-- `path`
-- `lines`
-- `weight`
-- `confidence`
-- `privacyTier`
-- `note`
-- `updatedAt`
-
-これにより、wiki は受動的なノート置き場ではなく、信念レイヤーのように振る舞います。主張は追跡、スコアリング、異議申し立て、ソースへの解決が可能です。
+これにより wiki は、受動的なノート置き場ではなく信念レイヤーとして動作します。クレームは追跡、スコアリング、異議申し立て、ソースへの解決が可能です。
 
 ## エージェント向けエンティティメタデータ
 
-エンティティページは、エージェント利用向けのルーティングメタデータも持てます。これは汎用 frontmatter なので、人、チーム、システム、プロジェクト、その他任意のエンティティ種別で機能します。
+エンティティページは、人、チーム、システム、プロジェクト、またはその他の任意のエンティティタイプに使用できる汎用ルーティングメタデータを持ちます。
 
-一般的なフィールドは次のとおりです。
-
-- `entityType`: 例: `person`、`team`、`system`、または `project`
-- `canonicalId`: エイリアスやインポートをまたいで使われる安定した識別キー
-- `aliases`: 同じページに解決されるべき名前、ハンドル、ラベル
-- `privacyTier`: `public`、`local-private`、`sensitive`、または `confirm-before-use`
+- `entityType`: 例: `person`、`team`、`system`、`project`
+- `canonicalId`: エイリアスやインポートをまたぐ安定した ID キー
+- `aliases`: 同じページに解決される名前、ハンドル、またはラベル
+- `privacyTier`: 自由形式の文字列。`public` はレビュー不要として扱われ、それ以外の値（例: `local-private`、`sensitive`、`confirm-before-use`）は `reports/privacy-review.md` でフラグ付けされます
 - `bestUsedFor` / `notEnoughFor`: コンパクトなルーティングヒント
 - `lastRefreshedAt`: ページ編集時刻とは別のソース更新タイムスタンプ
-- `personCard`: ハンドル、ソーシャル、メール、タイムゾーン、レーン、依頼対象、依頼を避ける対象、信頼度、プライバシーを含む、任意の人物固有ルーティングカード
-- `relationships`: ターゲット、種類、重み、信頼度、証拠種別、プライバシー階層、ノートを持つ関連ページへの型付きエッジ
+- `personCard`: 任意の人物固有ルーティングカード（ハンドル、ソーシャル、メール、タイムゾーン、レーン、依頼対象、依頼を避ける対象、信頼度、プライバシー階層）
+- `relationships`: 関連ページへの型付きエッジ（ターゲット、種類、重み、信頼度、エビデンス種別、プライバシー階層、ノート）
 
-人物 wiki では、エージェントは通常 `reports/person-agent-directory.md` から開始し、連絡先詳細や推論された事実を使う前に `wiki_get` で人物ページを開くべきです。
+人物 wiki では、まず `reports/person-agent-directory.md` から始め、その後連絡先詳細や推定された事実を使う前に `wiki_get` で人物ページを開いてください。
 
-例:
-
+<Accordion title="エンティティページの例">
 ```yaml
 pageType: entity
 entityType: person
-id: entity.brad-groux
-canonicalId: maintainer.brad-groux
+id: entity.example-person
+canonicalId: maintainer.example-person
 aliases:
-  - Brad
-  - bgroux
+  - Alex
+  - example-handle
 privacyTier: local-private
 bestUsedFor:
-  - Microsoft Teams and Azure routing
+  - Example ecosystem routing
 notEnoughFor:
   - legal approval
 lastRefreshedAt: "2026-04-29T00:00:00.000Z"
 personCard:
   handles:
-    - "@bgroux"
+    - "@example-handle"
   socials:
-    - "https://x.example/bgroux"
+    - "https://x.example/example-handle"
   emails:
-    - brad@example.com
+    - alex@example.com
   timezone: America/Chicago
-  lane: Microsoft ecosystem
+  lane: Example ecosystem
   askFor:
-    - Teams rollout questions
+    - Example rollout questions
   avoidAskingFor:
     - unrelated billing decisions
   confidence: 0.8
   privacyTier: confirm-before-use
 relationships:
-  - targetId: entity.alice
-    targetTitle: Alice
+  - targetId: entity.other-person
+    targetTitle: Other Person
     kind: collaborates-with
     confidence: 0.7
     evidenceKind: discrawl-stat
 claims:
-  - id: claim.brad.teams
-    text: Brad is useful for Microsoft Teams routing.
+  - id: claim.example.routing
+    text: Alex is useful for example-ecosystem routing.
     status: supported
     confidence: 0.9
     evidence:
@@ -239,123 +159,78 @@ claims:
         sourceId: source.maintainers
         privacyTier: local-private
 ```
+</Accordion>
 
 ## コンパイルパイプライン
 
-コンパイルステップは wiki ページを読み取り、要約を正規化し、安定した機械向けアーティファクトを次の下に出力します。
+compile は wiki ページを読み取り、サマリーを正規化し、安定した機械向けアーティファクトを次の場所に出力します。
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-これらのダイジェストが存在するため、エージェントやランタイムコードは Markdown ページをスクレイピングする必要がありません。
-
-コンパイル済み出力は次も支えます。
-
-- 検索/get フロー向けの初回 wiki インデックス作成
-- 主張 ID から所有ページへのルックアップ
-- コンパクトなプロンプト補足
-- レポート/ダッシュボード生成
+エージェントとランタイムコードは、Markdown をスクレイピングする代わりにこれらのダイジェストを読み取ります。コンパイル済み出力は、search/get 用の初回 wiki インデックス作成、クレーム ID から所有ページへの逆引き、コンパクトなプロンプト補足、レポート生成にも使われます。
 
 ## ダッシュボードとヘルスレポート
 
-`render.createDashboards` が有効な場合、コンパイルは `reports/` の下でダッシュボードを保守します。
+`render.createDashboards` が有効な場合、compile は `reports/` の下でダッシュボードを保守します。
 
-組み込みレポートは次のとおりです。
-
-- `reports/open-questions.md`
-- `reports/contradictions.md`
-- `reports/low-confidence.md`
-- `reports/claim-health.md`
-- `reports/stale-pages.md`
-- `reports/person-agent-directory.md`
-- `reports/relationship-graph.md`
-- `reports/provenance-coverage.md`
-- `reports/privacy-review.md`
-
-これらのレポートは次のようなものを追跡します。
-
-- 矛盾ノートのクラスター
-- 競合する主張のクラスター
-- 構造化された証拠が欠落している主張
-- 信頼度の低いページと主張
-- 古い、または鮮度が不明なページ
-- 未解決の質問があるページ
-- 人物/エンティティのルーティングカード
-- 構造化された関係エッジ
-- 証拠クラスのカバレッジ
-- 使用前にレビューが必要な非公開プライバシー階層
+| レポート                            | 追跡対象                                           |
+| ----------------------------------- | -------------------------------------------------- |
+| `reports/open-questions.md`         | 未解決の質問があるページ                           |
+| `reports/contradictions.md`         | 矛盾ノートのクラスター                             |
+| `reports/low-confidence.md`         | 信頼度の低いページとクレーム                       |
+| `reports/claim-health.md`           | 構造化エビデンスが欠けているクレーム               |
+| `reports/stale-pages.md`            | 古い、または鮮度が不明なページ                     |
+| `reports/person-agent-directory.md` | 人物/エンティティのルーティングカード              |
+| `reports/relationship-graph.md`     | 構造化された関係エッジ                             |
+| `reports/provenance-coverage.md`    | エビデンスクラスのカバレッジ                       |
+| `reports/privacy-review.md`         | 使用前にレビューが必要な非パブリックなプライバシー階層 |
 
 ## 検索と取得
 
-`memory-wiki` は 2 つの検索バックエンドをサポートします。
+2 つの検索バックエンド:
 
-- `shared`: 利用可能な場合、共有メモリ検索フローを使う
-- `local`: wiki をローカルで検索する
+- `shared`: 利用可能な場合は共有メモリ検索フローを使用
+- `local`: wiki をローカルで検索
 
-また、3 つのコーパスをサポートします。
+3 つのコーパス: `wiki`、`memory`、`all`。
 
-- `wiki`
-- `memory`
-- `all`
+- `wiki_search` / `wiki_get` は、可能な場合はコンパイル済みダイジェストを初回パスとして使用します
+- クレーム ID は所有ページへ逆引きされます
+- 異議あり/古い/新鮮なクレームはランキングに影響します
+- 来歴ラベルは結果に引き継がれます
 
-重要な動作:
+検索モード（`--mode` / ツールの `mode` パラメーター）:
 
-- `wiki_search` と `wiki_get` は、可能な場合、最初のパスとしてコンパイル済みダイジェストを使う
-- 主張 ID は所有ページに解決できる
-- 異議のある/古い/新鮮な主張はランキングに影響する
-- 来歴ラベルは結果に残ることがある
-- 検索モードは、人物検索、質問ルーティング、ソース証拠、または生の主張に対してランキングを偏らせることができる
+| モード            | ブースト対象                                                   |
+| ----------------- | -------------------------------------------------------------- |
+| `auto`            | バランスの取れたデフォルト                                     |
+| `find-person`     | 人物らしいエンティティ、エイリアス、ハンドル、ソーシャル、canonical ID |
+| `route-question`  | エージェントカード、ask-for/best-used-for ヒント、関係コンテキスト |
+| `source-evidence` | ソースページと構造化エビデンスメタデータ                       |
+| `raw-claim`       | 一致する構造化クレーム。クレーム/エビデンスメタデータを返します |
 
-実用的なルール:
-
-- 1 回の広範なリコールには `memory_search corpus=all` を使う
-- wiki 固有のランキング、来歴、またはページ単位の信念構造を重視する場合は `wiki_search` + `wiki_get` を使う
-
-検索モード:
-
-- `auto`: バランスの取れたデフォルト
-- `find-person`: 人物らしいエンティティ、エイリアス、ハンドル、ソーシャル、canonical ID をブーストする
-- `route-question`: エージェントカード、依頼対象ヒント、最適用途ヒント、関係コンテキストをブーストする
-- `source-evidence`: ソースページと構造化証拠メタデータをブーストする
-- `raw-claim`: 一致する構造化主張をブーストし、結果に主張/証拠メタデータを返す
-
-結果が構造化主張に一致した場合、`wiki_search` は詳細ペイロードで `matchedClaimId`、`matchedClaimStatus`、`matchedClaimConfidence`、`evidenceKinds`、`evidenceSourceIds` を返せます。テキスト出力にも、利用可能な場合はコンパクトな `Claim:` と `Evidence:` 行が含まれます。
+結果が構造化クレームに一致する場合、`wiki_search` は詳細ペイロードで `matchedClaimId`、`matchedClaimStatus`、`matchedClaimConfidence`、`evidenceKinds`、`evidenceSourceIds` を返します。利用可能な場合、テキスト出力にはコンパクトな `Claim:` 行と `Evidence:` 行が含まれます。
 
 ## エージェントツール
 
-Plugin は次のツールを登録します。
+| ツール        | 目的                                                                                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `wiki_status` | 現在の vault モード、ヘルス、Obsidian CLI の可用性                                                                                                            |
+| `wiki_search` | wiki ページと、設定されている場合は共有メモリコーパスを検索します。人物検索、質問ルーティング、ソースエビデンス、または raw claim ドリルダウン用に `mode` を受け取ります |
+| `wiki_get`    | id/path で wiki ページを読み取ります。共有検索が有効で検索が失敗した場合は、共有メモリコーパスにフォールバックします                                         |
+| `wiki_apply`  | 自由形式のページ手術を行わず、狭い範囲の統合/メタデータ変更を行います                                                                                         |
+| `wiki_lint`   | 構造チェック、来歴の不足、矛盾、未解決の質問                                                                                                                  |
 
-- `wiki_status`
-- `wiki_search`
-- `wiki_get`
-- `wiki_apply`
-- `wiki_lint`
-
-それぞれの役割:
-
-- `wiki_status`: 現在のボールトモード、ヘルス、Obsidian CLI の可用性
-- `wiki_search`: wiki ページと、設定されている場合は共有メモリコーパスを検索する。人物検索、質問ルーティング、ソース証拠、または生の主張ドリルダウン向けに `mode` を受け付ける
-- `wiki_get`: ID/パスで wiki ページを読み取る、または共有メモリコーパスにフォールバックする
-- `wiki_apply`: 自由形式のページ手術なしで、狭い統合/メタデータ変更を行う
-- `wiki_lint`: 構造チェック、来歴ギャップ、矛盾、未解決の質問
-
-このPluginは非排他的なメモリコーパス補足も登録するため、アクティブメモリPluginがコーパス選択をサポートしている場合、共有の
-`memory_search` と `memory_get` から wiki に到達できます。
+このプラグインは非排他的なメモリコーパス補足も登録するため、アクティブメモリプラグインがコーパス選択をサポートしている場合、共有 `memory_search` と `memory_get` は wiki に到達できます。
 
 ## プロンプトとコンテキストの動作
 
 `context.includeCompiledDigestPrompt` が有効な場合、メモリプロンプトセクションは
-`agent-digest.json` からのコンパクトなコンパイル済みスナップショットを追加します。
-
-そのスナップショットは意図的に小さく、高シグナルです。
-
-- 上位ページのみ
-- 上位クレームのみ
-- 矛盾数
-- 質問数
-- 信頼度/鮮度の修飾子
-
-これはプロンプト形状を変更するためオプトインであり、主にメモリ補足を明示的に消費するコンテキストエンジンやレガシーのプロンプト組み立てで役立ちます。
+`agent-digest.json` からコンパクトなコンパイル済みスナップショットを追加します。上位ページのみ、
+上位クレームのみ、矛盾数、質問数、信頼度/鮮度の
+修飾子です。これはプロンプト形状を変えるためオプトインです。主に、メモリ
+補足を明示的に消費するコンテキストエンジンやプロンプト組み立てで重要になります。
 
 ## 設定
 
@@ -387,6 +262,10 @@ Plugin は次のツールを登録します。
             indexMemoryRoot: true,
             followMemoryEvents: true,
           },
+          unsafeLocal: {
+            allowPrivateMemoryCoreAccess: false,
+            paths: [],
+          },
           ingest: {
             autoCompile: true,
             maxConcurrentJobs: 1,
@@ -413,19 +292,27 @@ Plugin は次のツールを登録します。
 
 主なトグル:
 
-- `vaultMode`: `isolated`、`bridge`、`unsafe-local`
-- `vault.renderMode`: `native` または `obsidian`
-- `bridge.readMemoryArtifacts`: アクティブメモリPluginの公開アーティファクトをインポート
-- `bridge.followMemoryEvents`: ブリッジモードでイベントログを含める
-- `search.backend`: `shared` または `local`
-- `search.corpus`: `wiki`、`memory`、または `all`
-- `context.includeCompiledDigestPrompt`: メモリプロンプトセクションにコンパクトなダイジェストスナップショットを追加
-- `render.createBacklinks`: 決定論的な関連ブロックを生成
-- `render.createDashboards`: ダッシュボードページを生成
+| キー                                       | 値 / デフォルト                               | 注記                                                     |
+| ------------------------------------------ | ---------------------------------------------- | -------------------------------------------------------- |
+| `vaultMode`                                | `isolated` (デフォルト), `bridge`, `unsafe-local` |                                                          |
+| `vault.path`                               | デフォルト `~/.openclaw/wiki/main`                |                                                          |
+| `vault.renderMode`                         | `native` (デフォルト), `obsidian`                 |                                                          |
+| `bridge.readMemoryArtifacts`               | デフォルト `true`                                 | アクティブメモリPluginの公開アーティファクトをインポート |
+| `bridge.followMemoryEvents`                | デフォルト `true`                                 | ブリッジモードでイベントログを含める                    |
+| `unsafeLocal.allowPrivateMemoryCoreAccess` | デフォルト `false`                                | `unsafe-local` インポートの実行に必要                   |
+| `unsafeLocal.paths`                        | デフォルト `[]`                                   | `unsafe-local` モードでインポートする明示的なローカルパス |
+| `search.backend`                           | `shared` (デフォルト), `local`                    |                                                          |
+| `search.corpus`                            | `wiki` (デフォルト), `memory`, `all`              |                                                          |
+| `context.includeCompiledDigestPrompt`      | デフォルト `false`                                | コンパクトなダイジェストスナップショットをメモリプロンプトセクションに追加 |
+| `render.createBacklinks`                   | デフォルト `true`                                 | 決定論的な関連ブロックを生成                            |
+| `render.createDashboards`                  | デフォルト `true`                                 | ダッシュボードページを生成                              |
 
 ### 例: QMD + ブリッジモード
 
 リコールには QMD を使い、管理されたナレッジレイヤーには `memory-wiki` を使いたい場合に使用します。
+各レイヤーは焦点を保ちます。QMD は生のメモ、セッション
+エクスポート、追加コレクションを検索可能にし、`memory-wiki` は
+安定したエンティティ、クレーム、ダッシュボード、ソースページをコンパイルします。
 
 ```json5
 {
@@ -460,15 +347,11 @@ Plugin は次のツールを登録します。
 }
 ```
 
-これにより、次が維持されます。
-
-- アクティブメモリのリコールを QMD が担当
-- `memory-wiki` はコンパイル済みページとダッシュボードに集中
-- コンパイル済みダイジェストプロンプトを意図的に有効にするまで、プロンプト形状は変更されない
+これにより、QMD は Active Memory リコールを担い、`memory-wiki` は
+コンパイル済みページとダッシュボードに集中し、コンパイル済みダイジェストプロンプトを
+意図的に有効にするまでプロンプト形状は変わりません。
 
 ## CLI
-
-`memory-wiki` はトップレベルの CLI サーフェスも公開します。
 
 ```bash
 openclaw wiki status
@@ -484,36 +367,44 @@ openclaw wiki bridge import
 openclaw wiki obsidian status
 ```
 
-完全なコマンドリファレンスについては、[CLI: wiki](/ja-JP/cli/wiki) を参照してください。
+完全なコマンドリファレンスについては [CLI: wiki](/ja-JP/cli/wiki) を参照してください。
+`wiki okf import`、`wiki apply metadata`、`wiki unsafe-local import`、
+`wiki chatgpt import` / `wiki chatgpt rollback`、および完全な `wiki obsidian`
+サブコマンドセットが含まれます。
 
 ## Obsidian サポート
 
-`vault.renderMode` が `obsidian` の場合、このPluginは Obsidian 向けの
-Markdown を書き込み、必要に応じて公式の `obsidian` CLI を使用できます。
-
-サポートされるワークフローには次が含まれます。
-
-- ステータスのプローブ
-- vault 検索
-- ページを開く
-- Obsidian コマンドの呼び出し
-- デイリーノートへのジャンプ
-
-これは任意です。wiki は Obsidian なしでもネイティブモードで動作します。
+`vault.renderMode` が `obsidian` の場合、Plugin は Obsidian に適した
+Markdown を書き出し、必要に応じて公式の `obsidian` CLI を使用してステータス
+調査、保管庫検索、ページを開く操作、コマンド呼び出し、日次ノートへのジャンプを
+実行できます。これは任意です。wiki は Obsidian なしでもネイティブモードで動作します。
 
 ## 推奨ワークフロー
 
-1. リコール/昇格/Dreaming にはアクティブメモリPluginを使い続けます。
-2. `memory-wiki` を有効にします。
-3. ブリッジモードが明示的に必要でない限り、`isolated` モードから始めます。
-4. 来歴が重要な場合は `wiki_search` / `wiki_get` を使用します。
-5. 狭い範囲の統合やメタデータ更新には `wiki_apply` を使用します。
-6. 意味のある変更後に `wiki_lint` を実行します。
-7. 古さや矛盾を可視化したい場合は、ダッシュボードをオンにします。
+<Steps>
+<Step title="リコールにはアクティブメモリPluginを使い続ける">
+リコール、昇格、Dreaming は設定済みのメモリバックエンドが引き続き所有します。
+</Step>
+<Step title="memory-wiki を有効にする">
+ブリッジモードを明示的に使いたい場合を除き、`isolated` モードから始めます。
+</Step>
+<Step title="来歴が重要な場合は wiki_search / wiki_get を使う">
+wiki 固有のランキングやページレベルの信念構造が必要な場合は、`memory_search` よりもこれらを優先します。
+</Step>
+<Step title="狭い合成やメタデータ更新には wiki_apply を使う">
+管理された生成ブロックを手作業で編集するのは避けます。
+</Step>
+<Step title="意味のある変更後に wiki_lint を実行する">
+矛盾、未解決の質問、来歴の欠落を検出します。
+</Step>
+<Step title="古さ/矛盾を可視化するためにダッシュボードを有効にする">
+`render.createDashboards: true` (デフォルト) を設定します。
+</Step>
+</Steps>
 
 ## 関連ドキュメント
 
 - [メモリ概要](/ja-JP/concepts/memory)
 - [CLI: memory](/ja-JP/cli/memory)
 - [CLI: wiki](/ja-JP/cli/wiki)
-- [Plugin SDK の概要](/ja-JP/plugins/sdk-overview)
+- [Plugin SDK 概要](/ja-JP/plugins/sdk-overview)

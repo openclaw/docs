@@ -1,243 +1,254 @@
 ---
 read_when:
     - Codex ハーネスのランタイムサポート契約が必要です
-    - ネイティブの Codex ツール、フック、Compaction、またはフィードバックアップロードをデバッグしている
-    - OpenClaw と Codex ハーネスのターン全体で Plugin の動作を変更している
-summary: Codexハーネスのランタイム境界、フック、ツール、権限、診断
+    - ネイティブ Codex ツール、フック、Compaction、またはフィードバックのアップロードをデバッグしている
+    - OpenClaw と Codex ハーネスのターン全体で Plugin の動作を変更しています
+summary: Codex ハーネスのランタイム境界、フック、ツール、権限、診断
 title: Codex ハーネスランタイム
 x-i18n:
-    generated_at: "2026-07-04T20:25:09Z"
+    generated_at: "2026-07-05T11:35:56Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c681de59a53b85402e95b1d3f2aa853e78989185ad05cf1f0497814be5959232
+    source_hash: bcf458cfae804655e4544682ff7c12643bccf298b868d918b7c115ae5d075eae
     source_path: plugins/codex-harness-runtime.md
     workflow: 16
 ---
 
-このページでは、Codex ハーネスのターンに関するランタイム契約を説明します。セットアップと
-ルーティングについては、[Codex ハーネス](/ja-JP/plugins/codex-harness)から始めてください。設定フィールドについては、
+Codex ハーネスターンのランタイム契約。セットアップとルーティングについては
+[Codex ハーネス](/ja-JP/plugins/codex-harness)を参照してください。設定フィールドについては
 [Codex ハーネスリファレンス](/ja-JP/plugins/codex-harness-reference)を参照してください。
 
 ## 概要
 
-Codex モードは、内部のモデル呼び出しだけを変えた OpenClaw ではありません。Codex は
-ネイティブモデルループのより多くを所有し、OpenClaw はその境界に合わせて Plugin、ツール、セッション、
-診断サーフェスを適応させます。
-
-OpenClaw は引き続き、チャネルルーティング、セッションファイル、可視メッセージ配信、
-OpenClaw 動的ツール、承認、メディア配信、トランスクリプトミラーを所有します。
-Codex は、正規のネイティブスレッド、ネイティブモデルループ、ネイティブツールの
-継続、ネイティブ Compaction を所有します。
+Codex はネイティブモデルループ、ネイティブスレッド再開、ネイティブツール
+継続、ネイティブ Compaction を所有します。OpenClaw はチャネルルーティング、セッション
+ファイル、可視メッセージ配信、OpenClaw 動的ツール、承認、メディア
+配信、およびその境界まわりのトランスクリプトミラーを所有します。
 
 プロンプトのルーティングは、プロバイダー文字列だけでなく、選択されたランタイムに従います。
-ネイティブ Codex ターンは Codex app-server の開発者指示を受け取り、一方で
-明示的な OpenClaw 互換ルートは、Codex 風の OpenAI 認証またはトランスポートを使う場合でも
-通常の OpenClaw システムプロンプトを維持します。
+ネイティブ Codex ターンは Codex app-server 開発者指示を受け取り、明示的な
+OpenClaw 互換ルートは、Codex 風の OpenAI 認証またはトランスポートを使う場合でも
+通常の OpenClaw システムプロンプトを保持します。
 
-ネイティブ Codex は、アクティブな Codex スレッド設定に従って、Codex 所有のベース/モデル指示とプロジェクトドキュメント動作を保持します。OpenClaw は、ワークスペースの
-パーソナリティファイルと OpenClaw エージェント ID が権威を持ち続けるように、Codex の組み込みパーソナリティを無効にした状態でネイティブ
-Codex スレッドを開始および再開します。軽量な
-OpenClaw 実行では、既存のプロジェクトドキュメント抑制も引き続き保持されます。OpenClaw の
-開発者指示は、ソースチャネル配信、OpenClaw 動的ツール、ACP 委譲、アダプターコンテキスト、
-アクティブなエージェントワークスペースのプロファイルファイルなど、OpenClaw ランタイム上の関心事を扱います。OpenClaw の Skills カタログとツール経由の
-`MEMORY.md` ポインターは、ネイティブ Codex 向けのターンスコープのコラボレーション開発者指示として投影されます。アクティブな `BOOTSTRAP.md` の内容と完全な
-`MEMORY.md` フォールバック注入は、引き続きターン入力の参照コンテキストを使用します。
+OpenClaw は Codex の組み込み
+パーソナリティを無効化（`personality: "none"`）してネイティブ Codex スレッドを開始および再開するため、ワークスペースのパーソナリティファイル
+と OpenClaw エージェント ID が権威を保ちます。それ以外の場合、ネイティブ Codex は Codex 所有の
+ベース/モデル指示とプロジェクトドキュメント読み込みを維持します。軽量な
+OpenClaw 実行（たとえば cron）では、引き続きプロジェクトドキュメント読み込みを抑制します。
+
+OpenClaw 開発者指示は、OpenClaw ランタイム上の関心事を対象にします: ソースチャネル
+配信、OpenClaw 動的ツール、ACP 委譲、アダプターコンテキスト、および
+アクティブなエージェントワークスペースプロファイルファイルです。Skills カタログとツール経由の
+`MEMORY.md` ポインターは、ターンスコープのコラボレーション開発者
+指示として投影されます。メモリツールが利用できない場合、アクティブな `BOOTSTRAP.md` 内容
+と完全な `MEMORY.md` は、代わりにプレーンなターン入力コンテキストへフォールバックします。
 
 ## スレッドバインディングとモデル変更
 
-OpenClaw セッションが既存の Codex スレッドにアタッチされている場合、次のターンでは
-現在選択されている OpenAI モデル、承認ポリシー、サンドボックス、サービス階層が app-server に再送信されます。`openai/gpt-5.5` から
-`openai/gpt-5.2` へ切り替えると、スレッドバインディングは維持されますが、
-新しく選択されたモデルで継続するよう Codex に要求します。
+OpenClaw セッションが既存の Codex スレッドにアタッチされている場合、次の
+ターンでは、現在選択されているモデル、承認ポリシー、サンドボックス、
+承認レビュアー、およびサービスティアを app-server に再送信します。
+`openai/gpt-5.5` から `openai/gpt-5.2` に切り替えると、スレッドバインディングは維持されますが、Codex には
+新しく選択されたモデルで続行するよう求めます。
 
 ## 可視返信と Heartbeat
 
-直接/ソースチャットのターンが Codex ハーネスを通じて実行される場合、可視返信は
-内部 WebChat サーフェス向けに、デフォルトで最終アシスタント応答の自動配信になります。
-これにより、Codex は Pi ハーネスのプロンプト契約と整合します。エージェントは
-通常どおり返信し、OpenClaw は最終テキストをソース会話に投稿します。直接/ソースチャットで
-エージェントが `message(action="send")` を呼び出さない限り、最終アシスタントテキストを意図的に非公開にしておきたい場合は、
-`messages.visibleReplies: "message_tool"` を設定します。
+Codex ハーネス経由の直接/ソースチャットターンは、内部 WebChat サーフェスではデフォルトで自動的に最終
+アシスタント配信を行い、Pi ハーネス
+契約に一致します: エージェントは通常どおり返信し、OpenClaw は最終テキストを
+ソース会話に投稿します。最終アシスタントテキストを、エージェントが `message(action="send")` を呼び出すまで非公開に保つには、`messages.visibleReplies: "message_tool"` を設定します。
 
-Codex Heartbeat ターンでは、デフォルトで検索可能な OpenClaw
-ツールカタログにも `heartbeat_respond` が含まれるため、エージェントは最終テキストにその制御フローをエンコードせずに、
-起動を静かに保つべきか通知すべきかを記録できます。
-
-Heartbeat 固有のイニシアチブガイダンスは、Heartbeat ターン自体に Codex コラボレーションモードの
-開発者指示として送信されます。通常のチャットターンでは、
-通常のランタイムプロンプトに Heartbeat の哲学を持ち越すのではなく、Codex Default モードに戻します。
-空でない `HEARTBEAT.md` が存在する場合、Heartbeat の
-コラボレーションモード指示は、その内容をインライン展開する代わりに Codex にそのファイルを参照させます。
+Codex Heartbeat ターンでは、エージェントがウェイクを静かなままにするか
+通知するかを記録できるように、デフォルトで検索可能な OpenClaw ツール
+カタログに `heartbeat_respond` が含まれます。Heartbeat イニシアチブガイダンスは、Heartbeat ターンにスコープされた Codex コラボレーションモード
+開発者指示として送信されます。通常のチャットターンは
+Codex Default mode のままです。`HEARTBEAT.md` が空でない場合、Heartbeat
+指示は内容をインライン化する代わりに Codex にそのファイルを指し示します。
 
 ## フック境界
 
-Codex ハーネスには 3 つのフックレイヤーがあります。
-
-| レイヤー                              | 所有者                   | 目的                                                                |
+| レイヤー                              | 所有者                    | 目的                                                                |
 | ------------------------------------- | ------------------------ | ------------------------------------------------------------------- |
-| OpenClaw Plugin フック                | OpenClaw                 | OpenClaw と Codex ハーネス間のプロダクト/Plugin 互換性。            |
-| Codex app-server 拡張ミドルウェア     | OpenClaw バンドル Plugin | OpenClaw 動的ツール周辺のターンごとのアダプター動作。               |
-| Codex ネイティブフック                | Codex                    | Codex 設定に基づく低レベルの Codex ライフサイクルとネイティブツールポリシー。 |
+| OpenClaw Plugin フック                 | OpenClaw                 | OpenClaw と Codex ハーネス間のプロダクト/Plugin 互換性。            |
+| Codex app-server 拡張ミドルウェア | OpenClaw バンドル Plugin | OpenClaw 動的ツールまわりのターンごとのアダプター動作。             |
+| Codex ネイティブフック                    | Codex                    | Codex 設定からの低レベル Codex ライフサイクルとネイティブツールポリシー。 |
 
-OpenClaw は、OpenClaw Plugin の動作をルーティングするために、プロジェクトまたはグローバルの Codex `hooks.json` ファイルを使用しません。サポートされるネイティブツールと権限ブリッジについては、
-OpenClaw は `PreToolUse`、`PostToolUse`、
-`PermissionRequest`、`Stop` 用のスレッドごとの Codex 設定を注入します。
+OpenClaw は、Plugin 動作をルーティングするためにプロジェクトまたはグローバルの Codex `hooks.json` ファイルを使用しません。ネイティブツールと権限ブリッジについて、OpenClaw は
+`PreToolUse`、`PostToolUse`、`PermissionRequest`、
+および `Stop` のスレッドごとの Codex 設定を注入します。
 
-Codex app-server の承認が有効な場合、つまり `approvalPolicy` が
-`"never"` ではない場合、デフォルトで注入されるネイティブフック設定では `PermissionRequest` が省略されるため、
-Codex の app-server レビュアーと OpenClaw の承認ブリッジが、レビュー後の実際の
-エスカレーションを処理します。互換リレーが必要な場合、オペレーターは
-`nativeHookRelay.events` に `permission_request` を明示的に追加できます。
+Codex app-server 承認が有効（`approvalPolicy` が
+`"never"` ではない）な場合、デフォルトで注入されるネイティブフック設定は `PermissionRequest` を省略するため、Codex の app-server レビュアーと OpenClaw の承認ブリッジがレビュー後の実際の
+エスカレーションを処理します。互換リレーを強制するには、
+`nativeHookRelay.events` に `permission_request` を追加します。`SessionStart` や `UserPromptSubmit` などの他の Codex
+フックは Codex レベルの
+制御のままであり、v1 契約では OpenClaw Plugin フックとして公開されません。
 
-`SessionStart` や `UserPromptSubmit` などの他の Codex フックは、
-Codex レベルの制御として残ります。これらは v1
-契約では OpenClaw Plugin フックとして公開されません。
+OpenClaw 動的ツールについては、Codex が
+呼び出しを要求した後に OpenClaw がツールを実行するため、Plugin とミドルウェアの動作はハーネスアダプター内で実行されます。Codex ネイティブツールについては、Codex が正規のツールレコードを所有します。OpenClaw は
+選択されたイベントをミラーできますが、Codex が app-server またはネイティブフックコールバック経由でそれを公開しない限り、ネイティブスレッドを書き換えることはできません。
 
-OpenClaw 動的ツールでは、Codex が呼び出しを要求した後に OpenClaw がツールを実行するため、
-OpenClaw はハーネスアダプター内で、自身が所有する Plugin とミドルウェア動作を発火します。Codex ネイティブツールでは、Codex が正規のツールレコードを所有します。
-OpenClaw は選択されたイベントをミラーできますが、Codex が app-server またはネイティブフック
-コールバックを通じてその操作を公開しない限り、ネイティブ Codex
-スレッドを書き換えることはできません。
-
-Codex app-server のレポートモード `PreToolUse` イベントは、Plugin 承認リクエストを
+Codex app-server レポートモードの `PreToolUse` イベントは、Plugin 承認を
 対応する app-server 承認に委ねます。OpenClaw の `before_tool_call` フックが
-`requireApproval` を返し、ネイティブペイロードがレポート承認モード
-（`openclaw_approval_mode` が `"report"`）を設定している場合、ネイティブフックリレーは
-Plugin 承認要件を記録し、ネイティブ決定を返しません。Codex が
-同じツール使用に対して app-server 承認リクエストを送信すると、OpenClaw は Plugin
-承認プロンプトを開き、その決定を Codex にマッピングして返します。Codex の `PermissionRequest`
-イベントは別の承認パスであり、そのブリッジ向けにランタイムが設定されている場合は、引き続き OpenClaw
-承認を経由してルーティングできます。
+`requireApproval` を返し、同時にネイティブペイロードが `openclaw_approval_mode:
+"report"` を設定している場合、ネイティブフックリレーは Plugin 承認要件を記録し、
+ネイティブ判定を返しません。後で Codex が同じツール使用について app-server 承認
+リクエストを送信すると、OpenClaw は Plugin 承認プロンプトを開き、
+判定を Codex にマッピングします。Codex `PermissionRequest` イベントは
+別の承認パスであり、そのブリッジ用に設定されている場合は引き続き OpenClaw 承認経由でルーティングできます。
 
-Codex app-server のアイテム通知は、ネイティブ `PostToolUse` リレーですでにカバーされていない
-ネイティブツール完了について、非同期の `after_tool_call`
-観測も提供します。これらの観測はテレメトリと Plugin
-互換性のためだけのものであり、ネイティブツール呼び出しをブロック、遅延、変更することはできません。
+Codex app-server 項目通知は、ネイティブ
+`PostToolUse` リレーでまだカバーされていないネイティブツール完了について、非同期の `after_tool_call`
+観測も提供します。これらはテレメトリ/互換性のみを目的とします。ネイティブツール呼び出しを
+ブロック、遅延、または変更することはできません。
 
-Compaction と LLM ライフサイクルの投影は、ネイティブ Codex フックコマンドではなく、Codex app-server
-通知と OpenClaw アダプター状態から得られます。
-OpenClaw の `before_compaction`、`after_compaction`、`llm_input`、`llm_output`
-イベントはアダプターレベルの観測であり、Codex の内部リクエストや Compaction ペイロードを
-バイト単位でキャプチャしたものではありません。
+Compaction と LLM ライフサイクル投影は、ネイティブ Codex フックコマンドではなく、Codex app-server
+通知と OpenClaw アダプター状態から取得されます。
+`before_compaction`、`after_compaction`、`llm_input`、および `llm_output` は
+アダプターレベルの観測であり、Codex の内部
+リクエストまたは Compaction ペイロードのバイト単位のキャプチャではありません。
 
-Codex ネイティブの `hook/started` と `hook/completed` app-server 通知は、
-軌跡とデバッグのために `codex_app_server.hook` エージェントイベントとして投影されます。
-これらは OpenClaw Plugin フックを呼び出しません。
+Codex ネイティブの `hook/started` および `hook/completed` app-server 通知は、
+軌跡とデバッグのために `codex_app_server.hook` エージェントイベントとして
+投影されます。これらは OpenClaw Plugin フックを呼び出しません。
 
 ## V1 サポート契約
 
 Codex ランタイム v1 でサポートされるもの:
 
-| サーフェス                                    | サポート                                                                         | 理由                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Surface                                       | Support                                                                          | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | --------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Codex 経由の OpenAI モデルループ              | サポート                                                                         | Codex app-server が OpenAI ターン、ネイティブスレッドの再開、ネイティブツールの継続を所有します。                                                                                                                                                                                                                                                                                                                                                                                  |
-| OpenClaw チャネルルーティングと配信          | サポート                                                                         | Telegram、Discord、Slack、WhatsApp、iMessage、その他のチャネルはモデルランタイムの外側に留まります。                                                                                                                                                                                                                                                                                                                                                                               |
-| OpenClaw 動的ツール                          | サポート                                                                         | Codex はこれらのツールの実行を OpenClaw に依頼するため、OpenClaw は実行パスに留まります。                                                                                                                                                                                                                                                                                                                                                                                          |
-| プロンプトとコンテキスト Plugin              | サポート                                                                         | OpenClaw は OpenClaw 固有のプロンプト/コンテキストを Codex ターンに投影しつつ、Codex が所有するベース、モデル、設定済みプロジェクトドキュメントのプロンプトはネイティブ Codex レーンに残します。OpenClaw はネイティブスレッドで Codex の組み込みパーソナリティを無効化するため、エージェントワークスペースのパーソナリティファイルが引き続き信頼できる情報源になります。ネイティブ Codex 開発者指示は、`codex_app_server` に明示的にスコープされたコマンドガイダンスのみを受け入れます。レガシーなグローバルコマンドヒントは、非 Codex プロンプトサーフェス向けに残ります。 |
-| コンテキストエンジンのライフサイクル        | サポート                                                                         | 組み立て、取り込み、ターン後メンテナンスは Codex ターンの前後で実行されます。コンテキストエンジンはネイティブ Codex Compaction を置き換えません。                                                                                                                                                                                                                                                                                                                                    |
-| 動的ツールフック                              | サポート                                                                         | `before_tool_call`、`after_tool_call`、ツール結果ミドルウェアは、OpenClaw が所有する動的ツールの前後で実行されます。                                                                                                                                                                                                                                                                                                                                                                |
-| ライフサイクルフック                          | アダプター観測としてサポート                                                     | `llm_input`、`llm_output`、`agent_end`、`before_compaction`、`after_compaction` は、正直な Codex モードペイロードで発火します。                                                                                                                                                                                                                                                                                                                                                       |
-| 最終回答の修正ゲート                          | ネイティブフックリレー経由でサポート                                             | Codex `Stop` は `before_agent_finalize` に中継されます。`revise` は、確定前にもう 1 回モデルパスを実行するよう Codex に依頼します。                                                                                                                                                                                                                                                                                                                                                   |
-| ネイティブシェル、パッチ、MCP のブロックまたは観測 | ネイティブフックリレー経由でサポート                                             | Codex `PreToolUse` と `PostToolUse` は、Codex app-server `0.125.0` 以降での MCP ペイロードを含む、コミット済みネイティブツールサーフェス向けに中継されます。ブロックはサポートされますが、引数の書き換えはサポートされません。                                                                                                                                                                                                                                                     |
-| ネイティブ権限ポリシー                        | Codex app-server 承認と互換性ネイティブフックリレー経由でサポート                | Codex app-server の承認リクエストは、Codex レビュー後に OpenClaw 経由でルーティングされます。`PermissionRequest` ネイティブフックリレーは、Codex が guardian レビュー前にそれを発行するため、ネイティブ承認モードではオプトインです。                                                                                                                                                                                                                                              |
-| App-server トラジェクトリキャプチャ          | サポート                                                                         | OpenClaw は app-server に送信したリクエストと、受信した app-server 通知を記録します。                                                                                                                                                                                                                                                                                                                                                                                              |
+| Codex 経由の OpenAI モデルループ               | サポートされています                                                                        | Codex app-server が OpenAI ターン、ネイティブスレッド再開、ネイティブツール継続を所有します。                                                                                                                                                                                                                                                                                                                                                                                          |
+| OpenClaw チャネルルーティングと配信         | サポートされています                                                                        | Telegram、Discord、Slack、WhatsApp、iMessage、その他のチャネルはモデルランタイムの外側に留まります。                                                                                                                                                                                                                                                                                                                                                                                    |
+| OpenClaw 動的ツール                        | サポートされています                                                                        | Codex はこれらのツールの実行を OpenClaw に依頼するため、OpenClaw は実行パス内に留まります。                                                                                                                                                                                                                                                                                                                                                                                                |
+| プロンプトとコンテキスト Plugin                    | サポートされています                                                                        | OpenClaw は OpenClaw 固有のプロンプト/コンテキストを Codex ターンに投影しつつ、Codex が所有するベース、モデル、構成済みプロジェクトドキュメントのプロンプトはネイティブ Codex レーンに残します。OpenClaw はネイティブスレッドでは Codex の組み込みパーソナリティを無効化し、エージェントワークスペースのパーソナリティファイルを権威あるものとして保ちます。ネイティブ Codex 開発者指示は、`codex_app_server` に明示的にスコープされたコマンドガイダンスのみを受け入れます。レガシーのグローバルコマンドヒントは、Codex 以外のプロンプトサーフェス向けに残ります。 |
+| コンテキストエンジンのライフサイクル                      | サポートされています                                                                        | 組み立て、取り込み、ターン後メンテナンスは Codex ターンの前後で実行されます。コンテキストエンジンはネイティブ Codex Compaction を置き換えません。                                                                                                                                                                                                                                                                                                                                                        |
+| 動的ツールフック                            | サポートされています                                                                        | `before_tool_call`、`after_tool_call`、ツール結果ミドルウェアは OpenClaw 所有の動的ツールの前後で実行されます。                                                                                                                                                                                                                                                                                                                                                                          |
+| ライフサイクルフック                               | アダプター観測としてサポートされています                                                | `llm_input`、`llm_output`、`agent_end`、`before_compaction`、`after_compaction` は正確な Codex モードペイロードで発火します。                                                                                                                                                                                                                                                                                                                                                           |
+| 最終回答の改訂ゲート                    | ネイティブフックリレー経由でサポートされています                                              | Codex `Stop` は `before_agent_finalize` に中継されます。`revise` は最終化の前にもう 1 回モデルパスを実行するよう Codex に依頼します。                                                                                                                                                                                                                                                                                                                                                                |
+| ネイティブシェル、パッチ、MCP のブロックまたは観測 | ネイティブフックリレー経由でサポートされています                                              | Codex `PreToolUse` と `PostToolUse` は、Codex app-server `0.125.0` 以降での MCP ペイロードを含め、コミット済みのネイティブツールサーフェスについて中継されます。ブロックはサポートされていますが、引数の書き換えはサポートされていません。                                                                                                                                                                                                                                                                               |
+| ネイティブ権限ポリシー                      | Codex app-server 承認と互換性ネイティブフックリレー経由でサポートされています | Codex app-server 承認リクエストは、Codex レビュー後に OpenClaw 経由でルーティングされます。`PermissionRequest` ネイティブフックリレーは、Codex がガーディアンレビュー前にそれを発行するため、ネイティブ承認モードではオプトインです。                                                                                                                                                                                                                                                                          |
+| App-server 軌跡キャプチャ                 | サポートされています                                                                        | OpenClaw は app-server に送信したリクエストと、受信した app-server 通知を記録します。                                                                                                                                                                                                                                                                                                                                                                                    |
 
-Codex ランタイム v1 でサポートされないもの:
+Codex ランタイム v1 でサポートされていないもの:
 
-| サーフェス                                          | V1 境界                                                                                                                                         | 今後のパス                                                                                |
+| Surface                                             | V1 boundary                                                                                                                                     | Future path                                                                               |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| ネイティブツール引数のミューテーション             | Codex ネイティブ pre-tool フックはブロックできますが、OpenClaw は Codex ネイティブツール引数を書き換えません。                                | 置換ツール入力に対する Codex フック/スキーマサポートが必要です。                         |
-| 編集可能な Codex ネイティブトランスクリプト履歴    | Codex は正規のネイティブスレッド履歴を所有します。OpenClaw はミラーを所有し、将来のコンテキストを投影できますが、未サポートの内部を変更すべきではありません。 | ネイティブスレッド手術が必要な場合は、明示的な Codex app-server API を追加します。        |
-| Codex ネイティブツール記録の `tool_result_persist` | そのフックは OpenClaw が所有するトランスクリプト書き込みを変換するものであり、Codex ネイティブツール記録ではありません。                      | 変換済み記録をミラーすることは可能ですが、正規の書き換えには Codex サポートが必要です。  |
-| リッチなネイティブ Compaction メタデータ           | OpenClaw はネイティブ Compaction をリクエストできますが、安定した保持/削除リスト、トークン差分、完了サマリー、サマリーペイロードは受け取りません。 | よりリッチな Codex Compaction イベントが必要です。                                       |
-| Compaction 介入                                    | OpenClaw は Plugin やコンテキストエンジンがネイティブ Codex Compaction を拒否、書き換え、置換することを許可しません。                         | Plugin がネイティブ Compaction の拒否または書き換えを必要とする場合は、Codex pre/post Compaction フックを追加します。 |
-| バイト単位で一致するモデル API リクエストキャプチャ | OpenClaw は app-server リクエストと通知をキャプチャできますが、Codex コアが最終的な OpenAI API リクエストを内部で構築します。                 | Codex モデルリクエストトレースイベントまたはデバッグ API が必要です。                    |
+| ネイティブツール引数の変更                       | Codex ネイティブ事前ツールフックはブロックできますが、OpenClaw は Codex ネイティブツール引数を書き換えません。                                               | 置換ツール入力に対する Codex フック/スキーマサポートが必要です。                            |
+| 編集可能な Codex ネイティブトランスクリプト履歴            | Codex は正規のネイティブスレッド履歴を所有します。OpenClaw はミラーを所有し、将来のコンテキストを投影できますが、サポートされていない内部構造を変更すべきではありません。 | ネイティブスレッド手術が必要な場合は、明示的な Codex app-server API を追加します。                    |
+| Codex ネイティブツールレコード用の `tool_result_persist` | そのフックは OpenClaw 所有のトランスクリプト書き込みを変換するものであり、Codex ネイティブツールレコードを変換するものではありません。                                                           | 変換済みレコードをミラーすることは可能ですが、正規の書き換えには Codex サポートが必要です。              |
+| リッチなネイティブ Compaction メタデータ                     | OpenClaw はネイティブ Compaction をリクエストできますが、安定した保持/削除リスト、トークン差分、完了サマリー、サマリーペイロードは受け取りません。   | よりリッチな Codex Compaction イベントが必要です。                                                     |
+| Compaction 介入                             | OpenClaw は、Plugin やコンテキストエンジンがネイティブ Codex Compaction を拒否、書き換え、置換することを許可しません。                                             | Plugin がネイティブ Compaction を拒否または書き換える必要がある場合は、Codex 事前/事後 Compaction フックを追加します。 |
+| バイト単位で一致するモデル API リクエストキャプチャ             | OpenClaw は app-server リクエストと通知をキャプチャできますが、Codex core は最終的な OpenAI API リクエストを内部で構築します。                      | Codex モデルリクエストトレースイベントまたはデバッグ API が必要です。                                   |
 
-## ネイティブ権限と MCP 要求
+## ネイティブ権限と MCP elicitation
 
-`PermissionRequest` について、OpenClaw はポリシーが判断した場合にのみ明示的な許可または拒否の判断を返します。判断なしの結果は許可ではありません。Codex はそれをフック判断なしとして扱い、自身の guardian またはユーザー承認パスにフォールスルーします。
+`PermissionRequest` について、OpenClaw はポリシーが判断した場合にのみ明示的な許可または拒否の
+判断を返します。判断なしの結果は許可ではありません。Codex はそれをフック判断なしとして扱い、
+自身のガーディアンまたはユーザー承認パスにフォールスルーします。
 
-Codex app-server 承認モードは、デフォルトでこのネイティブフックを省略します。この動作は、`permission_request` が `nativeHookRelay.events` に明示的に含まれている場合、または互換性ランタイムがそれをインストールする場合に適用されます。
+Codex app-server 承認モードでは、デフォルトでこのネイティブフックは省略されます。これは、
+`permission_request` が `nativeHookRelay.events` に明示的に含まれている場合、または互換性ランタイムが
+それをインストールする場合を除き適用されます。
 
-オペレーターが Codex ネイティブ権限リクエストに対して `allow-always` を選択すると、OpenClaw はその正確なプロバイダー/セッション/ツール入力/cwd フィンガープリントを、限定されたセッションウィンドウ内で記憶します。記憶された判断は意図的に完全一致のみです。コマンド、引数、ツールペイロード、または cwd が変更されると、新しい承認が作成されます。
+オペレーターが Codex ネイティブ権限リクエストに対して `allow-always` を選択すると、OpenClaw はその正確な
+プロバイダー/セッション/ツール入力/cwd フィンガープリントを、境界付きセッションウィンドウ内で記憶します。
+記憶された判断は意図的に完全一致のみです。コマンド、引数、ツールペイロード、または
+cwd が変わると、新しい承認が作成されます。
 
-Codex MCP ツール承認要求は、Codex が `_meta.codex_approval_kind` を `"mcp_tool_call"` としてマークした場合、OpenClaw の Plugin 承認フロー経由でルーティングされます。Codex `request_user_input` プロンプトは送信元チャットに送り返され、次にキューに入ったフォローアップメッセージは、追加コンテキストとして誘導されるのではなく、そのネイティブサーバーリクエストへの回答になります。その他の MCP 要求リクエストは fail closed します。
+Codex MCP ツール承認 elicitation は、Codex が `_meta.codex_approval_kind` を `"mcp_tool_call"` としてマークした場合、
+OpenClaw の Plugin 承認フロー経由でルーティングされます。Codex
+`request_user_input` プロンプトは元のチャットに送り返され、次にキューに入ったフォローアップメッセージは、
+追加コンテキストとして誘導されるのではなく、そのネイティブサーバーリクエストへの回答になります。
+その他の MCP elicitation リクエストは fail closed します。
 
-これらのプロンプトを運ぶ一般的な Plugin 承認フローについては、[Plugin 権限リクエスト](/ja-JP/plugins/plugin-permission-requests) を参照してください。
+これらのプロンプトを運ぶ一般的な Plugin 承認フローについては、
+[Plugin 権限リクエスト](/ja-JP/plugins/plugin-permission-requests) を参照してください。
 
 ## キュー誘導
 
-アクティブ実行キュー誘導は Codex app-server `turn/steer` に対応します。デフォルトの `messages.queue.mode: "steer"` では、OpenClaw は設定された静穏ウィンドウ中に steer モードのチャットメッセージをバッチ化し、到着順に 1 つの `turn/steer` リクエストとして送信します。
+アクティブ実行キュー誘導は Codex app-server `turn/steer` に対応付けられます。
+デフォルトの `messages.queue.mode: "steer"` では、OpenClaw は構成済みの静穏ウィンドウ中に steer モードのチャット
+メッセージをバッチ処理し、到着順に 1 つの `turn/steer`
+リクエストとして送信します。
 
 Codex レビューと手動 Compaction ターンは、同一ターンのステアリングを拒否することがあります。その
-場合、OpenClaw はアクティブな実行が終了してからプロンプトを開始します。
-メッセージをステアリングではなくデフォルトでキューに入れる必要がある場合は、
-`/queue followup` または `/queue collect` を使用します。
-[ステアリングキュー](/ja-JP/concepts/queue-steering) を参照してください。
+場合、OpenClaw はアクティブな実行が終了するのを待ってから
+プロンプトを開始します。デフォルトでメッセージをステアリングではなくキューに入れる必要がある場合は、
+`/queue followup` または `/queue collect` を使用します。[ステアリングキュー](/ja-JP/concepts/queue-steering)を参照してください。
 
 ## Codex フィードバックアップロード
 
-ネイティブ Codex ハーネスを使用しているセッションで `/diagnostics [note]` が承認されると、
-OpenClaw は関連する Codex スレッドに対して Codex app-server の `feedback/upload` も呼び出します。
-このアップロードは、一覧に含まれる各スレッドと、利用可能な場合は生成された Codex サブスレッドのログを含めるよう app-server に要求します。
+ネイティブ Codex ハーネス上のセッションで `/diagnostics [note]` が承認されると、
+OpenClaw は関連する Codex スレッドに対して Codex app-server `feedback/upload` も呼び出します。
+これには、一覧に含まれる各スレッドのログと、利用可能な場合は生成された Codex
+サブスレッドが含まれます。
 
-アップロードは Codex の通常のフィードバック経路を通じて OpenAI サーバーへ送信されます。その app-server で Codex
-フィードバックが無効になっている場合、コマンドは app-server
-エラーを返します。完了した診断返信には、送信されたスレッドのチャンネル、OpenClaw セッション ID、
-Codex スレッド ID、およびローカルの `codex resume <thread-id>` コマンドが一覧表示されます。
+アップロードは、Codex の通常のフィードバック経路を通じて OpenAI サーバーに送信されます。その
+app-server で Codex フィードバックが無効になっている場合、コマンドは
+app-server エラーを返します。完了した診断応答には、送信されたスレッドの
+チャンネル、OpenClaw セッション ID、Codex スレッド ID、ローカルの `codex resume <thread-id>`
+コマンドが一覧表示されます。
 
-承認を拒否または無視した場合、OpenClaw はそれらの Codex ID を表示せず、
-Codex フィードバックも送信しません。このアップロードはローカル Gateway
-診断エクスポートを置き換えるものではありません。承認、プライバシー、ローカルバンドル、グループチャットの動作については
-[診断エクスポート](/ja-JP/gateway/diagnostics) を参照してください。
+承認を拒否または無視した場合、OpenClaw はそれらの Codex ID を出力せず、
+Codex フィードバックも送信しません。このアップロードは、ローカルの
+Gateway 診断エクスポートを置き換えるものではありません。承認、プライバシー、ローカルバンドル、
+グループチャットの挙動については、[診断エクスポート](/ja-JP/gateway/diagnostics)を参照してください。
 
-現在接続されているスレッドについて、完全な Gateway
-診断バンドルなしで Codex フィードバックアップロードだけを明示的に行いたい場合にのみ、
+完全な Gateway 診断バンドルなしで、現在アタッチされているスレッドの Codex フィードバックアップロードだけが必要な場合にのみ、
 `/codex diagnostics [note]` を使用します。
 
 ## Compaction とトランスクリプトミラー
 
 選択されたモデルが Codex ハーネスを使用する場合、ネイティブスレッドの Compaction は
-Codex app-server が所有します。OpenClaw は Codex ターンに対して事前 Compaction を実行せず、
-Codex Compaction をコンテキストエンジンの Compaction で置き換えず、ネイティブ Codex
-Compaction を開始できない場合に OpenClaw または公開 OpenAI 要約へフォールバックしません。
-OpenClaw は、チャンネル履歴、検索、`/new`、`/reset`、および将来のモデルまたはハーネス切り替えのために、
-トランスクリプトミラーを保持します。
+Codex app-server に属します。OpenClaw は Codex ターンに対してプリフライト Compaction を実行せず、
+Codex Compaction をコンテキストエンジン Compaction に置き換えず、ネイティブ Compaction を開始できない場合に
+OpenClaw または公開 OpenAI 要約へフォールバックしません。OpenClaw はチャンネル履歴、検索、
+`/new`、`/reset`、および将来のモデルまたはハーネス切り替えのためにトランスクリプトミラーを保持します。
 
-`/compact` や Plugin が要求した手動 compact 操作などの明示的な Compaction リクエストは、
-`thread/compact/start` でネイティブ Codex Compaction を開始します。
-OpenClaw は、Codex が一致する `contextCompaction` 完了項目を発行するまで、リクエストと共有クライアントリースを開いたままにし、
-その後 Compaction ターンを完了として報告します。その終端ターンが設定された Compaction タイムアウトを超えた場合、
-OpenClaw はネイティブターンの割り込みを要求します。リースとスレッド単位の Compaction
-フェンスは、Codex が終端状態を報告するか、割り込み RPC を確認するまで保持されます。
-Codex が割り込み猶予期間内に確認しない場合、OpenClaw はフェンスを解放する前に接続を廃止します。
-リモート接続では、一致するスレッドバインディングも切り離されるため、後続の作業が未確認のリモートターンと重なることはありません。
-廃止された接続上の他のターンは失敗し、新しいクライアントで再試行できます。
-クライアントのクローズ、リクエストのキャンセル、または失敗した Compaction ターンは、失敗した操作を返します。
+`/compact` や Plugin が要求した手動
+compact 操作などの明示的な Compaction 要求は、`thread/compact/start` でネイティブ Codex Compaction を開始します。
+OpenClaw は、Codex が対応する `contextCompaction` 完了アイテムを発行するまで
+要求と共有クライアントリースを開いたままにし、その後 Compaction
+ターンを完了として報告します。その終端ターンが設定された Compaction
+タイムアウトを超えた場合、OpenClaw はネイティブターンの割り込みを要求します。リースとスレッドごとの
+Compaction フェンスは、Codex が終端状態を報告するか
+割り込み RPC を確認するまで保持されます。Codex が割り込み猶予期間内に確認しない場合、
+OpenClaw はフェンスを解放する前に接続を廃止します。リモート接続では、
+対応するスレッドバインディングも切り離すため、後続の作業が未確認のリモートターンと
+重なることはありません。廃止された接続上の他のターンは失敗し、新しいクライアントで再試行できます。
+クライアントの終了、要求のキャンセル、または失敗した Compaction ターンは、失敗した操作を返します。
+自動的なコンテキスト圧迫 Compaction は Codex の役割です。OpenClaw は手動で要求されたトリガーに対してのみ
+ネイティブ Compaction を開始します。
 
 コンテキストエンジンが Codex スレッドブートストラップ投影を要求すると、OpenClaw は
-ツール呼び出し名と ID、入力形状、および編集済みのツール結果内容を新しい Codex スレッドへ投影します。
-その投影に生のツール呼び出し引数値はコピーしません。
+ツール呼び出しの名前と ID、入力形状、マスク済みのツール結果
+コンテンツを新しい Codex スレッドに投影します。その投影に生のツール呼び出し引数値は
+コピーしません。
 
-ミラーには、ユーザープロンプト、最終アシスタントテキスト、および app-server が発行した場合の軽量な Codex
-推論または計画レコードが含まれます。OpenClaw はネイティブ Compaction の開始と終端ステータスを記録しますが、
-人間が読める Compaction 要約や、Compaction 後に Codex が保持したエントリの監査可能な一覧は公開しません。
+ミラーには、app-server が発行した場合、ユーザープロンプト、最終的なアシスタントテキスト、
+軽量な Codex 推論または計画レコードが含まれます。OpenClaw は
+ネイティブ Compaction の開始と終端ステータスを記録しますが、人間が読める
+Compaction 要約や、Compaction 後に Codex が保持したエントリの監査可能な一覧は
+公開しません。
 
-Codex が正準のネイティブスレッドを所有するため、`tool_result_persist` は現在、
-Codex ネイティブのツール結果レコードを書き換えません。これは、OpenClaw が OpenClaw 所有のセッション
-トランスクリプトツール結果を書き込む場合にのみ適用されます。
+Codex が正規のネイティブスレッドを所有するため、`tool_result_persist` は
+Codex ネイティブのツール結果レコードを書き換えません。これは OpenClaw が
+OpenClaw 所有のセッショントランスクリプトのツール結果を書き込む場合にのみ適用されます。
 
 ## メディアと配信
 
 OpenClaw は引き続きメディア配信とメディアプロバイダー選択を所有します。画像、
 動画、音楽、PDF、TTS、メディア理解では、`agents.defaults.imageGenerationModel`、
-`videoGenerationModel`、`pdfModel`、`messages.tts` など、一致するプロバイダー/モデル設定を使用します。
+`videoGenerationModel`、`pdfModel`、`messages.tts` などの対応するプロバイダー/モデル
+設定を使用します。
 
-テキスト、画像、動画、音楽、TTS、承認、メッセージングツール出力は、引き続き通常の OpenClaw
-配信経路を通ります。メディア生成にレガシーランタイムは必要ありません。
-Codex が `savedPath` を持つネイティブ画像生成項目を発行した場合、OpenClaw は
-Codex ターンにアシスタントテキストがない場合でも、その正確なファイルを通常の返信メディア経路で転送します。
+テキスト、画像、動画、音楽、TTS、承認、メッセージングツール出力は、通常の
+OpenClaw 配信経路を引き続き通過します。メディア生成にレガシーランタイムは必要ありません。
+Codex が `savedPath` を含むネイティブ画像生成アイテムを発行した場合、
+Codex ターンにアシスタントテキストがなくても、OpenClaw はその正確なファイルを通常の返信メディア
+経路で転送します。
 
 ## 関連
 

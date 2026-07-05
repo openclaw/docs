@@ -1,17 +1,17 @@
 ---
-summary: '`/automation/cron-jobs` にリダイレクト'
+summary: /automation/cron-jobs へリダイレクト
 title: Webhook
 x-i18n:
-    generated_at: "2026-04-24T04:45:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
-    source_path: automation/webhook.md
-    workflow: 15
+    generated_at: "2026-07-05T11:01:02Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: fde1180946aef371d4e44b24f3880f28e935a033c9a722ea3b188f893faf9e17
+    source_path: automation/webhook.md
+    workflow: 16
 ---
 
-このページは[Scheduled Tasks](/ja-JP/automation/cron-jobs#webhooks)に移動しました。Webhookのドキュメントについては、[Scheduled Tasks](/ja-JP/automation/cron-jobs#webhooks)を参照してください。
+このページは移動しました。Webhookドキュメントは現在、[スケジュール済みタスク](/ja-JP/automation/cron-jobs#webhooks)にあります。
 
 ## 関連
 

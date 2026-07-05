@@ -1,35 +1,37 @@
 ---
 read_when:
-    - セルフホストの Synapse または Tuwunel 向け Matrix 静音ストリーミングの設定
-    - ユーザーは、すべてのプレビュー編集ごとではなく、完了したブロックについてのみ通知を受け取りたいと考えています。
-summary: 通知を抑えた確定済みプレビュー編集のための受信者別 Matrix プッシュルール
-title: 静かなプレビュー向けのMatrixプッシュルール
+    - セルフホストの Synapse または Tuwunel 向けに Matrix の静かなストリーミングを設定する
+    - ユーザーはすべてのプレビュー編集ではなく、完了したブロックでのみ通知を望んでいる
+summary: 受信者ごとの Matrix プッシュルールによる、通知を抑えた確定済みプレビュー編集
+title: 静かなプレビュー向けの Matrix プッシュルール
 x-i18n:
-    generated_at: "2026-04-30T04:59:24Z"
+    generated_at: "2026-07-05T11:04:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
+    source_hash: 3f2260b4cc68f82cbe1aef86b8963b6b40e93f089b31991964fc9282b2c121fb
     source_path: channels/matrix-push-rules.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-`channels.matrix.streaming` が `"quiet"` の場合、OpenClaw は単一のプレビューイベントをその場で編集し、確定した編集にカスタムコンテンツフラグを付けます。Matrix クライアントは、ユーザーごとのプッシュルールがそのフラグに一致する場合にのみ、最終編集で通知します。このページは、Matrix をセルフホストしていて、各受信者アカウントにそのルールをインストールしたい運用者向けです。
+`channels.matrix.streaming` が `"quiet"` の場合、OpenClaw は単一のプレビューイベントをその場で編集して返信をストリーミングします。プレビューは通知しない `m.notice` イベントとして送信され、確定済みの編集には `content["com.openclaw.finalized_preview"] = true` が付けられます。Matrix クライアントは、ユーザーごとのプッシュルールがこのマーカーに一致する場合にのみ、その最終編集で通知します。このページは、Matrix をセルフホストし、各受信者アカウントにそのルールをインストールしたい運用者向けです。
 
-標準の Matrix 通知動作だけが必要な場合は、`streaming: "partial"` を使うか、ストリーミングをオフのままにしてください。[Matrix チャンネル設定](/ja-JP/channels/matrix#streaming-previews)を参照してください。
+`streaming: "progress"` は同じ経路で下書きを確定するため、同じルールは進行モードの確定済み編集にも発火します。
+
+標準の Matrix 通知動作だけが必要な場合は、`streaming: "partial"` を使用するか、ストリーミングをオフのままにしてください。[Matrix チャネル設定](/ja-JP/channels/matrix#streaming-previews)を参照してください。
 
 ## 前提条件
 
 - 受信者ユーザー = 通知を受け取るべき人
 - bot ユーザー = 返信を送信する OpenClaw Matrix アカウント
-- 下記の API 呼び出しには受信者ユーザーのアクセストークンを使用する
-- プッシュルールの `sender` は bot ユーザーの完全な MXID と照合する
-- 受信者アカウントには、動作中の pusher がすでに必要です。quiet プレビュールールは、通常の Matrix プッシュ配信が正常な場合にのみ機能します
+- 以下の API 呼び出しには受信者ユーザーのアクセストークンを使用する
+- プッシュルール内の `sender` は bot ユーザーの完全な MXID と照合する
+- 受信者アカウントには、動作中の pushers がすでに存在している必要があります。静かなプレビュールールは、通常の Matrix プッシュ配信が健全な場合にのみ機能します
 
 ## 手順
 
 <Steps>
-  <Step title="quiet プレビューを設定する">
+  <Step title="静かなプレビューを設定する">
 
 ```json5
 {
@@ -44,7 +46,7 @@ x-i18n:
   </Step>
 
   <Step title="受信者のアクセストークンを取得する">
-    可能な場合は既存のクライアントセッショントークンを再利用してください。新しく発行するには、次のようにします。
+    可能な場合は、既存のクライアントセッショントークンを再利用してください。新しく発行するには:
 
 ```bash
 curl -sS -X POST \
@@ -59,7 +61,7 @@ curl -sS -X POST \
 
   </Step>
 
-  <Step title="pusher が存在することを確認する">
+  <Step title="pushers が存在することを確認する">
 
 ```bash
 curl -sS \
@@ -67,12 +69,12 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-pusher が返ってこない場合は、続行する前にこのアカウントの通常の Matrix プッシュ配信を修正してください。
+pushers が返らない場合は、続行する前にこのアカウントの通常の Matrix プッシュ配信を修正してください。
 
   </Step>
 
   <Step title="override プッシュルールをインストールする">
-    OpenClaw は、確定したテキストのみのプレビュー編集に `content["com.openclaw.finalized_preview"] = true` を付けます。そのマーカーと、送信者としての bot MXID に一致するルールをインストールします。
+    確定済みプレビューマーカーと送信者としての bot MXID に一致するルールをインストールします:
 
 ```bash
 curl -sS -X PUT \
@@ -102,12 +104,12 @@ curl -sS -X PUT \
   }'
 ```
 
-    実行前に置き換えてください。
+    実行前に置き換えてください:
 
-    - `https://matrix.example.org`: ホームサーバーのベース URL
+    - `https://matrix.example.org`: あなたのホームサーバーのベース URL
     - `$USER_ACCESS_TOKEN`: 受信者ユーザーのアクセストークン
-    - `openclaw-finalized-preview-botname`: bot ごと、受信者ごとに一意のルール ID（パターン: `openclaw-finalized-preview-<botname>`）
-    - `@bot:example.org`: OpenClaw bot の MXID。受信者のものではありません
+    - `openclaw-finalized-preview-botname`: 受信者ごと、bot ごとに一意のルール ID (パターン: `openclaw-finalized-preview-<botname>`)
+    - `@bot:example.org`: 受信者ではなく、あなたの OpenClaw bot MXID
 
   </Step>
 
@@ -119,40 +121,40 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-その後、ストリーミングされた返信をテストします。quiet モードでは、ルームに quiet ドラフトプレビューが表示され、ブロックまたはターンが完了した時点で一度だけ通知されます。
+次に、ストリーミングされた返信をテストします。静かなモードでは、ルームに静かな下書きプレビューが表示され、ブロックまたはターンが完了した時点で一度だけ通知されます。
 
   </Step>
 </Steps>
 
-後でルールを削除するには、同じルール URL に受信者のトークンで `DELETE` を送信します。
+後でルールを削除するには、受信者のトークンで同じルール URL に対して `DELETE` します。
 
-## 複数 bot に関する注記
+## 複数 bot のメモ
 
-プッシュルールは `ruleId` をキーにします。同じ ID に対して `PUT` を再実行すると、単一のルールが更新されます。同じ受信者に通知する OpenClaw bot が複数ある場合は、bot ごとに、異なる送信者一致を持つルールを 1 つ作成してください。
+プッシュルールは `ruleId` によってキー付けされます。同じ ID に対して `PUT` を再実行すると、単一のルールが更新されます。同じ受信者に通知する OpenClaw bot が複数ある場合は、bot ごとに異なる送信者一致を持つルールを 1 つ作成してください。
 
-新しいユーザー定義の `override` ルールは、デフォルトの抑制ルールより前に挿入されるため、追加の順序パラメーターは不要です。このルールは、その場で確定できるテキストのみのプレビュー編集にのみ影響します。メディアのフォールバックと古いプレビューのフォールバックは、通常の Matrix 配信を使用します。
+新しいユーザー定義の `override` ルールは、サーバー既定の抑制ルールより前に挿入されるため、追加の順序パラメーターは不要です。このルールは、その場で確定できるテキストのみのプレビュー編集にだけ影響します。メディア返信、古いプレビューのフォールバック、Matrix メンションを有効にする最終テキストは、代わりに通常の通知メッセージとして配信されます。
 
-## ホームサーバーに関する注記
+## ホームサーバーのメモ
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    特別な `homeserver.yaml` の変更は不要です。通常の Matrix 通知がすでにこのユーザーに届いている場合は、上記の受信者トークン + `pushrules` 呼び出しが主な設定手順です。
+    特別な `homeserver.yaml` の変更は不要です。通常の Matrix 通知がすでにこのユーザーに届いている場合、上記の受信者トークン + `pushrules` 呼び出しが主な設定手順です。
 
-    Synapse をリバースプロキシまたは worker の背後で実行している場合は、`/_matrix/client/.../pushrules/` が Synapse に正しく到達することを確認してください。プッシュ配信はメインプロセス、または `synapse.app.pusher` / 設定済みの pusher worker によって処理されます。それらが正常であることを確認してください。
+    リバースプロキシまたは workers の背後で Synapse を実行している場合は、`/_matrix/client/.../pushrules/` が Synapse に正しく到達することを確認してください。プッシュ配信はメインプロセス、または `synapse.app.pusher` / 設定済みの pusher workers によって処理されます。それらが健全であることを確認してください。
 
-    このルールは `event_property_is` プッシュルール条件（MSC3758、プッシュルール v1.10）を使用します。これは 2023 年に Synapse に追加されました。古い Synapse リリースは `PUT pushrules/...` 呼び出しを受け付けますが、条件には暗黙的に一致しません。確定したプレビュー編集で通知が届かない場合は Synapse をアップグレードしてください。
+    このルールは `event_property_is` プッシュルール条件 (MSC3758、push rule v1.10) を使用します。これは 2023 年に Synapse に追加されました。古い Synapse リリースでは `PUT pushrules/...` 呼び出しを受け付けますが、条件には暗黙的に一致しません。確定済みプレビュー編集で通知が届かない場合は、Synapse をアップグレードしてください。
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    Synapse と同じフローです。確定プレビューマーカーに Tuwunel 固有の設定は不要です。
+    フローは Synapse と同じです。確定済みプレビューマーカーに Tuwunel 固有の設定は不要です。
 
-    ユーザーが別のデバイスでアクティブな間に通知が消える場合は、`suppress_push_when_active` が有効になっているか確認してください。Tuwunel はこのオプションを 1.4.2（2025 年 9 月）で追加しており、1 台のデバイスがアクティブな間、他のデバイスへのプッシュを意図的に抑制できます。
+    ユーザーが別のデバイスでアクティブな間に通知が消える場合は、`suppress_push_when_active` が有効になっているか確認してください。Tuwunel は 1.4.2 (2025 年 9 月) でこのオプションを追加しており、1 台のデバイスがアクティブな間、他のデバイスへのプッシュを意図的に抑制できます。
 
   </Accordion>
 </AccordionGroup>
 
 ## 関連
 
-- [Matrix チャンネル設定](/ja-JP/channels/matrix)
+- [Matrix チャネル設定](/ja-JP/channels/matrix)
 - [ストリーミングの概念](/ja-JP/concepts/streaming)

@@ -1,19 +1,19 @@
 ---
 summary: Redirigir a /gateway/authentication
-title: Supervisión de autenticación
+title: Monitoreo de autenticación
 x-i18n:
-    generated_at: "2026-04-30T05:26:44Z"
+    generated_at: "2026-07-05T11:00:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
+    source_hash: 2d2c52a0082ff90306c61fb33ee2f2dc74b8703c9d8ee7a13581e72d2d564f0a
     source_path: automation/auth-monitoring.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-La supervisión de autenticación se encuentra en [Autenticación](/es/gateway/authentication).
+Esta página se movió. La autenticación del proveedor de modelos está en [Autenticación](/es/gateway/authentication); los scripts de operaciones para monitorear el estado de autenticación están en [Scripts de monitoreo de autenticación](/es/help/scripts#auth-monitoring-scripts).
 
 ## Relacionado
 
-- [Solución de problemas de automatización](/es/automation/cron-jobs)
-- [Ganchos](/es/automation/hooks)
+- [Solución de problemas de automatización](/es/automation/cron-jobs#troubleshooting)
+- [Hooks](/es/automation/hooks)

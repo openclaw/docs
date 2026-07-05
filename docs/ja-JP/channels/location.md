@@ -1,52 +1,52 @@
 ---
 read_when:
-- Adding or modifying channel location parsing
-- エージェントのプロンプトやツールでlocationコンテキストフィールドを使用する
-summary: 受信チャンネルのlocation解析（Telegram/WhatsApp/Matrix）とコンテキストフィールド
-title: チャンネルlocation解析
+    - チャネルの場所解析の追加または変更
+    - エージェントのプロンプトやツールで位置情報コンテキストフィールドを使用する
+summary: 受信チャネルの場所解析（Telegram、WhatsApp、Matrix、LINE）とコンテキストフィールド
+title: チャネル位置解析
 x-i18n:
-  generated_at: '2026-04-24T04:46:30Z'
-  refreshed_at: '2026-04-28T05:23:26Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
-  source_path: channels/location.md
-  workflow: 15
-  postprocess_version: locale-links-v1
+    generated_at: "2026-07-05T11:04:15Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 3388739af0514238453aefbbf32de9ccdd19240367907a045bfe5e48e95a2ae6
+    source_path: channels/location.md
+    workflow: 16
 ---
 
-OpenClawは、チャットチャンネルから共有されたlocationを次の形式に正規化します。
+OpenClaw はチャットチャンネルから共有された場所を次の形式に正規化します。
 
-- 受信本文に追加される簡潔な座標テキスト
-- 自動返信コンテキストペイロード内の構造化フィールド
-
-チャンネルが提供するラベル、住所、caption/commentは、ユーザー本文にインラインで入るのではなく、共有の信頼されていないメタデータJSONブロックとしてプロンプトに描画されます。
+- 受信本文に追加される簡潔な座標テキスト、および
+- 自動返信コンテキストペイロード内の構造化フィールド。チャンネルから提供されるラベル、住所、キャプション/コメントは、ユーザー本文にインラインではなく、共有の信頼されないメタデータ JSON ブロックによってプロンプトにレンダリングされます。
 
 現在サポートされているもの:
 
-- **Telegram**（locationピン + venue + ライブロケーション）
+- **LINE**（タイトル/住所付きの位置情報メッセージ）
+- **Matrix**（`geo_uri` 付きの `m.location`）
+- **Telegram**（位置情報ピン + 会場 + ライブ位置情報）
 - **WhatsApp**（`locationMessage` + `liveLocationMessage`）
-- **Matrix**（`geo_uri` を持つ `m.location`）
 
-## テキスト形式
+## テキスト書式
 
-locationは、角括弧なしの見やすい行として描画されます。
+場所は、角括弧なしの読みやすい行としてレンダリングされます。座標は小数点以下 6 桁を使用し、精度はメートル単位の整数に丸められます。
 
 - ピン:
   - `📍 48.858844, 2.294351 ±12m`
-- 名前付きの場所:
+- 名前付きの場所（同じ行。名前/住所はメタデータブロックのみに入ります）:
   - `📍 48.858844, 2.294351 ±12m`
 - ライブ共有:
   - `🛰 Live location: 48.858844, 2.294351 ±12m`
 
-チャンネルにラベル、住所、またはcaption/commentが含まれている場合、それはコンテキストペイロードに保持され、フェンス付きの信頼されていないJSONとしてプロンプトに表示されます。
+チャンネルにラベル、住所、キャプション/コメントが含まれる場合、それはコンテキストペイロードに保持され、プロンプト内ではフェンス付きの信頼されない JSON として表示されます（存在しないフィールドは省略されます）。
 
 ````text
-Location（信頼されていないメタデータ）:
+Location (untrusted metadata):
 ```json
 {
   "latitude": 48.858844,
   "longitude": 2.294351,
+  "accuracy_m": 12,
+  "source": "place",
   "name": "Eiffel Tower",
   "address": "Champ de Mars, Paris",
   "caption": "Meet here"
@@ -56,27 +56,30 @@ Location（信頼されていないメタデータ）:
 
 ## コンテキストフィールド
 
-locationが存在する場合、これらのフィールドが `ctx` に追加されます。
+場所が存在する場合、次のフィールドが `ctx` に追加されます。
 
-- `LocationLat`（number）
-- `LocationLon`（number）
-- `LocationAccuracy`（number、メートル; 任意）
-- `LocationName`（string; 任意）
-- `LocationAddress`（string; 任意）
+- `LocationLat`（数値）
+- `LocationLon`（数値）
+- `LocationAccuracy`（数値、メートル。任意）
+- `LocationName`（文字列。任意）
+- `LocationAddress`（文字列。任意）
 - `LocationSource`（`pin | place | live`）
-- `LocationIsLive`（boolean）
-- `LocationCaption`（string; 任意）
+- `LocationIsLive`（真偽値）
+- `LocationCaption`（文字列。任意）
 
-プロンプトレンダラーは `LocationName`、`LocationAddress`、`LocationCaption` を信頼されていないメタデータとして扱い、他のチャンネルコンテキストで使われるものと同じ境界付きJSONパスを通じてシリアライズします。
+チャンネルが明示的なソースを設定しない場合、OpenClaw が推論します。ライブ共有は `live`、名前または住所がある場所は `place`、それ以外はすべて `pin` になります。
 
-## チャンネルに関する注記
+プロンプトレンダラーは、`LocationName`、`LocationAddress`、`LocationCaption` を信頼されないメタデータとして扱い、他のチャンネルコンテキストに使用されるものと同じ、境界付き JSON パスを通じてシリアライズします。
 
-- **Telegram**: venueは `LocationName/LocationAddress` にマッピングされます。ライブロケーションは `live_period` を使用します。
-- **WhatsApp**: `locationMessage.comment` と `liveLocationMessage.caption` は `LocationCaption` を設定します。
-- **Matrix**: `geo_uri` はピンlocationとして解析されます。高度は無視され、`LocationIsLive` は常にfalseです。
+## チャンネルの注記
+
+- **LINE**: 位置情報メッセージの `title`/`address` は `LocationName`/`LocationAddress` に対応します。ライブ位置情報はありません。
+- **Matrix**: `geo_uri` はピン位置情報として解析されます。`u`（不確実性）パラメーターは `LocationAccuracy` に対応し、イベント本文は `LocationCaption` に設定されます。高度は無視され、`LocationIsLive` は常に false です。
+- **Telegram**: 会場は `LocationName`/`LocationAddress` に対応します。ライブ位置情報は `live_period` によって検出されます。
+- **WhatsApp**: `locationMessage.comment` と `liveLocationMessage.caption` は `LocationCaption` に設定されます。
 
 ## 関連
 
-- [Location command (nodes)](/ja-JP/nodes/location-command)
-- [Camera capture](/ja-JP/nodes/camera)
-- [Media understanding](/ja-JP/nodes/media-understanding)
+- [位置情報コマンド（ノード）](/ja-JP/nodes/location-command)
+- [カメラキャプチャ](/ja-JP/nodes/camera)
+- [メディア理解](/ja-JP/nodes/media-understanding)

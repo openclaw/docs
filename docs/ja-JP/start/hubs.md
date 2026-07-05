@@ -1,27 +1,27 @@
 ---
 read_when:
-    - ドキュメントの完全な一覧が必要な場合
-summary: すべての OpenClaw ドキュメントへリンクするハブ
-title: ドキュメントハブ
+    - OpenClaw のドキュメント全体の完全な一覧が必要な場合
+summary: すべての OpenClaw ドキュメントにリンクするハブ
+title: Docs ハブ
 x-i18n:
-    generated_at: "2026-06-27T13:05:07Z"
+    generated_at: "2026-07-05T11:51:21Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
+    source_hash: 9b51fc77155b2e7ed6cb6e36d375585ebd457c3d89f97c4151877d1aae20717f
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
+OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started) から始めてください。
 </Note>
 
-左側のナビゲーションに表示されない詳細解説やリファレンスドキュメントを含め、すべてのページを見つけるには、これらのハブを使用します。
+左ナビゲーションに表示されない詳細解説やリファレンスドキュメントを含め、すべてのページを見つけるには、これらのハブを使用してください。
 
 ## ここから開始
 
-- [インデックス](/ja-JP)
+- [索引](/ja-JP)
 - [はじめに](/ja-JP/start/getting-started)
 - [オンボーディング](/ja-JP/start/onboarding)
 - [オンボーディング (CLI)](/ja-JP/start/wizard)
@@ -29,11 +29,11 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [ダッシュボード (ローカル Gateway)](http://127.0.0.1:18789/)
 - [ヘルプ](/ja-JP/help)
 - [ドキュメントディレクトリ](/ja-JP/start/docs-directory)
-- [設定](/ja-JP/gateway/configuration)
-- [設定例](/ja-JP/gateway/configuration-examples)
+- [構成](/ja-JP/gateway/configuration)
+- [構成例](/ja-JP/gateway/configuration-examples)
 - [OpenClaw アシスタント](/ja-JP/start/openclaw)
 - [ショーケース](/ja-JP/start/showcase)
-- [ロア](/ja-JP/start/lore)
+- [世界観](/ja-JP/start/lore)
 
 ## インストール + 更新
 
@@ -51,11 +51,11 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
 - [メモリ](/ja-JP/concepts/memory)
 - [エージェントループ](/ja-JP/concepts/agent-loop)
-- [ストリーミング + チャンク分割](/ja-JP/concepts/streaming)
+- [ストリーミング + チャンク化](/ja-JP/concepts/streaming)
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
 - [Compaction](/ja-JP/concepts/compaction)
 - [セッション](/ja-JP/concepts/session)
-- [セッションの枝刈り](/ja-JP/concepts/session-pruning)
+- [セッション枝刈り](/ja-JP/concepts/session-pruning)
 - [セッションツール](/ja-JP/concepts/session-tool)
 - [キュー](/ja-JP/concepts/queue)
 - [スラッシュコマンド](/ja-JP/tools/slash-commands)
@@ -71,26 +71,26 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [モデルフェイルオーバー](/ja-JP/concepts/model-failover)
 - [OAuth](/ja-JP/concepts/oauth)
 
-## プロバイダー + 入口
+## プロバイダー + イングレス
 
 - [チャットチャネルハブ](/ja-JP/channels)
 - [モデルプロバイダーハブ](/ja-JP/providers/models)
-- [WhatsApp](/ja-JP/channels/whatsapp)
-- [Telegram](/ja-JP/channels/telegram)
-- [Slack](/ja-JP/channels/slack)
 - [Discord](/ja-JP/channels/discord)
-- [Mattermost](/ja-JP/channels/mattermost)
-- [Signal](/ja-JP/channels/signal)
-- [QQ Bot](/ja-JP/channels/qqbot)
 - [iMessage](/ja-JP/channels/imessage)
-- [位置情報の解析](/ja-JP/channels/location)
+- [Mattermost](/ja-JP/channels/mattermost)
+- [QQ Bot](/ja-JP/channels/qqbot)
+- [Signal](/ja-JP/channels/signal)
+- [Slack](/ja-JP/channels/slack)
+- [Telegram](/ja-JP/channels/telegram)
 - [WebChat](/ja-JP/web/webchat)
+- [WhatsApp](/ja-JP/channels/whatsapp)
+- [位置情報の解析](/ja-JP/channels/location)
 - [Webhook](/ja-JP/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/ja-JP/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + 運用
 
-- [Gateway 運用手順](/ja-JP/gateway)
+- [Gateway ランブック](/ja-JP/gateway)
 - [ネットワークモデル](/ja-JP/network#core-model)
 - [Gateway ペアリング](/ja-JP/gateway/pairing)
 - [Gateway ロック](/ja-JP/gateway/gateway-lock)
@@ -98,7 +98,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [ヘルス](/ja-JP/gateway/health)
 - [Heartbeat](/ja-JP/gateway/heartbeat)
 - [Doctor](/ja-JP/gateway/doctor)
-- [ログ記録](/ja-JP/gateway/logging)
+- [ロギング](/ja-JP/gateway/logging)
 - [サンドボックス化](/ja-JP/gateway/sandboxing)
 - [ダッシュボード](/ja-JP/web/dashboard)
 - [コントロール UI](/ja-JP/web/control-ui)
@@ -118,7 +118,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [昇格モード](/ja-JP/tools/elevated)
 - [Cron ジョブ](/ja-JP/automation/cron-jobs)
 - [自動化](/ja-JP/automation)
-- [思考 + 詳細出力](/ja-JP/tools/thinking)
+- [思考 + 詳細](/ja-JP/tools/thinking)
 - [モデル](/ja-JP/concepts/models)
 - [サブエージェント](/ja-JP/tools/subagents)
 - [エージェント送信 CLI](/ja-JP/tools/agent-send)
@@ -127,15 +127,15 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [ブラウザー (Linux トラブルシューティング)](/ja-JP/tools/browser-linux-troubleshooting)
 - [投票](/ja-JP/cli/message)
 
-## Node、メディア、音声
+## ノード、メディア、音声
 
-- [Node 概要](/ja-JP/nodes)
+- [ノード概要](/ja-JP/nodes)
 - [カメラ](/ja-JP/nodes/camera)
 - [画像](/ja-JP/nodes/images)
 - [音声](/ja-JP/nodes/audio)
 - [位置情報コマンド](/ja-JP/nodes/location-command)
 - [音声ウェイク](/ja-JP/nodes/voicewake)
-- [トークモード](/ja-JP/nodes/talk)
+- [会話モード](/ja-JP/nodes/talk)
 
 ## プラットフォーム
 
@@ -158,7 +158,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [macOS 子プロセス](/ja-JP/platforms/mac/child-process)
 - [macOS ヘルス](/ja-JP/platforms/mac/health)
 - [macOS アイコン](/ja-JP/platforms/mac/icon)
-- [macOS ログ記録](/ja-JP/platforms/mac/logging)
+- [macOS ロギング](/ja-JP/platforms/mac/logging)
 - [macOS 権限](/ja-JP/platforms/mac/permissions)
 - [macOS リモート](/ja-JP/platforms/mac/remote)
 - [macOS 署名](/ja-JP/platforms/mac/signing)
@@ -175,16 +175,16 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [Plugin マニフェスト](/ja-JP/plugins/manifest)
 - [エージェントツール](/ja-JP/plugins/building-plugins#registering-agent-tools)
 - [Plugin バンドル](/ja-JP/plugins/bundles)
-- [ClawHub](/ja-JP/clawhub)
-- [Capability クックブック](/ja-JP/plugins/adding-capabilities)
+- [ClawHub](/clawhub)
+- [ケイパビリティクックブック](/ja-JP/plugins/adding-capabilities)
 - [音声通話 Plugin](/ja-JP/plugins/voice-call)
 - [Zalo ユーザー Plugin](/ja-JP/plugins/zalouser)
 
 ## ワークスペース + テンプレート
 
 - [Skills](/ja-JP/tools/skills)
-- [ClawHub](/ja-JP/clawhub)
-- [Skills 設定](/ja-JP/tools/skills-config)
+- [ClawHub](/clawhub)
+- [Skills 構成](/ja-JP/tools/skills-config)
 - [デフォルト AGENTS](/ja-JP/reference/AGENTS.default)
 - [テンプレート: AGENTS](/ja-JP/reference/templates/AGENTS)
 - [テンプレート: BOOTSTRAP](/ja-JP/reference/templates/BOOTSTRAP)

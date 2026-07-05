@@ -1,26 +1,25 @@
 ---
 read_when:
     - Quieres un paso de LLM solo JSON dentro de los flujos de trabajo
-    - Necesitas salida de LLM validada por esquema para la automatización
+    - Necesitas una salida de LLM validada por esquema para la automatización
 summary: Tareas de LLM solo JSON para flujos de trabajo (herramienta de Plugin opcional)
 title: Tarea de LLM
 x-i18n:
-    generated_at: "2026-06-27T13:06:04Z"
+    generated_at: "2026-07-05T11:49:57Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 98856fd8ccf7181a89073cbaa939d9b303532f7fba612d7800e1b89a9d1b25ae
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` es una **herramienta de plugin opcional** que ejecuta una tarea de LLM solo JSON y
-devuelve salida estructurada (opcionalmente validada con JSON Schema).
+`llm-task` es una **herramienta de plugin opcional** incluida que ejecuta una única
+llamada LLM solo JSON y devuelve salida estructurada, opcionalmente validada con un
+Schema JSON. Ofrece a motores de flujo de trabajo como Lobster un paso LLM sin código
+OpenClaw personalizado por flujo de trabajo.
 
-Esto es ideal para motores de flujo de trabajo como Lobster: puedes agregar un único paso de LLM
-sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
-
-## Habilitar el plugin
+## Habilitar
 
 1. Habilita el plugin:
 
@@ -34,7 +33,7 @@ sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
 }
 ```
 
-2. Permite la herramienta opcional:
+2. Permite la herramienta:
 
 ```json
 {
@@ -44,7 +43,9 @@ sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
 }
 ```
 
-Usa `tools.allow` solo cuando quieras el modo restrictivo de lista de permitidos.
+`alsoAllow` añade `llm-task` sobre el perfil de herramientas activo sin
+restringir otras herramientas centrales. Usa `tools.allow` solo si quieres un modo
+restrictivo de lista de permitidos.
 
 ## Configuración (opcional)
 
@@ -68,47 +69,50 @@ Usa `tools.allow` solo cuando quieras el modo restrictivo de lista de permitidos
 }
 ```
 
-`allowedModels` es una lista de permitidos de cadenas `provider/model`. Si se configura, se rechaza cualquier solicitud
-fuera de la lista.
+`allowedModels` es una lista de permitidos de cadenas `provider/model`; se rechaza una solicitud para cualquier
+otro modelo. Todas las demás claves son valores de reserva por llamada que se usan cuando la
+llamada de herramienta omite ese parámetro.
 
 ## Parámetros de la herramienta
 
-- `prompt` (cadena, obligatorio)
-- `input` (cualquiera, opcional)
-- `schema` (objeto, JSON Schema opcional)
-- `provider` (cadena, opcional)
-- `model` (cadena, opcional)
-- `thinking` (cadena, opcional)
-- `authProfileId` (cadena, opcional)
-- `temperature` (número, opcional)
-- `maxTokens` (número, opcional)
-- `timeoutMs` (número, opcional)
-
-`thinking` acepta los ajustes preestablecidos estándar de razonamiento de OpenClaw, como `low` o `medium`.
+| Parámetro       | Tipo   | Notas                                                                                                                                         |
+| --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | string | Obligatorio. Instrucción de tarea para el LLM.                                                                                                       |
+| `input`         | any    | Carga útil opcional; se serializa a JSON y se añade al prompt.                                                                              |
+| `schema`        | object | Schema JSON opcional contra el que debe validarse la salida analizada.                                                                                 |
+| `provider`      | string | Anula `defaultProvider` / el proveedor predeterminado del agente.                                                                                   |
+| `model`         | string | Anula `defaultModel`; acepta ids de modelo simples, alias o una referencia `provider/model` (un prefijo de proveedor duplicado se elimina automáticamente). |
+| `thinking`      | string | Nivel de razonamiento (por ejemplo, `low`, `medium`); debe ser uno compatible con el modelo resuelto.                                                          |
+| `authProfileId` | string | Anula `defaultAuthProfileId`.                                                                                                             |
+| `temperature`   | number | De mejor esfuerzo; no todos los proveedores lo respetan.                                                                                                      |
+| `maxTokens`     | number | Límite de mejor esfuerzo para tokens de salida.                                                                                                             |
+| `timeoutMs`     | number | Tiempo de espera de ejecución; valor predeterminado `30000`.                                                                                                                 |
 
 ## Salida
 
-Devuelve `details.json` con el JSON analizado (y lo valida con
-`schema` cuando se proporciona).
+Devuelve `details.json` (el JSON analizado y validado con el schema), además de `details.provider`
+y `details.model`, que indican qué se ejecutó realmente.
 
 ## Ejemplo: paso de flujo de trabajo de Lobster
 
 ### Limitación importante
 
-El ejemplo siguiente asume que la **CLI independiente de Lobster** se ejecuta en un entorno donde `openclaw.invoke` ya tiene el contexto correcto de URL/autenticación del Gateway.
+El ejemplo siguiente asume que la **CLI independiente de Lobster** se ejecuta donde
+`openclaw.invoke` ya tiene el contexto correcto de URL/autenticación del gateway.
 
-Para el ejecutor Lobster **integrado** incluido dentro de OpenClaw, este patrón de CLI anidada **actualmente no es fiable**:
+Para el ejecutor Lobster **integrado** incluido dentro de OpenClaw, este patrón de CLI anidada
+**actualmente no es fiable**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Hasta que Lobster integrado tenga un puente compatible para este flujo, prefiere una de estas opciones:
+Hasta que Lobster integrado tenga un puente compatible para este flujo, prefiere:
 
 - llamadas directas a la herramienta `llm-task` fuera de Lobster, o
-- pasos de Lobster que no dependan de llamadas anidadas a `openclaw.invoke`.
+- pasos de Lobster que no dependan de llamadas `openclaw.invoke` anidadas.
 
-Ejemplo de CLI independiente de Lobster:
+Ejemplo de la CLI independiente de Lobster:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -132,14 +136,16 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Notas de seguridad
 
-- La herramienta es **solo JSON** e indica al modelo que genere solo JSON (sin
-  bloques de código, sin comentarios).
-- No se exponen herramientas al modelo para esta ejecución.
-- Trata la salida como no confiable a menos que la valides con `schema`.
-- Coloca aprobaciones antes de cualquier paso con efectos secundarios (enviar, publicar, ejecutar).
+- **Solo JSON**: se indica al modelo que devuelva solo un valor JSON, sin bloques de
+  código ni comentarios.
+- **Sin herramientas**: la ejecución subyacente tiene las herramientas deshabilitadas, por lo que el modelo no puede llamar
+  fuera durante la tarea.
+- Trata la salida como no fiable a menos que la valides con `schema`.
+- Coloca aprobaciones antes de cualquier paso con efectos secundarios (send, post, exec) que consuma
+  esta salida.
 
 ## Relacionado
 
 - [Niveles de razonamiento](/es/tools/thinking)
 - [Subagentes](/es/tools/subagents)
-- [Comandos de barra](/es/tools/slash-commands)
+- [Comandos slash](/es/tools/slash-commands)

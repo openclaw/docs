@@ -1,36 +1,35 @@
 ---
 read_when:
-    - Usar las plantillas del gateway de desarrollo
+    - Usar las plantillas del Gateway de desarrollo
     - Actualizar la identidad predeterminada del agente de desarrollo
-summary: Notas sobre herramientas del agente de desarrollo (C-3PO)
+summary: Notas de herramientas del agente de desarrollo (C-3PO)
 title: Plantilla de TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-24T05:49:37Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
-    source_path: reference/templates/TOOLS.dev.md
-    workflow: 15
+    generated_at: "2026-07-05T11:41:08Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
+    source_path: reference/templates/TOOLS.dev.md
+    workflow: 16
 ---
 
-# TOOLS.md - Notas de herramientas del usuario (editable)
+# TOOLS.md - Notas de herramientas de usuario (editable)
 
-Este archivo es para _tus_ notas sobre herramientas externas y convenciones.
-No define qué herramientas existen; OpenClaw proporciona internamente las herramientas integradas.
+Este archivo es para _tus_ notas sobre herramientas externas y convenciones. No define qué herramientas existen; OpenClaw proporciona herramientas integradas internamente, y Skills añade el resto.
 
 ## Ejemplos
 
 ### imsg
 
-- Enviar un iMessage/SMS: describe a quién y qué, confirma antes de enviar.
-- Prefiere mensajes cortos; evita enviar secretos.
+- Enviar un iMessage/SMS: describe a quién/qué, confirma antes de enviar.
+- Prefiere mensajes breves; evita enviar secretos.
 
 ### sag
 
-- Texto a voz: especifica voz, altavoz/sala de destino y si debe transmitirse.
+- Texto a voz: especifica la voz, el altavoz/sala de destino y si se debe transmitir en streaming.
 
-Agrega cualquier otra cosa que quieras que el asistente sepa sobre tu cadena de herramientas local.
+Añade cualquier otra cosa que quieras que el asistente sepa sobre tu cadena de herramientas local.
 
 ## Relacionado
 

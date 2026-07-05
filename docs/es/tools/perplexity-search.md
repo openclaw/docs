@@ -1,24 +1,22 @@
 ---
 read_when:
-    - Desea usar Perplexity Search para la búsqueda web
+    - Quieres usar Perplexity Search para la búsqueda web
     - Necesitas configurar PERPLEXITY_API_KEY u OPENROUTER_API_KEY
-summary: Compatibilidad de la API de búsqueda de Perplexity y Sonar/OpenRouter para web_search
+summary: API de búsqueda de Perplexity y compatibilidad de Sonar/OpenRouter con web_search
 title: Búsqueda de Perplexity
 x-i18n:
-    generated_at: "2026-06-27T13:07:41Z"
+    generated_at: "2026-07-05T11:45:30Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
+    source_hash: a7ca97355110e70a05f1d57acab475dda8dec89393804df40c6e9be5e30780e8
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
-OpenClaw admite Perplexity Search API como proveedor de `web_search`.
-Devuelve resultados estructurados con los campos `title`, `url` y `snippet`.
+OpenClaw admite la API de Perplexity Search como proveedor de `web_search`. Devuelve resultados estructurados con los campos `title`, `url` y `snippet`.
 
-Por compatibilidad, OpenClaw también admite configuraciones heredadas de Perplexity Sonar/OpenRouter.
-Si usas `OPENROUTER_API_KEY`, una clave `sk-or-...` en `plugins.entries.perplexity.config.webSearch.apiKey`, o defines `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, el proveedor cambia a la ruta de chat-completions y devuelve respuestas sintetizadas por IA con citas en lugar de resultados estructurados de Search API.
+Por compatibilidad, OpenClaw también admite configuraciones heredadas de Perplexity Sonar/OpenRouter. Si usas `OPENROUTER_API_KEY`, una clave `sk-or-...` en `plugins.entries.perplexity.config.webSearch.apiKey`, o defines `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, el proveedor cambia a la ruta de chat-completions y devuelve respuestas sintetizadas por IA con citas en lugar de resultados estructurados de la API de Search.
 
 ## Instalar Plugin
 
@@ -31,22 +29,22 @@ openclaw gateway restart
 
 ## Obtener una clave de API de Perplexity
 
-1. Crea una cuenta de Perplexity en [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
-2. Genera una clave de API en el panel
+1. Crea una cuenta de Perplexity en [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api).
+2. Genera una clave de API en el panel.
 3. Guarda la clave en la configuración o define `PERPLEXITY_API_KEY` en el entorno de Gateway.
 
 ## Compatibilidad con OpenRouter
 
 Si ya usabas OpenRouter para Perplexity Sonar, conserva `provider: "perplexity"` y define `OPENROUTER_API_KEY` en el entorno de Gateway, o guarda una clave `sk-or-...` en `plugins.entries.perplexity.config.webSearch.apiKey`.
 
-Controles de compatibilidad opcionales:
+Controles opcionales de compatibilidad:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
 
 ## Ejemplos de configuración
 
-### Perplexity Search API nativa
+### API nativa de Perplexity Search
 
 ```json5
 {
@@ -100,19 +98,15 @@ Controles de compatibilidad opcionales:
 
 ## Dónde definir la clave
 
-**Mediante configuración:** ejecuta `openclaw configure --section web`. Guarda la clave en
-`~/.openclaw/openclaw.json`, dentro de `plugins.entries.perplexity.config.webSearch.apiKey`.
-Ese campo también acepta objetos SecretRef.
+**Mediante configuración:** ejecuta `openclaw configure --section web`. Guarda la clave en `~/.openclaw/openclaw.json` bajo `plugins.entries.perplexity.config.webSearch.apiKey`. Ese campo también acepta objetos SecretRef.
 
-**Mediante entorno:** define `PERPLEXITY_API_KEY` u `OPENROUTER_API_KEY`
-en el entorno del proceso de Gateway. Para una instalación de gateway, colócala en
-`~/.openclaw/.env` (o en el entorno de tu servicio). Consulta [Variables de entorno](/es/help/faq#env-vars-and-env-loading).
+**Mediante entorno:** define `PERPLEXITY_API_KEY` u `OPENROUTER_API_KEY` en el entorno del proceso de Gateway. Para una instalación de gateway, ponla en `~/.openclaw/.env` (o en el entorno de tu servicio). Consulta [Variables de entorno](/es/help/faq#env-vars-and-env-loading).
 
-Si `provider: "perplexity"` está configurado y la SecretRef de la clave de Perplexity no se puede resolver sin alternativa de entorno, el inicio o la recarga fallan rápidamente.
+Si `provider: "perplexity"` está configurado y el SecretRef de la clave de Perplexity no se resuelve sin respaldo de entorno, el inicio/la recarga falla rápido.
 
-## Parámetros de la herramienta
+## Parámetros de herramienta
 
-Estos parámetros se aplican a la ruta nativa de Perplexity Search API.
+Estos parámetros se aplican a la ruta nativa de la API de Perplexity Search.
 
 <ParamField path="query" type="string" required>
 Consulta de búsqueda.
@@ -131,7 +125,7 @@ Código de idioma ISO 639-1 (por ejemplo, `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Filtro de tiempo: `day` equivale a 24 horas.
+Filtro de tiempo: `day` son 24 horas.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -143,7 +137,7 @@ Solo resultados publicados antes de esta fecha (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Arreglo de lista de dominios permitidos/bloqueados (máx. 20).
+Array de dominios permitidos/denegados (máx. 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
@@ -156,12 +150,9 @@ Límite de tokens por página.
 
 Para la ruta heredada de compatibilidad con Sonar/OpenRouter:
 
-- Se aceptan `query`, `count` y `freshness`
-- Allí `count` es solo de compatibilidad; la respuesta sigue siendo una sola
-  respuesta sintetizada con citas, no una lista de N resultados
-- Los filtros exclusivos de Search API, como `country`, `language`, `date_after`,
-  `date_before`, `domain_filter`, `max_tokens` y `max_tokens_per_page`,
-  devuelven errores explícitos
+- Se aceptan `query`, `count` y `freshness`.
+- `count` allí es solo de compatibilidad; la respuesta sigue siendo una única respuesta sintetizada con citas en lugar de una lista de N resultados.
+- Los filtros exclusivos de la API de Search (`country`, `language`, `date_after`, `date_before`, `domain_filter`, `max_tokens`, `max_tokens_per_page`) devuelven errores explícitos.
 
 **Ejemplos:**
 
@@ -206,32 +197,32 @@ await web_search({
 });
 ```
 
-### Reglas de filtro de dominios
+### Reglas del filtro de dominios
 
-- Máximo 20 dominios por filtro
-- No se puede mezclar la lista de permitidos y la lista de bloqueados en la misma solicitud
-- Usa el prefijo `-` para las entradas de la lista de bloqueados (por ejemplo, `["-reddit.com"]`)
+- Máximo 20 dominios por filtro.
+- No se pueden mezclar entradas de lista de permitidos y lista de denegados en la misma solicitud.
+- Usa un prefijo `-` para las entradas de lista de denegados (por ejemplo, `["-reddit.com"]`).
 
 ## Notas
 
-- Perplexity Search API devuelve resultados estructurados de búsqueda web (`title`, `url`, `snippet`)
-- OpenRouter o `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` explícitos hacen que Perplexity vuelva a usar chat completions de Sonar por compatibilidad
-- La compatibilidad con Sonar/OpenRouter devuelve una sola respuesta sintetizada con citas, no filas de resultados estructuradas
-- Los resultados se almacenan en caché durante 15 minutos de forma predeterminada (configurable mediante `cacheTtlMinutes`)
+- La API de Perplexity Search devuelve resultados estructurados de búsqueda web (`title`, `url`, `snippet`).
+- OpenRouter, o un `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` explícito, cambia Perplexity de nuevo a chat completions de Sonar por compatibilidad.
+- La compatibilidad con Sonar/OpenRouter devuelve una única respuesta sintetizada con citas, no filas de resultados estructurados.
+- Los resultados se almacenan en caché durante 15 minutos de forma predeterminada (configurable mediante `cacheTtlMinutes`).
 
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Web search overview" href="/es/tools/web" icon="globe">
+  <Card title="Resumen de búsqueda web" href="/es/tools/web" icon="globe">
     Todos los proveedores y reglas de detección automática.
   </Card>
-  <Card title="Brave search" href="/es/tools/brave-search" icon="shield">
+  <Card title="Búsqueda de Brave" href="/es/tools/brave-search" icon="shield">
     Resultados estructurados con filtros de país e idioma.
   </Card>
-  <Card title="Exa search" href="/es/tools/exa-search" icon="magnifying-glass">
+  <Card title="Búsqueda de Exa" href="/es/tools/exa-search" icon="magnifying-glass">
     Búsqueda neuronal con extracción de contenido.
   </Card>
-  <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
-    Inicio rápido y referencia oficiales de Perplexity Search API.
+  <Card title="Documentación de la API de Perplexity Search" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    Inicio rápido y referencia oficiales de la API de Perplexity Search.
   </Card>
 </CardGroup>

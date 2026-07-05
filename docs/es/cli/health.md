@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Quiere comprobar rápidamente el estado del Gateway en ejecución
-summary: Referencia de la CLI para `openclaw health` (instantánea del estado del Gateway mediante RPC)
-title: Estado
+    - Desea comprobar rápidamente el estado del Gateway en ejecución
+summary: Referencia de CLI para `openclaw health` (instantánea del estado de Gateway mediante RPC)
+title: Salud
 x-i18n:
-    generated_at: "2026-05-11T20:27:00Z"
+    generated_at: "2026-07-05T11:10:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Obtén el estado del Gateway en ejecución.
+Obtén una instantánea de salud del Gateway en ejecución mediante RPC por WebSocket (sin sockets de canal directos desde la CLI).
 
 ## Opciones
 
-| Opción           | Predeterminado | Descripción                                                              |
-| ---------------- | -------------- | ------------------------------------------------------------------------ |
-| `--json`         | `false`        | Imprime JSON legible por máquina en lugar de texto.                      |
-| `--timeout <ms>` | `10000`        | Tiempo de espera de conexión en milisegundos.                            |
-| `--verbose`      | `false`        | Registro detallado. Fuerza un sondeo en vivo y amplía la salida por agente. |
-| `--debug`        | `false`        | Alias de `--verbose`.                                                    |
+| Flag             | Predeterminado | Descripción                                                                       |
+| ---------------- | -------------- | --------------------------------------------------------------------------------- |
+| `--json`         | `false`        | Imprime JSON legible por máquina en lugar de texto.                               |
+| `--timeout <ms>` | `10000`        | Tiempo de espera de conexión en milisegundos.                                     |
+| `--verbose`      | `false`        | Fuerza una sonda en vivo y amplía la salida a todas las cuentas y agentes configurados. |
+| `--debug`        | `false`        | Alias de `--verbose`.                                                             |
 
 Ejemplos:
 
@@ -36,16 +36,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Notas:
+## Comportamiento
 
-- De forma predeterminada, `openclaw health` solicita al Gateway en ejecución su instantánea de estado. Cuando el
-  Gateway ya tiene una instantánea reciente en caché, puede devolver esa carga útil en caché y
-  actualizarse en segundo plano.
-- `--verbose` fuerza un sondeo en vivo, imprime detalles de conexión del Gateway y amplía la
-  salida legible por humanos para todas las cuentas y agentes configurados.
-- La salida incluye almacenes de sesión por agente cuando hay varios agentes configurados.
+- Sin `--verbose`, el Gateway puede devolver una instantánea en caché (vigente por hasta 60 segundos y sin cambios respecto al estado de ejecución del canal en vivo) y actualizarla en segundo plano para el siguiente solicitante.
+- `--verbose` fuerza una sonda en vivo (sondas de cuenta por canal), imprime los detalles de conexión del Gateway y amplía la salida legible por humanos a todas las cuentas y agentes configurados en lugar de solo al agente predeterminado.
+- `--json` siempre devuelve la instantánea completa: canales, sondas por cuenta, estado de carga de plugins, estado de cuarentena del motor de contexto, estado de caché de precios de modelos, salud del bucle de eventos y almacenes de sesión por agente.
 
 ## Relacionado
 
-- [Referencia de CLI](/es/cli)
-- [Estado del Gateway](/es/gateway/health)
+- [Referencia de la CLI](/es/cli)
+- [`openclaw status`](/es/cli/status) — diagnóstico local y sondas de canal sin una instantánea de salud completa
+- [Salud del Gateway](/es/gateway/health)

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - 你是新用户，想要一份“该点击/运行什么”的指南
-    - 出了问题，而你想最快找到修复方法
-summary: 帮助中心：常见修复、安装完整性检查，以及出现故障时应查看的位置
+    - 你是新用户，想要一份“我该点击/运行什么”的指南
+    - 出了问题，而你想用最快路径修复
+summary: 帮助中心：常见修复、安装完整性检查，以及出现故障时该查看哪里
 title: 帮助
 x-i18n:
-    generated_at: "2026-05-06T03:09:38Z"
+    generated_at: "2026-07-05T11:23:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 118e8ad2207d32739d3da7d0097604dfad8e7780843841f4f84a44cd77eb8736
+    source_hash: 3068eafc6157b73b1245d56c51b10091292a9f9d86849423cb70bd311f76c1bb
     source_path: help/index.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-快速“解决问题”路径，适用于最常见的问题：
+最快解决问题路径，按症状：
 
-- [故障排除](/zh-CN/help/troubleshooting) - 按症状优先的决策树
-- [调试](/zh-CN/help/debugging) - 监视模式、原始流、开发配置文件
+- [故障排查](/zh-CN/help/troubleshooting) - 按症状优先的决策树
+- [调试](/zh-CN/help/debugging) - watch 模式、原始流、dev 配置文件
 - [安装完整性检查](/zh-CN/install/node#troubleshooting) - Node / npm / PATH 检查
-- [Gateway 网关故障排除](/zh-CN/gateway/troubleshooting) - Gateway 网关特定问题
-- [Doctor](/zh-CN/gateway/doctor) - 自动修复 + 诊断包
+- [Gateway 网关故障排查](/zh-CN/gateway/troubleshooting) - Gateway 网关相关问题
+- [Doctor](/zh-CN/gateway/doctor) - `openclaw doctor`：健康检查、配置迁移、修复步骤
 
 ## 常见问题
 
 - [常见问题](/zh-CN/help/faq) - 日常概念和运维问题
-- [首次运行常见问题](/zh-CN/help/faq-first-run) - 安装、新手引导、身份验证、订阅、早期失败
+- [首次运行常见问题](/zh-CN/help/faq-first-run) - 安装、引导设置、身份验证、订阅、早期故障
 - [Models 常见问题](/zh-CN/help/faq-models) - 模型选择、故障转移、身份验证配置文件
 
 ## 诊断
@@ -42,6 +42,6 @@ x-i18n:
 
 ## 社区和元信息
 
-- [OpenClaw 传说](/zh-CN/start/lore) - 故事
+- [OpenClaw 背景故事](/zh-CN/start/lore) - 故事
 - [文档中心](/zh-CN/start/hubs) - 本文档的组织方式
-- [文档目录](/zh-CN/start/docs-directory) - 完整文件映射
+- [文档目录](/zh-CN/start/docs-directory) - 完整文件地图

@@ -1,78 +1,61 @@
 ---
 read_when:
-    - 你想透過快取保留降低提示詞 Token 成本
-    - 多代理設定中需要每個代理各自的快取行為
-    - 你正在一起調整心跳偵測與 cache-ttl 修剪
-summary: 提示快取調整項、合併順序、供應商行為與調校模式
+    - 你想透過保留快取來降低提示詞 token 成本
+    - 你需要在多代理設定中具備個別代理快取行為
+    - 你正在同時調校心跳偵測與 cache-ttl 清理
+summary: 提示快取調整項、合併順序、提供者行為與調校模式
 title: 提示快取
 x-i18n:
-    generated_at: "2026-07-01T18:07:25Z"
+    generated_at: "2026-07-05T11:41:06Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3189cc734bbee14236e6303aca99aca512732989ffd01612ae635608a2471e60
+    source_hash: 68f3e6ba31517a598f22cfdbe04da746a756feadc7c4c376efaa4779cbf05b31
     source_path: reference/prompt-caching.md
     workflow: 16
 ---
 
-提示快取表示模型提供者可以跨回合重複使用未變更的提示前綴（通常是系統/開發者指令與其他穩定上下文），而不是每次都重新處理。當上游 API 直接公開這些計數器時，OpenClaw 會將提供者用量正規化為 `cacheRead` 與 `cacheWrite`。
+提示快取讓模型供應商能在多輪對話中重用未變更的提示前綴（system/developer 指令、工具定義、其他穩定脈絡），而不是每次請求都重新處理。這能降低長時間工作階段中重複脈絡的 token 成本與延遲。
 
-當即時工作階段快照缺少快取計數器時，狀態介面也可以從最新的逐字稿用量記錄中還原這些計數器，因此 `/status` 可以在部分工作階段中繼資料遺失後繼續顯示快取行。既有非零即時快取值仍會優先於逐字稿後備值。
+只要上游 API 暴露相關計數器，OpenClaw 就會將供應商用量正規化為 `cacheRead` 與 `cacheWrite`。當即時工作階段快照缺少快取計數器時，用量摘要（`/status` 及類似項目）會回退使用最後一筆 transcript 用量項目；非零的即時值一律優先於回退值。
 
-這很重要的原因：較低的 Token 成本、更快的回應，以及長時間執行工作階段中更可預期的效能。沒有快取時，即使大部分輸入沒有變更，重複提示也會在每個回合支付完整提示成本。
+供應商參考資料：
 
-下列章節涵蓋所有會影響提示重用與 Token 成本的快取相關旋鈕。
-
-提供者參考：
-
-- Anthropic 提示快取：[https://platform.claude.com/docs/en/build-with-claude/prompt-caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
-- OpenAI 提示快取：[https://developers.openai.com/api/docs/guides/prompt-caching](https://developers.openai.com/api/docs/guides/prompt-caching)
-- OpenAI API 標頭與請求 ID：[https://developers.openai.com/api/reference/overview](https://developers.openai.com/api/reference/overview)
-- Anthropic 請求 ID 與錯誤：[https://platform.claude.com/docs/en/api/errors](https://platform.claude.com/docs/en/api/errors)
+- [Anthropic 提示快取](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- [OpenAI 提示快取](https://developers.openai.com/api/docs/guides/prompt-caching)
 
 ## 主要旋鈕
 
-### `cacheRetention`（全域預設、模型與個別代理）
+### `cacheRetention`
 
-將快取保留設定為所有模型的全域預設：
+值：`"none" | "short" | "long"`。可設定為全域預設值、每個模型，以及每個 agent。
 
 ```yaml
 agents:
   defaults:
     params:
       cacheRetention: "long" # none | short | long
-```
-
-針對每個模型覆寫：
-
-```yaml
-agents:
-  defaults:
     models:
       "anthropic/claude-opus-4-6":
         params:
-          cacheRetention: "short" # none | short | long
-```
-
-個別代理覆寫：
-
-```yaml
-agents:
+          cacheRetention: "short" # overrides the global default for this model
   list:
     - id: "alerts"
       params:
-        cacheRetention: "none"
+        cacheRetention: "none" # overrides both defaults for this agent
 ```
 
-設定合併順序：
+合併順序（後者優先）：
 
-1. `agents.defaults.params`（全域預設 — 套用至所有模型）
-2. `agents.defaults.models["provider/model"].params`（個別模型覆寫）
-3. `agents.list[].params`（符合的代理 ID；依鍵覆寫）
+1. `agents.defaults.params` - 所有模型的全域預設值
+2. `agents.defaults.models["provider/model"].params` - 每個模型的覆寫
+3. `agents.list[].params` - 每個 agent 的覆寫，依 agent id 比對
+
+來源：`src/agents/embedded-agent-runner/extra-params.ts`（`resolveExtraParams`）。
 
 ### `contextPruning.mode: "cache-ttl"`
 
-在快取 TTL 視窗後修剪舊的工具結果上下文，避免閒置後的請求重新快取過大的歷史記錄。
+在快取 TTL 視窗經過後修剪舊的工具結果脈絡，讓閒置後的請求不會重新快取過大的歷史內容。
 
 ```yaml
 agents:
@@ -86,7 +69,7 @@ agents:
 
 ### 心跳偵測保溫
 
-心跳偵測可以讓快取視窗保持溫熱，並減少閒置間隔後重複寫入快取。
+心跳偵測可以維持快取視窗溫熱，並減少閒置間隔後重複的快取寫入。可全域設定（`agents.defaults.heartbeat`）或按 agent 設定（`agents.list[].heartbeat`）。
 
 ```yaml
 agents:
@@ -95,91 +78,85 @@ agents:
       every: "55m"
 ```
 
-個別代理心跳偵測支援於 `agents.list[].heartbeat`。
+## 供應商行為
 
-## 提供者行為
+### Anthropic（直接 API 與 Vertex AI）
 
-### Anthropic（直接 API）
+- `cacheRetention` 支援 `anthropic` 與 `anthropic-vertex` 供應商，也支援 `amazon-bedrock` 上的 Claude 模型，以及在明確設定 `cacheRetention` 時支援自訂 `anthropic-messages` 相容端點。
+- 未設定時，OpenClaw 會為直接 Anthropic（僅 `anthropic` 與 `anthropic-vertex` 供應商；其他 Anthropic 系列路由需要明確值）種下 `cacheRetention: "short"`。
+- 原生 Anthropic Messages 回應會暴露 `cache_read_input_tokens` 與 `cache_creation_input_tokens`，並映射到 `cacheRead` 與 `cacheWrite`。
+- `cacheRetention: "short"` 映射到預設的 5 分鐘暫時快取。明確設定時，`cacheRetention: "long"` 會請求 1 小時 TTL（`cache_control: { type: "ephemeral", ttl: "1h" }`）。隱含/環境驅動的長保留（`OPENCLAW_CACHE_RETENTION=long` 且沒有明確 `cacheRetention`）只會在 `api.anthropic.com` 或 Vertex AI（`aiplatform.googleapis.com` / `*-aiplatform.googleapis.com`）主機上升級到 1 小時 TTL；其他主機維持 5 分鐘快取。
 
-- 支援 `cacheRetention`。
-- 使用 Anthropic API 金鑰驗證設定檔時，如果未設定，OpenClaw 會為 Anthropic 模型參照植入 `cacheRetention: "short"`。
-- Anthropic 原生 Messages 回應會公開 `cache_read_input_tokens` 與 `cache_creation_input_tokens`，因此 OpenClaw 可以同時顯示 `cacheRead` 與 `cacheWrite`。
-- 對於原生 Anthropic 請求，`cacheRetention: "short"` 會對應到預設 5 分鐘的暫時快取，而 `cacheRetention: "long"` 只會在直接 `api.anthropic.com` 主機上升級為 1 小時 TTL。
+來源：`src/agents/anthropic-payload-policy.ts`（`resolveAnthropicEphemeralCacheControl`、`isLongTtlEligibleEndpoint`）。
 
 ### OpenAI（直接 API）
 
-- 近期受支援模型會自動進行提示快取。OpenClaw 不需要注入區塊層級的快取標記。
-- OpenClaw 使用 `prompt_cache_key` 讓快取路由在各回合間保持穩定。選擇 `cacheRetention: "long"` 時，直接 OpenAI 主機會使用 `prompt_cache_retention: "24h"`。
-- OpenAI 相容的 Completions 提供者只有在其模型設定明確設定 `compat.supportsPromptCacheKey: true` 時，才會接收 `prompt_cache_key`。長保留轉送是另一項能力：只有當該相容性項目也支援長快取保留時，明確的 `cacheRetention: "long"` 才會傳送 `prompt_cache_retention: "24h"`。Mistral 等提供者可以選擇啟用快取鍵，同時設定 `compat.supportsLongCacheRetention: false` 以抑制長保留欄位。`cacheRetention: "none"` 會抑制這兩個欄位。
-- OpenAI 回應會透過 `usage.prompt_tokens_details.cached_tokens`（或 Responses API 事件上的 `input_tokens_details.cached_tokens`）公開已快取的提示 Token。OpenClaw 會將其對應到 `cacheRead`。
-- GPT-5.6 Responses 用量也可以公開 `input_tokens_details.cache_write_tokens`。OpenClaw 會將其對應到 `cacheWrite`，並以該模型的快取寫入費率計價；省略此欄位的 Responses 會將 `cacheWrite` 維持為 `0`。
-- OpenAI 會回傳有用的追蹤與速率限制標頭，例如 `x-request-id`、`openai-processing-ms` 和 `x-ratelimit-*`，但快取命中統計應來自用量酬載，而不是標頭。
-- 實務上，OpenAI 通常比較像初始前綴快取，而不是 Anthropic 風格的移動式完整歷史重用。在目前的即時探測中，穩定的長前綴文字回合可能接近 `4864` 個已快取 Token 的平台期，而工具密集或 MCP 風格逐字稿即使完全重複，通常也會在約 `4608` 個已快取 Token 附近達到平台期。
-
-### Anthropic Vertex
-
-- Vertex AI 上的 Anthropic 模型（`anthropic-vertex/*`）支援 `cacheRetention`，方式與直接 Anthropic 相同。
-- `cacheRetention: "long"` 會在 Vertex AI 端點對應到真正的 1 小時提示快取 TTL。
-- `anthropic-vertex` 的預設快取保留與直接 Anthropic 預設相符。
-- Vertex 請求會透過具邊界感知的快取塑形路由，因此快取重用會與提供者實際接收的內容保持一致。
+- 在支援的近期模型上，提示快取是自動的；OpenClaw 不會注入區塊層級快取標記。
+- OpenClaw 會傳送 `prompt_cache_key`，讓多輪對話中的快取路由保持穩定。直接 `api.openai.com` 主機會自動取得此欄位。OpenAI 相容代理（oMLX、llama.cpp、自訂端點）需要在模型設定中加入 `compat.supportsPromptCacheKey: true` 才能選用；代理永遠不會自動偵測。
+- 只有在選取 `cacheRetention: "long"`，且解析後端點同時支援快取鍵與長保留（`compat.supportsLongCacheRetention`，預設為 true；Together AI 與 Cloudflare 相容設定檔會停用）時，才會加入 `prompt_cache_retention: "24h"`。`cacheRetention: "none"` 會抑制兩個欄位。
+- 快取命中會透過 `usage.prompt_tokens_details.cached_tokens`（Chat Completions）或 `input_tokens_details.cached_tokens`（Responses API）呈現，並映射到 `cacheRead`。
+- Responses API payload 也可以暴露 `input_tokens_details.cache_write_tokens`，映射到 `cacheWrite`，並依模型的快取寫入費率計價；省略該欄位的 Responses payload 會讓 `cacheWrite` 保持為 `0`。OpenAI 的 Chat Completions API 未記載也不發出 `cache_write_tokens` 計數器，但 OpenClaw 仍會在那裡讀取 `prompt_tokens_details.cache_write_tokens`，供回報獨立寫入計數的 OpenRouter 相容與 DeepSeek 風格代理使用。
+- 實務上，OpenAI 更像初始前綴快取，而不是 Anthropic 的移動式完整歷史重用；請見下方 [OpenAI 即時預期](#openai-live-expectations)。
 
 ### Amazon Bedrock
 
-- Anthropic Claude 模型參照（`amazon-bedrock/*anthropic.claude*`）支援明確的 `cacheRetention` 透傳。
-- 非 Anthropic Bedrock 模型會在執行階段被強制設為 `cacheRetention: "none"`。
+- Anthropic Claude 模型參照（`amazon-bedrock/*anthropic.claude*`，加上 AWS system inference profile 前綴 `us.`/`eu.`/`global.anthropic.claude*`）支援明確的 `cacheRetention` 透傳。
+- 非 Anthropic Bedrock 模型（例如 `amazon.nova-*`）在執行階段會解析為無快取保留，不論設定了任何 `cacheRetention` 值。
+- 不透明的 Bedrock application inference profile ARN（不包含 `claude` 的 profile ID）也會解析為無快取保留，除非明確設定 `cacheRetention`，因為無法僅從 ARN 推斷模型系列。
 
-### OpenRouter 模型
+### OpenRouter
 
-對於 `openrouter/anthropic/*` 模型參照，只有在請求仍然指向已驗證的 OpenRouter 路由（其預設端點上的 `openrouter`，或任何解析到 `openrouter.ai` 的提供者/基底 URL）時，OpenClaw 才會在系統/開發者提示區塊上注入 Anthropic `cache_control`，以改善提示快取重用。
+對於 `openrouter/anthropic/*` 模型參照，OpenClaw 會在 system/developer 提示區塊上注入 Anthropic `cache_control` 標記，但只有在請求仍指向已驗證的 OpenRouter 路由時才會如此（預設端點上的 `openrouter`，或任何解析到 `openrouter.ai` 的供應商/base URL）。將模型改指向任意 OpenAI 相容代理 URL 會停止此注入。
 
-對於 `openrouter/deepseek/*`、`openrouter/moonshot*/*` 和 `openrouter/zai/*` 模型參照，允許使用 `contextPruning.mode: "cache-ttl"`，因為 OpenRouter 會自動處理提供者端提示快取。OpenClaw 不會將 Anthropic `cache_control` 標記注入這些請求。
+`contextPruning.mode: "cache-ttl"` 允許用於 `openrouter/anthropic/*`、`openrouter/deepseek/*`、`openrouter/moonshot/*`、`openrouter/moonshotai/*` 與 `openrouter/zai/*` 模型參照，因為這些路由可處理供應商端提示快取，不需要 OpenClaw 注入的標記。
 
-DeepSeek 快取建構是盡力而為，可能需要幾秒鐘。立即的後續請求仍可能顯示 `cached_tokens: 0`；請在短暫延遲後以重複的相同前綴請求驗證，並使用 `usage.prompt_tokens_details.cached_tokens` 作為快取命中訊號。
+來源：`extensions/openrouter/index.ts`（`OPENROUTER_CACHE_TTL_MODEL_PREFIXES`）。
 
-如果你將模型重新指向任意 OpenAI 相容代理 URL，OpenClaw 會停止注入這些 OpenRouter 專用的 Anthropic 快取標記。
+OpenRouter 上的 DeepSeek 快取建構是盡力而為，可能需要數秒；立即跟進的請求仍可能顯示 `cached_tokens: 0`。請在短暫延遲後，用重複的相同前綴請求驗證，並使用 `usage.prompt_tokens_details.cached_tokens` 作為快取命中訊號。
 
-### 其他提供者
+### Google Gemini（直接 API）
 
-如果提供者不支援此快取模式，`cacheRetention` 不會有作用。
+- 直接 Gemini transport（`api: "google-generative-ai"`）會透過上游 `cachedContentTokenCount` 回報快取命中，並映射到 `cacheRead`。
+- 符合資格的模型系列：`gemini-2.5*` 與 `gemini-3*`（排除該前綴比對以外的 Live/preview 變體，例如 `gemini-live-2.5-flash-preview`）。
+- 在符合資格的模型上設定 `cacheRetention` 時，OpenClaw 會自動為 system prompt 建立、重用並重新整理 `cachedContents` 資源，不需要手動 cached-content handle。TTL 對 `cacheRetention: "short"` 為 `300s`，對 `"long"` 為 `3600s`。
+- 你仍可透過 `params.cachedContent`（或舊版 `params.cached_content`）傳入既有 Gemini cached-content handle；明確 handle 會完全略過自動快取管理路徑。
+- 這與 Anthropic/OpenAI 的提示前綴快取不同：OpenClaw 會為 Gemini 管理供應商原生的 `cachedContents` 資源，而不是注入行內快取標記。
 
-### Google Gemini 直接 API
+來源：`src/agents/embedded-agent-runner/google-prompt-cache.ts`。
 
-- 直接 Gemini 傳輸（`api: "google-generative-ai"`）會透過上游 `cachedContentTokenCount` 回報快取命中；OpenClaw 會將其對應到 `cacheRead`。
-- 當直接 Gemini 模型設定了 `cacheRetention` 時，OpenClaw 會在 Google AI Studio 執行中自動為系統提示建立、重用並重新整理 `cachedContents` 資源。這表示你不再需要手動預先建立 cached-content 控制代碼。
-- 你仍可在已設定的模型上透過 `params.cachedContent`（或舊版 `params.cached_content`）傳入既有的 Gemini cached-content 控制代碼。
-- 這與 Anthropic/OpenAI 提示前綴快取不同。對於 Gemini，OpenClaw 會管理提供者原生的 `cachedContents` 資源，而不是將快取標記注入請求。
+### 命令列介面 harness 供應商（Claude Code、Gemini 命令列介面）
 
-### Gemini 命令列介面用量
+發出 JSONL 用量事件的命令列介面後端（`jsonlDialect: "claude-stream-json"` 或 `"gemini-stream-json"`）會經過共用用量剖析器，該剖析器可辨識多種欄位名稱變體，包括映射到 `cacheRead` 的普通 `cached` 計數器。當命令列介面的 JSON payload 省略直接 input-token 欄位時，OpenClaw 會將其推導為 `input_tokens - cached`。這只是用量正規化，不會為這些命令列介面驅動模型建立 Anthropic/OpenAI 風格的提示快取標記。
 
-- Gemini 命令列介面 `stream-json` 輸出可以透過 `stats.cached` 呈現快取命中；OpenClaw 會將其對應到 `cacheRead`。舊版 `--output-format json` 覆寫使用相同的用量正規化。
-- 如果命令列介面省略直接的 `stats.input` 值，OpenClaw 會從 `stats.input_tokens - stats.cached` 推導輸入 Token。
-- 這只是用量正規化。這不表示 OpenClaw 正在為 Gemini 命令列介面建立 Anthropic/OpenAI 風格的提示快取標記。
+來源：`src/agents/cli-output.ts`（`toCliUsage`）。
 
-## 系統提示快取邊界
+### 其他供應商
 
-OpenClaw 會將系統提示拆分為**穩定前綴**與**易變後綴**，兩者由內部快取前綴邊界分隔。邊界上方的內容（工具定義、Skills 中繼資料、工作區檔案與其他相對靜態的上下文）會被排序，以便在各回合間維持位元組完全相同。邊界下方的內容（例如 `HEARTBEAT.md`、執行階段時間戳與其他每回合中繼資料）可以變更，而不會使已快取前綴失效。
+如果供應商不支援上述任何快取模式，`cacheRetention` 不會產生效果。
+
+## System-prompt 快取邊界
+
+OpenClaw 會在內部快取前綴邊界，將 system prompt 分割為**穩定前綴**與**易變後綴**。邊界以上的內容（工具定義、Skills 中繼資料、工作區檔案）會排序以在多輪對話中保持位元組完全相同。邊界以下的內容（例如 `HEARTBEAT.md`、執行階段時間戳記、其他每輪中繼資料）可以變更，而不會讓已快取前綴失效。
 
 關鍵設計選擇：
 
-- 穩定的工作區專案上下文檔案會排序在 `HEARTBEAT.md` 之前，因此心跳偵測變動不會破壞穩定前綴。
-- 此邊界會套用於 Anthropic 系列、OpenAI 系列、Google 與命令列介面傳輸塑形，因此所有受支援提供者都能受益於相同的前綴穩定性。
-- Codex Responses 與 Anthropic Vertex 請求會透過具邊界感知的快取塑形路由，因此快取重用會與提供者實際接收的內容保持一致。
-- 系統提示指紋會被正規化（空白、行尾、hook 新增的上下文、執行階段能力排序），因此語意未變更的提示可以跨回合共享 KV/快取。
+- 穩定的工作區專案脈絡檔案會排在 `HEARTBEAT.md` 之前，因此心跳偵測變動不會破壞穩定前綴。
+- 此邊界會套用到 Anthropic 系列、OpenAI 系列、Google 與命令列介面 transport shaping，因此所有受支援供應商都能受益於相同的前綴穩定性。
+- Codex Responses 與 Anthropic Vertex 請求會透過邊界感知的快取 shaping 路由，使快取重用與供應商實際收到的內容保持一致。
+- System-prompt fingerprint 會經過正規化（空白、行尾、hook 新增脈絡、執行階段能力排序），讓語意未變的提示在多輪對話中共用快取。
 
-如果你在設定或工作區變更後看到非預期的 `cacheWrite` 尖峰，請檢查該變更落在快取邊界上方或下方。將易變內容移到邊界下方（或讓它穩定）通常可以解決此問題。
+如果你在設定或工作區變更後看到非預期的 `cacheWrite` 激增，請檢查變更落在快取邊界以上或以下。將易變內容移到邊界以下（或使其穩定）通常可以解決問題。
 
 ## OpenClaw 快取穩定性防護
 
-OpenClaw 也會在請求抵達提供者之前，讓幾種快取敏感的酬載形狀保持確定性：
-
-- Bundle MCP 工具目錄會在工具註冊前以確定性方式排序，因此 `listTools()` 順序變更不會攪動工具區塊並破壞提示快取前綴。
-- 具有持久化影像區塊的舊版工作階段會保留**最近 3 個已完成回合**完整不變；較舊且已處理的影像區塊可能會被替換為標記，因此影像密集的後續請求不會持續重新傳送大型過時酬載。
+- 綁定的 MCP 工具目錄會在工具註冊前以確定性方式排序（依 server name，再依 tool name），因此 `listTools()` 順序變更不會擾動 tools block 並破壞提示快取前綴。
+- 具有持久化 image blocks 的舊版工作階段會保留**最近 3 個已完成回合**完整不變（計算所有已完成回合，而不只是含 image 的回合）。較舊且已處理的 image blocks 會替換為文字標記，因此大量 image 的後續請求不會持續重新傳送龐大的陳舊 payload。
 
 ## 調校模式
 
 ### 混合流量（建議預設）
 
-在主要代理上保留長效基準，並在突發通知代理上停用快取：
+在你的主要 agent 上保留長生命週期基準線，並在突發型 notifier agents 上停用快取：
 
 ```yaml
 agents:
@@ -200,68 +177,52 @@ agents:
         cacheRetention: "none"
 ```
 
-### 成本優先基準
+### 成本優先基準線
 
-- 設定基準 `cacheRetention: "short"`。
+- 設定基準線 `cacheRetention: "short"`。
 - 啟用 `contextPruning.mode: "cache-ttl"`。
-- 只對會受益於溫熱快取的代理，將心跳偵測維持在你的 TTL 以下。
-
-## 快取診斷
-
-OpenClaw 會為嵌入式代理執行公開專用的快取追蹤診斷。
-
-對於一般面向使用者的診斷，當即時工作階段項目沒有 `cacheRead` / `cacheWrite` 計數器時，`/status` 與其他用量摘要可以使用最新的逐字稿用量項目作為後備來源。
+- 只對受益於溫熱快取的 agents，將心跳偵測維持在你的 TTL 以下。
 
 ## 即時迴歸測試
 
-OpenClaw 維持一個合併的即時快取迴歸閘門，涵蓋重複前綴、工具回合、影像回合、MCP 風格工具逐字稿，以及 Anthropic 無快取控制組。
+OpenClaw 會執行一個合併的即時快取迴歸 gate，涵蓋重複前綴、工具回合、image 回合、MCP 風格工具 transcript，以及 Anthropic 無快取 control。
 
 - `src/agents/live-cache-regression.live.test.ts`
+- `src/agents/live-cache-regression-runner.ts`
 - `src/agents/live-cache-regression-baseline.ts`
 
-使用下列命令執行狹窄的即時閘門：
+使用以下方式執行：
 
 ```sh
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache
 ```
 
-基準檔案會儲存最近觀察到的即時數值，以及測試使用的供應商特定迴歸下限。
-執行器也會使用每次執行都全新的工作階段 ID 與提示命名空間，避免先前的快取狀態污染目前的迴歸樣本。
-
-這些測試刻意不在各供應商之間使用相同的成功條件。
+基準線檔案會儲存最近觀察到的即時數字，以及測試檢查的供應商特定迴歸下限。每次執行都使用全新的每次執行工作階段 ID 與提示命名空間，因此先前的快取狀態不會污染目前樣本。Anthropic 與 OpenAI 使用不同的執行方式：Anthropic 下限未達是硬性迴歸（測試失敗），而 OpenAI 下限未達僅供觀察（記錄為警告，不會讓執行失敗）。它們不共用單一跨供應商閾值。
 
 ### Anthropic 即時預期
 
-- 預期透過 `cacheWrite` 進行明確的暖機寫入。
-- 預期重複回合幾乎會重用完整歷史，因為 Anthropic 快取控制會將快取中斷點往對話後段推進。
-- 目前的即時斷言仍對穩定、工具和影像路徑使用高命中率門檻。
+- 預期會透過 `cacheWrite` 進行明確的暖機寫入。
+- 預期在重複回合中幾乎完整重用歷史，因為 Anthropic 的快取控制會在對話中推進快取中斷點。
+- stable、tool、image 與 MCP-style 路徑的基準下限是嚴格的回歸閘門。
 
 ### OpenAI 即時預期
 
-- 只預期 `cacheRead`。`cacheWrite` 維持為 `0`。
+- 只預期 `cacheRead`；在 Chat Completions 上 `cacheWrite` 會維持 `0`。
 - 將重複回合的快取重用視為供應商特定的平台期，而不是 Anthropic 風格的移動式完整歷史重用。
-- 目前的即時斷言使用根據 `gpt-5.4-mini` 上觀察到的即時行為所推導出的保守下限檢查：
-  - 穩定前綴：`cacheRead >= 4608`，命中率 `>= 0.90`
-  - 工具逐字稿：`cacheRead >= 4096`，命中率 `>= 0.85`
-  - 影像逐字稿：`cacheRead >= 3840`，命中率 `>= 0.82`
-  - MCP 風格逐字稿：`cacheRead >= 4096`，命中率 `>= 0.85`
+- 下限僅供觀察（一旦未命中會記錄為警告，而不是測試失敗），源自 `gpt-5.4-mini` 上觀察到的即時行為：
 
-2026-04-04 的全新合併即時驗證結果為：
+| 情境                 | `cacheRead` 下限 | 命中率下限 |
+| -------------------- | ----------------: | -------------: |
+| 穩定前綴             |             4,608 |           0.90 |
+| 工具逐字稿           |             4,096 |           0.85 |
+| 圖片逐字稿           |             3,840 |           0.82 |
+| MCP-style 逐字稿     |             4,096 |           0.85 |
 
-- 穩定前綴：`cacheRead=4864`，命中率 `0.966`
-- 工具逐字稿：`cacheRead=4608`，命中率 `0.896`
-- 影像逐字稿：`cacheRead=4864`，命中率 `0.954`
-- MCP 風格逐字稿：`cacheRead=4608`，命中率 `0.891`
+最近觀察到的基準數字（來自 `live-cache-regression-baseline.ts`）落在：穩定前綴 `cacheRead=4864`、命中率 `0.966`；工具逐字稿 `cacheRead=4608`、命中率 `0.896`；圖片逐字稿 `cacheRead=4864`、命中率 `0.954`；MCP-style 逐字稿 `cacheRead=4608`、命中率 `0.891`。
 
-最近合併閘門的本機實際耗時約為 `88s`。
+斷言不同的原因：Anthropic 會公開明確的快取中斷點與移動式對話歷史重用，而 OpenAI 在即時流量中的有效可重用前綴，可能會比完整提示更早進入平台期。用單一跨供應商百分比門檻比較兩個供應商會造成誤判回歸。
 
-斷言不同的原因：
-
-- Anthropic 會公開明確的快取中斷點與移動式對話歷史重用。
-- OpenAI 提示快取仍對完全相同的前綴敏感，但即時 Responses 流量中實際可重用的前綴可能會比完整提示更早達到平台期。
-- 因此，用單一跨供應商百分比門檻比較 Anthropic 和 OpenAI 會造成誤判迴歸。
-
-### `diagnostics.cacheTrace` 設定
+## `diagnostics.cacheTrace` 設定
 
 ```yaml
 diagnostics:
@@ -275,43 +236,47 @@ diagnostics:
 
 預設值：
 
-- `filePath`：`$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`
-- `includeMessages`：`true`
-- `includePrompt`：`true`
-- `includeSystem`：`true`
+| 鍵                | 預設值                                      |
+| ----------------- | -------------------------------------------- |
+| `filePath`        | `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl` |
+| `includeMessages` | `true`                                       |
+| `includePrompt`   | `true`                                       |
+| `includeSystem`   | `true`                                       |
 
-### 環境切換（一次性偵錯）
+### 環境變數切換（一次性偵錯）
 
-- `OPENCLAW_CACHE_TRACE=1` 會啟用快取追蹤。
-- `OPENCLAW_CACHE_TRACE_FILE=/path/to/cache-trace.jsonl` 會覆寫輸出路徑。
-- `OPENCLAW_CACHE_TRACE_MESSAGES=0|1` 會切換完整訊息承載擷取。
-- `OPENCLAW_CACHE_TRACE_PROMPT=0|1` 會切換提示文字擷取。
-- `OPENCLAW_CACHE_TRACE_SYSTEM=0|1` 會切換系統提示擷取。
+| 變數                                 | 效果                                 |
+| ------------------------------------ | ------------------------------------ |
+| `OPENCLAW_CACHE_TRACE=1`             | 啟用快取追蹤                         |
+| `OPENCLAW_CACHE_TRACE_FILE=path`     | 覆寫輸出路徑                         |
+| `OPENCLAW_CACHE_TRACE_MESSAGES=0\|1` | 切換完整訊息酬載擷取                 |
+| `OPENCLAW_CACHE_TRACE_PROMPT=0\|1`   | 切換提示文字擷取                     |
+| `OPENCLAW_CACHE_TRACE_SYSTEM=0\|1`   | 切換系統提示擷取                     |
 
-### 要檢查的內容
+### 要檢查什麼
 
-- 快取追蹤事件是 JSONL，並包含 `session:loaded`、`prompt:before`、`stream:context` 和 `session:after` 等分階段快照。
-- 每回合快取權杖影響可透過 `cacheRead` 和 `cacheWrite` 在一般使用介面中看到（例如 `/usage tokens`、`/status`、工作階段用量摘要，以及自訂 `messages.usageTemplate` 版面）。
-- 對 Anthropic 而言，快取啟用時預期同時看到 `cacheRead` 和 `cacheWrite`。
-- 對 OpenAI 而言，快取命中時預期看到 `cacheRead`。GPT-5.6 Responses 在寫入提示片段時也可能回報 `cacheWrite`；其他省略寫入計數器的 Responses 承載會讓它保持在 `0`。
-- 如果需要請求追蹤，請將請求 ID 和速率限制標頭與快取指標分開記錄。OpenClaw 目前的快取追蹤輸出著重於提示/工作階段形狀與正規化權杖用量，而非原始供應商回應標頭。
+- 快取追蹤事件是 JSONL，包含像 `session:loaded`、`prompt:before`、`stream:context` 和 `session:after` 這類階段性快照。
+- 每回合快取 token 影響可在一般使用介面中看到：`cacheRead` 和 `cacheWrite` 會出現在 `/usage tokens`、`/status`、工作階段使用量摘要，以及自訂 `messages.usageTemplate` 版面配置中。
+- 對 Anthropic 而言，快取啟用時預期會同時看到 `cacheRead` 和 `cacheWrite`。
+- 對 OpenAI 而言，快取命中時預期會看到 `cacheRead`；只有在包含 `cacheWrite` 的 Responses API 酬載上才會填入它（請參閱上方的 [OpenAI](#openai-direct-api)）。
+- OpenAI 也會傳回追蹤與速率限制標頭，例如 `x-request-id`、`openai-processing-ms` 和 `x-ratelimit-*`；可使用這些標頭進行請求追蹤，但快取命中計算仍應來自使用量酬載，而不是標頭。
 
 ## 快速疑難排解
 
-- 多數回合的 `cacheWrite` 偏高：檢查是否有易變的系統提示輸入，並確認模型/供應商支援你的快取設定。
-- Anthropic 上的 `cacheWrite` 偏高：通常表示快取中斷點落在每次請求都會變更的內容上。
-- OpenAI `cacheRead` 偏低：確認穩定前綴位於最前方、重複前綴至少有 1024 個權杖，並且應共用快取的回合重用了相同的 `prompt_cache_key`。
-- `cacheRetention` 沒有效果：確認模型鍵符合 `agents.defaults.models["provider/model"]`。
-- 帶有快取設定的 Bedrock Nova/Mistral 請求：預期執行階段會強制設為 `none`。
+- **多數回合都有高 `cacheWrite`**：檢查是否有易變的系統提示輸入；確認模型/供應商支援你的快取設定。
+- **Anthropic 上有高 `cacheWrite`**：通常表示快取中斷點落在每次請求都會變動的內容上。
+- **OpenAI `cacheRead` 偏低**：確認穩定前綴位於最前面、重複前綴至少有 1024 個 token，且應共享快取的回合重用了相同的 `prompt_cache_key`。
+- **`cacheRetention` 沒有效果**：確認模型鍵符合 `agents.defaults.models["provider/model"]`。
+- **帶有快取設定的 Bedrock Nova 請求**：這是預期行為，這些請求會在執行階段解析為無快取保留。
 
 相關文件：
 
 - [Anthropic](/zh-TW/providers/anthropic)
-- [權杖使用與成本](/zh-TW/reference/token-use)
+- [Token 使用量與成本](/zh-TW/reference/token-use)
 - [工作階段剪枝](/zh-TW/concepts/session-pruning)
 - [閘道設定參考](/zh-TW/gateway/configuration-reference)
 
 ## 相關
 
-- [權杖使用與成本](/zh-TW/reference/token-use)
-- [API 使用與成本](/zh-TW/reference/api-usage-costs)
+- [Token 使用量與成本](/zh-TW/reference/token-use)
+- [API 使用量與成本](/zh-TW/reference/api-usage-costs)

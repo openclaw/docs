@@ -1,84 +1,79 @@
 ---
 read_when:
-    - Trabajar en código o pruebas del runtime de agente de OpenClaw
-    - Ejecutar los flujos de lint, comprobación de tipos y pruebas en vivo de agent-runtime
-summary: 'Flujo de trabajo para desarrolladores del entorno de ejecución de agentes de OpenClaw: compilación, pruebas y validación en vivo'
-title: Flujo de trabajo del runtime del agente de OpenClaw
+    - Trabajar en el código o las pruebas del runtime de agentes de OpenClaw
+    - Ejecución de flujos de lint, comprobación de tipos y pruebas en vivo de agent-runtime
+summary: 'Flujo de trabajo para desarrolladores del runtime de agentes de OpenClaw: compilación, pruebas y validación en vivo'
+title: Flujo de trabajo del runtime de agente de OpenClaw
 x-i18n:
-    generated_at: "2026-06-27T11:56:28Z"
+    generated_at: "2026-07-05T11:26:08Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: e5150689bc102a372b65b1c9bf0a378c7ccb0578d38a750571887dcbe0650e8a
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-Un flujo de trabajo sensato para trabajar en el tiempo de ejecución del agente de OpenClaw en OpenClaw.
+Flujo de trabajo de desarrollo para el runtime de agentes (`src/agents/`) en el repositorio de OpenClaw.
 
-## Comprobación de tipos y linting
+## Verificación de tipos y linting
 
-- Compuerta local predeterminada: `pnpm check`
-- Compuerta de compilación: `pnpm build` cuando el cambio pueda afectar la salida de compilación, el empaquetado o los límites de carga diferida/módulos
-- Compuerta completa para integrar cambios del tiempo de ejecución del agente: `pnpm check && pnpm test`
+- Puerta local predeterminada: `pnpm check` (verificación de tipos, linting, guardas de políticas)
+- Puerta de compilación: `pnpm build` cuando el cambio puede afectar la salida de compilación, el empaquetado o los límites de carga diferida/módulos
+- Puerta completa previa al push: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
-## Ejecutar pruebas del tiempo de ejecución del agente
+## Ejecutar pruebas del runtime de agentes
 
-Ejecuta directamente el conjunto de pruebas del tiempo de ejecución del agente con Vitest:
+Ejecuta las suites unitarias del runtime de agentes:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-Para incluir el ejercicio con proveedor en vivo:
+El primer glob también cubre las suites `agent-tools*`, `agent-settings` y
+`agent-tool-definition-adapter*`.
+
+Las pruebas en vivo se excluyen de la configuración unitaria; ejecútalas mediante el
+wrapper en vivo (establece `OPENCLAW_LIVE_TEST=1` y requiere credenciales de proveedor):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
-
-Esto cubre los principales conjuntos de pruebas unitarias del tiempo de ejecución del agente:
-
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
 
 ## Pruebas manuales
 
-Flujo recomendado:
+- Ejecuta el Gateway en modo de desarrollo (omite las conexiones de canales mediante `OPENCLAW_SKIP_CHANNELS=1`): `pnpm gateway:dev`
+- Activa un turno de agente mediante el Gateway: `pnpm openclaw agent --message "Hello" --thinking low`
+- Usa la TUI para depuración interactiva: `pnpm tui`
 
-- Ejecuta el Gateway en modo de desarrollo:
-  - `pnpm gateway:dev`
-- Activa el agente directamente:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- Usa la TUI para depuración interactiva:
-  - `pnpm tui`
-
-Para el comportamiento de llamadas a herramientas, solicita una acción `read` o `exec` para que puedas ver la transmisión de herramientas y el manejo de la carga útil.
+Para el comportamiento de llamadas a herramientas, solicita una acción `read` o `exec` para poder observar
+el streaming de herramientas y el manejo de payloads.
 
 ## Restablecimiento desde cero
 
-El estado reside en el directorio de estado de OpenClaw. El valor predeterminado es `~/.openclaw`. Si `OPENCLAW_STATE_DIR` está definido, usa ese directorio en su lugar.
+El estado reside en el directorio de estado de OpenClaw: `~/.openclaw` de forma predeterminada, o
+`$OPENCLAW_STATE_DIR` cuando está definido. Rutas relativas a ese directorio:
 
-Para restablecer todo:
+| Ruta                                           | Contiene                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `openclaw.json`                                | Configuración                                                      |
+| `state/openclaw.sqlite`                        | Base de datos de estado del runtime compartido                     |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | Perfiles de autenticación de modelo por agente (claves de API + OAuth) y estado del runtime |
+| `credentials/`                                 | Credenciales de proveedor/canal fuera del almacén de perfiles de autenticación |
+| `agents/<agentId>/sessions/`                   | Transcripciones de sesión más el índice `sessions.json`            |
+| `sessions/`                                    | Almacén de sesiones heredado de un solo agente (solo instalaciones antiguas) |
+| `workspace/`                                   | Espacio de trabajo predeterminado del agente (los agentes adicionales usan `workspace-<agentId>`) |
 
-- `openclaw.json` para la configuración
-- `agents/<agentId>/agent/auth-profiles.json` para perfiles de autenticación de modelos (claves de API + OAuth)
-- `credentials/` para el estado de proveedores/canales que aún reside fuera del almacén de perfiles de autenticación
-- `agents/<agentId>/sessions/` para el historial de sesiones del agente
-- `agents/<agentId>/sessions/sessions.json` para el índice de sesiones
-- `sessions/` si existen rutas heredadas
-- `workspace/` si quieres un espacio de trabajo en blanco
+Elimina esas rutas para un restablecimiento completo. Restablecimientos más específicos:
 
-Si solo quieres restablecer las sesiones, elimina `agents/<agentId>/sessions/` para ese agente. Si quieres conservar la autenticación, deja `agents/<agentId>/agent/auth-profiles.json` y cualquier estado de proveedor en `credentials/` en su lugar.
+- Solo sesiones: elimina `agents/<agentId>/sessions/` para ese agente.
+- Conservar la autenticación: deja `agents/<agentId>/agent/openclaw-agent.sqlite` y `credentials/` en su lugar.
+
+Los archivos heredados `auth-profiles.json` ya no se leen en runtime;
+`openclaw doctor --fix` los importa al almacén SQLite.
 
 ## Referencias
 
@@ -87,4 +82,4 @@ Si solo quieres restablecer las sesiones, elimina `agents/<agentId>/sessions/` p
 
 ## Relacionado
 
-- [Arquitectura del tiempo de ejecución del agente de OpenClaw](/es/agent-runtime-architecture)
+- [Arquitectura del runtime de agentes de OpenClaw](/es/agent-runtime-architecture)

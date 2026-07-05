@@ -1,32 +1,26 @@
 ---
 read_when:
     - Quieres activar o controlar TaskFlows desde un sistema externo
-    - Estás configurando el Plugin de webhooks incluido
-summary: 'Plugin de Webhooks: entrada autenticada de TaskFlow para automatización externa de confianza'
+    - Está configurando el plugin de webhooks incluido
+summary: 'Plugin Webhooks: entrada TaskFlow autenticada para automatización externa de confianza'
 title: Plugin de Webhooks
 x-i18n:
-    generated_at: "2026-05-06T17:59:38Z"
+    generated_at: "2026-07-05T11:38:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-El Plugin Webhooks agrega rutas HTTP autenticadas que vinculan la automatización
-externa con los TaskFlows de OpenClaw.
+El plugin Webhooks añade rutas HTTP autenticadas para que un sistema externo
+de confianza (Zapier, n8n, un trabajo de CI, un servicio interno) pueda crear y controlar
+TaskFlows administrados de OpenClaw mediante HTTP, sin escribir un plugin personalizado.
 
-Úsalo cuando quieras que un sistema de confianza, como Zapier, n8n, un trabajo de CI o un
-servicio interno, cree y dirija TaskFlows gestionados sin escribir primero un plugin
-personalizado.
-
-## Dónde se ejecuta
-
-El Plugin Webhooks se ejecuta dentro del proceso Gateway.
-
-Si tu Gateway se ejecuta en otra máquina, instala y configura el plugin en ese
-host de Gateway y luego reinicia el Gateway.
+El plugin se ejecuta dentro del proceso de Gateway. Para un Gateway remoto, instálalo y
+configúralo en ese host, y luego reinicia Gateway. Se distribuye sin rutas
+configuradas, por lo que no hace nada hasta que agregues al menos una ruta.
 
 ## Configurar rutas
 
@@ -61,50 +55,48 @@ Define la configuración en `plugins.entries.webhooks.config`:
 
 Campos de ruta:
 
-- `enabled`: opcional, el valor predeterminado es `true`
-- `path`: opcional, el valor predeterminado es `/plugins/webhooks/<routeId>`
-- `sessionKey`: sesión obligatoria propietaria de los TaskFlows vinculados
-- `secret`: secreto compartido o SecretRef obligatorio
-- `controllerId`: id de controlador opcional para los flujos gestionados creados
-- `description`: nota opcional para el operador
+| Campo          | Obligatorio | Predeterminado                | Notas                                         |
+| -------------- | ----------- | ----------------------------- | --------------------------------------------- |
+| `enabled`      | no          | `true`                        |                                               |
+| `path`         | no          | `/plugins/webhooks/<routeId>` | Debe ser único entre las rutas.               |
+| `sessionKey`   | sí          | -                             | Sesión propietaria de los TaskFlows vinculados. |
+| `secret`       | sí          | -                             | Cadena sin formato o SecretRef (abajo).       |
+| `controllerId` | no          | `webhooks/<routeId>`          | Se usa como controlador `create_flow` predeterminado. |
+| `description`  | no          | -                             | Solo nota para el operador.                   |
 
-Entradas `secret` compatibles:
+`secret` acepta una cadena sin formato o un SecretRef: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- Cadena de texto sin formato
-- SecretRef con `source: "env" | "file" | "exec"`
-
-Si una ruta respaldada por un secreto no puede resolver su secreto al iniciar, el plugin omite
-esa ruta y registra una advertencia en lugar de exponer un endpoint dañado.
+Cada ruta configurada se registra al inicio independientemente de si su secreto
+se puede resolver en ese momento. Un secreto que no se puede resolver no deshabilita ni omite la
+ruta: las solicitudes a ella fallan la autenticación (`401`) hasta que el secreto pueda
+resolverse. Los valores SecretRef se resuelven de nuevo en cada solicitud, por lo que rotar el
+secreto subyacente (variable de entorno, archivo o salida de exec) surte efecto sin
+reiniciar Gateway.
 
 ## Modelo de seguridad
 
-Cada ruta es de confianza para actuar con la autoridad de TaskFlow de su
-`sessionKey` configurada.
+Cada ruta actúa con la autoridad de TaskFlow de su `sessionKey` configurada:
+puede inspeccionar y modificar cualquier TaskFlow propiedad de esa sesión. El acceso a TaskFlow
+siempre pasa por `api.runtime.tasks.managedFlows.bindSession(...)`, por lo que una
+ruta nunca puede actuar fuera de su sesión vinculada. Para limitar el alcance del impacto:
 
-Esto significa que la ruta puede inspeccionar y mutar TaskFlows propiedad de esa sesión, por lo que
-deberías:
+- Usa un secreto fuerte y único por ruta.
+- Prefiere un SecretRef en lugar de un secreto en texto plano en línea.
+- Vincula las rutas a la sesión más limitada que se ajuste al flujo de trabajo.
+- Expón solo la ruta de webhook específica que necesitas.
 
-- Usar un secreto único y robusto por ruta
-- Preferir referencias a secretos en lugar de secretos en texto claro en línea
-- Vincular rutas a la sesión más restringida que se ajuste al flujo de trabajo
-- Exponer solo la ruta de webhook específica que necesitas
-
-El plugin aplica:
-
-- Autenticación mediante secreto compartido
-- Guardas de tamaño del cuerpo de la solicitud y de tiempo de espera
-- Limitación de tasa de ventana fija
-- Limitación de solicitudes en curso
-- Acceso a TaskFlow vinculado al propietario mediante `api.runtime.tasks.managedFlows.bindSession(...)`
+Orden de manejo de solicitudes para cada ruta: comprobaciones del método HTTP (`POST` únicamente) y
+`Content-Type: application/json`, luego limitación de tasa de ventana fija (120
+solicitudes por ventana de 60 segundos por clave de ruta+IP-del-cliente, hasta 4096 claves
+rastreadas), luego limitación de solicitudes en curso (8 solicitudes concurrentes por clave, hasta
+4096 claves rastreadas), luego autenticación con secreto compartido, y después una lectura de cuerpo JSON de 256 KB /
+15 segundos. Las solicitudes que fallan una comprobación anterior nunca llegan a
+las posteriores.
 
 ## Formato de solicitud
 
-Envía solicitudes `POST` con:
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` o `x-openclaw-webhook-secret: <secret>`
-
-Ejemplo:
+Envía solicitudes `POST` con `Content-Type: application/json` y
+`Authorization: Bearer <secret>` o `x-openclaw-webhook-secret: <secret>`:
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -113,29 +105,29 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -d '{"action":"create_flow","goal":"Review inbound queue"}'
 ```
 
-## Acciones compatibles
+## Acciones admitidas
 
-Actualmente, el plugin acepta estos valores JSON de `action`:
+| Acción             | Propósito                                                          |
+| ------------------ | ------------------------------------------------------------------ |
+| `create_flow`      | Crear un TaskFlow administrado para la sesión de la ruta.          |
+| `get_flow`         | Obtener un TaskFlow por id.                                        |
+| `list_flows`       | Listar TaskFlows para la sesión de la ruta.                        |
+| `find_latest_flow` | Obtener el TaskFlow actualizado más recientemente.                 |
+| `resolve_flow`     | Resolver un TaskFlow mediante un token opaco.                      |
+| `get_task_summary` | Obtener el resumen de tarea de un TaskFlow.                        |
+| `set_waiting`      | Marcar un TaskFlow como en espera, con datos opcionales de estado/espera. |
+| `resume_flow`      | Reanudar un TaskFlow en espera/bloqueado.                          |
+| `finish_flow`      | Marcar un TaskFlow como finalizado.                                |
+| `fail_flow`        | Marcar un TaskFlow como fallido.                                   |
+| `request_cancel`   | Solicitar cancelación cooperativa.                                 |
+| `cancel_flow`      | Cancelar un TaskFlow (puede devolver `202` si los hijos siguen activos). |
+| `run_task`         | Crear una tarea hija administrada dentro de un TaskFlow existente. |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+Las acciones de modificación (`set_waiting`, `resume_flow`, `finish_flow`, `fail_flow`,
+`request_cancel`) requieren `flowId` y `expectedRevision` para concurrencia
+optimista; una revisión obsoleta devuelve `409 revision_conflict`.
 
 ### `create_flow`
-
-Crea un TaskFlow gestionado para la sesión vinculada de la ruta.
-
-Ejemplo:
 
 ```json
 {
@@ -148,14 +140,9 @@ Ejemplo:
 
 ### `run_task`
 
-Crea una tarea secundaria gestionada dentro de un TaskFlow gestionado existente.
-
-Los runtimes permitidos son:
-
-- `subagent`
-- `acp`
-
-Ejemplo:
+Valores de `runtime` permitidos: `subagent`, `acp`. `startedAt`, `lastEventAt` y
+`progressSummary` solo son válidos cuando `status` es `"running"`; enviarlos
+con cualquier otro estado devuelve `400 invalid_request`.
 
 ```json
 {
@@ -167,9 +154,7 @@ Ejemplo:
 }
 ```
 
-## Forma de la respuesta
-
-Las respuestas correctas devuelven:
+## Forma de respuesta
 
 ```json
 {
@@ -178,8 +163,6 @@ Las respuestas correctas devuelven:
   "result": {}
 }
 ```
-
-Las solicitudes rechazadas devuelven:
 
 ```json
 {
@@ -191,10 +174,17 @@ Las solicitudes rechazadas devuelven:
 }
 ```
 
-El plugin elimina intencionalmente los metadatos de propietario/sesión de las respuestas de webhook.
+Las vistas de flujo y tarea nunca incluyen metadatos de propietario/sesión, por lo que las respuestas no pueden
+filtrar la `sessionKey` vinculada de la ruta. Los valores de `code` incluyen `not_found`,
+`not_managed`, `revision_conflict`, `persist_failed`, `cancel_requested`,
+`cancel_pending`, `terminal`, `invalid_request`, `request_rejected` y
+códigos de respaldo específicos de acción (`mutation_rejected`, `create_rejected`,
+`task_not_created`, `cancel_rejected`) cuando una modificación se rechaza por un
+motivo no cubierto por los códigos nombrados arriba.
 
-## Documentación relacionada
+## Relacionado
 
+- [Hooks](/es/automation/hooks): hooks internos impulsados por eventos frente a este puente TaskFlow basado en HTTP
+- [Webhooks de Gateway (configuración `hooks.*`)](/es/automation/cron-jobs#webhooks): funcionalidad separada de endpoint HTTP genérico de Gateway; no es lo mismo que las rutas de este plugin
 - [SDK de runtime de Plugin](/es/plugins/sdk-runtime)
-- [Descripción general de hooks y webhooks](/es/automation/hooks)
-- [Webhooks de CLI](/es/cli/webhooks)
+- [webhooks de CLI](/es/cli/webhooks)

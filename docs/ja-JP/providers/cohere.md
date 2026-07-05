@@ -1,35 +1,36 @@
 ---
 read_when:
-    - OpenClawでCohereを使用したい
-    - Cohere API キー環境変数または CLI 認証の選択が必要です
+    - OpenClaw で Cohere を使用したい
+    - Cohere API キーの環境変数または CLI 認証の選択が必要です
 summary: Cohere のセットアップ（認証 + モデル選択）
 title: Cohere
 x-i18n:
-    generated_at: "2026-06-27T12:41:33Z"
+    generated_at: "2026-07-05T11:39:31Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76365a5d358bd5576d83a24d62ef30e203ee204bca90a2e50c56cc4c549b52af
+    source_hash: 846e69fd185c210c9ffd8719a233272aeda2aa0749f952a74714c13fd917fb66
     source_path: providers/cohere.md
     workflow: 16
 ---
 
-[Cohere](https://cohere.com) は、Compatibility API を通じて OpenAI 互換の推論を提供します。OpenClaw は外部化移行中に Cohere プロバイダーを同梱し、Command A モデルカタログを備えた公式の外部 Plugin としても公開しています。
+[Cohere](https://cohere.com) は Compatibility API を通じて OpenAI 互換の推論を提供します。OpenClaw は外部化への移行期間中、Cohere プロバイダーを同梱し、公式外部プラグインとしても公開しています。
 
 | プロパティ        | 値                                                |
 | --------------- | ---------------------------------------------------- |
 | プロバイダー ID     | `cohere`                                             |
-| Plugin          | 移行中は同梱、公式の外部パッケージ |
-| 認証 env var    | `COHERE_API_KEY`                                     |
+| Plugin          | 移行期間中は同梱、公式外部パッケージ |
+| 認証環境変数    | `COHERE_API_KEY`                                     |
 | オンボーディングフラグ | `--auth-choice cohere-api-key`                       |
 | 直接 CLI フラグ | `--cohere-api-key <key>`                             |
 | API             | OpenAI 互換 (`openai-completions`)             |
 | ベース URL        | `https://api.cohere.ai/compatibility/v1`             |
 | デフォルトモデル   | `cohere/command-a-03-2025`                           |
+| コンテキストウィンドウ  | 256,000 トークン                                       |
 
 ## はじめる
 
-1. Cohere は現在の OpenClaw パッケージに含まれています。利用できない場合は、外部パッケージをインストールして Gateway を再起動します。
+1. Cohere は現在の OpenClaw パッケージに同梱されています。見つからない場合は、外部パッケージをインストールして Gateway を再起動します。
 
 ```bash
 openclaw plugins install @openclaw/cohere-provider
@@ -51,11 +52,11 @@ openclaw onboard --non-interactive \
 openclaw models list --provider cohere
 ```
 
-デフォルトモデルは、プライマリモデルがまだ設定されていない場合にのみ設定されます。
+オンボーディングでは、プライマリモデルがまだ設定されていない場合にのみ、Cohere をプライマリモデルとして設定します。
 
 ## 環境変数のみのセットアップ
 
-`COHERE_API_KEY` を Gateway プロセスで利用可能にしてから、Cohere モデルを選択します。
+`COHERE_API_KEY` を Gateway プロセスで利用できるようにしてから、Cohere モデルを選択します。
 
 ```json5
 {
@@ -68,11 +69,11 @@ openclaw models list --provider cohere
 ```
 
 <Note>
-Gateway がデーモンまたは Docker で実行されている場合は、そのサービス向けに `COHERE_API_KEY` を設定します。インタラクティブシェル内でのみエクスポートしても、すでに実行中の Gateway では利用可能になりません。
+Gateway がデーモンまたは Docker で実行されている場合は、そのサービスに `COHERE_API_KEY` を設定してください。インタラクティブシェルでのみエクスポートしても、すでに実行中の Gateway では利用できません。
 </Note>
 
 ## 関連
 
 - [モデルプロバイダー](/ja-JP/concepts/model-providers)
-- [モデル CLI](/ja-JP/cli/models)
-- [プロバイダーディレクトリ](/ja-JP/providers)
+- [Models CLI](/ja-JP/cli/models)
+- [プロバイダーディレクトリ](/ja-JP/providers/index)

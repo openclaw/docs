@@ -6,91 +6,74 @@ read_when:
 summary: Compatibilidad con Linux + estado de la aplicación complementaria
 title: Aplicación para Linux
 x-i18n:
-    generated_at: "2026-06-27T12:01:36Z"
+    generated_at: "2026-07-05T11:28:50Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 437eb12d373ff9161ec7fa1e6fc04bf5662f903374d17f55b45ae1ea355c9085
+    source_hash: 3a1b57fc7e37257a05eb06f265a49f165eef429f1c8d93c988853f39eba89627
     source_path: platforms/linux.md
     workflow: 16
 ---
 
-The Gateway es totalmente compatible con Linux. **Node es el runtime recomendado**.
-Bun no se recomienda para el Gateway (errores de WhatsApp/Telegram).
+El Gateway es totalmente compatible con Linux. Node es el runtime recomendado; Bun
+no se recomienda (problemas conocidos con WhatsApp/Telegram).
 
-Las aplicaciones complementarias nativas para Linux están planificadas. Las contribuciones son bienvenidas si quieres ayudar a crear una.
+Todavía no hay una app complementaria nativa para Linux. Se aceptan contribuciones.
 
-## Ruta rápida para principiantes (VPS)
+## Ruta rápida (VPS)
 
-1. Instala Node 24 (recomendado; Node 22 LTS, actualmente `22.19+`, sigue funcionando por compatibilidad)
+1. Instala Node 24 (recomendado) o Node 22.19+ (LTS, aún compatible).
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
 4. Desde tu portátil: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. Abre `http://127.0.0.1:18789/` y autentícate con el secreto compartido configurado (token por defecto; contraseña si configuras `gateway.auth.mode: "password"`)
+5. Abre `http://127.0.0.1:18789/` y autentícate con el secreto compartido
+   configurado (token de forma predeterminada; contraseña si `gateway.auth.mode` es `"password"`).
 
-Guía completa para servidores Linux: [Servidor Linux](/es/vps). Ejemplo de VPS paso a paso: [exe.dev](/es/install/exe-dev)
+Guía completa del servidor: [Servidor Linux](/es/vps). Ejemplo de VPS paso a paso:
+[exe.dev](/es/install/exe-dev).
 
 ## Instalación
 
 - [Primeros pasos](/es/start/getting-started)
 - [Instalación y actualizaciones](/es/install/updating)
-- Flujos opcionales: [Bun (experimental)](/es/install/bun), [Nix](/es/install/nix), [Docker](/es/install/docker)
+- Opcional: [Bun (experimental)](/es/install/bun), [Nix](/es/install/nix), [Docker](/es/install/docker)
 
-## Gateway
+## Servicio de Gateway (systemd)
 
-- [Manual operativo del Gateway](/es/gateway)
-- [Configuración](/es/gateway/configuration)
+Instálalo con uno de estos comandos:
 
-## Instalación del servicio Gateway (CLI)
-
-Usa uno de estos:
-
-```
+```bash
 openclaw onboard --install-daemon
-```
-
-O:
-
-```
 openclaw gateway install
+openclaw configure   # select "Gateway service" when prompted
 ```
 
-O:
+Repara o migra una instalación existente:
 
-```
-openclaw configure
-```
-
-Selecciona **Servicio Gateway** cuando se te solicite.
-
-Reparar/migrar:
-
-```
+```bash
 openclaw doctor
 ```
 
-## Control del sistema (unidad de usuario systemd)
+`openclaw gateway install` genera una unidad de **usuario** de systemd de forma predeterminada. La guía
+completa del servicio, incluida la variante de unidad de nivel **sistema** para hosts compartidos o
+siempre activos, está en el [runbook de Gateway](/es/gateway#supervision-and-service-lifecycle).
 
-OpenClaw instala un servicio systemd de **usuario** por defecto. Usa un servicio de **sistema**
-para servidores compartidos o siempre activos. `openclaw gateway install` y
-`openclaw onboard --install-daemon` ya generan la unidad canónica actual
-por ti; escribe una manualmente solo cuando necesites una configuración personalizada
-de sistema/gestor de servicios. La guía completa del servicio está en el [manual operativo del Gateway](/es/gateway).
+Escribe una unidad a mano solo para una configuración personalizada. Ejemplo mínimo de unidad de usuario
+(`~/.config/systemd/user/openclaw-gateway[-<profile>].service`):
 
-Configuración mínima:
-
-Crea `~/.config/systemd/user/openclaw-gateway[-<profile>].service`:
-
-```
+```ini
 [Unit]
 Description=OpenClaw Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -101,55 +84,57 @@ KillMode=control-group
 WantedBy=default.target
 ```
 
-Actívalo:
+Actívala:
 
-```
+```bash
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
 ## Presión de memoria y terminaciones por OOM
 
-En Linux, el kernel elige una víctima OOM cuando un cgroup de host, VM o contenedor
-se queda sin memoria. El Gateway puede ser una mala víctima porque posee sesiones
-de larga duración y conexiones de canales. Por eso OpenClaw prioriza que los procesos
-hijo transitorios se terminen antes que el Gateway cuando sea posible.
+En Linux, el kernel elige una víctima de OOM cuando un host, una VM o un cgroup de contenedor
+se queda sin memoria. El Gateway es una mala víctima porque posee sesiones
+persistentes y conexiones de canales, por lo que OpenClaw sesga los procesos
+hijos transitorios para que se terminen primero cuando sea posible.
 
-Para los procesos hijo de Linux elegibles, OpenClaw inicia el hijo mediante un breve
-envoltorio `/bin/sh` que eleva el `oom_score_adj` propio del hijo a `1000`, y luego
-ejecuta con `exec` el comando real. Esta es una operación sin privilegios porque el hijo
-solo aumenta su propia probabilidad de terminación por OOM.
+Para los procesos hijos aptos en Linux, OpenClaw envuelve el comando en un breve
+shim de `/bin/sh` que eleva el `oom_score_adj` propio del hijo a `1000`, y luego
+hace `exec` del comando real. Esto no requiere privilegios: un proceso siempre puede elevar
+su propia puntuación de OOM.
 
-Las superficies de procesos hijo cubiertas incluyen:
+Superficies de procesos hijos cubiertas:
 
-- hijos de comandos gestionados por supervisor,
-- hijos de shell PTY,
-- hijos de servidor MCP stdio,
-- procesos de navegador/Chrome lanzados por OpenClaw.
+- Hijos de comandos gestionados por el supervisor
+- Hijos de shell PTY
+- Hijos de servidores MCP stdio
+- Procesos de navegador/Chrome iniciados por OpenClaw (mediante el runtime de procesos del plugin SDK)
 
-El envoltorio es solo para Linux y se omite cuando `/bin/sh` no está disponible. También
-se omite si el entorno del hijo define `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
-`no` u `off`.
+El wrapper es solo para Linux y se omite cuando `/bin/sh` no está disponible, o cuando
+el entorno del hijo establece `OPENCLAW_CHILD_OOM_SCORE_ADJ` en `0`, `false`, `no` u
+`off`.
 
-Para verificar un proceso hijo:
+Verifica un proceso hijo:
 
 ```bash
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-El valor esperado para los hijos cubiertos es `1000`. El proceso Gateway debería mantener
-su puntuación normal, normalmente `0`.
+El valor esperado para los hijos cubiertos es `1000`; el proceso del Gateway en sí
+mantiene su puntuación normal (normalmente `0`).
 
-La unidad systemd recomendada también define `OOMPolicy=continue`. Esto mantiene viva la
-unidad del Gateway cuando el asesino OOM selecciona un proceso hijo transitorio;
-el comando/sesión hijo puede fallar y reportar su error sin que systemd marque
-todo el servicio gateway como fallido ni reinicie todos los canales.
+`OOMPolicy=continue` de la unidad systemd mantiene activo el servicio de Gateway cuando
+un hijo transitorio es seleccionado por el OOM killer, en lugar de marcar toda la
+unidad como fallida y reiniciar todos los canales; el hijo o la sesión fallida informa
+su propio error.
 
-Esto no reemplaza el ajuste normal de memoria. Si un VPS o contenedor termina hijos
-repetidamente, aumenta el límite de memoria, reduce la concurrencia o añade controles
-de recursos más estrictos, como `MemoryMax=` de systemd o límites de memoria a nivel de contenedor.
+Esto no sustituye al ajuste normal de memoria. Si una VPS o un contenedor termina hijos repetidamente,
+aumenta el límite de memoria, reduce la concurrencia o añade controles de recursos
+más estrictos (systemd `MemoryMax=`, límites de memoria del contenedor).
 
 ## Relacionado
 
 - [Resumen de instalación](/es/install)
 - [Servidor Linux](/es/vps)
 - [Raspberry Pi](/es/install/raspberry-pi)
+- [Runbook de Gateway](/es/gateway)
+- [Configuración de Gateway](/es/gateway/configuration)

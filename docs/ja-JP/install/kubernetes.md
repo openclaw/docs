@@ -1,28 +1,28 @@
 ---
 read_when:
     - Kubernetes クラスターで OpenClaw を実行したい
-    - Kubernetes 環境で OpenClaw をテストしたい場合
-summary: Kustomize で OpenClaw Gateway を Kubernetes クラスターにデプロイする
+    - Kubernetes 環境で OpenClaw をテストしたい
+summary: KustomizeでOpenClaw GatewayをKubernetesクラスターにデプロイする
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-06-28T20:44:08Z"
+    generated_at: "2026-07-05T11:26:51Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-OpenClaw を Kubernetes 上で実行するための最小限の出発点です。本番対応のデプロイではありません。中核となるリソースを扱い、環境に合わせて調整することを前提としています。
+OpenClaw を Kubernetes で実行するための最小限の出発点であり、本番環境向けのデプロイではありません。コアリソースを対象としており、利用環境に合わせて調整することを前提としています。
 
-## なぜ Helm ではないのか？
+## Helm を使わない理由
 
-OpenClaw は、いくつかの設定ファイルを持つ単一コンテナです。重要なカスタマイズ対象はインフラのテンプレート化ではなく、エージェントのコンテンツ（Markdown ファイル、Skills、設定の上書き）です。Kustomize は Helm チャートのオーバーヘッドなしにオーバーレイを扱えます。デプロイがより複雑になった場合は、これらのマニフェストの上に Helm チャートを重ねることもできます。
+OpenClaw は、いくつかの設定ファイルを持つ単一コンテナです。重要なカスタマイズは、インフラのテンプレート化ではなく、エージェントコンテンツ（Markdown ファイル、Skills、設定オーバーライド）にあります。Kustomize は Helm チャートのオーバーヘッドなしでオーバーレイを扱えます。デプロイがより複雑になった場合は、これらのマニフェストの上に Helm チャートを重ねてください。
 
 ## 必要なもの
 
-- 実行中の Kubernetes クラスター（AKS、EKS、GKE、k3s、kind、OpenShift など）
+- 稼働中の Kubernetes クラスター（AKS、EKS、GKE、k3s、kind、OpenShift など）
 - クラスターに接続済みの `kubectl`
 - 少なくとも 1 つのモデルプロバイダーの API キー
 
@@ -37,8 +37,7 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Control UI 用に設定された共有シークレットを取得します。このデプロイスクリプトは
-デフォルトでトークン認証を作成します。
+`deploy.sh` はデフォルトでトークン認証を作成します。Control UI 用に生成されたゲートウェイトークンを取得します。
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
@@ -46,9 +45,9 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 
 ローカルデバッグでは、`./scripts/k8s/deploy.sh --show-token` がデプロイ後にトークンを出力します。
 
-## Kind によるローカルテスト
+## Kind を使ったローカルテスト
 
-クラスターがない場合は、[Kind](https://kind.sigs.k8s.io/) でローカルに作成します。
+クラスターがない場合は、[Kind](https://kind.sigs.k8s.io/) を使ってローカルに作成します。
 
 ```bash
 ./scripts/k8s/create-kind.sh           # auto-detects docker or podman
@@ -57,11 +56,11 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 
 その後、通常どおり `./scripts/k8s/deploy.sh` でデプロイします。
 
-## 手順
+## ステップごと
 
 ### 1) デプロイ
 
-**オプション A** — 環境内の API キー（1 ステップ）:
+**オプション A: 環境変数内の API キー（1 ステップ）**
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -69,9 +68,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-スクリプトは、API キーと自動生成された Gateway トークンを含む Kubernetes Secret を作成してからデプロイします。Secret がすでに存在する場合は、現在の Gateway トークンと、変更対象ではないプロバイダーキーを保持します。
+このスクリプトは、API キーと自動生成されたゲートウェイトークンを含む Kubernetes Secret を作成し、その後デプロイします。Secret がすでに存在する場合は、現在のゲートウェイトークンと、変更対象ではないプロバイダーキーを保持します。
 
-**オプション B** — シークレットを別途作成する:
+**オプション B: Secret を別途作成する**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,9 +78,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-ローカルテスト用にトークンを標準出力へ出力したい場合は、どちらのコマンドでも `--show-token` を使用します。
+ローカルテスト用にトークンを標準出力へ出力するには、どちらのコマンドにも `--show-token` を追加します。
 
-### 2) Gateway にアクセスする
+### 2) ゲートウェイにアクセスする
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
@@ -90,7 +89,7 @@ open http://localhost:18789
 
 ## デプロイされるもの
 
-```
+```text
 Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 ├── Deployment/openclaw        # Single pod, init container + gateway
 ├── Service/openclaw           # ClusterIP on port 18789
@@ -103,7 +102,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### エージェント指示
 
-`scripts/k8s/manifests/configmap.yaml` の `AGENTS.md` を編集して再デプロイします。
+`scripts/k8s/manifests/configmap.yaml` 内の `AGENTS.md` を編集して、再デプロイします。
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -111,7 +110,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### Gateway 設定
 
-`scripts/k8s/manifests/configmap.yaml` の `openclaw.json` を編集します。完全なリファレンスについては、[Gateway 設定](/ja-JP/gateway/configuration) を参照してください。
+`scripts/k8s/manifests/configmap.yaml` 内の `openclaw.json` を編集します。完全なリファレンスは [Gateway 設定](/ja-JP/gateway/configuration) を参照してください。
 
 ### プロバイダーを追加する
 
@@ -134,7 +133,7 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### カスタム namespace
+### カスタム名前空間
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
@@ -145,18 +144,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 `scripts/k8s/manifests/deployment.yaml` の `image` フィールドを編集します。
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # primary; official Docker Hub mirror: openclaw/openclaw
 ```
 
-### port-forward を越えて公開する
+### port-forward を超えて公開する
 
-デフォルトのマニフェストは、Pod 内部で Gateway をループバックにバインドします。これは `kubectl port-forward` では機能しますが、Pod IP に到達する必要がある Kubernetes `Service` や Ingress パスでは機能しません。
+デフォルトのマニフェストは、Pod 内のループバックにゲートウェイをバインドします。これは `kubectl port-forward` では機能しますが、Pod IP に直接到達する必要がある Kubernetes `Service` や Ingress パスでは機能しません。
 
-Ingress またはロードバランサー経由で Gateway を公開したい場合:
+Ingress またはロードバランサー経由でゲートウェイを公開するには、次のようにします。
 
-- `scripts/k8s/manifests/configmap.yaml` の Gateway バインドを `loopback` から、デプロイモデルに合う非ループバックのバインドに変更する
-- Gateway 認証を有効にしたままにし、適切な TLS 終端済みエントリーポイントを使用する
-- サポートされている Web セキュリティモデルを使用して、リモートアクセス用に Control UI を設定する（たとえば HTTPS/Tailscale Serve と、必要に応じた明示的な許可済みオリジン）
+- `scripts/k8s/manifests/configmap.yaml` のゲートウェイバインドを `loopback` から、デプロイモデルに合う非ループバックのバインドに変更します。
+- ゲートウェイ認証を有効のままにし、適切な TLS 終端エントリーポイントを使用します。
+- サポートされる Web セキュリティモデルを使って、リモートアクセス用に Control UI を設定します（たとえば HTTPS/Tailscale Serve と、必要に応じた明示的な許可オリジン）。
 
 ## 再デプロイ
 
@@ -164,7 +163,7 @@ Ingress またはロードバランサー経由で Gateway を公開したい場
 ./scripts/k8s/deploy.sh
 ```
 
-これにより、すべてのマニフェストが適用され、設定やシークレットの変更を反映するために Pod が再起動されます。
+これにより、すべてのマニフェストが適用され、設定や Secret の変更を反映するために Pod が再起動されます。
 
 ## 削除
 
@@ -172,20 +171,20 @@ Ingress またはロードバランサー経由で Gateway を公開したい場
 ./scripts/k8s/deploy.sh --delete
 ```
 
-これにより、namespace とその中のすべてのリソース（PVC を含む）が削除されます。
+これにより、PVC を含め、その名前空間とその中のすべてのリソースが削除されます。
 
 ## アーキテクチャメモ
 
-- Gateway はデフォルトで Pod 内部のループバックにバインドされるため、含まれているセットアップは `kubectl port-forward` 用です
-- クラスタースコープのリソースはありません。すべて単一の namespace 内にあります
-- セキュリティ: `readOnlyRootFilesystem`、`drop: ALL` capabilities、非 root ユーザー（UID 1000）
-- デフォルト設定では、Control UI はより安全なローカルアクセスパスに維持されます: ループバックバインドと `kubectl port-forward` による `http://127.0.0.1:18789`
-- localhost アクセスを越えて使用する場合は、サポートされているリモートモデルを使用してください: HTTPS/Tailscale と、適切な Gateway バインドおよび Control UI オリジン設定
-- シークレットは一時ディレクトリに生成され、クラスターへ直接適用されます。シークレット情報がリポジトリのチェックアウトに書き込まれることはありません
+- ゲートウェイはデフォルトで Pod 内のループバックにバインドされるため、同梱のセットアップは `kubectl port-forward` 用です。
+- クラスタースコープのリソースはありません。すべて単一の名前空間内にあります。
+- セキュリティ強化: `readOnlyRootFilesystem`、`drop: ALL` capabilities、非 root ユーザー（UID 1000）。
+- デフォルト設定では、Control UI をより安全なローカルアクセス経路に保ちます。ループバックバインドに加えて、`kubectl port-forward` で `http://127.0.0.1:18789` に接続します。
+- localhost アクセスを超える場合は、サポートされるリモートモデルを使用してください。HTTPS/Tailscale に加えて、適切なゲートウェイバインドと Control UI のオリジン設定を使います。
+- Secret は一時ディレクトリ内で生成され、クラスターに直接適用されます。Secret の内容がリポジトリのチェックアウトに書き込まれることはありません。
 
 ## ファイル構造
 
-```
+```text
 scripts/k8s/
 ├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
 ├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)

@@ -1,56 +1,60 @@
 ---
 read_when:
-    - チャンネルの連絡先/グループ/自分自身のIDを調べたい
-    - あなたはチャネルディレクトリアダプターを開発しています
-summary: '`openclaw directory` の CLI リファレンス（自分、ピア、グループ）'
+    - チャンネルの連絡先、グループ、自分の ID を調べたい
+    - チャンネルディレクトリアダプターを開発しています
+summary: '`openclaw directory`（自分、ピア、グループ）の CLI リファレンス'
 title: ディレクトリ
 x-i18n:
-    generated_at: "2026-07-03T15:19:25Z"
+    generated_at: "2026-07-05T11:11:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d17f545ce0bbe23a6c1ba74e4d1b44b103cc985b52affe4b25fbc6a6d1121045
+    source_hash: d9e1a952525f79dcb6eedb87eb433be7cb378fa19de5f252521e287d2c52275c
     source_path: cli/directory.md
     workflow: 16
 ---
 
 # `openclaw directory`
 
-対応しているチャンネル向けのディレクトリ検索（連絡先/ピア、グループ、および「me」）。
+対応しているチャンネル向けのディレクトリ検索: 連絡先/ピア、グループ、および「me」（自分）。
+
+結果は他のコマンド、特に `openclaw message send --target ...` に貼り付けて使うことを想定しています。
 
 ## 共通フラグ
 
-- `--channel <name>`: チャンネル ID/エイリアス（複数のチャンネルが設定されている場合は必須。1 つだけ設定されている場合は自動）
+- `--channel <name>`: チャンネル ID/エイリアス（複数のチャンネルが設定されている場合は必須。1 つだけ設定されている場合は自動選択）
 - `--account <id>`: アカウント ID（デフォルト: チャンネルのデフォルト）
 - `--json`: JSON を出力
 
+デフォルト（非 JSON）の出力は、タブで区切られた `id`（および場合によっては `name`）です。
+
 ## 注記
 
-- `directory` は、他のコマンド（特に `openclaw message send --target ...`）に貼り付けられる ID を見つけるためのものです。
-- 多くのチャンネルでは、結果はライブプロバイダーディレクトリではなく、設定ベース（許可リスト / 設定済みグループ）です。
-- インストール済みのチャンネル Plugin は、ディレクトリ対応を省略している場合があります。その場合、コマンドは Plugin を再インストールするのではなく、未対応のディレクトリ操作を報告します。
-- デフォルト出力は、タブ区切りの `id`（場合によっては `name`）です。スクリプト用途には `--json` を使用してください。
+- 多くのチャンネルでは、結果はライブのプロバイダーディレクトリではなく、設定に基づくもの（許可リスト/設定済みグループ）です。
+- すでにインストール済みのチャンネル Plugin がディレクトリサポートを持たない場合があります。その場合、コマンドはサポートされていない操作として報告します。サポートを追加するために Plugin の再インストールやアップグレードを試みることはありません。
 
-## 結果を `message send` で使用する
+## `message send` で結果を使う
 
 ```bash
 openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## ID 形式（チャンネル別）
+## チャンネル別 ID 形式
 
-- WhatsApp: `+15551234567`（DM）、`1234567890-1234567890@g.us`（グループ）、`120363123456789@newsletter`（Channel/Newsletter の送信先ターゲット）
-- Signal: 設定済みエイリアスは、E.164/UUID の DM ターゲット、または `group:<id>` グループターゲットに解決されます
-- Telegram: `@username` または数値のチャット ID。グループは数値 ID です
-- Slack: `user:U…` と `channel:C…`
-- Discord: `user:<id>` と `channel:<id>`
-- Matrix（Plugin）: `user:@user:server`、`room:!roomId:server`、または `#alias:server`
-- Microsoft Teams（Plugin）: `user:<id>` と `conversation:<id>`
-- Zalo（Plugin）: ユーザー ID（Bot API）
-- Zalo Personal / `zalouser`（Plugin）: `zca` からのスレッド ID（DM/グループ）（`me`、`friend list`、`group list`）
+| チャンネル                          | ターゲット ID 形式                                                                                                          |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| WhatsApp                            | `+15551234567`（DM）、`1234567890-1234567890@g.us`（グループ）、`120363123456789@newsletter`（チャンネル/ニュースレター、送信のみ） |
+| Signal                              | 設定済みエイリアスは E.164/UUID の DM ターゲット、または `group:<id>` のグループターゲットに解決されます                    |
+| Telegram                            | `@username` または数値のチャット ID。グループは数値 ID を使います                                                          |
+| Slack                               | `user:U…` と `channel:C…`                                                                                                  |
+| Discord                             | `user:<id>` と `channel:<id>`                                                                                              |
+| Matrix（Plugin）                    | `user:@user:server`、`room:!roomId:server`、または `#alias:server`                                                         |
+| Microsoft Teams（Plugin）           | `user:<id>` と `conversation:<id>`                                                                                         |
+| Zalo（Plugin）                      | ユーザー ID（Bot API）                                                                                                     |
+| Zalo Personal / `zalouser`（Plugin） | `zca`（`me`、`friend list`、`group list`）からのスレッド ID（DM/グループ）                                                   |
 
-## 自分自身（「me」）
+## 自分（「me」）
 
 ```bash
 openclaw directory self --channel zalouser

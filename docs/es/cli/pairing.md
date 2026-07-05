@@ -4,22 +4,20 @@ read_when:
 summary: Referencia de CLI para `openclaw pairing` (aprobar/listar solicitudes de emparejamiento)
 title: Emparejamiento
 x-i18n:
-    generated_at: "2026-05-06T17:54:21Z"
+    generated_at: "2026-07-05T11:10:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 022018239ab1134b18986be42b8e019f412a1a730a9671f422979909c4a31dc5
+    source_hash: ca83ad9d9e55cfffd49301cb529b28df370c2dcff03484880f7cfc85ec2d6440
     source_path: cli/pairing.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw pairing`
 
-Aprueba o inspecciona solicitudes de emparejamiento por mensaje directo (para canales que admiten emparejamiento).
+Aprueba o inspecciona solicitudes de emparejamiento por DM para canales que admiten emparejamiento (solo DM de chat; el emparejamiento de nodo/dispositivo usa `openclaw devices`).
 
-Relacionado:
-
-- Flujo de emparejamiento: [Emparejamiento](/es/channels/pairing)
+Relacionado: [Flujo de emparejamiento](/es/channels/pairing)
 
 ## Comandos
 
@@ -35,19 +33,16 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Lista las solicitudes de emparejamiento pendientes para un canal.
+Lista las solicitudes de emparejamiento pendientes de un canal.
 
-Opciones:
+| Opción                  | Descripción                           |
+| ----------------------- | ------------------------------------- |
+| `[channel]`             | id de canal posicional                |
+| `--channel <channel>`   | id de canal explícito                 |
+| `--account <accountId>` | id de cuenta para canales multicuenta |
+| `--json`                | salida legible por máquina            |
 
-- `[channel]`: id de canal posicional
-- `--channel <channel>`: id de canal explícito
-- `--account <accountId>`: id de cuenta para canales con varias cuentas
-- `--json`: salida legible por máquina
-
-Notas:
-
-- Si hay varios canales compatibles con emparejamiento configurados, debes proporcionar un canal de forma posicional o con `--channel`.
-- Se permiten canales de extensión siempre que el id de canal sea válido.
+Si hay varios canales compatibles con emparejamiento configurados, pasa un canal de forma posicional o con `--channel`. Los canales de extensión funcionan siempre que el id de canal sea válido.
 
 ## `pairing approve`
 
@@ -57,27 +52,17 @@ Uso:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` cuando hay exactamente un canal compatible con emparejamiento configurado
+- `openclaw pairing approve <code>` cuando está configurado exactamente un canal compatible con emparejamiento
 
-Opciones:
+Opciones: `--channel <channel>`, `--account <accountId>`, `--notify` (envía una confirmación al solicitante en el mismo canal).
 
-- `--channel <channel>`: id de canal explícito
-- `--account <accountId>`: id de cuenta para canales con varias cuentas
-- `--notify`: envía una confirmación al solicitante en el mismo canal
+### Inicialización del propietario
 
-Inicialización del propietario:
+Si `commands.ownerAllowFrom` está vacío cuando apruebas un código de emparejamiento, OpenClaw también registra al remitente aprobado como propietario de comandos, usando una entrada con ámbito de canal como `telegram:123456789`. Esto solo inicializa el primer propietario; las aprobaciones de emparejamiento posteriores nunca reemplazan ni amplían `commands.ownerAllowFrom`.
 
-- Si `commands.ownerAllowFrom` está vacío cuando apruebas un código de emparejamiento, OpenClaw también registra al remitente aprobado como propietario de comandos, usando una entrada con ámbito de canal como `telegram:123456789`.
-- Esto solo inicializa el primer propietario. Las aprobaciones de emparejamiento posteriores no reemplazan ni amplían `commands.ownerAllowFrom`.
-- El propietario de comandos es la cuenta del operador humano autorizada a ejecutar comandos exclusivos del propietario y aprobar acciones peligrosas como `/diagnostics`, `/export-trajectory`, `/config` y aprobaciones de exec.
+El propietario de comandos es la cuenta del operador humano autorizada para ejecutar comandos exclusivos del propietario y aprobar acciones peligrosas como `/diagnostics`, `/export-trajectory`, `/config` y aprobaciones de ejecución. El emparejamiento solo permite que un remitente hable con el agente; por sí solo no concede privilegios de propietario más allá de esta inicialización única.
 
-## Notas
-
-- Entrada de canal: pásala de forma posicional (`pairing list telegram`) o con `--channel <channel>`.
-- `pairing list` admite `--account <accountId>` para canales con varias cuentas.
-- `pairing approve` admite `--account <accountId>` y `--notify`.
-- Si solo hay un canal compatible con emparejamiento configurado, se permite `pairing approve <code>`.
-- Si aprobaste un remitente antes de que existiera esta inicialización, ejecuta `openclaw doctor`; advierte cuando no hay ningún propietario de comandos configurado y muestra el comando `openclaw config set commands.ownerAllowFrom ...` para corregirlo.
+Si aprobaste un remitente antes de que existiera esta inicialización, ejecuta `openclaw doctor`; advierte cuando no hay ningún propietario de comandos configurado y muestra el comando exacto `openclaw config set commands.ownerAllowFrom ...` para corregirlo.
 
 ## Relacionado
 

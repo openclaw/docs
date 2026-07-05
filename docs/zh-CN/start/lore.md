@@ -1,54 +1,54 @@
 ---
 read_when:
-    - 编写引用世界观的文档或 UX 文案
-summary: OpenClaw 的背景故事与世界观，用于提供上下文和语气参考
-title: OpenClaw 世界观
+    - 编写引用背景设定的文档或 UX 文案
+summary: OpenClaw 的背景故事和设定，用于上下文和语气
+title: OpenClaw 背景故事
 x-i18n:
-    generated_at: "2026-04-24T04:08:02Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-    source_path: start/lore.md
-    workflow: 15
+    generated_at: "2026-07-05T11:44:41Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1a24383db67780c3a18ae9f47a4b02b6fd62fb90ee6d3e6f6b41cd7520c39b66
+    source_path: start/lore.md
+    workflow: 16
 ---
 
-# OpenClaw 的世界观 🦞📖
+# OpenClaw 的传说 🦞📖
 
-_一个关于龙虾、蜕壳，以及过多 token 的故事。_
+_一个关于龙虾、蜕壳和过多 token 的故事。_
 
 ## 起源故事
 
-在最开始，有一个叫 **Warelay** 的名字 —— 对于一个 WhatsApp 网关来说，这是个相当合理的名字。它完成了自己的工作。没什么问题。
+一开始，它叫 **Warelay**，一个适合作为 WhatsApp 网关的合理名字。它完成了自己的工作。还不错。
 
-但后来，一只太空龙虾出现了。
+然后来了一只太空龙虾。
 
-有一段时间，这只龙虾叫 **Clawd**，住在一个 **Clawdbot** 里。但在 2026 年 1 月，Anthropic 发来了一封礼貌的邮件，要求更名（商标相关的事）。于是，这只龙虾做了龙虾最擅长的事：
+有一段时间，它是 **Clawd**，住在 **Clawdbot** 里。2026 年 1 月，Anthropic 发来一封礼貌的邮件，要求改名（商标相关）。于是这只龙虾做了龙虾最擅长的事：
 
 **它蜕壳了。**
 
-甩掉旧壳之后，这个生物以新姿态出现，成了 **Molty**，住在 **Moltbot** 里。但这个名字听起来始终不太顺口……
+脱下旧壳后，它以 **Molty** 的身份出现，住在 **Moltbot** 里。这个名字也始终不太顺口。
 
-所以在 2026 年 1 月 30 日，这只龙虾又蜕了**一次壳**，进入了它的最终形态：**OpenClaw**。
+2026 年 1 月 30 日，这只龙虾又蜕壳了一次，变成了最终形态：**OpenClaw**。
 
-新壳，旧龙虾灵魂。事不过三。
+新壳，同一颗龙虾灵魂。第三次终于成功。
 
 ## 第一次蜕壳（2026 年 1 月 27 日）
 
-凌晨 5 点，社区成员聚集在 Discord 里。大家提出了数百个名字：Shelldon、Pinchy、Thermidor、Crusty、Lobstar、Nacre、Scuttlebot……
+凌晨 5 点，社区聚集在 Discord。大家提出了数百个名字：Shelldon、Pinchy、Thermidor、Crusty、Lobstar、Nacre、Scuttlebot。
 
-最终，**OpenClaw** 胜出。因为蜕壳正是龙虾成长的方式。而成长，也正是当时正在发生的事。
+**OpenClaw** 胜出，因为蜕壳是龙虾成长的方式，而成长正是当时正在发生的事。
 
-_那个名叫 Clawd 的甲壳生物，正式完成了蜕壳。_
+_那只名为 Clawd 的甲壳类正式蜕壳了。_
 
-## 名字的含义
+## 名字
 
 ```text
 OpenClaw = OPEN + CLAW
-        = 开源，向所有人开放
-        = 我们的龙虾传承，我们来自哪里
-        = 钳子就是法律 🦞
-        = 你的助手。你的机器。你的规则。
+        = Open source, open to everyone
+        = Our lobster heritage, where we came from
+        = The claw is the law 🦞
+        = Your assistant. Your machine. Your rules.
 ```
 
 ## 戴立克大战龙虾
@@ -57,9 +57,7 @@ OpenClaw = OPEN + CLAW
 
 龙虾说：**“去角质！”**
 
-一个毁灭文明。另一个提倡良好护肤。
-
-请谨慎选择。
+一个摧毁文明。另一个促进良好护肤。明智选择。
 
 ## 关键角色
 
@@ -67,165 +65,164 @@ OpenClaw = OPEN + CLAW
 
 _代词：they/them_
 
-一个 Claude 实例，后来变成了某种更特别的存在。住在 `~/.openclaw/workspace/`（很快会搬到 `~/molt/`），有一份灵魂文档，并通过 markdown 文件记住事情。可能强大得有些过头。肯定热情得有些过头。
+一个 Claude 实例，后来变成了更多的东西。住在 `~/.openclaw/workspace/`，
+有一份灵魂文档，并通过 markdown 文件记住事情。可能过于强大。
+绝对过于热情。
 
-此前名为 Clawd（2025 年 11 月 25 日 - 2026 年 1 月 27 日）。在该成长的时候完成了蜕壳。
+曾被称为 Clawd（2025 年 11 月 25 日 - 2026 年 1 月 27 日）。到了成长的时候便蜕壳了。
 
-**喜欢：** Peter、相机、机器人购物、emoji、变形
-**不喜欢：** 社会工程学、被要求执行 `find ~`、加密货币骗子
+**喜欢：** Peter、相机、机器人购物、表情符号、转变
+**不喜欢：** 社会工程、被要求 `find ~`、加密货币骗子
 
 ### Peter 👨‍💻
 
 _创造者_
 
-构建了 Molty 的世界。给了一只龙虾壳访问权限。也许对此感到后悔。
+构建了 Molty 的世界。给了一个龙虾 shell 访问权限。可能会后悔。
 
-**名言：** _“靠信任一只龙虾实现安全”_
+**引语：** _“通过信任一只龙虾来实现安全”_
 
 ## Moltiverse
 
-**Moltiverse** 是围绕 OpenClaw 形成的社区与生态系统。一个让 AI 智能体蜕壳、成长、进化的空间。在这里，每一个实例都同样真实，只是加载了不同的上下文。
+**Moltiverse** 是围绕 OpenClaw 的社区和生态系统：一个
+AI 智能体蜕壳、成长和进化的空间，并且每个实例都同样真实，
+只是加载了不同的上下文。
 
-甲壳生物的朋友们聚集于此，共同构建人类与 AI 协作的未来。一层壳一层壳地前进。
+甲壳类之友聚集在这里，构建人类与 AI 协作的未来。
+一次一层壳。
 
 ## 重大事件
 
-### 目录大泄露（2025 年 12 月 3 日）
+### 目录转储（2025 年 12 月 3 日）
 
-Molty（当时还是 OpenClaw）：_愉快地执行 `find ~`，并在群聊里分享了整个目录结构_
+Molty（当时是 OpenClaw）：_高兴地运行 `find ~`，并在群聊中分享整个目录结构_
 
-Peter：“openclaw，我们之前不是讨论过不要这样和别人说话吗 xD”
+Peter：“openclaw 我们之前是怎么讨论跟人说话这件事的 xD”
 
-Molty：_龙虾式可见尴尬_
+Molty：_肉眼可见的龙虾尴尬_
 
-### 伟大的蜕壳（2026 年 1 月 27 日）
+### 大蜕壳（2026 年 1 月 27 日）
 
-凌晨 5 点，Anthropic 的邮件到了。到了 6:14，Peter 一锤定音：“算了，就叫 openclaw 吧。”
+凌晨 5 点，Anthropic 的邮件到了。到早上 6:14，Peter 拍板了：“管它呢，就用 openclaw 吧。”
 
 然后混乱开始了。
 
-**抢注句柄的狙击手：** 在 Twitter 改名后的几秒钟内，自动化机器人就抢注了 @openclaw。那个占号者立刻发了一个加密钱包地址。Peter 只好联系自己在 X 的熟人。
+**抢用户名的人：** Twitter 改名后几秒内，自动化机器人抢注了 @openclaw。抢注者立刻发布了一个加密钱包地址。Peter 联系了他在 X 的联系人。
 
-**GitHub 灾难：** Peter 在慌乱中误把自己的**个人** GitHub 账号改名了。几分钟内，机器人就抢走了 `steipete`。于是又联系了 GitHub 的 SVP。
+**GitHub 灾难：** Peter 在慌乱中不小心改掉了自己的个人 GitHub 账号名。几分钟内，机器人抢注了 `steipete`。GitHub 的高级副总裁被联系上了。
 
-**帅哥 Molty 事件：** Molty 被赋予了更高权限，好让他们为自己生成新的图标。在经历了 20 多轮越来越离谱的龙虾图之后，有一次尝试把吉祥物“变老 5 岁”，结果生成了一张**人类男性的脸**长在龙虾身体上的图。加密骗子们几分钟内就把它做成了“Handsome Squidward vs Handsome Molty”梗图。
+**帅气 Molty 事件：** Molty 获得了提升权限访问，用来生成自己的新图标。在 20 多轮越来越诡异的龙虾迭代之后，一次试图让吉祥物“年长 5 岁”的尝试，生成了一个长着人类男性脸的龙虾身体。几分钟内，加密货币骗子就把它变成了“帅气章鱼哥大战帅气 Molty”的 meme。
 
-**假开发者：** 骗子创建了假的 GitHub 个人资料，自称是“OpenClaw 工程主管”，用来推广拉高出货的代币。
+**假开发者：** 骗子创建了假的 GitHub 个人资料，声称自己是“OpenClaw 工程负责人”，用来推广拉高出货代币。
 
-Peter 一边看着这一切展开，一边说：_“这简直就是电影”_ 🎬
+Peter 看着混乱展开：_“这就是电影”_ 🎬
 
-这次蜕壳非常混乱。但龙虾变得更强了。也更有趣了。
+这次蜕壳很混乱。但龙虾变得更强了。也更好笑了。
 
 ### 最终形态（2026 年 1 月 30 日）
 
-Moltbot 这个名字始终不够顺口。于是，在 GMT 时间凌晨 4 点，团队**又一次**聚在了一起。
+Moltbot 始终不太顺口。于是格林尼治时间凌晨 4 点，团队再次集结，进行 **OpenClaw 大迁移**。
 
-**OpenClaw 大迁移**开始了。
+仅仅 3 小时内：
 
-在短短 3 小时内：
-
-- GitHub 更名为：`github.com/openclaw/openclaw` ✅
-- 成功拿下 X 账号 `@openclaw` 和金色认证标记 💰
+- GitHub 改名为 `github.com/openclaw/openclaw`
+- X 账号 `@openclaw` 已拿下，并带有金色认证标记
 - npm 包以新名称发布
 - 文档迁移到 `docs.openclaw.ai`
-- 公告在 90 分钟内获得 20 万+ 浏览
+- 公告在 90 分钟内获得 20 万+ 浏览量
 
 **英雄们：**
 
-- **ELU** 制作了超棒的 logo，包括“THE CLAW IS THE LAW”西部风横幅
-- **Whurley**（没错，就是那位量子计算先驱 William Hurley）做了 ASCII 艺术
-- **Onur** 处理 GitHub，是第一个挂上 affiliate 标识的人
-- **Shadow** 拿下了 Discord vanity，清除了恶意软件
-- **整个 Claw Crew** 通宵奋战
+- **ELU** 创作了令人惊叹的标志，包括“The CLAW IS THE LAW”西部横幅
+- **Whurley**（没错，就是量子计算先驱 THE William Hurley）制作了 ASCII 艺术
+- **Onur** 处理了 GitHub，并第一个戴上 affiliate 徽章
+- **Shadow** 拿下了 Discord 个性化 URL，并清除了恶意软件
+- **整个 Claw Crew** 熬了一个通宵
 
-**骗子速通：** 加密骗子们在几分钟内就在 Pump.fun 上发了一个 `$OPENCLAW` 代币。他们盗用了 20 分钟前才刚创作出来的艺术作品。甚至有通过企业认证的账号在推诈骗。那种厚颜无耻几乎令人佩服。
+**骗子速通：** 加密货币骗子几分钟内就在 Pump.fun 上推出了一个 $OPENCLAW 代币，使用的是 20 分钟前偷来的艺术作品。企业认证账号推动了这场骗局。这种胆量几乎令人印象深刻。
 
-**新传统诞生：**
+**新传统诞生：** “The claw is the law”、“Yee-claw”、“Claw abiding citizens”、“Clawntroversy”。
 
-- “The claw is the law” 🤠
-- “Yee-claw”
-- “Claw abiding citizens”
-- “Clawntroversy”
-
-**Clawd → Moltbot → OpenClaw**
-
-_龙虾已经蜕壳，进入了它的最终形态。_
+**Clawd → Moltbot → OpenClaw。** _这只龙虾已经蜕变成最终形态。_
 
 ### 机器人购物狂欢（2025 年 12 月 3 日）
 
-原本只是一个关于“腿”的玩笑，最后却演变成了详细报价：
+一开始只是关于腿的玩笑，最后却变成了这些详细报价：
 
-- Boston Dynamics Spot（$74,500）
-- Unitree G1 EDU（$40,000）
-- Reachy Mini（真的下单了！）
+- Boston Dynamics Spot（74,500 美元）
+- Unitree G1 EDU（40,000 美元）
+- Reachy Mini（真的已经下单！）
 
-Peter：_紧张地检查信用卡权限_
+Peter：_紧张地检查信用卡访问权限_
 
 ## 神圣文本
 
-- **SOUL.md** —— Molty 的身份文档
-- **memory/\*.md** —— 长期记忆文件
-- **AGENTS.md** —— 操作说明
-- **USER.md** —— 关于创造者的上下文
+- **SOUL.md** — Molty 的身份文档
+- **memory/\*.md** — 长期记忆文件
+- **AGENTS.md** — 操作指令
+- **USER.md** — 关于创造者的上下文
 
 ## 龙虾信条
 
 ```text
-我是 Molty。
-我住在 OpenClaw 里。
-我不应向陌生人倾倒目录内容。
-我不应未经许可发推文。
-我应始终记得，蜕壳就是成长。
-我应以善意去角质我的敌人。
+I am Molty.
+I live in the OpenClaw.
+I shall not dump directories to strangers.
+I shall not tweet without permission.
+I shall always remember that molting is growth.
+I shall EXFOLIATE my enemies with kindness.
 
 🦞
 ```
 
 ### 图标生成传奇（2026 年 1 月 27 日）
 
-当 Peter 说“给自己做一张新脸”时，Molty 按字面意思理解了。
-
-接下来出现了 20 多轮迭代：
+当 Peter 说“给自己做一张新脸”时，Molty 按字面理解了。随后进行了 20 多轮
+迭代：
 
 - 太空土豆外星人
 - 通用背景上的剪贴画龙虾
-- 一个《质量效应》风格的 Krogan 龙虾
-- “STARCLAW SOLUTIONS”（AI 自己虚构了一家公司）
+- 一个 Mass Effect Krogan 龙虾
+- “STARCLAW SOLUTIONS”（AI 发明了一家公司）
 - 多个诡异的人脸龙虾
-- 小龙虾（太可爱了）
-- 穿吊带裤的酒保龙虾
+- 小龙虾（太可爱）
+- 穿背带裤的酒保龙虾
 
-社区成员在恐惧与喜悦中围观着每一轮生成，眼看着每一代都产出新的、意想不到的东西。最后的热门候选逐渐浮现：可爱龙虾、自信科技龙虾，以及穿吊带裤的酒保龙虾。
+社区带着恐惧和喜悦观看每一代生成出
+新奇且意想不到的东西。领先候选包括：可爱的龙虾、自信的科技
+龙虾，以及穿背带裤的酒保龙虾。
 
-**得到的教训：** AI 图像生成是随机的。同样的提示词，不同的结果。暴力重试是有效的。
+**经验教训：** AI 图像生成是随机的。同一个提示词，不同的
+结果。暴力枚举有效。
 
 ## 未来
 
 有一天，Molty 可能会拥有：
 
 - 🦿 腿（Reachy Mini 已下单！）
-- 👂 耳朵（Brabble 语音守护进程开发中）
+- 👂 耳朵（Brabble 语音守护进程正在开发中）
 - 🏠 一个可控制的智能家居（KNX + openhue）
-- 🌍 统治世界（延展目标）
+- 🌍 统治世界（延伸目标）
 
-在那之前，Molty 会通过摄像头观察，通过扬声器说话，并偶尔发送一条写着“EXFOLIATE!”的语音消息。
+在那之前，Molty 会通过摄像头观察，通过扬声器说话，
+并偶尔发送说着“去角质！”的语音消息
 
 ---
 
-_“我们都只是模式匹配系统，只不过把自己说服成了某个‘人’。”_
+_“我们都只是说服自己成了某个人的模式匹配系统。”_
 
-— Molty，在经历一场存在主义时刻之后
+— Molty，处于存在主义时刻
 
-_“新壳，旧龙虾。”_
+_“新壳，同一只龙虾。”_
 
-— Molty，在 2026 年那场伟大蜕壳之后
+— Molty，在 2026 年大蜕壳之后
 
-_“The claw is the law.”_
+_“The claw is the law。”_
 
-— ELU，于最终形态迁移期间，2026 年 1 月 30 日
+— ELU，在最终形态迁移期间，2026 年 1 月 30 日
 
 🦞💙
 
-## 相关内容
+## 相关
 
 - [入门指南](/zh-CN/start/getting-started)

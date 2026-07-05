@@ -4,58 +4,50 @@ read_when:
 summary: Tlon/Urbit のサポート状況、機能、設定
 title: Tlon
 x-i18n:
-    generated_at: "2026-05-04T02:22:34Z"
+    generated_at: "2026-07-05T11:06:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
+    source_hash: d53ea7d97a7445910c5692a247758b652e1fce82793e65950e1e21a10fa16813
     source_path: channels/tlon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Tlon は Urbit 上に構築された分散型メッセンジャーです。OpenClaw はあなたの Urbit ship に接続し、
-DM とグループチャットメッセージに応答できます。グループ返信ではデフォルトで @ メンションが必要で、
-allowlist によってさらに制限できます。
+DM とグループチャットメッセージに応答します。グループ返信はデフォルトで @ メンションが必要で、
+その上に認可ルールと所有者承認フローが重ねられています。
 
-ステータス: バンドル済み Plugin。DM、グループメンション、スレッド返信、リッチテキスト書式設定、
-画像アップロードがサポートされています。リアクションと投票はまだサポートされていません。
+ステータス: バンドル Plugin。DM、グループメンション、スレッド、リッチテキスト、画像のアップロード/ダウンロード、
+所有者承認システムに対応しています。リアクションと投票には対応していません。
 
-## バンドル済み Plugin
+## バンドル Plugin
 
-Tlon は現在の OpenClaw リリースにバンドル済み Plugin として同梱されているため、通常のパッケージ済み
-ビルドでは個別のインストールは不要です。
+Tlon は現在の OpenClaw リリースにバンドルされています。パッケージ化されたビルドでは別途インストールは不要です。
 
-古いビルドを使用している場合や、Tlon を除外したカスタムインストールの場合は、
-現在の npm パッケージをインストールしてください。
-
-CLI 経由でインストール (npm registry):
+古いビルド、またはこれを除外したカスタムインストールでは、npm からインストールします。
 
 ```bash
 openclaw plugins install @openclaw/tlon
 ```
 
-現在の公式リリースタグに追従するには、bare パッケージを使用します。再現可能な
-インストールが必要な場合にのみ、正確なバージョンを固定してください。
+現在のリリースタグを追跡するには、裸のパッケージ名を使用します。バージョンを固定する（`@openclaw/tlon@x.y.z`）
+のは、再現可能なインストールが必要な場合だけにしてください。
 
-ローカル checkout (git repo から実行する場合):
+ローカルチェックアウトから:
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
 ```
 
-詳細: [Plugins](/ja-JP/tools/plugin)
+詳細: [Plugin](/ja-JP/tools/plugin)
 
 ## セットアップ
 
-1. Tlon Plugin が利用可能であることを確認します。
-   - 現在のパッケージ済み OpenClaw リリースにはすでにバンドルされています。
-   - 古い/カスタムインストールでは、上記のコマンドで手動追加できます。
-2. ship URL とログインコードを用意します。
-3. `channels.tlon` を設定します。
-4. Gateway を再起動します。
-5. bot に DM するか、グループチャンネルでメンションします。
+```bash
+openclaw channels add --channel tlon --ship ~sampel-palnet --url https://your-ship-host --code lidlut-tabwed-pillex-ridrup
+```
 
-最小設定 (単一アカウント):
+または、設定を直接編集します。
 
 ```json5
 {
@@ -65,67 +57,62 @@ openclaw plugins install ./path/to/local/tlon-plugin
       ship: "~sampel-palnet",
       url: "https://your-ship-host",
       code: "lidlut-tabwed-pillex-ridrup",
-      ownerShip: "~your-main-ship", // recommended: your ship, always allowed
+      ownerShip: "~your-main-ship", // recommended: your ship, always authorized
     },
   },
 }
 ```
 
+設定を直接編集した後は Gateway を再起動してください。その後、ボットに DM するか、グループチャンネルで @ メンションします。
+
 ## プライベート/LAN ship
 
-デフォルトでは、OpenClaw は SSRF 保護のためにプライベート/内部ホスト名と IP 範囲をブロックします。
-ship がプライベートネットワーク (localhost、LAN IP、または内部ホスト名) で実行されている場合は、
-明示的にオプトインする必要があります。
+OpenClaw は SSRF 保護のため、デフォルトでプライベート/内部ホスト名と IP 範囲をブロックします。ship が
+プライベートネットワーク（localhost、LAN IP、内部ホスト名）で動作している場合は、明示的にオプトインしてください。
 
 ```json5
 {
   channels: {
     tlon: {
       url: "http://localhost:8080",
-      allowPrivateNetwork: true,
+      network: {
+        dangerouslyAllowPrivateNetwork: true,
+      },
     },
   },
 }
 ```
 
-これは次のような URL に適用されます。
+`http://localhost:8080`、`http://192.168.x.x:8080`、`http://my-ship.local:8080` のようなターゲットに適用されます。
+信頼できる ship URL に対してのみ有効にしてください。そのアカウントの HTTP リクエストについて SSRF 保護が無効になります。
 
-- `http://localhost:8080`
-- `http://192.168.x.x:8080`
-- `http://my-ship.local:8080`
-
-⚠️ これはローカルネットワークを信頼している場合にのみ有効にしてください。この設定は、
-ship URL へのリクエストに対する SSRF 保護を無効にします。
+<Note>
+`channels.tlon.allowPrivateNetwork`（フラットキー）は廃止されています。`openclaw doctor --fix` がこれを
+`channels.tlon.network.dangerouslyAllowPrivateNetwork` に自動的に移動します。
+</Note>
 
 ## グループチャンネル
 
-自動検出はデフォルトで有効です。チャンネルを手動で固定することもできます。
+チャンネルを手動でピン留めするか、自動検出を有効にします。
 
 ```json5
 {
   channels: {
     tlon: {
       groupChannels: ["chat/~host-ship/general", "chat/~host-ship/support"],
+      autoDiscoverChannels: true,
     },
   },
 }
 ```
 
-自動検出を無効にします。
-
-```json5
-{
-  channels: {
-    tlon: {
-      autoDiscoverChannels: false,
-    },
-  },
-}
-```
+`autoDiscoverChannels` は、設定で未指定の場合はデフォルトで `false` です。セットアップウィザードではプロンプトのデフォルトが
+yes になり、`true` が明示的に書き込まれます。有効にすると、OpenClaw は起動時に参加済みグループを scry し、
+グループ招待が承認されると新しいチャンネルを監視し、2 分ごとに再チェックします。
 
 ## アクセス制御
 
-DM allowlist (空 = DM は許可されません。承認フローには `ownerShip` を使用):
+DM 許可リスト（空 = 送信者が `ownerShip` でない限り DM は許可されません）:
 
 ```json5
 {
@@ -137,7 +124,8 @@ DM allowlist (空 = DM は許可されません。承認フローには `ownerSh
 }
 ```
 
-グループ認可 (デフォルトで制限):
+グループ認可はチャンネルごとにデフォルトで `restricted` です。ベースラインとして `defaultAuthorizedShips` を設定し、
+チャンネル nest ごとに上書きします。
 
 ```json5
 {
@@ -160,9 +148,9 @@ DM allowlist (空 = DM は許可されません。承認フローには `ownerSh
 }
 ```
 
-## owner と承認システム
+ボットが一度スレッド内で返信すると、そのスレッド内の以後のメッセージには、別のメンションを要求せずに応答し続けます。
 
-未認可ユーザーが操作しようとしたときに承認リクエストを受け取る owner ship を設定します。
+## 所有者と承認システム
 
 ```json5
 {
@@ -174,19 +162,34 @@ DM allowlist (空 = DM は許可されません。承認フローには `ownerSh
 }
 ```
 
-owner ship は **すべての場所で自動的に認可されます** — DM 招待は自動承認され、
-チャンネルメッセージは常に許可されます。owner を `dmAllowlist` や
-`defaultAuthorizedShips` に追加する必要はありません。
+所有者 ship はどこでも認可されます。DM 招待は常に自動承認され、グループ招待も常に自動承認され、チャンネルメッセージも常に認可を通過します。
+所有者は `dmAllowlist`、`defaultAuthorizedShips`、`groupInviteAllowlist` に含まれている必要はありません。
 
-設定すると、owner は次の DM 通知を受け取ります。
+`ownerShip` が設定されている場合、未認可のリクエストは単に破棄されるのではなく、保留中の承認としてキューに入り、
+所有者に DM されます。
 
-- allowlist にない ship からの DM リクエスト
-- 認可なしのチャンネルでのメンション
-- グループ招待リクエスト
+- `dmAllowlist` に含まれていない ship からの DM リクエスト
+- 送信者が認可に失敗したチャンネル内のメンション
+- `groupInviteAllowlist` に含まれていない ship からのグループ招待（自動承認がオフの場合、またはオンでも
+  招待者が許可リストに含まれていない場合）
+
+所有者は DM で返信してリクエストに対処します。
+
+| 所有者の返信                 | 効果                                                 |
+| ---------------------------- | ---------------------------------------------------- |
+| `approve` / `deny` / `block` | 最新の保留中承認に対処します                         |
+| `approve <id>` / `deny <id>` | id で特定の承認に対処します                          |
+| `block`                      | ship もネイティブにブロックし、再接続できないようにします |
+| `unblock ~ship`              | ネイティブブロックを取り消します                     |
+| `blocked`                    | 現在ブロックされている ship を一覧表示します         |
+| `pending`                    | 保留中の承認リクエストを一覧表示します               |
+
+`ownerShip` が設定されていない場合、未認可の DM とチャンネルメンションは単に破棄され、ログに記録されます。
+承認プロンプトはありません。
 
 ## 自動承認設定
 
-DM 招待を自動承認します (`dmAllowlist` 内の ship の場合):
+`dmAllowlist` にすでに含まれている ship からの DM 招待を自動承認します（所有者はこのフラグに関係なく常に自動承認されます）。
 
 ```json5
 {
@@ -198,7 +201,8 @@ DM 招待を自動承認します (`dmAllowlist` 内の ship の場合):
 }
 ```
 
-信頼済み ship からのグループ招待を自動承認します。
+許可リストからのグループ招待を自動承認します（フェイルクローズ: `autoAcceptGroupInvites: true` で
+`groupInviteAllowlist` が空の場合、所有者以外からの招待は承認されません）。
 
 ```json5
 {
@@ -211,46 +215,53 @@ DM 招待を自動承認します (`dmAllowlist` 内の ship の場合):
 }
 ```
 
-`autoAcceptGroupInvites` は `groupInviteAllowlist` が空の場合、fail closed になります。
-自動的に承認するグループ招待元の ship を allowlist に設定してください。
+## Urbit 設定ストアによるホットリロード
 
-## 配信先 (CLI/cron)
+上記の設定のほとんど（`dmAllowlist`、`groupInviteAllowlist`、`groupChannels`、
+`defaultAuthorizedShips`、`autoDiscoverChannels`、`autoAcceptDmInvites`、
+`autoAcceptGroupInvites`、`ownerShip`、`showModelSignature`）は、初回実行時に ship の
+`%settings` agent（desk `moltbot`、bucket `tlon`）へミラーされ、その後はそこからライブで読み込まれます。
+そのため、Landscape クライアントまたはバンドル Skills の設定コマンドから行った変更は、Gateway の再起動なしで適用されます。
+`channelRules` と保留中の承認も JSON としてそこに永続化されます。設定ストアに一度も書き込まれていない値については、
+ファイル設定が信頼できる情報源のままです。
 
-`openclaw message send` または cron 配信でこれらを使用します。
+## 配信ターゲット（CLI/cron）
+
+`openclaw message send` または cron 配信で使用します。
 
 - DM: `~sampel-palnet` または `dm/~sampel-palnet`
 - グループ: `chat/~host-ship/channel` または `group:~host-ship/channel`
 
-## バンドル済み skill
+## バンドル Skills
 
-Tlon Plugin には、Tlon 操作への CLI アクセスを提供するバンドル済み skill ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
-が含まれています。
+この Plugin は、直接 Urbit 操作を行う CLI である [`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill) をバンドルしています。
+Plugin がインストールされると自動的に利用できます。
 
-- **連絡先**: プロフィールの取得/更新、連絡先一覧
-- **チャンネル**: 一覧表示、作成、メッセージ投稿、履歴取得
-- **グループ**: 一覧表示、作成、メンバー管理
-- **DM**: メッセージ送信、メッセージへのリアクション
-- **リアクション**: 投稿と DM に emoji リアクションを追加/削除
-- **設定**: slash command 経由で Plugin 権限を管理
-
-この skill は Plugin がインストールされると自動的に利用可能になります。
+- **アクティビティ**: メンション、返信、未読
+- **チャンネル**: 一覧表示、作成、名前変更
+- **連絡先**: プロファイルの一覧表示/取得/更新
+- **グループ**: 作成、参加、招待/リクエストフロー、ロール
+- **フック**: チャンネルフックの管理
+- **メッセージ**: 履歴、検索
+- **DM**: 送信、リアクション、承認/拒否
+- **投稿**: リアクション、削除
+- **Notebook**: diary チャンネルへの投稿
+- **設定**: 上記の設定ストアを介した Plugin 設定のホットリロード
 
 ## 機能
 
-| 機能                  | ステータス                                      |
-| --------------------- | ----------------------------------------------- |
-| ダイレクトメッセージ  | ✅ サポート済み                                 |
-| グループ/チャンネル   | ✅ サポート済み (デフォルトでメンション必須)    |
-| スレッド              | ✅ サポート済み (スレッド内で自動返信)          |
-| リッチテキスト        | ✅ Markdown を Tlon 形式に変換                  |
-| 画像                  | ✅ Tlon ストレージにアップロード                |
-| リアクション          | ✅ [バンドル済み skill](#bundled-skill) 経由    |
-| 投票                  | ❌ まだサポートされていません                  |
-| ネイティブコマンド    | ✅ サポート済み (デフォルトで owner のみ)       |
+| 機能            | ステータス                                      |
+| --------------- | ----------------------------------------------- |
+| ダイレクトメッセージ | 対応                                            |
+| グループ/チャンネル | 対応（デフォルトでメンションゲートあり）       |
+| スレッド        | 対応（一度参加すると返信し続けます）            |
+| リッチテキスト  | Markdown を Tlon のネイティブ形式へ変換         |
+| 画像            | 受信時にダウンロード、送信時にアップロード      |
+| リアクション    | [バンドル Skills](#bundled-skill) 経由のみ      |
+| 投票            | 非対応                                          |
+| ネイティブコマンド | デフォルトで所有者のみ                         |
 
 ## トラブルシューティング
-
-まずこの手順を実行してください。
 
 ```bash
 openclaw status
@@ -262,42 +273,47 @@ openclaw doctor
 よくある失敗:
 
 - **DM が無視される**: 送信者が `dmAllowlist` に含まれておらず、承認フロー用の `ownerShip` も設定されていません。
-- **グループメッセージが無視される**: チャンネルが検出されていないか、送信者が認可されていません。
-- **接続エラー**: ship URL に到達できることを確認してください。ローカル ship には `allowPrivateNetwork` を有効にしてください。
-- **認証エラー**: ログインコードが現在有効であることを確認してください (コードはローテーションされます)。
+- **グループメッセージが無視される**: チャンネルが検出/ピン留めされていないか、送信者が認可に失敗しており、
+  承認をキューに入れるための `ownerShip` がありません。
+- **接続エラー**: ship URL に到達できることを確認してください。ローカル ship には
+  `network.dangerouslyAllowPrivateNetwork` を設定します。
+- **認証エラー**: ログインコードはローテーションされます。ship から現在のコードをコピーしてください。
 
 ## 設定リファレンス
 
 完全な設定: [設定](/ja-JP/gateway/configuration)
 
-プロバイダーオプション:
-
-- `channels.tlon.enabled`: チャンネル起動を有効/無効にします。
-- `channels.tlon.ship`: bot の Urbit ship 名 (例: `~sampel-palnet`)。
-- `channels.tlon.url`: ship URL (例: `https://sampel-palnet.tlon.network`)。
-- `channels.tlon.code`: ship ログインコード。
-- `channels.tlon.allowPrivateNetwork`: localhost/LAN URL を許可します (SSRF bypass)。
-- `channels.tlon.ownerShip`: 承認システム用の owner ship (常に認可済み)。
-- `channels.tlon.dmAllowlist`: DM を許可された ship (空 = なし)。
-- `channels.tlon.autoAcceptDmInvites`: allowlist に含まれる ship からの DM を自動承認します。
-- `channels.tlon.autoAcceptGroupInvites`: allowlist に含まれる ship からのグループ招待を自動承認します。
-- `channels.tlon.groupInviteAllowlist`: グループ招待を自動承認できる ship。
-- `channels.tlon.autoDiscoverChannels`: グループチャンネルを自動検出します (デフォルト: true)。
-- `channels.tlon.groupChannels`: 手動で固定されたチャンネル nest。
-- `channels.tlon.defaultAuthorizedShips`: すべてのチャンネルで認可される ship。
-- `channels.tlon.authorization.channelRules`: チャンネルごとの認可ルール。
-- `channels.tlon.showModelSignature`: メッセージにモデル名を追加します。
+| キー                                                   | 意味                                                           |
+| ------------------------------------------------------ | -------------------------------------------------------------- |
+| `channels.tlon.enabled`                                | チャンネル起動を有効/無効にします。                           |
+| `channels.tlon.ship`                                   | ボットの Urbit ship 名（例: `~sampel-palnet`）。               |
+| `channels.tlon.url`                                    | ship URL（例: `https://sampel-palnet.tlon.network`）。         |
+| `channels.tlon.code`                                   | ship ログインコード。                                          |
+| `channels.tlon.network.dangerouslyAllowPrivateNetwork` | localhost/LAN の ship URL を許可します（SSRF オプトイン）。    |
+| `channels.tlon.ownerShip`                              | 所有者 ship: 常に認可され、承認リクエストを受け取ります。      |
+| `channels.tlon.dmAllowlist`                            | DM を許可された ship（空 = 所有者以外なし）。                  |
+| `channels.tlon.autoAcceptDmInvites`                    | `dmAllowlist` 内の ship からの DM を自動承認します。           |
+| `channels.tlon.autoAcceptGroupInvites`                 | `groupInviteAllowlist` からのグループ招待を自動承認します。    |
+| `channels.tlon.groupInviteAllowlist`                   | グループ招待が自動承認される ship。                            |
+| `channels.tlon.autoDiscoverChannels`                   | 参加済みグループチャンネルを自動検出します（デフォルト: `false`）。 |
+| `channels.tlon.groupChannels`                          | 手動でピン留めされたチャンネル nest。                          |
+| `channels.tlon.defaultAuthorizedShips`                 | すべてのチャンネルで認可される ship（どのルールにも一致しない場合に使用）。 |
+| `channels.tlon.authorization.channelRules`             | チャンネル nest ごとの認可モード + 許可リスト。                |
+| `channels.tlon.showModelSignature`                     | 返信に `_[Generated by <model>]_` を追加します。                |
+| `channels.tlon.responsePrefix`                         | 送信返信の前に付ける静的プレフィックス。                       |
+| `channels.tlon.accounts.<id>`                          | 追加の名前付きアカウント（複数 ship セットアップ）。           |
 
 ## 注記
 
-- グループ返信では、応答するためにメンション (例: `~your-bot-ship`) が必要です。
-- スレッド返信: 受信メッセージがスレッド内にある場合、OpenClaw はスレッド内で返信します。
-- リッチテキスト: Markdown 書式 (太字、斜体、コード、見出し、リスト) は Tlon のネイティブ形式に変換されます。
-- 画像: URL は Tlon ストレージにアップロードされ、画像ブロックとして埋め込まれます。
+- ボットがすでにそのスレッドに参加していない限り、グループ返信には @ メンション（例: `~your-bot-ship`）が必要です。
+- スレッド返信はスレッド内に送信されます。ボットには、agent 用にスレッドコンテキストの直近 10 件のメッセージも前置されます。
+- リッチテキスト（太字、斜体、コード、ヘッダー、リスト）は Tlon のネイティブ形式に変換されます。
+- チャンネル要約を求める受信メッセージ（たとえば「このチャンネルを要約して」）を送信すると、
+  通常の返信フローではなく組み込みの履歴要約がトリガーされます。
 
 ## 関連
 
-- [チャンネル概要](/ja-JP/channels) — サポートされているすべてのチャンネル
+- [チャンネル概要](/ja-JP/channels) — 対応しているすべてのチャンネル
 - [ペアリング](/ja-JP/channels/pairing) — DM 認証とペアリングフロー
 - [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンションゲート
 - [チャンネルルーティング](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング

@@ -1,38 +1,36 @@
 ---
 read_when:
-    - '`openclaw browser` を使用しており、一般的なタスクの例が必要です'
-    - 別のマシンで動作しているブラウザを Node ホスト経由で制御したい場合
-    - Chrome MCP 経由でローカルのサインイン済み Chrome に接続したい
-summary: 'CLI リファレンス: `openclaw browser`（ライフサイクル、プロファイル、タブ、アクション、状態、デバッグ）'
+    - '`openclaw browser` を使用しており、一般的なタスクの例が必要な場合'
+    - 別のマシン上で実行されているブラウザを Node ホスト経由で制御したい場合
+    - Chrome MCP 経由でローカルのサインイン済み Chrome に接続する
+summary: '`openclaw browser` のCLIリファレンス（ライフサイクル、プロファイル、タブ、アクション、状態、デバッグ）'
 title: ブラウザー
 x-i18n:
-    generated_at: "2026-06-27T10:52:39Z"
+    generated_at: "2026-07-05T11:10:11Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d9e45a6b89f23623c25b61d41273151b60da1fc415b5d3c901d8c555d8244f7a
+    source_hash: 82070c47ee06bf8dc5e3463ea17d2ef4b9c6adcc9a1e830d745986e7162fd6b1
     source_path: cli/browser.md
     workflow: 16
 ---
 
 # `openclaw browser`
 
-OpenClaw のブラウザー制御サーフェスを管理し、ブラウザーアクション（ライフサイクル、プロファイル、タブ、スナップショット、スクリーンショット、ナビゲーション、入力、状態エミュレーション、デバッグ）を実行します。
+OpenClaw のブラウザー制御サーフェスを管理し、ブラウザーアクションを実行します: ライフサイクル、プロファイル、タブ、スナップショット、スクリーンショット、ナビゲーション、入力、状態エミュレーション、デバッグ。
 
-関連:
-
-- ブラウザーツール + API: [ブラウザーツール](/ja-JP/tools/browser)
+関連: [ブラウザーツール](/ja-JP/tools/browser)
 
 ## 共通フラグ
 
-- `--url <gatewayWsUrl>`: Gateway WebSocket URL（デフォルトは設定）。
-- `--token <token>`: Gateway トークン（必要な場合）。
-- `--timeout <ms>`: リクエストタイムアウト（ms）。
+- `--url <gatewayWsUrl>`: Gateway WebSocket URL (デフォルトは設定)。
+- `--token <token>`: Gateway トークン (必要な場合)。
+- `--timeout <ms>`: リクエストタイムアウト (ms、デフォルト: `30000`)。
 - `--expect-final`: 最終 Gateway レスポンスを待ちます。
-- `--browser-profile <name>`: ブラウザープロファイルを選択します（デフォルトは設定から）。
-- `--json`: 機械可読出力（サポートされている場合）。
+- `--browser-profile <name>`: ブラウザープロファイルを選択します (デフォルト: `openclaw`、または `browser.defaultProfile`)。
+- `--json`: 機械可読な出力 (対応している場合)。
 
-## クイックスタート（ローカル）
+## クイックスタート (ローカル)
 
 ```bash
 openclaw browser profiles
@@ -41,11 +39,11 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-エージェントは `browser({ action: "doctor" })` で同じ準備完了チェックを実行できます。
+エージェントは `browser({ action: "doctor" })` で同じ準備状態チェックを実行できます。
 
 ## クイックトラブルシューティング
 
-`start` が `not reachable after start` で失敗する場合は、まず CDP の準備完了状態をトラブルシュートしてください。`start` と `tabs` は成功するのに `open` または `navigate` が失敗する場合、ブラウザー制御プレーンは正常で、通常はナビゲーションの SSRF ポリシーが原因です。
+`start` が `not reachable after start` で失敗する場合は、まず CDP 準備状態をトラブルシュートしてください。`start` と `tabs` は成功するが `open` または `navigate` が失敗する場合、ブラウザー制御プレーンは正常で、失敗の原因は通常ナビゲーション SSRF ポリシーブロックです。
 
 最小シーケンス:
 
@@ -70,29 +68,14 @@ openclaw browser stop
 openclaw browser --browser-profile openclaw reset-profile
 ```
 
-注記:
-
-- `doctor --deep` はライブスナップショットプローブを追加します。基本的な CDP
-  準備完了状態は緑でも、現在のタブを検査できる証拠が欲しい場合に便利です。
-- `attachOnly` とリモート CDP プロファイルでは、OpenClaw がブラウザープロセス自体を起動していない場合でも、`openclaw browser stop` は
-  アクティブな制御セッションを閉じ、一時的なエミュレーション上書きをクリアします。
-- ローカル管理プロファイルでは、`openclaw browser stop` は生成されたブラウザー
-  プロセスを停止します。
-- `openclaw browser start --headless` はその start リクエストにのみ適用され、
-  OpenClaw がローカル管理ブラウザーを起動する場合にのみ有効です。`browser.headless` やプロファイル設定を書き換えず、すでに実行中の
-  ブラウザーには何もしません。
-- `DISPLAY` または `WAYLAND_DISPLAY` がない Linux ホストでは、`OPENCLAW_BROWSER_HEADLESS=0`、
-  `browser.headless=false`、または `browser.profiles.<name>.headless=false` が
-  表示ブラウザーを明示的に要求しない限り、ローカル管理プロファイルは
-  自動的にヘッドレスで実行されます。
+- `doctor --deep` はライブスナップショットプローブを追加します: 基本的な CDP 準備状態は正常だが、現在のタブを検査できる証拠が必要な場合に便利です。
+- `stop` はアクティブな制御セッションを閉じ、一時的なエミュレーション上書きをクリアします。これは OpenClaw がブラウザープロセス自体を起動していない `attachOnly` やリモート CDP プロファイルでも同様です。ローカル管理プロファイルでは、`stop` は生成されたブラウザープロセスも停止します。
+- `start --headless` はその起動リクエストにのみ適用され、OpenClaw がローカル管理ブラウザーを起動する場合にのみ有効です。`browser.headless` やプロファイル設定を書き換えることはなく、すでに実行中のブラウザーには何もしません。
+- `DISPLAY` または `WAYLAND_DISPLAY` がない Linux ホストでは、`OPENCLAW_BROWSER_HEADLESS=0`、`browser.headless=false`、または `browser.profiles.<name>.headless=false` が表示可能なブラウザーを明示的に要求していない限り、ローカル管理プロファイルは自動的にヘッドレスで実行されます。
 
 ## コマンドが見つからない場合
 
-`openclaw browser` が未知のコマンドの場合は、
-`~/.openclaw/openclaw.json` の `plugins.allow` を確認してください。
-
-`plugins.allow` が存在する場合、設定にルートの `browser` ブロックがすでにない限り、
-バンドルされたブラウザー Plugin を明示的に列挙します。
+`openclaw browser` が不明なコマンドの場合は、`~/.openclaw/openclaw.json` の `plugins.allow` を確認してください。`plugins.allow` が存在する場合、設定にルート `browser` ブロックがすでにない限り、同梱ブラウザー Plugin を明示的に一覧に含めます:
 
 ```json5
 {
@@ -102,17 +85,15 @@ openclaw browser --browser-profile openclaw reset-profile
 }
 ```
 
-たとえば `browser.enabled=true` や
-`browser.profiles.<name>` のような明示的なルート `browser` ブロックも、
-制限的な Plugin 許可リストの下でバンドルされたブラウザー Plugin を有効化します。
+明示的なルート `browser` ブロック (例: `browser.enabled=true` または `browser.profiles.<name>`) も、制限付き Plugin 許可リスト下で同梱ブラウザー Plugin を有効化します。
 
 関連: [ブラウザーツール](/ja-JP/tools/browser#missing-browser-command-or-tool)
 
 ## プロファイル
 
-プロファイルは名前付きのブラウザールーティング設定です。実際には:
+プロファイルは名前付きのブラウザールーティング設定です:
 
-- `openclaw`: 専用の OpenClaw 管理 Chrome インスタンスを起動または接続します（分離されたユーザーデータディレクトリ）。
+- `openclaw` (デフォルト): 専用の OpenClaw 管理 Chrome インスタンスを起動または接続します (分離されたユーザーデータディレクトリ)。
 - `user`: Chrome DevTools MCP 経由で、既存のサインイン済み Chrome セッションを制御します。
 - カスタム CDP プロファイル: ローカルまたはリモートの CDP エンドポイントを指します。
 
@@ -124,11 +105,7 @@ openclaw browser create-profile --name remote --cdp-url https://browser-host.exa
 openclaw browser delete-profile --name work
 ```
 
-特定のプロファイルを使う:
-
-```bash
-openclaw browser --browser-profile work tabs
-```
+任意のサブコマンドで `--browser-profile <name>` を使って特定のプロファイルを使用します。例: `openclaw browser --browser-profile work tabs`。
 
 ## タブ
 
@@ -143,12 +120,9 @@ openclaw browser focus docs
 openclaw browser close t1
 ```
 
-`tabs` はまず `suggestedTargetId` を返し、次に `t1` などの安定した `tabId`、
-任意のラベル、そして生の `targetId` を返します。エージェントは
-`suggestedTargetId` を `focus`、`close`、スナップショット、アクションに渡し返す必要があります。`open --label`、`tab new --label`、または `tab label` でラベルを割り当てられます。ラベル、
-タブ ID、生のターゲット ID、一意のターゲット ID プレフィックスはすべて受け付けられます。
-互換性のためリクエストフィールド名は引き続き `targetId` ですが、これらのタブ参照を受け付けます。生のターゲット ID は永続的なエージェントメモリではなく、診断用ハンドルとして扱ってください。
-Chromium がナビゲーションやフォーム送信中に基盤となる生ターゲットを置き換える場合、OpenClaw は一致を証明できるとき、安定した `tabId`/ラベルを置換後のタブに付けたままにします。生のターゲット ID は揮発的なままです。`suggestedTargetId` を優先してください。
+`tabs` は最初に `suggestedTargetId` を返し、次に安定した `tabId` (`t1` など)、任意のラベル、生の `targetId` を返します。`suggestedTargetId` を `focus`、`close`、スナップショット、アクションに渡してください。`open --label`、`tab new --label`、または `tab label` でラベルを割り当てます。ラベル、タブ ID、生のターゲット ID、一意なターゲット ID プレフィックスはいずれも受け付けられます。リクエストフィールド名は互換性のため引き続き `targetId` ですが、これらのタブ参照のいずれも受け付けます。
+
+生のターゲット ID は揮発性の診断用ハンドルであり、永続的なエージェントメモリではありません。ナビゲーションやフォーム送信中に Chromium が基になる生ターゲットを置き換える場合、OpenClaw は一致を証明できるとき、安定した `tabId`/ラベルを置き換え後のタブに紐付けたままにします。`suggestedTargetId` を優先してください。
 
 ## スナップショット / スクリーンショット / アクション
 
@@ -168,31 +142,13 @@ openclaw browser screenshot --ref e12
 openclaw browser screenshot --labels
 ```
 
-注記:
+- `--full-page` はページキャプチャ専用です。`--ref` や `--element` と組み合わせることはできません。
+- `existing-session` / `user` プロファイルはページスクリーンショットと、スナップショット出力からの `--ref` スクリーンショットに対応していますが、CSS `--element` スクリーンショットには対応していません。
+- `--labels` は現在のスナップショット参照をスクリーンショット上に重ねます。Playwright ベースのプロファイルでは、`--full-page` (フルページオーバーレイ)、`--ref` (ARIA ref による要素クリップオーバーレイ)、`--element` (CSS セレクターによる要素クリップオーバーレイ) で動作します。要素クリップモードでは、ラベルは要素を基準に投影されます。レスポンスには `annotations` 配列 (空の場合は省略) も含まれ、各 ref の境界ボックスが含まれます: キャプチャ画像の座標空間 (ビューポート / フルページ / 要素相対) における `ref`、`number`、`role`、任意の `name`、および `box: {x, y, width, height}`。
+  `existing-session` プロファイルはページスクリーンショット上に chrome-mcp オーバーレイをレンダリングしますが、Playwright 投影ヘルパーは使用せず、`annotations` も含めません。CSS `--element` スクリーンショットはそこでサポートされません。Playwright または chrome-mcp がない場合、ラベル付きスクリーンショットは利用できません。
+- `snapshot --urls` は検出されたリンク先を AI スナップショットに追加し、エージェントがリンクテキストだけから推測するのではなく、直接ナビゲーションターゲットを選べるようにします。
 
-- `--full-page` はページキャプチャ専用です。`--ref`
-  や `--element` と組み合わせることはできません。
-- `existing-session` / `user` プロファイルは、ページスクリーンショットとスナップショット出力からの `--ref`
-  スクリーンショットをサポートしますが、CSS `--element` スクリーンショットはサポートしません。
-- `--labels` は現在のスナップショット参照をスクリーンショット上にオーバーレイします。
-  Playwright ベースのプロファイルでは、`--full-page`（フルページラベル
-  オーバーレイ）、`--ref`（ARIA ref による要素クリップラベルオーバーレイ）、`--element`
-  （CSS セレクターによる要素クリップラベルオーバーレイ）と連携します。要素クリップモードでは、ラベルは要素を基準に投影されます。レスポンスには、各 ref の境界ボックスを含む
-  `annotations` 配列も含まれます。各項目には `ref`、
-  `number`、`role`、任意の `name`、および `box: {x, y, width, height}` があります。
-  座標はキャプチャ画像の空間（ビューポート / フルページ /
-  要素相対）内です。空の場合、このフィールドは省略されます。
-  `existing-session` プロファイルはページスクリーンショットに chrome-mcp オーバーレイを描画しますが、
-  Playwright 投影ヘルパーは使用せず、
-  `annotations` も含めません。そこでは CSS `--element` スクリーンショットはサポートされません。Playwright または chrome-mcp がない場合、
-  ラベル付きスクリーンショットは利用できません。以前のリリースでは、ラベル付き
-  Playwright スクリーンショットで `--full-page`、`--ref`、`--element` が無視され、
-  常にビューポートキャプチャが返されていました。現在、ラベル付き
-  スクリーンショットはこれらのスコープを尊重します。
-- `snapshot --urls` は検出されたリンク先を AI スナップショットに追加するため、
-  エージェントはリンクテキストだけから推測する代わりに、直接ナビゲーションターゲットを選択できます。
-
-Navigate/click/type（ref ベースの UI 自動化）:
+ナビゲート/クリック/入力 (ref ベースの UI 自動化):
 
 ```bash
 openclaw browser navigate https://example.com
@@ -211,13 +167,9 @@ openclaw browser evaluate --fn 'const title = document.title; return title;'
 openclaw browser evaluate --timeout-ms 30000 --fn 'async () => { await window.ready; return true; }'
 ```
 
-`evaluate --fn` は関数ソース、式、または文本体を受け付けます。
-文本体は async 関数としてラップされるため、返したい値には `return` を使ってください。ページ側の関数が
-デフォルトの evaluate タイムアウトより長い時間を必要とする可能性がある場合は、`evaluate --timeout-ms <ms>` を使用してください。
+`evaluate --fn` は関数ソース、式、または文の本体を受け付けます。文の本体は async 関数としてラップされるため、返したい値には `return` を使用してください。ページ側の関数がデフォルトの evaluate タイムアウトより長くかかる可能性がある場合は、`--timeout-ms` を使用してください。`browser.evaluateEnabled=false` (デフォルト: `true`) は `evaluate` と `wait --fn` の両方を無効にします。
 
-アクションレスポンスは、OpenClaw が置換タブを証明できる場合、アクションによってトリガーされたページ
-置換後の現在の生 `targetId` を返します。スクリプトはそれでも、
-長時間実行されるワークフローには `suggestedTargetId`/ラベルを保存して渡す必要があります。
+アクションレスポンスは、OpenClaw が置き換え後のタブを証明できる場合、アクションによってページが置き換えられた後の現在の生の `targetId` を返します。長期間のワークフローでは、スクリプトは引き続き `suggestedTargetId`/ラベルを保存して渡す必要があります。
 
 ファイル + ダイアログヘルパー:
 
@@ -230,18 +182,9 @@ openclaw browser dialog --accept
 openclaw browser dialog --dismiss --dialog-id d1
 ```
 
-管理 Chrome プロファイルは、通常のクリックでトリガーされるダウンロードを OpenClaw
-ダウンロードディレクトリ（デフォルトは `/tmp/openclaw/downloads`、または設定済みの一時
-ルート）に保存します。エージェントが特定のファイルを待ってそのパスを返す必要がある場合は、
-`waitfordownload` または `download` を使ってください。これらの明示的なウェイターが次のダウンロードを所有します。
-アップロードは、OpenClaw の一時アップロードルートと OpenClaw 管理の
-インバウンドメディアからのファイルを受け付けます。これには `media://inbound/<id>` とサンドボックス相対の
-`media/inbound/<id>` 参照が含まれます。ネストした media ref、トラバーサル、任意の
-ローカルパスは引き続き拒否されます。
-アクションがモーダルダイアログを開くと、アクションレスポンスは
-`browserState.dialogs.pending` とともに `blockedByDialog` を返します。直接応答するには
-`--dialog-id` を渡してください。OpenClaw の外部で処理されたダイアログは
-`browserState.dialogs.recent` の下に表示されます。
+管理 Chrome プロファイルは、通常のクリックで開始されたダウンロードを OpenClaw ダウンロードディレクトリ (デフォルトでは `/tmp/openclaw/downloads`、または設定済みの一時ルート) に保存します。エージェントが特定のファイルを待ってそのパスを返す必要がある場合は、`waitfordownload` または `download` を使用してください。これらの明示的な待機処理が次のダウンロードを所有します。アップロードは、OpenClaw 一時アップロードルートと OpenClaw 管理の受信メディアからのファイルを受け付けます。これには `media://inbound/<id>` とサンドボックス相対の `media/inbound/<id>` 参照が含まれます。ネストされたメディア参照、トラバーサル、任意のローカルパスは拒否されます。
+
+アクションがモーダルダイアログを開いた場合、アクションレスポンスは `browserState.dialogs.pending` とともに `blockedByDialog` を返します。直接応答するには `--dialog-id` を渡してください。OpenClaw 外で処理されたダイアログは `browserState.dialogs.recent` に表示されます。
 
 ## 状態とストレージ
 
@@ -286,7 +229,7 @@ openclaw browser trace stop --out trace.zip
 
 ## MCP 経由の既存 Chrome
 
-組み込みの `user` プロファイルを使用するか、独自の `existing-session` プロファイルを作成します。
+組み込みの `user` プロファイルを使用するか、独自の `existing-session` プロファイルを作成します:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -296,33 +239,30 @@ openclaw browser create-profile --name chrome-port --driver existing-session --c
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-デフォルトの existing-session パスは、ホスト専用の Chrome MCP 自動接続です。ブラウザーがすでに
-DevTools エンドポイント付きで実行されている場合は、Chrome MCP が代わりにそのエンドポイントへ接続するよう `--cdp-url` を渡してください。
-Docker、Browserless、または Chrome MCP セマンティクスが不要なその他のリモートセットアップでは、
-CDP プロファイルを使用します。
+デフォルトの existing-session パスは、ホスト専用 Chrome MCP 自動接続です。ブラウザーがすでに DevTools エンドポイント付きで実行されている場合は、Chrome MCP が代わりにそのエンドポイントへ接続するように `--cdp-url` を渡してください。Docker、Browserless、または Chrome MCP セマンティクスが不要なその他のリモートセットアップでは、代わりに CDP プロファイルを使用してください。
 
 現在の existing-session の制限:
 
-- スナップショット駆動のアクションは CSS セレクターではなく refs を使用します
-- `browser.actionTimeoutMs` は、呼び出し元が `timeoutMs` を省略した場合、サポートされている `act` リクエストのデフォルトを 60000 ms にします。呼び出しごとの `timeoutMs` が引き続き優先されます。
-- `click` は左クリックのみです
-- `type` は `slowly=true` をサポートしていません
-- `press` は `delayMs` をサポートしていません
-- `hover`、`scrollintoview`、`drag`、`select`、`fill`、`evaluate` は、呼び出しごとのタイムアウト上書きを拒否します
-- `select` は 1 つの値のみをサポートします
-- `wait --load networkidle` は既存セッションのプロファイルではサポートされていません（管理対象および raw/remote CDP では動作します）
-- ファイルアップロードには `--ref` / `--input-ref` が必要です。CSS `--element` はサポートせず、現時点では一度に 1 ファイルのみサポートします
-- ダイアログフックは `--timeout` をサポートしていません
-- スクリーンショットはページキャプチャと `--ref` をサポートしますが、CSS `--element` はサポートしていません
-- `responsebody`、ダウンロードインターセプト、PDF エクスポート、バッチアクションには、引き続き管理対象ブラウザーまたは raw CDP プロファイルが必要です
+- スナップショット駆動のアクションは CSS セレクターではなく refs を使用します。
+- `browser.actionTimeoutMs` は、呼び出し元が `timeoutMs` を省略した場合、対応する `act` リクエストのデフォルトを 60000 ms にします。呼び出しごとの `timeoutMs` が引き続き優先されます。
+- `click` は左クリックのみです。
+- `type` は `slowly=true` に対応していません。
+- `press` は `delayMs` に対応していません。
+- `hover`、`scrollintoview`、`drag`、`select`、`fill`、`evaluate` は呼び出しごとのタイムアウト上書きを拒否します。
+- `select` は 1 つの値のみ対応します。
+- `wait --load networkidle` はサポートされません (管理プロファイルおよび raw/remote CDP プロファイルでは動作します)。
+- ファイルアップロードには `--ref` / `--input-ref` が必要で、CSS `--element` には対応せず、一度に 1 ファイルのみ対応します。
+- ダイアログフックは `--timeout` に対応していません。
+- スクリーンショットはページキャプチャと `--ref` に対応しますが、CSS `--element` には対応していません。
+- `responsebody`、ダウンロードインターセプト、PDF エクスポート、バッチアクションには、引き続き管理ブラウザーまたは raw CDP プロファイルが必要です。
 
-## リモートブラウザー制御（Node ホストプロキシ）
+## リモートブラウザー制御（ノードホストプロキシ）
 
-Gateway がブラウザーとは別のマシンで実行されている場合は、Chrome/Brave/Edge/Chromium があるマシンで **Node ホスト**を実行します。Gateway はブラウザーアクションをその Node にプロキシします（別個のブラウザー制御サーバーは不要です）。
+Gateway がブラウザーとは別のマシンで実行されている場合は、Chrome/Brave/Edge/Chromium があるマシンで**ノードホスト**を実行します。Gateway はブラウザー操作をそのノードにプロキシします。別個のブラウザー制御サーバーは不要です。
 
-自動ルーティングを制御するには `gateway.nodes.browser.mode` を使用し、複数が接続されている場合に特定の Node を固定するには `gateway.nodes.browser.node` を使用します。
+自動ルーティングを制御するには `gateway.nodes.browser.mode` を使用し、複数のノードが接続されている場合に特定のノードへ固定するには `gateway.nodes.browser.node` を使用します。
 
-セキュリティ + リモートセットアップ: [ブラウザーツール](/ja-JP/tools/browser)、[リモートアクセス](/ja-JP/gateway/remote)、[Tailscale](/ja-JP/gateway/tailscale)、[セキュリティ](/ja-JP/gateway/security)
+セキュリティ + リモートセットアップ: [ブラウザーツール](/ja-JP/tools/browser), [リモートアクセス](/ja-JP/gateway/remote), [Tailscale](/ja-JP/gateway/tailscale), [セキュリティ](/ja-JP/gateway/security)
 
 ## 関連
 

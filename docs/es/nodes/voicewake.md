@@ -1,59 +1,46 @@
 ---
 read_when:
     - Cambiar el comportamiento o los valores predeterminados de las palabras de activación por voz
-    - Agregar nuevas plataformas de Node que necesitan sincronización de palabra de activación
-summary: Palabras de activación por voz globales (propiedad del Gateway) y cómo se sincronizan entre nodos
+    - Añadir nuevas plataformas Node que necesitan sincronización de palabra de activación
+summary: Palabras de activación de voz globales (propiedad del Gateway) y cómo se sincronizan entre nodos
 title: Activación por voz
 x-i18n:
-    generated_at: "2026-06-27T11:56:03Z"
+    generated_at: "2026-07-05T11:28:23Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
+    source_hash: 6ec1980dd69a041e7dfeaa9d74e370e3279b22aa7ed19b72067ee56f3f696899
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw trata las **palabras de activación como una única lista global** propiedad del **Gateway**.
+Las palabras de activación son **una lista global propiedad del Gateway**; no hay listas personalizadas por nodo. Cualquier nodo o interfaz de app puede editar la lista; el Gateway conserva el cambio y lo transmite a todos los clientes conectados.
 
-- No hay **palabras de activación personalizadas por nodo**.
-- **Cualquier IU de nodo/app puede editar** la lista; los cambios los persiste el Gateway y se transmiten a todos.
-- macOS e iOS mantienen interruptores locales de **activación/desactivación de Activación por voz** (la UX local y los permisos difieren).
-- Android actualmente mantiene la Activación por voz desactivada y usa un flujo manual de micrófono en la pestaña Voz.
+- **macOS**: interruptor local para activar/desactivar Voice Wake. Requiere macOS 26+; consulta [Activación por voz (macOS)](/es/platforms/mac/voicewake) para detalles de runtime/PTT.
+- **iOS**: interruptor local para activar/desactivar Voice Wake en Configuración.
+- **Android**: Voice Wake se desactiva forzosamente en runtime. La pestaña Voz usa captura manual del micrófono en lugar de activadores por palabra de activación.
 
-## Almacenamiento (host del Gateway)
+## Almacenamiento
 
-Las palabras de activación y las reglas de enrutamiento se almacenan en la base de datos de estado del gateway:
-
-- `~/.openclaw/state/openclaw.sqlite`
-
-Las tablas activas son:
-
-- `voicewake_triggers`
-- `voicewake_routing_config`
-- `voicewake_routing_routes`
-
-Los archivos heredados `settings/voicewake.json` y `settings/voicewake-routing.json` son
-solo entradas de migración de doctor; en tiempo de ejecución se leen y escriben las tablas SQLite.
+Las palabras de activación y las reglas de enrutamiento viven en la base de datos de estado del Gateway, `~/.openclaw/state/openclaw.sqlite` de forma predeterminada (se puede sobrescribir con `OPENCLAW_STATE_DIR`), en las tablas `voicewake_triggers`, `voicewake_routing_config`, `voicewake_routing_routes`. Los archivos heredados `settings/voicewake.json` y `settings/voicewake-routing.json` son solo entradas de migración para `openclaw doctor --fix`; el runtime nunca los lee.
 
 ## Protocolo
 
-### Métodos
+### Lista de activadores
 
-- `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` con parámetros `{ triggers: string[] }` → `{ triggers: string[] }`
+| Método         | Parámetros              | Resultado                |
+| -------------- | ----------------------- | ------------------------ |
+| `voicewake.get` | ninguno                | `{ triggers: string[] }` |
+| `voicewake.set` | `{ triggers: string[] }` | `{ triggers: string[] }` |
 
-Notas:
+`voicewake.set` normaliza la entrada: recorta espacios en blanco, elimina entradas vacías, conserva como máximo 32 activadores y trunca cada uno a 64 caracteres. Un resultado vacío vuelve a los valores predeterminados integrados (`openclaw`, `claude`, `computer`).
 
-- Los disparadores se normalizan (se recortan y se descartan los vacíos). Las listas vacías recurren a los valores predeterminados.
-- Se aplican límites por seguridad (topes de cantidad/longitud).
+### Enrutamiento (activador a destino)
 
-### Métodos de enrutamiento (disparador → destino)
-
-- `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` con parámetros `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
-
-Forma de `VoiceWakeRoutingConfig`:
+| Método                  | Parámetros                           | Resultado                            |
+| ----------------------- | ------------------------------------ | ------------------------------------ |
+| `voicewake.routing.get` | ninguno                             | `{ config: VoiceWakeRoutingConfig }` |
+| `voicewake.routing.set` | `{ config: VoiceWakeRoutingConfig }` | `{ config: VoiceWakeRoutingConfig }` |
 
 ```json
 {
@@ -64,41 +51,31 @@ Forma de `VoiceWakeRoutingConfig`:
 }
 ```
 
-Los destinos de ruta admiten exactamente uno de los siguientes:
+Cada `target` de ruta admite exactamente uno de estos:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
 - `{ "sessionKey": "agent:main:main" }`
 
+Límites: como máximo 32 rutas, texto del activador de como máximo 64 caracteres. Los activadores de ruta se normalizan para coincidencia y detección de duplicados convirtiendo a minúsculas, quitando la puntuación inicial/final de cada palabra y colapsando los espacios en blanco (`"Hey, Bot!!"` y `"hey bot"` coinciden y cuentan como duplicados); esta es una normalización más estricta que el recorte simple usado para la lista global de activadores anterior.
+
 ### Eventos
 
-- carga útil de `voicewake.changed` `{ triggers: string[] }`
-- carga útil de `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
+| Evento                      | Carga útil                          |
+| --------------------------- | ------------------------------------ |
+| `voicewake.changed`         | `{ triggers: string[] }`             |
+| `voicewake.routing.changed` | `{ config: VoiceWakeRoutingConfig }` |
 
-Quién lo recibe:
-
-- Todos los clientes WebSocket (app de macOS, WebChat, etc.)
-- Todos los nodos conectados (iOS/Android), y también al conectar un nodo como envío inicial del “estado actual”.
+Ambos se transmiten a todos los clientes WebSocket con ámbito de lectura (app de macOS, WebChat y similares) y a todos los nodos conectados. Un nodo también recibe ambos como envío de instantánea inicial justo después de conectarse.
 
 ## Comportamiento del cliente
 
-### App de macOS
-
-- Usa la lista global para filtrar los disparadores de `VoiceWakeRuntime`.
-- Editar “Palabras de activación” en la configuración de Activación por voz llama a `voicewake.set` y luego depende de la transmisión para mantener sincronizados a los demás clientes.
-
-### Nodo iOS
-
-- Usa la lista global para la detección de disparadores de `VoiceWakeManager`.
-- Editar Palabras de activación en Configuración llama a `voicewake.set` (a través del WS del Gateway) y también mantiene receptiva la detección local de palabras de activación.
-
-### Nodo Android
-
-- La Activación por voz está actualmente deshabilitada en el runtime/la Configuración de Android.
-- La voz de Android usa captura manual de micrófono en la pestaña Voz en lugar de disparadores por palabras de activación.
+- **macOS**: llama a `voicewake.set`/`voicewake.get` y escucha `voicewake.changed` para mantenerse sincronizado con otros clientes.
+- **iOS**: llama a `voicewake.set`/`voicewake.get` y escucha `voicewake.changed` para mantener ágil la detección local de palabras de activación.
+- **Android**: existen `VoiceWakeMode` (`Off`/`Foreground`/`Always`) y código de sincronización con el Gateway, pero la app fuerza el modo a `Off` al iniciar; Voice Wake no está disponible actualmente desde Configuración de Android.
 
 ## Relacionado
 
-- [Modo conversación](/es/nodes/talk)
-- [Notas de audio y voz](/es/nodes/audio)
-- [Comprensión multimedia](/es/nodes/media-understanding)
+- [Modo de conversación](/es/nodes/talk)
+- [Audio y notas de voz](/es/nodes/audio)
+- [Comprensión de medios](/es/nodes/media-understanding)

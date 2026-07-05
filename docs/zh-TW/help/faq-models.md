@@ -2,187 +2,160 @@
 read_when:
     - 選擇或切換模型、設定別名
     - 偵錯模型容錯移轉 /「所有模型皆失敗」
-    - 了解驗證設定檔以及如何管理它們
+    - 了解驗證設定檔及其管理方式
 sidebarTitle: Models FAQ
-summary: 常見問題：模型預設值、選擇、別名、切換、容錯移轉與驗證設定檔
-title: 常見問題：模型與驗證
+summary: 常見問題：模型預設值、選擇、別名、切換、容錯移轉和驗證設定檔
+title: FAQ：模型與驗證
 x-i18n:
-    generated_at: "2026-06-28T20:43:15Z"
+    generated_at: "2026-07-05T11:21:28Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3bfff016fc8b5afff5dde2b939b7fa431aa5a0309aa2833e7dd4675b638ca225
+    source_hash: 071e89c01120849179d3bc372153eb2c76a0fa4e93846df42920f0d961d597df
     source_path: help/faq-models.md
     workflow: 16
 ---
 
-  模型與身分驗證設定檔問答。如需設定、工作階段、閘道、頻道與疑難排解，請參閱主要的 [FAQ](/zh-TW/help/faq)。
+  模型與驗證設定檔問答。若需設定、工作階段、閘道、頻道與疑難排解，請參閱主要的 [FAQ](/zh-TW/help/faq)。
 
   ## 模型：預設值、選擇、別名、切換
 
   <AccordionGroup>
   <Accordion title='什麼是「預設模型」？'>
-    OpenClaw 的預設模型就是你設定為：
+    使用以下項目設定：
 
-    ```
+    ```text
     agents.defaults.model.primary
     ```
 
-    模型會以 `provider/model` 參照（例如：`openai/gpt-5.5` 或 `anthropic/claude-sonnet-4-6`）。如果你省略 provider，OpenClaw 會先嘗試別名，接著針對該精確模型 id 嘗試唯一已設定 provider 的比對，最後才會退回到已設定的預設 provider，作為已棄用的相容性路徑。如果該 provider 不再公開已設定的預設模型，OpenClaw 會退回到第一個已設定的 provider/model，而不是浮現過時且已移除 provider 的預設值。你仍應該**明確**設定 `provider/model`。
+    模型是 `provider/model` 參照（範例：`openai/gpt-5.5`、
+    `anthropic/claude-sonnet-4-6`）。請一律明確設定 `provider/model`。如果
+    省略提供者，OpenClaw 會先嘗試比對別名，接著比對該模型 id 的唯一
+    已設定提供者，然後退回到已設定的預設提供者（已淘汰的相容性路徑）。如果該
+    提供者不再有已設定的預設模型，OpenClaw 會改為退回到第一個已設定的
+    提供者/模型，而不是過時的預設值。
 
   </Accordion>
 
-  <Accordion title="你推薦哪個模型？">
-    **建議預設值：**使用你的 provider 堆疊中可用的最強最新世代模型。
-    **對於啟用工具或不可信輸入的代理：**優先考量模型能力，而不是成本。
-    **對於例行／低風險聊天：**使用較便宜的後備模型，並依代理角色路由。
+  <Accordion title="你建議使用哪個模型？">
+    使用你的提供者堆疊所提供的最強最新世代模型，
+    尤其是啟用工具或處理不受信任輸入的代理程式；較弱或
+    過度量化的模型更容易受到提示注入與不安全
+    行為影響（請參閱[安全性](/zh-TW/gateway/security)）。依代理程式角色將較便宜的模型路由到
+    例行/低風險聊天。
 
-    MiniMax 有自己的文件：[MiniMax](/zh-TW/providers/minimax) 和
+    依代理程式路由模型，並使用子代理程式平行處理長任務（每個
+    子代理程式都會消耗自己的權杖）。請參閱[模型](/zh-TW/concepts/models)、
+    [子代理程式](/zh-TW/tools/subagents)、[MiniMax](/zh-TW/providers/minimax) 與
     [本機模型](/zh-TW/gateway/local-models)。
-
-    經驗法則：高風險工作使用**你負擔得起的最佳模型**，例行聊天或摘要則使用較便宜的
-    模型。你可以依代理路由模型，並使用子代理平行處理長任務（每個子代理都會消耗 token）。請參閱[模型](/zh-TW/concepts/models)和
-    [子代理](/zh-TW/tools/subagents)。
-
-    強烈警告：較弱或過度量化的模型更容易受到提示
-    注入與不安全行為影響。請參閱[安全性](/zh-TW/gateway/security)。
-
-    更多背景：[模型](/zh-TW/concepts/models)。
 
   </Accordion>
 
   <Accordion title="如何在不清除設定的情況下切換模型？">
-    使用**模型命令**，或只編輯**模型**欄位。避免完整替換設定。
+    只變更模型欄位，避免完整取代設定。
 
-    安全選項：
-
-    - 聊天中的 `/model`（快速、每個工作階段）
+    - 聊天中的 `/model`（每個工作階段，請參閱[斜線命令](/zh-TW/tools/slash-commands)）
     - `openclaw models set ...`（只更新模型設定）
     - `openclaw configure --section model`（互動式）
-    - 編輯 `~/.openclaw/openclaw.json` 中的 `agents.defaults.model`
+    - 直接編輯 `~/.openclaw/openclaw.json` 中的 `agents.defaults.model`
 
-    除非你打算替換整個設定，否則避免用部分物件呼叫 `config.apply`。
-    對於 RPC 編輯，請先用 `config.schema.lookup` 檢查，並優先使用 `config.patch`。lookup 酬載會提供正規化路徑、淺層 schema 文件／限制，以及直接子項摘要。
-    用於部分更新。
-    如果你確實覆寫了設定，請從備份還原，或重新執行 `openclaw doctor` 修復。
+    對於 RPC 編輯，請先使用 `config.schema.lookup` 檢查（正規化
+    路徑、淺層結構描述文件、子項摘要），然後優先使用 `config.patch`
+    而不是搭配部分物件使用 `config.apply`。如果你確實覆寫了設定，
+    請從備份還原或執行 `openclaw doctor` 來修復。
 
-    文件：[模型](/zh-TW/concepts/models)、[設定精靈](/zh-TW/cli/configure)、[設定](/zh-TW/cli/config)、[Doctor](/zh-TW/gateway/doctor)。
+    文件：[模型](/zh-TW/concepts/models)、[設定](/zh-TW/cli/configure)、
+    [設定檔](/zh-TW/cli/config)、[Doctor](/zh-TW/gateway/doctor)。
 
   </Accordion>
 
   <Accordion title="我可以使用自架模型（llama.cpp、vLLM、Ollama）嗎？">
-    可以。Ollama 是使用本機模型最簡單的路徑。
-
-    最快設定方式：
+    可以，Ollama 是最簡單的路徑。快速設定：
 
     1. 從 `https://ollama.com/download` 安裝 Ollama
     2. 拉取本機模型，例如 `ollama pull gemma4`
-    3. 如果你也想使用雲端模型，請執行 `ollama signin`
-    4. 執行 `openclaw onboard` 並選擇 `Ollama`
-    5. 選擇 `Local` 或 `Cloud + Local`
+    3. 若也要使用雲端模型，請執行 `ollama signin`
+    4. 執行 `openclaw onboard`，選擇 `Ollama`，然後選擇 `Local` 或 `Cloud + Local`
 
-    注意：
+    `Cloud + Local` 會提供雲端模型加上你的本機 Ollama 模型；
+    `kimi-k2.5:cloud` 等雲端模型不需要本機拉取。若要手動切換：
+    `openclaw models list`，然後 `openclaw models set ollama/<model>`。
 
-    - `Cloud + Local` 會提供雲端模型加上你的本機 Ollama 模型
-    - 像 `kimi-k2.5:cloud` 這類雲端模型不需要本機拉取
-    - 若要手動切換，請使用 `openclaw models list` 和 `openclaw models set ollama/<model>`
-
-    安全性注意：較小或高度量化的模型更容易受到提示
-    注入影響。對於任何可使用工具的機器人，我們強烈建議使用**大型模型**。
-    如果你仍想使用小型模型，請啟用沙盒與嚴格的工具允許清單。
+    較小/高度量化的模型更容易受到提示注入影響。
+    對任何具備工具存取權的機器人使用大型模型；如果仍然使用小型模型，
+    請啟用沙箱化與嚴格的工具允許清單。
 
     文件：[Ollama](/zh-TW/providers/ollama)、[本機模型](/zh-TW/gateway/local-models)、
-    [模型 provider](/zh-TW/concepts/model-providers)、[安全性](/zh-TW/gateway/security)、
-    [沙盒](/zh-TW/gateway/sandboxing)。
+    [模型提供者](/zh-TW/concepts/model-providers)、[安全性](/zh-TW/gateway/security)、
+    [沙箱化](/zh-TW/gateway/sandboxing)。
 
   </Accordion>
 
-  <Accordion title="OpenClaw、Flawd 和 Krill 使用哪些模型？">
-    - 這些部署可能不同，也可能隨時間變更；沒有固定的 provider 建議。
-    - 使用 `openclaw models status` 檢查每個閘道上的目前執行階段設定。
-    - 對於安全性敏感／啟用工具的代理，請使用可用的最強最新世代模型。
+  <Accordion title="如何即時切換模型（不重新啟動）？">
+    將 `/model <name>` 作為獨立訊息傳送。請參閱
+    [斜線命令](/zh-TW/tools/slash-commands)以取得
+    完整命令清單，包括編號選擇器（`/model`、`/model
+    list`、`/model 3`）、用於清除工作階段覆寫的 `/model default`，以及
+    用於端點/API 模式詳細資訊的 `/model status`。
 
-  </Accordion>
+    使用 `@profile` 強制每個工作階段使用特定驗證設定檔：
 
-  <Accordion title="如何即時切換模型（不用重新啟動）？">
-    將 `/model` 命令作為獨立訊息使用：
-
-    ```
-    /model sonnet
-    /model opus
-    /model gpt
-    /model gpt-mini
-    /model gemini
-    /model gemini-flash
-    /model gemini-flash-lite
-    ```
-
-    這些是內建別名。可透過 `agents.defaults.models` 新增自訂別名。
-
-    你可以用 `/model`、`/model list` 或 `/model status` 列出可用模型。
-
-    `/model`（以及 `/model list`）會顯示精簡的編號選擇器。依編號選擇：
-
-    ```
-    /model 3
-    ```
-
-    你也可以為 provider 強制指定特定身分驗證設定檔（每個工作階段）：
-
-    ```
+    ```text
     /model opus@anthropic:default
     /model opus@anthropic:work
     ```
 
-    提示：`/model status` 會顯示目前作用中的代理、正在使用哪個 `auth-profiles.json` 檔案，以及接下來會嘗試哪個身分驗證設定檔。
-    可用時也會顯示已設定的 provider 端點（`baseUrl`）和 API 模式（`api`）。
-
-    **如何取消釘選我用 @profile 設定的設定檔？**
-
-    重新執行 `/model`，但**不要**加上 `@profile` 後綴：
-
-    ```
-    /model anthropic/claude-opus-4-6
-    ```
-
-    如果你想回到預設值，請從 `/model` 選取它（或傳送 `/model <default provider/model>`）。
-    使用 `/model status` 確認目前作用中的身分驗證設定檔。
+    若要取消釘選以 `@profile` 設定的設定檔，請在不加
+    後綴的情況下重新執行 `/model`（例如 `/model anthropic/claude-opus-4-6`），或從
+    `/model` 選擇預設值。使用 `/model status` 確認作用中的驗證設定檔。
 
   </Accordion>
 
-  <Accordion title="如果兩個 provider 公開相同的模型 id，/model 會使用哪一個？">
-    `/model provider/model` 會為該工作階段選擇精確的 provider 路由。
+  <Accordion title="如果兩個提供者公開相同的模型 id，/model 會使用哪一個？">
+    `/model provider/model` 會選擇該確切提供者路由。例如，
+    `qianfan/deepseek-v4-flash` 和 `deepseek/deepseek-v4-flash` 是不同的
+    參照，即使模型 id 相同，OpenClaw 也不會在裸 id 相符時靜默切換
+    提供者。
 
-    例如，`qianfan/deepseek-v4-flash` 和 `deepseek/deepseek-v4-flash` 是不同的模型參照，即使兩者都包含 `deepseek-v4-flash`。OpenClaw 不應只因為裸模型 id 相符，就靜默地從一個 provider 切換到另一個。
+    使用者選取的 `/model` 參照在備援時是嚴格的：如果該
+    提供者/模型變得不可用，回覆會明確失敗，而不是
+    退回到 `agents.defaults.model.fallbacks`。已設定的備援
+    鏈仍會套用到已設定的預設值、排程工作主要模型與
+    自動選取的備援狀態。當非工作階段覆寫的執行允許
+    使用備援時，OpenClaw 會先嘗試要求的提供者/模型，接著
+    嘗試已設定的備援，最後才是已設定的主要模型，因此重複的裸
+    模型 id 永遠不會直接跳回預設提供者。
 
-    使用者選取的 `/model` 參照對後備策略也很嚴格。如果所選 provider/model 不可用，回覆會明確失敗，而不是從 `agents.defaults.model.fallbacks` 回答。已設定的後備鏈仍適用於已設定的預設值、排程工作主要模型，以及自動選取的後備狀態。
-
-    如果從非工作階段覆寫啟動的執行允許使用後備，OpenClaw 會先嘗試要求的 provider/model，接著嘗試已設定的後備，最後才嘗試已設定的主要模型。這可防止重複的裸模型 id 直接跳回預設 provider。
-
-    請參閱[模型](/zh-TW/concepts/models)和[模型容錯移轉](/zh-TW/concepts/model-failover)。
+    請參閱[模型](/zh-TW/concepts/models)與[模型容錯移轉](/zh-TW/concepts/model-failover)。
 
   </Accordion>
 
-  <Accordion title="我可以用 GPT 5.5 處理日常任務，並用 Codex 5.5 寫程式嗎？">
-    可以。請將模型選擇和執行階段選擇分開處理：
+  <Accordion title="我可以將 GPT 5.5 用於日常任務，將 Codex 5.5 用於寫程式嗎？">
+    可以，模型選擇與執行階段選擇是分開的：
 
-    - **原生 Codex 程式設計代理：**將 `agents.defaults.model.primary` 設為 `openai/gpt-5.5`。當你想使用 ChatGPT/Codex 訂閱身分驗證時，請用 `openclaw models auth login --provider openai` 登入。
-    - **代理迴圈之外的直接 OpenAI API 任務：**為影像、嵌入、語音、即時，以及其他非代理 OpenAI API 介面設定 `OPENAI_API_KEY`。
-    - **OpenAI 代理 API 金鑰身分驗證：**搭配有序的 `openai` API 金鑰設定檔使用 `/model openai/gpt-5.5`。
-    - **子代理：**將程式設計任務路由到有自己 `openai/gpt-5.5` 模型的 Codex 專用代理。
+    - **原生 Codex 程式設計代理程式：** 將 `agents.defaults.model.primary` 設為
+      `openai/gpt-5.5`。使用 `openclaw models auth login --provider
+      openai` 登入，以使用 ChatGPT/Codex 訂閱驗證。
+    - **代理程式迴圈之外的直接 OpenAI API 任務：** 為圖像、嵌入、語音、即時與其他
+      非代理程式 OpenAI API 介面設定
+      `OPENAI_API_KEY`。
+    - **OpenAI 代理程式 API 金鑰驗證：** `/model openai/gpt-5.5` 搭配已排序的
+      `openai` API 金鑰設定檔。
+    - **子代理程式：** 將程式設計任務路由到專注於 Codex 的代理程式，並使用其
+      自己的 `openai/gpt-5.5` 模型。
 
-    請參閱[模型](/zh-TW/concepts/models)和[斜線命令](/zh-TW/tools/slash-commands)。
+    請參閱[模型](/zh-TW/concepts/models)與[斜線命令](/zh-TW/tools/slash-commands)。
 
   </Accordion>
 
   <Accordion title="如何為 GPT 5.5 設定快速模式？">
-    使用工作階段切換或設定預設值：
-
-    - **每個工作階段：**當工作階段使用 `openai/gpt-5.5` 時傳送 `/fast on`。
-    - **每個模型預設值：**將 `agents.defaults.models["openai/gpt-5.5"].params.fastMode` 設為 `true`。
-    - **自動截止：**使用 `/fast auto` 或 `params.fastMode: "auto"`，讓新的模型呼叫在自動截止前以快速模式開始，然後讓後續重試、後備、工具結果或延續呼叫不使用快速模式啟動。截止預設為 60 秒；在作用中模型上設定 `params.fastAutoOnSeconds` 可變更它。
-
-    範例：
+    - **每個工作階段：** 使用 `openai/gpt-5.5` 時傳送 `/fast on`。
+    - **每個模型預設值：** 將
+      `agents.defaults.models["openai/gpt-5.5"].params.fastMode` 設為 `true`。
+    - **自動截止：** `/fast auto` 或 `params.fastMode: "auto"` 會讓新的
+      模型呼叫快速執行直到截止時間，之後的重試、備援、
+      工具結果或延續呼叫則不使用快速模式。截止時間預設為
+      60 秒；可在模型上使用 `params.fastAutoOnSeconds` 覆寫。
 
     ```json5
     {
@@ -201,61 +174,49 @@ x-i18n:
     }
     ```
 
-    對 OpenAI 而言，快速模式會對應到支援的原生 Responses 請求上的 `service_tier = "priority"`。工作階段 `/fast` 覆寫會優先於設定預設值。Codex app-server 回合只能在回合開始時接收 tier，因此 `auto` 會套用在下一個由 OpenClaw 啟動的模型回合，而不是已經執行中的 app-server 回合內。
+    快速模式會對應到原生 OpenAI Responses
+    要求上的 `service_tier = "priority"`；既有的 `service_tier` 值會保留，且快速模式不會
+    重寫 `reasoning` 或 `text.verbosity`。工作階段 `/fast` 覆寫優先於
+    設定預設值。
 
-    請參閱[思考與快速模式](/zh-TW/tools/thinking)和 [OpenAI 快速模式](/zh-TW/providers/openai#fast-mode)。
+    請參閱[思考與快速模式](/zh-TW/tools/thinking)，以及
+    [OpenAI](/zh-TW/providers/openai) 提供者頁面上進階設定下的快速模式章節。
 
   </Accordion>
 
-  <Accordion title='為什麼我看到「Model ... is not allowed」，然後沒有回覆？'>
-    如果設定了 `agents.defaults.models`，它會成為 `/model` 和任何
-    工作階段覆寫的**允許清單**。選擇不在該清單中的模型會回傳：
+  <Accordion title='為什麼我會看到「Model ... is not allowed」，然後沒有回覆？'>
+    如果設定了 `agents.defaults.models`，它會成為
+    `/model` 與工作階段覆寫的**允許清單**。選擇清單外的模型會
+    回傳以下內容，而不是一般回覆：
 
-    ```
+    ```text
     Model "provider/model" is not allowed. Use /models to list providers, or /models <provider> to list models.
     Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
     ```
 
-    該錯誤會**取代**正常回覆。修正方式：將精確模型加入
-    `agents.defaults.models`、為動態 provider 型錄加入像 `"provider/*": {}` 這樣的 provider 萬用字元、移除允許清單，或從 `/model list` 選取模型。
-    如果命令也包含 `--runtime codex`，請先更新允許清單，然後重試
-    相同的 `/model provider/model --runtime codex` 命令。
+    修正方式：將確切模型加入 `agents.defaults.models`、為動態目錄加入
+    `"provider/*": {}` 這類提供者
+    萬用字元、移除允許清單，或從 `/model list` 選擇模型。如果命令也
+    包含 `--runtime codex`，請先更新允許清單，然後重試相同的
+    `/model provider/model --runtime codex` 命令。
 
   </Accordion>
 
-  <Accordion title='為什麼我看到「Unknown model: minimax/MiniMax-M3」？'>
-    這表示**尚未設定 provider**（找不到 MiniMax provider 設定或身分驗證
-    設定檔），因此無法解析模型。
-
-    修正檢查清單：
-
-    1. 升級到目前的 OpenClaw 版本（或從原始碼 `main` 執行），然後重新啟動閘道。
-    2. 確認已設定 MiniMax（精靈或 JSON），或 MiniMax 身分驗證
-       存在於 env/auth profiles 中，讓相符的 provider 可以被注入
-       （`MINIMAX_API_KEY` 用於 `minimax`，`MINIMAX_OAUTH_TOKEN` 或儲存的 MiniMax
-       OAuth 用於 `minimax-portal`）。
-    3. 依你的身分驗證路徑使用精確模型 id（區分大小寫）：
-       `minimax/MiniMax-M3`、`minimax/MiniMax-M2.7`，或
-       `minimax/MiniMax-M2.7-highspeed` 用於 API 金鑰設定，或
-       `minimax-portal/MiniMax-M3`、`minimax-portal/MiniMax-M2.7`，或
-       `minimax-portal/MiniMax-M2.7-highspeed` 用於 OAuth 設定。
-    4. 執行：
-
-       ```bash
-       openclaw models list
-       ```
-
-       並從清單中選取（或在聊天中使用 `/model list`）。
-
-    請參閱 [MiniMax](/zh-TW/providers/minimax) 和[模型](/zh-TW/concepts/models)。
+  <Accordion title='為什麼我會看到「Unknown model: minimax/MiniMax-M3」？'>
+    如果你使用的是較舊的 OpenClaw 版本，請先升級（或從原始碼
+    `main` 執行）並重新啟動閘道；`MiniMax-M3` 可能尚未在你
+    已安裝版本的目錄中。否則就是 MiniMax 提供者尚未
+    設定（找不到提供者項目或驗證設定檔），因此模型無法
+    解析。完整修正檢查清單、提供者/模型 id 表格與設定區塊範例，請參閱
+    [MiniMax](/zh-TW/providers/minimax) 提供者頁面上的疑難排解章節。
 
   </Accordion>
 
-  <Accordion title="我可以將 MiniMax 作為預設，並用 OpenAI 處理複雜任務嗎？">
-    可以。將 **MiniMax 作為預設值**，並在需要時**每個工作階段**切換模型。
-    後備是用於**錯誤**，不是「困難任務」，因此請使用 `/model` 或獨立代理。
+  <Accordion title="我可以將 MiniMax 作為預設，並將 OpenAI 用於複雜任務嗎？">
+    可以。使用 MiniMax 作為預設，並依工作階段切換模型；備援
+    是用於錯誤，而不是「困難任務」，因此請使用 `/model` 或另一個代理程式。
 
-    **選項 A：每個工作階段切換**
+    **選項 A：依工作階段切換**
 
     ```json5
     {
@@ -272,40 +233,37 @@ x-i18n:
     }
     ```
 
-    然後：
+    然後 `/model gpt`。
 
-    ```
-    /model gpt
-    ```
+    **選項 B：分開的代理程式** — 代理程式 A 預設使用 MiniMax，代理程式 B
+    預設使用 OpenAI；依代理程式路由或使用 `/agent` 切換。
 
-    **選項 B：獨立代理**
-
-    - 代理 A 預設值：MiniMax
-    - 代理 B 預設值：OpenAI
-    - 依代理路由，或使用 `/agent` 切換
-
-    文件：[模型](/zh-TW/concepts/models)、[多代理路由](/zh-TW/concepts/multi-agent)、[MiniMax](/zh-TW/providers/minimax)、[OpenAI](/zh-TW/providers/openai)。
+    文件：[模型](/zh-TW/concepts/models)、[多代理程式路由](/zh-TW/concepts/multi-agent)、
+    [MiniMax](/zh-TW/providers/minimax)、[OpenAI](/zh-TW/providers/openai)。
 
   </Accordion>
 
   <Accordion title="opus / sonnet / gpt 是內建捷徑嗎？">
-    是。OpenClaw 內建一些預設簡寫（只有在該模型存在於 `agents.defaults.models` 時才會套用）：
+    是，這些是內建簡寫，僅在目標模型存在於
+    `agents.defaults.models` 時套用：
 
-    - `opus` → `anthropic/claude-opus-4-8`
-    - `sonnet` → `anthropic/claude-sonnet-4-6`
-    - `gpt` → `openai/gpt-5.4`
-    - `gpt-mini` → `openai/gpt-5.4-mini`
-    - `gpt-nano` → `openai/gpt-5.4-nano`
-    - `gemini` → `google/gemini-3.1-pro-preview`
-    - `gemini-flash` → `google/gemini-3-flash-preview`
-    - `gemini-flash-lite` → `google/gemini-3.1-flash-lite`
+    | 別名 | 解析為 |
+    | --- | --- |
+    | `opus` | `anthropic/claude-opus-4-8` |
+    | `sonnet` | `anthropic/claude-sonnet-4-6` |
+    | `gpt` | `openai/gpt-5.4` |
+    | `gpt-mini` | `openai/gpt-5.4-mini` |
+    | `gpt-nano` | `openai/gpt-5.4-nano` |
+    | `gemini` | `google/gemini-3.1-pro-preview` |
+    | `gemini-flash` | `google/gemini-3-flash-preview` |
+    | `gemini-flash-lite` | `google/gemini-3.1-flash-lite` |
 
-    如果你設定了同名的自訂別名，會以你的值為準。
+    你自己的同名別名會覆寫內建別名。
 
   </Accordion>
 
-  <Accordion title="我要如何定義／覆寫模型捷徑（別名）？">
-    別名來自 `agents.defaults.models.<modelId>.alias`。範例：
+  <Accordion title="如何定義/覆寫模型捷徑（別名）？">
+    別名位於 `agents.defaults.models.<modelId>.alias`：
 
     ```json5
     {
@@ -321,12 +279,13 @@ x-i18n:
     }
     ```
 
-    接著 `/model sonnet`（或支援時的 `/<alias>`）會解析到該模型 ID。
+    接著 `/model sonnet`（或支援時的 `/<alias>`）會解析為該
+    模型 id。
 
   </Accordion>
 
-  <Accordion title="我要如何加入來自 OpenRouter 或 Z.AI 等其他提供者的模型？">
-    OpenRouter（依 token 付費；許多模型）：
+  <Accordion title="如何新增來自 OpenRouter 或 Z.AI 等其他提供者的模型？">
+    OpenRouter（按權杖付費；多種模型）：
 
     ```json5
     {
@@ -346,130 +305,126 @@ x-i18n:
     {
       agents: {
         defaults: {
-          model: { primary: "zai/glm-5" },
-          models: { "zai/glm-5": {} },
+          model: { primary: "zai/glm-5.1" },
+          models: { "zai/glm-5.1": {} },
         },
       },
       env: { ZAI_API_KEY: "..." },
     }
     ```
 
-    如果你引用了某個提供者／模型，但缺少必要的提供者金鑰，你會收到執行階段驗證錯誤（例如 `No API key found for provider "zai"`）。
+    參照的提供者/模型若缺少提供者金鑰，會引發執行階段
+    驗證錯誤（例如 `No API key found for provider "zai"`）。
 
-    **加入新代理後找不到提供者的 API 金鑰**
+    **新增代理程式後找不到提供者的 API 金鑰**
 
-    這通常表示**新代理**的驗證儲存區是空的。驗證是以每個代理為單位，並儲存在：
+    新代理程式的驗證儲存區是空的；驗證是每個代理程式各自獨立，儲存在：
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    修正選項：
-
-    - 執行 `openclaw agents add <id>`，並在精靈中設定驗證。
-    - 或只從主要代理的驗證儲存區複製可攜式靜態 `api_key` / `token` 設定檔到新代理的驗證儲存區。
-    - 對於 OAuth 設定檔，當新代理需要自己的帳號時，請從新代理登入；否則 OpenClaw 可以讀取預設／主要代理，而不需要複製重新整理 token。
-
-    請**不要**在多個代理之間重複使用 `agentDir`；這會造成驗證／工作階段衝突。
+    修正：執行 `openclaw agents add <id>` 並在精靈中設定驗證，或只從主要
+    代理程式的儲存區複製可攜式靜態 `api_key`/`token` 設定檔。若使用 OAuth，當新的代理程式需要自己的
+    帳號時，請從該代理程式登入。完整的 `agentDir` 重用與憑證共用規則，請參閱 [多代理程式路由](/zh-TW/concepts/multi-agent)；絕對不要在代理程式之間重用
+    `agentDir`。
 
   </Accordion>
 </AccordionGroup>
 
-## 模型容錯移轉與「所有模型都失敗」
+## 模型容錯移轉與「所有模型皆失敗」
 
 <AccordionGroup>
   <Accordion title="容錯移轉如何運作？">
-    容錯移轉分成兩個階段：
+    分成兩個階段：
 
-    1. 在同一個提供者內進行**驗證設定檔輪替**。
+    1. 在同一提供者內進行**驗證設定檔輪替**。
     2. **模型備援**到 `agents.defaults.model.fallbacks` 中的下一個模型。
 
-    冷卻時間會套用到失敗的設定檔（指數退避），因此即使某個提供者受到速率限制或暫時失敗，OpenClaw 仍可持續回應。
+    冷卻時間會套用到失敗的設定檔（指數退避），因此當提供者受到速率限制或暫時失敗時，OpenClaw
+    仍可繼續回應。
 
-    速率限制儲存桶包含的不只是單純的 `429` 回應。OpenClaw
-    也會將 `Too many concurrent requests`、
-    `ThrottlingException`、`concurrency limit reached`、
-    `workers_ai ... quota limit exceeded`、`resource exhausted`，以及週期性的
-    用量視窗限制（`weekly/monthly limit reached`）視為值得容錯移轉的
-    速率限制。
+    速率限制 bucket 涵蓋的範圍不只普通的 `429`：`Too many concurrent
+    requests`、`ThrottlingException`、`concurrency limit reached`、`workers_ai
+    ... quota limit exceeded`、`resource exhausted`，以及週期性的
+    使用量時段限制（`weekly/monthly limit reached`）都會算作
+    值得容錯移轉的速率限制。
 
-    有些看起來像帳務問題的回應不是 `402`，而有些 HTTP `402`
-    回應也會留在該暫時性儲存桶中。如果提供者在 `401` 或 `403` 上回傳
-    明確的帳務文字，OpenClaw 仍可將其保留在
-    帳務通道中，但提供者特定的文字比對器會維持在擁有它們的
-    提供者範圍內（例如 OpenRouter `Key limit exceeded`）。如果 `402`
-    訊息反而看起來像可重試的用量視窗，或
-    組織／工作區支出限制（`daily limit reached, resets tomorrow`、
-    `organization spending limit exceeded`），OpenClaw 會將其視為
-    `rate_limit`，而不是長期的帳務停用。
+    帳務回應不一定總是 `402`，且某些 `402` 會留在
+    暫時性/速率限制 bucket，而不是帳務通道。`401`/`403` 上的明確
+    帳務文字仍可路由到帳務；提供者特定的
+    文字比對器（例如 OpenRouter `Key limit exceeded`）仍限定在各自的
+    提供者範圍內。若 `402` 看起來像可重試的使用量時段或
+    組織/工作區支出限制（`daily limit reached, resets tomorrow`、
+    `organization spending limit exceeded`），會被視為 `rate_limit`，而不是
+    長時間的帳務停用。
 
-    內容溢位錯誤則不同：例如
+    上下文溢位錯誤會完全避開備援路徑；像是
     `request_too_large`、`input exceeds the maximum number of tokens`、
-    `input token count exceeds the maximum number of input tokens`、
-    `input is too long for the model`，或 `ollama error: context length
-    exceeded` 等特徵，會留在壓縮／重試路徑上，而不是推進模型
-    備援。
+    `input token count exceeds the maximum number of input tokens`、`input is
+    too long for the model`，或 `ollama error: context length exceeded` 這類特徵會進入
+    壓縮/重試，而不是推進模型備援。
 
-    一般伺服器錯誤文字刻意比「任何包含
-    unknown/error 的內容」更窄。當提供者脈絡
-    符合時，OpenClaw 確實會將提供者範圍內的暫時性形狀，
-    例如 Anthropic 裸 `An unknown error occurred`、OpenRouter 裸
-    `Provider returned error`、停止原因錯誤如 `Unhandled stop reason:
-    error`、帶有暫時性伺服器文字的 JSON `api_error` 酬載
-    （`internal server error`、`unknown error, 520`、`upstream error`、`backend
-    error`），以及提供者忙碌錯誤如 `ModelNotReadyException`，視為
-    值得容錯移轉的逾時／過載訊號。
-    一般內部備援文字如 `LLM request failed with an unknown
-    error.` 會維持保守，本身不會觸發模型備援。
+    通用伺服器錯誤文字的範圍比「任何包含 unknown/error 的內容」
+    更窄。會算作容錯移轉
+    訊號的提供者限定暫時性形態包括：Anthropic 裸 `An unknown error occurred`、OpenRouter 裸
+    `Provider returned error`、像 `Unhandled stop reason:
+    error` 這類停止原因錯誤、含暫時性伺服器文字（`internal
+    server error`、`unknown error, 520`、`upstream error`、`backend error`）的 JSON `api_error` 酬載，
+    以及在提供者
+    上下文相符時，像 `ModelNotReadyException` 這類提供者忙碌錯誤。像 `LLM request failed
+    with an unknown error.` 這種通用內部備援文字會保持保守，單靠它本身不會觸發備援。
 
   </Accordion>
 
   <Accordion title='「No credentials found for profile anthropic:default」是什麼意思？'>
-    這表示系統嘗試使用驗證設定檔 ID `anthropic:default`，但在預期的驗證儲存區中找不到它的認證。
+    驗證設定檔 ID `anthropic:default` 在預期的驗證儲存區中沒有憑證。
 
     **修正檢查清單：**
 
-    - **確認驗證設定檔所在位置**（新路徑與舊路徑）
-      - 目前：`~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-      - 舊版：`~/.openclaw/agent/*`（由 `openclaw doctor` 遷移）
-    - **確認你的環境變數已由閘道載入**
-      - 如果你在 shell 中設定 `ANTHROPIC_API_KEY`，但透過 systemd/launchd 執行閘道，它可能不會繼承該變數。請將它放入 `~/.openclaw/.env`，或啟用 `env.shellEnv`。
-    - **確認你正在編輯正確的代理**
-      - 多代理設定表示可能會有多個 `auth-profiles.json` 檔案。
-    - **基本檢查模型／驗證狀態**
-      - 使用 `openclaw models status` 查看已設定的模型，以及提供者是否已完成驗證。
+    - 確認設定檔所在位置；目前為：
+      `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`；舊版為：
+      `~/.openclaw/agent/*`（由 `openclaw doctor` 遷移）。
+    - 確認閘道有載入你的環境變數。只在
+      你的 shell 中設定 `ANTHROPIC_API_KEY`，不會傳到透過 systemd/launchd 執行的閘道；請放到
+      `~/.openclaw/.env`，或啟用 `env.shellEnv`。
+    - 確認你正在編輯正確的代理程式；多代理程式設定會有
+      多個 `auth-profiles.json` 檔案。
+    - 執行 `openclaw models status` 以查看已設定模型與提供者
+      驗證狀態。
 
-    **「No credentials found for profile anthropic」的修正檢查清單**
+    **對於「No credentials found for profile anthropic」（沒有電子郵件後綴）：**
 
-    這表示該次執行被釘選到 Anthropic 驗證設定檔，但閘道
-    在其驗證儲存區中找不到它。
+    這次執行被固定到閘道找不到的 Anthropic 設定檔。
 
-    - **使用 Claude 命令列介面**
-      - 在閘道主機上執行 `openclaw models auth login --provider anthropic --method cli --set-default`。
-    - **如果你想改用 API 金鑰**
-      - 將 `ANTHROPIC_API_KEY` 放入**閘道主機**上的 `~/.openclaw/.env`。
-      - 清除任何強制使用缺失設定檔的釘選順序：
+    - 使用 Claude 命令列介面：在閘道主機上執行 `openclaw models auth login --provider anthropic
+      --method cli --set-default`。
+    - 若偏好使用 API 金鑰：在閘道主機上的
+      `~/.openclaw/.env` 放入 `ANTHROPIC_API_KEY`，然後清除任何會強制使用缺失設定檔的固定順序：
 
-        ```bash
-        openclaw models auth order clear --provider anthropic
-        ```
+      ```bash
+      openclaw models auth order clear --provider anthropic
+      ```
 
-    - **確認你是在閘道主機上執行命令**
-      - 在遠端模式中，驗證設定檔位於閘道機器上，而不是你的筆電上。
+    - 遠端模式：驗證設定檔存在於閘道機器上，而不是你的
+      筆電；請確認你是在那台機器上執行命令。
 
   </Accordion>
 
   <Accordion title="為什麼它也嘗試 Google Gemini 並失敗？">
-    如果你的模型設定包含 Google Gemini 作為備援（或你切換到 Gemini 簡寫），OpenClaw 會在模型備援期間嘗試它。如果你尚未設定 Google 認證，你會看到 `No API key found for provider "google"`。
+    如果你的模型設定包含 Google Gemini 作為備援（或你
+    切換到 Gemini 簡寫），OpenClaw 會在備援期間嘗試它。未設定
+    Google 憑證時會得到 `No API key found for provider
+    "google"`。修正：新增 Google 驗證，或從
+    `agents.defaults.model.fallbacks`/別名中移除 Google 模型。
 
-    修正：提供 Google 驗證，或移除／避免在 `agents.defaults.model.fallbacks` / 別名中使用 Google 模型，讓備援不要路由到那裡。
+    **LLM request rejected: thinking signature required（Google Antigravity）**
 
-    **LLM 要求遭拒：需要思考簽章（Google Antigravity）**
-
-    原因：工作階段歷史包含**沒有簽章的思考區塊**（通常來自
-    中止／部分串流）。Google Antigravity 要求思考區塊必須有簽章。
-
-    修正：OpenClaw 現在會為 Google Antigravity Claude 移除未簽章的思考區塊。如果仍然出現，請啟動**新工作階段**，或為該代理設定 `/thinking off`。
+    原因：工作階段歷史有沒有簽章的 thinking 區塊（通常
+    來自中止/部分串流）；Google Antigravity 要求 thinking 區塊
+    具備簽章。OpenClaw 會為 Google
+    Antigravity Claude 移除未簽章的 thinking 區塊；若它仍然出現，請開始新的工作階段，或為該代理程式設定
+    `/thinking off`。
 
   </Accordion>
 </AccordionGroup>
@@ -480,41 +435,45 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="什麼是驗證設定檔？">
-    驗證設定檔是繫結到提供者的具名認證記錄（OAuth 或 API 金鑰）。設定檔位於：
+    與提供者綁定的具名憑證記錄（OAuth 或 API 金鑰），儲存在：
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    若要檢查已儲存的設定檔而不傾印密鑰，請執行 `openclaw models auth list`（可選擇加上 `--provider <id>` 或 `--json`）。詳情請參閱[模型命令列介面](/zh-TW/cli/models#auth-profiles)。
+    不傾印機密即可檢查已儲存的設定檔：`openclaw models auth
+    list`（可選擇搭配 `--provider <id>` 或 `--json`）。請參閱
+    [模型命令列介面](/zh-TW/cli/models#auth-profiles)。
 
   </Accordion>
 
-  <Accordion title="典型的設定檔 ID 是什麼？">
-    OpenClaw 使用帶有提供者前綴的 ID，例如：
-
-    - `anthropic:default`（沒有電子郵件身分時常見）
-    - OAuth 身分使用 `anthropic:<email>`
-    - 你選擇的自訂 ID（例如 `anthropic:work`）
+  <Accordion title="常見的設定檔 ID 有哪些？">
+    提供者前綴：`anthropic:default`（沒有電子郵件身分時常見）、OAuth 身分使用
+    `anthropic:<email>`，或你選擇的自訂 ID
+    （例如 `anthropic:work`）。
 
   </Accordion>
 
-  <Accordion title="我可以控制要先嘗試哪個驗證設定檔嗎？">
-    可以。設定支援設定檔的選用中繼資料，以及每個提供者的排序（`auth.order.<provider>`）。這**不會**儲存密鑰；它會將 ID 對應到提供者／模式，並設定輪替順序。
+  <Accordion title="我可以控制先嘗試哪個驗證設定檔嗎？">
+    可以。`auth.order.<provider>` 設定會為每個提供者設定輪替順序
+    （僅中繼資料；不儲存機密）。
 
-    如果某個設定檔處於短暫**冷卻**（速率限制／逾時／驗證失敗）或較長的**停用**狀態（帳務／額度不足），OpenClaw 可能會暫時跳過它。若要檢查這點，請執行 `openclaw models status --json` 並查看 `auth.unusableProfiles`。調校：`auth.cooldowns.billingBackoffHours*`。
+    OpenClaw 可能會略過處於短暫**冷卻**狀態的設定檔（速率限制、
+    逾時、驗證失敗），或處於較長**停用**狀態的設定檔
+    （帳務/點數不足）。使用 `openclaw models status
+    --json` 檢查，並查看 `auth.unusableProfiles`。可透過
+    `auth.cooldowns.billingBackoffHours*` 調整。速率限制冷卻可以是
+    模型範圍；某個模型正在冷卻的設定檔仍可服務同一提供者上的
+    兄弟模型；帳務/停用視窗會封鎖
+    整個設定檔。
 
-    速率限制冷卻可以限定於模型範圍。某個設定檔如果正因
-    一個模型而冷卻，仍可能可用於同一提供者上的同級模型，
-    而帳務／停用視窗仍會封鎖整個設定檔。
-
-    你也可以透過命令列介面設定**每個代理**的順序覆寫（儲存在該代理的 `auth-state.json` 中）：
+    設定每個代理程式的順序覆寫（儲存在該代理程式的 `auth-state.json` 中）：
 
     ```bash
     # Defaults to the configured default agent (omit --agent)
     openclaw models auth order get --provider anthropic
 
-    # Lock rotation to a single profile (only try this one)
+    # Lock rotation to a single profile
     openclaw models auth order set --provider anthropic anthropic:default
 
     # Or set an explicit order (fallback within provider)
@@ -522,39 +481,25 @@ x-i18n:
 
     # Clear override (fall back to config auth.order / round-robin)
     openclaw models auth order clear --provider anthropic
-    ```
 
-    若要指定特定代理：
-
-    ```bash
+    # Target a specific agent
     openclaw models auth order set --provider anthropic --agent main anthropic:default
     ```
 
-    若要驗證實際會嘗試什麼，請使用：
-
-    ```bash
-    openclaw models status --probe
-    ```
-
-    如果已儲存的設定檔被明確順序省略，探測會回報該設定檔為
-    `excluded_by_auth_order`，而不是默默嘗試它。
+    驗證實際會嘗試什麼：`openclaw models status --probe`。若已儲存的設定檔被明確順序省略，會回報
+    `excluded_by_auth_order`，而不是默默嘗試。
 
   </Accordion>
 
   <Accordion title="OAuth 與 API 金鑰有什麼差異？">
-    OpenClaw 兩者都支援：
+    - **OAuth / 命令列介面登入**通常會在提供者支援時使用訂閱存取權。對 Anthropic 而言，OpenClaw 的 Claude 命令列介面後端
+      使用 Claude Code `claude -p`，Anthropic 目前將其視為
+      Agent SDK/程式化使用量，從訂閱使用量限制扣除；
+      目前的帳務暫停狀態與來源連結，請參閱 [Anthropic](/zh-TW/providers/anthropic)。
+    - **API 金鑰**使用按 token 計費。
 
-    - **OAuth / 命令列介面登入**通常會在提供者支援時利用訂閱存取權。
-      對於 Anthropic，OpenClaw 的 Claude 命令列介面後端使用
-      Claude Code `claude -p`；Anthropic 目前將其視為 Agent
-      SDK／程式化使用。Anthropic 已暫停 2026 年 6 月 15 日獨立 Agent
-      SDK 額度變更，因此目前這仍會從訂閱用量
-      限制中扣除。請參閱 Anthropic 的 [Agent SDK 方案
-      文章](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
-      了解目前的暫停公告。
-    - **API 金鑰**使用依 token 付費的帳務模式。
-
-    精靈明確支援 Anthropic Claude 命令列介面、OpenAI Codex OAuth，以及 API 金鑰。
+    精靈支援 Anthropic Claude 命令列介面、OpenAI Codex OAuth 與 API
+    金鑰。
 
   </Accordion>
 </AccordionGroup>

@@ -1,96 +1,90 @@
 ---
 read_when:
-    - Node専用の開発スクリプトや監視モードの障害をデバッグする
-    - OpenClaw における tsx/esbuild ローダーのクラッシュを調査する
-summary: Node + tsx "__name is not a function" クラッシュのメモと回避策
+    - tsx/esbuild ローダーのクラッシュで、欠落している __name ヘルパーが言及される問題を調査する
+summary: 過去の Node + tsx の「__name is not a function」クラッシュとその原因
 title: Node + tsx のクラッシュ
 x-i18n:
-    generated_at: "2026-05-06T17:55:05Z"
+    generated_at: "2026-07-05T11:22:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
+    source_hash: 97d2f62d24860cee65753027ba84c14c8d4ffb910ee17bb0032cf0409c427589
     source_path: debug/node-issue.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Node + tsx "\_\_name is not a function" クラッシュ
+# Node + tsx「\_\_name is not a function」クラッシュ
 
-## 概要
+## ステータス
 
-`tsx` を使って Node 経由で OpenClaw を実行すると、起動時に次のエラーで失敗します。
+解決済みです。このクラッシュは、`package.json` で現在固定されている
+`tsx` バージョン（`4.22.3`）でも、現在の Node リリースでも再現しません。将来の
+`tsx`/esbuild アップグレードで再発した場合に備えて、ここに残しています。
 
-```
+## 元の症状
+
+`tsx` 経由で OpenClaw の開発スクリプトを実行すると、起動時に次のエラーで失敗しました。
+
+```text
 [openclaw] Failed to start CLI: TypeError: __name is not a function
-    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
-    at .../src/agents/auth-profiles/constants.ts:25:20
+    at createSubsystemLogger (src/logging/subsystem.ts)
+    at <caller> (src/agents/auth-profiles/constants.ts)
 ```
 
-これは、dev スクリプトを Bun から `tsx` に切り替えた後（コミット `2871657e`、2026-01-06）に発生し始めました。同じランタイムパスは Bun では動作していました。
+行番号は省略しています。元のクラッシュ以降に両方のファイルが変更されており、
+該当する具体的な行は現在一致しません。
 
-## 環境
+これは、Bun を任意にするために開発スクリプトが Bun から `tsx` に切り替わった
+（`2871657e`、2026-01-06）後に発生しました。同等の Bun ベースのパスではクラッシュしませんでした。
+当初は macOS 上の Node v25.3.0 で確認されました。Node 25 を実行する他のプラットフォームも
+影響を受ける可能性が高いと考えられていました。
 
-- Node: v25.x（v25.3.0 で確認）
-- tsx: 4.21.0
-- OS: macOS（Node 25 を実行する他のプラットフォームでも再現する可能性あり）
+## 原因
 
-## 再現手順（Node のみ）
+`tsx` は、変換オプションで `keepNames: true` をハードコードして、esbuild 経由で TS/ESM を変換します。
+この設定により、esbuild は名前付き関数/クラス宣言を `__name` ヘルパーへの呼び出しでラップし、
+minification や bundling 後も `fn.name` が維持されるようにします。このクラッシュは、影響を受ける
+`tsx`/Node の組み合わせで、そのモジュールの呼び出し地点にヘルパーが存在しないか shadow されていたため、
+`__name(...)` がラップ済みの値を返す代わりに例外を投げたことを意味します。
+
+## 現在の再現確認
 
 ```bash
-# in repo root
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## リポジトリ内の最小再現
+最小の分離再現（元のスタックトレースにあるモジュールだけを読み込みます）。
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-## Node バージョン確認
+現在はどちらのコマンドも正常終了します。どちらかが再び `__name is not a
+function` を投げる場合は、upstream に報告する前に、正確な Node バージョン、`tsx` バージョン
+（`node_modules/tsx/package.json`）、完全なスタックトレースを記録してください。
 
-- Node 25.3.0: 失敗
-- Node 22.22.0（Homebrew `node@22`）: 失敗
-- Node 24: ここではまだ未インストール。検証が必要
+## 回避策（クラッシュが戻った場合）
 
-## メモ / 仮説
-
-- `tsx` は esbuild を使って TS/ESM を変換します。esbuild の `keepNames` は `__name` ヘルパーを生成し、関数定義を `__name(...)` でラップします。
-- このクラッシュは、実行時に `__name` は存在するものの関数ではないことを示しており、Node 25 のローダーパスでこのモジュールのヘルパーが欠落しているか上書きされていることを意味します。
-- 同様の `__name` ヘルパーの問題は、ヘルパーが欠落または書き換えられた場合に、他の esbuild 利用側でも報告されています。
-
-## 回帰履歴
-
-- `2871657e`（2026-01-06）: Bun を任意にするため、スクリプトが Bun から tsx に変更されました。
-- それ以前（Bun パス）では、`openclaw status` と `gateway:watch` は動作していました。
-
-## 回避策
-
-- dev スクリプトには Bun を使用します（現在の一時的な差し戻し）。
-- リポジトリの型チェックに `tsgo` を使用し、その後ビルド済み出力を実行します。
+- `node --import tsx` の代わりに Bun で開発スクリプトを実行します。
+- 型チェックには `pnpm tsgo` を実行し、その後 `tsx` 経由でソースを実行する代わりに
+  ビルド済み出力を実行します。
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- 履歴メモ: この Node/tsx 問題のデバッグ中はここで `tsc` が使われていましたが、現在のリポジトリの型チェックレーンは `tsgo` を使用しています。
-- 可能であれば、TS ローダーで esbuild の keepNames を無効化します（`__name` ヘルパーの挿入を防ぎます）。tsx は現在これを公開していません。
-- Node LTS（22/24）で `tsx` をテストし、この問題が Node 25 固有かどうかを確認します。
+- 別の `tsx` バージョンを試します（`pnpm add -D tsx@<version>` は依存関係の変更であり、
+  repo policy に従って承認が必要です）。これにより、bundled されている esbuild バージョンが
+  バグを再発させたかどうかを bisect できます。
+- 別の Node major/minor でテストし、失敗がバージョン固有かどうかを確認します。
 
-## 参考
+## 参考資料
 
-- [https://opennext.js.org/cloudflare/howtos/keep_names](https://opennext.js.org/cloudflare/howtos/keep_names)
 - [https://esbuild.github.io/api/#keep-names](https://esbuild.github.io/api/#keep-names)
 - [https://github.com/evanw/esbuild/issues/1031](https://github.com/evanw/esbuild/issues/1031)
-
-## 次の手順
-
-- Node 22/24 で再現し、Node 25 の回帰か確認します。
-- 既知の回帰がある場合は、`tsx` nightly をテストするか以前のバージョンに固定します。
-- Node LTS で再現する場合は、`__name` スタックトレースを含む最小再現を upstream に報告します。
 
 ## 関連
 

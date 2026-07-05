@@ -1,35 +1,41 @@
 ---
 read_when:
-    - Gateway サービスおよび/またはローカル状態を削除したい場合
-    - まずドライランを実行したい場合
-summary: '`openclaw uninstall` のCLIリファレンス（gatewayサービス + ローカルデータを削除）'
+    - Gateway サービスおよび local state を削除したい場合
+    - まずドライランを実行したい
+summary: '`openclaw uninstall` の CLI リファレンス（gateway サービス + ローカルデータを削除）'
 title: アンインストール
 x-i18n:
-    generated_at: "2026-06-27T11:04:01Z"
+    generated_at: "2026-07-05T11:14:34Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Gateway サービス + ローカルデータをアンインストールします（CLI は残ります）。
+Gateway サービスやローカルデータをアンインストールします。CLI 自体は
+削除されません。npm/pnpm で別途アンインストールしてください。
 
-オプション:
+## オプション
 
-- `--service`: Gateway サービスを削除する
-- `--state`: 状態と設定を削除する
-- `--workspace`: ワークスペースディレクトリを削除する
-- `--app`: macOS アプリを削除する
-- `--all`: サービス、状態、ワークスペース、アプリを削除する
-- `--yes`: 確認プロンプトをスキップする
-- `--non-interactive`: プロンプトを無効にする。`--yes` が必要
-- `--dry-run`: ファイルを削除せずに実行される操作を表示する
+| フラグ              | デフォルト | 説明                                                 |
+| ------------------- | ---------- | ---------------------------------------------------- |
+| `--service`         | `false`    | Gateway サービスを削除します。                       |
+| `--state`           | `false`    | 状態と設定を削除します。                             |
+| `--workspace`       | `false`    | ワークスペースディレクトリを削除します。             |
+| `--app`             | `false`    | macOS アプリを削除します。                           |
+| `--all`             | `false`    | `--service --state --workspace --app` の短縮形です。 |
+| `--yes`             | `false`    | 確認プロンプトをスキップします。                     |
+| `--non-interactive` | `false`    | プロンプトを無効にします。`--yes` が必要です。       |
+| `--dry-run`         | `false`    | ファイルを削除せずに予定されている操作を出力します。 |
 
-例:
+スコープフラグを指定しない場合、対話式の複数選択プロンプトで削除するコンポーネントを選びます
+（デフォルトでは service、state、workspace が事前選択されています）。
+
+## 例
 
 ```bash
 openclaw backup create
@@ -40,12 +46,11 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-注:
+## 注記
 
-- 状態やワークスペースを削除する前に復元可能なスナップショットが必要な場合は、先に `openclaw backup create` を実行してください。
+- state またはワークスペースを削除する前に、復元可能なスナップショットとして
+  まず `openclaw backup create` を実行してください。
 - `--state` は、`--workspace` も選択されていない限り、設定済みのワークスペースディレクトリを保持します。
-- `--all` は、サービス、状態、ワークスペース、アプリをまとめて削除するための省略形です。
-- `--non-interactive` には `--yes` が必要です。
 
 ## 関連
 

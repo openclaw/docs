@@ -1,20 +1,20 @@
 ---
 read_when:
-    - 任意のチャネルでリアクションに取り組む
-    - プラットフォーム間で絵文字リアクションがどのように異なるかを理解する
-summary: サポートされているすべてのチャンネルにおけるリアクションツールのセマンティクス
+    - 任意のチャンネルでリアクションに取り組む
+    - 絵文字リアクションがプラットフォーム間でどのように異なるかを理解する
+summary: サポートされるすべてのチャンネルにわたるリアクションツールのセマンティクス
 title: リアクション
 x-i18n:
-    generated_at: "2026-06-27T13:16:34Z"
+    generated_at: "2026-07-05T11:56:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2dc9575eaeb79a56ca82ee491c2974e9984b1a12999762b1532ca9affdbbd72f
+    source_hash: bcffae5deb5525b7f38fe827cce7ab46b66f238512d063c4cda651378efd8a67
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-エージェントは、`message` ツールと `react` アクションを使って、メッセージに絵文字リアクションを追加および削除できます。リアクションの動作はチャンネルとトランスポートによって異なります。
+エージェントは、`message` ツールの `react` アクションで絵文字リアクションを追加および削除します。動作はチャネルによって異なります。
 
 ## 仕組み
 
@@ -26,30 +26,30 @@ x-i18n:
 }
 ```
 
-- リアクションを追加する場合、`emoji` は必須です。
-- ボットのリアクションを削除するには、`emoji` を空文字列（`""`）に設定します。
-- 特定の絵文字を削除するには、`remove: true` を設定します（空でない `emoji` が必要です）。
-- ステータスリアクションをサポートするチャンネルでは、リアクションの `trackToolCalls: true` により、ランタイムは同じターン中の後続ツール進行状況リアクションに、そのリアクション済みメッセージを使用できます。
+- リアクションを追加する場合は `emoji` が必須です。
+- 対応しているチャネルでボットのリアクションを削除するには、`emoji` を空文字列 (`""`) に設定します。
+- 特定の絵文字を1つ削除するには、`remove: true` を設定します (空でない `emoji` が必要です)。
+- ステータスリアクションを持つチャネルでは、リアクションで `trackToolCalls: true` を設定すると、ランタイムは同じターン中の以後のツール進捗リアクションに、そのリアクション済みメッセージを再利用できます。
 
-## チャンネルの動作
+## チャネルの動作
 
 <AccordionGroup>
   <Accordion title="Discord and Slack">
-    - 空の `emoji` は、メッセージ上のボットのリアクションをすべて削除します。
+    - 空の `emoji` は、メッセージ上のボットのすべてのリアクションを削除します。
     - `remove: true` は、指定された絵文字だけを削除します。
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - 空の `emoji` は、メッセージ上のアプリのリアクションを削除します。
+    - 空の `emoji` (または `remove: true`) は、メッセージ上のボット自身のリアクションを削除し、設定されている場合は `emoji` で絞り込みます。
     - `remove: true` は、指定された絵文字だけを削除します。
 
   </Accordion>
 
   <Accordion title="Nextcloud Talk">
-    - リアクションの追加のみ: `emoji` は必須で、空でない必要があります。
-    - リアクション削除はまだサポートされていません。`remove: true`（または空の `emoji`）を指定した呼び出しは、何もせずに成功扱いにするのではなく、明確なエラーで拒否されます。
-    - Talk ボットが `reaction` 機能付きで登録されている必要があります（[Nextcloud Talk チャンネルドキュメント](/ja-JP/channels/nextcloud-talk)を参照）。
+    - リアクションの追加のみ: `emoji` は必須で、空であってはなりません。
+    - リアクション削除はまだ delete 呼び出しに接続されていません。`remove: true` は何もせず黙って成功するのではなく、明示的なエラーで拒否されます。
+    - `reaction` 機能で登録された Talk ボットが必要です ([Nextcloud Talk チャネルドキュメント](/ja-JP/channels/nextcloud-talk) を参照)。
 
   </Accordion>
 
@@ -61,45 +61,46 @@ x-i18n:
 
   <Accordion title="WhatsApp">
     - 空の `emoji` は、ボットのリアクションを削除します。
-    - `remove: true` は内部的に空の絵文字へマッピングされます（ツール呼び出しでは引き続き `emoji` が必要です）。
-    - WhatsApp にはメッセージごとにボットリアクション枠が1つあります。ステータスリアクション更新は、複数の絵文字を積み重ねるのではなく、その枠を置き換えます。
+    - `remove: true` は内部的に空の絵文字へマッピングされます (ツール呼び出しでは引き続き `emoji` が必要です)。
+    - WhatsApp にはメッセージごとにボットのリアクションスロットが1つあります。新しいリアクションを送信すると、複数の絵文字を積み重ねるのではなく置き換えられます。
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
-    - 空でない `emoji` が必要です。
+    - 追加と削除の両方で空でない `emoji` が必要です。
     - `remove: true` は、その特定の絵文字リアクションを削除します。
 
   </Accordion>
 
   <Accordion title="Feishu/Lark">
-    - `add`、`remove`、`list` アクションを指定して `feishu_reaction` ツールを使用します。
-    - 追加/削除には `emoji_type` が必要です。削除には `reaction_id` も必要です。
+    - 他のチャネルと同じ `react` アクションを使用します (メッセージリアクション ID による追加/削除/一覧)。別のツールではありません。
+    - 追加には空でない `emoji` が必要です (Feishu の `emoji_type`、例: `SMILE`、`THUMBSUP`、`HEART` にマッピングされます)。
+    - `remove: true` には空でない `emoji` が必要で、その絵文字タイプに一致するボット自身のリアクションを削除します。
+    - `clearAll: true` と空の `emoji` は、メッセージ上のボットのすべてのリアクションを削除します。
 
   </Accordion>
 
   <Accordion title="Signal">
-    - 受信リアクション通知は `channels.signal.reactionNotifications` で制御されます: `"off"` は通知を無効化し、`"own"`（デフォルト）はユーザーがボットメッセージにリアクションしたときにイベントを発行し、`"all"` はすべてのリアクションについてイベントを発行します。
+    - 受信リアクション通知は `channels.signal.reactionNotifications` で制御されます: `"off"` は無効化し、`"own"` (デフォルト) はユーザーがボットメッセージにリアクションしたときにイベントを発行し、`"all"` はすべてのリアクションについてイベントを発行し、`"allowlist"` は `channels.signal.reactionAllowlist` 内の送信者についてのみイベントを発行します。
 
   </Accordion>
 
   <Accordion title="iMessage">
-    - 送信リアクションは iMessage のタップバック（`love`、`like`、`dislike`、`laugh`、`emphasize`、`question`）です。
-    - 受信タップバック通知は `channels.imessage.reactionNotifications` で制御されます: `"off"` は通知を無効化し、`"own"`（デフォルト）はユーザーがボット作成メッセージにリアクションしたときにイベントを発行し、`"all"` は承認済み送信者からのすべてのタップバックについてイベントを発行します。
+    - 送信リアクションは iMessage の tapback (`love`、`like`、`dislike`、`laugh`、`emphasize`、`question`) です。リアクションを追加するには、`emoji` がこれらの種類のいずれかにマッピングされる必要があります。
+    - 認識された tapback 種類なしの `remove: true` は、すべての tapback 種類を削除します。認識された種類がある場合は、その1つだけを削除します。
 
   </Accordion>
 </AccordionGroup>
 
 ## リアクションレベル
 
-チャンネルごとの `reactionLevel` 設定は、エージェントがどの程度広くリアクションを使うかを制御します。値は通常、`off`、`ack`、`minimal`、または `extensive` です。
+チャネルごとの `reactionLevel` は、エージェントが自身のリアクションを送信する頻度を制限します。値: `off`、`ack`、`minimal`、`extensive`。
 
-- [Telegram reactionLevel](/ja-JP/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [WhatsApp reactionLevel](/ja-JP/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
-
-個別のチャンネルで `reactionLevel` を設定し、各プラットフォームでエージェントがメッセージにどの程度積極的にリアクションするかを調整します。
+- [Telegram リアクション通知](/ja-JP/channels/telegram#feature-reference) - `channels.telegram.reactionLevel` (デフォルト `minimal`)
+- [WhatsApp リアクションレベル](/ja-JP/channels/whatsapp#reaction-level) - `channels.whatsapp.reactionLevel` (デフォルト `minimal`)
+- [Signal リアクション](/ja-JP/channels/signal#reactions-message-tool) - `channels.signal.reactionLevel` (デフォルト `minimal`)
 
 ## 関連
 
-- [エージェント送信](/ja-JP/tools/agent-send) — `react` を含む `message` ツール
-- [チャンネル](/ja-JP/channels) — チャンネル固有の設定
+- [Agent Send](/ja-JP/tools/agent-send) - `react` を含む `message` ツール
+- [チャネル](/ja-JP/channels) - チャネル固有の設定

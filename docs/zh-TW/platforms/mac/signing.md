@@ -1,58 +1,48 @@
 ---
 read_when:
-    - 建置或簽署 Mac 偵錯建置
-summary: 由封裝指令碼產生的 macOS 除錯建置簽署步驟
+    - 建置或簽署 Mac 偵錯組建
+summary: 封裝指令碼產生的 macOS 偵錯建置簽署步驟
 title: macOS 簽署
 x-i18n:
-    generated_at: "2026-06-27T19:32:16Z"
+    generated_at: "2026-07-05T11:29:11Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: df4ee44b6bdf09a24e0d05ed4354e2cb573372d12a667b4fcdfd7d6f88291082
+    source_hash: 663c08c031417d5a9f048581421e4fe9f69480917582f74746af675bcca5cf95
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
 # mac 簽署（偵錯建置）
 
-此應用程式通常從 [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) 建置，該指令碼現在會：
+[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) 會將應用程式建置並封裝到固定路徑（`dist/OpenClaw.app`），接著呼叫 [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) 進行簽署。TCC 權限會繫結到套件組合 ID 與程式碼簽章；在重新建置之間保持兩者穩定（並讓應用程式位於固定路徑），可避免 macOS 遺忘 TCC 授權（通知、輔助使用、螢幕錄製、麥克風、語音）。
 
-- 設定穩定的偵錯 bundle 識別碼：`ai.openclaw.mac.debug`
-- 使用該 bundle id 寫入 Info.plist（可透過 `BUNDLE_ID=...` 覆寫）
-- 呼叫 [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) 來簽署主二進位檔與應用程式 bundle，讓 macOS 將每次重建視為相同的已簽署 bundle，並保留 TCC 權限（通知、輔助使用、螢幕錄製、麥克風、語音）。若要穩定保留權限，請使用真正的簽署身分；ad-hoc 需要主動選用且很脆弱（請參閱 [macOS 權限](/zh-TW/platforms/mac/permissions)）。
-- 預設使用 `CODESIGN_TIMESTAMP=auto`；它會為 Developer ID 簽章啟用可信時間戳。設定 `CODESIGN_TIMESTAMP=off` 可略過時間戳（離線偵錯建置）。
-- 將建置中繼資料注入 Info.plist：`OpenClawBuildTimestamp`（UTC）與 `OpenClawGitCommit`（短雜湊），讓「關於」窗格可以顯示建置、git，以及偵錯/發行通道。
-- **封裝預設使用節點 24**：此指令碼會執行 TS 建置與控制 UI 建置。節點 22 LTS（目前為 `22.19+`）仍支援相容性。
-- 從環境讀取 `SIGN_IDENTITY`。將 `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"`（或你的 Developer ID Application 憑證）加入 shell rc，即可一律使用你的憑證簽署。Ad-hoc 簽署需要透過 `ALLOW_ADHOC_SIGNING=1` 或 `SIGN_IDENTITY="-"` 明確選用（不建議用於權限測試）。
-- 簽署後執行 Team ID 稽核，若應用程式 bundle 內任何 Mach-O 是由不同的 Team ID 簽署，則會失敗。設定 `SKIP_TEAM_ID_CHECK=1` 可略過。
+- 偵錯套件組合識別碼預設為 `ai.openclaw.mac.debug`（可用 `BUNDLE_ID=...` 覆寫）。
+- 節點：`>=22.19.0 <23` 或 `>=23.11.0`（repo `package.json` `engines`）。封裝程式也會建置 Control UI（`pnpm ui:build`）。
+- 預設需要真實簽署身分；如果找不到身分且未設定 `ALLOW_ADHOC_SIGNING`，codesign 腳本會以錯誤結束。臨時簽署（`SIGN_IDENTITY="-"`）是明確選擇啟用，且不會在重新建置之間保留 TCC 權限。請參閱 [macOS 權限](/zh-TW/platforms/mac/permissions)。
+- 從環境讀取 `SIGN_IDENTITY`（例如 `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"`，或 Developer ID Application 憑證）。若未設定，`codesign-mac-app.sh` 會依此順序自動選擇身分：Developer ID Application、Apple Distribution、Apple Development，接著是找到的第一個有效 codesigning 身分。
+- `CODESIGN_TIMESTAMP=auto`（預設）只會為 Developer ID Application 簽章啟用可信時間戳記。設定為 `on`/`off` 可強制指定任一方式。
+- 以 `OpenClawBuildTimestamp`（ISO8601 UTC）與 `OpenClawGitCommit`（短雜湊，若無法取得則為 `unknown`）標記 Info.plist，讓「關於」分頁能顯示建置、git，以及偵錯/發行通道。
+- 簽署後會執行團隊 ID 稽核；若套件組合內任何 Mach-O 的團隊 ID 不同，就會失敗。設定 `SKIP_TEAM_ID_CHECK=1` 可略過。
 
-## 使用方式
+## 用法
 
 ```bash
 # from repo root
-scripts/package-mac-app.sh               # auto-selects identity; errors if none found
+scripts/package-mac-app.sh                                                      # auto-selects identity; errors if none found
 SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # real cert
-ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh    # ad-hoc (permissions will not stick)
-SIGN_IDENTITY="-" scripts/package-mac-app.sh        # explicit ad-hoc (same caveat)
-DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Team ID mismatch workaround
+ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # ad-hoc (permissions will not stick)
+SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # explicit ad-hoc (same caveat)
+DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # dev-only Sparkle Team ID mismatch workaround
 ```
 
-### Ad-hoc 簽署注意事項
+### 臨時簽署注意事項
 
-使用 `SIGN_IDENTITY="-"`（ad-hoc）簽署時，此指令碼會自動停用 **強化執行階段**（`--options runtime`）。這是必要的，可防止應用程式嘗試載入未共用相同 Team ID 的嵌入式框架（例如 Sparkle）時當機。Ad-hoc 簽章也會破壞 TCC 權限持久性；復原步驟請參閱 [macOS 權限](/zh-TW/platforms/mac/permissions)。
+`SIGN_IDENTITY="-"` 會停用強化執行階段（`--options runtime`），以避免應用程式載入未共用相同團隊 ID 的嵌入式框架（例如 Sparkle）時發生當機。臨時簽章也會破壞 TCC 權限持續性；復原步驟請參閱 [macOS 權限](/zh-TW/platforms/mac/permissions)。
 
 ## 「關於」的建置中繼資料
 
-`package-mac-app.sh` 會在 bundle 上標記：
-
-- `OpenClawBuildTimestamp`：封裝時的 ISO8601 UTC
-- `OpenClawGitCommit`：短 git 雜湊（若無法取得則為 `unknown`）
-
-「關於」分頁會讀取這些鍵，以顯示版本、建置日期、git commit，以及它是否為偵錯建置（透過 `#if DEBUG`）。程式碼變更後，請執行封裝器來重新整理這些值。
-
-## 原因
-
-TCC 權限會繫結至 bundle 識別碼_以及_程式碼簽章。具有變動 UUID 的未簽署偵錯建置，會導致 macOS 在每次重建後忘記授權。簽署二進位檔（預設為 ad-hoc）並維持固定的 bundle id/路徑（`dist/OpenClaw.app`），可在建置之間保留授權，與 VibeTunnel 的做法一致。
+「關於」分頁會從 Info.plist 讀取 `OpenClawBuildTimestamp` 與 `OpenClawGitCommit`，以顯示版本、建置日期、git commit，以及建置是否為 DEBUG（透過 `#if DEBUG`）。程式碼變更後請重新執行封裝程式，以重新整理這些值。
 
 ## 相關
 

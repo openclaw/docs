@@ -1,123 +1,33 @@
 ---
 read_when:
     - 整合預期使用 OpenAI Chat Completions 的工具
-summary: 從閘道公開一個與 OpenAI 相容的 /v1/chat/completions HTTP 端點
-title: OpenAI 聊天補全
+summary: 從閘道公開相容 OpenAI 的 /v1/chat/completions HTTP 端點
+title: OpenAI chat completions
 x-i18n:
-    generated_at: "2026-06-27T19:19:45Z"
+    generated_at: "2026-07-05T11:21:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8746f4f5964a5d0b948877b64b5d20440dea3aa45b36813c404cd06660792cf
+    source_hash: 9b1fffd2ce3da881ecd91adbb7c5d10b1d7adbd99af9b2ea4544b62ecbaf1f32
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-OpenClaw 的閘道可以提供小型、相容 OpenAI 的 Chat Completions 端點。
+閘道可以提供一個小型 OpenAI 相容的聊天完成介面。它**預設為停用**。
 
-此端點**預設停用**。請先在設定中啟用。
+啟用後，它會在與閘道相同的連接埠上提供以下所有項目（WS + HTTP 多工）：
 
-- `POST /v1/chat/completions`
-- 與閘道相同的連接埠（WS + HTTP 多工）：`http://<gateway-host>:<port>/v1/chat/completions`
+| 方法 | 路徑                   |
+| ------ | ---------------------- |
+| POST   | `/v1/chat/completions` |
+| GET    | `/v1/models`           |
+| GET    | `/v1/models/{id}`      |
+| POST   | `/v1/embeddings`       |
+| POST   | `/v1/responses`        |
 
-啟用閘道相容 OpenAI 的 HTTP 介面時，也會提供：
-
-- `GET /v1/models`
-- `GET /v1/models/{id}`
-- `POST /v1/embeddings`
-- `POST /v1/responses`
-
-在底層，請求會以一般閘道代理執行的方式執行（與 `openclaw agent` 相同的程式碼路徑），因此路由/權限/設定會與你的閘道一致。
-
-## 驗證
-
-使用閘道驗證設定。
-
-常見 HTTP 驗證路徑：
-
-- 共享密鑰驗證（`gateway.auth.mode="token"` 或 `"password"`）：
-  `Authorization: Bearer <token-or-password>`
-- 帶有可信身分的 HTTP 驗證（`gateway.auth.mode="trusted-proxy"`）：
-  透過已設定的身分感知 Proxy 路由，並讓它注入
-  必要的身分標頭
-- 私有入口開放驗證（`gateway.auth.mode="none"`）：
-  不需要驗證標頭
-
-注意：
-
-- 當 `gateway.auth.mode="token"` 時，使用 `gateway.auth.token`（或 `OPENCLAW_GATEWAY_TOKEN`）。
-- 當 `gateway.auth.mode="password"` 時，使用 `gateway.auth.password`（或 `OPENCLAW_GATEWAY_PASSWORD`）。
-- 當 `gateway.auth.mode="trusted-proxy"` 時，HTTP 請求必須來自
-  已設定的可信 Proxy 來源；同主機 loopback Proxy 需要明確設定
-  `gateway.auth.trustedProxy.allowLoopback = true`。
-- 繞過 Proxy 的內部同主機呼叫端可以使用
-  `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` 作為本機直接
-  後援。任何 `Forwarded`、`X-Forwarded-*` 或 `X-Real-IP` 標頭證據
-  都會讓請求改走可信 Proxy 路徑。
-- 如果已設定 `gateway.auth.rateLimit` 且發生太多驗證失敗，端點會回傳 `429` 並附上 `Retry-After`。
-
-## 安全邊界（重要）
-
-請將此端點視為閘道執行個體的**完整操作員存取**介面。
-
-- 這裡的 HTTP bearer 驗證不是狹義的逐使用者範圍模型。
-- 此端點的有效閘道 token/password 應視為擁有者/操作員憑證。
-- 請求會透過與可信操作員動作相同的控制平面代理路徑執行。
-- 此端點沒有獨立的非擁有者/逐使用者工具邊界；呼叫端一旦通過這裡的閘道驗證，OpenClaw 就會將該呼叫端視為此閘道的可信操作員。
-- 對於共享密鑰驗證模式（`token` 和 `password`），即使呼叫端送出較窄的 `x-openclaw-scopes` 標頭，端點也會還原一般完整操作員預設值。
-- 帶有可信身分的 HTTP 模式（例如可信 Proxy 驗證或 `gateway.auth.mode="none"`）會在存在 `x-openclaw-scopes` 時遵循它，否則會回退到一般操作員預設範圍集合。
-- 如果目標代理政策允許敏感工具，此端點可以使用它們。
-- 請只將此端點保留在 loopback/tailnet/私有入口上；不要直接暴露到公開網際網路。
-
-驗證矩陣：
-
-- `gateway.auth.mode="token"` 或 `"password"` + `Authorization: Bearer ...`
-  - 證明持有共享閘道操作員密鑰
-  - 忽略較窄的 `x-openclaw-scopes`
-  - 還原完整的預設操作員範圍集合：
-    `operator.admin`、`operator.approvals`、`operator.pairing`、
-    `operator.read`、`operator.talk.secrets`、`operator.write`
-  - 將此端點上的聊天回合視為擁有者傳送者回合
-- 帶有可信身分的 HTTP 模式（例如可信 Proxy 驗證，或私有入口上的 `gateway.auth.mode="none"`）
-  - 驗證某個外層可信身分或部署邊界
-  - 標頭存在時遵循 `x-openclaw-scopes`
-  - 標頭不存在時回退到一般操作員預設範圍集合
-  - 只有在呼叫端明確縮窄範圍並省略 `operator.admin` 時，才會失去擁有者語意
-  - 對於擁有者層級請求控制（例如 `x-openclaw-model`）需要 `operator.admin`
-
-請參閱[安全性](/zh-TW/gateway/security)和[遠端存取](/zh-TW/gateway/remote)。
-
-## 何時使用此端點
-
-當你要將工具或可信任的應用程式端後端與既有閘道整合，且可以安全持有閘道操作員憑證時，請使用 `/v1/chat/completions`。
-
-- 如果你的整合只是同一個閘道的另一個操作員/用戶端介面，請優先使用此端點，而不是新增內建通道。
-- 對於直接連線到遠端閘道的原生行動用戶端，請優先使用 [WebChat](/zh-TW/web/webchat) 或[閘道協定](/zh-TW/gateway/protocol)，並實作已配對裝置的啟動/裝置 token 流程，讓裝置不需要共享 HTTP token/password。
-- 當你要整合具有自身使用者、聊天室、網路鉤子遞送或對外傳輸的外部訊息網路時，請改為建立通道外掛。請參閱[建立外掛](/zh-TW/plugins/building-plugins)。
-
-## 代理優先模型合約
-
-OpenClaw 會將 OpenAI `model` 欄位視為**代理目標**，而不是原始提供者模型 ID。
-
-- `model: "openclaw"` 會路由到已設定的預設代理。
-- `model: "openclaw/default"` 也會路由到已設定的預設代理。
-- `model: "openclaw/<agentId>"` 會路由到特定代理。
-
-選用請求標頭：
-
-- `x-openclaw-model: <provider/model-or-bare-id>` 會覆寫所選代理的後端模型。共享密鑰 bearer 呼叫端可以使用此標頭。帶有身分的呼叫端，例如可信 Proxy 或帶有 `x-openclaw-scopes` 的私有免驗證入口請求，需要 `operator.admin`；僅寫入呼叫端會收到 `403 missing scope: operator.admin`。
-- `x-openclaw-agent-id: <agentId>` 仍支援作為相容性覆寫。
-- `x-openclaw-session-key: <sessionKey>` 明確控制工作階段路由。值不得使用保留的內部工作階段命名空間，例如 `subagent:`、`cron:` 或 `acp:`；這類請求會以 `400 invalid_request_error` 拒絕。
-- `x-openclaw-message-channel: <channel>` 會為通道感知提示和政策設定合成入口通道內容。
-
-仍接受的相容性別名：
-
-- `model: "openclaw:<agentId>"`
-- `model: "agent:<agentId>"`
+要求會以一般閘道代理程式執行的方式執行（與 `openclaw agent` 相同的程式碼路徑），因此路由、權限和設定會與你的閘道一致。
 
 ## 啟用端點
-
-將 `gateway.http.endpoints.chatCompletions.enabled` 設為 `true`：
 
 ```json5
 {
@@ -131,88 +41,128 @@ OpenClaw 會將 OpenAI `model` 欄位視為**代理目標**，而不是原始提
 }
 ```
 
-## 停用端點
+設定 `enabled: false`（或省略它）即可停用。
 
-將 `gateway.http.endpoints.chatCompletions.enabled` 設為 `false`：
+## 安全邊界（重要）
+
+請將此端點視為對閘道執行個體具有**完整操作員存取權**：
+
+- 此端點的有效閘道權杖/密碼等同於擁有者/操作員憑證，而不是狹窄的單一使用者範圍。
+- 要求會通過與受信任操作員動作相同的控制平面代理程式路徑，因此如果目標代理程式的政策允許敏感工具，此端點也能使用它們。
+- 只將它放在 loopback/tailnet/私人入口上。不要將它暴露到公用網際網路。
+
+驗證矩陣：
+
+| 驗證路徑                                                                                            | 行為                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"` 或 `"password"` + `Authorization: Bearer ...`                            | 證明持有共用閘道祕密。忽略任何 `x-openclaw-scopes` 標頭，並還原完整的預設操作員範圍集合：`operator.admin`、`operator.approvals`、`operator.pairing`、`operator.read`、`operator.talk.secrets`、`operator.write`。將聊天回合視為擁有者傳送者回合。 |
+| 攜帶受信任身分的 HTTP（受信任代理驗證，或私人入口上的 `gateway.auth.mode="none"`） | 當存在 `x-openclaw-scopes` 時會遵循它；不存在時則退回預設操作員範圍集合。只有在呼叫者明確縮小範圍並省略 `operator.admin` 時，才會失去擁有者語意。對 `x-openclaw-model` 等擁有者層級控制需要 `operator.admin`。                        |
+
+請參閱[操作員範圍](/zh-TW/gateway/operator-scopes)、[安全性](/zh-TW/gateway/security)和[遠端存取](/zh-TW/gateway/remote)。
+
+## 驗證
+
+使用閘道驗證設定（該模式的詳細資訊請參閱[受信任代理驗證](/zh-TW/gateway/trusted-proxy-auth)）：
+
+| 模式                                | 如何驗證                                                                                                                                                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"`         | `Authorization: Bearer <token>`。透過 `gateway.auth.token` 或 `OPENCLAW_GATEWAY_TOKEN` 設定。                                                                                              |
+| `gateway.auth.mode="password"`      | `Authorization: Bearer <password>`。透過 `gateway.auth.password` 或 `OPENCLAW_GATEWAY_PASSWORD` 設定。                                                                                     |
+| `gateway.auth.mode="trusted-proxy"` | 透過已設定且知道身分的代理進行路由；它會注入必要的身分標頭。同主機 loopback 代理需要明確設定 `gateway.auth.trustedProxy.allowLoopback = true`。 |
+| `gateway.auth.mode="none"`          | 不需要驗證標頭（僅限私人入口）。                                                                                                                                         |
+
+注意事項：
+
+- 在 `trusted-proxy` 閘道上略過代理的同主機呼叫者，可以直接退回使用 `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`。任何 `Forwarded`、`X-Forwarded-*` 或 `X-Real-IP` 標頭證據都會讓要求改走受信任代理路徑。
+- 如果已設定 `gateway.auth.rateLimit` 且驗證嘗試失敗次數過多，端點會傳回 `429`，並附上 `Retry-After` 標頭。
+
+## 何時使用此端點
+
+- 當你的整合只是同一個閘道的另一個操作員/用戶端介面時，請優先使用此端點，而不是新增內建通道。
+- 對於直接連線到遠端閘道的原生行動用戶端，請優先使用 [WebChat](/zh-TW/web/webchat) 或搭配已配對裝置啟動/裝置權杖流程的[閘道協定](/zh-TW/gateway/protocol)，如此裝置就不需要共用 HTTP 權杖/密碼。
+- 當整合具有自己使用者、房間、網路鉤子傳遞或外送傳輸的外部訊息網路時，請改為建置通道外掛。請參閱[建置外掛](/zh-TW/plugins/building-plugins)。
+
+## 代理程式優先模型合約
+
+OpenClaw 會將 OpenAI `model` 欄位視為**代理程式目標**，而不是原始提供者模型 ID。
+
+| `model` 值                                | 路由到                                                                                                                |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `openclaw`                                   | 已設定的預設代理程式                                                                                                 |
+| `openclaw/default`                           | 已設定的預設代理程式（穩定別名；即使實際預設代理程式 ID 在環境之間變更，也可以安全硬編碼） |
+| `openclaw/<agentId>` 或 `openclaw:<agentId>` | 特定代理程式                                                                                                           |
+| `agent:<agentId>`                            | 特定代理程式（相容性別名）                                                                                     |
+
+選用要求標頭：
+
+| 標頭                                          | 作用                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `x-openclaw-model: <provider/model-or-bare-id>` | 覆寫所選代理程式的後端模型。共用祕密 bearer 呼叫者可以直接使用此標頭；攜帶身分的呼叫者（受信任代理，或帶有 `x-openclaw-scopes` 的私人無驗證入口）需要 `operator.admin`，否則會得到 `403 missing scope: operator.admin`。 |
+| `x-openclaw-agent-id: <agentId>`                | 代理程式選擇的相容性覆寫。                                                                                                                                                                                                                                 |
+| `x-openclaw-session-key: <sessionKey>`          | 明確的工作階段路由。如果使用保留的內部命名空間（`subagent:`、`cron:`、`acp:`），會以 `400 invalid_request_error` 拒絕。                                                                                                                                |
+| `x-openclaw-message-channel: <channel>`         | 為通道感知的提示/政策設定合成入口通道內容。                                                                                                                                                                                              |
+
+`/v1/models` 會列出頂層代理程式目標（`openclaw`、`openclaw/default`、`openclaw/<agentId>`），而不是後端提供者模型，也不是子代理程式；子代理程式會保留為內部執行拓撲。如果省略 `x-openclaw-model`，所選代理程式會使用其一般設定的模型執行。
+
+`/v1/embeddings` 使用相同的代理程式目標 `model` ID。傳送 `x-openclaw-model`（來自共用祕密呼叫者，或具備 `operator.admin` 的攜帶身分呼叫者）以選擇特定嵌入模型；否則要求會使用所選代理程式的一般嵌入設定。
+
+## 工作階段行為
+
+預設情況下，端點會**每個要求都無狀態**（每次呼叫都會產生新的工作階段金鑰）。
+
+如果要求包含 OpenAI `user` 字串，閘道會從中衍生穩定的工作階段金鑰，讓重複呼叫可以共用代理程式工作階段。對於自訂應用程式，請在每個對話執行緒重用相同的 `user` 值；除非你希望多個對話/裝置共用同一個 OpenClaw 工作階段，否則請避免使用帳戶層級識別碼。只有在需要跨多個用戶端/執行緒進行明確路由控制時，才使用 `x-openclaw-session-key`，並使用應用程式擁有且避開上述保留命名空間的金鑰。
+
+## 要求限制（設定）
+
+預設值可在 `gateway.http.endpoints.chatCompletions` 下調整：
 
 ```json5
 {
   gateway: {
     http: {
       endpoints: {
-        chatCompletions: { enabled: false },
+        chatCompletions: {
+          enabled: true,
+          maxBodyBytes: 20000000,
+          maxImageParts: 8,
+          maxTotalImageBytes: 20000000,
+          images: {
+            allowUrl: false,
+            urlAllowlist: ["cdn.example.com", "*.assets.example.com"],
+            allowedMimes: [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+              "image/heic",
+              "image/heif",
+            ],
+            maxBytes: 10485760,
+            maxRedirects: 3,
+            timeoutMs: 10000,
+          },
+        },
       },
     },
   },
 }
 ```
 
-## 工作階段行為
+省略時的預設值：
 
-預設情況下，端點是**每次請求無狀態**（每次呼叫都會產生新的工作階段金鑰）。
+| 鍵                   | 預設值                                                                     |
+| --------------------- | --------------------------------------------------------------------------- |
+| `maxBodyBytes`        | 20MB                                                                        |
+| `maxImageParts`       | 8（從最新使用者訊息讀取的 `image_url` 部分上限）                 |
+| `maxTotalImageBytes`  | 20MB（單一要求中所有 `image_url` 部分的累計解碼位元組） |
+| `images.allowUrl`     | `false`（除非啟用，否則會拒絕來自 URL 的 `image_url` 部分）         |
+| `images.maxBytes`     | 每張圖片 10MB                                                              |
+| `images.maxRedirects` | 3                                                                           |
+| `images.timeoutMs`    | 10s                                                                         |
 
-如果請求包含 OpenAI `user` 字串，閘道會從中衍生穩定的工作階段金鑰，因此重複呼叫可以共用代理工作階段。
+HEIC/HEIF `image_url` 來源會被接受，並在透過共用 OpenClaw 影像處理器（Rastermill）交付給提供者之前正規化為 JPEG；對於需要外部轉碼器支援的格式，該處理器會退回使用系統轉換器（`sips`、ImageMagick、GraphicsMagick 或 ffmpeg）。
 
-對於自訂應用程式，最安全的預設做法是每個對話執行緒重複使用相同的 `user` 值。除非你明確希望多個對話或裝置共用同一個 OpenClaw 工作階段，否則請避免使用帳號層級識別碼。只有在需要跨多個用戶端或執行緒進行明確路由控制時，才使用 `x-openclaw-session-key`，並選擇應用程式擁有的金鑰，且不得以保留的內部命名空間開頭，例如 `subagent:`、`cron:` 或 `acp:`。
-
-## 為什麼此介面重要
-
-這是自託管前端和工具的最高槓桿相容性集合：
-
-- 大多數 Open WebUI、LobeChat 和 LibreChat 設定都預期有 `/v1/models`。
-- 許多 RAG 系統預期有 `/v1/embeddings`。
-- 既有 OpenAI 聊天用戶端通常可以從 `/v1/chat/completions` 開始。
-- 更多代理原生用戶端越來越偏好 `/v1/responses`。
-
-## 模型清單與代理路由
-
-<AccordionGroup>
-  <Accordion title="`/v1/models` 會回傳什麼？">
-    OpenClaw 代理目標清單。
-
-    回傳的 ID 是 `openclaw`、`openclaw/default` 和 `openclaw/<agentId>` 項目。
-    請直接將它們作為 OpenAI `model` 值使用。
-
-  </Accordion>
-  <Accordion title="`/v1/models` 會列出代理還是子代理？">
-    它會列出頂層代理目標，而不是後端提供者模型，也不是子代理。
-
-    子代理仍然是內部執行拓撲。它們不會顯示為偽模型。
-
-  </Accordion>
-  <Accordion title="為什麼包含 `openclaw/default`？">
-    `openclaw/default` 是已設定預設代理的穩定別名。
-
-    這表示即使實際預設代理 ID 在不同環境之間變更，用戶端仍可持續使用一個可預測的 ID。
-
-  </Accordion>
-  <Accordion title="如何覆寫後端模型？">
-    使用 `x-openclaw-model`。這是擁有者層級覆寫：它適用於閘道共享密鑰 bearer token/password 路徑，且在帶有身分的 HTTP 路徑（例如可信 Proxy 驗證）上需要 `operator.admin`。
-
-    範例：
-    `x-openclaw-model: openai/gpt-5.4`
-    `x-openclaw-model: gpt-5.5`
-
-    如果省略它，所選代理會使用其一般設定的模型選擇執行。
-
-  </Accordion>
-  <Accordion title="嵌入如何符合此合約？">
-    `/v1/embeddings` 使用相同的代理目標 `model` ID。
-
-    使用 `model: "openclaw/default"` 或 `model: "openclaw/<agentId>"`。
-    需要特定嵌入模型時，請從共享密鑰呼叫端或具有 `operator.admin` 的帶身分呼叫端，在 `x-openclaw-model` 中傳送。
-    若沒有該標頭，請求會傳遞到所選代理的一般嵌入設定。
-
-  </Accordion>
-</AccordionGroup>
-
-## 串流（SSE）
-
-設定 `stream: true` 以接收伺服器傳送事件（SSE）：
-
-- `Content-Type: text/event-stream`
-- 每個事件行為 `data: <json>`
-- 串流以 `data: [DONE]` 結束
+安全注意事項：允許清單中的主機名稱不會繞過私人/內部 IP 封鎖。對於暴露在網際網路上的閘道，除了應用程式層級的防護之外，也請套用網路輸出控制。請參閱[安全性](/zh-TW/gateway/security)。
 
 ## 聊天工具合約
 
@@ -220,94 +170,84 @@ OpenClaw 會將 OpenAI `model` 欄位視為**代理目標**，而不是原始提
 
 ### 支援的請求欄位
 
-- `tools`：`{ "type": "function", "function": { ... } }` 陣列
-- `tool_choice`：`"auto"`、`"none"`、`"required"` 或 `{ "type": "function", "function": { "name": "..." } }`
-- `messages[*].role: "tool"` 後續回合
-- `messages[*].tool_call_id` 用於將工具結果繫結回先前的工具呼叫
-- `max_completion_tokens`：數字；每次呼叫的總完成 token 上限（包含推理 token）。目前的 OpenAI Chat Completions 欄位名稱；同時傳送 `max_completion_tokens` 和 `max_tokens` 時優先使用。
-- `max_tokens`：數字；為向後相容而接受的舊版別名。當也存在 `max_completion_tokens` 時會被忽略。
-- `temperature`：數字；透過代理串流參數通道，盡力將取樣溫度轉送給上游提供者。
-- `top_p`：數字；透過代理串流參數通道，盡力將 nucleus sampling 轉送給上游提供者。
-- `frequency_penalty`：數字；透過代理串流參數通道，盡力將頻率懲罰轉送給上游提供者。驗證範圍：-2.0 到 2.0。超出範圍的值會回傳 `400 invalid_request_error`。
-- `presence_penalty`：數字；透過代理串流參數通道，盡力將存在懲罰轉送給上游提供者。驗證範圍：-2.0 到 2.0。超出範圍的值會回傳 `400 invalid_request_error`。
-- `seed`：數字（整數）；透過代理串流參數通道，盡力將 seed 轉送給上游提供者。非整數值會回傳 `400 invalid_request_error`。
-- `stop`：字串或最多 4 個字串的陣列；透過代理串流參數通道，盡力將停止序列轉送給上游提供者。若超過 4 個序列或項目非字串/為空，會回傳 `400 invalid_request_error`。
+| 欄位                       | 備註                                                                                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tools`                    | `{ "type": "function", "function": { ... } }` 的陣列                                                                                         |
+| `tool_choice`              | `"auto"`、`"none"`、`"required"`，或 `{ "type": "function", "function": { "name": "..." } }`                                                  |
+| `messages[*].role: "tool"` | 後續回合                                                                                                                                     |
+| `messages[*].tool_call_id` | 將工具結果繫結回先前的工具呼叫                                                                                                               |
+| `max_completion_tokens`    | 數字；每次呼叫的完成權杖總數上限（包含推理權杖）。目前欄位名稱；當它與 `max_tokens` 同時送出時會使用此欄位。                                 |
+| `max_tokens`               | 數字；舊版別名，當同時存在 `max_completion_tokens` 時會被忽略。                                                                              |
+| `temperature`              | 數字 0-2；盡力處理，轉送至上游提供者。若超出範圍，回傳 `400 invalid_request_error`。                                                         |
+| `top_p`                    | 數字 0-1；盡力處理。若超出範圍，回傳 `400 invalid_request_error`。                                                                           |
+| `frequency_penalty`        | 數字 -2.0 到 2.0；盡力處理。若超出範圍，回傳 `400 invalid_request_error`。                                                                    |
+| `presence_penalty`         | 數字 -2.0 到 2.0；盡力處理。若超出範圍，回傳 `400 invalid_request_error`。                                                                    |
+| `seed`                     | 整數；盡力處理。非整數值會回傳 `400 invalid_request_error`。                                                                                 |
+| `stop`                     | 字串或最多 4 個字串的陣列；盡力處理。超過 4 個序列或非字串/空白項目會回傳 `400 invalid_request_error`。                                      |
 
-當任一 token-cap 欄位有設定時，該值會透過代理串流參數通道轉送給上游提供者。實際送往上游提供者的 wire 欄位名稱由提供者傳輸層選擇：OpenAI 系列端點使用 `max_completion_tokens`，而只接受舊名稱的提供者（例如 Mistral 和 Chutes）使用 `max_tokens`。取樣欄位（`temperature`、`top_p`、`frequency_penalty`、`presence_penalty`、`seed`）遵循相同的串流參數通道；基於 ChatGPT 的 Codex Responses 後端會在伺服器端移除這些欄位，因為它使用固定取樣。`stop` 也會走串流參數通道，並對應到傳輸層的停止欄位（Chat Completions 後端為 `stop`，Anthropic 為 `stop_sequences`）；OpenAI Responses API 沒有停止參數，因此 `stop` 不會套用在以 Responses 支援的模型上。
+所有取樣與權杖上限欄位都走相同的 agent 串流參數通道，並盡力轉送：
+
+- 權杖上限：線路欄位名稱由提供者傳輸層選擇：OpenAI 家族端點使用 `max_completion_tokens`，只接受舊版名稱的提供者（Mistral、Chutes）使用 `max_tokens`。
+- `stop` 對應至傳輸層的停止欄位：Chat Completions 後端使用 `stop`，Anthropic 使用 `stop_sequences`。OpenAI Responses API 沒有停止參數，因此 `stop` 不會套用在 Responses 後端模型上。
+- 以 ChatGPT 為基礎的 Codex Responses 後端使用固定的伺服器端取樣，並會在請求抵達該後端之前移除 `temperature`/`top_p`（連同 `max_output_tokens`、`metadata`、`prompt_cache_retention`、`service_tier`）。
 
 ### 不支援的變體
 
-端點會針對不支援的工具變體回傳 `400 invalid_request_error`，包括：
+以下情況會回傳 `400 invalid_request_error`：
 
-- 非陣列的 `tools`
-- 非 function 的工具項目
-- 缺少 `tool.function.name`
+- 非陣列的 `tools`、非函式工具項目，或缺少 `tool.function.name`
 - `tool_choice` 變體，例如 `allowed_tools` 和 `custom`
-- 與提供的 `tools` 不相符的 `tool_choice.function.name` 值
+- 與所提供工具不相符的 `tool_choice.function.name` 值
 
-對於 `tool_choice: "required"` 和釘選 function 的 `tool_choice`，端點會縮小公開給用戶端的 function 工具集合，指示執行階段在回應前呼叫用戶端工具，並且在代理回應未包含相符的結構化用戶端工具呼叫時回傳錯誤。此契約適用於呼叫端提供的 HTTP `tools` 清單，而不是每一個內部 OpenClaw 代理工具。
+對於 `tool_choice: "required"` 和釘選函式的 `tool_choice`，端點會縮小暴露給用戶端的函式工具集，指示執行階段在回應前呼叫用戶端工具，並在 agent 回應沒有相符的結構化用戶端工具呼叫時出錯。這適用於呼叫端提供的 HTTP `tools` 清單，而不是每個 OpenClaw 內部 agent 工具。
 
 ### 非串流工具回應形狀
 
-當代理決定呼叫工具時，回應會使用：
+當 agent 呼叫工具時，回應會使用：
 
 - `choices[0].finish_reason = "tool_calls"`
-- `choices[0].message.tool_calls[]` 項目包含：
-  - `id`
-  - `type: "function"`
-  - `function.name`
-  - `function.arguments`（JSON 字串）
-
-工具呼叫前的助理註解會回傳在 `choices[0].message.content` 中（可能為空）。
+- `choices[0].message.tool_calls[]` 項目，包含 `id`、`type: "function"`、`function.name`、`function.arguments`（JSON 字串）
+- 工具呼叫前的助理評註，位於 `choices[0].message.content`（可能為空）
 
 ### 串流工具回應形狀
 
-當 `stream: true` 時，工具呼叫會以遞增 SSE 區塊發出：
+當 `stream: true` 時，工具呼叫會以遞增的 SSE 區塊抵達：初始助理角色 delta、選用的助理評註 delta、一個或多個帶有工具識別與引數片段的 `delta.tool_calls` 區塊，接著是最終區塊，其中包含 `finish_reason: "tool_calls"` 和 `data: [DONE]`。
 
-- 初始助理角色 delta
-- 可選的助理註解 delta
-- 一個或多個 `delta.tool_calls` 區塊，攜帶工具身分與引數片段
-- 帶有 `finish_reason: "tool_calls"` 的最後區塊
-- `data: [DONE]`
-
-如果 `stream_options.include_usage=true`，會在 `[DONE]` 前發出尾端 usage 區塊。
+如果 `stream_options.include_usage=true`，會在 `[DONE]` 前發出尾隨的用量區塊。
 
 ### 工具後續迴圈
 
-收到 `tool_calls` 後，用戶端應執行要求的 function，並傳送包含以下內容的後續請求：
+收到 `tool_calls` 後，執行要求的函式，並傳送後續請求，其中包含先前的助理工具呼叫訊息，以及一個或多個具有相符 `tool_call_id` 的 `role: "tool"` 訊息。這會延續相同的 agent 推理迴圈以產生最終答案。
 
-- 先前的助理工具呼叫訊息
-- 一個或多個具有相符 `tool_call_id` 的 `role: "tool"` 訊息
+## 串流 (SSE)
 
-這讓閘道代理執行能繼續相同的推理迴圈，並產生最終助理答案。
+設定 `stream: true` 以接收 Server-Sent Events：
+
+- `Content-Type: text/event-stream`
+- 每個事件行都是 `data: <json>`
+- 串流以 `data: [DONE]` 結束
 
 ## Open WebUI 快速設定
-
-基本 Open WebUI 連線：
 
 - 基底 URL：`http://127.0.0.1:18789/v1`
 - macOS 上 Docker 的基底 URL：`http://host.docker.internal:18789/v1`
 - API 金鑰：你的閘道 bearer token
 - 模型：`openclaw/default`
 
-預期行為：
+預期行為：`GET /v1/models` 會列出 `openclaw/default`，且 Open WebUI 會將其用作聊天模型 ID。若要使用特定後端提供者/模型，請設定 agent 的一般預設模型，或傳送 `x-openclaw-model`（共享密鑰呼叫端，或具備身分且擁有 `operator.admin` 的呼叫端）。
 
-- `GET /v1/models` 應列出 `openclaw/default`
-- Open WebUI 應使用 `openclaw/default` 作為聊天模型 id
-- 如果你想為該代理指定特定後端提供者/模型，請設定代理的一般預設模型，或由 shared-secret 呼叫端或帶有 `operator.admin` 身分的呼叫端傳送 `x-openclaw-model`
-
-快速 smoke：
+快速煙霧測試：
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-如果回傳 `openclaw/default`，大多數 Open WebUI 設定都能用相同的基底 URL 和 token 連線。
+如果回傳 `openclaw/default`，大多數 Open WebUI 設定都可以使用相同的基底 URL 和權杖連線。
 
 ## 範例
 
-一個應用程式對話的穩定工作階段：
+單一應用程式對話的穩定工作階段：
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -320,7 +260,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-在該對話的後續呼叫中重複使用相同的 `user` 值，以延續相同的代理工作階段。
+在該對話的後續呼叫中重複使用相同的 `user` 值，以繼續相同的 agent 工作階段。
 
 非串流：
 
@@ -355,14 +295,14 @@ curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-擷取單一模型：
+擷取一個模型：
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-建立 embeddings：
+建立嵌入：
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -375,14 +315,10 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-備註：
-
-- `/v1/models` 會回傳 OpenClaw 代理目標，而不是原始提供者 catalog。
-- `openclaw/default` 一律存在，因此一個穩定 id 可跨環境運作。
-- 後端提供者/模型覆寫應放在 `x-openclaw-model`，而不是 OpenAI `model` 欄位。在帶身分的 HTTP 驗證路徑上，此標頭需要 `operator.admin`。
-- `/v1/embeddings` 支援 `input` 為字串或字串陣列。
+`/v1/embeddings` 支援將 `input` 作為字串或字串陣列。
 
 ## 相關
 
-- [組態參考](/zh-TW/gateway/configuration-reference)
+- [設定參考](/zh-TW/gateway/configuration-reference)
+- [操作者範圍](/zh-TW/gateway/operator-scopes)
 - [OpenAI](/zh-TW/providers/openai)
