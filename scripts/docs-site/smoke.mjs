@@ -146,6 +146,9 @@ if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${exp
   throw new Error("it channels: x-default hreflang alternate is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
+if (!index.includes('class="site-footer"') || !index.includes('class="site-footer-links"')) {
+  throw new Error("index: site footer is missing");
+}
 if (!index.includes(`<link rel="canonical" href="${expectedOrigin}/">`)) {
   throw new Error(`index: canonical link should use ${expectedOrigin}`);
 }
@@ -341,6 +344,10 @@ if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(sit
 if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(siteCss)
   || !/\.nav-link\.active\{background:var\(--soft\);color:var\(--brand\);font-weight:730\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
+}
+if (!/\.site-footer\{[^}]*border-top:1px solid var\(--line\)/.test(siteCss)
+  || !/\.site-footer-links a\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
+  throw new Error("assets: site footer skin is missing");
 }
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
