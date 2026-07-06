@@ -326,11 +326,17 @@ if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
   throw new Error("assets: docs shell geometry does not match the wide reference layout");
 }
-if (!/body\{[^}]*font:14px\/1\.72/.test(siteCss)
-  || !/\.tab-link\{[^}]*font-size:14px/.test(siteCss)
-  || !/\.article h1\{font:740 28px\/1\.12/.test(siteCss)
-  || !/\.doc\{font-size:14px\}/.test(siteCss)) {
+if (!/body\{[^}]*font:15px\/1\.7 ui-sans-serif/.test(siteCss)
+  || !/body\{[^}]*radial-gradient/.test(siteCss)
+  || !/\.tab-link\{[^}]*font:700 13px\/1\.4 ui-monospace/.test(siteCss)
+  || !/\.article h1\{font:760 32px\/1\.12/.test(siteCss)
+  || !/\.doc\{font-size:15px\}/.test(siteCss)) {
   throw new Error("assets: docs type scale drifted from the reference skin");
+}
+if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)
+  || !/\.article-kicker\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)
+  || !/\.toc h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
+  throw new Error("assets: mono label accents drifted from the reference skin");
 }
 if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(siteCss)
   || !/\.nav-link\.active\{background:var\(--soft\);color:var\(--brand\);font-weight:730\}/.test(siteCss)) {
