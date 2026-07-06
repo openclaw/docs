@@ -327,7 +327,8 @@ if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   throw new Error("assets: docs shell geometry does not match the wide reference layout");
 }
 if (!/body\{[^}]*font:15px\/1\.7 Switzer,ui-sans-serif/.test(siteCss)
-  || !/body\{[^}]*radial-gradient/.test(siteCss)
+  || !/body::before\{[^}]*background-image:radial-gradient/.test(siteCss)
+  || !/::selection\{background:var\(--brand\);color:var\(--on-brand\)\}/.test(siteCss)
   || !/\.tab-link\{[^}]*font:700 13px\/1\.4 ui-monospace/.test(siteCss)
   || !/\.article h1\{font:760 32px\/1\.12/.test(siteCss)
   || !/\.doc\{font-size:15px\}/.test(siteCss)) {
