@@ -1352,6 +1352,7 @@
                     "group": "Web browser",
                     "pages": [
                       "tools/browser",
+                      "tools/chrome-extension",
                       "tools/browser-control",
                       "tools/browser-login",
                       "tools/browser-linux-troubleshooting",
@@ -2955,6 +2956,7 @@
                     "group": "Web browser",
                     "pages": [
                       "zh-TW/tools/browser",
+                      "zh-TW/tools/chrome-extension",
                       "zh-TW/tools/browser-control",
                       "zh-TW/tools/browser-login",
                       "zh-TW/tools/browser-linux-troubleshooting",
@@ -3901,6 +3903,7 @@
                     "group": "Web browser",
                     "pages": [
                       "ja-JP/tools/browser",
+                      "ja-JP/tools/chrome-extension",
                       "ja-JP/tools/browser-control",
                       "ja-JP/tools/browser-login",
                       "ja-JP/tools/browser-linux-troubleshooting",
@@ -4847,6 +4850,7 @@
                     "group": "Web browser",
                     "pages": [
                       "es/tools/browser",
+                      "es/tools/chrome-extension",
                       "es/tools/browser-control",
                       "es/tools/browser-login",
                       "es/tools/browser-linux-troubleshooting",
@@ -5793,6 +5797,7 @@
                     "group": "Web browser",
                     "pages": [
                       "pt-BR/tools/browser",
+                      "pt-BR/tools/chrome-extension",
                       "pt-BR/tools/browser-control",
                       "pt-BR/tools/browser-login",
                       "pt-BR/tools/browser-linux-troubleshooting",
@@ -6739,6 +6744,7 @@
                     "group": "Web browser",
                     "pages": [
                       "ko/tools/browser",
+                      "ko/tools/chrome-extension",
                       "ko/tools/browser-control",
                       "ko/tools/browser-login",
                       "ko/tools/browser-linux-troubleshooting",
@@ -7685,6 +7691,7 @@
                     "group": "Web browser",
                     "pages": [
                       "de/tools/browser",
+                      "de/tools/chrome-extension",
                       "de/tools/browser-control",
                       "de/tools/browser-login",
                       "de/tools/browser-linux-troubleshooting",
@@ -8631,6 +8638,7 @@
                     "group": "Web browser",
                     "pages": [
                       "fr/tools/browser",
+                      "fr/tools/chrome-extension",
                       "fr/tools/browser-control",
                       "fr/tools/browser-login",
                       "fr/tools/browser-linux-troubleshooting",
@@ -9577,6 +9585,7 @@
                     "group": "Web browser",
                     "pages": [
                       "hi/tools/browser",
+                      "hi/tools/chrome-extension",
                       "hi/tools/browser-control",
                       "hi/tools/browser-login",
                       "hi/tools/browser-linux-troubleshooting",
@@ -10523,6 +10532,7 @@
                     "group": "Web browser",
                     "pages": [
                       "ar/tools/browser",
+                      "ar/tools/chrome-extension",
                       "ar/tools/browser-control",
                       "ar/tools/browser-login",
                       "ar/tools/browser-linux-troubleshooting",
@@ -11469,6 +11479,7 @@
                     "group": "Web browser",
                     "pages": [
                       "it/tools/browser",
+                      "it/tools/chrome-extension",
                       "it/tools/browser-control",
                       "it/tools/browser-login",
                       "it/tools/browser-linux-troubleshooting",
@@ -12415,6 +12426,7 @@
                     "group": "Web browser",
                     "pages": [
                       "vi/tools/browser",
+                      "vi/tools/chrome-extension",
                       "vi/tools/browser-control",
                       "vi/tools/browser-login",
                       "vi/tools/browser-linux-troubleshooting",
@@ -13361,6 +13373,7 @@
                     "group": "Web browser",
                     "pages": [
                       "nl/tools/browser",
+                      "nl/tools/chrome-extension",
                       "nl/tools/browser-control",
                       "nl/tools/browser-login",
                       "nl/tools/browser-linux-troubleshooting",
@@ -14307,6 +14320,7 @@
                     "group": "Web browser",
                     "pages": [
                       "tr/tools/browser",
+                      "tr/tools/chrome-extension",
                       "tr/tools/browser-control",
                       "tr/tools/browser-login",
                       "tr/tools/browser-linux-troubleshooting",
@@ -15253,6 +15267,7 @@
                     "group": "Web browser",
                     "pages": [
                       "uk/tools/browser",
+                      "uk/tools/chrome-extension",
                       "uk/tools/browser-control",
                       "uk/tools/browser-login",
                       "uk/tools/browser-linux-troubleshooting",
@@ -16199,6 +16214,7 @@
                     "group": "Web browser",
                     "pages": [
                       "id/tools/browser",
+                      "id/tools/chrome-extension",
                       "id/tools/browser-control",
                       "id/tools/browser-login",
                       "id/tools/browser-linux-troubleshooting",
@@ -17145,6 +17161,7 @@
                     "group": "Web browser",
                     "pages": [
                       "pl/tools/browser",
+                      "pl/tools/chrome-extension",
                       "pl/tools/browser-control",
                       "pl/tools/browser-login",
                       "pl/tools/browser-linux-troubleshooting",
@@ -18091,6 +18108,7 @@
                     "group": "Web browser",
                     "pages": [
                       "ru/tools/browser",
+                      "ru/tools/chrome-extension",
                       "ru/tools/browser-control",
                       "ru/tools/browser-login",
                       "ru/tools/browser-linux-troubleshooting",
