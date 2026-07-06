@@ -2,40 +2,42 @@
 read_when:
     - 添加位置节点支持或权限 UI
     - 设计 Android 位置权限或前台行为
-summary: 节点的位置命令（location.get）、权限模式和 Android 前台行为
+summary: 节点定位命令（location.get）、权限模式和 Android 前台行为
 title: 位置命令
 x-i18n:
-    generated_at: "2026-07-05T11:28:45Z"
+    generated_at: "2026-07-06T21:48:32Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0a4d3321a9b4d290461742edb63a7829aeacb082bff11f65e217443d755dc29
+    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
     source_path: nodes/location-command.md
     workflow: 16
 ---
 
-## 简要说明
+## 简要概览
 
-- `location.get` 是一个节点命令，通过 `node.invoke` 或 `openclaw nodes location get` 调用。
+- `location.get` 是节点命令，通过 `node.invoke` 或 `openclaw nodes location get` 调用。
 - 默认关闭。
-- Android 应用设置使用选择器：关闭 / 使用期间。
-- 精确位置是一个单独的开关。
+- Android 第三方构建使用选择器：关闭 / 使用期间 / 始终。Play 构建保持为关闭 / 使用期间。
+- 精确位置是单独的开关。
 
 ## 为什么使用选择器（而不只是开关）
 
-操作系统的位置权限是多级的（iOS/macOS 暴露“使用期间”与“始终”；Android 目前支持仅前台）。精确位置也是单独的操作系统授权（iOS 14+ 的 “Precise”，Android 的 “fine” 与 “coarse”）。应用内选择器驱动请求的模式，但操作系统仍会决定实际授权。
+操作系统的位置权限是多级的。精确位置也是单独的操作系统授权（iOS 14+ 的“精确”，Android 的“fine” 与“coarse”）。应用内选择器会驱动请求的模式，但操作系统仍会决定实际授权。
 
 ## 设置模型
 
 按节点设备：
 
-- `location.enabledMode`: `off | whileUsing`
+- `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
 UI 行为：
 
 - 选择 `whileUsing` 会请求前台权限。
-- 如果操作系统拒绝请求的级别，应用会回退到已授权的最高级别并显示状态。
+- 在 Android 第三方构建中选择 `always` 会先请求前台权限，说明后台访问，然后打开 Android 应用设置以授予单独的 **始终允许** 权限。
+- Android Play 构建不会声明后台位置权限，也不会显示 `always`。
+- 如果操作系统拒绝所请求的级别，应用会回退到已授予的最高级别并显示状态。
 
 ## 权限映射（node.permissions）
 
@@ -81,31 +83,33 @@ CLI 标志直接映射：`--location-timeout` -> `timeoutMs`，`--max-age` -> `m
 错误（稳定代码）：
 
 - `LOCATION_DISABLED`：选择器已关闭。
-- `LOCATION_PERMISSION_REQUIRED`：请求的模式缺少权限。
-- `LOCATION_BACKGROUND_UNAVAILABLE`：应用在后台，但只授权了“使用期间”。
+- `LOCATION_PERMISSION_REQUIRED`：缺少所请求模式的权限。
+- `LOCATION_BACKGROUND_UNAVAILABLE`：应用在后台，但只授予了“使用期间”权限。
 - `LOCATION_TIMEOUT`：未及时获取定位。
 - `LOCATION_UNAVAILABLE`：系统故障或没有提供商。
 
 ## 后台行为
 
-- Android 应用在后台时会拒绝 `location.get`；在 Android 上请求位置时，请保持 OpenClaw 打开。
+- Android 第三方构建仅在用户选择 `Always` 且 Android 已授予后台位置权限时，才接受后台 `location.get`。现有的持久节点服务会添加 `location` 服务类型，并在活动时披露 `Location: Always`。
+- Android Play 构建和 `While Using` 模式会在后台时拒绝 `location.get`。
 - 其他节点平台可能不同。
 
 ## 模型/工具集成
 
-- Agent 工具：`nodes` 工具的 `location_get` 操作（需要节点）。
+- 智能体工具：`nodes` 工具的 `location_get` 动作（必须指定节点）。
 - CLI：`openclaw nodes location get --node <id>`。
-- Agent 指南：仅在用户已启用位置并理解范围时调用。
+- 智能体指南：仅在用户已启用位置并理解范围时调用。
 
 ## UX 文案（建议）
 
 - 关闭：“位置共享已禁用。”
-- 使用期间：“仅在 OpenClaw 打开时。”
-- 精确：“使用精确 GPS 位置。关闭开关可共享大致位置。”
+- 使用期间：“仅当 OpenClaw 打开时。”
+- 始终：“允许在 OpenClaw 处于后台时执行请求的位置检查。”
+- 精确：“使用精确 GPS 位置。关闭以共享大致位置。”
 
 ## 相关
 
 - [节点概览](/zh-CN/nodes)
-- [渠道位置解析](/zh-CN/channels/location)
-- [相机捕获](/zh-CN/nodes/camera)
+- [频道位置解析](/zh-CN/channels/location)
+- [相机拍摄](/zh-CN/nodes/camera)
 - [Talk 模式](/zh-CN/nodes/talk)

@@ -1,22 +1,22 @@
 ---
 read_when:
-    - 你想选择一个模型提供商
+    - 你想选择模型提供商
     - 你需要快速了解受支持的 LLM 后端
-summary: OpenClaw 支持的模型提供商（LLM）
+summary: OpenClaw 支持的模型提供商（大语言模型）
 title: 提供商目录
 x-i18n:
-    generated_at: "2026-07-06T10:52:01Z"
+    generated_at: "2026-07-06T21:50:20Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2075285660dafedc0218da57d731099068eb8c16b043e8074bcda3e30f4bf7a4
+    source_hash: fb53d2fdc4cafa2bf7a8167591296362b9772ddbcfa01036a4704b362d80cfce
     source_path: providers/index.md
     workflow: 16
 ---
 
 OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份验证，然后将默认模型设置为 `provider/model`。
 
-在找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）/等）？请参阅 [Channels](/zh-CN/channels)。
+在找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）/等）？请参阅 [渠道](/zh-CN/channels)。
 
 ## 快速开始
 
@@ -57,14 +57,15 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Hugging Face（推理）](/zh-CN/providers/huggingface)
 - [inferrs（本地模型）](/zh-CN/providers/inferrs)
 - [Kilocode](/zh-CN/providers/kilocode)
-- [LiteLLM（统一网关）](/zh-CN/providers/litellm)
+- [LiteLLM（统一 Gateway 网关）](/zh-CN/providers/litellm)
 - [LM Studio（本地模型）](/zh-CN/providers/lmstudio)
+- [LongCat](/providers/longcat)
 - [MiniMax](/zh-CN/providers/minimax)
 - [Mistral](/zh-CN/providers/mistral)
 - [Moonshot AI（Kimi + Kimi Coding）](/zh-CN/providers/moonshot)
 - [NovitaAI](/zh-CN/providers/novita)
 - [NVIDIA](/zh-CN/providers/nvidia)
-- [Ollama（云 + 本地模型）](/zh-CN/providers/ollama)
+- [Ollama（云端 + 本地模型）](/zh-CN/providers/ollama)
 - [Ollama Cloud](/zh-CN/providers/ollama-cloud)
 - [OpenAI（API + Codex）](/zh-CN/providers/openai)
 - [OpenCode](/zh-CN/providers/opencode)
@@ -84,7 +85,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Venice（Venice AI，注重隐私）](/zh-CN/providers/venice)
 - [Vercel AI Gateway](/zh-CN/providers/vercel-ai-gateway)
 - [vLLM（本地模型）](/zh-CN/providers/vllm)
-- [Volcengine（Doubao）](/zh-CN/providers/volcengine)
+- [Volcengine（豆包）](/zh-CN/providers/volcengine)
 - [Vydra](/zh-CN/providers/vydra)
 - [xAI](/zh-CN/providers/xai)
 - [Xiaomi](/zh-CN/providers/xiaomi)
@@ -110,5 +111,4 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 
 - [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭据的社区代理（使用前请核实 Anthropic 政策/条款）
 
-如需完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，
-请参阅 [模型提供商](/zh-CN/concepts/model-providers)。
+如需完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参阅[模型提供商](/zh-CN/concepts/model-providers)。
