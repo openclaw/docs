@@ -319,6 +319,7 @@ ${pager(prev, next)}
 ${tocHtml(toc)}
 </main>
 </div>
+${siteFooter()}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
@@ -345,6 +346,20 @@ function siteHeader(page, nav, activeTab) {
 </div>
 <nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
 </header>`;
+}
+
+function siteFooter() {
+  return `<footer class="site-footer">
+<div class="site-footer-inner">
+<p class="site-footer-note">© 2026 OpenClaw — an <a href="https://openclaw.org" target="_blank" rel="noopener">OpenClaw Foundation</a> project</p>
+<nav class="site-footer-links" aria-label="OpenClaw links">
+<a href="https://openclaw.ai" target="_blank" rel="noopener">openclaw.ai</a>
+<a href="https://openclaw.org" target="_blank" rel="noopener">openclaw.org</a>
+<a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">${icon("github")}GitHub</a>
+<a href="https://discord.com/invite/clawd" target="_blank" rel="noopener">${icon("discord")}Discord</a>
+</nav>
+</div>
+</footer>`;
 }
 
 function sidebar(page, nav, activeTab) {

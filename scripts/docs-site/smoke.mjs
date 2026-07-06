@@ -296,6 +296,12 @@ if (!/theme-toggle-icon-dark/.test(index)
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
+if (!/class="site-footer"/.test(index)
+  || !/an <a href="https:\/\/openclaw\.org"[^>]*>OpenClaw Foundation<\/a> project/.test(index)
+  || !/\.site-footer\{border-top:1px solid var\(--line\)/.test(siteCss)
+  || !/\.site-footer-inner\{[^}]*justify-content:space-between/.test(siteCss)) {
+  throw new Error("assets: site footer with Foundation attribution is missing");
+}
 if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
   throw new Error("assets: light code theme is not skinned");
 }
@@ -322,7 +328,7 @@ if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
   throw new Error("assets: sidebar overflow affordance is missing");
 }
 if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
-  || !/\.doc-shell\{max-width:1780px;margin:0 auto\}/.test(siteCss)
+  || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)
   || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
   throw new Error("assets: docs shell geometry does not match the wide reference layout");
 }
