@@ -1745,6 +1745,7 @@
                     "pages": [
                       "cli/agent",
                       "cli/agents",
+                      "cli/audit",
                       "cli/hooks",
                       "cli/infer",
                       "cli/memory",
@@ -3315,6 +3316,7 @@
                     "pages": [
                       "zh-TW/cli/agent",
                       "zh-TW/cli/agents",
+                      "zh-TW/cli/audit",
                       "zh-TW/cli/hooks",
                       "zh-TW/cli/infer",
                       "zh-TW/cli/memory",
@@ -4262,6 +4264,7 @@
                     "pages": [
                       "ja-JP/cli/agent",
                       "ja-JP/cli/agents",
+                      "ja-JP/cli/audit",
                       "ja-JP/cli/hooks",
                       "ja-JP/cli/infer",
                       "ja-JP/cli/memory",
@@ -5209,6 +5212,7 @@
                     "pages": [
                       "es/cli/agent",
                       "es/cli/agents",
+                      "es/cli/audit",
                       "es/cli/hooks",
                       "es/cli/infer",
                       "es/cli/memory",
@@ -6156,6 +6160,7 @@
                     "pages": [
                       "pt-BR/cli/agent",
                       "pt-BR/cli/agents",
+                      "pt-BR/cli/audit",
                       "pt-BR/cli/hooks",
                       "pt-BR/cli/infer",
                       "pt-BR/cli/memory",
@@ -7103,6 +7108,7 @@
                     "pages": [
                       "ko/cli/agent",
                       "ko/cli/agents",
+                      "ko/cli/audit",
                       "ko/cli/hooks",
                       "ko/cli/infer",
                       "ko/cli/memory",
@@ -8050,6 +8056,7 @@
                     "pages": [
                       "de/cli/agent",
                       "de/cli/agents",
+                      "de/cli/audit",
                       "de/cli/hooks",
                       "de/cli/infer",
                       "de/cli/memory",
@@ -8997,6 +9004,7 @@
                     "pages": [
                       "fr/cli/agent",
                       "fr/cli/agents",
+                      "fr/cli/audit",
                       "fr/cli/hooks",
                       "fr/cli/infer",
                       "fr/cli/memory",
@@ -9944,6 +9952,7 @@
                     "pages": [
                       "hi/cli/agent",
                       "hi/cli/agents",
+                      "hi/cli/audit",
                       "hi/cli/hooks",
                       "hi/cli/infer",
                       "hi/cli/memory",
@@ -10891,6 +10900,7 @@
                     "pages": [
                       "ar/cli/agent",
                       "ar/cli/agents",
+                      "ar/cli/audit",
                       "ar/cli/hooks",
                       "ar/cli/infer",
                       "ar/cli/memory",
@@ -11838,6 +11848,7 @@
                     "pages": [
                       "it/cli/agent",
                       "it/cli/agents",
+                      "it/cli/audit",
                       "it/cli/hooks",
                       "it/cli/infer",
                       "it/cli/memory",
@@ -12785,6 +12796,7 @@
                     "pages": [
                       "vi/cli/agent",
                       "vi/cli/agents",
+                      "vi/cli/audit",
                       "vi/cli/hooks",
                       "vi/cli/infer",
                       "vi/cli/memory",
@@ -13732,6 +13744,7 @@
                     "pages": [
                       "nl/cli/agent",
                       "nl/cli/agents",
+                      "nl/cli/audit",
                       "nl/cli/hooks",
                       "nl/cli/infer",
                       "nl/cli/memory",
@@ -14679,6 +14692,7 @@
                     "pages": [
                       "tr/cli/agent",
                       "tr/cli/agents",
+                      "tr/cli/audit",
                       "tr/cli/hooks",
                       "tr/cli/infer",
                       "tr/cli/memory",
@@ -15626,6 +15640,7 @@
                     "pages": [
                       "uk/cli/agent",
                       "uk/cli/agents",
+                      "uk/cli/audit",
                       "uk/cli/hooks",
                       "uk/cli/infer",
                       "uk/cli/memory",
@@ -16573,6 +16588,7 @@
                     "pages": [
                       "id/cli/agent",
                       "id/cli/agents",
+                      "id/cli/audit",
                       "id/cli/hooks",
                       "id/cli/infer",
                       "id/cli/memory",
@@ -17520,6 +17536,7 @@
                     "pages": [
                       "pl/cli/agent",
                       "pl/cli/agents",
+                      "pl/cli/audit",
                       "pl/cli/hooks",
                       "pl/cli/infer",
                       "pl/cli/memory",
@@ -18467,6 +18484,7 @@
                     "pages": [
                       "ru/cli/agent",
                       "ru/cli/agents",
+                      "ru/cli/audit",
                       "ru/cli/hooks",
                       "ru/cli/infer",
                       "ru/cli/memory",
