@@ -296,7 +296,7 @@ if (!/theme-toggle-icon-dark/.test(index)
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
-if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2926;--code-border:#ddd6ce;--code-shadow:none/.test(siteCss)) {
+if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
   throw new Error("assets: light code theme is not skinned");
 }
 if (/\.toc a:first-of-type/.test(siteCss)) {
@@ -338,7 +338,7 @@ if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(sit
   || !/\.toc h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
   throw new Error("assets: mono label accents drifted from the reference skin");
 }
-if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(siteCss)
+if (!/--bg:#101012;--paper:#19191c;--paper-2:#202024;[^}]*--soft:#33211d/.test(siteCss)
   || !/\.nav-link\.active\{background:var\(--soft\);color:var\(--brand\);font-weight:730\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
 }
@@ -438,8 +438,8 @@ if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px sol
 if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/\.doc code\{overflow-wrap:anywhere;word-break:break-word\}/.test(siteCss)
   || !/@media\(max-width:820px\)[\s\S]*?\.doc \.oc-table\{min-width:0;table-layout:fixed\}/.test(siteCss)
-  || !/:root\{--tooltip-bg:#f4f1ef;--tooltip-text:#171514;--tooltip-border:#f4f1ef[^}]*\}/.test(siteCss)
-  || !/:root\[data-theme="light"\]\{--tooltip-bg:#171514;--tooltip-text:#fffdfa;--tooltip-border:#171514\}/.test(siteCss)
+  || !/:root\{--tooltip-bg:#ededed;--tooltip-text:#17171a;--tooltip-border:#ededed[^}]*\}/.test(siteCss)
+  || !/:root\[data-theme="light"\]\{--tooltip-bg:#17171a;--tooltip-text:#f6f5f3;--tooltip-border:#17171a\}/.test(siteCss)
   || !/\.oc-chart\{[^}]*border:1px solid var\(--line-strong\)/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after,[^{]+\.oc-chart-donut-key\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
@@ -447,7 +447,7 @@ if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/:root\[data-theme="light"\] \.oc-callout\{background:var\(--paper\);border-color:var\(--line-strong\);border-left-color:var\(--callout-accent\)\}/.test(siteCss)
   || !/\.oc-cta\{[^}]*grid-template-columns:minmax\(0,1fr\) auto/.test(siteCss)
   || !/\.oc-cta-link\{[^}]*transition:background \.16s ease,border-color \.16s ease,color \.16s ease,filter \.16s ease/.test(siteCss)
-  || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:#1b0d08\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
+  || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:var\(--on-brand\)\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
   || !/\.oc-tooltip\[data-tip\]:hover:after,\.oc-tooltip\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
   || !/\.oc-pullquote\{[^}]*border-left:3px solid var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: editorial components should keep the docs publishing skin");
