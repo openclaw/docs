@@ -602,7 +602,7 @@ function lineChart(points, max, unit, options = {}) {
 
 function donutChart(points, unit) {
   const total = points.reduce((sum, point) => sum + Math.max(point.value, 0), 0) || 1;
-  const colors = ["var(--brand)", "#48b49a", "#7aa7ff", "#c084fc", "#d97706", "#f472b6"];
+  const colors = ["var(--brand)", "var(--accent-2)", "#7aa7ff", "#c084fc", "#d97706", "#f472b6"];
   let offset = 0;
   const segments = points.map((point, index) => {
     const pct = Math.max(0, (point.value / total) * 100);
