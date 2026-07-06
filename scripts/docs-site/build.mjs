@@ -314,6 +314,7 @@ ${pager(prev, next)}
 ${tocHtml(toc)}
 </main>
 </div>
+${siteFooter()}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
@@ -340,6 +341,15 @@ function siteHeader(page, nav, activeTab) {
 </div>
 <nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
 </header>`;
+}
+
+function siteFooter() {
+  return `<footer class="site-footer">
+<div class="site-footer-row">
+<div class="site-footer-brand"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""><div><strong>OpenClaw</strong><span>Self-hosted gateway for AI agents. MIT licensed.</span></div></div>
+<nav class="site-footer-links"><a href="https://github.com/openclaw/openclaw">GitHub</a><a href="https://github.com/openclaw/openclaw/releases">Releases</a><a href="https://discord.com/invite/clawd">Discord</a><a href="https://openclaw.ai">openclaw.ai</a></nav>
+</div>
+</footer>`;
 }
 
 function sidebar(page, nav, activeTab) {
