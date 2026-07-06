@@ -330,7 +330,7 @@ if (!/body\{[^}]*font:15px\/1\.7 Switzer,ui-sans-serif/.test(siteCss)
   || !/body::before\{[^}]*background-image:radial-gradient/.test(siteCss)
   || !/::selection\{background:var\(--brand\);color:var\(--on-brand\)\}/.test(siteCss)
   || !/\.tab-link\{[^}]*font:700 13px\/1\.4 ui-monospace/.test(siteCss)
-  || !/\.article h1\{font:760 32px\/1\.12/.test(siteCss)
+  || !/\.article h1\{font:700 clamp\(34px,3\.8vw,44px\)\/1\.08/.test(siteCss)
   || !/\.doc\{font-size:15px\}/.test(siteCss)) {
   throw new Error("assets: docs type scale drifted from the reference skin");
 }
@@ -340,7 +340,7 @@ if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(sit
   throw new Error("assets: mono label accents drifted from the reference skin");
 }
 if (!/--bg:#101012;--paper:#19191c;--paper-2:#202024;[^}]*--soft:#33211d/.test(siteCss)
-  || !/\.nav-link\.active\{background:var\(--soft\);color:var\(--brand\);font-weight:730\}/.test(siteCss)) {
+  || !/\.nav-link\.active\{border-left-color:var\(--brand\);color:var\(--brand\);font-weight:650\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
 }
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
