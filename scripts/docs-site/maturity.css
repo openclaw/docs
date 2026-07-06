@@ -15,7 +15,7 @@
   max-width: 46rem;
   margin: 0;
   color: var(--ink);
-  font: 750 36px / 1.08 ui-sans-serif, system-ui, sans-serif;
+  font: 750 36px / 1.08 Switzer, ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0;
 }
 
@@ -23,13 +23,13 @@
   max-width: 58rem;
   margin: 0;
   color: var(--text);
-  font: 500 16px / 1.65 ui-sans-serif, system-ui, sans-serif;
+  font: 500 16px / 1.65 Switzer, ui-sans-serif, system-ui, sans-serif;
 }
 
 .maturity-kicker {
   margin: 0;
   color: var(--brand);
-  font: 750 10px / 1.3 ui-sans-serif, system-ui, sans-serif;
+  font: 750 10px / 1.3 Switzer, ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -87,7 +87,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, currentColor 11%, transparent);
   color: inherit;
-  font: 750 10px / 1.25 ui-sans-serif, system-ui, sans-serif;
+  font: 750 10px / 1.25 Switzer, ui-sans-serif, system-ui, sans-serif;
   white-space: nowrap;
 }
 
@@ -146,12 +146,12 @@
 .maturity-summary-value {
   display: inline-block;
   color: var(--ink);
-  font: 750 30px / 1 ui-sans-serif, system-ui, sans-serif;
+  font: 750 30px / 1 Switzer, ui-sans-serif, system-ui, sans-serif;
 }
 
 .maturity-summary-heading > span:not(.maturity-summary-value) {
   color: var(--text);
-  font: 700 13px / 1.2 ui-sans-serif, system-ui, sans-serif;
+  font: 700 13px / 1.2 Switzer, ui-sans-serif, system-ui, sans-serif;
 }
 
 .maturity-summary-bar {
@@ -306,7 +306,7 @@
   padding: 0 0 9px;
   border-top: 0;
   color: var(--muted);
-  font: 750 10px / 1.2 ui-sans-serif, system-ui, sans-serif;
+  font: 750 10px / 1.2 Switzer, ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -326,7 +326,7 @@
 .maturity-surface-title {
   overflow-wrap: anywhere;
   color: var(--ink);
-  font: 700 13px / 1.25 ui-sans-serif, system-ui, sans-serif;
+  font: 700 13px / 1.25 Switzer, ui-sans-serif, system-ui, sans-serif;
 }
 
 .maturity-surface-meta {
@@ -409,7 +409,7 @@
 
 .maturity-evidence-title {
   color: var(--ink);
-  font: 700 13px / 1.3 ui-sans-serif, system-ui, sans-serif;
+  font: 700 13px / 1.3 Switzer, ui-sans-serif, system-ui, sans-serif;
 }
 
 .maturity-evidence-card span {
@@ -446,7 +446,7 @@
 .maturity-category-row-header {
   padding: 8px 0;
   color: var(--muted);
-  font: 750 10px / 1.2 ui-sans-serif, system-ui, sans-serif;
+  font: 750 10px / 1.2 Switzer, ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0.04em;
   opacity: 0.72;
   text-transform: uppercase;

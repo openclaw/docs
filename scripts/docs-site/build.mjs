@@ -288,8 +288,11 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <meta name="twitter:description" content="${escapeAttr(description)}">
 <meta name="twitter:image" content="${escapeAttr(ogImageUrl)}">
 <meta name="twitter:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
-<meta name="theme-color" content="#FF5A36">
+<meta name="theme-color" content="#f5654a">
 <link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&f[]=sentient@400i&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
