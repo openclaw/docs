@@ -84,7 +84,7 @@
   max-width: 100%;
   padding: 3px 8px;
   border: 1px solid color-mix(in srgb, currentColor 34%, transparent);
-  border-radius: 999px;
+  border-radius: 2px;
   background: color-mix(in srgb, currentColor 11%, transparent);
   color: inherit;
   font: 750 10px / 1.25 Switzer, ui-sans-serif, system-ui, sans-serif;
