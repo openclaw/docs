@@ -5,22 +5,22 @@ read_when:
 summary: OpenClaw 支持的模型提供商（LLM）
 title: 提供商目录
 x-i18n:
-    generated_at: "2026-07-05T11:38:00Z"
+    generated_at: "2026-07-06T10:52:01Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b90fc2b21b16b4630f9f2412f43e640a3e969564fe62def6a789853546bb0ba1
+    source_hash: 2075285660dafedc0218da57d731099068eb8c16b043e8074bcda3e30f4bf7a4
     source_path: providers/index.md
     workflow: 16
 ---
 
 OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份验证，然后将默认模型设置为 `provider/model`。
 
-正在查找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）等）？请参阅 [Channels](/zh-CN/channels)。
+在找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）/等）？请参阅 [Channels](/zh-CN/channels)。
 
 ## 快速开始
 
-1. 使用提供商完成身份验证（通常通过 `openclaw onboard`）。
+1. 使用提供商进行身份验证（通常通过 `openclaw onboard`）。
 2. 设置默认模型：
 
 ```json5
@@ -64,7 +64,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Moonshot AI（Kimi + Kimi Coding）](/zh-CN/providers/moonshot)
 - [NovitaAI](/zh-CN/providers/novita)
 - [NVIDIA](/zh-CN/providers/nvidia)
-- [Ollama（云端 + 本地模型）](/zh-CN/providers/ollama)
+- [Ollama（云 + 本地模型）](/zh-CN/providers/ollama)
 - [Ollama Cloud](/zh-CN/providers/ollama-cloud)
 - [OpenAI（API + Codex）](/zh-CN/providers/openai)
 - [OpenCode](/zh-CN/providers/opencode)
@@ -79,7 +79,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [SGLang（本地模型）](/zh-CN/providers/sglang)
 - [StepFun](/zh-CN/providers/stepfun)
 - [Synthetic](/zh-CN/providers/synthetic)
-- [腾讯云（TokenHub）](/zh-CN/providers/tencent)
+- [腾讯云（TokenHub / TokenPlan）](/zh-CN/providers/tencent)
 - [Together AI](/zh-CN/providers/together)
 - [Venice（Venice AI，注重隐私）](/zh-CN/providers/venice)
 - [Vercel AI Gateway](/zh-CN/providers/vercel-ai-gateway)
@@ -108,7 +108,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 
 ## 社区工具
 
-- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭证的社区代理（使用前请核验 Anthropic 政策/条款）
+- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭据的社区代理（使用前请核实 Anthropic 政策/条款）
 
 如需完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，
 请参阅 [模型提供商](/zh-CN/concepts/model-providers)。

@@ -1,21 +1,21 @@
 ---
 read_when:
     - 你正在安裝、設定或稽核 tencent 外掛
-summary: 為 OpenClaw 新增 Tencent TokenHub 模型提供者支援。
+summary: 新增 Tencent Hy3 模型供應商支援（TokenHub 和 TokenPlan）至 OpenClaw。
 title: 騰訊外掛
 x-i18n:
-    generated_at: "2026-06-27T19:46:41Z"
+    generated_at: "2026-07-06T10:51:38Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf977c889dd59aff6f106fd14c19d23f28464622047a37c292f5f7ef1a6b0551
+    source_hash: b386553d6ae07aac1a82172e4b46fc3a1f639bb37aec0a50de935af011e0296c
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
 # Tencent 外掛
 
-為 OpenClaw 新增 Tencent TokenHub 模型供應商支援。
+為 OpenClaw 新增 Tencent TokenHub 與 TokenPlan 模型提供者支援。
 
 ## 發行
 
@@ -24,7 +24,7 @@ x-i18n:
 
 ## 介面
 
-providers: tencent-tokenhub
+providers: tencent-tokenhub, tencent-tokenplan
 
 ## 相關文件
 

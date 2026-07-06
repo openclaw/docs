@@ -1,28 +1,28 @@
 ---
 read_when:
     - Quieres elegir un proveedor de modelos
-    - Necesitas una descripción general rápida de los backends de LLM compatibles
+    - Necesitas un resumen rápido de los backends de LLM compatibles
 summary: Proveedores de modelos (LLM) compatibles con OpenClaw
 title: Directorio de proveedores
 x-i18n:
-    generated_at: "2026-07-05T11:40:32Z"
+    generated_at: "2026-07-06T10:51:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b90fc2b21b16b4630f9f2412f43e640a3e969564fe62def6a789853546bb0ba1
+    source_hash: 2075285660dafedc0218da57d731099068eb8c16b043e8074bcda3e30f4bf7a4
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego define el
+OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego configura el
 modelo predeterminado como `provider/model`.
 
-¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Consulta [Canales](/es/channels).
+¿Buscas la documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulta [Canales](/es/channels).
 
 ## Inicio rápido
 
 1. Autentícate con el proveedor (normalmente mediante `openclaw onboard`).
-2. Define el modelo predeterminado:
+2. Configura el modelo predeterminado:
 
 ```json5
 {
@@ -41,7 +41,7 @@ modelo predeterminado como `provider/model`.
 - [BytePlus (internacional)](/es/concepts/model-providers#byteplus-international)
 - [Cerebras](/es/providers/cerebras)
 - [Chutes](/es/providers/chutes)
-- [ClawRouter (enrutamiento multiproveedor administrado)](/es/providers/clawrouter)
+- [ClawRouter (enrutamiento multiproveedor gestionado)](/es/providers/clawrouter)
 - [Cloudflare AI Gateway](/es/providers/cloudflare-ai-gateway)
 - [Cohere](/es/providers/cohere)
 - [ComfyUI](/es/providers/comfy)
@@ -55,7 +55,7 @@ modelo predeterminado como `provider/model`.
 - [Google (Gemini)](/es/providers/google)
 - [Gradium](/es/providers/gradium)
 - [Groq (inferencia LPU)](/es/providers/groq)
-- [Hugging Face (Inference)](/es/providers/huggingface)
+- [Hugging Face (inferencia)](/es/providers/huggingface)
 - [inferrs (modelos locales)](/es/providers/inferrs)
 - [Kilocode](/es/providers/kilocode)
 - [LiteLLM (gateway unificado)](/es/providers/litellm)
@@ -80,7 +80,7 @@ modelo predeterminado como `provider/model`.
 - [SGLang (modelos locales)](/es/providers/sglang)
 - [StepFun](/es/providers/stepfun)
 - [Synthetic](/es/providers/synthetic)
-- [Tencent Cloud (TokenHub)](/es/providers/tencent)
+- [Tencent Cloud (TokenHub / TokenPlan)](/es/providers/tencent)
 - [Together AI](/es/providers/together)
 - [Venice (Venice AI, centrado en la privacidad)](/es/providers/venice)
 - [Vercel AI Gateway](/es/providers/vercel-ai-gateway)
@@ -91,12 +91,12 @@ modelo predeterminado como `provider/model`.
 - [Xiaomi](/es/providers/xiaomi)
 - [Z.AI (GLM)](/es/providers/zai)
 
-## Páginas generales compartidas
+## Páginas de información general compartidas
 
 - [Variantes adicionales de proveedores](/es/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
-- [Generación de imágenes](/es/tools/image-generation) - Herramienta `image_generate` compartida, selección de proveedor y conmutación por error
-- [Generación de música](/es/tools/music-generation) - Herramienta `music_generate` compartida, selección de proveedor y conmutación por error
-- [Generación de video](/es/tools/video-generation) - Herramienta `video_generate` compartida, selección de proveedor y conmutación por error
+- [Generación de imágenes](/es/tools/image-generation) - Herramienta compartida `image_generate`, selección de proveedor y conmutación por error
+- [Generación de música](/es/tools/music-generation) - Herramienta compartida `music_generate`, selección de proveedor y conmutación por error
+- [Generación de video](/es/tools/video-generation) - Herramienta compartida `video_generate`, selección de proveedor y conmutación por error
 
 ## Proveedores de transcripción
 
