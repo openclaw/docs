@@ -544,8 +544,8 @@ async function checkMobile() {
       viewport: innerWidth,
     };
   });
-  if (!menu.bodyOpen || menu.ariaExpanded !== "true" || menu.sidebarLeft !== 0 || menu.sidebarRight > menu.viewport - 8 || menu.sidebarWidth > 380 || !menu.closeVisible) {
-    throw new Error(`mobile menu drawer failed: ${JSON.stringify(menu)}`);
+  if (!menu.bodyOpen || menu.ariaExpanded !== "true" || menu.sidebarLeft !== 0 || menu.sidebarRight !== menu.viewport || menu.sidebarWidth !== menu.viewport || !menu.closeVisible) {
+    throw new Error(`mobile menu drawer failed (expected full-bleed on phones): ${JSON.stringify(menu)}`);
   }
   await page.keyboard.press("Escape");
   const closed = await page.evaluate(() => ({
