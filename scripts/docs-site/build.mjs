@@ -341,7 +341,7 @@ function siteHeader(page, nav, activeTab) {
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a></div>
 <button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
-<nav class="header-links">${languagePicker(page)}${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
+<nav class="header-links">${languagePicker(page)}${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
 </div>
 <nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
@@ -355,6 +355,7 @@ function siteFooter() {
 <nav class="site-footer-links" aria-label="OpenClaw links">
 <a href="https://openclaw.ai" target="_blank" rel="noopener">openclaw.ai</a>
 <a href="https://openclaw.org" target="_blank" rel="noopener">openclaw.org</a>
+<a href="https://github.com/openclaw/openclaw/releases" target="_blank" rel="noopener">${icon("package")}Releases</a>
 <a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">${icon("github")}GitHub</a>
 <a href="https://discord.com/invite/clawd" target="_blank" rel="noopener">${icon("discord")}Discord</a>
 </nav>
@@ -394,6 +395,10 @@ function localeDisplayName(code) {
 
 function topLink(label, href, iconName) {
   return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
+}
+
+function topIconLink(label, href, iconName) {
+  return `<a class="top-icon-link" href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}">${icon(iconName)}</a>`;
 }
 
 function firstStatusLine(content) {
