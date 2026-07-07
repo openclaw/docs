@@ -70,24 +70,20 @@ function baselineY(blockTop, size, lineIndex) {
 
 function defs() {
   return `<defs>
-    <symbol id="lobster" viewBox="0 0 16 16" overflow="visible">
-      <g shape-rendering="crispEdges">
-        <g fill="#33130e">
-          <rect x="1" y="5" width="1" height="3"/><rect x="2" y="4" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="3" y="9" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="4" y="10" width="1" height="1"/><rect x="5" y="2" width="6" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="12" y="3" width="1" height="1"/><rect x="12" y="9" width="1" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="14" y="5" width="1" height="3"/><rect x="5" y="11" width="6" height="1"/><rect x="4" y="12" width="1" height="1"/><rect x="11" y="12" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/><rect x="5" y="14" width="6" height="1"/>
-        </g>
-        <g fill="#f5654a">
-          <rect x="5" y="3" width="6" height="1"/><rect x="4" y="4" width="8" height="1"/><rect x="3" y="5" width="10" height="1"/><rect x="3" y="6" width="10" height="1"/><rect x="3" y="7" width="10" height="1"/><rect x="4" y="8" width="8" height="1"/><rect x="5" y="9" width="6" height="1"/><rect x="5" y="12" width="6" height="1"/><rect x="6" y="13" width="4" height="1"/>
-        </g>
-        <g fill="#ff8f78">
-          <rect x="1" y="6" width="2" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="13" y="6" width="2" height="1"/><rect x="13" y="5" width="1" height="1"/><rect x="13" y="7" width="1" height="1"/>
-        </g>
-        <g fill="#081016">
-          <rect x="6" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/>
-        </g>
-        <g fill="#f5fbff">
-          <rect x="6" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/>
-        </g>
-      </g>
+    <linearGradient id="lobster-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff4d4d"/>
+      <stop offset="1" stop-color="#991b1b"/>
+    </linearGradient>
+    <symbol id="lobster" viewBox="0 0 120 120" overflow="visible">
+      <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lobster-grad)"/>
+      <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lobster-grad)"/>
+      <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lobster-grad)"/>
+      <path d="M45 15 Q35 5 30 8" stroke="#ff4d4d" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M75 15 Q85 5 90 8" stroke="#ff4d4d" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <circle cx="45" cy="35" r="6" fill="#101012"/>
+      <circle cx="75" cy="35" r="6" fill="#101012"/>
+      <circle cx="46" cy="34" r="2.5" fill="#00e5cc"/>
+      <circle cx="76" cy="34" r="2.5" fill="#00e5cc"/>
     </symbol>
   </defs>`;
 }
