@@ -211,7 +211,7 @@ if (!/data-chat-copy/.test(index)
   || !/data-chat-retry[^>]+hidden/.test(index)
   || !/\.docs-chat\.expanded/.test(chatCss)
   || !/\.docs-chat\{[^}]*height:min\(680px/.test(chatCss)
-  || !/\.docs-chat-panel\{[^}]*border-radius:16px/.test(chatCss)
+  || !/\.docs-chat-panel\{[^}]*border-radius:0/.test(chatCss)
   || !/\.docs-chat-panel>\*\{min-width:0;max-width:100%/.test(chatCss)
   || !/\.docs-chat-actions\{[^}]*gap:6px/.test(chatCss)
   || !/\.docs-chat-head\{overflow:visible\}/.test(chatCss)
@@ -299,7 +299,13 @@ if (!/theme-toggle-icon-dark/.test(index)
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
-if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2926;--code-border:#ddd6ce;--code-shadow:none/.test(siteCss)) {
+if (!/class="site-footer"/.test(index)
+  || !/an <a href="https:\/\/openclaw\.org"[^>]*>OpenClaw Foundation<\/a> project/.test(index)
+  || !/\.site-footer\{border-top:1px solid var\(--line\)/.test(siteCss)
+  || !/\.site-footer-inner\{[^}]*justify-content:space-between/.test(siteCss)) {
+  throw new Error("assets: site footer with Foundation attribution is missing");
+}
+if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
   throw new Error("assets: light code theme is not skinned");
 }
 if (/\.toc a:first-of-type/.test(siteCss)) {
@@ -325,14 +331,15 @@ if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
   throw new Error("assets: sidebar overflow affordance is missing");
 }
 if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
-  || !/\.doc-shell\{max-width:1780px;margin:0 auto\}/.test(siteCss)
+  || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)
   || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
   throw new Error("assets: docs shell geometry does not match the wide reference layout");
 }
-if (!/body\{[^}]*font:15px\/1\.7 ui-sans-serif/.test(siteCss)
-  || !/body\{[^}]*radial-gradient/.test(siteCss)
+if (!/body\{[^}]*font:15px\/1\.7 Switzer,ui-sans-serif/.test(siteCss)
+  || !/::selection\{background:var\(--brand\);color:var\(--on-brand\)\}/.test(siteCss)
+  || /body::before\{[^}]*background-image:radial-gradient/.test(siteCss)
   || !/\.tab-link\{[^}]*font:700 13px\/1\.4 ui-monospace/.test(siteCss)
-  || !/\.article h1\{font:760 32px\/1\.12/.test(siteCss)
+  || !/\.article h1\{font:700 clamp\(34px,3\.8vw,44px\)\/1\.08/.test(siteCss)
   || !/\.doc\{font-size:15px\}/.test(siteCss)) {
   throw new Error("assets: docs type scale drifted from the reference skin");
 }
@@ -341,12 +348,12 @@ if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(sit
   || !/\.toc h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
   throw new Error("assets: mono label accents drifted from the reference skin");
 }
-if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(siteCss)
-  || !/\.nav-link\.active\{background:var\(--soft\);color:var\(--brand\);font-weight:730\}/.test(siteCss)) {
+if (!/--bg:#101012;--paper:#19191c;--paper-2:#202024;[^}]*--soft:#33211d/.test(siteCss)
+  || !/\.nav-link\.active\{border-left-color:var\(--brand\);color:var\(--brand\);font-weight:650\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
 }
 if (!/\.site-footer\{[^}]*border-top:1px solid var\(--line\)/.test(siteCss)
-  || !/\.site-footer-links a\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
+  || !/\.site-footer-inner\{[^}]*ui-monospace/.test(siteCss)) {
   throw new Error("assets: site footer skin is missing");
 }
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
@@ -445,8 +452,8 @@ if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px sol
 if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/\.doc code\{overflow-wrap:anywhere;word-break:break-word\}/.test(siteCss)
   || !/@media\(max-width:820px\)[\s\S]*?\.doc \.oc-table\{min-width:0;table-layout:fixed\}/.test(siteCss)
-  || !/:root\{--tooltip-bg:#f4f1ef;--tooltip-text:#171514;--tooltip-border:#f4f1ef[^}]*\}/.test(siteCss)
-  || !/:root\[data-theme="light"\]\{--tooltip-bg:#171514;--tooltip-text:#fffdfa;--tooltip-border:#171514\}/.test(siteCss)
+  || !/:root\{--tooltip-bg:#ededed;--tooltip-text:#17171a;--tooltip-border:#ededed[^}]*\}/.test(siteCss)
+  || !/:root\[data-theme="light"\]\{--tooltip-bg:#17171a;--tooltip-text:#f6f5f3;--tooltip-border:#17171a\}/.test(siteCss)
   || !/\.oc-chart\{[^}]*border:1px solid var\(--line-strong\)/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after,[^{]+\.oc-chart-donut-key\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
@@ -454,7 +461,7 @@ if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/:root\[data-theme="light"\] \.oc-callout\{background:var\(--paper\);border-color:var\(--line-strong\);border-left-color:var\(--callout-accent\)\}/.test(siteCss)
   || !/\.oc-cta\{[^}]*grid-template-columns:minmax\(0,1fr\) auto/.test(siteCss)
   || !/\.oc-cta-link\{[^}]*transition:background \.16s ease,border-color \.16s ease,color \.16s ease,filter \.16s ease/.test(siteCss)
-  || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:#1b0d08\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
+  || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:var\(--on-brand\)\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
   || !/\.oc-tooltip\[data-tip\]:hover:after,\.oc-tooltip\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
   || !/\.oc-pullquote\{[^}]*border-left:3px solid var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: editorial components should keep the docs publishing skin");
@@ -555,7 +562,6 @@ if (!fs.existsSync(path.join(site, "index.md"))
 const rootMarkdownPrompt = encodeURIComponent(`Read from ${expectedOrigin}/index.md so I can ask questions about it.`);
 const chatgptAction = `https://chatgpt.com/?hints=search&amp;q=${rootMarkdownPrompt}`;
 const claudeAction = `https://claude.ai/new?q=${rootMarkdownPrompt}`;
-const perplexityAction = `https://www.perplexity.ai/search/new?q=${rootMarkdownPrompt}`;
 if (!/<script type="application\/json" data-page-markdown>/.test(index)
   || />"---\\n/.test(index)) {
   throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
@@ -569,13 +575,12 @@ if (!/class="page-actions"/.test(index)
   || !/target="_blank" rel="noreferrer"/.test(index)
   || !/Open in ChatGPT/.test(index)
   || !/Open in Claude/.test(index)
-  || !/Open in Perplexity/.test(index)
+  || /Open in Perplexity/.test(index)
   || !index.includes(chatgptAction)
-  || !index.includes(claudeAction)
-  || !index.includes(perplexityAction)) {
+  || !index.includes(claudeAction)) {
   throw new Error("page tools: AI action menu links are missing");
 }
-if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
+if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 3) {
   throw new Error("page tools: dropdown links should open in a new tab");
 }
 if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(index)

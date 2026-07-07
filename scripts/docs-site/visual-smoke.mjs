@@ -131,10 +131,10 @@ async function checkDesktop() {
       codeLineGap: lineRects.length > 1 ? lineRects[1].top - lineRects[0].bottom : 0,
     };
   });
-  if (componentSkin.codeBg !== "rgb(16, 16, 16)"
+  if (componentSkin.codeBg !== "rgb(14, 14, 16)"
     || parseFloat(componentSkin.codePadding) > 14
     || !componentSkin.stepBorderImage.includes("linear-gradient")
-    || componentSkin.paramTypeColor === "rgb(129, 122, 118)"
+    || componentSkin.paramTypeColor === "rgb(154, 154, 162)"
     || componentSkin.codeLineGap > 3) {
     throw new Error(`desktop component skin failed: ${JSON.stringify(componentSkin)}`);
   }
@@ -544,8 +544,8 @@ async function checkMobile() {
       viewport: innerWidth,
     };
   });
-  if (!menu.bodyOpen || menu.ariaExpanded !== "true" || menu.sidebarLeft !== 0 || menu.sidebarRight > menu.viewport - 8 || menu.sidebarWidth > 380 || !menu.closeVisible) {
-    throw new Error(`mobile menu drawer failed: ${JSON.stringify(menu)}`);
+  if (!menu.bodyOpen || menu.ariaExpanded !== "true" || menu.sidebarLeft !== 0 || menu.sidebarRight !== menu.viewport || menu.sidebarWidth !== menu.viewport || !menu.closeVisible) {
+    throw new Error(`mobile menu drawer failed (expected full-bleed on phones): ${JSON.stringify(menu)}`);
   }
   await page.keyboard.press("Escape");
   const closed = await page.evaluate(() => ({
@@ -696,7 +696,7 @@ async function checkLightMode() {
       minCardWidth: Math.min(...cardWidths),
     };
   });
-  if (skin.theme !== "light" || skin.codeText !== "#2d2926" || skin.badgeRadius === "0px" || skin.minCardWidth < 150) {
+  if (skin.theme !== "light" || skin.codeText !== "#26262c" || skin.badgeRadius === "0px" || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
   await page.close();
