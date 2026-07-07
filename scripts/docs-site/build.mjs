@@ -39,6 +39,12 @@ const defaultShellAssetVersion = createHash("sha256")
   .digest("hex")
   .slice(0, 12);
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
+const ogAssetVersion = createHash("sha256")
+  .update(fs.readFileSync(new URL("./og-card-template.mjs", import.meta.url)))
+  .update("\0")
+  .update(fs.readFileSync(new URL("./og-card.svg", import.meta.url)))
+  .digest("hex")
+  .slice(0, 12);
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
 const previewPagesPerGroup = parseOptionalPositiveInt(
@@ -263,7 +269,7 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const pageOgPath = page.locale === "en" && renderedPageOgCards.has(page.slug)
     ? `/og/${page.slug}.png`
     : ogImagePath;
-  const ogImageUrl = canonicalOrigin ? `${canonicalOrigin}${pageOgPath}` : publicPath(pageOgPath);
+  const ogImageUrl = `${canonicalOrigin ? `${canonicalOrigin}${pageOgPath}` : publicPath(pageOgPath)}?v=${ogAssetVersion}`;
   return `<!doctype html>
 <html lang="${lang}" dir="${dir}">
 <head>
@@ -382,7 +388,11 @@ function languagePicker(page) {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
   }).join("");
-  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
+  const nativeOptions = pickerLocales.map((locale) => {
+    const active = locale.code === page.locale;
+    return `<option value="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}"${active ? " selected" : ""}>${escapeHtml(localeFlag(locale.code))} ${escapeHtml(localeDisplayName(locale.code))}</option>`;
+  }).join("");
+  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><select class="language-native" data-language-native aria-label="Language">${nativeOptions}</select><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
 }
 
 function localeFlag(code) {

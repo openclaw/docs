@@ -166,14 +166,17 @@ const gettingStartedOgImage = `${expectedOrigin}/og/start/getting-started.png`;
 if (!fs.existsSync(path.join(site, "og/start/getting-started.png"))) {
   throw new Error("start/getting-started: per-page og image was not generated");
 }
-if (!gettingStarted.includes(`<meta property="og:image" content="${gettingStartedOgImage}">`)) {
+if (!gettingStarted.includes(`<meta property="og:image" content="${gettingStartedOgImage}?v=`)) {
   throw new Error("start/getting-started: og:image does not use the per-page card");
 }
-if (!gettingStarted.includes(`<meta name="twitter:image" content="${gettingStartedOgImage}">`)) {
+if (!gettingStarted.includes(`<meta name="twitter:image" content="${gettingStartedOgImage}?v=`)) {
   throw new Error("start/getting-started: twitter:image does not use the per-page card");
 }
-if (gettingStarted.includes(`${expectedOrigin}/og-card.png`)) {
+if (gettingStarted.includes(`${expectedOrigin}/og-card.png"`)) {
   throw new Error("start/getting-started: metadata fell back to the generic og-card.png");
+}
+if (!/og\/start\/getting-started\.png\?v=[0-9a-f]{12}/.test(gettingStarted)) {
+  throw new Error("start/getting-started: og image URL must carry a cache-busting content version");
 }
 if (previewOrigin !== expectedOrigin && /<link rel="canonical"[^>]+documentation\.openclaw\.ai/.test(index)) {
   throw new Error(`index: canonical link should not use preview origin ${previewOrigin}`);
@@ -285,6 +288,14 @@ if (!/\.language-menu\{top:calc\(100% \+ 8px\);width:min\(270px,calc\(100vw - 32
   || !/\.language-menu::-webkit-scrollbar-track\{background:transparent\}/.test(siteCss)) {
   throw new Error("assets: compact language picker is missing");
 }
+if (!/data-language-native/.test(index)
+  || !/\.language-native\{display:none\}/.test(siteCss)
+  || !/\.language-native\{display:block;position:absolute/.test(siteCss)) {
+  throw new Error("assets: native language select fallback for coarse pointers is missing");
+}
+if (!/tocSpyHoldUntil/.test(siteJs) || !/key===currentDocKey/.test(siteJs)) {
+  throw new Error("assets: toc scrollspy hold and same-document popstate guard are missing");
+}
 if (/\.header-links a[\s{:.[]/.test(siteCss)) {
   throw new Error("assets: .header-links descendant anchor rules override .language-option layout; scope to .header-links>a");
 }
@@ -390,7 +401,7 @@ if (!/let tocObserver=null/.test(siteJs)
   || !/rootMargin:"-120px 0px -70% 0px"/.test(siteJs)
   || !/scroller\.scrollTop\+innerHeight>=scroller\.scrollHeight-2/.test(siteJs)
   || !/scrollTarget\(url\.hash\);initTocScrollspy\(\)/.test(siteJs)
-  || !/scrollActiveNavLink\(\);\s*initTocScrollspy\(\);\s*document\.addEventListener\("click"/.test(siteJs)) {
+  || !/scrollActiveNavLink\(\);\s*initTocScrollspy\(\);\s*document\.addEventListener\("change"[^;]*language-native[\s\S]{0,200}?document\.addEventListener\("click"/.test(siteJs)) {
   throw new Error("assets: table-of-contents scrollspy is missing");
 }
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
