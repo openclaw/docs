@@ -1,49 +1,51 @@
 ---
 read_when:
-    - Agregar compatibilidad con nodos de ubicación o interfaz de permisos
+    - Agregar soporte para nodos de ubicación o interfaz de permisos
     - Diseñar permisos de ubicación o comportamiento en primer plano de Android
-summary: Comando de ubicación para nodos (location.get), modos de permiso y comportamiento en primer plano de Android
+summary: Comando de ubicación para nodos (location.get), modos de permiso y comportamiento de Android en primer plano
 title: Comando de ubicación
 x-i18n:
-    generated_at: "2026-07-05T11:30:20Z"
+    generated_at: "2026-07-06T21:48:30Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0a4d3321a9b4d290461742edb63a7829aeacb082bff11f65e217443d755dc29
+    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
     source_path: nodes/location-command.md
     workflow: 16
 ---
 
-## En resumen
+## Resumen
 
-- `location.get` es un comando de Node, invocado mediante `node.invoke` u `openclaw nodes location get`.
+- `location.get` es un comando de nodo, invocado mediante `node.invoke` u `openclaw nodes location get`.
 - Desactivado de forma predeterminada.
-- La configuración de la app de Android usa un selector: Desactivado / Mientras se usa.
+- Las compilaciones de terceros para Android usan un selector: Desactivado / Mientras se usa / Siempre. Las compilaciones de Play siguen siendo Desactivado / Mientras se usa.
 - Ubicación precisa es un interruptor independiente.
 
 ## Por qué un selector (y no solo un interruptor)
 
-Los permisos de ubicación del sistema operativo tienen varios niveles (iOS/macOS exponen Mientras se usa frente a Siempre; Android actualmente admite solo primer plano). La ubicación precisa también es una concesión independiente del sistema operativo (iOS 14+ "Precisa", Android "fina" frente a "aproximada"). El selector dentro de la app controla el modo solicitado, pero el sistema operativo sigue decidiendo la concesión real.
+Los permisos de ubicación del sistema operativo tienen varios niveles. La ubicación precisa también es una concesión independiente del sistema operativo (iOS 14+ "Precise", Android "fine" frente a "coarse"). El selector dentro de la app controla el modo solicitado, pero el sistema operativo sigue decidiendo la concesión real.
 
 ## Modelo de configuración
 
-Por dispositivo Node:
+Por dispositivo de nodo:
 
-- `location.enabledMode`: `off | whileUsing`
+- `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
-Comportamiento de la interfaz:
+Comportamiento de la IU:
 
-- Seleccionar `whileUsing` solicita permiso de primer plano.
-- Si el sistema operativo deniega el nivel solicitado, la app vuelve al nivel más alto concedido y muestra el estado.
+- Seleccionar `whileUsing` solicita permiso en primer plano.
+- Seleccionar `always` en la compilación de terceros para Android primero solicita permiso en primer plano, explica el acceso en segundo plano y luego abre la configuración de la app de Android para la concesión independiente **Permitir todo el tiempo**.
+- Las compilaciones de Android Play no declaran permiso de ubicación en segundo plano ni muestran `always`.
+- Si el sistema operativo deniega el nivel solicitado, la app vuelve al nivel concedido más alto y muestra el estado.
 
 ## Asignación de permisos (node.permissions)
 
-Opcional. El Node de macOS informa `location` mediante el mapa `permissions` en `node.list`/`node.describe`; iOS/Android pueden omitirlo.
+Opcional. El nodo de macOS informa `location` mediante el mapa `permissions` en `node.list`/`node.describe`; iOS/Android pueden omitirlo.
 
 ## Comando: `location.get`
 
-Se llama mediante `node.invoke` o el asistente de CLI:
+Se llama mediante `node.invoke` o el helper de CLI:
 
 ```bash
 openclaw nodes location get --node <idOrNameOrIp>
@@ -60,9 +62,9 @@ Parámetros:
 }
 ```
 
-Las flags de CLI se asignan directamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
+Las marcas de CLI se asignan directamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
 
-Payload de respuesta:
+Carga útil de respuesta:
 
 ```json
 {
@@ -88,24 +90,26 @@ Errores (códigos estables):
 
 ## Comportamiento en segundo plano
 
-- La app de Android deniega `location.get` cuando está en segundo plano; mantén OpenClaw abierto al solicitar la ubicación en Android.
-- Otras plataformas Node pueden diferir.
+- Las compilaciones de terceros para Android aceptan `location.get` en segundo plano solo cuando el usuario seleccionó `Always` y Android concedió la ubicación en segundo plano. El servicio persistente de nodo existente agrega el tipo de servicio `location` y muestra `Location: Always` mientras está activo.
+- Las compilaciones de Android Play y el modo `While Using` deniegan `location.get` mientras la app está en segundo plano.
+- Otras plataformas de nodo pueden diferir.
 
-## Integración con modelos/herramientas
+## Integración de modelo/herramientas
 
-- Herramienta de agente: la acción `location_get` de la herramienta `nodes` (Node obligatorio).
+- Herramienta del agente: la acción `location_get` de la herramienta `nodes` (nodo obligatorio).
 - CLI: `openclaw nodes location get --node <id>`.
 - Directrices para agentes: llamar solo cuando el usuario haya habilitado la ubicación y entienda el alcance.
 
 ## Texto de UX (sugerido)
 
-- Desactivado: "El uso compartido de ubicación está desactivado."
+- Desactivado: "El uso compartido de ubicación está deshabilitado."
 - Mientras se usa: "Solo cuando OpenClaw está abierto."
-- Precisa: "Usar ubicación GPS precisa. Desactívalo para compartir ubicación aproximada."
+- Siempre: "Permitir comprobaciones de ubicación solicitadas mientras OpenClaw está en segundo plano."
+- Precisa: "Usar ubicación GPS precisa. Desactívala para compartir una ubicación aproximada."
 
 ## Relacionado
 
-- [Información general de Nodes](/es/nodes)
+- [Resumen de nodos](/es/nodes)
 - [Análisis de ubicación de canales](/es/channels/location)
 - [Captura de cámara](/es/nodes/camera)
 - [Modo de conversación](/es/nodes/talk)

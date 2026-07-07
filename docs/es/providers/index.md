@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Quieres elegir un proveedor de modelos
-    - Necesitas un resumen rápido de los backends de LLM compatibles
+    - Quiere elegir un proveedor de modelos
+    - Necesitas una descripción general rápida de los backends LLM compatibles
 summary: Proveedores de modelos (LLM) compatibles con OpenClaw
 title: Directorio de proveedores
 x-i18n:
-    generated_at: "2026-07-06T10:51:53Z"
+    generated_at: "2026-07-06T21:50:57Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2075285660dafedc0218da57d731099068eb8c16b043e8074bcda3e30f4bf7a4
+    source_hash: fb53d2fdc4cafa2bf7a8167591296362b9772ddbcfa01036a4704b362d80cfce
     source_path: providers/index.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego configura el
 modelo predeterminado como `provider/model`.
 
-¿Buscas la documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulta [Canales](/es/channels).
+¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Consulta [Canales](/es/channels).
 
 ## Inicio rápido
 
@@ -38,7 +38,7 @@ modelo predeterminado como `provider/model`.
 - [Anthropic (API + Claude CLI)](/es/providers/anthropic)
 - [Arcee AI (modelos Trinity)](/es/providers/arcee)
 - [Azure Speech](/es/providers/azure-speech)
-- [BytePlus (internacional)](/es/concepts/model-providers#byteplus-international)
+- [BytePlus (Internacional)](/es/concepts/model-providers#byteplus-international)
 - [Cerebras](/es/providers/cerebras)
 - [Chutes](/es/providers/chutes)
 - [ClawRouter (enrutamiento multiproveedor gestionado)](/es/providers/clawrouter)
@@ -55,17 +55,18 @@ modelo predeterminado como `provider/model`.
 - [Google (Gemini)](/es/providers/google)
 - [Gradium](/es/providers/gradium)
 - [Groq (inferencia LPU)](/es/providers/groq)
-- [Hugging Face (inferencia)](/es/providers/huggingface)
+- [Hugging Face (Inferencia)](/es/providers/huggingface)
 - [inferrs (modelos locales)](/es/providers/inferrs)
 - [Kilocode](/es/providers/kilocode)
 - [LiteLLM (gateway unificado)](/es/providers/litellm)
 - [LM Studio (modelos locales)](/es/providers/lmstudio)
+- [LongCat](/providers/longcat)
 - [MiniMax](/es/providers/minimax)
 - [Mistral](/es/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/es/providers/moonshot)
 - [NovitaAI](/es/providers/novita)
 - [NVIDIA](/es/providers/nvidia)
-- [Ollama (nube + modelos locales)](/es/providers/ollama)
+- [Ollama (modelos en la nube + locales)](/es/providers/ollama)
 - [Ollama Cloud](/es/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/es/providers/openai)
 - [OpenCode](/es/providers/opencode)
@@ -91,12 +92,12 @@ modelo predeterminado como `provider/model`.
 - [Xiaomi](/es/providers/xiaomi)
 - [Z.AI (GLM)](/es/providers/zai)
 
-## Páginas de información general compartidas
+## Páginas de resumen compartidas
 
-- [Variantes adicionales de proveedores](/es/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
+- [Variantes adicionales de proveedores](/es/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy y OAuth de Gemini CLI
 - [Generación de imágenes](/es/tools/image-generation) - Herramienta compartida `image_generate`, selección de proveedor y conmutación por error
 - [Generación de música](/es/tools/music-generation) - Herramienta compartida `music_generate`, selección de proveedor y conmutación por error
-- [Generación de video](/es/tools/video-generation) - Herramienta compartida `video_generate`, selección de proveedor y conmutación por error
+- [Generación de vídeo](/es/tools/video-generation) - Herramienta compartida `video_generate`, selección de proveedor y conmutación por error
 
 ## Proveedores de transcripción
 

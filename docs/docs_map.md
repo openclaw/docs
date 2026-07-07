@@ -4849,6 +4849,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/android
 - Headings:
   - H2: Support snapshot
+  - H2: Install outside Google Play
   - H2: Mirror and control Android from a remote Mac
   - H3: Before you begin
   - H3: Enable ADB over TCP
@@ -4861,6 +4862,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: 2. Verify discovery (optional)
   - H4: Cross-network discovery via unicast DNS-SD
   - H3: 3. Connect from Android
+  - H3: Multiple gateways
   - H3: Presence alive beacons
   - H3: 4. Approve pairing (CLI)
   - H3: 5. Verify the node is connected
@@ -5778,6 +5780,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Claude Fable 5
+  - H2: Claude Sonnet 5
 
 ## plugins/reference/anthropic.md
 
@@ -6056,6 +6059,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/reference/fal
 - Headings:
   - H1: fal plugin
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/featherless.md
+
+- Route: /plugins/reference/featherless
+- Headings:
+  - H1: Featherless plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7238,7 +7250,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Usage and cost tracking
   - H2: Getting started
-  - H2: Thinking defaults (Claude Fable 5, 4.8, and 4.6)
+  - H2: Thinking defaults (Claude Sonnet 5, Mythos 5, Fable 5, 4.8, and 4.6)
   - H2: Safety refusal fallback (Claude Fable 5)
   - H3: Why this exists
   - H3: How it works
@@ -7432,6 +7444,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Image generation
   - H2: Video generation
   - H2: Music generation
+  - H2: Related
+
+## providers/featherless.md
+
+- Route: /providers/featherless
+- Headings:
+  - H2: Setup
+  - H2: Default model
+  - H2: Other Featherless models
+  - H2: Troubleshooting
   - H2: Related
 
 ## providers/fireworks.md
@@ -9086,7 +9108,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How it works
   - H2: Install and pair
   - H2: Use it
-  - H2: Remote browser nodes
+  - H2: Remote / cross-machine
   - H2: Diagnostics
   - H2: Security model
 
@@ -9554,6 +9576,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How it works
   - H2: Lifecycle
+  - H2: Lifecycle curation
   - H2: Chat
   - H3: Learn from recent work
   - H2: CLI
