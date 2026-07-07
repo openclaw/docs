@@ -555,7 +555,6 @@ if (!fs.existsSync(path.join(site, "index.md"))
 const rootMarkdownPrompt = encodeURIComponent(`Read from ${expectedOrigin}/index.md so I can ask questions about it.`);
 const chatgptAction = `https://chatgpt.com/?hints=search&amp;q=${rootMarkdownPrompt}`;
 const claudeAction = `https://claude.ai/new?q=${rootMarkdownPrompt}`;
-const perplexityAction = `https://www.perplexity.ai/search/new?q=${rootMarkdownPrompt}`;
 if (!/<script type="application\/json" data-page-markdown>/.test(index)
   || />"---\\n/.test(index)) {
   throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
@@ -569,13 +568,12 @@ if (!/class="page-actions"/.test(index)
   || !/target="_blank" rel="noreferrer"/.test(index)
   || !/Open in ChatGPT/.test(index)
   || !/Open in Claude/.test(index)
-  || !/Open in Perplexity/.test(index)
+  || /Open in Perplexity/.test(index)
   || !index.includes(chatgptAction)
-  || !index.includes(claudeAction)
-  || !index.includes(perplexityAction)) {
+  || !index.includes(claudeAction)) {
   throw new Error("page tools: AI action menu links are missing");
 }
-if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
+if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 3) {
   throw new Error("page tools: dropdown links should open in a new tab");
 }
 if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(index)
