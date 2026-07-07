@@ -285,6 +285,12 @@ if (!/\.language-menu\{top:calc\(100% \+ 8px\);width:min\(270px,calc\(100vw - 32
   || !/\.language-menu::-webkit-scrollbar-track\{background:transparent\}/.test(siteCss)) {
   throw new Error("assets: compact language picker is missing");
 }
+if (/\.header-links a[\s{:.[]/.test(siteCss)) {
+  throw new Error("assets: .header-links descendant anchor rules override .language-option layout; scope to .header-links>a");
+}
+if (!/\.header-links>a\{display:inline-flex/.test(siteCss) || !/\.language-option\{display:grid/.test(siteCss)) {
+  throw new Error("assets: language menu options must stack as grid rows");
+}
 try {
   execFileSync(process.execPath, ["--check", path.join(site, "assets/docs-site.js")], { stdio: "pipe" });
 } catch (err) {
