@@ -262,9 +262,9 @@ function writePage(page) {
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const lang = htmlLang(page.locale);
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
-  const title = `${page.title} - ${config.name}`;
+  const title = page.slug === "index" ? `${config.name} Docs` : `${page.title} - ${config.name}`;
   const description = page.summary || config.description || "";
-  const ogTitle = page.slug === "index" ? config.name : `${page.title} · ${config.name}`;
+  const ogTitle = page.slug === "index" ? `${config.name} Docs` : `${page.title} · ${config.name}`;
   const canonicalUrl = canonicalOrigin ? `${canonicalOrigin}${pageRoute(page)}` : "";
   const pageOgPath = page.locale === "en" && renderedPageOgCards.has(page.slug)
     ? `/og/${page.slug}.png`
