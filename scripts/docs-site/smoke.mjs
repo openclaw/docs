@@ -365,7 +365,10 @@ if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(sit
   || !/\.toc h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
   throw new Error("assets: mono label accents drifted from the reference skin");
 }
-if (!/--bg:#101012;--paper:#19191c;--paper-2:#202024;[^}]*--soft:#33211d/.test(siteCss)
+if (!/--oc-palette-ink-950:\s*#101012/.test(siteCss)
+  || !/--bg:var\(--oc-bg-page\);--paper:var\(--oc-bg-surface\);--paper-2:var\(--oc-bg-elevated\)/.test(siteCss)
+  || !/--brand:var\(--oc-accent-primary\);--brand-2:var\(--oc-accent-primary-deep\)/.test(siteCss)
+  || !/--soft:#33211d/.test(siteCss)
   || !/\.nav-link\.active\{border-left-color:var\(--brand\);color:var\(--brand\);font-weight:650\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
 }
