@@ -92,6 +92,10 @@ const DEVEX_SKIP_RESPONSE_HEADERS = new Set([
   "transfer-encoding",
 ]);
 
+// Upstream timeout budget. If Devex takes longer than this we abort and
+// fall through to R2 — better a normal docs page than a hung request.
+const DEVEX_UPSTREAM_TIMEOUT_MS = 2500;
+
 function devexShouldRoute(request: Request, url: URL): boolean {
   const ua = request.headers.get("User-Agent") ?? "";
   const isAgent = DEVEX_AGENT_UA.test(ua) && !/mozilla\//i.test(ua);
@@ -117,6 +121,9 @@ async function devexReverseProxy(
 ): Promise<Response> {
   const target = `${DEVEX_ORIGIN}${url.pathname}${url.search}`;
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), DEVEX_UPSTREAM_TIMEOUT_MS);
+
   let upstream: Response;
   try {
     upstream = await fetch(target, {
@@ -125,9 +132,13 @@ async function devexReverseProxy(
         "User-Agent": request.headers.get("User-Agent") ?? "",
         "Accept": request.headers.get("Accept") ?? "*/*",
       },
+      signal: controller.signal,
     });
   } catch {
+    // Timeout, network error, or upstream refusal — all fall through to R2.
     return new Response("__DEVEX_FALLBACK__", { status: 599 });
+  } finally {
+    clearTimeout(timer);
   }
 
   const headers = new Headers();
