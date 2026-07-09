@@ -20,6 +20,7 @@ import sql from "highlight.js/lib/languages/sql";
 import typescript from "highlight.js/lib/languages/typescript";
 import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
+import { icons as lucideIcons } from "lucide";
 
 const markerPrefix = "OPENCLAW_DOCS_MARKER";
 const inlineMarkerPrefix = "OPENCLAW_DOCS_INLINE";
@@ -636,20 +637,98 @@ function tileHtml(rawAttrs, selfClosing) {
   return `<a class="oc-tile" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
 }
 
+// Docs author icons with Lucide names (docs.json declares icons.library "lucide");
+// legacy Font Awesome-style names still in the corpus map through ICON_ALIASES.
+// Unknown names keep the generic fallback tile so a typo never breaks a build.
+const ICON_ALIASES = {
+  "arrow-up-right-from-square": "external-link",
+  "arrows-rotate": "refresh-cw",
+  "arrows-turn-right": "corner-down-right",
+  "bars-staggered": "align-left",
+  bolt: "zap",
+  "car-side": "car",
+  "cart-shopping": "shopping-cart",
+  "circle-question": "circle-help",
+  "cloud-arrow-up": "cloud-upload",
+  "code-compare": "git-compare",
+  "code-pull-request": "git-pull-request",
+  comments: "messages-square",
+  compress: "minimize-2",
+  couch: "sofa",
+  cube: "box",
+  desktop: "monitor",
+  "diagram-project": "waypoints",
+  docker: "container",
+  "ear-listen": "ear",
+  "file-invoice-dollar": "receipt",
+  "file-lines": "file-text",
+  fire: "flame",
+  flask: "flask-conical",
+  gear: "settings",
+  gears: "settings",
+  grid: "grid-2x2",
+  "grid-2": "grid-2x2",
+  hashtag: "hash",
+  home: "house",
+  "house-signal": "house-wifi",
+  language: "languages",
+  "layer-group": "layers",
+  "list-check": "list-checks",
+  "magnifying-glass": "search",
+  message: "message-square",
+  "message-lines": "message-square-text",
+  microchip: "cpu",
+  microphone: "mic",
+  mobile: "smartphone",
+  "people-roof": "users",
+  "pen-ruler": "pencil-ruler",
+  "photo-film": "images",
+  "plane-departure": "plane-takeoff",
+  print: "printer",
+  "puzzle-piece": "puzzle",
+  "ranking-star": "trophy",
+  ring: "circle",
+  robot: "bot",
+  "scale-balanced": "scale",
+  seedling: "sprout",
+  "shield-exclamation": "shield-alert",
+  "shield-halved": "shield-half",
+  sitemap: "network",
+  // Lucide carries no brand marks; hash is the Slack channel metaphor.
+  slack: "hash",
+  sliders: "sliders-horizontal",
+  "square-poll-horizontal": "chart-bar",
+  "toggle-on": "toggle-right",
+  train: "train-front",
+  vial: "test-tube",
+  "volume-high": "volume-2",
+  "walkie-talkie": "radio",
+  "wand-magic-sparkles": "wand-sparkles",
+  "waveform-lines": "audio-waveform",
+  "window-maximize": "app-window",
+  "wine-glass": "wine",
+};
+
+const ICON_FALLBACK = `<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/>`;
+const iconCache = new Map();
+
+function lucideIconBody(kebab) {
+  const pascal = kebab.split("-").map((part) => part ? part[0].toUpperCase() + part.slice(1) : part).join("");
+  const nodes = lucideIcons[pascal];
+  if (!nodes) return null;
+  return nodes
+    .map(([tag, attrs]) => `<${tag} ${Object.entries(attrs).map(([key, value]) => `${key}="${value}"`).join(" ")}/>`)
+    .join("");
+}
+
 function iconSvg(name) {
-  const paths = {
-    rocket: `<path d="M4.5 16.5c-1.1.9-1.7 2-1.9 3.5 1.5-.2 2.7-.8 3.5-1.9"/><path d="M9 15l-4-4 3-3c4-4 8-5 12-5-0 4-1 8-5 12l-3 3-3-3z"/><path d="M14 6l4 4"/><path d="M8 16l-2 4 4-2"/>`,
-    sparkles: `<path d="M12 3l1.4 4.2L17.5 9l-4.1 1.8L12 15l-1.4-4.2L6.5 9l4.1-1.8L12 3z"/><path d="M5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14z"/><path d="M19 13l.7 1.8L21.5 16l-1.8.7L19 18.5l-.7-1.8-1.8-.7 1.8-.7L19 13z"/>`,
-    "layout-dashboard": `<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>`,
-    terminal: `<path d="M4 17l5-5-5-5"/><path d="M12 19h8"/>`,
-    settings: `<path d="M12 8a4 4 0 100 8 4 4 0 000-8z"/><path d="M4 12h2m12 0h2M12 4v2m0 12v2M6.3 6.3l1.4 1.4m8.6 8.6l1.4 1.4m0-11.4l-1.4 1.4m-8.6 8.6l-1.4 1.4"/>`,
-    book: `<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5z"/>`,
-    globe: `<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.3 2.5 3.5 5.5 3.5 9S14.3 18.5 12 21c-2.3-2.5-3.5-5.5-3.5-9S9.7 5.5 12 3z"/>`,
-    wrench: `<path d="M14.7 6.3a4 4 0 005 5L9.5 21 4 15.5 14.7 6.3z"/><path d="M6 18l-2 2"/>`,
-    gear: `<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21h-4v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H3v-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1L7 4.2l.1.1a1.7 1.7 0 001.9.3 1.7 1.7 0 001-1.6V3h4v.1a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 00-.3 1.9 1.7 1.7 0 001.6 1h.1v4H21a1.7 1.7 0 00-1.6 1z"/>`
-  };
-  const path = paths[slug(name)] ?? `<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/>`;
-  return `<svg class="oc-card-icon" viewBox="0 0 24 24" aria-hidden="true">${path}</svg>`;
+  const key = slug(name);
+  let body = iconCache.get(key);
+  if (body === undefined) {
+    body = lucideIconBody(ICON_ALIASES[key] ?? key) ?? ICON_FALLBACK;
+    iconCache.set(key, body);
+  }
+  return `<svg class="oc-card-icon" viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
 }
 
 function cardGridClass(rawAttrs) {
