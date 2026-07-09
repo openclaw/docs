@@ -304,7 +304,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
-<body>
+<body class="oc-app-surface">
 ${siteHeader(page, nav, activeTab)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
@@ -488,7 +488,7 @@ function pageStatus(page) {
   if (meta.since) badges.push([`Since ${meta.since}`, "since"]);
   if (meta.updated) badges.push([`Updated ${meta.updated}`, "updated"]);
   return badges.length
-    ? `<div class="page-status">${badges.map(([label, kind]) => `<span class="page-status-badge page-status-${kind}">${escapeHtml(label)}</span>`).join("")}</div>`
+    ? `<div class="page-status">${badges.map(([label, kind]) => `<span class="oc-pill page-status-badge page-status-${kind}">${escapeHtml(label)}</span>`).join("")}</div>`
     : "";
 }
 
@@ -553,7 +553,7 @@ function tocHtml(items) {
 
 function pager(prev, next) {
   if (!prev && !next) return "";
-  return `<nav class="page-nav">${prev ? `<a href="${pageUrl(prev)}"><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="next" href="${pageUrl(next)}"><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
+  return `<nav class="page-nav">${prev ? `<a class="oc-card oc-card-interactive" href="${pageUrl(prev)}"><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="oc-card oc-card-interactive next" href="${pageUrl(next)}"><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
 }
 
 function pageFeedback(page) {
@@ -561,7 +561,7 @@ function pageFeedback(page) {
   const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
   const pagePath = pageRoute(page);
   const canonicalUrl = `${docsOrigin()}${pagePath}`;
-  return `<section class="page-feedback" aria-label="Page feedback" data-feedback-path="${escapeAttr(pagePath)}" data-feedback-url="${escapeAttr(canonicalUrl)}" data-feedback-repo="${escapeAttr(feedbackIssueRepository)}"><div class="page-feedback-prompt"><span>Was this useful?</span><button type="button" data-feedback-value="yes" aria-pressed="false">Yes</button><button type="button" data-feedback-value="no" aria-pressed="false">No</button><output data-feedback-result></output></div><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav><div class="page-feedback-composer" data-feedback-composer hidden><textarea data-feedback-detail rows="3" placeholder="What were you looking for?" aria-label="What was missing?"></textarea><a class="page-feedback-submit" data-feedback-issue-link target="_blank" rel="noopener noreferrer">${icon("github")}<span>Open issue</span></a></div></section>`;
+  return `<section class="page-feedback" aria-label="Page feedback" data-feedback-path="${escapeAttr(pagePath)}" data-feedback-url="${escapeAttr(canonicalUrl)}" data-feedback-repo="${escapeAttr(feedbackIssueRepository)}"><div class="page-feedback-prompt"><span>Was this useful?</span><button class="oc-action oc-action-ghost" type="button" data-feedback-value="yes" aria-pressed="false">Yes</button><button class="oc-action oc-action-ghost" type="button" data-feedback-value="no" aria-pressed="false">No</button><output data-feedback-result></output></div><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav><div class="page-feedback-composer" data-feedback-composer hidden><textarea data-feedback-detail rows="3" placeholder="What were you looking for?" aria-label="What was missing?"></textarea><a class="oc-action oc-action-secondary page-feedback-submit" data-feedback-issue-link target="_blank" rel="noopener noreferrer">${icon("github")}<span>Open issue</span></a></div></section>`;
 }
 
 function raiseIssueUrl(page) {

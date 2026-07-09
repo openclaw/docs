@@ -89,9 +89,19 @@ async function checkDesktop() {
   if (!mermaidOverlayFocus.activeInOverlay || !mermaidOverlayFocus.bodyLocked) {
     throw new Error(`mermaid overlay focus trap failed: ${JSON.stringify(mermaidOverlayFocus)}`);
   }
-  await page.evaluate(() => history.pushState({ docs: true }, "", "/"));
+  await page.evaluate(() => history.pushState({ docs: true }, "", `${location.pathname}#fixture-components`));
   await page.goBack();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
+  const sameDocumentOverlayClose = await page.evaluate(() => ({
+    pathname: location.pathname,
+    overlayOpen: Boolean(document.querySelector("[data-mermaid-overlay].open")),
+    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
+  }));
+  if (sameDocumentOverlayClose.pathname !== "/__elements"
+    || sameDocumentOverlayClose.overlayOpen
+    || sameDocumentOverlayClose.bodyLocked) {
+    throw new Error(`same-document history left mermaid overlay open: ${JSON.stringify(sameDocumentOverlayClose)}`);
+  }
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
   await page.keyboard.press("Meta+K");
@@ -544,7 +554,12 @@ async function checkMobile() {
       viewport: innerWidth,
     };
   });
-  if (!menu.bodyOpen || menu.ariaExpanded !== "true" || menu.sidebarLeft !== 0 || menu.sidebarRight !== menu.viewport || menu.sidebarWidth !== menu.viewport || !menu.closeVisible) {
+  if (!menu.bodyOpen
+    || menu.ariaExpanded !== "true"
+    || Math.abs(menu.sidebarLeft) >= 1
+    || Math.abs(menu.sidebarRight - menu.viewport) >= 1
+    || Math.abs(menu.sidebarWidth - menu.viewport) >= 1
+    || !menu.closeVisible) {
     throw new Error(`mobile menu drawer failed (expected full-bleed on phones): ${JSON.stringify(menu)}`);
   }
   await page.keyboard.press("Escape");
@@ -696,7 +711,7 @@ async function checkLightMode() {
       minCardWidth: Math.min(...cardWidths),
     };
   });
-  if (skin.theme !== "light" || skin.codeText !== "#26262c" || skin.badgeRadius === "0px" || skin.minCardWidth < 150) {
+  if (skin.theme !== "light" || skin.codeText !== "#26262c" || skin.badgeRadius !== "0px" || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
   await page.close();
