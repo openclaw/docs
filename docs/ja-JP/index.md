@@ -41,7 +41,7 @@ x-i18n:
   <Card title="開始する" href="/ja-JP/start/getting-started" icon="rocket">
     OpenClaw をインストールし、数分で Gateway を起動します。
   </Card>
-  <Card title="オンボーディングを実行" href="/ja-JP/start/wizard" icon="sparkles">
+  <Card title="オンボーディングを実行" href="/ja-JP/start/wizard" icon="list-checks">
     `openclaw onboard` とペアリングフローによるガイド付きセットアップ。
   </Card>
   <Card title="Control UI を開く" href="/ja-JP/web/control-ui" icon="layout-dashboard">

@@ -41,7 +41,7 @@ x-i18n:
   <Card title="Commencer" href="/fr/start/getting-started" icon="rocket">
     Installez OpenClaw et lancez le Gateway en quelques minutes.
   </Card>
-  <Card title="Exécuter l’intégration" href="/fr/start/wizard" icon="sparkles">
+  <Card title="Exécuter l’intégration" href="/fr/start/wizard" icon="list-checks">
     Configuration guidée avec `openclaw onboard` et des flux d’appairage.
   </Card>
   <Card title="Ouvrir l’UI de contrôle" href="/fr/web/control-ui" icon="layout-dashboard">

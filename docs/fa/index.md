@@ -41,7 +41,7 @@ x-i18n:
   <Card title="شروع کنید" href="/fa/start/getting-started" icon="rocket">
     OpenClaw را نصب کنید و Gateway را در چند دقیقه راه‌اندازی کنید.
   </Card>
-  <Card title="اجرای راه‌اندازی اولیه" href="/fa/start/wizard" icon="sparkles">
+  <Card title="اجرای راه‌اندازی اولیه" href="/fa/start/wizard" icon="list-checks">
     راه‌اندازی هدایت‌شده با `openclaw onboard` و جریان‌های جفت‌سازی.
   </Card>
   <Card title="باز کردن رابط کاربری کنترل" href="/fa/web/control-ui" icon="layout-dashboard">

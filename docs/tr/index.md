@@ -41,7 +41,7 @@ x-i18n:
   <Card title="Başlayın" href="/tr/start/getting-started" icon="rocket">
     OpenClaw'u kurun ve Gateway'i dakikalar içinde ayağa kaldırın.
   </Card>
-  <Card title="Başlatma Sihirbazını Çalıştırın" href="/tr/start/wizard" icon="sparkles">
+  <Card title="Başlatma Sihirbazını Çalıştırın" href="/tr/start/wizard" icon="list-checks">
     `openclaw onboard` ve eşleştirme akışlarıyla yönlendirmeli kurulum.
   </Card>
   <Card title="Kontrol Kullanıcı Arayüzünü Açın" href="/tr/web/control-ui" icon="layout-dashboard">
