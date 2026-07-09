@@ -20,9 +20,9 @@
   },
   "favicon": "/assets/pixel-lobster.svg",
   "colors": {
-    "primary": "#FF5A36",
-    "dark": "#FF5A36",
-    "light": "#FF8A6B"
+    "primary": "#D84A31",
+    "dark": "#E05540",
+    "light": "#F5654A"
   },
   "styling": {
     "codeblocks": {
@@ -1280,6 +1280,7 @@
                   "plugins/webhooks",
                   "plugins/admin-http-rpc",
                   "plugins/voice-call",
+                  "plugins/vault",
                   "plugins/memory-wiki",
                   "plugins/llama-cpp",
                   "plugins/memory-lancedb",
@@ -1329,6 +1330,7 @@
                   "tools/btw",
                   "tools/code-execution",
                   "tools/diffs",
+                  "tools/show-widget",
                   "tools/elevated",
                   "tools/permission-modes",
                   "tools/exec-approvals",
@@ -1483,6 +1485,7 @@
                   "providers/litellm",
                   "providers/lmstudio",
                   "providers/longcat",
+                  "providers/meta",
                   "providers/minimax",
                   "providers/mistral",
                   "providers/moonshot",
@@ -1695,6 +1698,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "nodes/computer-use",
                       "nodes/talk",
                       "nodes/voicewake",
                       "nodes/location-command"
@@ -1754,6 +1758,7 @@
                       "cli/commitments",
                       "cli/message",
                       "cli/models",
+                      "cli/promos",
                       "cli/sessions",
                       "cli/system",
                       "cli/tasks"
@@ -2887,6 +2892,7 @@
                   "zh-TW/plugins/webhooks",
                   "zh-TW/plugins/admin-http-rpc",
                   "zh-TW/plugins/voice-call",
+                  "zh-TW/plugins/vault",
                   "zh-TW/plugins/memory-wiki",
                   "zh-TW/plugins/llama-cpp",
                   "zh-TW/plugins/memory-lancedb",
@@ -2936,6 +2942,7 @@
                   "zh-TW/tools/btw",
                   "zh-TW/tools/code-execution",
                   "zh-TW/tools/diffs",
+                  "zh-TW/tools/show-widget",
                   "zh-TW/tools/elevated",
                   "zh-TW/tools/permission-modes",
                   "zh-TW/tools/exec-approvals",
@@ -3056,6 +3063,7 @@
                   "zh-TW/providers/litellm",
                   "zh-TW/providers/lmstudio",
                   "zh-TW/providers/longcat",
+                  "zh-TW/providers/meta",
                   "zh-TW/providers/minimax",
                   "zh-TW/providers/mistral",
                   "zh-TW/providers/moonshot",
@@ -3268,6 +3276,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "zh-TW/nodes/computer-use",
                       "zh-TW/nodes/talk",
                       "zh-TW/nodes/voicewake",
                       "zh-TW/nodes/location-command"
@@ -3327,6 +3336,7 @@
                       "zh-TW/cli/commitments",
                       "zh-TW/cli/message",
                       "zh-TW/cli/models",
+                      "zh-TW/cli/promos",
                       "zh-TW/cli/sessions",
                       "zh-TW/cli/system",
                       "zh-TW/cli/tasks"
@@ -3837,6 +3847,7 @@
                   "ja-JP/plugins/webhooks",
                   "ja-JP/plugins/admin-http-rpc",
                   "ja-JP/plugins/voice-call",
+                  "ja-JP/plugins/vault",
                   "ja-JP/plugins/memory-wiki",
                   "ja-JP/plugins/llama-cpp",
                   "ja-JP/plugins/memory-lancedb",
@@ -3886,6 +3897,7 @@
                   "ja-JP/tools/btw",
                   "ja-JP/tools/code-execution",
                   "ja-JP/tools/diffs",
+                  "ja-JP/tools/show-widget",
                   "ja-JP/tools/elevated",
                   "ja-JP/tools/permission-modes",
                   "ja-JP/tools/exec-approvals",
@@ -4006,6 +4018,7 @@
                   "ja-JP/providers/litellm",
                   "ja-JP/providers/lmstudio",
                   "ja-JP/providers/longcat",
+                  "ja-JP/providers/meta",
                   "ja-JP/providers/minimax",
                   "ja-JP/providers/mistral",
                   "ja-JP/providers/moonshot",
@@ -4218,6 +4231,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "ja-JP/nodes/computer-use",
                       "ja-JP/nodes/talk",
                       "ja-JP/nodes/voicewake",
                       "ja-JP/nodes/location-command"
@@ -4277,6 +4291,7 @@
                       "ja-JP/cli/commitments",
                       "ja-JP/cli/message",
                       "ja-JP/cli/models",
+                      "ja-JP/cli/promos",
                       "ja-JP/cli/sessions",
                       "ja-JP/cli/system",
                       "ja-JP/cli/tasks"
@@ -4787,6 +4802,7 @@
                   "es/plugins/webhooks",
                   "es/plugins/admin-http-rpc",
                   "es/plugins/voice-call",
+                  "es/plugins/vault",
                   "es/plugins/memory-wiki",
                   "es/plugins/llama-cpp",
                   "es/plugins/memory-lancedb",
@@ -4836,6 +4852,7 @@
                   "es/tools/btw",
                   "es/tools/code-execution",
                   "es/tools/diffs",
+                  "es/tools/show-widget",
                   "es/tools/elevated",
                   "es/tools/permission-modes",
                   "es/tools/exec-approvals",
@@ -4956,6 +4973,7 @@
                   "es/providers/litellm",
                   "es/providers/lmstudio",
                   "es/providers/longcat",
+                  "es/providers/meta",
                   "es/providers/minimax",
                   "es/providers/mistral",
                   "es/providers/moonshot",
@@ -5168,6 +5186,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "es/nodes/computer-use",
                       "es/nodes/talk",
                       "es/nodes/voicewake",
                       "es/nodes/location-command"
@@ -5227,6 +5246,7 @@
                       "es/cli/commitments",
                       "es/cli/message",
                       "es/cli/models",
+                      "es/cli/promos",
                       "es/cli/sessions",
                       "es/cli/system",
                       "es/cli/tasks"
@@ -5737,6 +5757,7 @@
                   "pt-BR/plugins/webhooks",
                   "pt-BR/plugins/admin-http-rpc",
                   "pt-BR/plugins/voice-call",
+                  "pt-BR/plugins/vault",
                   "pt-BR/plugins/memory-wiki",
                   "pt-BR/plugins/llama-cpp",
                   "pt-BR/plugins/memory-lancedb",
@@ -5786,6 +5807,7 @@
                   "pt-BR/tools/btw",
                   "pt-BR/tools/code-execution",
                   "pt-BR/tools/diffs",
+                  "pt-BR/tools/show-widget",
                   "pt-BR/tools/elevated",
                   "pt-BR/tools/permission-modes",
                   "pt-BR/tools/exec-approvals",
@@ -5906,6 +5928,7 @@
                   "pt-BR/providers/litellm",
                   "pt-BR/providers/lmstudio",
                   "pt-BR/providers/longcat",
+                  "pt-BR/providers/meta",
                   "pt-BR/providers/minimax",
                   "pt-BR/providers/mistral",
                   "pt-BR/providers/moonshot",
@@ -6118,6 +6141,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "pt-BR/nodes/computer-use",
                       "pt-BR/nodes/talk",
                       "pt-BR/nodes/voicewake",
                       "pt-BR/nodes/location-command"
@@ -6177,6 +6201,7 @@
                       "pt-BR/cli/commitments",
                       "pt-BR/cli/message",
                       "pt-BR/cli/models",
+                      "pt-BR/cli/promos",
                       "pt-BR/cli/sessions",
                       "pt-BR/cli/system",
                       "pt-BR/cli/tasks"
@@ -6687,6 +6712,7 @@
                   "ko/plugins/webhooks",
                   "ko/plugins/admin-http-rpc",
                   "ko/plugins/voice-call",
+                  "ko/plugins/vault",
                   "ko/plugins/memory-wiki",
                   "ko/plugins/llama-cpp",
                   "ko/plugins/memory-lancedb",
@@ -6736,6 +6762,7 @@
                   "ko/tools/btw",
                   "ko/tools/code-execution",
                   "ko/tools/diffs",
+                  "ko/tools/show-widget",
                   "ko/tools/elevated",
                   "ko/tools/permission-modes",
                   "ko/tools/exec-approvals",
@@ -6856,6 +6883,7 @@
                   "ko/providers/litellm",
                   "ko/providers/lmstudio",
                   "ko/providers/longcat",
+                  "ko/providers/meta",
                   "ko/providers/minimax",
                   "ko/providers/mistral",
                   "ko/providers/moonshot",
@@ -7068,6 +7096,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "ko/nodes/computer-use",
                       "ko/nodes/talk",
                       "ko/nodes/voicewake",
                       "ko/nodes/location-command"
@@ -7127,6 +7156,7 @@
                       "ko/cli/commitments",
                       "ko/cli/message",
                       "ko/cli/models",
+                      "ko/cli/promos",
                       "ko/cli/sessions",
                       "ko/cli/system",
                       "ko/cli/tasks"
@@ -7637,6 +7667,7 @@
                   "de/plugins/webhooks",
                   "de/plugins/admin-http-rpc",
                   "de/plugins/voice-call",
+                  "de/plugins/vault",
                   "de/plugins/memory-wiki",
                   "de/plugins/llama-cpp",
                   "de/plugins/memory-lancedb",
@@ -7686,6 +7717,7 @@
                   "de/tools/btw",
                   "de/tools/code-execution",
                   "de/tools/diffs",
+                  "de/tools/show-widget",
                   "de/tools/elevated",
                   "de/tools/permission-modes",
                   "de/tools/exec-approvals",
@@ -7806,6 +7838,7 @@
                   "de/providers/litellm",
                   "de/providers/lmstudio",
                   "de/providers/longcat",
+                  "de/providers/meta",
                   "de/providers/minimax",
                   "de/providers/mistral",
                   "de/providers/moonshot",
@@ -8018,6 +8051,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "de/nodes/computer-use",
                       "de/nodes/talk",
                       "de/nodes/voicewake",
                       "de/nodes/location-command"
@@ -8077,6 +8111,7 @@
                       "de/cli/commitments",
                       "de/cli/message",
                       "de/cli/models",
+                      "de/cli/promos",
                       "de/cli/sessions",
                       "de/cli/system",
                       "de/cli/tasks"
@@ -8587,6 +8622,7 @@
                   "fr/plugins/webhooks",
                   "fr/plugins/admin-http-rpc",
                   "fr/plugins/voice-call",
+                  "fr/plugins/vault",
                   "fr/plugins/memory-wiki",
                   "fr/plugins/llama-cpp",
                   "fr/plugins/memory-lancedb",
@@ -8636,6 +8672,7 @@
                   "fr/tools/btw",
                   "fr/tools/code-execution",
                   "fr/tools/diffs",
+                  "fr/tools/show-widget",
                   "fr/tools/elevated",
                   "fr/tools/permission-modes",
                   "fr/tools/exec-approvals",
@@ -8756,6 +8793,7 @@
                   "fr/providers/litellm",
                   "fr/providers/lmstudio",
                   "fr/providers/longcat",
+                  "fr/providers/meta",
                   "fr/providers/minimax",
                   "fr/providers/mistral",
                   "fr/providers/moonshot",
@@ -8968,6 +9006,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "fr/nodes/computer-use",
                       "fr/nodes/talk",
                       "fr/nodes/voicewake",
                       "fr/nodes/location-command"
@@ -9027,6 +9066,7 @@
                       "fr/cli/commitments",
                       "fr/cli/message",
                       "fr/cli/models",
+                      "fr/cli/promos",
                       "fr/cli/sessions",
                       "fr/cli/system",
                       "fr/cli/tasks"
@@ -9537,6 +9577,7 @@
                   "hi/plugins/webhooks",
                   "hi/plugins/admin-http-rpc",
                   "hi/plugins/voice-call",
+                  "hi/plugins/vault",
                   "hi/plugins/memory-wiki",
                   "hi/plugins/llama-cpp",
                   "hi/plugins/memory-lancedb",
@@ -9586,6 +9627,7 @@
                   "hi/tools/btw",
                   "hi/tools/code-execution",
                   "hi/tools/diffs",
+                  "hi/tools/show-widget",
                   "hi/tools/elevated",
                   "hi/tools/permission-modes",
                   "hi/tools/exec-approvals",
@@ -9706,6 +9748,7 @@
                   "hi/providers/litellm",
                   "hi/providers/lmstudio",
                   "hi/providers/longcat",
+                  "hi/providers/meta",
                   "hi/providers/minimax",
                   "hi/providers/mistral",
                   "hi/providers/moonshot",
@@ -9918,6 +9961,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "hi/nodes/computer-use",
                       "hi/nodes/talk",
                       "hi/nodes/voicewake",
                       "hi/nodes/location-command"
@@ -9977,6 +10021,7 @@
                       "hi/cli/commitments",
                       "hi/cli/message",
                       "hi/cli/models",
+                      "hi/cli/promos",
                       "hi/cli/sessions",
                       "hi/cli/system",
                       "hi/cli/tasks"
@@ -10487,6 +10532,7 @@
                   "ar/plugins/webhooks",
                   "ar/plugins/admin-http-rpc",
                   "ar/plugins/voice-call",
+                  "ar/plugins/vault",
                   "ar/plugins/memory-wiki",
                   "ar/plugins/llama-cpp",
                   "ar/plugins/memory-lancedb",
@@ -10536,6 +10582,7 @@
                   "ar/tools/btw",
                   "ar/tools/code-execution",
                   "ar/tools/diffs",
+                  "ar/tools/show-widget",
                   "ar/tools/elevated",
                   "ar/tools/permission-modes",
                   "ar/tools/exec-approvals",
@@ -10656,6 +10703,7 @@
                   "ar/providers/litellm",
                   "ar/providers/lmstudio",
                   "ar/providers/longcat",
+                  "ar/providers/meta",
                   "ar/providers/minimax",
                   "ar/providers/mistral",
                   "ar/providers/moonshot",
@@ -10868,6 +10916,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "ar/nodes/computer-use",
                       "ar/nodes/talk",
                       "ar/nodes/voicewake",
                       "ar/nodes/location-command"
@@ -10927,6 +10976,7 @@
                       "ar/cli/commitments",
                       "ar/cli/message",
                       "ar/cli/models",
+                      "ar/cli/promos",
                       "ar/cli/sessions",
                       "ar/cli/system",
                       "ar/cli/tasks"
@@ -11437,6 +11487,7 @@
                   "it/plugins/webhooks",
                   "it/plugins/admin-http-rpc",
                   "it/plugins/voice-call",
+                  "it/plugins/vault",
                   "it/plugins/memory-wiki",
                   "it/plugins/llama-cpp",
                   "it/plugins/memory-lancedb",
@@ -11486,6 +11537,7 @@
                   "it/tools/btw",
                   "it/tools/code-execution",
                   "it/tools/diffs",
+                  "it/tools/show-widget",
                   "it/tools/elevated",
                   "it/tools/permission-modes",
                   "it/tools/exec-approvals",
@@ -11606,6 +11658,7 @@
                   "it/providers/litellm",
                   "it/providers/lmstudio",
                   "it/providers/longcat",
+                  "it/providers/meta",
                   "it/providers/minimax",
                   "it/providers/mistral",
                   "it/providers/moonshot",
@@ -11818,6 +11871,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "it/nodes/computer-use",
                       "it/nodes/talk",
                       "it/nodes/voicewake",
                       "it/nodes/location-command"
@@ -11877,6 +11931,7 @@
                       "it/cli/commitments",
                       "it/cli/message",
                       "it/cli/models",
+                      "it/cli/promos",
                       "it/cli/sessions",
                       "it/cli/system",
                       "it/cli/tasks"
@@ -12387,6 +12442,7 @@
                   "vi/plugins/webhooks",
                   "vi/plugins/admin-http-rpc",
                   "vi/plugins/voice-call",
+                  "vi/plugins/vault",
                   "vi/plugins/memory-wiki",
                   "vi/plugins/llama-cpp",
                   "vi/plugins/memory-lancedb",
@@ -12436,6 +12492,7 @@
                   "vi/tools/btw",
                   "vi/tools/code-execution",
                   "vi/tools/diffs",
+                  "vi/tools/show-widget",
                   "vi/tools/elevated",
                   "vi/tools/permission-modes",
                   "vi/tools/exec-approvals",
@@ -12556,6 +12613,7 @@
                   "vi/providers/litellm",
                   "vi/providers/lmstudio",
                   "vi/providers/longcat",
+                  "vi/providers/meta",
                   "vi/providers/minimax",
                   "vi/providers/mistral",
                   "vi/providers/moonshot",
@@ -12768,6 +12826,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "vi/nodes/computer-use",
                       "vi/nodes/talk",
                       "vi/nodes/voicewake",
                       "vi/nodes/location-command"
@@ -12827,6 +12886,7 @@
                       "vi/cli/commitments",
                       "vi/cli/message",
                       "vi/cli/models",
+                      "vi/cli/promos",
                       "vi/cli/sessions",
                       "vi/cli/system",
                       "vi/cli/tasks"
@@ -13337,6 +13397,7 @@
                   "nl/plugins/webhooks",
                   "nl/plugins/admin-http-rpc",
                   "nl/plugins/voice-call",
+                  "nl/plugins/vault",
                   "nl/plugins/memory-wiki",
                   "nl/plugins/llama-cpp",
                   "nl/plugins/memory-lancedb",
@@ -13386,6 +13447,7 @@
                   "nl/tools/btw",
                   "nl/tools/code-execution",
                   "nl/tools/diffs",
+                  "nl/tools/show-widget",
                   "nl/tools/elevated",
                   "nl/tools/permission-modes",
                   "nl/tools/exec-approvals",
@@ -13506,6 +13568,7 @@
                   "nl/providers/litellm",
                   "nl/providers/lmstudio",
                   "nl/providers/longcat",
+                  "nl/providers/meta",
                   "nl/providers/minimax",
                   "nl/providers/mistral",
                   "nl/providers/moonshot",
@@ -13718,6 +13781,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "nl/nodes/computer-use",
                       "nl/nodes/talk",
                       "nl/nodes/voicewake",
                       "nl/nodes/location-command"
@@ -13777,6 +13841,7 @@
                       "nl/cli/commitments",
                       "nl/cli/message",
                       "nl/cli/models",
+                      "nl/cli/promos",
                       "nl/cli/sessions",
                       "nl/cli/system",
                       "nl/cli/tasks"
@@ -14287,6 +14352,7 @@
                   "tr/plugins/webhooks",
                   "tr/plugins/admin-http-rpc",
                   "tr/plugins/voice-call",
+                  "tr/plugins/vault",
                   "tr/plugins/memory-wiki",
                   "tr/plugins/llama-cpp",
                   "tr/plugins/memory-lancedb",
@@ -14336,6 +14402,7 @@
                   "tr/tools/btw",
                   "tr/tools/code-execution",
                   "tr/tools/diffs",
+                  "tr/tools/show-widget",
                   "tr/tools/elevated",
                   "tr/tools/permission-modes",
                   "tr/tools/exec-approvals",
@@ -14456,6 +14523,7 @@
                   "tr/providers/litellm",
                   "tr/providers/lmstudio",
                   "tr/providers/longcat",
+                  "tr/providers/meta",
                   "tr/providers/minimax",
                   "tr/providers/mistral",
                   "tr/providers/moonshot",
@@ -14668,6 +14736,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "tr/nodes/computer-use",
                       "tr/nodes/talk",
                       "tr/nodes/voicewake",
                       "tr/nodes/location-command"
@@ -14727,6 +14796,7 @@
                       "tr/cli/commitments",
                       "tr/cli/message",
                       "tr/cli/models",
+                      "tr/cli/promos",
                       "tr/cli/sessions",
                       "tr/cli/system",
                       "tr/cli/tasks"
@@ -15237,6 +15307,7 @@
                   "uk/plugins/webhooks",
                   "uk/plugins/admin-http-rpc",
                   "uk/plugins/voice-call",
+                  "uk/plugins/vault",
                   "uk/plugins/memory-wiki",
                   "uk/plugins/llama-cpp",
                   "uk/plugins/memory-lancedb",
@@ -15286,6 +15357,7 @@
                   "uk/tools/btw",
                   "uk/tools/code-execution",
                   "uk/tools/diffs",
+                  "uk/tools/show-widget",
                   "uk/tools/elevated",
                   "uk/tools/permission-modes",
                   "uk/tools/exec-approvals",
@@ -15406,6 +15478,7 @@
                   "uk/providers/litellm",
                   "uk/providers/lmstudio",
                   "uk/providers/longcat",
+                  "uk/providers/meta",
                   "uk/providers/minimax",
                   "uk/providers/mistral",
                   "uk/providers/moonshot",
@@ -15618,6 +15691,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "uk/nodes/computer-use",
                       "uk/nodes/talk",
                       "uk/nodes/voicewake",
                       "uk/nodes/location-command"
@@ -15677,6 +15751,7 @@
                       "uk/cli/commitments",
                       "uk/cli/message",
                       "uk/cli/models",
+                      "uk/cli/promos",
                       "uk/cli/sessions",
                       "uk/cli/system",
                       "uk/cli/tasks"
@@ -16187,6 +16262,7 @@
                   "id/plugins/webhooks",
                   "id/plugins/admin-http-rpc",
                   "id/plugins/voice-call",
+                  "id/plugins/vault",
                   "id/plugins/memory-wiki",
                   "id/plugins/llama-cpp",
                   "id/plugins/memory-lancedb",
@@ -16236,6 +16312,7 @@
                   "id/tools/btw",
                   "id/tools/code-execution",
                   "id/tools/diffs",
+                  "id/tools/show-widget",
                   "id/tools/elevated",
                   "id/tools/permission-modes",
                   "id/tools/exec-approvals",
@@ -16356,6 +16433,7 @@
                   "id/providers/litellm",
                   "id/providers/lmstudio",
                   "id/providers/longcat",
+                  "id/providers/meta",
                   "id/providers/minimax",
                   "id/providers/mistral",
                   "id/providers/moonshot",
@@ -16568,6 +16646,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "id/nodes/computer-use",
                       "id/nodes/talk",
                       "id/nodes/voicewake",
                       "id/nodes/location-command"
@@ -16627,6 +16706,7 @@
                       "id/cli/commitments",
                       "id/cli/message",
                       "id/cli/models",
+                      "id/cli/promos",
                       "id/cli/sessions",
                       "id/cli/system",
                       "id/cli/tasks"
@@ -17137,6 +17217,7 @@
                   "pl/plugins/webhooks",
                   "pl/plugins/admin-http-rpc",
                   "pl/plugins/voice-call",
+                  "pl/plugins/vault",
                   "pl/plugins/memory-wiki",
                   "pl/plugins/llama-cpp",
                   "pl/plugins/memory-lancedb",
@@ -17186,6 +17267,7 @@
                   "pl/tools/btw",
                   "pl/tools/code-execution",
                   "pl/tools/diffs",
+                  "pl/tools/show-widget",
                   "pl/tools/elevated",
                   "pl/tools/permission-modes",
                   "pl/tools/exec-approvals",
@@ -17306,6 +17388,7 @@
                   "pl/providers/litellm",
                   "pl/providers/lmstudio",
                   "pl/providers/longcat",
+                  "pl/providers/meta",
                   "pl/providers/minimax",
                   "pl/providers/mistral",
                   "pl/providers/moonshot",
@@ -17518,6 +17601,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "pl/nodes/computer-use",
                       "pl/nodes/talk",
                       "pl/nodes/voicewake",
                       "pl/nodes/location-command"
@@ -17577,6 +17661,7 @@
                       "pl/cli/commitments",
                       "pl/cli/message",
                       "pl/cli/models",
+                      "pl/cli/promos",
                       "pl/cli/sessions",
                       "pl/cli/system",
                       "pl/cli/tasks"
@@ -18087,6 +18172,7 @@
                   "ru/plugins/webhooks",
                   "ru/plugins/admin-http-rpc",
                   "ru/plugins/voice-call",
+                  "ru/plugins/vault",
                   "ru/plugins/memory-wiki",
                   "ru/plugins/llama-cpp",
                   "ru/plugins/memory-lancedb",
@@ -18136,6 +18222,7 @@
                   "ru/tools/btw",
                   "ru/tools/code-execution",
                   "ru/tools/diffs",
+                  "ru/tools/show-widget",
                   "ru/tools/elevated",
                   "ru/tools/permission-modes",
                   "ru/tools/exec-approvals",
@@ -18256,6 +18343,7 @@
                   "ru/providers/litellm",
                   "ru/providers/lmstudio",
                   "ru/providers/longcat",
+                  "ru/providers/meta",
                   "ru/providers/minimax",
                   "ru/providers/mistral",
                   "ru/providers/moonshot",
@@ -18468,6 +18556,7 @@
                   {
                     "group": "Node features",
                     "pages": [
+                      "ru/nodes/computer-use",
                       "ru/nodes/talk",
                       "ru/nodes/voicewake",
                       "ru/nodes/location-command"
@@ -18527,6 +18616,7 @@
                       "ru/cli/commitments",
                       "ru/cli/message",
                       "ru/cli/models",
+                      "ru/cli/promos",
                       "ru/cli/sessions",
                       "ru/cli/system",
                       "ru/cli/tasks"
