@@ -39,6 +39,112 @@ const maxSearchQueryLength = 180;
 const maxSearchResults = 12;
 let searchIndexCache: SearchIndex | undefined;
 
+// -- Devex reverse-proxy -----------------------------------------------------
+// Pilot config: agent traffic (matched by UA + allowlisted IPs) on
+// non-API/non-asset routes is served from the Devex origin, which exposes
+// docs as fragments via /q/ + /a/. Human traffic, API routes (/mcp,
+// /api/search, /llms.txt, etc.) and non-agent traffic continue to hit R2
+// unchanged. To disable, comment out the devexShouldRoute check inside
+// the fetch handler.
+
+const DEVEX_ORIGIN = "https://sink.trydevex.com/prod/openclaw";
+
+// Only these client IPs get their agent traffic routed. Reads
+// `CF-Connecting-IP`, so this is the true source IP from Cloudflare's edge.
+const DEVEX_ALLOWLISTED_IPS = new Set([
+  "98.42.87.116",
+]);
+
+const DEVEX_AGENT_UA =
+  /claude-code|cursor|cline|codex|chatgpt-user|gptbot|anthropic-ai|continue\.dev|^python-requests|^curl\/|^go-http-client|node-fetch|undici/i;
+
+// API surfaces that already carry query intent through their own protocol
+// (or are consumed one-off as manifests). Never intercept these.
+const DEVEX_API_ROUTES = new Set([
+  "/mcp",
+  "/api/search",
+  "/mcp.search_open_claw",
+  "/llms.txt",
+  "/.well-known/llms.txt",
+  "/llms-full.txt",
+  "/.well-known/llms-full.txt",
+]);
+
+// Site metadata files: consumed by crawlers/tooling, not docs content.
+// Intercepting these would break crawler behaviour.
+const DEVEX_METADATA_PATHS = new Set([
+  "/robots.txt",
+  "/sitemap.xml",
+  "/humans.txt",
+  "/favicon.ico",
+]);
+
+// Static asset extensions: agents fetch these as part of rendering pages,
+// not as content to consume. Extension matched against the last segment.
+const DEVEX_STATIC_EXTENSIONS = new Set([
+  ".css", ".js", ".png", ".jpg", ".jpeg", ".svg", ".gif", ".ico",
+  ".woff", ".woff2", ".ttf", ".otf", ".map", ".webp", ".mp4", ".webm",
+]);
+
+const DEVEX_SKIP_RESPONSE_HEADERS = new Set([
+  "content-length",
+  "content-encoding",
+  "transfer-encoding",
+]);
+
+function devexShouldRoute(request: Request, url: URL): boolean {
+  const ua = request.headers.get("User-Agent") ?? "";
+  const isAgent = DEVEX_AGENT_UA.test(ua) && !/mozilla\//i.test(ua);
+  if (!isAgent) return false;
+
+  if (DEVEX_API_ROUTES.has(url.pathname)) return false;
+  if (DEVEX_METADATA_PATHS.has(url.pathname)) return false;
+
+  // Static asset extension check — cheap tail-index lookup.
+  const dot = url.pathname.lastIndexOf(".");
+  if (dot >= 0) {
+    const ext = url.pathname.slice(dot).toLowerCase();
+    if (DEVEX_STATIC_EXTENSIONS.has(ext)) return false;
+  }
+
+  const ip = request.headers.get("CF-Connecting-IP") ?? "";
+  return DEVEX_ALLOWLISTED_IPS.has(ip);
+}
+
+async function devexReverseProxy(
+  request: Request,
+  url: URL,
+): Promise<Response> {
+  const target = `${DEVEX_ORIGIN}${url.pathname}${url.search}`;
+
+  let upstream: Response;
+  try {
+    upstream = await fetch(target, {
+      method: request.method,
+      headers: {
+        "User-Agent": request.headers.get("User-Agent") ?? "",
+        "Accept": request.headers.get("Accept") ?? "*/*",
+      },
+    });
+  } catch {
+    return new Response("__DEVEX_FALLBACK__", { status: 599 });
+  }
+
+  const headers = new Headers();
+  for (const [k, v] of upstream.headers) {
+    if (!DEVEX_SKIP_RESPONSE_HEADERS.has(k.toLowerCase())) {
+      headers.set(k, v);
+    }
+  }
+  headers.set("X-OpenClaw-Docs-Origin", "devex-proxy");
+
+  return new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -55,6 +161,12 @@ export default {
     if (mintlifyRedirectHosts.has(url.hostname)) {
       url.hostname = mintlifyBackupHost;
       return Response.redirect(url.toString(), 308);
+    }
+
+    if (devexShouldRoute(request, url)) {
+      const proxied = await devexReverseProxy(request, url);
+      if (proxied.status !== 599) return proxied;
+      // 599 = Devex unreachable → fall through to existing R2 routing
     }
 
     if (url.pathname === "/api/search") {
