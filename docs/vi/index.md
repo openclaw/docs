@@ -41,7 +41,7 @@ x-i18n:
   <Card title="Bắt đầu" href="/vi/start/getting-started" icon="rocket">
     Cài đặt OpenClaw và khởi chạy Gateway trong vài phút.
   </Card>
-  <Card title="Chạy quy trình nhập môn" href="/vi/start/wizard" icon="sparkles">
+  <Card title="Chạy quy trình nhập môn" href="/vi/start/wizard" icon="list-checks">
     Thiết lập có hướng dẫn với `openclaw onboard` và các luồng ghép nối.
   </Card>
   <Card title="Mở Control UI" href="/vi/web/control-ui" icon="layout-dashboard">

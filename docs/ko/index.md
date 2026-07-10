@@ -41,7 +41,7 @@ x-i18n:
   <Card title="시작하기" href="/ko/start/getting-started" icon="rocket">
     OpenClaw를 설치하고 몇 분 안에 Gateway를 실행하세요.
   </Card>
-  <Card title="온보딩 실행" href="/ko/start/wizard" icon="sparkles">
+  <Card title="온보딩 실행" href="/ko/start/wizard" icon="list-checks">
     `openclaw onboard`와 페어링 흐름으로 안내되는 설정입니다.
   </Card>
   <Card title="Control UI 열기" href="/ko/web/control-ui" icon="layout-dashboard">

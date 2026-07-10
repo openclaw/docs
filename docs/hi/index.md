@@ -41,7 +41,7 @@ x-i18n:
   <Card title="शुरू करें" href="/hi/start/getting-started" icon="rocket">
     OpenClaw इंस्टॉल करें और कुछ ही मिनटों में Gateway शुरू करें।
   </Card>
-  <Card title="Onboarding चलाएं" href="/hi/start/wizard" icon="sparkles">
+  <Card title="Onboarding चलाएं" href="/hi/start/wizard" icon="list-checks">
     `openclaw onboard` और पेयरिंग फ़्लो के साथ निर्देशित सेटअप।
   </Card>
   <Card title="Control UI खोलें" href="/hi/web/control-ui" icon="layout-dashboard">

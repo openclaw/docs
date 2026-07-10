@@ -41,7 +41,7 @@ x-i18n:
   <Card title="ابدأ" href="/ar/start/getting-started" icon="rocket">
     ثبّت OpenClaw وشغّل Gateway خلال دقائق.
   </Card>
-  <Card title="شغّل التهيئة" href="/ar/start/wizard" icon="sparkles">
+  <Card title="شغّل التهيئة" href="/ar/start/wizard" icon="list-checks">
     إعداد موجّه باستخدام `openclaw onboard` وتدفقات الاقتران.
   </Card>
   <Card title="افتح واجهة التحكم" href="/ar/web/control-ui" icon="layout-dashboard">
