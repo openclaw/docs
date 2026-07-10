@@ -677,7 +677,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha 版</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta 版</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta 版</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[脈絡](/zh-TW/concepts/context), [脈絡引擎](/zh-TW/concepts/context-engine), [Codex 脈絡引擎 Harness](/zh-TW/plan/codex-context-engine-harness)</div>
+        <div className="maturity-category-docs">[脈絡](/zh-TW/concepts/context), [脈絡引擎](/zh-TW/concepts/context-engine)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">

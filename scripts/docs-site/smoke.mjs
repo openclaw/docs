@@ -10,6 +10,7 @@ import { parseFrontmatter } from "./frontmatter.mjs";
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
 const docsDir = path.join(root, "docs");
+const workerSource = fs.readFileSync(path.join(root, "workers", "docs-router.ts"), "utf8");
 const sourceMetadata = readSourceMetadata(root);
 const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
@@ -47,6 +48,14 @@ if (!shellOnly) {
     "pagefind/pagefind.js",
     "docs-search.json",
   );
+}
+if (!/--oc-bg-page: #101012/.test(workerSource)
+  || !/@media \(prefers-color-scheme: light\)/.test(workerSource)
+  || !/background: var\(--oc-bg-page\)/.test(workerSource)
+  || !/border-radius: var\(--oc-radius-surface\)/.test(workerSource)
+  || !/background var\(--oc-duration-fast\) var\(--oc-ease-out\)/.test(workerSource)
+  || /<link[^>]+stylesheet/.test(workerSource)) {
+  throw new Error("worker 404: shared token foundation or self-contained rendering is missing");
 }
 const poison = [
   /\banalysis\s+to=functions\./iu,
@@ -214,7 +223,7 @@ if (!/data-chat-copy/.test(index)
   || !/data-chat-retry[^>]+hidden/.test(index)
   || !/\.docs-chat\.expanded/.test(chatCss)
   || !/\.docs-chat\{[^}]*height:min\(680px/.test(chatCss)
-  || !/\.docs-chat-panel\{[^}]*border-radius:0/.test(chatCss)
+  || !/\.docs-chat-panel\{[^}]*border-radius:var\(--oc-radius-surface\)/.test(chatCss)
   || !/\.docs-chat-panel>\*\{min-width:0;max-width:100%/.test(chatCss)
   || !/\.docs-chat-actions\{[^}]*gap:6px/.test(chatCss)
   || !/\.docs-chat-head\{overflow:visible\}/.test(chatCss)
@@ -232,7 +241,7 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat-form button\{position:absolute;right:34px;bottom:34px/.test(chatCss)
   || !/\.docs-chat-auth\{[^}]*grid-row:4;align-self:end/.test(chatCss)
   || !/\.docs-chat-github-icon\{[^}]*fill:currentColor/.test(chatCss)
-  || !/\.docs-chat-avatar\{[^}]*border-radius:999px/.test(chatCss)
+  || !/\.docs-chat-avatar\{[^}]*border-radius:var\(--oc-radius-round\)/.test(chatCss)
   || !/translateY\(10px\) scale\(\.985\)/.test(chatCss)) {
   throw new Error("index: floating docs chat controls are missing");
 }
@@ -293,8 +302,9 @@ if (!/data-language-native/.test(index)
   || !/\.language-native\{display:block;position:absolute/.test(siteCss)) {
   throw new Error("assets: native language select fallback for coarse pointers is missing");
 }
-if (!/tocSpyHoldUntil/.test(siteJs) || !/key===currentDocKey/.test(siteJs)) {
-  throw new Error("assets: toc scrollspy hold and same-document popstate guard are missing");
+if (!/tocSpyHoldUntil/.test(siteJs)
+  || !/closeMermaidOverlay\(\);const key=location\.pathname\+location\.search;if\(key===currentDocKey\)\{tocSpyHoldUntil/.test(siteJs)) {
+  throw new Error("assets: toc scrollspy hold or Mermaid-safe same-document popstate guard is missing");
 }
 if (/\.header-links a[\s{:.[]/.test(siteCss)) {
   throw new Error("assets: .header-links descendant anchor rules override .language-option layout; scope to .header-links>a");
@@ -325,6 +335,13 @@ if (!/class="site-footer"/.test(index)
 if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
   throw new Error("assets: light code theme is not skinned");
 }
+if (!/--oc-status-success-bg: rgb\(34 197 94 \/ 0\.12\)/.test(siteCss)
+  || !/\.oc-app-surface\s*\{/.test(siteCss)
+  || !/\.oc-action\s*\{/.test(siteCss)
+  || !/class="oc-app-surface"/.test(index)
+  || !/class="oc-card oc-card-interactive"/.test(index)) {
+  throw new Error("assets: v0.0.1 product tokens and shared component primitives were not bundled and consumed");
+}
 if (/\.toc a:first-of-type/.test(siteCss)) {
   throw new Error("assets: first table-of-contents item is hard-highlighted");
 }
@@ -339,7 +356,7 @@ if (!fs.existsSync(path.join(site, "assets/mermaid.esm.min.mjs"))
   || !fs.existsSync(path.join(site, "assets/chunks/mermaid.esm.min"))) {
   throw new Error("assets: Mermaid runtime was not copied");
 }
-if (!/\.sidebar\{[^}]*padding:0 6px 64px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
+if (!/\.sidebar\{[^}]*padding:0 6px var\(--oc-space-8\) 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
 }
 if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
@@ -352,25 +369,28 @@ if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
   throw new Error("assets: docs shell geometry does not match the wide reference layout");
 }
-if (!/body\{[^}]*font:15px\/1\.7 Switzer,ui-sans-serif/.test(siteCss)
+if (!/body\{[^}]*font:var\(--oc-font-size-md\)\/1\.7 var\(--oc-font-body\)/.test(siteCss)
   || !/::selection\{background:var\(--brand\);color:var\(--on-brand\)\}/.test(siteCss)
   || /body::before\{[^}]*background-image:radial-gradient/.test(siteCss)
-  || !/\.tab-link\{[^}]*font:700 13px\/1\.4 ui-monospace/.test(siteCss)
-  || !/\.article h1\{font:700 clamp\(34px,3\.8vw,44px\)\/1\.08/.test(siteCss)
-  || !/\.doc\{font-size:15px\}/.test(siteCss)) {
+  || !/\.tab-link\{[^}]*font:700 var\(--oc-font-size-sm\)\/1\.4 var\(--oc-font-mono\)/.test(siteCss)
+  || !/\.article h1\{font:700 clamp\(34px,3\.8vw,44px\)\/1\.08 var\(--oc-font-display\)/.test(siteCss)
+  || !/\.doc\{font-size:var\(--oc-font-size-md\)\}/.test(siteCss)) {
   throw new Error("assets: docs type scale drifted from the reference skin");
 }
-if (!/\.nav-section h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)
-  || !/\.article-kicker\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)
-  || !/\.toc h2\{[^}]*ui-monospace[^}]*text-transform:uppercase/.test(siteCss)) {
+if (!/\.nav-section h2\{[^}]*var\(--oc-font-mono\)[^}]*text-transform:uppercase/.test(siteCss)
+  || !/\.article-kicker\{[^}]*var\(--oc-font-mono\)[^}]*text-transform:uppercase/.test(siteCss)
+  || !/\.toc h2\{[^}]*var\(--oc-font-mono\)[^}]*text-transform:uppercase/.test(siteCss)) {
   throw new Error("assets: mono label accents drifted from the reference skin");
 }
-if (!/--bg:#101012;--paper:#19191c;--paper-2:#202024;[^}]*--soft:#33211d/.test(siteCss)
+if (!/--oc-palette-ink-950:\s*#101012/.test(siteCss)
+  || !/--bg:var\(--oc-bg-page\);--paper:var\(--oc-bg-surface\);--paper-2:var\(--oc-bg-elevated\)/.test(siteCss)
+  || !/--brand:var\(--oc-accent-primary\);--brand-2:var\(--oc-accent-primary-deep\)/.test(siteCss)
+  || !/--soft:var\(--oc-surface-accent-soft\)/.test(siteCss)
   || !/\.nav-link\.active\{border-left-color:var\(--brand\);color:var\(--brand\);font-weight:650\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
 }
 if (!/\.site-footer\{[^}]*border-top:1px solid var\(--line\)/.test(siteCss)
-  || !/\.site-footer-inner\{[^}]*ui-monospace/.test(siteCss)) {
+  || !/\.site-footer-inner\{[^}]*var\(--oc-font-mono\)/.test(siteCss)) {
   throw new Error("assets: site footer skin is missing");
 }
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
@@ -389,7 +409,7 @@ if (!/function syncStickyHeaderOffset/.test(siteJs)
 }
 if (!/\.toc\{position:fixed;left:calc\(24px \+ 220px \+ 34px\);top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
   || !/\.toc\.is-visible,\.toc\[open\]\{opacity:1;visibility:visible;pointer-events:auto;transform:none\}/.test(siteCss)
-  || !/\.toc summary\{display:flex;align-items:center;gap:8px/.test(siteCss)
+  || !/\.toc summary\{display:flex;align-items:center;gap:var\(--oc-space-2\)/.test(siteCss)
   || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none;width:min\(340px,calc\(100vw - 302px\)\)/.test(siteCss)
   || !/Math\.max\(scrollY,document\.scrollingElement\?\.scrollTop\|\|0\)>8/.test(siteJs)
   || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
@@ -462,23 +482,22 @@ if (!/\.oc-step:last-child\{[^}]*border-image:linear-gradient\(to bottom,var\(--
 }
 if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px solid var\(--callout-accent\)/.test(siteCss)
   || !/\.oc-callout\{[^}]*background:var\(--callout-surface\);border-color:var\(--line-strong\);border-left-color:var\(--callout-accent\)/.test(siteCss)
-  || !/\.oc-callout-warning\{--callout-accent:#d97706\}/.test(siteCss)
-  || !/\.oc-callout-check\{--callout-accent:#48b49a\}/.test(siteCss)) {
+  || !/\.oc-callout-warning\{--callout-accent:var\(--oc-status-warning-fg\)\}/.test(siteCss)
+  || !/\.oc-callout-check\{--callout-accent:var\(--oc-status-success-fg\)\}/.test(siteCss)) {
   throw new Error("assets: callout tones should use reference-aligned component skin");
 }
 if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/\.doc code\{overflow-wrap:anywhere;word-break:break-word\}/.test(siteCss)
   || !/@media\(max-width:820px\)[\s\S]*?\.doc \.oc-table\{min-width:0;table-layout:fixed\}/.test(siteCss)
-  || !/:root\{--tooltip-bg:#ededed;--tooltip-text:#17171a;--tooltip-border:#ededed[^}]*\}/.test(siteCss)
-  || !/:root\[data-theme="light"\]\{--tooltip-bg:#17171a;--tooltip-text:#f6f5f3;--tooltip-border:#17171a\}/.test(siteCss)
+  || !/:root\{[^}]*--tooltip-bg:var\(--oc-text-primary\);--tooltip-text:var\(--oc-bg-page\);--tooltip-border:var\(--oc-text-primary\)/.test(siteCss)
   || !/\.oc-chart\{[^}]*border:1px solid var\(--line-strong\)/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after,[^{]+\.oc-chart-donut-key\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
   || !/\.oc-chart-donut-segment\{[^}]*stroke-dasharray:var\(--oc-chart-share\)/.test(siteCss)
   || !/:root\[data-theme="light"\] \.oc-callout\{background:var\(--paper\);border-color:var\(--line-strong\);border-left-color:var\(--callout-accent\)\}/.test(siteCss)
   || !/\.oc-cta\{[^}]*grid-template-columns:minmax\(0,1fr\) auto/.test(siteCss)
-  || !/\.oc-cta-link\{[^}]*transition:background \.16s ease,border-color \.16s ease,color \.16s ease,filter \.16s ease/.test(siteCss)
-  || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:var\(--on-brand\)\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
+  || !/\.oc-cta-link\{[^}]*transition:background var\(--oc-duration-fast\) var\(--oc-ease-out\),border-color var\(--oc-duration-fast\) var\(--oc-ease-out\),color var\(--oc-duration-fast\) var\(--oc-ease-out\),filter var\(--oc-duration-fast\) var\(--oc-ease-out\)/.test(siteCss)
+  || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:var\(--oc-accent-primary-hover\);border-color:var\(--oc-accent-primary-hover\);color:var\(--on-brand\)\}/.test(siteCss)
   || !/\.oc-tooltip\[data-tip\]:hover:after,\.oc-tooltip\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
   || !/\.oc-pullquote\{[^}]*border-left:3px solid var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: editorial components should keep the docs publishing skin");
@@ -505,7 +524,7 @@ for (const marker of [
   'class="oc-card-grid oc-card-cols-2"',
   'class="oc-card-grid oc-card-cols-3"',
   'class="oc-card-grid oc-card-cols-4"',
-  'class="oc-card"',
+  'class="oc-card oc-card-interactive"',
   'class="oc-code"',
   'class="oc-code is-expandable"',
   'class="oc-code-group"',
@@ -519,7 +538,7 @@ for (const marker of [
   'class="oc-frame"',
   'class="oc-tooltip"',
   'class="oc-param-default"',
-  'class="page-status-badge page-status-beta"',
+  'class="oc-pill page-status-badge page-status-beta"',
   'Status: visual fixture',
   'Applies to: docs shell',
   'class="oc-badge oc-badge-orange"',
@@ -539,7 +558,7 @@ for (const marker of [
   'class="oc-chart-donut-segment"',
   'class="oc-cta oc-cta-default"',
   'class="oc-cta-grid"',
-  'class="oc-cta-card oc-cta-card-default"',
+  'class="oc-card oc-card-interactive oc-cta-card oc-cta-card-default"',
   'class="oc-table-wrap"',
   'class="oc-table"',
   'class="oc-mermaid"',

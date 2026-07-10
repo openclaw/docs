@@ -677,7 +677,7 @@ Yüzey, Gateway çalışma zamanı, Discord veya macOS uygulaması gibi bir ür�
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Bağlam](/tr/concepts/context), [Bağlam Motoru](/tr/concepts/context-engine), [Codex Bağlam Motoru Harness](/tr/plan/codex-context-engine-harness)</div>
+        <div className="maturity-category-docs">[Bağlam](/tr/concepts/context), [Bağlam Motoru](/tr/concepts/context-engine)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">

@@ -16,6 +16,7 @@
     "docs:smoke:shell": "DOCS_SITE_ARTIFACT_MODE=shell node scripts/docs-site/smoke.mjs",
     "docs:visual": "node scripts/docs-site/visual-smoke.mjs",
     "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs",
+    "skills:install": "npx --yes skills@1.5.15 add openclaw/design-system --skill openclaw-design openclaw-brand openclaw-design-system openclaw-marketing-pages openclaw-design-audit --agent codex --copy --yes",
     "test": "node --test scripts/docs-site/frontmatter.test.mjs"
   },
   "devDependencies": {
@@ -28,5 +29,8 @@
     "pagefind": "1.5.2",
     "playwright": "^1.61.1",
     "yaml": "2.9.0"
+  },
+  "dependencies": {
+    "@openclaw/design-system": "https://github.com/openclaw/design-system/archive/refs/tags/v0.0.1.tar.gz"
   }
 }

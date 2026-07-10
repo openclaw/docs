@@ -677,7 +677,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">آلفا</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">بتا</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">بتا</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[زمینه](/fa/concepts/context)، [موتور زمینه](/fa/concepts/context-engine)، [مهار موتور زمینه Codex](/fa/plan/codex-context-engine-harness)</div>
+        <div className="maturity-category-docs">[زمینه](/fa/concepts/context)، [موتور زمینه](/fa/concepts/context-engine)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">

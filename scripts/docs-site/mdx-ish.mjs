@@ -483,7 +483,7 @@ function cardHtml(rawAttrs, selfClosing) {
   const title = attrs.title ?? attrs.name ?? "Open";
   const icon = attrs.icon ? iconSvg(attrs.icon) : "";
   const end = selfClosing ? "</div></a>" : "";
-  return `<a class="oc-card" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
+  return `<a class="oc-card oc-card-interactive" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
 }
 
 function ctaCardHtml(rawAttrs, selfClosing) {
@@ -493,7 +493,7 @@ function ctaCardHtml(rawAttrs, selfClosing) {
   const tone = slug(attrs.tone ?? attrs.variant ?? "default");
   const icon = attrs.icon ? iconSvg(attrs.icon) : "";
   const end = selfClosing ? `${ctaActions(attrs, "card")}</div></a>` : "";
-  return `<a class="oc-cta-card oc-cta-card-${tone}" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${attrs.kicker ? `<span class="oc-cta-kicker">${escapeHtml(attrs.kicker)}</span>` : ""}${end}`;
+  return `<a class="oc-card oc-card-interactive oc-cta-card oc-cta-card-${tone}" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${attrs.kicker ? `<span class="oc-cta-kicker">${escapeHtml(attrs.kicker)}</span>` : ""}${end}`;
 }
 
 function ctaActions(attrs, context = "block") {
@@ -511,7 +511,8 @@ function ctaActions(attrs, context = "block") {
 }
 
 function ctaLink(href, label, variant, nested = false) {
-  const className = `oc-cta-link oc-cta-link-${escapeAttr(variant)}`;
+  const actionVariant = variant === "primary" ? "primary" : "secondary";
+  const className = `oc-action oc-action-${actionVariant} oc-cta-link oc-cta-link-${escapeAttr(variant)}`;
   return nested
     ? `<span class="${className}" data-href="${escapeAttr(href)}">${escapeHtml(label)}</span>`
     : `<a class="${className}" href="${escapeAttr(href)}">${escapeHtml(label)}</a>`;

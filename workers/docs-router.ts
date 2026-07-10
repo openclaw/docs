@@ -475,15 +475,58 @@ function docsNotFoundHtml(pathname: string): string {
 <style>
 :root {
   color-scheme: dark;
-  --bg: #090b0f;
-  --panel: #11151d;
-  --panel-strong: #171d27;
-  --text: #f7f2ea;
-  --muted: #a9b2c0;
-  --line: #273141;
-  --accent: #ff5a36;
-  --accent-2: #5fd4c8;
-  --shadow: rgba(0, 0, 0, .38);
+  --oc-bg-page: #101012;
+  --oc-bg-surface: #19191c;
+  --oc-bg-elevated: #202024;
+  --oc-text-primary: #ededed;
+  --oc-text-secondary: #bcbcc4;
+  --oc-text-muted: #9a9aa2;
+  --oc-text-on-accent: #101012;
+  --oc-accent-primary: #f5654a;
+  --oc-accent-primary-hover: #e05540;
+  --oc-accent-secondary: #4fc8ae;
+  --oc-border-subtle: rgb(154 154 162 / .18);
+  --oc-surface-card: rgb(25 25 28 / .72);
+  --oc-surface-card-strong: rgb(25 25 28 / .9);
+  --oc-surface-interactive-hover: rgb(237 237 237 / .16);
+  --oc-focus-ring: rgb(79 200 174 / .72);
+  --oc-space-2: .5rem;
+  --oc-space-3: .75rem;
+  --oc-space-4: 1rem;
+  --oc-space-5: 1.5rem;
+  --oc-space-6: 2rem;
+  --oc-space-7: 3rem;
+  --oc-space-8: 4rem;
+  --oc-font-size-sm: .8125rem;
+  --oc-font-size-lg: 1.0625rem;
+  --oc-radius-surface: 0;
+  --oc-radius-control: 0;
+  --oc-shadow-lg: 0 24px 48px -12px rgb(0 0 0 / .42);
+  --oc-duration-fast: 160ms;
+  --oc-ease-out: cubic-bezier(.23, 1, .32, 1);
+  --oc-font-display: "Switzer", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --oc-font-body: "Switzer", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --oc-font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --oc-bg-page: #f6f5f3;
+    --oc-bg-surface: #eceae6;
+    --oc-bg-elevated: #fff;
+    --oc-text-primary: #17171a;
+    --oc-text-secondary: #46464e;
+    --oc-text-muted: #63636c;
+    --oc-text-on-accent: #fff;
+    --oc-accent-primary: #d84a31;
+    --oc-accent-primary-hover: #c24028;
+    --oc-accent-secondary: #14806e;
+    --oc-border-subtle: rgb(23 23 26 / .14);
+    --oc-surface-card: rgb(255 255 255 / .8);
+    --oc-surface-card-strong: rgb(255 255 255 / .95);
+    --oc-surface-interactive-hover: rgb(23 23 26 / .14);
+    --oc-focus-ring: rgb(20 128 110 / .58);
+  }
 }
 * { box-sizing: border-box; }
 body {
@@ -491,28 +534,26 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(145deg, #090b0f 0%, #10141d 52%, #161216 100%);
-  background-size: 56px 56px, 56px 56px, auto;
-  color: var(--text);
-  font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: var(--oc-space-5) 0;
+  background: var(--oc-bg-page);
+  color: var(--oc-text-primary);
+  font: 16px/1.55 var(--oc-font-body);
 }
 main {
   width: min(960px, calc(100vw - 32px));
   display: grid;
-  gap: 24px;
+  gap: var(--oc-space-5);
   grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
   align-items: stretch;
 }
 .hero, .panel {
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  box-shadow: 0 24px 80px var(--shadow);
+  border: 1px solid var(--oc-border-subtle);
+  border-radius: var(--oc-radius-surface);
+  background: var(--oc-surface-card);
+  box-shadow: var(--oc-shadow-lg);
 }
 .hero {
-  padding: clamp(28px, 5vw, 56px);
+  padding: clamp(var(--oc-space-6), 5vw, var(--oc-space-8, 4rem));
   position: relative;
   overflow: hidden;
 }
@@ -521,14 +562,14 @@ main {
   position: absolute;
   inset: 0 0 auto;
   height: 5px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  background: linear-gradient(90deg, var(--oc-accent-primary), var(--oc-accent-secondary));
 }
 .brand {
   display: inline-flex;
-  gap: 12px;
+  gap: var(--oc-space-3);
   align-items: center;
-  color: var(--muted);
-  font-size: 13px;
+  color: var(--oc-text-muted);
+  font-size: var(--oc-font-size-sm);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -541,23 +582,23 @@ h1 {
   line-height: .86;
   letter-spacing: 0;
 }
-p { margin: 0; color: var(--muted); max-width: 56ch; }
+p { margin: 0; color: var(--oc-text-muted); max-width: 56ch; }
 .path {
-  margin-top: 26px;
+  margin-top: var(--oc-space-5);
   display: inline-flex;
   max-width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  background: #0a0d12;
-  color: #d9e0ea;
-  font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: var(--oc-space-2) var(--oc-space-3);
+  border: 1px solid var(--oc-border-subtle);
+  background: var(--oc-bg-page);
+  color: var(--oc-text-secondary);
+  font: var(--oc-font-size-sm)/1.4 var(--oc-font-mono);
   overflow-wrap: anywhere;
 }
 .actions {
-  margin-top: 28px;
+  margin-top: var(--oc-space-5);
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--oc-space-2);
 }
 a {
   color: inherit;
@@ -568,54 +609,70 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 0 16px;
-  border: 1px solid var(--line);
-  background: var(--panel-strong);
+  gap: var(--oc-space-2);
+  padding: 0 var(--oc-space-4);
+  border: 1px solid var(--oc-border-subtle);
+  border-radius: var(--oc-radius-control);
+  background: var(--oc-surface-card-strong);
   font-weight: 700;
+  transition:
+    background var(--oc-duration-fast) var(--oc-ease-out),
+    border-color var(--oc-duration-fast) var(--oc-ease-out),
+    color var(--oc-duration-fast) var(--oc-ease-out);
 }
 .button.primary {
-  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
-  background: var(--accent);
-  color: #1d0903;
+  border-color: var(--oc-accent-primary);
+  background: var(--oc-accent-primary);
+  color: var(--oc-text-on-accent);
 }
-.button:hover { border-color: var(--accent-2); }
+.button:hover {
+  border-color: var(--oc-accent-primary);
+  background: var(--oc-surface-interactive-hover);
+}
+.button.primary:hover {
+  border-color: var(--oc-accent-primary-hover);
+  background: var(--oc-accent-primary-hover);
+}
+.button:focus-visible {
+  outline: 2px solid var(--oc-focus-ring);
+  outline-offset: 3px;
+}
 .panel {
-  padding: 24px;
+  padding: var(--oc-space-5);
   display: grid;
   align-content: center;
-  gap: 14px;
+  gap: var(--oc-space-3);
 }
 .status {
   display: grid;
-  gap: 10px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  background: #0b0f15;
-  font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  gap: var(--oc-space-2);
+  padding: var(--oc-space-4);
+  border: 1px solid var(--oc-border-subtle);
+  background: var(--oc-bg-page);
+  font: var(--oc-font-size-sm)/1.6 var(--oc-font-mono);
 }
 .status div {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
+  gap: var(--oc-space-4);
 }
-.status span:first-child { color: var(--muted); }
-.status span:last-child { color: var(--accent-2); }
+.status span:first-child { color: var(--oc-text-muted); }
+.status span:last-child { color: var(--oc-accent-secondary); }
 .links {
   display: grid;
-  gap: 8px;
+  gap: var(--oc-space-2);
 }
 .links a {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-  color: #e9edf3;
+  gap: var(--oc-space-4);
+  padding: var(--oc-space-3) 0;
+  border-bottom: 1px solid var(--oc-border-subtle);
+  color: var(--oc-text-primary);
 }
-.links a:hover { color: var(--accent-2); }
+.links a:hover { color: var(--oc-accent-secondary); }
 @media (max-width: 760px) {
-  body { place-items: start center; padding: 18px 0; }
+  body { place-items: start center; padding: var(--oc-space-4) 0; }
   main { grid-template-columns: 1fr; }
   h1 { max-width: none; font-size: 4rem; }
 }
