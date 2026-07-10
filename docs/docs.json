@@ -1622,6 +1622,7 @@
                     "pages": [
                       "gateway/gateway-lock",
                       "gateway/background-process",
+                      "gateway/restart-recovery",
                       "gateway/multiple-gateways"
                     ]
                   },
@@ -3200,6 +3201,7 @@
                     "pages": [
                       "zh-TW/gateway/gateway-lock",
                       "zh-TW/gateway/background-process",
+                      "zh-TW/gateway/restart-recovery",
                       "zh-TW/gateway/multiple-gateways"
                     ]
                   },
@@ -4155,6 +4157,7 @@
                     "pages": [
                       "ja-JP/gateway/gateway-lock",
                       "ja-JP/gateway/background-process",
+                      "ja-JP/gateway/restart-recovery",
                       "ja-JP/gateway/multiple-gateways"
                     ]
                   },
@@ -5110,6 +5113,7 @@
                     "pages": [
                       "es/gateway/gateway-lock",
                       "es/gateway/background-process",
+                      "es/gateway/restart-recovery",
                       "es/gateway/multiple-gateways"
                     ]
                   },
@@ -6065,6 +6069,7 @@
                     "pages": [
                       "pt-BR/gateway/gateway-lock",
                       "pt-BR/gateway/background-process",
+                      "pt-BR/gateway/restart-recovery",
                       "pt-BR/gateway/multiple-gateways"
                     ]
                   },
@@ -7020,6 +7025,7 @@
                     "pages": [
                       "ko/gateway/gateway-lock",
                       "ko/gateway/background-process",
+                      "ko/gateway/restart-recovery",
                       "ko/gateway/multiple-gateways"
                     ]
                   },
@@ -7975,6 +7981,7 @@
                     "pages": [
                       "de/gateway/gateway-lock",
                       "de/gateway/background-process",
+                      "de/gateway/restart-recovery",
                       "de/gateway/multiple-gateways"
                     ]
                   },
@@ -8930,6 +8937,7 @@
                     "pages": [
                       "fr/gateway/gateway-lock",
                       "fr/gateway/background-process",
+                      "fr/gateway/restart-recovery",
                       "fr/gateway/multiple-gateways"
                     ]
                   },
@@ -9885,6 +9893,7 @@
                     "pages": [
                       "hi/gateway/gateway-lock",
                       "hi/gateway/background-process",
+                      "hi/gateway/restart-recovery",
                       "hi/gateway/multiple-gateways"
                     ]
                   },
@@ -10840,6 +10849,7 @@
                     "pages": [
                       "ar/gateway/gateway-lock",
                       "ar/gateway/background-process",
+                      "ar/gateway/restart-recovery",
                       "ar/gateway/multiple-gateways"
                     ]
                   },
@@ -11795,6 +11805,7 @@
                     "pages": [
                       "it/gateway/gateway-lock",
                       "it/gateway/background-process",
+                      "it/gateway/restart-recovery",
                       "it/gateway/multiple-gateways"
                     ]
                   },
@@ -12750,6 +12761,7 @@
                     "pages": [
                       "vi/gateway/gateway-lock",
                       "vi/gateway/background-process",
+                      "vi/gateway/restart-recovery",
                       "vi/gateway/multiple-gateways"
                     ]
                   },
@@ -13705,6 +13717,7 @@
                     "pages": [
                       "nl/gateway/gateway-lock",
                       "nl/gateway/background-process",
+                      "nl/gateway/restart-recovery",
                       "nl/gateway/multiple-gateways"
                     ]
                   },
@@ -14660,6 +14673,7 @@
                     "pages": [
                       "tr/gateway/gateway-lock",
                       "tr/gateway/background-process",
+                      "tr/gateway/restart-recovery",
                       "tr/gateway/multiple-gateways"
                     ]
                   },
@@ -15615,6 +15629,7 @@
                     "pages": [
                       "uk/gateway/gateway-lock",
                       "uk/gateway/background-process",
+                      "uk/gateway/restart-recovery",
                       "uk/gateway/multiple-gateways"
                     ]
                   },
@@ -16570,6 +16585,7 @@
                     "pages": [
                       "id/gateway/gateway-lock",
                       "id/gateway/background-process",
+                      "id/gateway/restart-recovery",
                       "id/gateway/multiple-gateways"
                     ]
                   },
@@ -17525,6 +17541,7 @@
                     "pages": [
                       "pl/gateway/gateway-lock",
                       "pl/gateway/background-process",
+                      "pl/gateway/restart-recovery",
                       "pl/gateway/multiple-gateways"
                     ]
                   },
@@ -18480,6 +18497,7 @@
                     "pages": [
                       "ru/gateway/gateway-lock",
                       "ru/gateway/background-process",
+                      "ru/gateway/restart-recovery",
                       "ru/gateway/multiple-gateways"
                     ]
                   },
