@@ -677,7 +677,7 @@ Une surface est un domaine produit tel que le runtime Gateway, Discord ou l’ap
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Bêta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Bêta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Contexte](/fr/concepts/context), [Moteur de contexte](/fr/concepts/context-engine), [Banc d’essai du moteur de contexte Codex](/fr/plan/codex-context-engine-harness)</div>
+        <div className="maturity-category-docs">[Contexte](/fr/concepts/context), [Moteur de contexte](/fr/concepts/context-engine)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
