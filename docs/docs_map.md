@@ -6937,6 +6937,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: When to use a harness
   - H2: What core still owns
+  - H3: Harness-owned auth bootstrap
   - H2: Register a harness
   - H2: Selection policy
   - H2: Provider plus harness pairing
