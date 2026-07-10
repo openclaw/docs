@@ -1713,7 +1713,8 @@
                   "web/control-ui",
                   "web/dashboard",
                   "web/webchat",
-                  "web/tui"
+                  "web/tui",
+                  "web/lobster"
                 ]
               }
             ]
@@ -3290,7 +3291,8 @@
                   "zh-TW/web/control-ui",
                   "zh-TW/web/dashboard",
                   "zh-TW/web/webchat",
-                  "zh-TW/web/tui"
+                  "zh-TW/web/tui",
+                  "zh-TW/web/lobster"
                 ]
               }
             ]
@@ -4244,7 +4246,8 @@
                   "ja-JP/web/control-ui",
                   "ja-JP/web/dashboard",
                   "ja-JP/web/webchat",
-                  "ja-JP/web/tui"
+                  "ja-JP/web/tui",
+                  "ja-JP/web/lobster"
                 ]
               }
             ]
@@ -5198,7 +5201,8 @@
                   "es/web/control-ui",
                   "es/web/dashboard",
                   "es/web/webchat",
-                  "es/web/tui"
+                  "es/web/tui",
+                  "es/web/lobster"
                 ]
               }
             ]
@@ -6152,7 +6156,8 @@
                   "pt-BR/web/control-ui",
                   "pt-BR/web/dashboard",
                   "pt-BR/web/webchat",
-                  "pt-BR/web/tui"
+                  "pt-BR/web/tui",
+                  "pt-BR/web/lobster"
                 ]
               }
             ]
@@ -7106,7 +7111,8 @@
                   "ko/web/control-ui",
                   "ko/web/dashboard",
                   "ko/web/webchat",
-                  "ko/web/tui"
+                  "ko/web/tui",
+                  "ko/web/lobster"
                 ]
               }
             ]
@@ -8060,7 +8066,8 @@
                   "de/web/control-ui",
                   "de/web/dashboard",
                   "de/web/webchat",
-                  "de/web/tui"
+                  "de/web/tui",
+                  "de/web/lobster"
                 ]
               }
             ]
@@ -9014,7 +9021,8 @@
                   "fr/web/control-ui",
                   "fr/web/dashboard",
                   "fr/web/webchat",
-                  "fr/web/tui"
+                  "fr/web/tui",
+                  "fr/web/lobster"
                 ]
               }
             ]
@@ -9968,7 +9976,8 @@
                   "hi/web/control-ui",
                   "hi/web/dashboard",
                   "hi/web/webchat",
-                  "hi/web/tui"
+                  "hi/web/tui",
+                  "hi/web/lobster"
                 ]
               }
             ]
@@ -10922,7 +10931,8 @@
                   "ar/web/control-ui",
                   "ar/web/dashboard",
                   "ar/web/webchat",
-                  "ar/web/tui"
+                  "ar/web/tui",
+                  "ar/web/lobster"
                 ]
               }
             ]
@@ -11876,7 +11886,8 @@
                   "it/web/control-ui",
                   "it/web/dashboard",
                   "it/web/webchat",
-                  "it/web/tui"
+                  "it/web/tui",
+                  "it/web/lobster"
                 ]
               }
             ]
@@ -12830,7 +12841,8 @@
                   "vi/web/control-ui",
                   "vi/web/dashboard",
                   "vi/web/webchat",
-                  "vi/web/tui"
+                  "vi/web/tui",
+                  "vi/web/lobster"
                 ]
               }
             ]
@@ -13784,7 +13796,8 @@
                   "nl/web/control-ui",
                   "nl/web/dashboard",
                   "nl/web/webchat",
-                  "nl/web/tui"
+                  "nl/web/tui",
+                  "nl/web/lobster"
                 ]
               }
             ]
@@ -14738,7 +14751,8 @@
                   "tr/web/control-ui",
                   "tr/web/dashboard",
                   "tr/web/webchat",
-                  "tr/web/tui"
+                  "tr/web/tui",
+                  "tr/web/lobster"
                 ]
               }
             ]
@@ -15692,7 +15706,8 @@
                   "uk/web/control-ui",
                   "uk/web/dashboard",
                   "uk/web/webchat",
-                  "uk/web/tui"
+                  "uk/web/tui",
+                  "uk/web/lobster"
                 ]
               }
             ]
@@ -16646,7 +16661,8 @@
                   "id/web/control-ui",
                   "id/web/dashboard",
                   "id/web/webchat",
-                  "id/web/tui"
+                  "id/web/tui",
+                  "id/web/lobster"
                 ]
               }
             ]
@@ -17600,7 +17616,8 @@
                   "pl/web/control-ui",
                   "pl/web/dashboard",
                   "pl/web/webchat",
-                  "pl/web/tui"
+                  "pl/web/tui",
+                  "pl/web/lobster"
                 ]
               }
             ]
@@ -18554,7 +18571,8 @@
                   "ru/web/control-ui",
                   "ru/web/dashboard",
                   "ru/web/webchat",
-                  "ru/web/tui"
+                  "ru/web/tui",
+                  "ru/web/lobster"
                 ]
               }
             ]
