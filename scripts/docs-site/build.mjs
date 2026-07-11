@@ -341,7 +341,8 @@ function siteHeader(page, nav, activeTab) {
   const tabs = nav.map((tab) => {
     const href = pageUrl(firstPage(tab));
     const active = tab.title === activeTab ? " active" : "";
-    return `<a class="tab-link${active}" href="${href}">${escapeHtml(tab.title)}</a>`;
+    const current = tab.title === activeTab ? ' aria-current="location"' : "";
+    return `<a class="tab-link${active}" href="${href}"${current}>${escapeHtml(tab.title)}</a>`;
   }).join("");
   return `<header class="site-header">
 <div class="header-row">
@@ -370,10 +371,17 @@ function siteFooter() {
 }
 
 function sidebar(page, nav, activeTab) {
-  const groups = (nav.find((tab) => tab.title === activeTab) ?? nav[0])?.groups ?? [];
+  const currentTab = nav.find((tab) => tab.title === activeTab) ?? nav[0];
+  const groups = currentTab?.groups ?? [];
+  const mobileTabs = nav.map((tab) => {
+    const active = tab.title === currentTab?.title;
+    return `<a class="mobile-tab-link${active ? " active" : ""}" href="${pageUrl(firstPage(tab))}"${active ? ' aria-current="location"' : ""}>${escapeHtml(tab.title)}</a>`;
+  }).join("");
   return `<aside class="sidebar">
-<button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">Close</button>
-<nav>${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
+<div class="sidebar-head"><strong>Browse docs</strong><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
+<details class="mobile-section-switcher"><summary><span class="mobile-section-copy"><span class="mobile-section-label">Section</span><strong>${escapeHtml(currentTab?.title ?? "Docs")}</strong></span><span class="mobile-section-chevron" aria-hidden="true">${icon("chevron-down")}</span></summary><nav class="mobile-tabs" aria-label="Docs sections">${mobileTabs}</nav></details>
+<p class="sidebar-section-label">In this section</p>
+<nav aria-label="${escapeAttr(`${currentTab?.title ?? "Docs"} pages`)}">${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
 </aside>`;
 }
 

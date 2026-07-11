@@ -428,6 +428,13 @@ if (!/let tocObserver=null/.test(siteJs)
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
+if (!/class="mobile-tabs" aria-label="Docs sections"/.test(index)
+  || !/class="mobile-tab-link active"[^>]*aria-current="location"/.test(index)
+  || !/class="mobile-section-switcher"><summary>/.test(index)
+  || !/\.mobile-section-switcher\[open\] \.mobile-tabs\{display:grid;gap:2px/.test(siteCss)
+  || !/\.mobile-tab-link\.active\{background:var\(--soft\);color:var\(--brand\)/.test(siteCss)) {
+  throw new Error("assets: mobile global docs navigation is missing");
+}
 if (/data-locale/.test(siteJs)) {
   throw new Error("assets: stale native language select handler is still present");
 }

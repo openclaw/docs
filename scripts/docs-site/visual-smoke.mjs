@@ -508,19 +508,35 @@ async function checkMobile() {
     const header = document.querySelector(".site-header")?.getBoundingClientRect();
     const menu = document.querySelector("[data-nav-toggle]")?.getBoundingClientRect();
     const theme = document.querySelector("[data-theme-toggle]")?.getBoundingClientRect();
+    const themeStyle = getComputedStyle(document.querySelector("[data-theme-toggle]"));
     const search = document.querySelector("[data-search-open]")?.getBoundingClientRect();
+    const brand = document.querySelector(".brand")?.getBoundingClientRect();
+    const github = document.querySelector('.top-icon-link[aria-label="GitHub"]')?.getBoundingClientRect();
+    const discord = document.querySelector('.top-icon-link[aria-label="Discord"]')?.getBoundingClientRect();
     const code = document.querySelector(".oc-code")?.getBoundingClientRect();
     const step = document.querySelector(".oc-step")?.getBoundingClientRect();
     const overlap = (a, b) => Boolean(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
     return {
       headerWidth: header?.width,
       menuThemeOverlap: overlap(menu, theme),
+      themeHasChrome: parseFloat(themeStyle.borderTopWidth) > 0 || themeStyle.backgroundColor !== "rgba(0, 0, 0, 0)",
+      brandCenterDelta: brand ? Math.abs((brand.left + brand.right) / 2 - innerWidth / 2) : null,
+      githubVisible: Boolean(github && github.width > 0 && github.height > 0),
+      discordVisible: Boolean(discord && discord.width > 0 && discord.height > 0),
       searchInViewport: search ? search.left >= 0 && search.right <= innerWidth : false,
       codeInViewport: code ? code.left >= 0 && code.right <= innerWidth + 1 : false,
       stepInset: step?.left,
     };
   });
-  if (geometry.menuThemeOverlap || !geometry.searchInViewport || !geometry.codeInViewport || geometry.stepInset < 0) {
+  if (geometry.menuThemeOverlap
+    || geometry.themeHasChrome
+    || geometry.brandCenterDelta === null
+    || geometry.brandCenterDelta > 2
+    || geometry.githubVisible
+    || geometry.discordVisible
+    || !geometry.searchInViewport
+    || !geometry.codeInViewport
+    || geometry.stepInset < 0) {
     throw new Error(`mobile visual geometry failed: ${JSON.stringify(geometry)}`);
   }
   const mobileCardColumns = await page.evaluate(() => {
@@ -538,20 +554,29 @@ async function checkMobile() {
   await page.click("[data-nav-toggle]");
   await page.locator(".sidebar.open").waitFor({ state: "visible" });
   await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar")?.getBoundingClientRect().left ?? -999) < 1);
-  await page.screenshot({ path: path.join(artifacts, "elements-mobile-menu.png"), fullPage: false });
   const menu = await page.evaluate(() => {
     const sidebar = document.querySelector(".sidebar")?.getBoundingClientRect();
     const close = document.querySelector("[data-nav-close]")?.getBoundingClientRect();
     const toggle = document.querySelector("[data-nav-toggle]");
     const closeStyle = getComputedStyle(document.querySelector("[data-nav-close]"));
+    const sectionSwitcher = document.querySelector(".mobile-section-switcher");
+    const sectionSwitcherRect = sectionSwitcher?.getBoundingClientRect();
     return {
       bodyOpen: document.body.classList.contains("nav-open"),
       ariaExpanded: toggle?.getAttribute("aria-expanded"),
       sidebarLeft: sidebar?.left,
       sidebarRight: sidebar?.right,
       sidebarWidth: sidebar?.width,
+      sidebarTop: sidebar?.top,
+      sidebarBottom: sidebar?.bottom,
       closeVisible: closeStyle.display !== "none" && close && close.height >= 36,
+      sectionSwitcherVisible: Boolean(sectionSwitcherRect && sectionSwitcherRect.width > 0 && sectionSwitcherRect.height > 0),
+      sectionSwitcherOpen: sectionSwitcher?.hasAttribute("open"),
+      sectionSwitcherCurrent: sectionSwitcher?.querySelector(".mobile-section-copy > strong")?.textContent?.trim(),
+      drawerAtTop: (document.querySelector(".sidebar")?.scrollTop ?? -1) <= 1,
+      closeFocused: document.activeElement === document.querySelector("[data-nav-close]"),
       viewport: innerWidth,
+      viewportHeight: innerHeight,
     };
   });
   if (!menu.bodyOpen
@@ -559,8 +584,40 @@ async function checkMobile() {
     || Math.abs(menu.sidebarLeft) >= 1
     || Math.abs(menu.sidebarRight - menu.viewport) >= 1
     || Math.abs(menu.sidebarWidth - menu.viewport) >= 1
-    || !menu.closeVisible) {
+    || Math.abs(menu.sidebarTop) >= 1
+    || Math.abs(menu.sidebarBottom - menu.viewportHeight) >= 1
+    || !menu.closeVisible
+    || !menu.sectionSwitcherVisible
+    || menu.sectionSwitcherOpen
+    || !menu.sectionSwitcherCurrent
+    || !menu.drawerAtTop
+    || !menu.closeFocused) {
     throw new Error(`mobile menu drawer failed (expected full-bleed on phones): ${JSON.stringify(menu)}`);
+  }
+  await page.click(".mobile-section-switcher > summary");
+  await page.locator(".mobile-tabs").waitFor({ state: "visible" });
+  await page.screenshot({ path: path.join(artifacts, "elements-mobile-menu.png"), fullPage: false });
+  const sections = await page.evaluate(() => {
+    const container = document.querySelector(".mobile-tabs")?.getBoundingClientRect();
+    const links = [...document.querySelectorAll(".mobile-tab-link")];
+    const rects = links.map((link) => link.getBoundingClientRect());
+    return {
+      open: document.querySelector(".mobile-section-switcher")?.hasAttribute("open"),
+      mobileTabCount: links.length,
+      desktopTabCount: document.querySelectorAll(".tab-link").length,
+      activeCount: document.querySelectorAll('.mobile-tab-link[aria-current="location"]').length,
+      linksVisible: rects.every((rect) => rect.width > 0 && rect.height > 0),
+      linksInViewport: rects.every((rect) => rect.left >= 0 && rect.right <= innerWidth),
+      lastLinkVisible: Boolean(container && rects.at(-1)?.bottom <= container.bottom + 1),
+    };
+  });
+  if (!sections.open
+    || sections.mobileTabCount !== sections.desktopTabCount
+    || sections.activeCount !== 1
+    || !sections.linksVisible
+    || !sections.linksInViewport
+    || !sections.lastLinkVisible) {
+    throw new Error(`mobile docs section switcher failed: ${JSON.stringify(sections)}`);
   }
   await page.keyboard.press("Escape");
   const closed = await page.evaluate(() => ({
