@@ -20,6 +20,7 @@ const previewOrigin = (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
+const basePath = `/${(process.env.DOCS_SITE_BASE_PATH ?? "").replace(/^\/+|\/+$/g, "")}`.replace(/^\/$/, "");
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
 }
@@ -734,6 +735,19 @@ if (!fs.existsSync(legacyDigitalOcean)) {
 if (!/url=\/(?:docs\/)?install\/digitalocean/.test(fs.readFileSync(legacyDigitalOcean, "utf8"))) {
   throw new Error("legacy DigitalOcean redirect: wrong destination");
 }
+for (const locale of activeLocaleCodes()) {
+  if (locale === "en") continue;
+  const localizedCodexSupervisor = path.join(site, locale, "plugins/reference/codex-supervisor/index.html");
+  if (!fs.existsSync(localizedCodexSupervisor)) {
+    throw new Error(`localized Codex Supervisor redirect: missing /${locale}/plugins/reference/codex-supervisor`);
+  }
+  const localizedDestination = fs.existsSync(path.join(docsDir, locale, "plugins/codex-supervision.md"))
+    ? `${basePath}/${locale}/plugins/codex-supervision`
+    : `${basePath}/plugins/codex-supervision`;
+  if (!fs.readFileSync(localizedCodexSupervisor, "utf8").includes(`url=${localizedDestination}`)) {
+    throw new Error(`localized Codex Supervisor redirect: wrong ${locale} destination`);
+  }
+}
 const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "utf8");
 if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
@@ -745,7 +759,6 @@ console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks
 function assertInternalRoutes() {
   const files = walkFiles(site);
   const present = new Set(files.map((file) => path.relative(site, file).replaceAll(path.sep, "/")));
-  const basePath = `/${(process.env.DOCS_SITE_BASE_PATH ?? "").replace(/^\/+|\/+$/g, "")}`.replace(/^\/$/, "");
   const missing = new Map();
 
   for (const file of files) {
