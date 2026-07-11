@@ -98,7 +98,10 @@ def build_pending_manifest(
     all_files: list[Path] = []
     pending_files: list[Path] = []
     for path in docs_root.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in {".md", ".mdx"}:
+        # Alias files such as CLAUDE.md -> AGENTS.md resolve to the same source
+        # path. Translating both assigns one output to multiple shards, wasting
+        # model calls and making the final artifact overwrite nondeterministic.
+        if path.is_symlink() or not path.is_file() or path.suffix.lower() not in {".md", ".mdx"}:
             continue
         rel = path.relative_to(docs_root)
         parts = rel.parts

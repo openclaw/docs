@@ -81,7 +81,7 @@ def source_doc_count(docs_root: Path) -> int:
     locale_dirs = {path.name for path in docs_root.iterdir() if is_locale_dir(path)}
     count = 0
     for path in docs_root.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in {".md", ".mdx"}:
+        if path.is_symlink() or not path.is_file() or path.suffix.lower() not in {".md", ".mdx"}:
             continue
         rel = path.relative_to(docs_root)
         parts = rel.parts

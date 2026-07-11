@@ -519,6 +519,30 @@ class I18NScriptTests(unittest.TestCase):
             self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/index.md"))
             self.assertEqual(str(result.shard_files[0]), result.pending_path.read_text(encoding="utf-8").strip())
 
+    def test_translation_planning_excludes_symlink_aliases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            source = docs / "AGENTS.md"
+            source.write_text("# Instructions\n", encoding="utf-8")
+            alias = docs / "CLAUDE.md"
+            alias.symlink_to(source.name)
+
+            result = pending.build_pending_manifest(
+                docs_root=docs,
+                openclaw_sync_dir=Path(tmp) / ".openclaw-sync",
+                locale="fr",
+                locale_slug="fr",
+                mode="full",
+                shard_index=0,
+                shard_total=1,
+            )
+
+            self.assertEqual(1, translation_plan.source_doc_count(docs))
+            self.assertEqual(1, result.all_count)
+            self.assertEqual(1, result.total_pending_count)
+            self.assertEqual([source.resolve()], result.shard_files)
+
     def test_pending_manifest_skips_matching_incremental_hash(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
