@@ -20,7 +20,7 @@ Outputs:
   responses, or unknown API failures.
 
 Examples:
-  OPENAI_API_KEY=sk-... OPENCLAW_DOCS_I18N_MODEL=gpt-5.5 python .github/scripts/i18n/provider_preflight.py
+  OPENAI_API_KEY=sk-... OPENCLAW_DOCS_I18N_MODEL=gpt-5.6 python .github/scripts/i18n/provider_preflight.py
   python .github/scripts/i18n/provider_preflight.py --status-code 401 --response-file /tmp/openai-error.json
 """
 
@@ -155,7 +155,7 @@ def parse_args() -> argparse.Namespace:
   Prints a concise provider/key result and writes provider_preflight/failure_class to GITHUB_OUTPUT.
 
 Examples:
-  OPENAI_API_KEY=sk-... OPENCLAW_DOCS_I18N_MODEL=gpt-5.5 python .github/scripts/i18n/provider_preflight.py
+  OPENAI_API_KEY=sk-... OPENCLAW_DOCS_I18N_MODEL=gpt-5.6 python .github/scripts/i18n/provider_preflight.py
   python .github/scripts/i18n/provider_preflight.py --status-code 429 --response-file /tmp/error.json
 """,
     )

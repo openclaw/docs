@@ -166,7 +166,7 @@ jobs:
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
-          OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
+          OPENCLAW_DOCS_I18N_MODEL: gpt-5.6
           OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
           WORKER_PARALLEL: ${{ inputs.worker_parallel }}
           THINKING_EFFORT: ${{ inputs.thinking_effort }}
@@ -239,8 +239,8 @@ jobs:
         with:
           openai-api-key: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           prompt-file: .openclaw-sync/docs-mdx-repair.md
-          model: gpt-5.5
-          effort: high
+          model: gpt-5.6
+          effort: xhigh
           sandbox: workspace-write
           safety-strategy: drop-sudo
           codex-args: '["--full-auto"]'

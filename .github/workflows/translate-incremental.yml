@@ -139,7 +139,7 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "medium"
+      thinking_effort: "xhigh"
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -159,7 +159,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
-          OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
+          OPENCLAW_DOCS_I18N_MODEL: gpt-5.6
         run: |
           set -euo pipefail
 
