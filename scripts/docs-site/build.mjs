@@ -714,11 +714,27 @@ function writeRedirects() {
   for (const redirect of config.redirects ?? []) {
     const source = cleanPath(redirect.source);
     const dest = cleanPath(redirect.destination);
-    writeRedirectFile(source, publicPath(dest));
-    for (const prefix of new Set([basePath, legacyBasePath].filter(Boolean))) {
-      writeRedirectFile(`${prefix}${source}`, publicPath(dest));
+    writeRedirectVariants(source, publicPath(dest));
+    for (const locale of locales) {
+      if (locale.root) continue;
+      writeRedirectVariants(`/${locale.code}${source}`, localizedRedirectDestination(locale.code, dest));
     }
   }
+}
+
+function writeRedirectVariants(source, dest) {
+  writeRedirectFile(source, dest);
+  for (const prefix of new Set([basePath, legacyBasePath].filter(Boolean))) {
+    writeRedirectFile(`${prefix}${source}`, dest);
+  }
+}
+
+function localizedRedirectDestination(locale, dest) {
+  const [pathname, hash] = dest.split("#");
+  const slug = normalizeSlug(pathname.replace(/^\/+|\/+$/g, ""));
+  const page = allPageByKey.get(pageKey(locale, slug));
+  if (!page) return publicPath(dest);
+  return publicPath(`${pageRoute(page)}${hash ? `#${hash}` : ""}`);
 }
 
 function writeRedirectFile(source, dest) {
