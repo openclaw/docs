@@ -164,6 +164,7 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
+          MODE: ${{ inputs.mode }}
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
           OPENCLAW_DOCS_I18N_MODEL: gpt-5.6
@@ -178,6 +179,12 @@ jobs:
           fi
 
           mapfile -t DOC_FILES < "${pending_file}"
+          TRANSLATE_ARGS=()
+          if [ "${MODE}" = "full" ]; then
+            TRANSLATE_ARGS+=(--overwrite)
+          else
+            TRANSLATE_ARGS+=(--allow-partial)
+          fi
           attempt=1
           max_attempts=5
           while [ "$attempt" -le "$max_attempts" ]; do
@@ -190,8 +197,8 @@ jobs:
                 --src en \
                 --mode doc \
                 --thinking "${THINKING_EFFORT}" \
-                --allow-partial \
                 --parallel "${WORKER_PARALLEL}" \
+                "${TRANSLATE_ARGS[@]}" \
                 "${DOC_FILES[@]}"
             ); then
               exit 0

@@ -228,6 +228,7 @@ class I18NScriptTests(unittest.TestCase):
         )
         self.assertIn("ARTIFACT_DIR: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}", reusable)
         self.assertIn("include-hidden-files: true", reusable)
+
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"', reusable)
@@ -273,6 +274,14 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.upload_scope }}", r2_pages)
         self.assertIn("R2_UPLOAD_LOCALE: ${{ inputs.locale || '' }}", r2_pages)
         self.assertIn("R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}", r2_pages)
+
+    def test_translation_worker_overwrites_full_reconciliation_outputs(self) -> None:
+        reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
+        self.assertIn("MODE: ${{ inputs.mode }}", reusable)
+        self.assertIn('if [ "${MODE}" = "full" ]; then', reusable)
+        self.assertIn("TRANSLATE_ARGS+=(--overwrite)", reusable)
+        self.assertIn("TRANSLATE_ARGS+=(--allow-partial)", reusable)
+        self.assertIn('"${TRANSLATE_ARGS[@]}"', reusable)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
