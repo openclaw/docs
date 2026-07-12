@@ -283,6 +283,10 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("TRANSLATE_ARGS+=(--allow-partial)", reusable)
         self.assertIn('"${TRANSLATE_ARGS[@]}"', reusable)
 
+    def test_translation_worker_timeout_accommodates_xhigh_full_shards(self) -> None:
+        reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
+        self.assertRegex(reusable, r"(?ms)^  translate:\n.*?^    timeout-minutes: 360$")
+
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
         self.assertTrue(prepare.is_translatable_doc_path("docs/reference/test.md"))

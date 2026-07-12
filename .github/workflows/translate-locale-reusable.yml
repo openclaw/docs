@@ -67,7 +67,7 @@ jobs:
   translate:
     name: Translate ${{ inputs.locale }} shard ${{ inputs.shard_index }}/${{ inputs.shard_total }}
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 360
     permissions:
       contents: read
     concurrency:
