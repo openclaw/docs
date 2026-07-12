@@ -11,6 +11,7 @@ Publish mirror for `docs.openclaw.ai`. Source repo: `openclaw/openclaw`.
 ## Editable Here
 
 - `AGENTS.md`, `CLAUDE.md`, `README.md`.
+- `.agents/skills/autoreview/**` for the repo-local canonical review skill mirror.
 - `.github/assets/**` for repo-owned README media that must not be pruned by docs sync.
 - `.github/workflows/translate-*.yml`.
 - `.github/workflows/translate-locale-reusable.yml`.
