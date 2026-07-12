@@ -1697,6 +1697,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "nodes/index",
+                  "nodes/presence",
                   "nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -3282,6 +3283,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "zh-TW/nodes/index",
+                  "zh-TW/nodes/presence",
                   "zh-TW/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -4244,6 +4246,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "ja-JP/nodes/index",
+                  "ja-JP/nodes/presence",
                   "ja-JP/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -5206,6 +5209,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "es/nodes/index",
+                  "es/nodes/presence",
                   "es/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -6168,6 +6172,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "pt-BR/nodes/index",
+                  "pt-BR/nodes/presence",
                   "pt-BR/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -7130,6 +7135,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "ko/nodes/index",
+                  "ko/nodes/presence",
                   "ko/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -8092,6 +8098,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "de/nodes/index",
+                  "de/nodes/presence",
                   "de/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -9054,6 +9061,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "fr/nodes/index",
+                  "fr/nodes/presence",
                   "fr/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -10016,6 +10024,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "hi/nodes/index",
+                  "hi/nodes/presence",
                   "hi/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -10978,6 +10987,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "ar/nodes/index",
+                  "ar/nodes/presence",
                   "ar/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -11940,6 +11950,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "it/nodes/index",
+                  "it/nodes/presence",
                   "it/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -12902,6 +12913,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "vi/nodes/index",
+                  "vi/nodes/presence",
                   "vi/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -13864,6 +13876,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "nl/nodes/index",
+                  "nl/nodes/presence",
                   "nl/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -14826,6 +14839,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "tr/nodes/index",
+                  "tr/nodes/presence",
                   "tr/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -15788,6 +15802,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "uk/nodes/index",
+                  "uk/nodes/presence",
                   "uk/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -16750,6 +16765,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "id/nodes/index",
+                  "id/nodes/presence",
                   "id/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -17712,6 +17728,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "pl/nodes/index",
+                  "pl/nodes/presence",
                   "pl/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
@@ -18674,6 +18691,7 @@
                 "group": "Nodes and media",
                 "pages": [
                   "ru/nodes/index",
+                  "ru/nodes/presence",
                   "ru/nodes/troubleshooting",
                   {
                     "group": "Media capabilities",
